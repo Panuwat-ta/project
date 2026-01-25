@@ -15,7 +15,7 @@
 ---
 
 ## 1️. สแกนรูป หาจุดตัดต่อ / ภาพปลอมของคน
-
+*(Image Forgery / Face Manipulation Detection)*
 ### สิ่งที่ระบบทำ
 
 * ตรวจจับการตัดต่อใบหน้า / deepfake / AI-generated

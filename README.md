@@ -8,7 +8,7 @@
 
 
 
-# ภาพรวมโครงงาน (Project Overview)
+## ภาพรวมโครงงาน (Project Overview)
 
 โครงงานนี้มีวัตถุประสงค์เพื่อพัฒนา **Mobile Application สำหรับการตรวจจับรูปภาพที่มีความเสี่ยงในการหลอกลวง (Scam Image Detection)**
 โดยช่วยให้ผู้ใช้สามารถตรวจสอบความน่าเชื่อถือของรูปภาพก่อนนำไปใช้ แชร์ หรือเชื่อถือในบริบทต่าง ๆ เช่น การซื้อขายออนไลน์ การโฆษณา และโซเชียลมีเดีย
@@ -31,3 +31,13 @@
 ทำให้โครงงานนี้เหมาะสมทั้งในเชิงวิชาการและการนำไปประยุกต์ใช้งานจริง
 
 ---
+
+## พื้นที่การทำงาน
+
+### [Discord](https://discord.gg/WSEXfzrb) *(ใช้ผูดคุยสื่อสาร)*
+
+
+
+### [Miro](https://miro.com/welcomeonboard/QmZJV2lUMDZ0amlTbWtrRlBxQkM0WE82aEM5K1YyVFdYM0s2Z2J1U0w1cXYwQlorcDRSZk5oaFNaYXM3enozcXppUXdyK0xQNWE5aTZ0bm42anhNUWtHeEhvMWNmVHNWUUlMZGx1VU41WGdmK0g2eTdzQ1U2S3VCd2pqeTNBNEd0R2lncW1vRmFBVnlLcVJzTmdFdlNRPT0hdjE=?share_link_id=95378118618) *(วิเคราะห์ความต้องการ)*
+
+### [Figma](https://www.figma.com/design/gFrjAWWl0ZmT7h7vzu9011/project-Mobile-App--Scam-Image-Detection?node-id=0-1&t=seKA8vjnzcKV9HMq-1) *(ออกแบบ)*
