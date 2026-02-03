@@ -6,7 +6,7 @@
 **ผู้จัดรับผืดชอบโครงงาน**<br>
 นาย ภานุวัฒน์ ต๋าคำ รหัสนักศึกษา 67543210044-3
 
-
+---
 
 ## ภาพรวมโครงงาน (Project Overview)
 
@@ -43,3 +43,5 @@
 ### [Figma](https://www.figma.com/design/gFrjAWWl0ZmT7h7vzu9011/project-Mobile-App--Scam-Image-Detection?node-id=0-1&t=seKA8vjnzcKV9HMq-1) *(ออกแบบ)*
 
 ### [Clickup](https://app.clickup.com/90182185353/v/s/90189518592) *(งานที่ต้องทำ)*
+
+### [Diagram](https://drive.google.com/file/d/1I2ksLvZp0x3iNYt57_46cqnTDfPgWvzR/view?usp=sharing) *(Diagram)*
