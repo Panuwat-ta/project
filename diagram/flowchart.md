@@ -92,110 +92,103 @@ graph TD
 
 ## ⚙️ System Logic (การทำงานฝั่งระบบ)
 ```mermaid
-graph TD
-    %% Nodes Definition
-    Start([รับไฟล์รูปภาพ])
-    Validate{ตรวจสอบไฟล์<br/>Valid Image?}
-    Reject[คืนค่า Error]
-    
-    Preprocess[Preprocessing<br/>- Resize<br/>- Normalize]
-    
-    CacheCheck{เคยตรวจรูปนี้ไหม?<br/>Redis Hash}
-    RetCache[ดึงผลเก่าจาก DB]
-    
-    %% Parallel Tasks Section
-    Fork1[ ] 
-    style Fork1 fill:#000,stroke:#000,height:2px
-    
-    Task1[<b>Task 1: Metadata</b><br/>ดึงค่า EXIF/GPS]
-    Task2[<b>Task 2: Forgery</b><br/>เช็คการตัดต่อ ELA]
-    Task3[<b>Task 3: OCR</b><br/>อ่านข้อความในภาพ]
-    Task4[<b>Task 4: Source</b><br/>ตรวจสอบแหล่งที่มา]
-    
-    Join1[ ]
-    style Join1 fill:#000,stroke:#000,height:2px
-    
-    %% Post-Parallel Logic
-    Timeout[<b>Partial Failure</b><br/>Timeout < 10 s]
-    
-    KeywordCheck{เจอ Keyword<br/>อันตรายสูง?}
-    Task5[<b>Task 5: AI-Gen</b><br/>เช็คว่าเป็นภาพ AI]
-    
-    Calc[<b>คำนวณคะแนนความเสี่ยง</b><br/>Weighted Risk Score]
-    GenDesc[สร้างคำอธิบายผลลัพธ์]
-    SaveDB[(บันทึกลง<br/>Database)]
-    End([ส่ง JSON กลับ Client])
+flowchart TD
+    %% การตั้งค่า Class สีต่างๆ (บังคับข้อความสีดำ color:black)
+    classDef blueFill fill:#dae8fc,stroke:#6c8ebf,color:black
+    classDef darkBlueFill fill:#0050ef,stroke:#001DBC,color:black
+    classDef greyFill fill:#f5f5f5,stroke:#666666,color:black
+    classDef redFill fill:#f8cecc,stroke:#b85450,color:black
+    classDef orangeFill fill:#ffe6cc,stroke:#d79b00,color:black
+    classDef greenFill fill:#d5e8d4,stroke:#82b366,color:black
+    classDef purpleFill fill:#e1d5e7,stroke:#9673a6,color:black
 
-    %% Flow Connections
+    %% Nodes (โหนดต่างๆ)
+    Start(["รับไฟล์รูปภาพ"])
+    Validate{"ตรวจสอบไฟล์<br>(Valid Image?)"}
+    Reject["คืนค่า Error"]
+    Process["Preprocessing<br>- Resize<br>- Normalize"]
+    Cache{"เคยตรวจรูปนี้ไหม?<br>(Redis Hash)"}
+    RetCache["ดึงผลเก่าจาก DB"]
+    
+    %% Parallel Tasks Group
+    T1["Task 1: Metadata<br>ดึงค่า EXIF/GPS"]
+    T2["Task 2: Forgery<br>เช็คการตัดต่อ (ELA)"]
+    T3["Task 3: OCR<br>อ่านข้อความในภาพ"]
+    
+    Partial["Partial Failure<br>(Timeout < 10 s)"]
+    CheckKey{"เจอ Keyword<br>อันตรายสูง?"}
+    
+    T4["Task 4: Source<br>ตรวจสอบแหล่งที่มา"]
+    SearchNet{"ค้นหารูปในอินเตอร์เน็ต"}
+    
+    FoundMany["เจอรูปมีที่มา<br>มากกว่า 3 ที่"]
+    FoundFew["เจอรูปมีที่มา<br>น้อยกว่าหรือเท่ากับ 1 ที่"]
+    
+    T5["Task 5: AI-Gen<br>เช็คว่าเป็นภาพ AI"]
+    
+    Calc["คำนวณคะแนนความเสี่ยง<br>(Weighted Risk Score)"]
+    Gen["สร้างคำอธิบายผลลัพธ์"]
+    DB[("บันทึกลง<br>Database")]
+    EndNode(["ส่ง JSON กลับ Client"])
+
+    %% Connections (เส้นเชื่อมโยง)
     Start --> Validate
     Validate -- "ไม่ใช่รูป/เสีย" --> Reject
-    Validate -- "ถูกต้อง" --> Preprocess
+    Validate -- "ถูกต้อง" --> Process
+    Process --> Cache
     
-    Preprocess --> CacheCheck
-    CacheCheck -- "Hit (เคยตรวจ)" --> RetCache
-    RetCache --> End
+    Cache -- "Hit (เคยตรวจ)" --> RetCache
+    RetCache --> EndNode
     
-    CacheCheck -- "Miss (ไม่เคย)" --> Fork1
+    %% Miss Case (Parallel Processing)
+    Cache -- "Miss (ไม่เคย)" --> T1 & T2 & T3
     
-    Fork1 --> Task1
-    Fork1 --> Task2
-    Fork1 --> Task3
-    Fork1 --> Task4
+    T1 & T2 & T3 --> Partial
+    Partial --> CheckKey
     
-    Task1 --> Join1
-    Task2 --> Join1
-    Task3 --> Join1
-    Task4 --> Join1
+    %% Logic Checks
+    CheckKey -- "เจอความเสี่ยงที่แน่ชัด" --> Calc
+    CheckKey -- "ไม่เจอความเสี่ยงที่แน่ชัด" --> T4
     
-    Join1 --> Timeout
-    Timeout --> KeywordCheck
+    T4 --> SearchNet
     
-    KeywordCheck -- "เจอความเสี่ยงที่แน่ชัด" --> Calc
-    KeywordCheck -- "ไม่พบ" --> Task5
-    Task5 --> Calc
+    SearchNet -- ">= 3" --> FoundMany
+    FoundMany --> Calc
     
-    Calc --> GenDesc
-    GenDesc --> SaveDB
-    SaveDB --> End
+    SearchNet -- "<= 1" --> FoundFew
+    FoundFew --> T5
+    T5 --> Calc
+    
+    %% Finalize
+    Calc --> Gen
+    Gen --> DB
+    DB --> EndNode
 
-    %% Styling with Black Text and Draw.io Colors
-    classDef allText color:#000;
-    class Start,Validate,Reject,Preprocess,CacheCheck,RetCache,Task1,Task2,Task3,Task4,Timeout,KeywordCheck,Task5,Calc,GenDesc,SaveDB,End allText;
-
-    style Start fill:#0050ef,stroke:#001DBC
-    style End fill:#0050ef,stroke:#001DBC
-    
-    style Validate fill:#fff2cc,stroke:#d6b656
-    style CacheCheck fill:#fff2cc,stroke:#d6b656
-    style KeywordCheck fill:#fff2cc,stroke:#d6b656
-    
-    style Reject fill:#d5e8d4,stroke:#82b366
-    style Calc fill:#d5e8d4,stroke:#82b366
-    style Timeout fill:#d5e8d4,stroke:#82b366
-    style GenDesc fill:#d5e8d4,stroke:#82b366
-    
-    style Preprocess fill:#dae8fc,stroke:#6c8ebf
-    style RetCache fill:#dae8fc,stroke:#6c8ebf
-    style SaveDB fill:#dae8fc,stroke:#6c8ebf
-    
-    style Task1 fill:#f5f5f5,stroke:#666
-    style Task2 fill:#f5f5f5,stroke:#666
-    style Task3 fill:#f5f5f5,stroke:#666
-    style Task4 fill:#f5f5f5,stroke:#666
-    style Task5 fill:#f5f5f5,stroke:#666
+    %% การใส่สีให้กับ Nodes
+    class Start,EndNode darkBlueFill
+    class Validate,T1,T2,T3,T5,T4 greyFill
+    class Reject redFill
+    class Process blueFill
+    class Cache,SearchNet,CheckKey,DB orangeFill
+    class RetCache,Gen purpleFill
+    class Partial,Calc,FoundMany,FoundFew greenFill
 ```
 ### 2. System Logic (กระบวนการฝั่งระบบ/หลังบ้าน)
 
 * **Validation & Preprocessing:** ก่อนจะเริ่มวิเคราะห์ ระบบจะเช็คความถูกต้องของไฟล์และปรับขนาด (Resize/Normalize) เพื่อให้โมเดล AI ทำงานได้แม่นยำที่สุด
 * **Optimization (Cache Strategy):** มีการใช้ **Redis Hash** เพื่อตรวจสอบว่ารูปนี้เคยมีคนส่งตรวจหรือยัง หาก "เคยแล้ว" ระบบจะดึงผลเก่าจาก DB มาตอบทันที ช่วยประหยัดทรัพยากรเครื่องเซิร์ฟเวอร์
-* **Parallel Processing (การทำงานขนาน):** หากเป็นรูปใหม่ ระบบจะแยกการทำงานออกเป็น 4 งานหลักพร้อมกัน (Task 1-4) เพื่อความรวดเร็ว:
+* **Parallel Processing (การทำงานขนาน):** หากเป็นรูปใหม่ ระบบจะแยกการทำงานออกเป็น 3 งานหลักพร้อมกัน (Task 1-3) เพื่อความรวดเร็ว:
 * **Metadata:** เช็คค่า EXIF/GPS ว่ารูปถ่ายที่ไหน เมื่อไหร่ (ป้องกันการแอบอ้างสถานที่)
 * **Forgery (ELA):** เช็คการตัดต่อระดับพิกเซล (Error Level Analysis) เช่น การแก้ตัวเลขบนสลิปโอนเงิน
 * **OCR:** อ่านข้อความในภาพเพื่อหา Keyword อันตราย (เช่น ชื่อบัญชีม้า หรือข้อความเชิญชวนหลอกลวง)
-* **Source:** ตรวจสอบแหล่งที่มาของภาพ
+* **Partial Failure** ถ้าเวลาที่ใช้มาการทำงานในบาง Task มากว่าเท่ากับ 5 วิ ให้ส่งข้อมูลไปแบบไม่ต้องรอ (ให้ส่งมาทีหลัง)
 
 
-* **Decision Logic:** ระบบมีจุดตัดสินใจ (Keyword Check) หากพบความเสี่ยงที่ชัดเจนมาก จะข้ามไปคำนวณคะแนนเลย แต่ถ้ายังไม่ชัดเจน จะส่งไปเช็คต่อที่ **AI-Gen Task** เพื่อดูว่าเป็นภาพที่สร้างจาก AI หรือไม่
+
+* **Decision Logic:** ระบบมีจุดตัดสินใจ (Keyword Check) หากพบความเสี่ยงที่ชัดเจนมาก จะข้ามไปคำนวณคะแนนเลย แต่ถ้ายังไม่ชัดเจน จะส่งไปเช็คต่อที่
+* **Source:** ตรวจสอบแหล่งที่มาของภาพ โดยค้นหาจากในอินเตอร์เน็ต ถ้าเจอมากว่าหรือเท่ากับ 3 ที่ จะข้ามไปคำนวณคะแนนเลย แต่ถ้าไม่จะส่งไปเช็คต่อที่
+
+* **AI-Gen Task:** เพื่อดูว่าเป็นภาพที่สร้างจาก AI หรือไม่
 * **Final Output:** จบด้วยการคำนวณคะแนนแบบถ่วงน้ำหนัก (Weighted Risk Score) สร้างคำอธิบาย บันทึก และส่งกลับไปแสดงผลที่หน้าแอปในรูปแบบ JSON
 
 
