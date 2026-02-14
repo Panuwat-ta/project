@@ -66,55 +66,69 @@ graph TD
 ## ⚙️ System Logic (การทำงานฝั่งระบบ)
 ```mermaid
 graph TD
-    AWS((AWS S3)) -- "import image" --> Input[/รับไฟล์รูปภาพ/]
-    Input --> Validate{"ตรวจสอบไฟล์ (Valid Image?)"}
+    %% Source & Initial Validation
+    S3([AWS S3]) -- "import image" --> Receive[/รับไฟล์รูปภาพ/]
+    Receive --> NodeValidate{ "ตรวจสอบไฟล์<br/>(Valid Image?)" }
     
-    Validate -- "ไม่ใช่รูป/เสีย" --> Reject[คืนค่า Error]
-    Validate -- "ถูกต้อง" --> Preprocess["Preprocessing - Resize - Normalize(PNG)"]
+    NodeValidate -- "ไม่ใช่รูป/เสีย" --> Reject[คืนค่า Error]
+    NodeValidate -- "ถูกต้อง" --> Preprocess["Preprocessing<br/>- Resize<br/>- Normalize(PNG)"]
+
+    %% Cache Mechanism
+    Preprocess --> NodeCache{ "เคยตรวจรูปนี้ไหม?<br/>(Redis Hash)" }
+    NodeCache -- "Hit (เคยตรวจ)" --> RetCache[ดึงผลเก่าจาก DB]
     
-    Preprocess --> Task1["Task 1: Metadata ดึงค่า EXIF/GPS"]
-    Task1 --> Cache{"เคยตรวจรูปนี้ไหม? (Redis Hash)"}
+    %% Processing Tasks
+    NodeCache -- "Miss (ไม่เคย)" --> Task1["<b>Task 1: Metadata</b><br/>ดึงค่า EXIF/GPS"]
+    Task1 --> Task2["<b>Task 2: OCR</b><br/>อ่านข้อความในภาพ"]
+    Task2 --> Task3["<b>Task 3: Forgery</b><br/>เช็คการตัดต่อ(ELA)"]
+    Task3 --> PartialFail["<b>Partial Failure</b><br/>( Timeout < 5 s)"]
     
-    Cache -- "Hit (เคยตรวจ)" --> RetCache[ดึงผลเก่าจาก DB]
-    RetCache --> Output[/ส่ง JSON กลับ Client/]
+    PartialFail --> NodeKeyword{ "เจอ Keyword<br/>อันตรายสูง?" }
     
-    Cache -- "Miss (ไม่เคย)" --> Task2["Task 2: OCR อ่านข้อความในภาพ"]
-    Task2 --> Task3["Task 3: Forgery เช็คการตัดต่อ(ELA)"]
-    Task3 --> PartialFail["Partial Failure (Timeout < 5s)"]
+    NodeKeyword -- "ไม่เจอความเสี่ยงที่แน่ชัด" --> Task4["<b>Task 4: Source</b><br/>ตรวจสอบแหล่งที่มา"]
+    Task4 --> NodeSearch{ค้นหารูปในอินเตอร์เน็ต}
     
-    PartialFail --> Keyword{"เจอ Keyword อันตรายสูง?"}
+    NodeSearch -- ">= 3" --> SourceHigh["เจอรูปมีที่มามากกว่า 3 ที่"]
+    NodeSearch -- "<= 1" --> SourceLow["เจอรูปมีที่มา<br/>น้อยกว่าหรือเท่ากับ 1 ที่"]
     
-    Keyword -- "เจอความเสี่ยง" --> Calc
-    Keyword -- "ไม่เจอความเสี่ยงที่แน่ชัด" --> Task4["Task 4: Source ตรวจสอบแหล่งที่มา"]
+    SourceLow --> Task5["<b>Task 5: AI-Gen</b><br/>เช็คว่าเป็นภาพ AI"]
     
-    Task4 --> Search{ค้นหารูปในอินเตอร์เน็ต}
-    Search -- ">= 3" --> LowRisk[เจอรูปมีที่มามากกว่า 3 ที่]
-    Search -- "<= 1" --> HighRisk["เจอรูปมีที่มา น้อยกว่าหรือเท่ากับ 1 ที่"]
+    %% Aggregation Point (Collector)
+    Collector(( ))
+    NodeKeyword -- "เจอ" --> Collector
+    SourceHigh --> Collector
+    Task5 --> Collector
     
-    HighRisk --> Task5["Task 5: AI-Gen เช็คว่าเป็นภาพ AI"]
-    Task5 --> Calc
-    LowRisk --> Calc
+    %% Final Calculation & Storage
+    Collector --> Calc["<b>คำนวณคะแนนความเสี่ยง</b><br/>(Weighted Risk Score)"]
+    Calc --> Gen[สร้างคำอธิบายผลลัพธ์]
+    Gen --> DB[(บันทึกลง Database)]
     
-    Calc["คำนวณคะแนนความเสี่ยง (Weighted Risk Score)"] --> Gen[สร้างคำอธิบายผลลัพธ์]
-    Gen --> DB[("บันทึกลง Database")]
-    DB --> Output
+    %% Output
+    DB --> Output[/ส่ง JSON กลับ Client/]
+    RetCache --> Output
 
     %% Styling
-    classDef blue fill:#0050ef,stroke:#001DBC,color:#fff
-    classDef green fill:#d5e8d4,stroke:#82b366,color:#000
-    classDef yellow fill:#fff2cc,stroke:#d6b656,color:#000
-    classDef purple fill:#e1d5e7,stroke:#9673a6,color:#000
-    classDef cloud fill:#dae8fc,stroke:#6c8ebf,color:#000
-    classDef red fill:#f8cecc,stroke:#b85450,color:#000
-    classDef grey fill:#f5f5f5,stroke:#666666,color:#333
-
-    class Input,Output,MergeNode1,MergeNode2 blue
-    class Calc,LowRisk,HighRisk green
-    class Validate,Cache,Keyword,Search yellow
-    class RetCache,Gen purple
-    class AWS,DB,Preprocess cloud
-    class Reject red
-    class Task1,Task2,Task3,Task4,Task5,PartialFail grey
+    style S3 fill:#dae8fc,stroke:#6c8ebf
+    style Receive fill:#0050ef,color:#fff
+    style NodeValidate fill:#f5f5f5,stroke:#666
+    style Reject fill:#f8cecc,stroke:#b85450
+    style Preprocess fill:#dae8fc,stroke:#6c8ebf
+    style NodeCache fill:#ffe6cc,stroke:#d79b00
+    style RetCache fill:#e1d5e7,stroke:#9673a6
+    style Task1 fill:#f5f5f5,stroke:#666
+    style Task2 fill:#f5f5f5,stroke:#666
+    style Task3 fill:#f5f5f5,stroke:#666
+    style Task4 fill:#f5f5f5,stroke:#666
+    style Task5 fill:#f5f5f5,stroke:#666
+    style PartialFail fill:#d5e8d4,stroke:#82b366
+    style NodeKeyword fill:#ffe6cc,stroke:#d79b00
+    style NodeSearch fill:#ffe6cc,stroke:#d79b00
+    style SourceHigh fill:#d5e8d4,stroke:#82b366
+    style SourceLow fill:#d5e8d4,stroke:#82b366
+    style Calc fill:#d5e8d4,stroke:#82b366
+    style DB fill:#ffe6cc,stroke:#d79b00
+    style Output fill:#0050ef,color:#fff
 ```
 
 ### คำอธิบาย System Logic

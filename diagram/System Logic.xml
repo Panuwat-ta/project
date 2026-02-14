@@ -1,24 +1,24 @@
-<mxGraphModel dx="1281" dy="1662" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+<mxGraphModel dx="1603" dy="1965" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
   <root>
     <mxCell id="0" />
     <mxCell id="1" parent="0" />
     <mxCell id="validate" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" value="ตรวจสอบไฟล์&lt;br&gt;(Valid Image?)" vertex="1">
-      <mxGeometry height="80" width="130" x="699" y="46" as="geometry" />
+      <mxGeometry height="80" width="130" x="699" y="31" as="geometry" />
     </mxCell>
     <mxCell id="reject" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" value="คืนค่า Error" vertex="1">
-      <mxGeometry height="50" width="100" x="940" y="61" as="geometry" />
+      <mxGeometry height="50" width="100" x="940" y="46" as="geometry" />
     </mxCell>
-    <mxCell id="rJpoJUVmxKSdY5zMJWEI-1" edge="1" parent="1" source="process1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="6-m-vmU7sYoF_rk1p_Qd-2">
+    <mxCell id="V6IMyUe4JzUjVXO2BRwE-2" edge="1" parent="1" source="process1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="cache">
       <mxGeometry relative="1" as="geometry" />
     </mxCell>
     <mxCell id="process1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Preprocessing&lt;br&gt;- Resize&lt;br&gt;- Normalize(PNG)" vertex="1">
-      <mxGeometry height="60" width="120" x="704" y="166" as="geometry" />
+      <mxGeometry height="60" width="120" x="704" y="151" as="geometry" />
     </mxCell>
     <mxCell id="cache" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" value="เคยตรวจรูปนี้ไหม?&lt;br&gt;(Redis Hash)" vertex="1">
-      <mxGeometry height="80" width="140" x="694" y="370" as="geometry" />
+      <mxGeometry height="80" width="140" x="694" y="282" as="geometry" />
     </mxCell>
     <mxCell id="ret_cache" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="ดึงผลเก่าจาก DB" vertex="1">
-      <mxGeometry height="50" width="110" x="1151" y="385" as="geometry" />
+      <mxGeometry height="50" width="110" x="1151" y="297" as="geometry" />
     </mxCell>
     <mxCell id="calc" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1" value="คำนวณคะแนนความเสี่ยง&lt;br&gt;(Weighted Risk Score)" vertex="1">
       <mxGeometry height="60" width="160" x="373" y="1212" as="geometry" />
@@ -31,7 +31,7 @@
     </mxCell>
     <mxCell id="e1" edge="1" parent="1" source="rJpoJUVmxKSdY5zMJWEI-3" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="validate" value="">
       <mxGeometry relative="1" as="geometry">
-        <mxPoint x="764" y="6" as="sourcePoint" />
+        <mxPoint x="764" y="-9" as="sourcePoint" />
       </mxGeometry>
     </mxCell>
     <mxCell id="e2" edge="1" parent="1" source="validate" style="endArrow=classic;html=1;fontColor=#CC0000;" target="reject" value="ไม่ใช่รูป/เสีย">
@@ -43,9 +43,9 @@
     <mxCell id="e5" edge="1" parent="1" source="cache" style="endArrow=classic;html=1;fontColor=#0000CC;" target="ret_cache" value="Hit (เคยตรวจ)">
       <mxGeometry relative="1" as="geometry" />
     </mxCell>
-    <mxCell id="e6" edge="1" parent="1" source="cache" style="endArrow=classic;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="6-m-vmU7sYoF_rk1p_Qd-3" value="Miss (ไม่เคย)">
+    <mxCell id="e6" edge="1" parent="1" source="cache" style="endArrow=classic;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="V6IMyUe4JzUjVXO2BRwE-3" value="Miss (ไม่เคย)">
       <mxGeometry relative="1" as="geometry">
-        <mxPoint x="764" y="513" as="targetPoint" />
+        <mxPoint x="764" y="500" as="targetPoint" />
       </mxGeometry>
     </mxCell>
     <mxCell id="e8" edge="1" parent="1" source="calc" style="endArrow=classic;html=1;" target="gen" value="">
@@ -71,28 +71,19 @@
       <mxGeometry relative="1" as="geometry" />
     </mxCell>
     <mxCell id="kXEdN1bkzKhmfy1pEcrI-21" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1" value="Partial Failure&lt;div&gt;( Timeout &amp;lt; 5 s)&lt;/div&gt;" vertex="1">
-      <mxGeometry height="60" width="160" x="684" y="700" as="geometry" />
+      <mxGeometry height="60" width="160" x="684" y="690" as="geometry" />
     </mxCell>
-    <mxCell id="rJpoJUVmxKSdY5zMJWEI-2" edge="1" parent="1" source="6-m-vmU7sYoF_rk1p_Qd-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="cache">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="6-m-vmU7sYoF_rk1p_Qd-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="&lt;b&gt;Task 1: Metadata&lt;/b&gt;&lt;br&gt;ดึงค่า EXIF/GPS" vertex="1">
-      <mxGeometry height="60" width="120" x="704" y="260" as="geometry" />
-    </mxCell>
-    <mxCell id="GwN9DLibwNi88hxRSugp-9" edge="1" parent="1" source="6-m-vmU7sYoF_rk1p_Qd-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="6-m-vmU7sYoF_rk1p_Qd-4">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="GwN9DLibwNi88hxRSugp-11" edge="1" parent="1" source="6-m-vmU7sYoF_rk1p_Qd-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="GwN9DLibwNi88hxRSugp-10">
+    <mxCell id="V6IMyUe4JzUjVXO2BRwE-6" edge="1" parent="1" source="6-m-vmU7sYoF_rk1p_Qd-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="6-m-vmU7sYoF_rk1p_Qd-4">
       <mxGeometry relative="1" as="geometry" />
     </mxCell>
     <mxCell id="6-m-vmU7sYoF_rk1p_Qd-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" value="&lt;b&gt;Task 2: OCR&lt;/b&gt;&lt;br&gt;อ่านข้อความในภาพ" vertex="1">
-      <mxGeometry height="60" width="120" x="704" y="530" as="geometry" />
+      <mxGeometry height="60" width="120" x="704" y="507" as="geometry" />
     </mxCell>
-    <mxCell id="GwN9DLibwNi88hxRSugp-12" edge="1" parent="1" source="6-m-vmU7sYoF_rk1p_Qd-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="GwN9DLibwNi88hxRSugp-10">
+    <mxCell id="V6IMyUe4JzUjVXO2BRwE-7" edge="1" parent="1" source="6-m-vmU7sYoF_rk1p_Qd-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="kXEdN1bkzKhmfy1pEcrI-21">
       <mxGeometry relative="1" as="geometry" />
     </mxCell>
     <mxCell id="6-m-vmU7sYoF_rk1p_Qd-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" value="&lt;div&gt;&lt;b&gt;Task 3: Forgery&lt;/b&gt;&lt;/div&gt;&lt;div&gt;เช็คการตัดต่อ(ELA)&lt;/div&gt;" vertex="1">
-      <mxGeometry height="60" width="120" x="704" y="620" as="geometry" />
+      <mxGeometry height="60" width="120" x="704" y="597" as="geometry" />
     </mxCell>
     <mxCell id="GwN9DLibwNi88hxRSugp-17" edge="1" parent="1" source="6-m-vmU7sYoF_rk1p_Qd-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="GwN9DLibwNi88hxRSugp-15">
       <mxGeometry relative="1" as="geometry" />
@@ -154,7 +145,7 @@
       <mxGeometry height="80" width="140" x="694" y="790" as="geometry" />
     </mxCell>
     <mxCell id="rJpoJUVmxKSdY5zMJWEI-3" parent="1" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#0050ef;fontColor=#ffffff;strokeColor=#001DBC;" value="&lt;span style=&quot;color: rgb(255, 255, 255);&quot;&gt;รับไฟล์รูปภาพ&lt;/span&gt;" vertex="1">
-      <mxGeometry height="60" width="120" x="703" y="-70" as="geometry" />
+      <mxGeometry height="60" width="120" x="703" y="-85" as="geometry" />
     </mxCell>
     <mxCell id="GwN9DLibwNi88hxRSugp-2" edge="1" parent="1" source="GwN9DLibwNi88hxRSugp-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="rJpoJUVmxKSdY5zMJWEI-3">
       <mxGeometry relative="1" as="geometry" />
@@ -165,18 +156,7 @@
       </mxGeometry>
     </mxCell>
     <mxCell id="GwN9DLibwNi88hxRSugp-1" parent="1" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;AWS S3&lt;/span&gt;" vertex="1">
-      <mxGeometry height="80" width="120" x="703" y="-220" as="geometry" />
-    </mxCell>
-    <mxCell id="GwN9DLibwNi88hxRSugp-13" edge="1" parent="1" source="GwN9DLibwNi88hxRSugp-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="kXEdN1bkzKhmfy1pEcrI-21">
-      <mxGeometry relative="1" as="geometry">
-        <Array as="points">
-          <mxPoint x="940" y="615" />
-          <mxPoint x="940" y="730" />
-        </Array>
-      </mxGeometry>
-    </mxCell>
-    <mxCell id="GwN9DLibwNi88hxRSugp-10" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" value="" vertex="1">
-      <mxGeometry height="30" width="30" x="890" y="600" as="geometry" />
+      <mxGeometry height="80" width="120" x="703" y="-235" as="geometry" />
     </mxCell>
     <mxCell id="GwN9DLibwNi88hxRSugp-14" parent="1" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#0050ef;fontColor=#ffffff;strokeColor=#001DBC;" value="ส่ง JSON กลับ Client" vertex="1">
       <mxGeometry height="60" width="140" x="385" y="1540" as="geometry" />
@@ -186,6 +166,12 @@
     </mxCell>
     <mxCell id="GwN9DLibwNi88hxRSugp-15" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" value="" vertex="1">
       <mxGeometry height="30" width="30" x="560" y="1150" as="geometry" />
+    </mxCell>
+    <mxCell id="V6IMyUe4JzUjVXO2BRwE-5" edge="1" parent="1" source="V6IMyUe4JzUjVXO2BRwE-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="6-m-vmU7sYoF_rk1p_Qd-3">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="V6IMyUe4JzUjVXO2BRwE-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="&lt;b&gt;Task 1: Metadata&lt;/b&gt;&lt;br&gt;ดึงค่า EXIF/GPS" vertex="1">
+      <mxGeometry height="60" width="120" x="704" y="413" as="geometry" />
     </mxCell>
   </root>
 </mxGraphModel>
