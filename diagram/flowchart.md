@@ -67,40 +67,41 @@ graph TD
 ```mermaid
 graph TD
     %% Source & Initial Validation
-    S3([AWS S3]) -- "import image" --> Receive[/รับไฟล์รูปภาพ/]
-    Receive --> NodeValidate{ "ตรวจสอบไฟล์<br/>(Valid Image?)" }
+    S3([AWS S3]) -- import_image --> Receive[/รับไฟล์รูปภาพ/]
+    Receive --> NodeValidate{ตรวจสอบไฟล์ Valid Image}
     
-    NodeValidate -- "ไม่ใช่รูป/เสีย" --> Reject[คืนค่า Error]
-    NodeValidate -- "ถูกต้อง" --> Preprocess["Preprocessing<br/>- Resize<br/>- Normalize(PNG)"]
+    NodeValidate -- ไม่ใช่รูปหรือไฟล์เสีย --> Reject[คืนค่า Error]
+    NodeValidate -- ถูกต้อง --> Preprocess[Preprocessing]
 
     %% Cache Mechanism
-    Preprocess --> NodeCache{ "เคยตรวจรูปนี้ไหม?<br/>(Redis Hash)" }
-    NodeCache -- "Hit (เคยตรวจ)" --> RetCache[ดึงผลเก่าจาก DB]
+    Preprocess --> NodeCache{เคยตรวจรูปนี้ไหม Redis}
+    NodeCache -- Hit_เคยตรวจ --> RetCache[ดึงผลเก่าจาก DB]
     
-    %% Processing Tasks
-    NodeCache -- "Miss (ไม่เคย)" --> Task1["<b>Task 1: Metadata</b><br/>ดึงค่า EXIF/GPS"]
-    Task1 --> Task2["<b>Task 2: OCR</b><br/>อ่านข้อความในภาพ"]
-    Task2 --> Task3["<b>Task 3: Forgery</b><br/>เช็คการตัดต่อ(ELA)"]
-    Task3 --> PartialFail["<b>Partial Failure</b><br/>( Timeout < 5 s)"]
+    %% Processing Tasks (ส่วนที่เป็นข้อความสีดำบนพื้นเทา)
+    NodeCache -- Miss_ไม่เคย --> Task1[Task 1 Metadata]
+    Task1 --> Task2[Task 2 OCR]
+    Task2 --> Task3[Task 3 Forgery]
     
-    PartialFail --> NodeKeyword{ "เจอ Keyword<br/>อันตรายสูง?" }
+    %% Error Handling & Logic Branching
+    Task3 --> PartialFail[Partial Failure Timeout 5s]
+    PartialFail --> NodeKeyword{เจอ Keyword อันตราย}
     
-    NodeKeyword -- "ไม่เจอความเสี่ยงที่แน่ชัด" --> Task4["<b>Task 4: Source</b><br/>ตรวจสอบแหล่งที่มา"]
-    Task4 --> NodeSearch{ค้นหารูปในอินเตอร์เน็ต}
+    NodeKeyword -- ไม่เจอความเสี่ยงชัดเจน --> Task4[Task 4 Source]
+    Task4 --> NodeSearch{ค้นหารูปในเน็ต}
     
-    NodeSearch -- ">= 3" --> SourceHigh["เจอรูปมีที่มามากกว่า 3 ที่"]
-    NodeSearch -- "<= 1" --> SourceLow["เจอรูปมีที่มา<br/>น้อยกว่าหรือเท่ากับ 1 ที่"]
+    NodeSearch -- มากกว่าหรือเท่ากับ 3 --> SourceHigh[เจอรูปมีที่มามากกว่า 3 ที่]
+    NodeSearch -- น้อยกว่าหรือเท่ากับ 1 --> SourceLow[เจอรูปมีที่มาน้อยกว่า 1 ที่]
     
-    SourceLow --> Task5["<b>Task 5: AI-Gen</b><br/>เช็คว่าเป็นภาพ AI"]
+    SourceLow --> Task5[Task 5 AI-Gen]
     
     %% Aggregation Point (Collector)
     Collector(( ))
-    NodeKeyword -- "เจอ" --> Collector
-    SourceHigh --> Collector
-    Task5 --> Collector
+    NodeKeyword -- เจอ --> Collector
+    SourceHigh -- เจอ --> Collector
+    Task5 -- เจอ --> Collector
     
     %% Final Calculation & Storage
-    Collector --> Calc["<b>คำนวณคะแนนความเสี่ยง</b><br/>(Weighted Risk Score)"]
+    Collector --> Calc[คำนวณคะแนนความเสี่ยง]
     Calc --> Gen[สร้างคำอธิบายผลลัพธ์]
     Gen --> DB[(บันทึกลง Database)]
     
@@ -108,26 +109,26 @@ graph TD
     DB --> Output[/ส่ง JSON กลับ Client/]
     RetCache --> Output
 
-    %% Styling
-    style S3 fill:#dae8fc,stroke:#6c8ebf
+    %% Styling (กำหนดสีข้อความเป็นสีดำด้วย color:#000)
+    style S3 fill:#dae8fc,stroke:#6c8ebf,color:#000
     style Receive fill:#0050ef,color:#fff
-    style NodeValidate fill:#f5f5f5,stroke:#666
-    style Reject fill:#f8cecc,stroke:#b85450
-    style Preprocess fill:#dae8fc,stroke:#6c8ebf
-    style NodeCache fill:#ffe6cc,stroke:#d79b00
-    style RetCache fill:#e1d5e7,stroke:#9673a6
-    style Task1 fill:#f5f5f5,stroke:#666
-    style Task2 fill:#f5f5f5,stroke:#666
-    style Task3 fill:#f5f5f5,stroke:#666
-    style Task4 fill:#f5f5f5,stroke:#666
-    style Task5 fill:#f5f5f5,stroke:#666
-    style PartialFail fill:#d5e8d4,stroke:#82b366
-    style NodeKeyword fill:#ffe6cc,stroke:#d79b00
-    style NodeSearch fill:#ffe6cc,stroke:#d79b00
-    style SourceHigh fill:#d5e8d4,stroke:#82b366
-    style SourceLow fill:#d5e8d4,stroke:#82b366
-    style Calc fill:#d5e8d4,stroke:#82b366
-    style DB fill:#ffe6cc,stroke:#d79b00
+    style NodeValidate fill:#f5f5f5,stroke:#666,color:#000
+    style Reject fill:#f8cecc,stroke:#b85450,color:#000
+    style Preprocess fill:#dae8fc,stroke:#6c8ebf,color:#000
+    style NodeCache fill:#ffe6cc,stroke:#d79b00,color:#000
+    style RetCache fill:#e1d5e7,stroke:#9673a6,color:#000
+    style Task1 fill:#f5f5f5,stroke:#666,color:#000
+    style Task2 fill:#f5f5f5,stroke:#666,color:#000
+    style Task3 fill:#f5f5f5,stroke:#666,color:#000
+    style Task4 fill:#f5f5f5,stroke:#666,color:#000
+    style Task5 fill:#f5f5f5,stroke:#666,color:#000
+    style PartialFail fill:#d5e8d4,stroke:#82b366,color:#000
+    style NodeKeyword fill:#ffe6cc,stroke:#d79b00,color:#000
+    style NodeSearch fill:#ffe6cc,stroke:#d79b00,color:#000
+    style SourceHigh fill:#d5e8d4,stroke:#82b366,color:#000
+    style SourceLow fill:#d5e8d4,stroke:#82b366,color:#000
+    style Calc fill:#d5e8d4,stroke:#82b366,color:#000
+    style DB fill:#ffe6cc,stroke:#d79b00,color:#000
     style Output fill:#0050ef,color:#fff
 ```
 
