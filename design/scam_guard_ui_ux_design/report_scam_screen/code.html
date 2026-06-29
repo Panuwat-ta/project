@@ -1,0 +1,251 @@
+<!DOCTYPE html><html lang="th"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+<title>แจ้งรายงาน - ScamGuard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-background": "#121c26",
+                    "outline-variant": "#bdc8cf",
+                    "on-tertiary-container": "#492b00",
+                    "on-tertiary-fixed": "#2a1700",
+                    "on-surface": "#121c26",
+                    "surface-container-highest": "#d9e3f1",
+                    "on-secondary-container": "#007230",
+                    "surface-container": "#e4effd",
+                    "inverse-primary": "#6cd2ff",
+                    "bg-light": "#F6F8FB",
+                    "primary-container": "#00a6d6",
+                    "danger": "#DC2626",
+                    "surface-dark": "#162230",
+                    "on-error-container": "#93000a",
+                    "inverse-surface": "#27313c",
+                    "surface-light": "#FFFFFF",
+                    "primary": "#006685",
+                    "text-secondary": "#5E6B78",
+                    "border": "#D8E0EA",
+                    "surface-container-lowest": "#ffffff",
+                    "on-surface-variant": "#3d484e",
+                    "secondary-container": "#7cf994",
+                    "outline": "#6e797f",
+                    "on-primary": "#ffffff",
+                    "background": "#f7f9ff",
+                    "surface": "#f7f9ff",
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "lg": "24px",
+                    "md": "16px",
+                    "xl": "32px",
+                    "safe-margin": "20px",
+                    "gutter": "12px",
+                    "xs": "4px",
+                    "sm": "8px",
+                    "xxl": "48px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Sarabun"],
+                    "caption": ["Sarabun"],
+                    "button-label": ["Sarabun"],
+                    "section-header": ["Sarabun"],
+                    "headline-lg": ["Sarabun"],
+                    "body-base": ["Sarabun"],
+                    "title-md": ["Sarabun"],
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "caption": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "button-label": ["16px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "section-header": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "headline-lg": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "body-base": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "title-md": ["22px", {"lineHeight": "28px", "fontWeight": "700"}],
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #F6F8FB;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #D8E0EA;
+            border-radius: 10px;
+        }
+        .focused-input:focus-within {
+            border-color: #006685;
+            box-shadow: 0 0 0 1px #006685;
+        }
+        .tonal-card {
+            background: #FFFFFF;
+            box-shadow: 0px 4px 12px rgba(23, 33, 43, 0.05);
+        }
+    </style>
+</head>
+<body class="text-on-background min-h-screen pb-24">
+<!-- TopAppBar -->
+<nav class="bg-surface-light dark:bg-surface-dark border-b border-border dark:border-outline-variant flex justify-between items-center w-full px-safe-margin h-16 sticky top-0 z-50">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary font-bold">shield_lock</span>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary dark:text-primary-fixed-dim">ScamGuard</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 duration-150">notifications</button>
+</div>
+</nav>
+<main class="max-w-[540px] mx-auto px-safe-margin pt-md">
+<!-- Section Header -->
+<header class="mb-lg">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile mb-xs">แจ้งรายงานการหลอกลวง</h2>
+<p class="font-body-base text-body-base text-text-secondary">ช่วยเราสร้างสังคมดิจิทัลที่ปลอดภัยยิ่งขึ้นโดยการแจ้งเบาะแส</p>
+</header>
+<form class="space-y-lg" id="scam-report-form">
+<!-- Image Preview Area -->
+<section class="tonal-card rounded-xl overflow-hidden border border-border">
+<div class="p-md border-b border-border bg-surface-container-low flex justify-between items-center">
+<span class="font-section-header text-section-header">รูปภาพที่ตรวจสอบ</span>
+<button class="text-primary font-button-label text-button-label flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[20px]">refresh</span> เปลี่ยนรูป
+                    </button>
+</div>
+<div class="aspect-video relative group cursor-pointer">
+<img class="w-full h-full object-cover" data-alt="A high-quality mobile screenshot showing a suspicious online banking transaction slip with a fake QR code. The image is clear and detailed, set against a clean white light-mode background in a clinical and secure UI design style. The lighting is bright and professional, emphasizing a corporate and reliable security utility aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDirsTKTyAkVLvah-Gxxo3EbGXq74mH1hE1yIRYlUF9G8PTfJcN5eWA-qO5_sO_nMS4QvKMft0fTelPyyJwBvpxnmgeJCISJeVRjOLqqKK6YoLg00wC6z38_zyLXtSWh5h2MtJ8WOJ4dpk1L2K9W8Y2xdiUkSz4eFqf9qETm-yXcP5il5wfNkIFBeArTZSbdrDjNcCTJI6XBaC4CK_PDiqmrKGLXVED2RRoDDlSq4hyOs4-2xZJzM0XDgDAdmZGOo_dftM2dAOd4uI">
+<div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+<div class="bg-white/90 p-sm rounded-full shadow-lg">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">zoom_in</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Dropdown: ประเภทเหตุการณ์ -->
+<div class="space-y-sm">
+<label class="font-button-label text-button-label text-on-surface block" for="scam_type">ประเภทเหตุการณ์</label>
+<div class="relative focused-input border border-border rounded-lg bg-white transition-all">
+<select class="w-full h-12 px-md bg-transparent appearance-none focus:outline-none font-body-base text-body-base" id="scam_type">
+<option disabled="" selected="" value="">เลือกประเภทการหลอกลวง</option>
+<option value="romance">Romance Scam (หลอกให้รัก)</option>
+<option value="shopping">Online Shopping (ซื้อของไม่ได้ของ)</option>
+<option value="fakeslip">Fake Slip (สลิปปลอม)</option>
+<option value="investment">Investment Scam (หลอกลงทุน)</option>
+<option value="identity">Identity Theft (สวมรอยตัวตน)</option>
+<option value="deepfake">AI / Deepfake</option>
+<option value="other">อื่นๆ</option>
+</select>
+<span class="material-symbols-outlined absolute right-md top-3 pointer-events-none text-text-secondary">expand_more</span>
+</div>
+</div>
+<!-- Input: แพลตฟอร์มที่พบ -->
+<div class="space-y-sm">
+<label class="font-button-label text-button-label text-on-surface block" for="platform">แพลตฟอร์มที่พบ</label>
+<div class="focused-input border border-border rounded-lg bg-white flex items-center px-md transition-all h-12">
+<span class="material-symbols-outlined text-text-secondary mr-sm">public</span>
+<input class="flex-1 h-full bg-transparent border-none focus:ring-0 font-body-base text-body-base outline-none" id="platform" placeholder="เช่น Facebook, Line, TikTok" type="text">
+</div>
+</div>
+<!-- Text Area: รายละเอียดเพิ่มเติม -->
+<div class="space-y-sm">
+<label class="font-button-label text-button-label text-on-surface block" for="details">รายละเอียดเพิ่มเติม</label>
+<textarea class="w-full p-md border border-border rounded-lg bg-white focus:ring-1 focus:ring-primary focus:border-primary font-body-base text-body-base outline-none transition-all" id="details" placeholder="ระบุลำดับเหตุการณ์ หรือข้อมูลที่น่าสงสัย..." rows="4"></textarea>
+</div>
+<!-- Checkbox: Consent -->
+<label class="flex items-start gap-3 cursor-pointer group p-sm rounded-lg hover:bg-surface-container-low transition-colors">
+<div class="relative flex items-center mt-1">
+<input class="peer h-5 w-5 border-2 border-outline rounded text-primary focus:ring-primary focus:ring-offset-0 transition-all checked:bg-primary" type="checkbox">
+<span class="material-symbols-outlined absolute text-white opacity-0 peer-checked:opacity-100 text-[16px] left-[2px] top-[2px] pointer-events-none">check</span>
+</div>
+<span class="font-body-base text-body-base text-on-surface-variant select-none">
+                    ยินยอมให้ใช้ข้อมูลเพื่อพัฒนาโมเดล AI ในการตรวจสอบและป้องกันภัยไซเบอร์
+                </span>
+</label>
+<!-- Primary CTA -->
+<button class="w-full bg-primary text-on-primary py-lg rounded-xl font-button-label text-button-label shadow-lg active:scale-[0.98] transition-transform duration-150 flex items-center justify-center gap-2" type="submit">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">send</span>
+                ส่งรายงาน
+            </button>
+<p class="text-center font-caption text-caption text-text-secondary">
+                ข้อมูลของคุณจะถูกเก็บเป็นความลับและใช้เพื่อความปลอดภัยส่วนรวมเท่านั้น
+            </p>
+</form>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-gutter py-sm bg-surface-light dark:bg-surface-dark border-t border-border dark:border-outline-variant h-16">
+<button class="flex flex-col items-center justify-center text-text-secondary dark:text-outline-variant hover:bg-surface-container-low transition-colors active:scale-90 duration-200">
+<span class="material-symbols-outlined">home</span>
+<span class="font-caption text-caption">หน้าหลัก</span>
+</button>
+<button class="flex flex-col items-center justify-center text-text-secondary dark:text-outline-variant hover:bg-surface-container-low transition-colors active:scale-90 duration-200">
+<span class="material-symbols-outlined">history</span>
+<span class="font-caption text-caption">ประวัติ</span>
+</button>
+<button class="flex flex-col items-center justify-center text-primary dark:text-secondary-fixed-dim font-bold hover:bg-surface-container-low transition-colors active:scale-90 duration-200">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">flag</span>
+<span class="font-caption text-caption">แจ้งรายงาน</span>
+</button>
+<button class="flex flex-col items-center justify-center text-text-secondary dark:text-outline-variant hover:bg-surface-container-low transition-colors active:scale-90 duration-200">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-caption text-caption">ตั้งค่า</span>
+</button>
+</nav>
+<script>
+        // Micro-interaction for form submission
+        document.getElementById('scam-report-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalContent = btn.innerHTML;
+            
+            // Success animation simulation
+            btn.disabled = true;
+            btn.classList.add('opacity-80');
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> กำลังส่งข้อมูล...';
+            
+            setTimeout(() => {
+                btn.innerHTML = '<span class="material-symbols-outlined">check_circle</span> ส่งเรียบร้อยแล้ว';
+                btn.classList.remove('bg-primary');
+                btn.classList.add('bg-secondary');
+                
+                setTimeout(() => {
+                    // Reset or Redirect
+                    alert('ขอบคุณที่แจ้งเบาะแส ข้อมูลของคุณกำลังได้รับการตรวจสอบ');
+                    btn.disabled = false;
+                    btn.innerHTML = originalContent;
+                    btn.classList.remove('bg-secondary');
+                    btn.classList.add('bg-primary');
+                    btn.classList.remove('opacity-80');
+                }, 1500);
+            }, 2000);
+        });
+
+        // Toggle focus state for better visualization
+        const inputs = document.querySelectorAll('.focused-input input, .focused-input select');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.closest('.focused-input').classList.add('ring-2', 'ring-primary/20');
+            });
+            input.addEventListener('blur', () => {
+                input.closest('.focused-input').classList.remove('ring-2', 'ring-primary/20');
+            });
+        });
+    </script>
+</body></html>

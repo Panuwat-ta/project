@@ -39,7 +39,7 @@
 
 * **[การออกแบบส่วนหน้าบ้าน (Mobile Application Design)](design/design.md)** - โครงสร้าง Components + Redux, สีสันธีม UI/UX และพฤติกรรมผู้ใช้
 * **[การออกแบบโมบายแอปพลิเคชันโดยละเอียด (Detailed Mobile Design)](design/mobile.md)** - ขอบเขต เป้าหมาย หน้าจอ และโครงสร้างโฟลเดอร์ของ React Native
-* **[การออกแบบสถาปัตยกรรมระบบหลังบ้าน (Backend & System Architecture)](design/Backend.md)** - โครงสร้าง Backend, ท่อประมวลผล AI Inference (FastAPI, PyTorch, ONNX), Database Schema และ API Specifications
+* **[การออกแบบสถาปัตยกรรมระบบหลังบ้าน (Backend & System Architecture)](design/server.md)** - โครงสร้าง Backend, ท่อประมวลผล AI Inference (FastAPI, PyTorch, ONNX), Database Schema และ API Specifications
 
 ---
 

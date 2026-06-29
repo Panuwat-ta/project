@@ -1,0 +1,6 @@
+{
+  "name": "ScamGuard",
+  "description": "An intelligent security application that analyzes images, banking slips, and messages to detect potential scams, fraud, and phishing attempts using AI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

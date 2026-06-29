@@ -1,0 +1,245 @@
+<!DOCTYPE html><html lang="th"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+<title>ScamGuard - Onboarding</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Shared Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-background": "#121c26",
+                    "outline-variant": "#bdc8cf",
+                    "on-tertiary-container": "#492b00",
+                    "on-tertiary-fixed": "#2a1700",
+                    "on-surface": "#121c26",
+                    "surface-container-highest": "#d9e3f1",
+                    "on-secondary-container": "#007230",
+                    "surface-container": "#e4effd",
+                    "inverse-primary": "#6cd2ff",
+                    "bg-light": "#F6F8FB",
+                    "primary-container": "#00a6d6",
+                    "danger": "#DC2626",
+                    "surface-dark": "#162230",
+                    "on-error-container": "#93000a",
+                    "inverse-surface": "#27313c",
+                    "surface-light": "#FFFFFF",
+                    "background": "#f7f9ff",
+                    "secondary": "#006e2d",
+                    "surface-tint": "#006685",
+                    "tertiary-container": "#d68900",
+                    "bg-dark": "#0F1720",
+                    "on-secondary-fixed": "#002109",
+                    "surface-dim": "#d1dbe9",
+                    "text-secondary": "#5E6B78",
+                    "surface-variant": "#d9e3f1",
+                    "error": "#ba1a1a",
+                    "primary": "#006685",
+                    "error-container": "#ffdad6",
+                    "primary-fixed": "#bfe9ff",
+                    "on-tertiary-fixed-variant": "#653e00",
+                    "tertiary": "#855300",
+                    "border": "#D8E0EA",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-fixed": "#001f2a",
+                    "on-surface-variant": "#3d484e",
+                    "tertiary-fixed": "#ffddb8",
+                    "secondary-container": "#7cf994",
+                    "surface-bright": "#f7f9ff",
+                    "outline": "#6e797f",
+                    "on-primary-container": "#003649",
+                    "tertiary-fixed-dim": "#ffb95f",
+                    "on-primary": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "surface": "#f7f9ff",
+                    "secondary-fixed": "#7ffc97",
+                    "on-secondary-fixed-variant": "#005320",
+                    "on-error": "#ffffff",
+                    "on-primary-fixed-variant": "#004d65",
+                    "inverse-on-surface": "#e8f2ff",
+                    "surface-container-low": "#edf4ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "lg": "24px",
+                    "md": "16px",
+                    "xl": "32px",
+                    "safe-margin": "20px",
+                    "gutter": "12px",
+                    "xs": "4px",
+                    "sm": "8px",
+                    "xxl": "48px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Sarabun"],
+                    "caption": ["Sarabun"],
+                    "button-label": ["Sarabun"],
+                    "section-header": ["Sarabun"],
+                    "headline-lg": ["Sarabun"],
+                    "body-base": ["Sarabun"],
+                    "code-data": ["Inter"],
+                    "title-md": ["Sarabun"],
+                    "display-hero": ["Sarabun"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "caption": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "button-label": ["16px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "section-header": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "headline-lg": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "body-base": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "code-data": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "title-md": ["22px", {"lineHeight": "28px", "fontWeight": "700"}],
+                    "display-hero": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        .scanning-line {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #006685, transparent);
+            position: absolute;
+            width: 100%;
+            top: 0;
+            animation: scan 3s ease-in-out infinite;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        body {
+            background-color: #F6F8FB;
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+</head>
+<body class="font-body-base text-on-background selection:bg-primary-container selection:text-on-primary-container">
+<!-- Top Navigation Anchor (Suppressed based on "The Destination Rule" for Transactional/Onboarding) -->
+<main class="min-h-screen flex flex-col max-w-[540px] mx-auto relative overflow-hidden">
+<!-- Header & Identity Section -->
+<header class="pt-xl px-safe-margin text-center">
+<div class="inline-flex items-center justify-center p-sm bg-primary-container/10 rounded-xl mb-md">
+<span class="material-symbols-outlined text-primary text-[32px]" style="font-variation-settings: 'FILL' 1;">shield_lock</span>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary tracking-tight">
+                ScamGuard
+            </h1>
+</header>
+<!-- Illustration Component -->
+<section class="flex-1 flex flex-col items-center justify-center px-safe-margin py-lg">
+<div class="relative w-full max-w-[320px] aspect-square rounded-xxl overflow-hidden shadow-2xl bg-surface-container-low border border-white">
+<!-- Main Illustration Image -->
+<div class="absolute inset-0 w-full h-full bg-cover bg-center" data-alt="A futuristic digital illustration of a smartphone screen displaying an image analysis process. A high-tech glowing scan line moves across a photo of a suspicious document. The aesthetic is clean and corporate, featuring a soft blue and white color palette with minimalist data visualizations and security icons floating in the background. The mood is professional, secure, and technologically advanced." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDGH-DrXX55yKMVQ1N_J4UUJSNUTLkFFwbp7dOHt6ecD7pi0-kJ7uLBG3WXsQLXwYwul3fy9or-J14akVnNitIfMv3wYaH8cV69q6W1SVOiNTB1nPPgO4-werva90QuccGRE0i2xWjgJKeeK15ZUg0SKtXRINZpL7dxvENs_OYPwrDoKAEIIqHtOdxsMR8wcuoFhTQGQJCE3w_jaQ4zWPj0pBQfVeha7WUxmAvjEU4lfTKgdDT-rHIf7jwjz2IGHke6fjtISOQhK9s')"></div>
+<!-- Animated Scanning Effect -->
+<div class="scanning-line z-10"></div>
+<!-- Floating Risk Badge (Micro-interaction) -->
+<div class="absolute bottom-6 right-6 z-20 flex items-center gap-2 bg-white/90 backdrop-blur-md px-md py-sm rounded-full shadow-lg border border-primary/10">
+<span class="material-symbols-outlined text-secondary text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-caption font-bold text-on-surface">ตรวจสอบความปลอดภัย</span>
+</div>
+</div>
+</section>
+<!-- Content & Consent Canvas -->
+<section class="bg-surface-light rounded-t-[32px] shadow-[0_-8px_24px_rgba(23,33,43,0.08)] px-safe-margin pt-xl pb-xxl z-30">
+<div class="text-center mb-xl">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-sm">
+                    ตรวจสอบรูปภาพเพื่อความปลอดภัย
+                </h2>
+<p class="text-body-base text-text-secondary leading-relaxed">
+                    แอปพลิเคชันนี้ถูกออกแบบมาเพื่อช่วยประเมินความเสี่ยงเบื้องต้นของรูปภาพ <strong>ผลลัพธ์ที่ได้เป็นการวิเคราะห์ทางเทคนิคเท่านั้น ไม่ใช่คำตัดสินทางกฎหมาย</strong> โปรดใช้วิจารณญาณในการใช้งาน
+                </p>
+</div>
+<!-- Consent Checkboxes -->
+<div class="space-y-md mb-xl">
+<label class="group flex items-start gap-md p-md bg-surface-container-lowest rounded-xl border border-border/50 hover:border-primary/30 transition-colors cursor-pointer">
+<div class="relative flex items-center h-6">
+<input class="peer h-5 w-5 rounded border-outline-variant text-primary focus:ring-primary/20 transition-all cursor-pointer" id="terms" type="checkbox">
+</div>
+<div class="flex flex-col">
+<span class="font-button-label text-on-surface group-hover:text-primary transition-colors">ยอมรับเงื่อนไขการใช้งาน</span>
+<span class="text-caption text-text-secondary">อ่านข้อกำหนดและนโยบายความเป็นส่วนตัว</span>
+</div>
+</label>
+<label class="group flex items-start gap-md p-md bg-surface-container-lowest rounded-xl border border-border/50 hover:border-primary/30 transition-colors cursor-pointer">
+<div class="relative flex items-center h-6">
+<input class="peer h-5 w-5 rounded border-outline-variant text-primary focus:ring-primary/20 transition-all cursor-pointer" id="research" type="checkbox">
+</div>
+<div class="flex flex-col">
+<span class="font-button-label text-on-surface group-hover:text-primary transition-colors">ยินยอมให้นำข้อมูลไปปรับปรุงระบบ</span>
+<span class="text-caption text-text-secondary">ข้อมูลของคุณจะถูกเก็บเป็นความลับเพื่อใช้พัฒนาความแม่นยำของ AI</span>
+</div>
+</label>
+</div>
+<!-- CTA Button -->
+<button class="w-full h-14 bg-primary text-white rounded-xl font-button-label text-button-label shadow-lg shadow-primary/20 hover:bg-primary-container active:scale-95 disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed transition-all flex items-center justify-center gap-sm" disabled="" id="cta-start">
+                เริ่มใช้งาน
+                <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+<p class="text-center text-caption text-outline mt-lg">
+                เวอร์ชัน 1.0.0 • ความปลอดภัยของคุณคือสิ่งสำคัญ
+            </p>
+</section>
+</main>
+<!-- Interactive Logic for CTA -->
+<script>
+        const termsCheckbox = document.getElementById('terms');
+        const researchCheckbox = document.getElementById('research');
+        const startBtn = document.getElementById('cta-start');
+
+        function updateButtonState() {
+            // Primarily require terms checkbox, research is optional but good UX to prompt
+            if (termsCheckbox.checked) {
+                startBtn.disabled = false;
+                startBtn.classList.remove('opacity-50', 'grayscale');
+            } else {
+                startBtn.disabled = true;
+                startBtn.classList.add('opacity-50', 'grayscale');
+            }
+        }
+
+        termsCheckbox.addEventListener('change', updateButtonState);
+        
+        startBtn.addEventListener('click', () => {
+            if(!startBtn.disabled) {
+                // Visual feedback
+                startBtn.innerHTML = `
+                    <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    กำลังเข้าสู่ระบบ...
+                `;
+                setTimeout(() => {
+                    alert('ยินดีต้อนรับเข้าสู่ ScamGuard');
+                    // In a real app: window.location.href = '/dashboard';
+                }, 1200);
+            }
+        });
+    </script>
+</body></html>
