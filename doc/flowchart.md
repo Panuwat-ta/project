@@ -5,12 +5,8 @@
 ```mermaid
 graph TD
     Start([เริ่มใช้งาน]) --> Home[หน้าแรก]
-    Home -- "เลือกเมนู" --> ImportMethod{วิธีการนำเข้าไฟล์}
-    ImportMethod -- "กล้อง" --> Camera[ถ่ายรูป]
-    ImportMethod -- "อัลบั้ม" --> Gallery[เลือกรูปจาก Gallery]
-    
-    Camera --> Image[ปรับแต่ง / Crop รูป]
-    Gallery --> Image
+    Home -- "เลือกเมนู" --> Gallery[เลือกรูปภาพจาก Gallery]
+    Gallery --> Image[ปรับแต่ง / Crop รูป]
     
     Image -- "PNG" --> Preview[แสดง Preview รูปภาพ]
     Preview -- "upload images" --> CheckBtn[/กดปุ่มตรวจสอบ/]
@@ -43,8 +39,8 @@ graph TD
     classDef error fill:#f8cecc,stroke:#b85450,color:#000
 
     class Start,End blue
-    class Home,Camera,Gallery,Image,Preview,Result,Error,Share green
-    class ImportMethod,Analyzing,Action,Options yellow
+    class Home,Gallery,Image,Preview,Result,Error,Share green
+    class Analyzing,Action,Options yellow
     class CheckBtn,RetCache,Gen purple
     class S3,AutoSave cloud
 ```
@@ -52,7 +48,7 @@ graph TD
 ### คำอธิบาย User Flow
 1. **เริ่มต้น (Start)**: ผู้ใช้เข้าสู่แอปพลิเคชัน
 2. **หน้าแรก (Home)**: แสดงเมนูหลัก
-3. **นำเข้าภาพ (Import)**: เลือกระหว่างถ่ายภาพใหม่หรือเลือกจากอัลบั้ม
+3. **นำเข้าภาพ (Import)**: เลือกรูปภาพที่น่าสงสัยจากคลังภาพ (Gallery) เพื่อเตรียมอัปโหลด
 4. **ปรับแต่ง (Edit)**: Crop หรือปรับขนาดภาพก่อนส่ง (PNG)
 5. **ตรวจสอบ (Check)**: กดปุ่มตรวจสอบเพื่อส่งข้อมูล
 6. **ประมวลผล (Processing)**: อัปโหลดภาพไปยัง AWS S3 และเข้าสู่กระบวนการวิเคราะห์ System Logic

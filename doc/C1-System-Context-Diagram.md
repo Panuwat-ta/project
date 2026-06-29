@@ -13,15 +13,15 @@ flowchart TD
         direction TB
         
         %% Nodes (โหนดต่างๆ)
-        User("👤 General User<br>[Person]")
+        User("General User<br>[Person]")
         
-        System("📱 Mobile App: Scam Image Detection<br>[Software System]<br>Allows users to upload images to detect forgery,<br>AI generation, and existing scams.")
+        System("Mobile App: Scam Image Detection<br>[Software System]<br>Allows users to upload images to detect forgery,<br>AI generation, and existing scams.")
         
-        Admin("👤 Admin<br>[Person]")
+        Admin("Admin<br>[Person]")
         
-        ExtSearch("☁️ Reverse Image Search Provider<br>[External System]<br>Google Vision API / Bing Visual Search<br>(Used to find similar images on the web)")
+        ExtSearch("Reverse Image Search Provider<br>[External System]<br>Google Vision API / Bing Visual Search<br>(Used to find similar images on the web)")
         
-        ExtNotify("📲 Push Notification Service<br>[External System]<br>Firebase Cloud Messaging (FCM)<br>(Sends alerts/results to mobile)")
+        ExtNotify("Push Notification Service<br>[External System]<br>Firebase Cloud Messaging (FCM)<br>(Sends alerts/results to mobile)")
 
         %% Relationships (เส้นเชื่อมโยง)
         User -- "1. อัปโหลดรูปเพื่อตรวจสอบ<br>2. ดูรายงานความเสี่ยง" --> System
@@ -46,7 +46,7 @@ flowchart TD
 ### 1. ระบบหลัก (The Software System)
 
 * **Mobile App: Scam Image Detection :**
-* **หน้าที่:** เป็นแอปพลิเคชันบนมือถือที่ให้ผู้ใช้เข้ามาอัปโหลดรูปภาพที่น่าสงสัย ระบบจะทำการวิเคราะห์ เช็คค่า EXIF/GPS ว่ารูปถ่ายที่ไหน เมื่อไหร่ , เช็คการตัดต่อระดับพิกเซล (Error Level Analysis) , อ่านข้อความในภาพเพื่อหา Keyword อันตราย , วิเคราะห์ภาพเพื่อดูว่าเป็นภาพที่สร้างจาก AI หรือไม่
+* **หน้าที่:** เป็นแอปพลิเคชันบนมือถือที่ให้ผู้ใช้เข้ามาอัปโหลดรูปภาพที่น่าสงสัย ระบบจะทำการวิเคราะห์ เช็คค่า EXIF/GPS ข้อมูลรายละเอียดของไฟล์รูปภาพและข้อมูลพิกัด (ถ้ามี), เช็คการตัดต่อระดับพิกเซล (Error Level Analysis), อ่านข้อความในภาพเพื่อหา Keyword อันตราย, วิเคราะห์ภาพเพื่อดูว่าเป็นภาพที่สร้างจาก AI หรือไม่
 
 
 
