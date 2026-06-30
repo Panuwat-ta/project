@@ -97,7 +97,7 @@ flowchart TD
   * ระบบความปลอดภัยการยืนยันตัวตนระดับ Token (JWT Authentication)
   * ระบบควบคุมอัตราการเรียกใช้ API (Rate Limiting) ป้องกันบอท
 * **งานพัฒนาโมดูลสกัดข้อความและการวิเคราะห์ประโยค (OCR & Textual Analysis):**
-  * พัฒนาโมดูลสกัดตัวอักษรไทย-อังกฤษ จากสลิปโอนเงินหรือข้อความในรูปภาพด้วยเทคโนโลยี OCR (EasyOCR / Tesseract)
+  * พัฒนาโมดูลสกัดตัวอักษรไทย-อังกฤษ จากสลิปโอนเงินหรือข้อความในรูปภาพด้วยเทคโนโลยี OCR (Surya-OCR)
   * พัฒนาระบบค้นหาและตรวจจับชุดคำค้นอันตราย (Scam Keywords) เช่น "กู้เงินด่วน", "ถอนยอด", "โบนัสพิเศษ" ด้วยตรรกะ Regex และ NLP
 * **งานพัฒนาสกัดข้อมูลแฝงและการค้นหาภาพย้อนกลับ (Metadata & Reverse Image Search):**
   * พัฒนาโมดูลการอ่านข้อมูลเมทาดาตาของภาพ (EXIF/GPS Extraction) เพื่อเช็คประวัติรุ่นอุปกรณ์ที่ใช้บันทึกภาพและรายละเอียดไฟล์ภาพ
@@ -105,7 +105,7 @@ flowchart TD
 * **งานพัฒนาฐานข้อมูลหลักและแคช (PostgreSQL & Redis Cache):**
   * ออกแบบฐานข้อมูล (Database Schema) จัดเก็บข้อมูลผู้ใช้งาน, ข้อมูลประวัติการตรวจเช็ก, และบันทึกรายงานสแกมเมอร์
   * พัฒนา Logic ระบบแคช (Redis) เก็บค่าคีย์รูปภาพ (Image Hash Index) เพื่อส่งข้อมูลที่ตรวจแล้วกลับทันทีโดยไม่ต้องรัน AI ซ้ำ
-  * พัฒนา Logic การเก็บอัปโหลดไฟล์รูปภาพและผลการวิเคราะห์ขึ้น AWS S3 Object Storage
+  * พัฒนา Logic การเก็บอัปโหลดไฟล์รูปภาพและผลการวิเคราะห์ขึ้นระบบจัดเก็บไฟล์คลาวด์ (Cloud Storage)
 
 ---
 
@@ -117,7 +117,7 @@ flowchart TD
   * ดำเนินการจัดทำป้ายกำกับพิกเซล (Pixel-level Annotations) ในส่วนที่ถูกแก้ไขของรูปภาพ
 * **งานพัฒนาโมดูลตรวจสอบร่องรอยการดัดแปลงภาพ (Image Forgery Detection):**
   * พัฒนาโมดูลคำนวณและดึงข้อมูลระดับพิกเซลด้วยเทคนิค ELA (Error Level Analysis)
-  * พัฒนาโมเดล Deep Learning (เช่น EfficientNet / CNN) เพื่อหาค่าคะแนนความผิดปกติของภาพที่ผ่านการแต่งรูป (Copy-Move, Splice, Inpainting)
+  * พัฒนาโมเดล Deep Learning (เช่น PSCC-Net ร่วมกับ SegFormer) เพื่อหาค่าคะแนนความผิดปกติของภาพที่ผ่านการแต่งรูป (Copy-Move, Splice, Inpainting)
 * **งานพัฒนาโมดูลตรวจสอบภาพสังเคราะห์จากปัญญาประดิษฐ์ (AI-Generated Image Detection):**
   * พัฒนาโมเดลปัญญาประดิษฐ์เชิงลึกในการตรวจหาเศษซากลักษณะทางฟิสิกส์ผิดปกติ (Artifacts) ที่หลงเหลือจากการรันโมเดล Generative AI (เช่น DALL-E, Midjourney, Stable Diffusion)
 * **งานพัฒนาเซอร์วิสประมวลผลและการอธิบายโมเดล (AI Inference & Explainability):**
@@ -146,7 +146,7 @@ flowchart TD
 | ส่วนประกอบที่ต้องพัฒนา (Modules / Components) | ภานุวัฒน์ ต๋าคำ (70%) | เอกพันธ์ ทศทิศรังสรรค์ (30%) |
 | :--- | :---: | :---: |
 | **1. Mobile App (React Native)**<br>- UI/UX Design, Camera & Gallery Integration<br>- Risk Score, History & Report System | **รับผิดชอบหลัก (Lead)** | ร่วมพัฒนาส่วนหน้าจอและทดสอบการใช้งาน |
-| **2. API Backend (FastAPI & Integrations)**<br>- API Gateway, User Auth (JWT)<br>- OCR Text Extraction, EXIF Extraction<br>- AWS S3, Redis Cache, PostgreSQL | **รับผิดชอบหลัก (Lead)** | สนับสนุนการออกแบบ Database & Schema |
+| **2. API Backend (FastAPI & Integrations)**<br>- API Gateway, User Auth (JWT)<br>- OCR Text Extraction, EXIF Extraction<br>- Cloud Storage, Redis Cache, PostgreSQL | **รับผิดชอบหลัก (Lead)** | สนับสนุนการออกแบบ Database & Schema |
 | **3. AI Inference Service (PyTorch / ONNX)**<br>- Dataset Prep, ELA & GenAI Detection Model<br>- ONNX conversion, Grad-CAM Generation | **รับผิดชอบหลัก (Lead)** | - |
 | **4. Admin Web Portal (React)**<br>- User Controls & statistical dashboard<br>- Scam Reports approval queue, Model Weight Upload | ร่วมพัฒนาและเชื่อมต่อ Backend API | **รับผิดชอบหลัก (Lead)** |
 | **5. SIT, Performance & Security Testing**<br>- Verification of AI performance<br>- Load test & Security audit | **รับผิดชอบหลัก (Lead)** | ร่วมดำเนินการทดสอบระบบแบบ SIT และเขียนบันทึกผลการทดสอบ |

@@ -29,7 +29,7 @@ flowchart TB
 
         subgraph Storages [Storage & Cache Layer]
             Cache("Cache<br>[Container: Redis]<br>เก็บผลตรวจชั่วคราว (Cache Hit)<br>เพื่อลดเวลาประมวลผลซ้ำ")
-            ObjectStore("Object Storage<br>[Container: AWS S3]<br>เก็บไฟล์รูปภาพต้นฉบับ,<br>ภาพ Heatmap")
+            ObjectStore("Object Storage<br>[Container: Cloud Storage]<br>เก็บไฟล์รูปภาพต้นฉบับ,<br>ภาพ Heatmap")
             MainDB[("Main Database<br>[Container: PostgreSQL]<br>เก็บข้อมูลผู้ใช้, ประวัติการสแกน,<br>ผลลัพธ์ (Risk Score)")]
         end
     end
@@ -100,10 +100,10 @@ flowchart TB
   * **หน้าที่:** จัดเก็บแคชของรูปภาพที่เคยผ่านการสแกนตรวจสอบแล้วเพื่อลดการประมวลผลซ้ำ (Cache Hit) ช่วยให้อุปกรณ์ของผู้ใช้รายอื่นที่ส่งรูปภาพเดิมเข้ามาได้รับผลวิเคราะห์แทบจะทันทีโดยไม่ต้องรัน AI ซ้ำ
   * **เทคโนโลยี:** Redis Cache
 
-* **Object Storage (AWS S3):**
+* **Object Storage (Cloud Storage):**
   * **บทบาท:** แหล่งจัดเก็บไฟล์รูปภาพขนาดใหญ่
   * **หน้าที่:** จัดเก็บไฟล์รูปภาพต้นฉบับที่ผู้ใช้อัปโหลดเข้ามา และรูปภาพแผนที่ความร้อน (Grad-CAM Heatmap) ที่ส่งกลับมาจากบริการ AI เพื่อแสดงจุดผิดปกติ
-  * **เทคโนโลยี:** AWS S3 (หรือ MinIO สำหรับ On-Premise)
+  * **เทคโนโลยี:** ระบบจัดเก็บไฟล์บนคลาวด์ (Cloud Storage)
 
 * **Main Database (PostgreSQL):**
   * **บทบาท:** ฐานข้อมูลหลักเชิงสัมพันธ์ (Relational Database)

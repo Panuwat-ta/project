@@ -150,7 +150,7 @@ flowchart TB
 
         subgraph Storages [Storage & Cache Layer]
             Cache("Cache<br>[Container: Redis]<br>เก็บผลตรวจชั่วคราว (Cache Hit)<br>เพื่อลดเวลาประมวลผลซ้ำ")
-            ObjectStore("Object Storage<br>[Container: AWS S3]<br>เก็บไฟล์รูปภาพต้นฉบับ,<br>ภาพ Heatmap")
+            ObjectStore("Object Storage<br>[Container: Cloud Storage]<br>เก็บไฟล์รูปภาพต้นฉบับ,<br>ภาพ Heatmap")
             MainDB[("Main Database<br>[Container: PostgreSQL]<br>เก็บข้อมูลผู้ใช้, ประวัติการสแกน,<br>ผลลัพธ์ (Risk Score)")]
         end
     end
@@ -196,7 +196,7 @@ flowchart TB
   * **AI Inference Service (PyTorch / ONNX):** เซอร์วิสวิเคราะห์โมเดล AI โดยเฉพาะ ทำการตรวจสอบรูปภาพว่าถูกตัดต่อ (ELA) หรือสร้างจากปัญญาประดิษฐ์ (AI-Generated Image) หรือไม่
 * **3. ส่วนจัดเก็บข้อมูล (Storage Containers):**
   * **Cache (Redis):** เก็บบันทึกข้อมูลผลการสแกนภาพล่าสุด เพื่อนำกลับมาแสดงผลทันทีโดยไม่ต้องประมวลผลใหม่ (Cache Hit) เมื่อส่งรูปเดิมเข้ามาซ้ำ
-  * **Object Storage (AWS S3):** จัดเก็บข้อมูลรูปภาพดิบที่ผู้ใช้อัปโหลดเข้ามาและรูปภาพผลลัพธ์ของ Heatmap
+  * **Object Storage (Cloud Storage):** จัดเก็บข้อมูลรูปภาพดิบที่ผู้ใช้อัปโหลดเข้ามาและรูปภาพผลลัพธ์ของ Heatmap
   * **Main Database (PostgreSQL):** จัดเก็บข้อมูลระบบหลัก เช่น ข้อมูลบัญชีผู้ใช้ บันทึกประวัติการสแกน และล็อกระบบ RBAC
 * **4. การเชื่อมต่อกับระบบภายนอก (External Systems):**
   * **Reverse Image Search (Google Vision API):** สืบค้นหาแหล่งที่มาดั้งเดิมของภาพจากเว็บไซต์ทั่วโลก
@@ -205,9 +205,9 @@ flowchart TB
 #### 2.1.3 เทคโนโลยีที่ใช้ในการพัฒนา (Technology Stack)
 * **Frontend:** Flutter (แอปพลิเคชันมือถือ), React.js (หน้าเว็บแอดมิน)
 * **Backend:** Python FastAPI (API Gateway และ Core Service)
-* **AI Engine:** PyTorch / ONNX (สำหรับ AI Inference), Transfer Learning ด้วย EfficientNet
+* **AI Engine:** PyTorch / ONNX (สำหรับ AI Inference), รันการดัดแปลงภาพด้วย PSCC-Net และ SegFormer
 * **Database & Caching:** PostgreSQL (ฐานข้อมูลหลัก), Redis (สำหรับจัดเก็บข้อมูลแคช)
-* **Object Storage:** AWS S3 (สำหรับรูปภาพและ Heatmap)
+* **Object Storage:** ระบบจัดเก็บไฟล์บนคลาวด์ (Cloud Storage) (สำหรับรูปภาพและ Heatmap)
 * **Deployment:** Docker & Containerization
 
 ### 2.2 ฟังก์ชันการทำงานของระบบ (Product Functions)
@@ -502,7 +502,7 @@ flowchart LR
   * ใช้โครงข่ายประสาทเทียมแบบ Deep Learning (PyTorch) ในการประเมินร่องรอยการแก้ไขพิกเซล (ELA) และตรวจเช็กการสังเคราะห์ภาพจาก Generative AI
 * **สถาปัตยกรรมความปลอดภัยและการจัดเก็บข้อมูล:**
   * จัดเก็บรายละเอียดบัญชีผู้ใช้งาน ประวัติรายการสแกน และรายงานความปลอดภัยลงในฐานข้อมูล PostgreSQL
-  * เก็บรูปภาพต้นฉบับและรูปภาพผลลัพธ์แผนที่ความร้อนลงใน AWS S3 Object Storage
+  * เก็บรูปภาพต้นฉบับและรูปภาพผลลัพธ์แผนที่ความร้อนลงในระบบจัดเก็บไฟล์บนคลาวด์ (Cloud Storage)
   * ใช้ Redis ในฐานะระบบจัดเก็บข้อมูลชั่วคราว (Caching) เพื่อตอบสนองความเร็วกรณีตรวจสอบรูปภาพซ้ำ
 
 ---

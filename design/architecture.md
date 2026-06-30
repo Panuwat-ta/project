@@ -24,7 +24,7 @@
 ระบบถูกแบ่งออกเป็น 3 เลเยอร์หลัก:
 1. **Presentation Layer (Frontend):** แอปพลิเคชันสมาร์ทโฟนที่พัฒนาด้วย **Flutter** สำหรับผู้ใช้งานทั่วไป และระบบเว็บพอร์ทัลที่พัฒนาด้วย **React.js** สำหรับผู้ดูแลระบบ
 2. **Business & Processing Layer (Backend Services):** ใช้ระบบย่อยประเภท Microservices โดยมี **API Application (FastAPI)** ทำหน้าที่คอยประสานงาน และสั่งงานการคำนวณเฉพาะด้านแยกไปที่ **AI Inference Service (PyTorch/ONNX)**
-3. **Data & Storage Layer (Storages):** ระบบจัดเก็บข้อมูลเชิงสัมพันธ์ **PostgreSQL**, หน่วยความจำแคชความเร็วสูง **Redis Cache** และพื้นที่จัดเก็บออบเจกต์ **AWS S3**
+3. **Data & Storage Layer (Storages):** ระบบจัดเก็บข้อมูลเชิงสัมพันธ์ **PostgreSQL**, หน่วยความจำแคชความเร็วสูง **Redis Cache** และพื้นที่จัดเก็บไฟล์ (Cloud Storage)
 
 ---
 
@@ -103,7 +103,7 @@ flowchart TB
 
         subgraph Storages [Storage & Cache Layer]
             Cache("Cache Store<br>[Container: Redis]<br>แคชข้อมูลภาพที่สแกนแล้ว (Image Hash)<br>เพื่อหลีกเลี่ยงการรัน AI ซ้ำซ้อน")
-            ObjectStore("Object Storage<br>[Container: AWS S3 / MinIO]<br>จัดเก็บภาพดิบของผู้ใช้<br>และภาพผลลัพธ์ Heatmap")
+            ObjectStore("Object Storage<br>[Container: Cloud Storage]<br>จัดเก็บภาพดิบของผู้ใช้<br>และภาพผลลัพธ์ Heatmap")
             MainDB[("Main Relational DB<br>[Container: PostgreSQL]<br>เก็บข้อมูลบัญชีผู้ใช้, ประวัติการสแกน,<br>ข้อมูลการรายงานสแกม และบันทึก Log")]
         end
     end
@@ -181,7 +181,7 @@ flowchart TB
 ### 4.3 Storage Containers
 
 * **Cache Store (Redis):** ทำหน้าที่เป็น Cache Lookup เมื่อมีผู้ส่งตรวจสอบรูปภาพ ระบบจะแปลงภาพเป็นค่า Hash และเช็กที่ Redis หากพบค่าเดิม (Cache Hit) จะตอบกลับข้อมูลผลลัพธ์เก่าทันทีโดยไม่ต้องรัน AI ซ้ำ
-* **Object Storage (AWS S3 / MinIO):** จัดเก็บรูปภาพต้นฉบับของผู้ใช้ โดยแบ่ง Directory อย่างมีระเบียบ และจัดเก็บรูปผลลัพธ์ Grad-CAM Heatmap เพื่อให้หน้าจอแอปแสดงภาพซ้อนทับบริเวณที่ตัดต่อ
+* **Object Storage (Cloud Storage):** จัดเก็บรูปภาพต้นฉบับของผู้ใช้ โดยแบ่ง Directory อย่างมีระเบียบ และจัดเก็บรูปผลลัพธ์ Grad-CAM Heatmap เพื่อให้หน้าจอแอปแสดงภาพซ้อนทับบริเวณที่ตัดต่อ
 * **Main Relational Database (PostgreSQL):** ใช้จัดเก็บข้อมูลที่มีความสัมพันธ์กันและต้องรับประกันความปลอดภัยของข้อมูล (ACID Transaction) ได้แก่ ตารางประวัติผู้ใช้งาน, รายการประวัติสแกน, สถิติคะแนนความเสี่ยง, ข้อมูลรายงานสแกม และสถานะ Consent การยินยอมความเป็นส่วนตัว
 
 ---
@@ -193,7 +193,7 @@ flowchart TB
 ```mermaid
 graph TD
     %% Source & Initial Validation
-    S3([AWS S3 / Client File]) -- อัปโหลดรูปภาพ --> Receive[/รับไฟล์รูปภาพ/]
+    CloudStorage([Cloud Storage / Client File]) -- อัปโหลดรูปภาพ --> Receive[/รับไฟล์รูปภาพ/]
     Receive --> NodeValidate{ตรวจสอบประเภทและ<br>ความสมบูรณ์ของรูปภาพ}
     
     NodeValidate -- ไฟล์เสียหาย/ไม่ใช่รูปภาพ --> Reject[ส่งข้อผิดพลาดกลับผู้ใช้งาน]
@@ -236,7 +236,7 @@ graph TD
     RetCache --> Output
 
     %% Styling
-    style S3 fill:#dae8fc,stroke:#6c8ebf,color:black
+    style CloudStorage fill:#dae8fc,stroke:#6c8ebf,color:black
     style Receive fill:#0050ef,color:white
     style NodeValidate fill:#f5f5f5,stroke:#666,color:black
     style Reject fill:#f8cecc,stroke:#b85450,color:black
@@ -284,7 +284,7 @@ $$Risk\ Score = (S_{text} \times 0.25) + (S_{visual} \times 0.45) + (S_{source} 
 ### 6.2 การคุ้มครองข้อมูลส่วนบุคคล (PDPA & Consent Management)
 * **Privacy by Design:** ระบบถูกสร้างขึ้นโดยคำนึงถึงความเป็นส่วนตัวของผู้ใช้งานเป็นหลัก
 * **Consent Control (ยินยอมระบุสิทธิ์):** ในการสมัครสมาชิกหรือเริ่มใช้งานครั้งแรก ผู้ใช้สามารถเลือกสิทธิ์ความยินยอมได้เป็น 2 ส่วน:
-  1. **ความต้องการเชิงระบบ:** ความยินยอมส่งประมวลผลไฟล์ภาพแบบประจักษ์ (สแกนครั้งเดียวและลบข้อมูลจาก S3 เมื่อได้ข้อสรุปชั่วคราว)
+  1. **ความต้องการเชิงระบบ:** ความยินยอมส่งประมวลผลไฟล์ภาพแบบประจักษ์ (สแกนครั้งเดียวและลบข้อมูลจากการจัดเก็บบนคลาวด์เมื่อได้ข้อสรุปชั่วคราว)
   2. **ความยินยอมด้านงานวิจัย:** การอนุญาตให้นำรูปภาพที่ส่งสแกนหรือสปอตเต็ดบันทึกเข้าสู่คลัง Dataset เพื่อใช้เทรน AI ปรับปรุงความแม่นยำ ซึ่งผู้ใช้สามารถกดยกเลิกความยินยอม (Opt-out) ย้อนหลังในหน้าตั้งค่าได้ทุกเวลา
 * **Data Anonymization:** รูปภาพในประวัติการสแกนและสเปกไฟล์ที่เปิดเผยสำหรับการศึกษาจะถูกตัดค่าพิกัด GPS หรือสัญลักษณ์แวดล้อมที่ระบุตัวตนจริงของผู้ใช้ดั้งเดิมออกไปทั้งหมด
 
@@ -300,6 +300,6 @@ $$Risk\ Score = (S_{text} \times 0.25) + (S_{visual} \times 0.45) + (S_{source} 
 | **AI Processing Framework** | PyTorch / ONNX Runtime | ปฏิบัติการคำนวณ Deep Learning โมเดลได้ดี, ONNX Runtime ช่วยเพิ่มความเร็วในการ Inference ได้มากกว่า PyTorch ดั้งเดิมถึง 2-5 เท่า |
 | **Primary Relational DB** | PostgreSQL | มีเสถียรภาพในการบันทึกข้อมูลแบบสัมพันธ์ (Relational Data), ปลอดภัย, รองรับคิวรีซับซ้อนและการเก็บพิกัดเชิงภูมิศาสตร์ (PostGIS) |
 | **Caching Engine** | Redis Cache | ช่วยดึงค่า Image Hash ที่เคยตรวจสอบแล้วอย่างรวดเร็ว (ลด latency จากหลายวินาทีให้เหลือหลักมิลลิวินาที) |
-| **File Storage** | AWS S3 / MinIO | รองรับการจัดเก็บไฟล์อิมเมจและรูป Heatmap ได้ในปริมาณมหาศาลแบบไร้ขีดจำกัด พร้อมระบบกำหนดอายุลิงก์ชั่วคราว (Presigned URLs) |
+| **File Storage** | Cloud Storage | รองรับการจัดเก็บไฟล์อิมเมจและรูป Heatmap ได้ในปริมาณมหาศาลบนระบบคลาวด์สตอเรจ พร้อมระบบกำหนดอายุลิงก์ชั่วคราว (Presigned URLs) |
 | **External Search API** | Google Vision API | ใช้กลไก Reverse Image Search เพื่อสืบค้นข้อมูลภาพแอบอ้างในโลกออนไลน์ได้อย่างแม่นยำและครอบคลุมที่สุด |
 | **Push Notification** | Firebase Cloud Messaging (FCM) | เป็นระบบส่ง Push Alert ที่เป็นมาตรฐาน เสถียรสูง และรองรับทั้งอุปกรณ์ iOS และ Android โดยไม่มีค่าใช้จ่ายพื้นฐาน |
