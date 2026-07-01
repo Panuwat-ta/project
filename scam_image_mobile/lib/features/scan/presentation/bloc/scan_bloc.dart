@@ -93,7 +93,7 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
   int _elapsedSeconds = 0;
   String? _currentTaskId;
 
-  static const int _timeoutSeconds = 120;
+  static const int _timeoutSeconds = 3600;
   static const int _pollIntervalSeconds = 3;
 
   Future<void> _onCropConfirmed(
@@ -182,6 +182,8 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
 // ── Mock repository stub (replaced by real DI in Task 23) ────────────────────
 
 class MockScanRepository implements ScanRepository {
+  final Map<String, DateTime> _startTimes = {};
+
   @override
   Future<String> submitImage({
     required String filePath,
@@ -189,17 +191,31 @@ class MockScanRepository implements ScanRepository {
     required String clientRequestId,
   }) async {
     await Future.delayed(const Duration(seconds: 2));
-    return 'mock_task_${DateTime.now().millisecondsSinceEpoch}';
+    final taskId = 'mock_task_${DateTime.now().millisecondsSinceEpoch}';
+    _startTimes[taskId] = DateTime.now();
+    return taskId;
   }
 
   @override
   Future<AnalysisTask> getAnalysisStatus(String taskId) async {
     await Future.delayed(const Duration(seconds: 1));
-    return AnalysisTask(
-      taskId: taskId,
-      status: AnalysisTaskStatus.completed,
-      progress: 100,
-    );
+    final startTime = _startTimes[taskId] ?? DateTime.now();
+    final elapsed = DateTime.now().difference(startTime);
+
+    if (elapsed.inMinutes >= 5) {
+      return AnalysisTask(
+        taskId: taskId,
+        status: AnalysisTaskStatus.completed,
+        progress: 100,
+      );
+    } else {
+      final progress = (elapsed.inSeconds / 300 * 100).toInt();
+      return AnalysisTask(
+        taskId: taskId,
+        status: AnalysisTaskStatus.processingText,
+        progress: progress.clamp(0, 99),
+      );
+    }
   }
 
   @override

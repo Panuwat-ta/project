@@ -6,6 +6,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../core/widgets/app_bottom_navigation.dart';
 import '../../domain/entities/analysis_result.dart' as domain;
 import '../bloc/result_bloc.dart';
 
@@ -69,24 +70,14 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           return const SizedBox.shrink();
         },
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: isDark ? const Color(0xFF162230) : Colors.white,
-        selectedItemColor: isDark ? AppColors.primaryFixedDim : AppColors.primary,
-        unselectedItemColor: AppColors.outlineVariant,
-        currentIndex: 0,
+      bottomNavigationBar: AppBottomNavigation(
+        currentIndex: 1,
         onTap: (index) {
           if (index == 0) context.go('/main/home');
           if (index == 1) context.go('/main/history');
           if (index == 2) context.go('/main/report');
           if (index == 3) context.go('/main/settings');
         },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'หน้าหลัก'),
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: 'ประวัติ'),
-          BottomNavigationBarItem(icon: Icon(Icons.flag_outlined), label: 'แจ้งรายงาน'),
-          BottomNavigationBarItem(icon: Icon(Icons.settings_outlined), label: 'ตั้งค่า'),
-        ],
       ),
     );
   }

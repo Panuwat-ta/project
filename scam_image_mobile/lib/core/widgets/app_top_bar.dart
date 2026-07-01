@@ -18,7 +18,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
   final bool automaticallyImplyLeading;
 
   @override
-  Size get preferredSize => const Size.fromHeight(64);
+  Size get preferredSize => const Size.fromHeight(50);
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
         isDark ? AppColors.primaryFixedDim : AppColors.primary;
 
     return AppBar(
-      toolbarHeight: 64,
+      toolbarHeight: 50,
       automaticallyImplyLeading: automaticallyImplyLeading,
       backgroundColor: isDark ? AppColors.bgDark : AppColors.bgLight,
       elevation: 0,

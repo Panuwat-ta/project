@@ -10,9 +10,8 @@ import '../../features/auth/data/repositories/auth_repository_impl.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
 
 // ── Scan ──────────────────────────────────────────────────────────────────────
-import '../../features/scan/data/datasources/scan_remote_datasource.dart';
-import '../../features/scan/data/repositories/scan_repository_impl.dart';
 import '../../features/scan/domain/repositories/scan_repository.dart';
+import '../../features/scan/presentation/bloc/scan_bloc.dart';
 
 // ── Result ────────────────────────────────────────────────────────────────────
 import '../../features/result/domain/repositories/result_repository.dart';
@@ -77,8 +76,8 @@ class ServiceLocator {
     );
 
     // ── Scan ──────────────────────────────────────────────────────────────────
-    final scanRemote = ScanRemoteDataSourceImpl(dio: dio);
-    scanRepository = ScanRepositoryImpl(remoteDataSource: scanRemote);
+    // Using MockScanRepository to prevent connection refused since there is no backend
+    scanRepository = MockScanRepository();
 
     // ── Result ────────────────────────────────────────────────────────────────
     resultRepository = MockResultRepository();

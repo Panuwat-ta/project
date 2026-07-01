@@ -133,20 +133,23 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'ความเสี่ยงโดยรวม',
-                    style: AppTypography.titleMd(
-                        color: isDark ? Colors.white : AppColors.onSurface),
-                  ),
-                  Text(
-                    'วิเคราะห์ล่าสุดเมื่อ 2 นาทีที่แล้ว',
-                    style: AppTypography.caption(color: AppColors.outlineVariant),
-                  ),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'ความเสี่ยงโดยรวม',
+                      style: AppTypography.titleMd(
+                          color: isDark ? Colors.white : AppColors.onSurface),
+                    ),
+                    Text(
+                      'วิเคราะห์ล่าสุดเมื่อ 2 นาทีที่แล้ว',
+                      style: AppTypography.caption(color: AppColors.outlineVariant),
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(width: AppSpacing.sm),
               _buildPill(
                 'ความเสี่ยงสูง',
                 isDark ? const Color(0xFF4A1818) : const Color(0xFFFFEBEB),
@@ -199,18 +202,24 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Icon(Icons.description_outlined,
-                      color: isDark ? AppColors.primaryFixedDim : AppColors.primary, size: 24),
-                  const SizedBox(width: AppSpacing.sm),
-                  Text(
-                    'การวิเคราะห์ข้อความ (OCR)',
-                    style: AppTypography.sectionHeader(
-                        color: isDark ? Colors.white : AppColors.onSurface),
-                  ),
-                ],
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(Icons.description_outlined,
+                        color: isDark ? AppColors.primaryFixedDim : AppColors.primary, size: 24),
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(
+                      child: Text(
+                        'การวิเคราะห์ข้อความ (OCR)',
+                        style: AppTypography.sectionHeader(
+                            color: isDark ? Colors.white : AppColors.onSurface),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(width: AppSpacing.sm),
               _buildPill(
                 'เสี่ยงสูง',
                 isDark ? const Color(0xFF4A1818) : const Color(0xFFFFEBEB),
@@ -311,18 +320,24 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Icon(Icons.manage_search_outlined,
-                      color: isDark ? AppColors.primaryFixedDim : AppColors.primary, size: 24),
-                  const SizedBox(width: AppSpacing.sm),
-                  Text(
-                    'การตรวจสอบแหล่งที่มา',
-                    style: AppTypography.sectionHeader(
-                        color: isDark ? Colors.white : AppColors.onSurface),
-                  ),
-                ],
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(Icons.manage_search_outlined,
+                        color: isDark ? AppColors.primaryFixedDim : AppColors.primary, size: 24),
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(
+                      child: Text(
+                        'การตรวจสอบแหล่งที่มา',
+                        style: AppTypography.sectionHeader(
+                            color: isDark ? Colors.white : AppColors.onSurface),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(width: AppSpacing.sm),
               _buildPill(
                 'ปานกลาง',
                 isDark ? const Color(0xFF4A3818) : const Color(0xFFFFF4E5),
@@ -429,6 +444,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                   ],
                 ),
               ),
+              const SizedBox(width: AppSpacing.sm),
               _buildPill(
                 'เสี่ยงต่ำ',
                 isDark ? const Color(0xFF183C25) : const Color(0xFFE6F4EA),

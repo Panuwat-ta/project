@@ -35,10 +35,16 @@ class AppBottomNavigation extends StatelessWidget {
       backgroundColor: bgColor,
       selectedItemColor: activeColor,
       unselectedItemColor: inactiveColor,
+      iconSize: 22,
+      selectedFontSize: 11,
+      unselectedFontSize: 11,
       selectedLabelStyle: AppTypography.caption(color: activeColor).copyWith(
         fontWeight: FontWeight.w600,
+        fontSize: 11,
       ),
-      unselectedLabelStyle: AppTypography.caption(color: inactiveColor),
+      unselectedLabelStyle: AppTypography.caption(color: inactiveColor).copyWith(
+        fontSize: 11,
+      ),
       items: const [
         BottomNavigationBarItem(
           icon: Icon(Icons.home_outlined),

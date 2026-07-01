@@ -344,7 +344,7 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
     );
     if (confirmed == true && context.mounted) {
       context.read<ScanBloc>().add(AnalysisCancelled());
-      context.go('/main/scan');
+      context.go('/main/home');
     }
   }
 
@@ -446,13 +446,15 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
                   ),
                   const SizedBox(height: AppSpacing.sm),
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       Text(
                         'กรุณารอครู่หนึ่ง ระบบกำลังประมวลผลด้วย AI',
                         style: AppTypography.bodyBase(
                             color: AppColors.outlineVariant),
+                        textAlign: TextAlign.center,
                       ),
                       const SizedBox(width: AppSpacing.xs),
                       _buildAnimatedDots(isDark),
