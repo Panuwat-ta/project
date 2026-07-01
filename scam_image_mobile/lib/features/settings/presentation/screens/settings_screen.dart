@@ -160,7 +160,7 @@ class _SettingsView extends StatelessWidget {
         actions: [
           IconButton(
             icon: Icon(Icons.notifications_none, color: isDark ? Colors.white : AppColors.textPrimary),
-            onPressed: () => _showComingSoon(context),
+            onPressed: () => context.push('/notifications'),
           ),
         ],
       ),

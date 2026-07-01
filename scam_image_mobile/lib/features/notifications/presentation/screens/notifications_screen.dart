@@ -119,7 +119,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       }
                     },
                     child: Container(
-                      padding: const EdgeInsets.all(AppSpacing.md),
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(12),
@@ -130,19 +129,24 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                             offset: const Offset(0, 4),
                           )
                         ],
-                        border: Border(
-                          left: BorderSide(
-                            color: notification.type == NotificationType.scamAlert ? AppColors.danger : Colors.transparent,
-                            width: 4,
-                          ),
-                          top: BorderSide(color: AppColors.outlineVariant.withValues(alpha: 0.15)),
-                          right: BorderSide(color: AppColors.outlineVariant.withValues(alpha: 0.15)),
-                          bottom: BorderSide(color: AppColors.outlineVariant.withValues(alpha: 0.15)),
+                        border: Border.all(
+                          color: AppColors.outlineVariant.withValues(alpha: 0.15),
                         ),
                       ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: IntrinsicHeight(
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              if (notification.type == NotificationType.scamAlert)
+                                Container(width: 4, color: AppColors.danger),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(AppSpacing.md),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
                           // Icon circle
                           Container(
                             width: 44, height: 44,
@@ -190,7 +194,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                               ],
                             ),
                           ),
-                        ],
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   ),
