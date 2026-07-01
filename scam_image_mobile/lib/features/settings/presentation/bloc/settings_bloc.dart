@@ -9,7 +9,7 @@ import '../../domain/repositories/settings_repository.dart';
 
 class SettingsState extends Equatable {
   const SettingsState({
-    this.themeMode = ThemeMode.system,
+    this.themeMode = ThemeMode.light,
     this.consent = const ConsentSetting(),
     this.isLoading = false,
     this.error,

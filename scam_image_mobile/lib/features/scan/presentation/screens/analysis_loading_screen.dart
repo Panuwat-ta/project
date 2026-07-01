@@ -387,7 +387,7 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
             ),
           );
           await Future.delayed(const Duration(seconds: 1));
-          if (context.mounted) context.pop();
+          if (context.mounted) context.go('/main/home');
         } else if (state is ScanTimeout) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -396,7 +396,7 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
             ),
           );
           await Future.delayed(const Duration(seconds: 1));
-          if (context.mounted) context.pop();
+          if (context.mounted) context.go('/main/home');
         }
       },
       child: Scaffold(

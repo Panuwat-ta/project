@@ -49,7 +49,7 @@ class UserProfileScreen extends StatelessWidget {
                         child: CircleAvatar(
                           radius: 50,
                           backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
-                          backgroundImage: const NetworkImage('https://i.pravatar.cc/150?img=11'),
+                          backgroundImage: const AssetImage('assets/images/profile.jpg'),
                         ),
                       ),
                       Positioned(

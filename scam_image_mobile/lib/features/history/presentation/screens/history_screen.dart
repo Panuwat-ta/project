@@ -252,6 +252,25 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             ),
                             onDismissed: (_) =>
                                 context.read<HistoryBloc>().add(HistoryItemDeleted(item.scanId)),
+                            confirmDismiss: (direction) async {
+                              return await showDialog(
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+                                  title: const Text('ยืนยันการลบ'),
+                                  content: const Text('คุณต้องการลบประวัตินี้ใช่หรือไม่?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(ctx, false),
+                                      child: const Text('ยกเลิก'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(ctx, true),
+                                      child: const Text('ลบ', style: TextStyle(color: Colors.red)),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
                             child: GestureDetector(
                               onTap: () =>
                                   context.push('/result/${item.scanId}'),
