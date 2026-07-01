@@ -15,7 +15,15 @@ class SplashCubit extends Cubit<SplashState> {
   /// Verifies token validity and resolves the current user.
   Future<void> checkSession() async {
     emit(const CheckingSession());
+    // หน่วงเวลา 3 วินาทีเพื่อให้แสดงหน้า Splash Screen ก่อนเข้าแอป
+    await Future.delayed(const Duration(seconds: 3));
     try {
+      final hasSeenOnboarding = await _authRepository.hasSeenOnboarding();
+      if (!hasSeenOnboarding) {
+        emit(const SplashConsentRequired());
+        return;
+      }
+
       final hasToken = await _authRepository.hasValidToken();
       if (!hasToken) {
         emit(const SplashUnauthenticated());

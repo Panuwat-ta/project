@@ -37,6 +37,15 @@ class AuthLocalDataSource {
     final token = await secureStorage.getToken(kAccessToken);
     return token != null && token.isNotEmpty;
   }
+
+  Future<bool> hasSeenOnboarding() async {
+    final seen = await secureStorage.getToken(kHasSeenOnboarding);
+    return seen == 'true';
+  }
+
+  Future<void> markOnboardingSeen() async {
+    await secureStorage.saveToken(kHasSeenOnboarding, 'true');
+  }
 }
 
 /// Key used to store the token expiry timestamp.

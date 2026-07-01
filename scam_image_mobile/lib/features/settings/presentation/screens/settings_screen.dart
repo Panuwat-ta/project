@@ -7,16 +7,12 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../bloc/settings_bloc.dart';
 
-/// Main settings screen — lists all user-configurable options.
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => SettingsCubit(repository: MockSettingsRepository()),
-      child: const _SettingsView(),
-    );
+    return const _SettingsView();
   }
 }
 
@@ -30,17 +26,18 @@ class _SettingsView extends StatelessWidget {
   }
 
   Future<void> _confirmClearCache(BuildContext context) async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.surfaceDark,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         title: Text(
           'ล้าง Cache',
-          style: AppTypography.titleMd(color: Colors.white),
+          style: AppTypography.titleMd(color: isDark ? Colors.white : AppColors.textPrimary),
         ),
         content: Text(
           'คุณต้องการล้าง Cache ของแอปใช่หรือไม่?',
-          style: AppTypography.bodyBase(color: Colors.white70),
+          style: AppTypography.bodyBase(color: isDark ? Colors.white70 : AppColors.textSecondary),
         ),
         actions: [
           TextButton(
@@ -50,7 +47,7 @@ class _SettingsView extends StatelessWidget {
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             child:
-                const Text('ล้าง Cache', style: TextStyle(color: Colors.white)),
+                Text('ล้าง Cache', style: TextStyle(color: isDark ? Colors.white : AppColors.primary)),
           ),
         ],
       ),
@@ -63,17 +60,18 @@ class _SettingsView extends StatelessWidget {
   }
 
   Future<void> _confirmLogout(BuildContext context) async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.surfaceDark,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         title: Text(
           'ออกจากระบบ',
-          style: AppTypography.titleMd(color: Colors.white),
+          style: AppTypography.titleMd(color: isDark ? Colors.white : AppColors.textPrimary),
         ),
         content: Text(
           'คุณแน่ใจหรือไม่ว่าต้องการออกจากระบบ?',
-          style: AppTypography.bodyBase(color: Colors.white70),
+          style: AppTypography.bodyBase(color: isDark ? Colors.white70 : AppColors.textSecondary),
         ),
         actions: [
           TextButton(
@@ -91,99 +89,218 @@ class _SettingsView extends StatelessWidget {
       ),
     );
     if (confirmed == true && context.mounted) {
-      // Real token clearing will be wired in Task 23.
       context.go('/login');
     }
   }
 
+  void _showThemeDialog(BuildContext context) {
+    final currentMode = context.read<SettingsCubit>().state.themeMode;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        title: Text('เลือกธีม', style: AppTypography.titleMd(color: isDark ? Colors.white : AppColors.textPrimary)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: Text('ตามระบบ', style: TextStyle(color: isDark ? Colors.white : AppColors.textPrimary)),
+              trailing: currentMode == ThemeMode.system ? Icon(Icons.check, color: AppColors.primary) : null,
+              onTap: () {
+                context.read<SettingsCubit>().setTheme(ThemeMode.system);
+                Navigator.pop(ctx);
+              },
+            ),
+            ListTile(
+              title: Text('สว่าง', style: TextStyle(color: isDark ? Colors.white : AppColors.textPrimary)),
+              trailing: currentMode == ThemeMode.light ? Icon(Icons.check, color: AppColors.primary) : null,
+              onTap: () {
+                context.read<SettingsCubit>().setTheme(ThemeMode.light);
+                Navigator.pop(ctx);
+              },
+            ),
+            ListTile(
+              title: Text('มืด', style: TextStyle(color: isDark ? Colors.white : AppColors.textPrimary)),
+              trailing: currentMode == ThemeMode.dark ? Icon(Icons.check, color: AppColors.primary) : null,
+              onTap: () {
+                context.read<SettingsCubit>().setTheme(ThemeMode.dark);
+                Navigator.pop(ctx);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Scaffold(
-      backgroundColor: AppColors.bgDark,
+      backgroundColor: isDark ? const Color(0xFF141921) : const Color(0xFFF5F6F8),
       appBar: AppBar(
-        backgroundColor: AppColors.bgDark,
         elevation: 0,
-        title: Text(
-          'ตั้งค่า',
-          style: AppTypography.headlineLgMobile(color: Colors.white),
+        backgroundColor: isDark ? const Color(0xFF1B222C) : Colors.white,
+        title: Row(
+          children: [
+            Icon(Icons.shield_outlined, color: isDark ? AppColors.primaryFixedDim : AppColors.primary),
+            const SizedBox(width: 8),
+            Text(
+              'ScamGuard',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                color: isDark ? AppColors.primaryFixedDim : AppColors.primary,
+              ),
+            ),
+          ],
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.notifications_none, color: isDark ? Colors.white : AppColors.textPrimary),
+            onPressed: () => _showComingSoon(context),
+          ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md,
-          vertical: AppSpacing.sm,
+          vertical: AppSpacing.lg,
         ),
         children: [
-          // ── User header ────────────────────────────────────────────────
-          _UserHeader(),
+          // ── User Header Card ────────────────────────────────────────────────
+          GestureDetector(
+            onTap: () => context.go('/main/settings/profile'),
+            child: Container(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF1B222C) : Colors.white,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Row(
+                children: [
+                  Stack(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: isDark ? AppColors.primaryFixedDim : AppColors.primary, width: 2),
+                        ),
+                        child: CircleAvatar(
+                          radius: 28,
+                          backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
+                          backgroundImage: const NetworkImage('https://i.pravatar.cc/150?img=11'),
+                        ),
+                      ),
+                      Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: Container(
+                          padding: const EdgeInsets.all(2),
+                          decoration: const BoxDecoration(
+                            color: Colors.green,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.check, color: Colors.white, size: 12),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'panuwat takham',
+                          style: AppTypography.titleMd(color: isDark ? Colors.white : AppColors.textPrimary).copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'การป้องกันระดับพื้นฐาน • v1.0.0',
+                          style: AppTypography.caption(color: isDark ? Colors.white54 : AppColors.textSecondary),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(Icons.edit, color: isDark ? AppColors.primaryFixedDim : AppColors.primary),
+                ],
+              ),
+            ),
+          ),
           const SizedBox(height: AppSpacing.lg),
 
-          // ── General section ────────────────────────────────────────────
-          _SectionLabel(label: 'บัญชีผู้ใช้'),
-          const SizedBox(height: AppSpacing.xs),
-          _SettingsTile(
-            icon: Icons.person_outline,
-            title: 'โปรไฟล์ผู้ใช้',
-            onTap: () => context.go('/main/settings/profile'),
-          ),
-          _SettingsTile(
-            icon: Icons.notifications_outlined,
-            title: 'การแจ้งเตือน',
-            onTap: () => _showComingSoon(context),
-          ),
-          _SettingsTile(
-            icon: Icons.language_outlined,
-            title: 'ภาษา',
-            onTap: () => _showComingSoon(context),
-          ),
-          const SizedBox(height: AppSpacing.md),
-
-          // ── Appearance section ─────────────────────────────────────────
-          _SectionLabel(label: 'การแสดงผล'),
-          const SizedBox(height: AppSpacing.xs),
-          BlocBuilder<SettingsCubit, SettingsState>(
-            builder: (context, state) {
-              return _SettingsTile(
-                icon: Icons.palette_outlined,
-                title: 'รูปแบบธีม',
-                trailing: Switch(
-                  value: state.themeMode == ThemeMode.light,
-                  onChanged: (_) =>
-                      context.read<SettingsCubit>().toggleTheme(),
-                  activeThumbColor: AppColors.primaryFixedDim,
+          // ── Settings List Card ────────────────────────────────────────────
+          Container(
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF1B222C) : Colors.white,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              children: [
+                _SettingsListItem(
+                  icon: Icons.person_outline,
+                  title: 'บัญชี',
+                  onTap: () => context.go('/main/settings/profile'),
                 ),
-              );
-            },
+                Divider(height: 1, thickness: 1, color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
+                _SettingsListItem(
+                  icon: Icons.notifications_none,
+                  title: 'การแจ้งเตือน',
+                  onTap: () => _showComingSoon(context),
+                ),
+                Divider(height: 1, thickness: 1, color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
+                _SettingsListItem(
+                  icon: Icons.language_outlined,
+                  title: 'ภาษา',
+                  trailingText: 'ไทย',
+                  onTap: () => _showComingSoon(context),
+                ),
+                Divider(height: 1, thickness: 1, color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
+                BlocBuilder<SettingsCubit, SettingsState>(
+                  builder: (context, state) {
+                    final themeText = state.themeMode == ThemeMode.system
+                        ? 'ตามระบบ'
+                        : (state.themeMode == ThemeMode.light ? 'สว่าง' : 'มืด');
+                    return _SettingsListItem(
+                      icon: Icons.palette_outlined,
+                      title: 'ธีม',
+                      trailingText: themeText,
+                      onTap: () => _showThemeDialog(context),
+                    );
+                  },
+                ),
+                Divider(height: 1, thickness: 1, color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
+                _SettingsListItem(
+                  icon: Icons.privacy_tip_outlined,
+                  title: 'ความเป็นส่วนตัว',
+                  onTap: () => context.go('/main/settings/privacy'),
+                ),
+                Divider(height: 1, thickness: 1, color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
+                _SettingsListItem(
+                  icon: Icons.delete_outline,
+                  title: 'ล้างแคช',
+                  trailingText: '12.4 MB',
+                  onTap: () => _confirmClearCache(context),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: AppSpacing.md),
+          const SizedBox(height: AppSpacing.lg),
 
-          // ── Privacy section ────────────────────────────────────────────
-          _SectionLabel(label: 'ความเป็นส่วนตัว'),
-          const SizedBox(height: AppSpacing.xs),
-          _SettingsTile(
-            icon: Icons.lock_outline,
-            title: 'ความเป็นส่วนตัว',
-            onTap: () => context.go('/main/settings/privacy'),
-          ),
-          const SizedBox(height: AppSpacing.md),
-
-          // ── Storage section ────────────────────────────────────────────
-          _SectionLabel(label: 'ข้อมูลและหน่วยความจำ'),
-          const SizedBox(height: AppSpacing.xs),
-          _SettingsTile(
-            icon: Icons.delete_outline,
-            title: 'ล้าง Cache',
-            onTap: () => _confirmClearCache(context),
-          ),
-          const SizedBox(height: AppSpacing.md),
-
-          // ── Danger zone ────────────────────────────────────────────────
-          _SettingsTile(
-            icon: Icons.logout,
-            title: 'ออกจากระบบ',
-            iconColor: AppColors.danger,
-            titleColor: AppColors.danger,
-            onTap: () => _confirmLogout(context),
+          // ── Logout Button ────────────────────────────────────────────────
+          OutlinedButton.icon(
+            onPressed: () => _confirmLogout(context),
+            icon: const Icon(Icons.logout, color: AppColors.danger),
+            label: const Text('ออกจากระบบ', style: TextStyle(color: AppColors.danger, fontSize: 16)),
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              side: const BorderSide(color: AppColors.danger),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              backgroundColor: isDark ? Colors.transparent : Colors.white,
+            ),
           ),
           const SizedBox(height: AppSpacing.xl),
         ],
@@ -192,117 +309,49 @@ class _SettingsView extends StatelessWidget {
   }
 }
 
-// ── User header ───────────────────────────────────────────────────────────────
-
-class _UserHeader extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => context.go('/main/settings/profile'),
-      child: Container(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceDark,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          children: [
-            CircleAvatar(
-              radius: 28,
-              backgroundColor: AppColors.bgDark,
-              child: const Icon(Icons.person, color: Colors.white54, size: 32),
-            ),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'ผู้ใช้งาน',
-                    style: AppTypography.sectionHeader(color: Colors.white),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'user@example.com',
-                    style: AppTypography.caption(color: Colors.white54),
-                  ),
-                ],
-              ),
-            ),
-            const Icon(Icons.chevron_right, color: Colors.white38),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ── Section label ─────────────────────────────────────────────────────────────
-
-class _SectionLabel extends StatelessWidget {
-  const _SectionLabel({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(
-        left: AppSpacing.xs,
-        bottom: AppSpacing.xs,
-      ),
-      child: Text(
-        label,
-        style: AppTypography.caption(color: AppColors.primaryFixedDim),
-      ),
-    );
-  }
-}
-
-// ── Settings tile ─────────────────────────────────────────────────────────────
-
-class _SettingsTile extends StatelessWidget {
-  const _SettingsTile({
+class _SettingsListItem extends StatelessWidget {
+  const _SettingsListItem({
     required this.icon,
     required this.title,
+    this.trailingText,
     this.onTap,
-    this.trailing,
-    this.iconColor,
-    this.titleColor,
   });
 
   final IconData icon;
   final String title;
+  final String? trailingText;
   final VoidCallback? onTap;
-  final Widget? trailing;
-  final Color? iconColor;
-  final Color? titleColor;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: AppSpacing.xs),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceDark,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: ListTile(
-        onTap: onTap,
-        leading: Icon(
-          icon,
-          color: iconColor ?? AppColors.primaryFixedDim,
-          semanticLabel: title,
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF2A3441) : const Color(0xFFF0F4F8),
+          borderRadius: BorderRadius.circular(8),
         ),
-        title: Text(
-          title,
-          style: AppTypography.bodyBase(color: titleColor ?? Colors.white),
-        ),
-        trailing: trailing ??
-            (onTap != null
-                ? const Icon(Icons.chevron_right, color: Colors.white38)
-                : null),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Icon(icon, color: isDark ? AppColors.primaryFixedDim : AppColors.primary, size: 20),
       ),
+      title: Text(
+        title,
+        style: AppTypography.bodyBase(color: isDark ? Colors.white : AppColors.textPrimary),
+      ),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (trailingText != null)
+            Text(
+              trailingText!,
+              style: TextStyle(color: isDark ? Colors.white70 : AppColors.textSecondary, fontSize: 14),
+            ),
+          if (trailingText != null) const SizedBox(width: 8),
+          Icon(Icons.chevron_right, color: isDark ? Colors.white54 : Colors.black38),
+        ],
+      ),
+      onTap: onTap,
     );
   }
 }

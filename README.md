@@ -16,10 +16,10 @@
 
 ปัญหาหลักที่โครงงานมุ่งแก้ไขคือการนำรูปภาพไปใช้ในการหลอกลวงในหลายรูปแบบ เช่น การใช้ภาพปลอมของบุคคล (Romance Scam), ภาพดัดแปลง (Image Forgery), การแต่งสลิปโอนเงินปลอม หรือภาพที่มีข้อความชักจูงให้โอนเงิน ซึ่งผู้ใช้งานทั่วไปไม่สามารถตรวจสอบได้ง่ายด้วยตนเอง
 
-เพื่อแก้ไขปัญหาดังกล่าว ระบบถูกออกแบบโดยใช้แนวคิด Multi-layer Analysis วิเคราะห์ภาพถ่ายในหลายมิติ และนำผลลัพธ์มาร่วมประเมินระดับความเสี่ยง (Risk Score) ผ่าน 3 เลเยอร์การสแกนหลัก:
+เพื่อแก้ไขปัญหาดังกล่าว ระบบถูกออกแบบโดยคำนึงถึงความง่ายในการใช้งาน (มีเมนูถ่ายภาพ, อัปโหลด, สามารถตัดขอบภาพ (Crop) ก่อนตรวจสอบ, และมีประวัติการสแกน) พร้อมแสดงผลลัพธ์เปอร์เซ็นต์ความเสี่ยง (Total Risk Score %) ที่เข้าใจง่าย โดยใช้แนวคิด Multi-layer Analysis วิเคราะห์ภาพถ่ายในหลายมิติ ผ่าน 3 เลเยอร์การสแกนหลัก:
 1. Textual Analysis: ดึงข้อมูลข้อความในภาพ (OCR) และวิเคราะห์ประเด็นคำค้นหาหลอกลวง (Scam Keywords) ด้วยระบบ NLP
-2. Source Verification: ค้นหาประวัติการเผยแพร่ของภาพย้อนหลัง (Reverse Image Search) เพื่อระบุแหล่งที่มาและบริบทจริง
-3. Visual Anomaly Detection: ใช้โมเดล Deep Learning (PyTorch) ตรวจสอบการแก้ไขตัดแต่งภาพระดับพิกเซล (ELA) และตรวจจับภาพสังเคราะห์ปัญญาประดิษฐ์ (AI-Generated Image) พร้อมแสดงผลแผนที่ความร้อน (Grad-CAM Heatmap) ตามแนวคิด Explainable AI (XAI)
+2. Source Verification: ตรวจสอบเทียบกับฐานข้อมูลภาพภายใน (Internal Image DB) เพื่อลดภาระระบบ และค้นหาประวัติการเผยแพร่ของภาพย้อนหลัง (Reverse Image Search) เพื่อระบุแหล่งที่มาและบริบทจริง
+3. Visual Anomaly Detection: ใช้โมเดล Deep Learning (PyTorch) และเทคโนโลยีระดับสูง (เช่น Gemini, SynthID) ตรวจสอบการแก้ไขตัดแต่งภาพระดับพิกเซล และภาพสังเคราะห์ปัญญาประดิษฐ์ พร้อมแสดงผลแผนที่ความร้อน (Grad-CAM Heatmap) ตามแนวคิด Explainable AI (XAI) และมีแผนรองรับการวิเคราะห์จากวิดีโอ (Keyframe Extraction) ในอนาคต
 
 ---
 
@@ -55,7 +55,7 @@
 ## ลิงก์พื้นที่ทำงานสำหรับการดำเนินงาน (Workspace Links)
 
 * **[Discord Channel](https://discord.gg/WSEXfzrb)** - ช่องทางการสื่อสารของทีมงาน
-* **[Miro Board](https://miro.com/welcomeonboard/QmZJV2lUMDZ0amlTbWtrRlBxQkM0WE82aEM5K1YyVFdYM0s2Z2J1U0w1cXYwQlorcDRSZk5oaFNaYXM3enozcXppUXdyK0xQNWE5aTZ0bm42anhNUWtHeEhvMWNmVHNWUUlMZGx1VU41WGdmK0g2eTdzQ1U2S3VCd2pqeTNBNEd0R2lncW1vRmFBVnlLcVJzTmdFdlNRPT0hdjE=?share_link_id=95378118618)** - พื้นที่ระดมสมองและวิเคราะห์ความต้องการเชิงระบบ
+* **[Miro Board](https://miro.com/welcomeonboard/WUdKOXhEY2V6QlV1ZDVMTFlHTEJBQlhxSnUxVW5NMkFCTFIyc1dIVUR6cTFzSEdFQmVaelQwa2V4bnNqWVFtRkRFeERidTlrVGx3S2pVWGE0aG1iVVVHeEhvMWNmVHNWUUlMZGx1VU41WGlkMmpmYktKbE0wSzN1c3ArWmtURDVnbHpza3F6REdEcmNpNEFOMmJXWXBBPT0hdjE=?share_link_id=787643582535)** - พื้นที่ระดมสมองและวิเคราะห์ความต้องการเชิงระบบ
 * **[Figma Design](https://www.figma.com/design/gFrjAWWl0ZmT7h7vzu9011/project-Mobile-App--Scam-Image-Detection?node-id=0-1&t=seKA8vjnzcKV9HMq-1)** - หน้าจอ UI/UX Design และ Prototype ของโมบายแอป
 * **[Trello Board](https://trello.com/b/7QuuGSAL)** - กระดานติดตามสถานะการดำเนินงาน (Task Tracking)
 * **[System Architecture Diagram (Google Drive)](https://drive.google.com/file/d/1I2ksLvZp0x3iNYt57_46cqnTDfPgWvzR/view?usp=sharing)** - ไฟล์สำรองไดอะแกรมภาพรวมระบบ

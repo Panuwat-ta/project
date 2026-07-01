@@ -113,6 +113,12 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<bool> hasValidToken() => localDataSource.hasValidToken();
 
+  @override
+  Future<bool> hasSeenOnboarding() => localDataSource.hasSeenOnboarding();
+
+  @override
+  Future<void> markOnboardingSeen() => localDataSource.markOnboardingSeen();
+
   // ── Helper ─────────────────────────────────────────────────────────────────
 
   Exception _mapDioException(DioException e) {

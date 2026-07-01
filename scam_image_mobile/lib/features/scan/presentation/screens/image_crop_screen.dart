@@ -31,6 +31,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
   String get _displayPath => _croppedPath ?? widget.filePath;
 
   Future<void> _cropImage() async {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     final croppedFile = await _imageCropper.cropImage(
       sourcePath: widget.filePath,
       compressQuality: 85,
@@ -38,8 +39,8 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
         AndroidUiSettings(
           toolbarTitle: 'ครอปรูปภาพ',
           lockAspectRatio: false,
-          toolbarColor: AppColors.bgDark,
-          toolbarWidgetColor: Colors.white,
+          toolbarColor: Theme.of(context).scaffoldBackgroundColor,
+          toolbarWidgetColor: isDark ? Colors.white : AppColors.onSurface,
         ),
         IOSUiSettings(title: 'ครอปรูปภาพ'),
       ],
@@ -74,6 +75,8 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
@@ -84,12 +87,12 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
-          backgroundColor: Colors.black,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : AppColors.onSurface),
             tooltip: 'ย้อนกลับ',
             onPressed: () async {
               final confirmed = await _confirmDiscard(context);
@@ -100,26 +103,131 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
           ),
           title: Text(
             'ตรวจสอบรูปภาพ',
-            style: AppTypography.sectionHeader(color: Colors.white),
+            style: AppTypography.sectionHeader(color: isDark ? Colors.white : AppColors.onSurface),
           ),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.notifications_outlined, color: isDark ? Colors.white : AppColors.onSurface),
+              onPressed: () => context.go('/notifications'),
+            ),
+          ],
         ),
         body: Column(
           children: [
+            // ── Subtitle ──────────────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+              child: Text(
+                'ปรับแต่งรูปภาพของคุณให้เห็นส่วนที่ต้องการวิเคราะห์ได้ชัดเจนที่สุด',
+                style: AppTypography.bodyBase(color: isDark ? AppColors.outlineVariant : AppColors.textSecondary),
+              ),
+            ),
+            
             // ── Image preview ──────────────────────────────────────────────
             Expanded(
-              child: Center(
-                child: Image.file(
-                  File(_displayPath),
-                  fit: BoxFit.contain,
-                  errorBuilder: (context, error, stackTrace) => Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: isDark ? Colors.black26 : Colors.black12,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Stack(
+                    alignment: Alignment.center,
                     children: [
-                      const Icon(Icons.broken_image,
-                          color: Colors.white54, size: 64),
-                      const SizedBox(height: AppSpacing.sm),
-                      Text(
-                        'ไม่สามารถโหลดรูปภาพได้',
-                        style: AppTypography.bodyBase(color: Colors.white54),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.file(
+                          File(_displayPath),
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) => Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.broken_image,
+                                  color: isDark ? Colors.white54 : AppColors.textSecondary, size: 64),
+                              const SizedBox(height: AppSpacing.sm),
+                              Text(
+                                'ไม่สามารถโหลดรูปภาพได้',
+                                style: AppTypography.bodyBase(color: isDark ? Colors.white54 : AppColors.textSecondary),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      // Fake crop corners (Cyan)
+                      Positioned.fill(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: Stack(
+                            children: [
+                              // Grid lines
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Container(height: 1, color: Colors.white.withValues(alpha: 0.3)),
+                                  Container(height: 1, color: Colors.white.withValues(alpha: 0.3)),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Container(width: 1, color: Colors.white.withValues(alpha: 0.3)),
+                                  Container(width: 1, color: Colors.white.withValues(alpha: 0.3)),
+                                ],
+                              ),
+                              // Corners
+                              Align(
+                                alignment: Alignment.topLeft,
+                                child: Container(
+                                  width: 24, height: 24,
+                                  decoration: const BoxDecoration(
+                                    border: Border(
+                                      top: BorderSide(color: AppColors.primaryFixedDim, width: 3),
+                                      left: BorderSide(color: AppColors.primaryFixedDim, width: 3),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Align(
+                                alignment: Alignment.topRight,
+                                child: Container(
+                                  width: 24, height: 24,
+                                  decoration: const BoxDecoration(
+                                    border: Border(
+                                      top: BorderSide(color: AppColors.primaryFixedDim, width: 3),
+                                      right: BorderSide(color: AppColors.primaryFixedDim, width: 3),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Align(
+                                alignment: Alignment.bottomLeft,
+                                child: Container(
+                                  width: 24, height: 24,
+                                  decoration: const BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(color: AppColors.primaryFixedDim, width: 3),
+                                      left: BorderSide(color: AppColors.primaryFixedDim, width: 3),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Align(
+                                alignment: Alignment.bottomRight,
+                                child: Container(
+                                  width: 24, height: 24,
+                                  decoration: const BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(color: AppColors.primaryFixedDim, width: 3),
+                                      right: BorderSide(color: AppColors.primaryFixedDim, width: 3),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -127,69 +235,88 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
               ),
             ),
 
-            // ── Info text ──────────────────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.md, vertical: AppSpacing.sm),
-              child: Text(
-                'รูปภาพจะถูกส่งไปประมวลผลบนระบบ Backend',
-                style: AppTypography.caption(
-                    color: AppColors.outlineVariant.withValues(alpha: 0.8)),
-                textAlign: TextAlign.center,
-              ),
-            ),
-
-            // ── Bottom action bar ──────────────────────────────────────────
+            // ── Bottom section (Action buttons + Info + Main Buttons) ─────────
             Container(
-              color: AppColors.surfaceDark,
-              padding: EdgeInsets.only(
-                top: AppSpacing.md,
-                left: AppSpacing.md,
-                right: AppSpacing.md,
-                bottom: AppSpacing.md +
-                    MediaQuery.of(context).padding.bottom,
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.md),
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
               ),
-              child: Row(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  // เปลี่ยนรูป
-                  Expanded(
-                    child: SecondaryButton(
-                      label: 'เปลี่ยนรูป',
-                      onPressed: () => context.pop(),
+                  // 4 Action Buttons Card
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.3)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _buildActionItem(context, icon: Icons.rotate_left, label: 'หมุนซ้าย', isDark: isDark),
+                        _buildActionItem(context, icon: Icons.rotate_right, label: 'หมุนขวา', isDark: isDark),
+                        _buildActionItem(context, icon: Icons.crop, label: 'สัดส่วน', isDark: isDark, onTap: _cropImage),
+                        _buildActionItem(context, icon: Icons.zoom_in, label: 'ขยาย', isDark: isDark),
+                      ],
                     ),
                   ),
-                  const SizedBox(width: AppSpacing.sm),
-                  // ครอปรูป
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: _cropImage,
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.primaryFixedDim,
-                        side: const BorderSide(
-                            color: AppColors.primaryFixedDim),
-                        shape: const StadiumBorder(),
-                        minimumSize: const Size(0, 52),
-                      ),
-                      child: Text(
-                        'ครอปรูป',
-                        style: AppTypography.buttonLabel(
-                            color: AppColors.primaryFixedDim),
-                      ),
+                  const SizedBox(height: AppSpacing.md),
+                  
+                  // Info Box
+                  Container(
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    decoration: BoxDecoration(
+                      color: isDark ? AppColors.primaryFixedDim.withValues(alpha: 0.1) : const Color(0xFFF0F5FF),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: isDark ? Colors.transparent : AppColors.primaryFixedDim.withValues(alpha: 0.2)),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(Icons.verified_user, color: isDark ? AppColors.primaryFixedDim : AppColors.primary, size: 20),
+                        const SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                          child: Text(
+                            'รูปภาพจะถูกส่งไปวิเคราะห์บนระบบคลาวด์อย่างปลอดภัย ข้อมูลของคุณจะได้รับการเข้ารหัสและไม่มีการเปิดเผยต่อสาธารณะ',
+                            style: AppTypography.caption(color: isDark ? AppColors.outlineVariant : AppColors.textSecondary),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(width: AppSpacing.sm),
-                  // เริ่มวิเคราะห์
-                  Expanded(
-                    child: PrimaryButton(
-                      label: 'เริ่มวิเคราะห์',
-                      onPressed: () {
-                        context.go(
-                          '/loading',
-                          extra: {'filePath': _displayPath},
-                        );
-                      },
+                  const SizedBox(height: AppSpacing.lg),
+                  
+                  // Primary Action
+                  PrimaryButton(
+                    label: 'เริ่มวิเคราะห์',
+                    leadingIcon: const Icon(Icons.search, size: 20),
+                    onPressed: () {
+                      context.go('/loading', extra: {'filePath': _displayPath});
+                    },
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  
+                  // Secondary Action
+                  OutlinedButton(
+                    onPressed: () => context.pop(),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: isDark ? AppColors.primaryFixedDim : AppColors.primary,
+                      side: BorderSide(color: isDark ? AppColors.primaryFixedDim : AppColors.primary),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      minimumSize: const Size(double.infinity, 52),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.image_outlined, size: 20),
+                        const SizedBox(width: AppSpacing.sm),
+                        Text('เปลี่ยนรูป', style: AppTypography.buttonLabel(color: isDark ? AppColors.primaryFixedDim : AppColors.primary)),
+                      ],
                     ),
                   ),
+                  SizedBox(height: MediaQuery.of(context).padding.bottom),
                 ],
               ),
             ),
@@ -198,4 +325,20 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
       ),
     );
   }
+
+  Widget _buildActionItem(BuildContext context, {required IconData icon, required String label, required bool isDark, VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap ?? () {},
+      behavior: HitTestBehavior.opaque,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: isDark ? AppColors.outlineVariant : AppColors.onSurface, size: 24),
+          const SizedBox(height: 4),
+          Text(label, style: AppTypography.caption(color: isDark ? AppColors.outlineVariant : AppColors.textSecondary)),
+        ],
+      ),
+    );
+  }
 }
+

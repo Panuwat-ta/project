@@ -37,4 +37,10 @@ abstract class AuthRepository {
 
   /// Returns `true` if a non-expired access token is present in storage.
   Future<bool> hasValidToken();
+
+  /// Returns `true` if the user has seen the onboarding screen.
+  Future<bool> hasSeenOnboarding();
+
+  /// Marks the onboarding screen as seen.
+  Future<void> markOnboardingSeen();
 }

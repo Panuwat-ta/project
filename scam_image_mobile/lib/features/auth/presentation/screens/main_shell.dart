@@ -30,7 +30,7 @@ class MainShell extends StatelessWidget {
     final inactiveColor =
         isDark ? AppColors.outlineVariant : AppColors.textSecondary;
     final bgColor =
-        isDark ? AppColors.surfaceDark : AppColors.surfaceLight;
+        Theme.of(context).colorScheme.surface;
     final borderColor = isDark
         ? AppColors.outlineVariant.withValues(alpha: 0.3)
         : AppColors.border;

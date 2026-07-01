@@ -23,6 +23,7 @@ import '../../features/result/domain/repositories/result_repository.dart';
 import '../../features/history/data/datasources/history_remote_datasource.dart';
 import '../../features/history/data/repositories/history_repository_impl.dart';
 import '../../features/history/domain/repositories/history_repository.dart';
+import '../../features/history/presentation/bloc/history_bloc.dart';
 
 // ── Report ────────────────────────────────────────────────────────────────────
 import '../../features/report/data/datasources/report_remote_datasource.dart';
@@ -86,8 +87,8 @@ class ServiceLocator {
     resultRepository = ResultRepositoryImpl(remoteDataSource: resultRemote);
 
     // ── History ───────────────────────────────────────────────────────────────
-    final historyRemote = HistoryRemoteDataSourceImpl(dio: dio);
-    historyRepository = HistoryRepositoryImpl(remoteDataSource: historyRemote);
+    // Using MockHistoryRepository for testing UI flow
+    historyRepository = MockHistoryRepository();
 
     // ── Report ────────────────────────────────────────────────────────────────
     final reportRemote = ReportRemoteDataSourceImpl(dio: dio);

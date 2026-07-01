@@ -3,6 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 /// Token key constants used across the app.
 const String kAccessToken = 'access_token';
 const String kRefreshToken = 'refresh_token';
+const String kHasSeenOnboarding = 'has_seen_onboarding';
 
 /// [SecureStorage] is a thin wrapper around [FlutterSecureStorage] that
 /// provides typed, async helpers for token management.

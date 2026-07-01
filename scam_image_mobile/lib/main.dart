@@ -70,13 +70,17 @@ class ScamGuardApp extends StatelessWidget {
           create: (_) => NotificationsCubit()..loadNotifications(),
         ),
       ],
-      child: MaterialApp.router(
-        title: 'ScamGuard',
-        debugShowCheckedModeBanner: false,
-        themeMode: ThemeMode.dark,
-        theme: AppTheme.light,
-        darkTheme: AppTheme.dark,
-        routerConfig: AppRouter.router,
+      child: BlocBuilder<SettingsCubit, SettingsState>(
+        builder: (context, state) {
+          return MaterialApp.router(
+            title: 'ScamGuard',
+            debugShowCheckedModeBanner: false,
+            themeMode: state.themeMode,
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            routerConfig: AppRouter.router,
+          );
+        },
       ),
     );
   }

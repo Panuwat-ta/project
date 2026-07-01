@@ -9,7 +9,7 @@ import '../../domain/repositories/settings_repository.dart';
 
 class SettingsState extends Equatable {
   const SettingsState({
-    this.themeMode = ThemeMode.dark,
+    this.themeMode = ThemeMode.system,
     this.consent = const ConsentSetting(),
     this.isLoading = false,
     this.error,
@@ -44,11 +44,9 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   final SettingsRepository repository;
 
-  /// Toggles between [ThemeMode.dark] and [ThemeMode.light].
-  void toggleTheme() {
-    final newMode =
-        state.themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
-    emit(state.copyWith(themeMode: newMode));
+  /// Sets the application theme mode.
+  void setTheme(ThemeMode mode) {
+    emit(state.copyWith(themeMode: mode));
   }
 
   /// Loads current consent settings from the repository.

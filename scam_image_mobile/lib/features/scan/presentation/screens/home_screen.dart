@@ -78,7 +78,7 @@ class _HomeViewState extends State<_HomeView>
 
         return Scaffold(
           backgroundColor:
-              isDark ? AppColors.bgDark : AppColors.bgLight,
+              Theme.of(context).scaffoldBackgroundColor,
           appBar: AppTopBar(
             automaticallyImplyLeading: false,
             actions: [
@@ -122,9 +122,7 @@ class _HomeViewState extends State<_HomeView>
                           color: AppColors.error,
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: isDark
-                                ? AppColors.surfaceDark
-                                : AppColors.surfaceLight,
+                            color: Theme.of(context).colorScheme.surface,
                             width: 1.5,
                           ),
                         ),
@@ -231,7 +229,7 @@ class _UploadCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: isDark
-              ? [AppColors.surfaceDark, AppColors.bgDark]
+              ? [Theme.of(context).colorScheme.surface, Theme.of(context).scaffoldBackgroundColor]
               : [Colors.white, const Color(0xFFEDF4FF)],
           stops: const [0.0, 1.0],
           transform:
@@ -327,7 +325,7 @@ class _UploadCard extends StatelessWidget {
                     ? null
                     : () => context.read<HomeCubit>().pickImage(),
                 leadingIcon: const Icon(
-                  Icons.add_photo_alternate_outlined,
+                  Icons.add_photo_alternate,
                   size: 20,
                 ),
               ),
@@ -403,7 +401,7 @@ class _SafetyTipsSection extends StatelessWidget {
             const SizedBox(height: AppSpacing.md),
             _TipCard(
               isDark: isDark,
-              icon: Icons.report_outlined,
+              icon: Icons.error_outline,
               iconColor: isDark
                   ? AppColors.inversePrimary // #6CD2FF
                   : AppColors.error,
@@ -437,7 +435,7 @@ class _TipCard extends StatelessWidget {
     final Widget content = Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: AppColors.outlineVariant.withValues(alpha: 0.3),

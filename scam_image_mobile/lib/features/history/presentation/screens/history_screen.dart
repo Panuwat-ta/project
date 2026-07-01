@@ -62,15 +62,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: AppColors.bgDark,
+      backgroundColor: isDark ? const Color(0xFF141921) : const Color(0xFFF5F6F8),
       appBar: core_widgets.AppTopBar(
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
-            icon: const Icon(
-              Icons.notifications_outlined,
-              color: AppColors.outlineVariant,
+            icon: Icon(
+              Icons.notifications_none,
+              color: isDark ? AppColors.primaryFixedDim : AppColors.primary,
             ),
             tooltip: 'การแจ้งเตือน',
             onPressed: () => context.go('/notifications'),
@@ -96,7 +97,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             child: Text(
                               'ประวัติการตรวจสอบ',
                               style: AppTypography.sectionHeader(
-                                  color: Colors.white),
+                                  color: isDark ? Colors.white : AppColors.onSurface),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
@@ -114,7 +115,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             child: Text(
                               '$count รายการ',
                               style: AppTypography.caption(
-                                  color: AppColors.primaryFixedDim),
+                                  color: isDark ? AppColors.primaryFixedDim : AppColors.primary),
                             ),
                           ),
                         ],
@@ -128,7 +129,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       Expanded(
                         child: TextFormField(
                           controller: _searchController,
-                          style: const TextStyle(color: Colors.white),
+                          style: TextStyle(color: isDark ? Colors.white : AppColors.onSurface),
                           decoration: InputDecoration(
                             hintText: 'ค้นหาประวัติ...',
                             hintStyle: AppTypography.bodyBase(
@@ -140,10 +141,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               color: AppColors.outlineVariant,
                             ),
                             filled: true,
-                            fillColor: AppColors.inverseSurface,
+                            fillColor: isDark ? const Color(0xFF141921) : Colors.white,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
+                              borderSide: BorderSide(color: isDark ? Colors.white24 : Colors.black12),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: isDark ? Colors.white24 : Colors.black12),
                             ),
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: AppSpacing.md,
@@ -158,17 +163,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         height: 48,
                         child: DecoratedBox(
                           decoration: BoxDecoration(
-                            color: AppColors.inverseSurface,
+                            color: isDark ? const Color(0xFF141921) : Colors.white,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: AppColors.outlineVariant
-                                  .withValues(alpha: 0.3),
+                              color: isDark ? Colors.white24 : Colors.black12,
                             ),
                           ),
                           child: IconButton(
-                            icon: const Icon(
-                              Icons.tune_outlined,
-                              color: AppColors.primaryFixedDim,
+                            icon: Icon(
+                              Icons.tune,
+                              color: isDark ? AppColors.primaryFixedDim : AppColors.primary,
                             ),
                             onPressed: () {}, // Filter dialog — future feature
                             tooltip: 'กรองผลลัพธ์',
@@ -251,7 +255,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                 context.read<HistoryBloc>().add(HistoryItemDeleted(item.scanId)),
                             child: GestureDetector(
                               onTap: () =>
-                                  context.go('/main/history/${item.scanId}'),
+                                  context.push('/result/${item.scanId}'),
                               child: _HistoryCard(item: item),
                             ),
                           );
@@ -288,19 +292,33 @@ class _HistoryCard extends StatelessWidget {
     }
   }
 
+  String _formatThaiDate(DateTime date) {
+    const thaiMonths = [
+      '', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.',
+      'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'
+    ];
+    final year = date.year > 2500 ? date.year : date.year + 543;
+    final month = thaiMonths[date.month];
+    final day = date.day.toString().padLeft(2, '0');
+    final hours = date.hour.toString().padLeft(2, '0');
+    final mins = date.minute.toString().padLeft(2, '0');
+    return '$day $month $year • $hours:$mins';
+  }
+
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     final widgetLevel = _toWidgetLevel(item.riskLevel);
     final riskColor = _riskColor(item.riskLevel);
-    final dateStr = DateFormat('dd MMM yyyy • HH:mm').format(item.createdAt);
+    final dateStr = _formatThaiDate(item.createdAt);
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.surfaceDark,
+        color: isDark ? const Color(0xFF1B222C) : Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: AppColors.outlineVariant.withValues(alpha: 0.2),
+          color: isDark ? Colors.transparent : Colors.black12,
         ),
       ),
       child: Row(
@@ -346,7 +364,7 @@ class _HistoryCard extends StatelessWidget {
                       child: Text(
                         item.title ?? item.scanId,
                         style:
-                            AppTypography.sectionHeader(color: Colors.white),
+                            AppTypography.sectionHeader(color: isDark ? Colors.white : AppColors.onSurface),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),

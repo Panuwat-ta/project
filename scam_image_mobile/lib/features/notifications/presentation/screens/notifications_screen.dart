@@ -33,10 +33,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   IconData _iconForType(NotificationType type) {
     switch (type) {
-      case NotificationType.scanCompleted: return Icons.analytics_outlined;
-      case NotificationType.scanFailed: return Icons.error_outline;
-      case NotificationType.scamAlert: return Icons.warning_amber_outlined;
-      case NotificationType.systemInfo: return Icons.campaign_outlined;
+      case NotificationType.scanCompleted: return Icons.check_circle;
+      case NotificationType.scanFailed: return Icons.error;
+      case NotificationType.scamAlert: return Icons.warning;
+      case NotificationType.systemInfo: return Icons.info;
     }
   }
 
@@ -51,21 +51,22 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return BlocProvider.value(
       value: _cubit,
       child: Scaffold(
-        backgroundColor: AppColors.bgDark,
         appBar: AppBar(
-          backgroundColor: AppColors.surfaceDark,
-          title: Text('การแจ้งเตือน', style: AppTypography.sectionHeader(color: Colors.white)),
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          title: Text('การแจ้งเตือน', style: AppTypography.sectionHeader(color: Theme.of(context).colorScheme.onSurface)),
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onSurface),
             onPressed: () => context.pop(),
           ),
           actions: [
             TextButton(
               onPressed: () => _cubit.clearAll(),
-              child: Text('ล้างทั้งหมด',
+              child: Text('ล้างการแจ้งเตือนทั้งหมด',
                 style: AppTypography.caption(color: AppColors.primaryFixedDim).copyWith(fontWeight: FontWeight.w600)),
             ),
           ],
@@ -89,7 +90,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               itemBuilder: (context, index) {
                 final notification = state.items[index];
                 final iconColor = _colorForType(notification.type);
-                final timeStr = DateFormat('dd MMM • HH:mm').format(notification.createdAt);
+
 
                 return Dismissible(
                   key: Key(notification.id),
@@ -114,14 +115,23 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(AppSpacing.md),
                       decoration: BoxDecoration(
-                        color: notification.isRead
-                            ? AppColors.surfaceDark
-                            : AppColors.inverseSurface.withValues(alpha: 0.6),
+                        color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: notification.isRead
-                              ? AppColors.outlineVariant.withValues(alpha: 0.15)
-                              : AppColors.primaryFixedDim.withValues(alpha: 0.2),
+                        boxShadow: isDark ? null : [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          )
+                        ],
+                        border: Border(
+                          left: BorderSide(
+                            color: !notification.isRead ? AppColors.danger : Colors.transparent,
+                            width: 4,
+                          ),
+                          top: BorderSide(color: AppColors.outlineVariant.withValues(alpha: 0.15)),
+                          right: BorderSide(color: AppColors.outlineVariant.withValues(alpha: 0.15)),
+                          bottom: BorderSide(color: AppColors.outlineVariant.withValues(alpha: 0.15)),
                         ),
                       ),
                       child: Row(
@@ -135,7 +145,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                               shape: BoxShape.circle,
                             ),
                             child: Icon(_iconForType(notification.type),
-                              color: iconColor, size: 22,
+                              color: iconColor, size: 24,
                               semanticLabel: notification.title),
                           ),
                           const SizedBox(width: AppSpacing.md),
@@ -145,13 +155,15 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Expanded(
                                       child: Text(notification.title,
                                         style: AppTypography.bodyBase(
                                           color: notification.isRead
                                               ? AppColors.outlineVariant
-                                              : Colors.white,
+                                              : Theme.of(context).colorScheme.onSurface,
                                         ).copyWith(
                                           fontWeight: notification.isRead
                                               ? FontWeight.w400
@@ -160,29 +172,18 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis),
                                     ),
-                                    if (!notification.isRead)
-                                      Container(
-                                        width: 8, height: 8,
-                                        decoration: const BoxDecoration(
-                                          color: AppColors.primaryFixedDim,
-                                          shape: BoxShape.circle,
-                                        ),
-                                      ),
+                                    Text(_getTimeAgo(notification.createdAt),
+                                      style: AppTypography.caption(
+                                        color: AppColors.outlineVariant).copyWith(fontSize: 12)),
                                   ],
                                 ),
-                                const SizedBox(height: AppSpacing.xs),
+                                const SizedBox(height: 4),
                                 Text(notification.body,
                                   style: AppTypography.caption(color: AppColors.outlineVariant),
                                   maxLines: 2, overflow: TextOverflow.ellipsis),
-                                const SizedBox(height: AppSpacing.xs),
-                                Text(timeStr,
-                                  style: AppTypography.caption(
-                                    color: AppColors.outline).copyWith(fontSize: 11)),
                               ],
                             ),
                           ),
-                          if (notification.scanId != null)
-                            Icon(Icons.chevron_right, color: AppColors.outlineVariant, size: 18),
                         ],
                       ),
                     ),
@@ -194,5 +195,17 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         ),
       ),
     );
+  }
+  String _getTimeAgo(DateTime date) {
+    final diff = DateTime.now().difference(date);
+    if (diff.inMinutes < 60) {
+      return '${diff.inMinutes > 0 ? diff.inMinutes : 1} นาทีที่แล้ว';
+    } else if (diff.inHours < 24) {
+      return '${diff.inHours} ชั่วโมงที่แล้ว';
+    } else if (diff.inDays < 7) {
+      return '${diff.inDays} วันที่แล้ว';
+    } else {
+      return DateFormat('dd MMM').format(date);
+    }
   }
 }

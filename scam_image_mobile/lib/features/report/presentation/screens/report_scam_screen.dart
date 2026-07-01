@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
@@ -8,10 +9,6 @@ import '../../domain/entities/scam_report.dart';
 import '../bloc/report_bloc.dart';
 
 /// Screen that lets the user submit a scam-image report.
-///
-/// Creates its own [ReportBloc] backed by [MockReportRepository] so it
-/// works in isolation during development. Swap to a real repository via DI
-/// in Task 23.
 class ReportScamScreen extends StatefulWidget {
   const ReportScamScreen({super.key, this.scanId});
 
@@ -25,18 +22,17 @@ class ReportScamScreen extends StatefulWidget {
 class _ReportScamScreenState extends State<ReportScamScreen> {
   // ── Form ──────────────────────────────────────────────────────────────────
   final _formKey = GlobalKey<FormState>();
-  final _descriptionController = TextEditingController();
-  final _referenceController = TextEditingController();
+  final _platformController = TextEditingController();
+  final _detailsController = TextEditingController();
 
   // ── Form state ────────────────────────────────────────────────────────────
   String? _selectedCategory;
-  String? _selectedPlatform;
-  bool _allowResearch = false;
+  bool _allowAIModel = false;
 
   // ── BLoC ──────────────────────────────────────────────────────────────────
   late final ReportBloc _bloc;
 
-  // ── Categories / Platforms ────────────────────────────────────────────────
+  // ── Categories ────────────────────────────────────────────────────────────
   static const _categories = [
     'Romance Scam',
     'ซื้อขายออนไลน์',
@@ -44,15 +40,6 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
     'ลงทุนหรือผลตอบแทนสูง',
     'ปลอมแปลงตัวตน',
     'ภาพ AI หรือ Deepfake',
-    'อื่นๆ',
-  ];
-
-  static const _platforms = [
-    'Facebook',
-    'LINE',
-    'Instagram',
-    'Marketplace',
-    'Website',
     'อื่นๆ',
   ];
 
@@ -64,8 +51,8 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
 
   @override
   void dispose() {
-    _descriptionController.dispose();
-    _referenceController.dispose();
+    _platformController.dispose();
+    _detailsController.dispose();
     _bloc.close();
     super.dispose();
   }
@@ -91,12 +78,12 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
         ScamReport(
           scanId: widget.scanId,
           category: _selectedCategory!,
-          description: _descriptionController.text.trim(),
-          platform: _selectedPlatform,
-          referenceUrl: _referenceController.text.trim().isEmpty
+          description: _detailsController.text.trim(),
+          platform: _platformController.text.trim().isEmpty
               ? null
-              : _referenceController.text.trim(),
-          allowResearchUse: _allowResearch,
+              : _platformController.text.trim(),
+          referenceUrl: null,
+          allowResearchUse: _allowAIModel,
         ),
       ),
     );
@@ -117,7 +104,13 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
       );
       // Pop after snackbar is visible
       Future.delayed(const Duration(milliseconds: 1500), () {
-        if (context.mounted) Navigator.of(context).pop();
+        if (context.mounted) {
+           if (GoRouter.of(context).canPop()) {
+             context.pop();
+           } else {
+             context.go('/main/home');
+           }
+        }
       });
     } else if (state is ReportError) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -135,26 +128,26 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
   // ── Build ─────────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return BlocProvider.value(
       value: _bloc,
       child: BlocListener<ReportBloc, ReportState>(
         listener: _onStateChanged,
         child: Scaffold(
-          backgroundColor: AppColors.bgDark,
-          appBar: AppBar(
-            backgroundColor: AppColors.surfaceDark,
-            foregroundColor: AppColors.primaryFixedDim,
-            elevation: 0,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              tooltip: 'กลับ',
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            title: Text(
-              'รายงานภาพต้องสงสัย',
-              style: AppTypography.sectionHeader(
-                  color: AppColors.primaryFixedDim),
-            ),
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          appBar: AppTopBar(
+            automaticallyImplyLeading: false, // In Figma, this acts like a main tab
+            actions: [
+              IconButton(
+                tooltip: 'การแจ้งเตือน',
+                onPressed: () => context.go('/notifications'),
+                icon: Icon(
+                  Icons.notifications_outlined,
+                  color: isDark ? AppColors.outlineVariant : AppColors.onSurfaceVariant,
+                ),
+              ),
+            ],
           ),
           body: SafeArea(
             child: Form(
@@ -169,145 +162,200 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                   Text(
                     'แจ้งรายงานการหลอกลวง',
                     style: AppTypography.headlineLgMobile(
-                        color: Colors.white),
+                        color: Theme.of(context).colorScheme.onSurface),
                   ),
                   const SizedBox(height: AppSpacing.xs),
                   Text(
                     'ช่วยเราสร้างสังคมดิจิทัลที่ปลอดภัยยิ่งขึ้นโดยการแจ้งเบาะแส',
                     style: AppTypography.bodyBase(
-                        color: AppColors.outlineVariant),
+                        color: AppColors.textSecondary),
                   ),
                   const SizedBox(height: AppSpacing.lg),
 
-                  // ── Category chips ─────────────────────────────────────
-                  _SectionLabel(label: 'ประเภทเหตุการณ์ *'),
-                  const SizedBox(height: AppSpacing.sm),
-                  Wrap(
-                    spacing: AppSpacing.sm,
-                    runSpacing: AppSpacing.sm,
-                    children: _categories.map((cat) {
-                      final selected = _selectedCategory == cat;
-                      return FilterChip(
-                        label: Text(
-                          cat,
-                          style: AppTypography.caption(
-                            color: selected
-                                ? AppColors.bgDark
-                                : Colors.white,
+                  // ── Image Card ─────────────────────────────────────────
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: AppColors.outlineVariant.withValues(alpha: 0.3),
+                      ),
+                      boxShadow: isDark ? [] : [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'รูปภาพที่ตรวจสอบ',
+                              style: AppTypography.titleMd(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
+                            TextButton.icon(
+                              onPressed: () {
+                                // TODO: Pick or change image
+                              },
+                              icon: const Icon(Icons.refresh, size: 18),
+                              label: const Text('เปลี่ยนรูป'),
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                minimumSize: const Size(0, 0),
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        // Mock Image Placeholder (QR Code)
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Container(
+                            height: 180,
+                            width: double.infinity,
+                            color: isDark ? AppColors.inverseSurface : AppColors.bgLight,
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Icon(
+                                  Icons.qr_code,
+                                  size: 64,
+                                  color: AppColors.outlineVariant.withValues(alpha: 0.5),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.search,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        selected: selected,
-                        onSelected: (_) =>
-                            setState(() => _selectedCategory = cat),
-                        selectedColor: AppColors.primaryFixedDim,
-                        backgroundColor: AppColors.inverseSurface,
-                        checkmarkColor: AppColors.bgDark,
-                        side: BorderSide(
-                          color: selected
-                              ? AppColors.primaryFixedDim
-                              : AppColors.outlineVariant.withValues(
-                                  alpha: 0.5),
-                        ),
-                        showCheckmark: false,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.sm,
-                          vertical: AppSpacing.xs,
-                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.xl),
+
+                  // ── Category Dropdown ──────────────────────────────────
+                  _SectionLabel(label: 'ประเภทเหตุการณ์', isDark: isDark),
+                  const SizedBox(height: AppSpacing.sm),
+                  DropdownButtonFormField<String>(
+                    value: _selectedCategory,
+                    decoration: _inputDecoration(
+                      hint: 'เลือกประเภทการหลอกลวง',
+                      isDark: isDark,
+                    ),
+                    dropdownColor: Theme.of(context).colorScheme.surface,
+                    style: AppTypography.bodyBase(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                    icon: const Icon(
+                      Icons.keyboard_arrow_down,
+                      color: AppColors.outlineVariant,
+                    ),
+                    items: _categories.map((cat) {
+                      return DropdownMenuItem(
+                        value: cat,
+                        child: Text(cat),
                       );
                     }).toList(),
+                    onChanged: (v) => setState(() => _selectedCategory = v),
+                    validator: (v) => v == null ? 'กรุณาเลือกประเภทการหลอกลวง' : null,
                   ),
                   const SizedBox(height: AppSpacing.lg),
 
-                  // ── Description field ──────────────────────────────────
-                  _SectionLabel(label: 'รายละเอียดเหตุการณ์ *'),
+                  // ── Platform TextField ─────────────────────────────────
+                  _SectionLabel(label: 'แพลตฟอร์มที่พบ', isDark: isDark),
                   const SizedBox(height: AppSpacing.sm),
                   TextFormField(
-                    controller: _descriptionController,
-                    minLines: 5,
-                    maxLines: 8,
-                    style: AppTypography.bodyBase(color: Colors.white),
+                    controller: _platformController,
+                    style: AppTypography.bodyBase(
+                        color: Theme.of(context).colorScheme.onSurface),
                     decoration: _inputDecoration(
-                      hint:
-                          'ระบุลำดับเหตุการณ์ หรือข้อมูลที่น่าสงสัย...',
+                      hint: 'เช่น Facebook, Line, TikTok',
+                      isDark: isDark,
+                      prefixIcon: const Icon(
+                        Icons.public,
+                        size: 20,
+                        color: AppColors.outlineVariant,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+
+                  // ── Details Field ──────────────────────────────────────
+                  _SectionLabel(label: 'รายละเอียดเพิ่มเติม', isDark: isDark),
+                  const SizedBox(height: AppSpacing.sm),
+                  TextFormField(
+                    controller: _detailsController,
+                    minLines: 4,
+                    maxLines: 6,
+                    style: AppTypography.bodyBase(
+                        color: Theme.of(context).colorScheme.onSurface),
+                    decoration: _inputDecoration(
+                      hint: 'ระบุลำดับเหตุการณ์ หรือข้อมูลที่น่าสงสัย...',
+                      isDark: isDark,
                     ),
                     validator: (v) {
-                      if (v == null || v.trim().length < 10) {
-                        return 'กรุณาระบุรายละเอียดอย่างน้อย 10 ตัวอักษร';
+                      if (v == null || v.trim().length < 5) {
+                        return 'กรุณาระบุรายละเอียดเพิ่มเติม';
                       }
                       return null;
                     },
                   ),
-                  const SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: AppSpacing.xl),
 
-                  // ── Platform chips ─────────────────────────────────────
-                  _SectionLabel(label: 'แพลตฟอร์มที่พบ'),
-                  const SizedBox(height: AppSpacing.sm),
-                  Wrap(
-                    spacing: AppSpacing.sm,
-                    runSpacing: AppSpacing.sm,
-                    children: _platforms.map((p) {
-                      final selected = _selectedPlatform == p;
-                      return FilterChip(
-                        label: Text(
-                          p,
-                          style: AppTypography.caption(
-                            color: selected
-                                ? AppColors.bgDark
-                                : Colors.white,
+                  // ── Consent Checkbox ───────────────────────────────────
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: Checkbox(
+                          value: _allowAIModel,
+                          onChanged: (v) => setState(() => _allowAIModel = v ?? false),
+                          activeColor: isDark ? AppColors.primaryFixedDim : AppColors.primary,
+                          checkColor: isDark ? AppColors.bgDark : Colors.white,
+                          side: const BorderSide(
+                            color: AppColors.outlineVariant,
+                            width: 1.5,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4),
                           ),
                         ),
-                        selected: selected,
-                        onSelected: (_) =>
-                            setState(() => _selectedPlatform = p),
-                        selectedColor: AppColors.primaryFixedDim,
-                        backgroundColor: AppColors.inverseSurface,
-                        checkmarkColor: AppColors.bgDark,
-                        side: BorderSide(
-                          color: selected
-                              ? AppColors.primaryFixedDim
-                              : AppColors.outlineVariant.withValues(
-                                  alpha: 0.5),
-                        ),
-                        showCheckmark: false,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.sm,
-                          vertical: AppSpacing.xs,
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-
-                  // ── Reference URL ──────────────────────────────────────
-                  _SectionLabel(
-                      label: 'ลิงก์หรือชื่อบัญชีผู้ต้องสงสัย (ถ้ามี)'),
-                  const SizedBox(height: AppSpacing.sm),
-                  TextFormField(
-                    controller: _referenceController,
-                    style: AppTypography.bodyBase(color: Colors.white),
-                    decoration: _inputDecoration(
-                      hint: 'https://... หรือ @username',
-                      prefixIcon: const Icon(
-                        Icons.link,
-                        size: 20,
-                        color: AppColors.outline,
                       ),
-                    ),
-                    // Optional — no validator
+                      const SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => setState(() => _allowAIModel = !_allowAIModel),
+                          child: Text(
+                            'ยินยอมให้ใช้ข้อมูลเพื่อพัฒนาโมเดล AI ในการตรวจสอบและป้องกันภัยไซเบอร์',
+                            style: AppTypography.bodyBase(
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: AppSpacing.lg),
-
-                  // ── Consent ────────────────────────────────────────────
-                  ConsentCheckboxTile(
-                    value: _allowResearch,
-                    onChanged: (v) =>
-                        setState(() => _allowResearch = v ?? false),
-                    label:
-                        'ยินยอมให้ใช้ข้อมูลเพื่อปรับปรุงระบบ',
-                    description:
-                        'ข้อมูลของคุณจะถูกเก็บเป็นความลับและใช้เพื่อความปลอดภัยส่วนรวมเท่านั้น',
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: AppSpacing.xl),
 
                   // ── Submit button ──────────────────────────────────────
                   BlocBuilder<ReportBloc, ReportState>(
@@ -319,20 +367,19 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                         onPressed: isLoading ? null : _submit,
                         leadingIcon: isLoading
                             ? null
-                            : const Icon(Icons.send, size: 18),
+                            : const Icon(Icons.send, size: 20),
                       );
                     },
                   ),
-                  const SizedBox(height: AppSpacing.md),
+                  const SizedBox(height: AppSpacing.lg),
 
                   // ── Footer note ────────────────────────────────────────
                   Text(
                     'ข้อมูลของคุณจะถูกเก็บเป็นความลับและใช้เพื่อความปลอดภัยส่วนรวมเท่านั้น',
                     textAlign: TextAlign.center,
-                    style:
-                        AppTypography.caption(color: AppColors.outline),
+                    style: AppTypography.caption(color: AppColors.textSecondary),
                   ),
-                  const SizedBox(height: AppSpacing.xl),
+                  const SizedBox(height: AppSpacing.xxl),
                 ],
               ),
             ),
@@ -346,17 +393,18 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
 
   InputDecoration _inputDecoration({
     required String hint,
+    required bool isDark,
     Widget? prefixIcon,
   }) =>
       InputDecoration(
         hintText: hint,
-        hintStyle: AppTypography.bodyBase(color: AppColors.outline),
+        hintStyle: AppTypography.bodyBase(color: AppColors.outlineVariant),
         prefixIcon: prefixIcon,
         filled: true,
-        fillColor: AppColors.inverseSurface,
+        fillColor: isDark ? AppColors.inverseSurface : Colors.white,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md,
-          vertical: AppSpacing.gutter,
+          vertical: AppSpacing.md,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
@@ -370,8 +418,8 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(
-              color: AppColors.primaryFixedDim, width: 1.5),
+          borderSide: BorderSide(
+              color: isDark ? AppColors.primaryFixedDim : AppColors.primary, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
@@ -388,13 +436,15 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
 // ── Private helper widget ─────────────────────────────────────────────────
 
 class _SectionLabel extends StatelessWidget {
-  const _SectionLabel({required this.label});
+  const _SectionLabel({required this.label, required this.isDark});
 
   final String label;
+  final bool isDark;
 
   @override
   Widget build(BuildContext context) => Text(
         label,
-        style: AppTypography.buttonLabel(color: Colors.white),
+        style: AppTypography.titleMd(
+            color: Theme.of(context).colorScheme.onSurface),
       );
 }

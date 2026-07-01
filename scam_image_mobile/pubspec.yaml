@@ -41,6 +41,7 @@ dependencies:
 
   # Share
   share_plus: ^13.2.0
+  flutter_svg: ^2.3.0
 
 dev_dependencies:
   flutter_test:
@@ -51,3 +52,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/icons/

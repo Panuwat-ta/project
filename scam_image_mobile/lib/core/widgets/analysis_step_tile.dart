@@ -115,6 +115,11 @@ class _AnalysisStepTileState extends State<AnalysisStepTile>
                 width: 2,
               ),
             ),
+            child: const Icon(
+              Icons.more_horiz,
+              color: AppColors.textSecondary,
+              size: 16,
+            ),
           ),
         );
     }
@@ -123,6 +128,9 @@ class _AnalysisStepTileState extends State<AnalysisStepTile>
   @override
   Widget build(BuildContext context) {
     final bool isPending = widget.status == AnalysisStepStatus.pending;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color primaryColor =
+        isDark ? AppColors.primaryFixedDim : AppColors.primary;
 
     return Opacity(
       opacity: isPending ? 0.4 : 1.0,
@@ -145,7 +153,12 @@ class _AnalysisStepTileState extends State<AnalysisStepTile>
                     Text(
                       widget.subtitle!,
                       style: AppTypography.caption(
-                          color: AppColors.textSecondary),
+                        color: widget.status == AnalysisStepStatus.done
+                            ? AppColors.success
+                            : widget.status == AnalysisStepStatus.active
+                                ? primaryColor
+                                : AppColors.textSecondary,
+                      ),
                     ),
                 ],
               ),

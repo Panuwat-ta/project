@@ -16,15 +16,17 @@ class AppColors {
   static const Color surfaceLight = Color(0xFFFFFFFF);
 
   // ── Primary ──────────────────────────────────────────────────────────────
-  static const Color primary = Color(0xFF006685);
+  static const Color primary = Color(0xFF00A6D6); // From Design System
   static const Color primaryFixedDim = Color(0xFF6CD2FF); // dark-mode accent
   static const Color primaryContainer = Color(0xFF00A6D6);
 
-  // ── Risk / Status ────────────────────────────────────────────────────────
+  // ── Risk / Status / Semantic ─────────────────────────────────────────────
+  static const Color secondary = Color(0xFF16A34A); // From Design System
+  static const Color tertiary = Color(0xFFF59E0B); // From Design System
   static const Color danger = Color(0xFFDC2626);
   static const Color error = Color(0xFFBA1A1A);
-  static const Color warning = Color(0xFFD68900);
-  static const Color success = Color(0xFF006E2D);
+  static const Color warning = Color(0xFFF59E0B); // Map tertiary to warning if needed
+  static const Color success = Color(0xFF16A34A); // Map secondary to success
 
   // ── Text ─────────────────────────────────────────────────────────────────
   static const Color textPrimary = Color(0xFF17212B);
@@ -36,9 +38,7 @@ class AppColors {
   static const Color border = Color(0xFFD8E0EA);
 
   // ── Semantic aliases (Material 3 naming) ─────────────────────────────────
-  static const Color secondary = Color(0xFF006E2D);
   static const Color secondaryContainer = Color(0xFF7CF994);
-  static const Color tertiary = Color(0xFF855300);
   static const Color errorContainer = Color(0xFFFFDAD6);
   static const Color onPrimary = Color(0xFFFFFFFF);
   static const Color onSurface = Color(0xFF121C26);

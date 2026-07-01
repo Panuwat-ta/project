@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
+
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../bloc/settings_bloc.dart';
 
-/// Privacy & Consent management screen.
-///
-/// Allows toggling data-use consents, requesting a data export,
-/// and permanently deleting the user's account.
 class PrivacyConsentScreen extends StatefulWidget {
   const PrivacyConsentScreen({super.key});
 
@@ -34,8 +30,6 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
     super.dispose();
   }
 
-  // ── Export ──────────────────────────────────────────────────────────────
-
   Future<void> _exportData() async {
     await _cubit.exportData();
     if (mounted) {
@@ -45,57 +39,24 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
     }
   }
 
-  // ── Delete account ──────────────────────────────────────────────────────
-
-  Future<void> _deleteAccount() async {
-    // Step 1: first confirm dialog
-    final step1 = await showDialog<bool>(
+  Future<void> _deleteAllData() async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.surfaceDark,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         title: Text(
-          'ลบบัญชี',
-          style: AppTypography.titleMd(color: Colors.white),
+          'ลบข้อมูลการใช้งาน',
+          style: AppTypography.titleMd(color: AppColors.danger),
         ),
         content: Text(
-          'การลบบัญชีจะลบข้อมูลทั้งหมดของคุณออกจากระบบอย่างถาวร '
-          'คุณต้องการดำเนินการต่อหรือไม่?',
-          style: AppTypography.bodyBase(color: Colors.white70),
+          'คุณต้องการลบข้อมูลการใช้งานทั้งหมดใช่หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้',
+          style: AppTypography.bodyBase(color: isDark ? Colors.white70 : AppColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
             child: const Text('ยกเลิก'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(
-              'ดำเนินการต่อ',
-              style: TextStyle(color: AppColors.danger),
-            ),
-          ),
-        ],
-      ),
-    );
-    if (step1 != true || !mounted) return;
-
-    // Step 2: final confirmation
-    final step2 = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.surfaceDark,
-        title: Text(
-          'ยืนยันการลบบัญชี',
-          style: AppTypography.titleMd(color: AppColors.danger),
-        ),
-        content: Text(
-          'คุณแน่ใจหรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้',
-          style: AppTypography.bodyBase(color: Colors.white70),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('ไม่ใช่'),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -103,118 +64,178 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
               foregroundColor: Colors.white,
             ),
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('ลบบัญชีของฉัน'),
+            child: const Text('ลบข้อมูล'),
           ),
         ],
       ),
     );
-    if (step2 != true || !mounted) return;
-
-    await _cubit.deleteAccount();
-    if (mounted) {
-      context.go('/login');
+    
+    if (confirmed == true && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('ข้อมูลของคุณถูกลบเรียบร้อยแล้ว')),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return BlocProvider.value(
       value: _cubit,
       child: Scaffold(
-        backgroundColor: AppColors.bgDark,
+        backgroundColor: isDark ? const Color(0xFF141921) : const Color(0xFFF5F6F8),
         appBar: AppBar(
-          backgroundColor: AppColors.bgDark,
           elevation: 0,
-          leading: const BackButton(color: Colors.white),
+          backgroundColor: isDark ? const Color(0xFF1B222C) : Colors.white,
+          leading: const BackButton(),
           title: Text(
             'ความเป็นส่วนตัว',
-            style: AppTypography.headlineLgMobile(color: Colors.white),
+            style: TextStyle(
+              color: isDark ? AppColors.primaryFixedDim : AppColors.primary,
+              fontWeight: FontWeight.bold,
+            ),
           ),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.notifications_none, color: isDark ? Colors.white : AppColors.textPrimary),
+              onPressed: () {},
+            ),
+          ],
         ),
         body: BlocBuilder<SettingsCubit, SettingsState>(
           builder: (context, state) {
             if (state.isLoading) {
-              return const Center(
-                child: CircularProgressIndicator(
-                  color: AppColors.primaryFixedDim,
-                ),
-              );
+              return const Center(child: CircularProgressIndicator(color: AppColors.primary));
             }
             return ListView(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.md,
-                vertical: AppSpacing.sm,
+                vertical: AppSpacing.lg,
               ),
               children: [
-                // ── Consent Management ─────────────────────────────────
-                _SectionHeader(label: 'การจัดการความยินยอม'),
-                const SizedBox(height: AppSpacing.sm),
-
-                _ConsentTile(
-                  title: 'ประมวลผลรูปภาพ',
-                  subtitle: 'ยินยอมให้ประมวลผลรูปภาพที่อัปโหลด (จำเป็น)',
-                  value: state.consent.processingConsent,
-                  onChanged: null, // required — always on
+                // ── Header Icon and Titles ─────────────────────────────────
+                Center(
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: isDark ? const Color(0xFF1B222C) : const Color(0xFFDFF1FF),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(Icons.security, size: 40, color: isDark ? AppColors.primaryFixedDim : AppColors.primary),
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      Text(
+                        'จัดการความยินยอม',
+                        style: AppTypography.headlineLgMobile(color: isDark ? Colors.white : AppColors.textPrimary).copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'เลือกการตั้งค่าที่คุณต้องการให้ ScamGuard ดูแลข้อมูล\nของคุณ',
+                        textAlign: TextAlign.center,
+                        style: AppTypography.bodyBase(color: isDark ? Colors.white54 : AppColors.textSecondary),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: AppSpacing.xs),
-
-                _ConsentTile(
-                  title: 'เก็บประวัติการสแกน',
-                  subtitle: 'บันทึกผลการวิเคราะห์ไว้ในประวัติของคุณ',
-                  value: state.consent.historyConsent,
-                  onChanged: (val) {
-                    final updated = state.consent.copyWith(historyConsent: val);
-                    context.read<SettingsCubit>().updateConsents(updated);
-                  },
-                ),
-                const SizedBox(height: AppSpacing.xs),
-
-                _ConsentTile(
-                  title: 'ใช้เพื่อปรับปรุงโมเดล AI',
-                  subtitle:
-                      'อนุญาตให้ใช้ข้อมูลแบบไม่ระบุตัวตนเพื่อปรับปรุงโมเดล',
-                  value: state.consent.researchConsent,
-                  onChanged: (val) {
-                    final updated =
-                        state.consent.copyWith(researchConsent: val);
-                    context.read<SettingsCubit>().updateConsents(updated);
-                  },
-                ),
-
                 const SizedBox(height: AppSpacing.lg),
 
-                // ── Personal Data ──────────────────────────────────────
-                _SectionHeader(label: 'ข้อมูลส่วนตัว'),
-                const SizedBox(height: AppSpacing.sm),
+                // ── Consent List Container ─────────────────────────────────
+                Container(
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF1B222C) : Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
+                    children: [
+                      _ConsentTile(
+                        title: 'ยินยอมให้ประมวลผลรูปภาพ',
+                        subtitle: 'ใช้เพื่อวิเคราะห์ความเสี่ยงในรูปภาพที่คุณอัปโหลด',
+                        value: state.consent.processingConsent,
+                        onChanged: null, 
+                      ),
+                      Divider(height: 1, thickness: 1, color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
+                      _ConsentTile(
+                        title: 'ยินยอมให้เก็บประวัติการสแกน',
+                        subtitle: 'ดูประวัติการวิเคราะห์ย้อนหลังได้ทุกเมื่อ',
+                        value: state.consent.historyConsent,
+                        onChanged: (val) {
+                          final updated = state.consent.copyWith(historyConsent: val);
+                          context.read<SettingsCubit>().updateConsents(updated);
+                        },
+                      ),
+                      Divider(height: 1, thickness: 1, color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
+                      _ConsentTile(
+                        title: 'ยินยอมให้ใช้ข้อมูลเพื่อพัฒนา AI',
+                        subtitle: 'ช่วยให้ระบบตรวจจับกลโกงได้แม่นยำยิ่งขึ้นสำหรับทุกคน',
+                        value: state.consent.researchConsent,
+                        onChanged: (val) {
+                          final updated = state.consent.copyWith(researchConsent: val);
+                          context.read<SettingsCubit>().updateConsents(updated);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.lg),
 
-                // Export data
+                // ── Action Buttons ────────────────────────────────────────
                 OutlinedButton.icon(
                   onPressed: _exportData,
                   icon: const Icon(Icons.download_outlined),
-                  label: const Text('ขอรับสำเนาข้อมูล'),
+                  label: const Text('ขอสำเนาข้อมูลส่วนตัว', style: TextStyle(fontSize: 16)),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.primaryFixedDim,
-                    side: const BorderSide(color: AppColors.primaryFixedDim),
-                    minimumSize: const Size(double.infinity, 52),
-                    shape: const StadiumBorder(),
+                    foregroundColor: isDark ? AppColors.primaryFixedDim : AppColors.primary,
+                    side: BorderSide(color: isDark ? AppColors.primaryFixedDim : AppColors.primary),
+                    minimumSize: const Size(double.infinity, 56),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                 ),
                 const SizedBox(height: AppSpacing.md),
-
-                // Delete account
-                ElevatedButton.icon(
-                  onPressed: _deleteAccount,
-                  icon: const Icon(Icons.delete_forever_outlined),
-                  label: const Text('ลบบัญชี'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.danger,
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(double.infinity, 52),
-                    shape: const StadiumBorder(),
-                    elevation: 0,
+                OutlinedButton.icon(
+                  onPressed: _deleteAllData,
+                  icon: const Icon(Icons.cancel_presentation, color: AppColors.danger),
+                  label: const Text('ลบข้อมูลการใช้งานทั้งหมด', style: TextStyle(color: AppColors.danger, fontSize: 16)),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: AppColors.danger),
+                    minimumSize: const Size(double.infinity, 56),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                 ),
-                const SizedBox(height: AppSpacing.xl),
+                const SizedBox(height: AppSpacing.lg),
+
+                // ── Info Box ──────────────────────────────────────────────
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF2A3441) : const Color(0xFFEAF5FF),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(Icons.info_outline, color: isDark ? AppColors.primaryFixedDim : AppColors.primary),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'ScamGuard ให้ความสำคัญกับความเป็นส่วนตัวของคุณ ข้อมูลของคุณจะถูกประมวลผลตามพระราชบัญญัติคุ้มครองข้อมูลส่วนตัว (PDPA) เราจะเก็บรักษาข้อมูลอย่างปลอดภัยและไม่ส่งต่อให้บุคคลที่สามโดยไม่ได้รับความยินยอม',
+                          style: AppTypography.caption(color: isDark ? Colors.white70 : AppColors.textSecondary).copyWith(height: 1.5),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                
+                const SizedBox(height: AppSpacing.xxl),
+
+                // ── Bottom Shield Watermark ──────────────────────────────
+                Opacity(
+                  opacity: 0.05,
+                  child: Center(
+                    child: Icon(Icons.security, size: 200, color: isDark ? Colors.white : Colors.black),
+                  ),
+                ),
               ],
             );
           },
@@ -223,27 +244,6 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
     );
   }
 }
-
-// ── Section header ────────────────────────────────────────────────────────────
-
-class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: AppSpacing.xs, bottom: 4),
-      child: Text(
-        label,
-        style: AppTypography.sectionHeader(color: Colors.white),
-      ),
-    );
-  }
-}
-
-// ── Consent tile ──────────────────────────────────────────────────────────────
 
 class _ConsentTile extends StatelessWidget {
   const _ConsentTile({
@@ -260,26 +260,26 @@ class _ConsentTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.surfaceDark,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white10),
-      ),
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: SwitchListTile(
         value: value,
         onChanged: onChanged,
-        activeThumbColor: AppColors.primaryFixedDim,
+        activeThumbColor: Colors.white,
+        activeTrackColor: isDark ? AppColors.primaryFixedDim : AppColors.primary,
+        inactiveThumbColor: Colors.white,
+        inactiveTrackColor: Colors.grey[400],
         title: Text(
           title,
-          style: AppTypography.bodyBase(color: Colors.white),
+          style: AppTypography.bodyBase(color: isDark ? Colors.white : AppColors.textPrimary).copyWith(fontWeight: FontWeight.bold),
         ),
-        subtitle: Text(
-          subtitle,
-          style: AppTypography.caption(color: Colors.white54),
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 4.0),
+          child: Text(
+            subtitle,
+            style: AppTypography.caption(color: isDark ? Colors.white54 : AppColors.textSecondary),
+          ),
         ),
       ),
     );

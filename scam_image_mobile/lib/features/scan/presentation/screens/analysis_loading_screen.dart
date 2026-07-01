@@ -118,7 +118,7 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
 
   // ── Widgets ────────────────────────────────────────────────────────────────
 
-  Widget _buildProgressRing(int progress) {
+  Widget _buildProgressRing(int progress, bool isDark) {
     return SizedBox(
       width: 192,
       height: 192,
@@ -156,9 +156,9 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
                         height: 128,
                         errorBuilder: (context2, err, trace) => Container(
                           color: AppColors.inverseSurface,
-                          child: const Icon(
+                          child: Icon(
                             Icons.image_outlined,
-                            color: Colors.white38,
+                            color: isDark ? Colors.white38 : AppColors.outlineVariant,
                             size: 40,
                           ),
                         ),
@@ -207,7 +207,7 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
               ),
               child: Text(
                 '$progress%',
-                style: AppTypography.caption(color: AppColors.bgDark),
+                style: AppTypography.caption(color: Theme.of(context).scaffoldBackgroundColor),
               ),
             ),
           ),
@@ -216,7 +216,7 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
     );
   }
 
-  Widget _buildAnimatedDots() {
+  Widget _buildAnimatedDots(bool isDark) {
     return AnimatedBuilder(
       animation: _dotsCtrl,
       builder: (context, _) {
@@ -234,8 +234,8 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
                 child: Container(
                   width: 4,
                   height: 4,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
+                  decoration: BoxDecoration(
+                    color: isDark ? Colors.white : AppColors.primary,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -250,7 +250,7 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
   Widget _buildStepCard(_StepStatuses steps) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surfaceDark,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: AppColors.outlineVariant.withValues(alpha: 0.3),
@@ -265,8 +265,8 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
             subtitle: steps.step1 == AnalysisStepStatus.done
                 ? 'เสร็จสิ้น'
                 : steps.step1 == AnalysisStepStatus.active
-                    ? 'กำลังดำเนินการ...'
-                    : null,
+                    ? 'กำลังอ่านข้อมูล...'
+                    : 'รอการประมวลผล',
           ),
           AnalysisStepTile(
             status: steps.step2,
@@ -274,8 +274,8 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
             subtitle: steps.step2 == AnalysisStepStatus.done
                 ? 'เสร็จสิ้น'
                 : steps.step2 == AnalysisStepStatus.active
-                    ? 'กำลังดำเนินการ...'
-                    : null,
+                    ? 'กำลังตรวจสอบข้อมูลผู้ส่ง...'
+                    : 'รอการประมวลผล',
           ),
           AnalysisStepTile(
             status: steps.step3,
@@ -283,38 +283,50 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
             subtitle: steps.step3 == AnalysisStepStatus.done
                 ? 'เสร็จสิ้น'
                 : steps.step3 == AnalysisStepStatus.active
-                    ? 'กำลังดำเนินการ...'
-                    : null,
+                    ? 'กำลังประมวลผลด้วย AI...'
+                    : 'รอการประมวลผล',
           ),
         ],
       ),
     );
   }
 
-  Widget _buildPrivacyBadge() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Icon(
-          Icons.verified_user_outlined,
-          size: 18,
-          color: AppColors.outlineVariant,
-          semanticLabel: 'การวิเคราะห์แบบเข้ารหัส',
+  Widget _buildPrivacyBadge(bool isDark) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.md),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.inverseSurface.withValues(alpha: 0.5) : AppColors.bgLight.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: AppColors.outlineVariant.withValues(alpha: 0.2),
         ),
-        const SizedBox(width: AppSpacing.xs),
-        Flexible(
-          child: Text(
-            'การวิเคราะห์แบบเข้ารหัส ข้อมูลของคุณจะถูกเก็บเป็นความลับ',
-            style: AppTypography.caption(color: AppColors.outlineVariant),
-            textAlign: TextAlign.center,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(
+            Icons.verified_user_outlined,
+            size: 18,
+            color: AppColors.outlineVariant,
+            semanticLabel: 'การวิเคราะห์แบบเข้ารหัส',
           ),
-        ),
-      ],
+          const SizedBox(width: AppSpacing.xs),
+          Flexible(
+            child: Text(
+              'การวิเคราะห์แบบเข้ารหัส ข้อมูลของคุณจะถูกเก็บเป็นความลับ',
+              style: AppTypography.caption(color: AppColors.outlineVariant),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return BlocListener<ScanBloc, ScanState>(
       listener: (context, state) async {
         if (state is ScanCompleted) {
@@ -340,8 +352,19 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
         }
       },
       child: Scaffold(
-        backgroundColor: AppColors.bgDark,
-        appBar: const AppTopBar(automaticallyImplyLeading: false),
+        appBar: AppTopBar(
+          automaticallyImplyLeading: false,
+          actions: [
+            IconButton(
+              tooltip: 'การแจ้งเตือน',
+              onPressed: () => context.go('/notifications'),
+              icon: Icon(
+                Icons.notifications_outlined,
+                color: isDark ? AppColors.outlineVariant : AppColors.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
         body: BlocBuilder<ScanBloc, ScanState>(
           builder: (context, state) {
             final int progress = state is ScanPolling
@@ -362,7 +385,7 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
                   const SizedBox(height: AppSpacing.lg),
 
                   // 1. Circular progress ring with thumbnail
-                  _buildProgressRing(progress),
+                  _buildProgressRing(progress, isDark),
 
                   const SizedBox(height: AppSpacing.xl),
 
@@ -370,22 +393,21 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
                   Text(
                     'กำลังวิเคราะห์ความปลอดภัย',
                     style: AppTypography.headlineLgMobile(
-                        color: Colors.white),
+                        color: isDark ? Colors.white : AppColors.onSurface),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: AppSpacing.sm),
 
-                  // Title + animated dots
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'กรุณารอสักครู่',
+                        'กรุณารอครู่หนึ่ง ระบบกำลังประมวลผลด้วย AI',
                         style: AppTypography.bodyBase(
                             color: AppColors.outlineVariant),
                       ),
                       const SizedBox(width: AppSpacing.xs),
-                      _buildAnimatedDots(),
+                      _buildAnimatedDots(isDark),
                     ],
                   ),
 
@@ -397,7 +419,7 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
                   const SizedBox(height: AppSpacing.lg),
 
                   // 4. Privacy badge
-                  _buildPrivacyBadge(),
+                  _buildPrivacyBadge(isDark),
 
                   const SizedBox(height: AppSpacing.lg),
                 ],

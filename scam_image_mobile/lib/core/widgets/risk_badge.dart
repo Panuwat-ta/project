@@ -20,26 +20,26 @@ class RiskBadge extends StatelessWidget {
     switch (level) {
       case RiskLevel.low:
         return _BadgeStyle(
-          bg: AppColors.success,
-          fg: Colors.white,
+          bg: AppColors.success.withValues(alpha: 0.15),
+          fg: AppColors.success,
           label: 'ต่ำ',
         );
       case RiskLevel.medium:
         return _BadgeStyle(
-          bg: AppColors.warning,
-          fg: Colors.white,
+          bg: AppColors.warning.withValues(alpha: 0.15),
+          fg: AppColors.warning,
           label: 'ปานกลาง',
         );
       case RiskLevel.high:
         return _BadgeStyle(
-          bg: AppColors.danger,
-          fg: Colors.white,
-          label: 'สูง',
+          bg: AppColors.danger.withValues(alpha: 0.15),
+          fg: AppColors.danger,
+          label: 'ความเสี่ยงสูง',
         );
       case RiskLevel.safe:
         return _BadgeStyle(
-          bg: AppColors.success,
-          fg: Colors.white,
+          bg: AppColors.success.withValues(alpha: 0.15),
+          fg: AppColors.success,
           label: 'ปลอดภัย',
         );
     }
