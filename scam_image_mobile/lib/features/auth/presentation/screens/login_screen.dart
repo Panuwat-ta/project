@@ -3,9 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_spacing.dart';
-import '../../../../core/constants/app_typography.dart';
 import '../../domain/entities/auth_token.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
@@ -236,7 +233,7 @@ class _LoginViewState extends State<_LoginView> {
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withValues(alpha: 0.05),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -271,7 +268,7 @@ class _LoginViewState extends State<_LoginView> {
                             style: TextStyle(color: textColor),
                             decoration: InputDecoration(
                               hintText: 'example@email.com',
-                              hintStyle: TextStyle(color: subtitleColor.withOpacity(0.5)),
+                              hintStyle: TextStyle(color: subtitleColor.withValues(alpha: 0.5)),
                               prefixIcon: Icon(Icons.mail_outline, color: subtitleColor),
                               filled: true,
                               fillColor: inputFillColor,
@@ -313,7 +310,7 @@ class _LoginViewState extends State<_LoginView> {
                             style: TextStyle(color: textColor),
                             decoration: InputDecoration(
                               hintText: '••••••••',
-                              hintStyle: TextStyle(color: subtitleColor.withOpacity(0.5)),
+                              hintStyle: TextStyle(color: subtitleColor.withValues(alpha: 0.5)),
                               prefixIcon: Icon(Icons.lock_outline, color: subtitleColor),
                               suffixIcon: IconButton(
                                 icon: Icon(
@@ -344,7 +341,7 @@ class _LoginViewState extends State<_LoginView> {
                                   onChanged: (v) => setState(() => _rememberMe = v ?? false),
                                   activeColor: primaryColor,
                                   checkColor: Colors.white,
-                                  side: BorderSide(color: subtitleColor.withOpacity(0.5)),
+                                  side: BorderSide(color: subtitleColor.withValues(alpha: 0.5)),
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                                 ),
                               ),

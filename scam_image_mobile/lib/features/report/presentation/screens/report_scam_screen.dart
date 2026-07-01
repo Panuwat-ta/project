@@ -255,7 +255,7 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                   _SectionLabel(label: 'ประเภทเหตุการณ์', isDark: isDark),
                   const SizedBox(height: AppSpacing.sm),
                   DropdownButtonFormField<String>(
-                    value: _selectedCategory,
+                    initialValue: _selectedCategory,
                     decoration: _inputDecoration(
                       hint: 'เลือกประเภทการหลอกลวง',
                       isDark: isDark,

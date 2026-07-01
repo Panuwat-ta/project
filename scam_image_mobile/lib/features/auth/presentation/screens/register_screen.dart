@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/app_colors.dart';
-
 import '../../domain/entities/auth_token.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
@@ -154,7 +152,7 @@ class _RegisterViewState extends State<_RegisterView> {
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withValues(alpha: 0.05),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -195,7 +193,7 @@ class _RegisterViewState extends State<_RegisterView> {
                             style: TextStyle(color: textColor),
                             decoration: InputDecoration(
                               hintText: 'กรอกชื่อและนามสกุลของคุณ',
-                              hintStyle: TextStyle(color: subtitleColor.withOpacity(0.5)),
+                              hintStyle: TextStyle(color: subtitleColor.withValues(alpha: 0.5)),
                               prefixIcon: Icon(Icons.person_outline, color: subtitleColor),
                               filled: true,
                               fillColor: inputFillColor,
@@ -220,7 +218,7 @@ class _RegisterViewState extends State<_RegisterView> {
                             style: TextStyle(color: textColor),
                             decoration: InputDecoration(
                               hintText: 'example@email.com',
-                              hintStyle: TextStyle(color: subtitleColor.withOpacity(0.5)),
+                              hintStyle: TextStyle(color: subtitleColor.withValues(alpha: 0.5)),
                               prefixIcon: Icon(Icons.mail_outline, color: subtitleColor),
                               filled: true,
                               fillColor: inputFillColor,
@@ -245,7 +243,7 @@ class _RegisterViewState extends State<_RegisterView> {
                             style: TextStyle(color: textColor),
                             decoration: InputDecoration(
                               hintText: 'อย่างน้อย 8 ตัวอักษร',
-                              hintStyle: TextStyle(color: subtitleColor.withOpacity(0.5)),
+                              hintStyle: TextStyle(color: subtitleColor.withValues(alpha: 0.5)),
                               prefixIcon: Icon(Icons.lock_outline, color: subtitleColor),
                               suffixIcon: IconButton(
                                 icon: Icon(
@@ -277,7 +275,7 @@ class _RegisterViewState extends State<_RegisterView> {
                             style: TextStyle(color: textColor),
                             decoration: InputDecoration(
                               hintText: 'กรอกรหัสผ่านเดิมอีกครั้ง',
-                              hintStyle: TextStyle(color: subtitleColor.withOpacity(0.5)),
+                              hintStyle: TextStyle(color: subtitleColor.withValues(alpha: 0.5)),
                               prefixIcon: Icon(Icons.sync_lock, color: subtitleColor),
                               suffixIcon: IconButton(
                                 icon: Icon(
@@ -313,7 +311,7 @@ class _RegisterViewState extends State<_RegisterView> {
                                   onChanged: (v) => setState(() => _termsAccepted = v ?? false),
                                   activeColor: primaryColor,
                                   checkColor: Colors.white,
-                                  side: BorderSide(color: subtitleColor.withOpacity(0.5)),
+                                  side: BorderSide(color: subtitleColor.withValues(alpha: 0.5)),
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                                 ),
                               ),

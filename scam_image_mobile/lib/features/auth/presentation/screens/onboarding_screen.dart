@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/injection_container.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../bloc/consent_cubit.dart';
 
 class OnboardingScreen extends StatelessWidget {
@@ -78,7 +77,7 @@ class _OnboardingView extends StatelessWidget {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha: 0.1),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -86,7 +85,7 @@ class _OnboardingView extends StatelessWidget {
                     ),
                     // Fallback visual if image fails
                     child: Center(
-                      child: Icon(Icons.security, size: 100, color: primaryColor.withOpacity(0.5)),
+                      child: Icon(Icons.security, size: 100, color: primaryColor.withValues(alpha: 0.5)),
                     ),
                   ),
                   Positioned(
@@ -127,7 +126,7 @@ class _OnboardingView extends StatelessWidget {
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 20,
                     offset: const Offset(0, -5),
                   ),
@@ -220,7 +219,7 @@ class _OnboardingView extends StatelessWidget {
                     'เวอร์ชัน 1.0.0 • ความปลอดภัยของคุณคือสิ่งสำคัญ',
                     style: TextStyle(
                       fontSize: 12,
-                      color: subtitleColor.withOpacity(0.5),
+                      color: subtitleColor.withValues(alpha: 0.5),
                     ),
                   ),
                 ],

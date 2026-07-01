@@ -30,14 +30,14 @@ Widget buildHistoryScreen(HistoryBloc bloc) {
     routes: [
       GoRoute(
         path: '/main/history',
-        builder: (_, __) => BlocProvider.value(
+        builder: (_, _) => BlocProvider.value(
           value: bloc,
           child: const HistoryScreen(),
         ),
       ),
       GoRoute(
         path: '/notifications',
-        builder: (_, __) =>
+        builder: (_, _) =>
             const Scaffold(body: Center(child: Text('Notifications'))),
       ),
       GoRoute(

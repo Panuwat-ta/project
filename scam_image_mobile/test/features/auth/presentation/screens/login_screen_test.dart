@@ -17,16 +17,16 @@ void main() {
       routes: [
         GoRoute(
           path: '/login',
-          builder: (_, __) => const LoginScreen(),
+          builder: (_, _) => const LoginScreen(),
         ),
         GoRoute(
           path: '/main/home',
-          builder: (_, __) =>
+          builder: (_, _) =>
               const Scaffold(body: Center(child: Text('Home'))),
         ),
         GoRoute(
           path: '/register',
-          builder: (_, __) =>
+          builder: (_, _) =>
               const Scaffold(body: Center(child: Text('Register'))),
         ),
       ],

@@ -109,7 +109,7 @@ class _SplashScreenState extends State<SplashScreen>
                         Text(
                           'ตรวจจับรูปภาพหลอกลวง',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withValues(alpha: 0.9),
                             fontSize: 18,
                             fontWeight: FontWeight.w400,
                           ),
@@ -154,7 +154,7 @@ class _SplashScreenState extends State<SplashScreen>
                         Text(
                           'ตรวจสอบความปลอดภัย...',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.8),
+                            color: Colors.white.withValues(alpha: 0.8),
                             fontSize: 14,
                           ),
                           textAlign: TextAlign.center,
@@ -163,7 +163,7 @@ class _SplashScreenState extends State<SplashScreen>
                         Text(
                           'ScamGuard v1.0.0',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.5),
+                            color: Colors.white.withValues(alpha: 0.5),
                             fontSize: 12,
                           ),
                         ),
@@ -195,10 +195,10 @@ class _LogoContainer extends StatelessWidget {
           width: 140,
           height: 140,
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.15),
+            color: Colors.white.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(40),
             border: Border.all(
-              color: Colors.white.withOpacity(0.3),
+              color: Colors.white.withValues(alpha: 0.3),
               width: 1,
             ),
           ),
@@ -221,7 +221,7 @@ class _LogoContainer extends StatelessWidget {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
