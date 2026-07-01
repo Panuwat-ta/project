@@ -58,10 +58,10 @@
 - [ ] **TASK-4.9:** พัฒนาระบบอัปโหลดไฟล์ไปจัดเก็บอย่างถาวรใน Cloud Storage และเชื่อมต่อระบบสั่ง Push Alert ผ่าน Firebase Cloud Messaging (FCM)
 
 ### 📌 เฟส 5: การพัฒนาแอปพลิเคชันมือถือ (Mobile Application - Flutter)
-- [ ] **TASK-5.1:** ตั้งค่าแอปพลิเคชัน Flutter และสร้างโครงสร้างโฟลเดอร์ตามรูปแบบ MVVM และ BLoC State Management
-- [ ] **TASK-5.2:** พัฒนาหน้าจอลงทะเบียน (Register), เข้าสู่ระบบ (Login) และเชื่อมต่อ JWT Storage
-- [ ] **TASK-5.3:** พัฒนาหน้าแรก (Home Screen) แถบข่าวสารสแกม และระบบอัปโหลดเลือกรูปภาพจากเครื่อง
-- [ ] **TASK-5.4:** บูรณาการ SDK สำหรับครอปตัดรูปภาพ (Image Cropper Widget) ปรับสเกลก่อนส่งขึ้น API
+- [x] **TASK-5.1:** ตั้งค่าแอปพลิเคชัน Flutter และสร้างโครงสร้างโฟลเดอร์ตามรูปแบบ MVVM และ BLoC State Management
+- [x] **TASK-5.2:** พัฒนาหน้าจอลงทะเบียน (Register), เข้าสู่ระบบ (Login) และเชื่อมต่อ JWT Storage
+- [x] **TASK-5.3:** พัฒนาหน้าแรก (Home Screen) แถบข่าวสารสแกม และระบบอัปโหลดเลือกรูปภาพจากเครื่อง
+- [x] **TASK-5.4:** บูรณาการ SDK สำหรับครอปตัดรูปภาพ (Image Cropper Widget) ปรับสเกลก่อนส่งขึ้น API
 - [ ] **TASK-5.5:** พัฒนาหน้าแสดงระดับคะแนนความเสี่ยง (Risk Gauge), รายละเอียดข้อมูล Multi-layer Analysis และภาพ Heatmap (Grad-CAM Overlay)
 - [ ] **TASK-5.6:** พัฒนาหน้าประวัติการสแกน (History List Screen) พร้อมฟังก์ชันปัดเพื่อลบ (Slide to Delete)
 - [ ] **TASK-5.7:** พัฒนาหน้ารายงานแจ้งสแกม (Report Scam Screen) และหน้าตั้งค่าความเป็นส่วนตัว (PDPA/Consent Management Settings)
