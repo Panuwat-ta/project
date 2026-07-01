@@ -33,13 +33,22 @@
 * **[แผนภาพระดับ C1 (System Context Diagram)](doc/C1-System-Context-Diagram.md)** - ขอบเขตระบบและการสื่อสารกับ Actor/External Services
 * **[แผนภาพระดับ C2 (Container Diagram)](doc/C2-Container-Diagram.md)** - สถาปัตยกรรมระดับคอนเทนเนอร์หลังบ้าน และฐานข้อมูล
 * **[แผนภาพและรายละเอียดกรณีการใช้งาน (Use Case Diagram)](doc/Use-Case-Diagram.md)** - หน้าที่ ความเกี่ยวข้อง และคำอธิบายความต้องการเชิงฟังก์ชัน (FR)
+* **[แผนผังการทำงานระบบ (Flowchart)](doc/flowchart.md)** - แผนผังการทำงานฝั่งผู้ใช้ (User Flow)
 
 ### เอกสารการออกแบบสถาปัตยกรรม (System Design & Architecture)
 เอกสารการออกแบบรายละเอียดเชิงลึกสำหรับระบบโมบายแอปและระบบหลังบ้าน จัดเก็บไว้ในโฟลเดอร์ design/:
 
+* **[เอกสารสถาปัตยกรรมระบบฉบับรวม (System Architecture)](design/architecture.md)** - โครงสร้างสถาปัตยกรรมระบบทั้งหมด (Frontend, Backend, AI)
 * **[การออกแบบส่วนหน้าบ้าน (Mobile Application Design)](design/design.md)** - โครงสร้าง Components + Redux, สีสันธีม UI/UX และพฤติกรรมผู้ใช้
 * **[การออกแบบโมบายแอปพลิเคชันโดยละเอียด (Detailed Mobile Design)](design/mobile.md)** - ขอบเขต เป้าหมาย หน้าจอ และโครงสร้างโฟลเดอร์ของ React Native
 * **[การออกแบบสถาปัตยกรรมระบบหลังบ้าน (Backend & System Architecture)](design/server.md)** - โครงสร้าง Backend, ท่อประมวลผล AI Inference (FastAPI, PyTorch, ONNX), Database Schema และ API Specifications
+
+---
+
+## ซอร์สโค้ดและแอปพลิเคชัน (Source Code & Applications)
+
+* **[แอปพลิเคชันมือถือ (Scam Image Mobile - Flutter)](scam_image_mobile/)** - ซอร์สโค้ดการพัฒนาแอปพลิเคชันด้วย Flutter
+* **[ต้นแบบ (Prototype)](pototype/)** - ไฟล์และโฟลเดอร์ต้นแบบของระบบ
 
 ---
 
