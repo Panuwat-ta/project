@@ -2,7 +2,7 @@
 
 ## Phase 1: Foundation & Core Setup
 
-- [ ] 1. Setup project structure, dependencies, and design system
+- [x] 1. Setup project structure, dependencies, and design system
   - Update `pubspec.yaml` with all required dependencies (flutter_bloc, go_router, dio, flutter_secure_storage, image_picker, image_cropper, cached_network_image, google_fonts, uuid, intl, equatable, bloc_test, mocktail)
   - Create folder structure: `lib/core/` and `lib/features/` with all subdirectories
   - Create `lib/core/constants/app_colors.dart` with all color tokens from design (bgDark #0F1720, surfaceDark #162230, primary #006685, primaryFixedDim #6CD2FF, danger #DC2626, warning #D68900, success #006E2D, etc.)
@@ -14,7 +14,7 @@
   - Run `flutter pub get` to verify dependencies resolve
   - _Requirements: REQ-NF-004_
 
-- [ ] 2. Implement core shared widgets
+- [x] 2. Implement core shared widgets
   - Create `lib/core/widgets/primary_button.dart` — full-width ElevatedButton with loading state, uses AppColors.primary / primaryFixedDim
   - Create `lib/core/widgets/secondary_button.dart` — outlined button
   - Create `lib/core/widgets/risk_badge.dart` — colored badge chip for ต่ำ/ปานกลาง/สูง/ปลอดภัย with text + color from design
@@ -30,7 +30,7 @@
   - Create `lib/core/widgets/glass_card.dart` — semi-transparent card (bg rgba(22,34,48,0.8), backdrop blur)
   - _Requirements: REQ-NF-001, REQ-NF-003_
 
-- [ ] 3. Setup navigation router and app entry point
+- [x] 3. Setup navigation router and app entry point
   - Create `lib/core/router/app_router.dart` using go_router with all routes: /splash, /onboarding, /login, /register, /main (ShellRoute for bottom nav), /main/home, /main/history, /main/history/:id, /main/report, /main/settings, /main/settings/profile, /main/settings/privacy, /crop, /loading, /result/:scanId, /heatmap/:scanId, /notifications
   - Implement `NavigationGuard` that redirects unauthenticated users to /login
   - Update `lib/main.dart` to use MaterialApp.router with AppTheme (dark by default), google_fonts textTheme, and app router
@@ -39,14 +39,14 @@
 
 ## Phase 2: Authentication Feature
 
-- [ ] 4. Auth domain layer
+- [x] 4. Auth domain layer
   - Create `lib/features/auth/domain/entities/user.dart` (id, email, displayName, avatarUrl)
   - Create `lib/features/auth/domain/entities/auth_token.dart` (accessToken, refreshToken, expiresAt)
   - Create `lib/features/auth/domain/repositories/auth_repository.dart` (abstract interface)
   - Create use cases: `login_usecase.dart`, `register_usecase.dart`, `logout_usecase.dart`, `refresh_token_usecase.dart`, `get_current_user_usecase.dart`
   - _Requirements: REQ-001, REQ-003, REQ-004_
 
-- [ ] 5. Auth data layer
+- [x] 5. Auth data layer
   - Create `lib/features/auth/data/models/user_model.dart` (extends User, fromJson/toJson)
   - Create `lib/features/auth/data/models/auth_token_model.dart`
   - Create `lib/features/auth/data/datasources/auth_remote_datasource.dart` using Dio (POST /auth/login, /auth/register, /auth/refresh, /auth/logout, GET /auth/me)
@@ -55,7 +55,7 @@
   - Create `lib/core/network/dio_client.dart` with base URL, auth interceptor (attach Bearer token, handle 401 → auto refresh)
   - _Requirements: REQ-003, REQ-NF-002_
 
-- [ ] 6. Auth presentation — SplashScreen
+- [x] 6. Auth presentation — SplashScreen
   - Create `lib/features/auth/presentation/bloc/splash_cubit.dart` with states: SplashInitial, CheckingSession, Authenticated, Unauthenticated, ConsentRequired, Failure
   - SplashCubit checks token validity → emits appropriate state
   - Create `lib/features/auth/presentation/screens/splash_screen.dart`:
@@ -68,7 +68,7 @@
     - Reacts to SplashCubit state → navigates via go_router
   - _Requirements: REQ-001_
 
-- [ ] 7. Auth presentation — Onboarding & Login & Register screens
+- [x] 7. Auth presentation — Onboarding & Login & Register screens
   - Create `lib/features/auth/presentation/bloc/consent_cubit.dart`
   - Create `lib/features/auth/presentation/screens/onboarding_screen.dart`:
     - Shield logo, title, app purpose description
@@ -92,14 +92,14 @@
 
 ## Phase 3: Scan Feature
 
-- [ ] 8. Scan domain layer
+- [x] 8. Scan domain layer
   - Create `lib/features/scan/domain/entities/scan_image.dart` (file path, file size, format)
   - Create `lib/features/scan/domain/entities/analysis_task.dart` (taskId, status, progress)
   - Create `lib/features/scan/domain/repositories/scan_repository.dart`
   - Create use cases: `select_image_usecase.dart`, `submit_image_usecase.dart`, `get_analysis_status_usecase.dart`
   - _Requirements: REQ-005, REQ-006, REQ-007_
 
-- [ ] 9. Scan data layer
+- [x] 9. Scan data layer
   - Create `lib/features/scan/data/models/analysis_task_model.dart`
   - Create `lib/features/scan/data/datasources/scan_remote_datasource.dart`:
     - POST /scans with multipart (image, source: "upload", consentForResearch, clientRequestId: UUID)
@@ -108,7 +108,7 @@
   - Create `lib/features/scan/data/repositories/scan_repository_impl.dart` with image compression logic (if > 10MB)
   - _Requirements: REQ-007, REQ-NF-001_
 
-- [ ] 10. Scan presentation — HomeScreen
+- [x] 10. Scan presentation — HomeScreen
   - Create `lib/features/scan/presentation/bloc/home_bloc.dart`
   - Create `lib/features/scan/presentation/screens/home_screen.dart`:
     - AppTopBar with notifications badge (unread dot on notifications icon)
@@ -119,7 +119,7 @@
     - PermissionRequestView when file permission denied
   - _Requirements: REQ-005_
 
-- [ ] 11. Scan presentation — ImageCropScreen & AnalysisLoadingScreen
+- [x] 11. Scan presentation — ImageCropScreen & AnalysisLoadingScreen
   - Create `lib/features/scan/presentation/screens/image_crop_screen.dart`:
     - Full screen with image_cropper package
     - AppBar with back button (shows confirm dialog if cropped)
@@ -139,7 +139,7 @@
 
 ## Phase 4: Result Feature
 
-- [ ] 12. Result domain layer
+- [x] 12. Result domain layer
   - Create `lib/features/result/domain/entities/analysis_result.dart` (scanId, taskId, status, riskScore, riskLevel, summary, imageUrl, heatmapUrl, createdAt, factors)
   - Create `lib/features/result/domain/entities/risk_factor.dart` (type, score, title, details)
   - Create `lib/features/result/domain/repositories/result_repository.dart`
@@ -147,14 +147,14 @@
   - Create helper: `lib/core/utils/risk_level_helper.dart` (fromScore: 0-39=low, 40-69=medium, 70-100=high)
   - _Requirements: REQ-008_
 
-- [ ] 13. Result data layer
+- [x] 13. Result data layer
   - Create `lib/features/result/data/models/analysis_result_model.dart` (fromJson/toJson)
   - Create `lib/features/result/data/models/risk_factor_model.dart`
   - Create `lib/features/result/data/datasources/result_remote_datasource.dart` (GET /scans/{taskId}/result)
   - Create `lib/features/result/data/repositories/result_repository_impl.dart`
   - _Requirements: REQ-008_
 
-- [ ] 14. Result presentation — AnalysisResultScreen & HeatmapViewerScreen
+- [x] 14. Result presentation — AnalysisResultScreen & HeatmapViewerScreen
   - Create `lib/features/result/presentation/bloc/result_bloc.dart`
   - Create `lib/features/result/presentation/screens/analysis_result_screen.dart`:
     - AppTopBar
@@ -174,19 +174,19 @@
 
 ## Phase 5: History Feature
 
-- [ ] 15. History domain layer
+- [x] 15. History domain layer
   - Create `lib/features/history/domain/entities/scan_history_item.dart`
   - Create `lib/features/history/domain/repositories/history_repository.dart`
   - Create use cases: `get_scan_history_usecase.dart`, `delete_scan_history_item_usecase.dart`, `search_history_usecase.dart`
   - _Requirements: REQ-010, REQ-011_
 
-- [ ] 16. History data layer
+- [x] 16. History data layer
   - Create `lib/features/history/data/models/scan_history_item_model.dart`
   - Create `lib/features/history/data/datasources/history_remote_datasource.dart` (GET/DELETE /history endpoints with pagination params)
   - Create `lib/features/history/data/repositories/history_repository_impl.dart`
   - _Requirements: REQ-010_
 
-- [ ] 17. History presentation
+- [x] 17. History presentation
   - Create `lib/features/history/presentation/bloc/history_bloc.dart` (load, refresh, search, delete)
   - Create `lib/features/history/presentation/screens/history_screen.dart`:
     - AppTopBar + notifications button
@@ -205,7 +205,7 @@
 
 ## Phase 6: Report & Notifications
 
-- [ ] 18. Report feature
+- [x] 18. Report feature
   - Create `lib/features/report/domain/entities/scam_report.dart`
   - Create `lib/features/report/domain/repositories/report_repository.dart`
   - Create `lib/features/report/domain/usecases/submit_scam_report_usecase.dart`
@@ -224,7 +224,7 @@
     - PrimaryButton "ส่งรายงาน" with loading state + success feedback
   - _Requirements: REQ-012_
 
-- [ ] 19. Notifications feature
+- [x] 19. Notifications feature
   - Create `lib/features/notifications/domain/entities/app_notification.dart` (id, type, title, body, createdAt, isRead, scanId?)
   - Create `lib/features/notifications/presentation/cubit/notifications_cubit.dart`
   - Create `lib/features/notifications/presentation/screens/notifications_screen.dart`:
@@ -238,7 +238,7 @@
 
 ## Phase 7: Settings Feature
 
-- [ ] 20. Settings domain & data layers
+- [x] 20. Settings domain & data layers
   - Create `lib/features/settings/domain/entities/consent_setting.dart` (processingConsent, historyConsent, researchConsent)
   - Create `lib/features/settings/domain/repositories/settings_repository.dart`
   - Create use cases: `get_consents_usecase.dart`, `update_consents_usecase.dart`, `delete_account_usecase.dart`, `export_privacy_data_usecase.dart`
@@ -246,7 +246,7 @@
   - Create `lib/features/settings/data/repositories/settings_repository_impl.dart`
   - _Requirements: REQ-014, REQ-015, REQ-016_
 
-- [ ] 21. Settings presentation screens
+- [x] 21. Settings presentation screens
   - Create `lib/features/settings/presentation/bloc/settings_bloc.dart` (theme, language, cache, logout)
   - Create `lib/features/settings/presentation/screens/settings_screen.dart`:
     - User info header (avatar placeholder + displayName + email)
@@ -269,13 +269,13 @@
 
 ## Phase 8: Main Shell & Integration
 
-- [ ] 22. Main shell with bottom navigation
+- [x] 22. Main shell with bottom navigation
   - Create `lib/features/auth/presentation/screens/main_shell.dart` — ShellRoute wrapper with AppBottomNavigation
   - Wire up all 4 tabs: Home, History, Report (แจ้งรายงาน), Settings
   - Handle bottom nav active state via go_router location
   - _Requirements: REQ-005 through REQ-016_
 
-- [ ] 23. Integration — dependency injection & final wiring
+- [x] 23. Integration — dependency injection & final wiring
   - Create `lib/core/di/injection_container.dart` (or use get_it / manual DI via MultiRepositoryProvider)
   - Provide all BLoCs and Repositories via MultiBlocProvider in main.dart
   - Wire up all navigation callbacks (onUploadPressed → /crop, onAnalysisComplete → /result/:id, etc.)
@@ -285,14 +285,14 @@
 
 ## Phase 9: Testing & Polish
 
-- [ ] 24. Unit tests — Domain & BLoC
+- [x] 24. Unit tests — Domain & BLoC
   - Write unit tests for RiskLevelHelper (fromScore boundary conditions)
   - Write unit tests for AuthBloc (login success/failure, token refresh)
   - Write unit tests for ScanBloc (polling state transitions)
   - Write BLoC tests using bloc_test and mocktail for mocking repositories
   - _Requirements: REQ-003, REQ-007, REQ-008_
 
-- [ ] 25. Widget tests
+- [x] 25. Widget tests
   - Write widget tests for LoginScreen form validation
   - Write widget tests for RiskBadge (correct color and text per level)
   - Write widget tests for HistoryScreen empty state
