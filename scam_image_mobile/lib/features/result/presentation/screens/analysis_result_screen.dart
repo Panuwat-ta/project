@@ -7,7 +7,6 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../domain/entities/analysis_result.dart' as domain;
-import '../../domain/entities/risk_factor.dart';
 import '../bloc/result_bloc.dart';
 
 class AnalysisResultScreen extends StatefulWidget {
@@ -250,7 +249,7 @@ class _ResultBody extends StatelessWidget {
         const SizedBox(height: AppSpacing.sm),
         GestureDetector(
           onTap: () {
-            context.go(
+            context.push(
               '/heatmap/${result.taskId}',
               extra: <String, dynamic>{
                 if (result.imageUrl != null) 'imageUrl': result.imageUrl,
@@ -265,11 +264,6 @@ class _ResultBody extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: isDark ? const Color(0xFF27313C) : AppColors.border,
-              ),
-              image: const DecorationImage(
-                image: AssetImage('assets/images/placeholder_heatmap.png'),
-                fit: BoxFit.cover,
-                opacity: 0.2, // Blend it with the background
               ),
             ),
             child: Row(
@@ -363,7 +357,7 @@ class _ResultBody extends StatelessWidget {
                 icon: const Icon(Icons.visibility_outlined, size: 18),
                 label: const Text('ดูรายละเอียด'),
                 onPressed: () {
-                  context.push('/main/history/${result.taskId}');
+                  context.push('/detail/${result.taskId}');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
@@ -380,7 +374,7 @@ class _ResultBody extends StatelessWidget {
               child: ElevatedButton.icon(
                 icon: const Icon(Icons.grid_view_outlined, size: 18),
                 label: const Text('ดู Heatmap'),
-                onPressed: () => context.go('/heatmap/${result.taskId}'),
+                onPressed: () => context.push('/heatmap/${result.taskId}'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryContainer,
                   foregroundColor: Colors.white,

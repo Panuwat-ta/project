@@ -4,9 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_spacing.dart';
-import '../../../../core/constants/app_typography.dart';
-import '../../../../core/widgets/widgets.dart';
 import '../bloc/consent_cubit.dart';
 
 class OnboardingScreen extends StatelessWidget {

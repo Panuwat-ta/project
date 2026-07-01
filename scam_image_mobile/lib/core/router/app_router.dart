@@ -76,14 +76,6 @@ class AppRouter {
           GoRoute(
             path: '/main/history',
             builder: (context, state) => const HistoryScreen(),
-            routes: [
-              GoRoute(
-                path: ':id',
-                builder: (context, state) => HistoryDetailScreen(
-                  scanId: state.pathParameters['id']!,
-                ),
-              ),
-            ],
           ),
           GoRoute(
             path: '/main/report',
@@ -145,6 +137,12 @@ class AppRouter {
       GoRoute(
         path: '/notifications',
         builder: (context, state) => const NotificationsScreen(),
+      ),
+      GoRoute(
+        path: '/detail/:scanId',
+        builder: (context, state) => HistoryDetailScreen(
+          scanId: state.pathParameters['scanId']!,
+        ),
       ),
     ],
   );

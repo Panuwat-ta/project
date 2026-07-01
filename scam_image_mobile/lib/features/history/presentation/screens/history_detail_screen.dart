@@ -6,7 +6,6 @@ import 'package:share_plus/share_plus.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
-import '../../../result/domain/entities/analysis_result.dart' as domain;
 import '../../../result/presentation/bloc/result_bloc.dart';
 
 class HistoryDetailScreen extends StatefulWidget {
@@ -538,7 +537,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
         ),
         const SizedBox(height: AppSpacing.sm),
         OutlinedButton.icon(
-          onPressed: () => context.go('/main/home'),
+          onPressed: () => context.go('/main/history'),
           icon: const Icon(Icons.refresh, size: 20),
           label: const Text('ตรวจสอบรูปภาพอื่น'),
           style: OutlinedButton.styleFrom(

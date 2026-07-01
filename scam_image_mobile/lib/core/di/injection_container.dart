@@ -15,13 +15,11 @@ import '../../features/scan/data/repositories/scan_repository_impl.dart';
 import '../../features/scan/domain/repositories/scan_repository.dart';
 
 // ── Result ────────────────────────────────────────────────────────────────────
-import '../../features/result/data/datasources/result_remote_datasource.dart';
-import '../../features/result/data/repositories/result_repository_impl.dart';
 import '../../features/result/domain/repositories/result_repository.dart';
+import '../../features/result/presentation/bloc/result_bloc.dart';
+
 
 // ── History ───────────────────────────────────────────────────────────────────
-import '../../features/history/data/datasources/history_remote_datasource.dart';
-import '../../features/history/data/repositories/history_repository_impl.dart';
 import '../../features/history/domain/repositories/history_repository.dart';
 import '../../features/history/presentation/bloc/history_bloc.dart';
 
@@ -83,8 +81,7 @@ class ServiceLocator {
     scanRepository = ScanRepositoryImpl(remoteDataSource: scanRemote);
 
     // ── Result ────────────────────────────────────────────────────────────────
-    final resultRemote = ResultRemoteDataSourceImpl(dio: dio);
-    resultRepository = ResultRepositoryImpl(remoteDataSource: resultRemote);
+    resultRepository = MockResultRepository();
 
     // ── History ───────────────────────────────────────────────────────────────
     // Using MockHistoryRepository for testing UI flow
