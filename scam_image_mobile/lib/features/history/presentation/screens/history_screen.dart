@@ -73,7 +73,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               color: isDark ? AppColors.primaryFixedDim : AppColors.primary,
             ),
             tooltip: 'การแจ้งเตือน',
-            onPressed: () => context.go('/notifications'),
+            onPressed: () => context.push('/notifications'),
           ),
         ],
       ),

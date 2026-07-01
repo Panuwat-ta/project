@@ -323,6 +323,59 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
     );
   }
 
+  String _formatTime(int seconds) {
+    final m = seconds ~/ 60;
+    final s = seconds % 60;
+    return '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
+  }
+
+  Future<void> _showCancelDialog(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('ยืนยันการยกเลิก?'),
+        content: const Text('คุณต้องการยกเลิกการวิเคราะห์รูปภาพนี้ใช่หรือไม่?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('ไม่, ทำงานต่อ'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('ใช่, ยกเลิก', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && context.mounted) {
+      context.read<ScanBloc>().add(AnalysisCancelled());
+      context.go('/main/scan');
+    }
+  }
+
+  Future<void> _showBackgroundDialog(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('ทำงานเบื้องหลัง'),
+        content: const Text('การวิเคราะห์จะทำงานต่อไปในเบื้องหลัง คุณสามารถตรวจสอบผลลัพธ์ได้ในหน้า "ประวัติ" เมื่อการวิเคราะห์เสร็จสิ้น ระบบจะส่งการแจ้งเตือนให้คุณทราบ'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('ยกเลิก'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('ตกลง'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && context.mounted) {
+      context.go('/main/history');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
@@ -357,7 +410,7 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
           actions: [
             IconButton(
               tooltip: 'การแจ้งเตือน',
-              onPressed: () => context.go('/notifications'),
+              onPressed: () => context.push('/notifications'),
               icon: Icon(
                 Icons.notifications_outlined,
                 color: isDark ? AppColors.outlineVariant : AppColors.onSurfaceVariant,
@@ -420,6 +473,27 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
 
                   // 4. Privacy badge
                   _buildPrivacyBadge(isDark),
+
+                  const SizedBox(height: AppSpacing.xl),
+
+                  // 5. Actions
+                  Row(
+                    children: [
+                      Expanded(
+                        child: SecondaryButton(
+                          label: 'ยกเลิก',
+                          onPressed: () => _showCancelDialog(context),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        child: PrimaryButton(
+                          label: 'ทำงานเบื้องหลัง',
+                          onPressed: () => _showBackgroundDialog(context),
+                        ),
+                      ),
+                    ],
+                  ),
 
                   const SizedBox(height: AppSpacing.lg),
                 ],

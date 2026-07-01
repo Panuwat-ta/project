@@ -34,8 +34,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   IconData _iconForType(NotificationType type) {
     switch (type) {
       case NotificationType.scanCompleted: return Icons.check_circle;
-      case NotificationType.scanFailed: return Icons.error;
       case NotificationType.scamAlert: return Icons.warning;
+      case NotificationType.scanFailed: return Icons.error;
       case NotificationType.systemInfo: return Icons.info;
     }
   }
@@ -43,8 +43,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   Color _colorForType(NotificationType type) {
     switch (type) {
       case NotificationType.scanCompleted: return AppColors.primaryFixedDim;
-      case NotificationType.scanFailed: return AppColors.danger;
-      case NotificationType.scamAlert: return AppColors.warning;
+      case NotificationType.scamAlert: return AppColors.danger;
+      case NotificationType.scanFailed: return AppColors.warning;
       case NotificationType.systemInfo: return AppColors.outlineVariant;
     }
   }
@@ -61,7 +61,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           title: Text('การแจ้งเตือน', style: AppTypography.sectionHeader(color: Theme.of(context).colorScheme.onSurface)),
           leading: IconButton(
             icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onSurface),
-            onPressed: () => context.pop(),
+            onPressed: () {
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                context.go('/main/scan');
+              }
+            },
           ),
           actions: [
             TextButton(
@@ -109,7 +115,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     onTap: () {
                       _cubit.markAsRead(notification.id);
                       if (notification.scanId != null) {
-                        context.go('/result/${notification.scanId}');
+                        context.push('/result/${notification.scanId}');
                       }
                     },
                     child: Container(
@@ -126,7 +132,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         ],
                         border: Border(
                           left: BorderSide(
-                            color: !notification.isRead ? AppColors.danger : Colors.transparent,
+                            color: notification.type == NotificationType.scamAlert ? AppColors.danger : Colors.transparent,
                             width: 4,
                           ),
                           top: BorderSide(color: AppColors.outlineVariant.withValues(alpha: 0.15)),

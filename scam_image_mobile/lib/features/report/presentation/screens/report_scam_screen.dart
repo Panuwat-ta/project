@@ -141,7 +141,7 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
             actions: [
               IconButton(
                 tooltip: 'การแจ้งเตือน',
-                onPressed: () => context.go('/notifications'),
+                onPressed: () => context.push('/notifications'),
                 icon: Icon(
                   Icons.notifications_outlined,
                   color: isDark ? AppColors.outlineVariant : AppColors.onSurfaceVariant,

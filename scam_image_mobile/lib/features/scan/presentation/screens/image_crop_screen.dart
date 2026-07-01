@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
@@ -26,9 +27,14 @@ class ImageCropScreen extends StatefulWidget {
 
 class _ImageCropScreenState extends State<ImageCropScreen> {
   String? _croppedPath;
+  late String _currentPath = widget.filePath;
   final ImageCropper _imageCropper = ImageCropper();
+  final ImagePicker _imagePicker = ImagePicker();
+  
+  double _rotation = 0.0;
+  double _scale = 1.0;
 
-  String get _displayPath => _croppedPath ?? widget.filePath;
+  String get _displayPath => _croppedPath ?? _currentPath;
 
   Future<void> _cropImage() async {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
@@ -73,6 +79,42 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
     return confirmed == true;
   }
 
+  Future<void> _pickNewImage() async {
+    final XFile? image = await _imagePicker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        _currentPath = image.path;
+        _croppedPath = null;
+        _rotation = 0.0;
+        _scale = 1.0;
+      });
+    }
+  }
+
+  void _rotateLeft() {
+    setState(() => _rotation -= 3.14159 / 2);
+  }
+
+  void _rotateRight() {
+    setState(() => _rotation += 3.14159 / 2);
+  }
+
+  void _zoomIn() {
+    setState(() {
+      _scale += 0.5;
+      if (_scale > 3.0) _scale = 1.0;
+    });
+  }
+
+  void _resetImage() {
+    setState(() {
+      _currentPath = widget.filePath;
+      _croppedPath = null;
+      _rotation = 0.0;
+      _scale = 1.0;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
@@ -108,7 +150,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
           actions: [
             IconButton(
               icon: Icon(Icons.notifications_outlined, color: isDark ? Colors.white : AppColors.onSurface),
-              onPressed: () => context.go('/notifications'),
+              onPressed: () => context.push('/notifications'),
             ),
           ],
         ),
@@ -138,20 +180,26 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(12),
-                        child: Image.file(
-                          File(_displayPath),
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) => Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.broken_image,
-                                  color: isDark ? Colors.white54 : AppColors.textSecondary, size: 64),
-                              const SizedBox(height: AppSpacing.sm),
-                              Text(
-                                'ไม่สามารถโหลดรูปภาพได้',
-                                style: AppTypography.bodyBase(color: isDark ? Colors.white54 : AppColors.textSecondary),
+                        child: Transform.scale(
+                          scale: _scale,
+                          child: Transform.rotate(
+                            angle: _rotation,
+                            child: Image.file(
+                              File(_displayPath),
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) => Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.broken_image,
+                                      color: isDark ? Colors.white54 : AppColors.textSecondary, size: 64),
+                                  const SizedBox(height: AppSpacing.sm),
+                                  Text(
+                                    'ไม่สามารถโหลดรูปภาพได้',
+                                    style: AppTypography.bodyBase(color: isDark ? Colors.white54 : AppColors.textSecondary),
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
                         ),
                       ),
@@ -255,10 +303,11 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        _buildActionItem(context, icon: Icons.rotate_left, label: 'หมุนซ้าย', isDark: isDark),
-                        _buildActionItem(context, icon: Icons.rotate_right, label: 'หมุนขวา', isDark: isDark),
+                        _buildActionItem(context, icon: Icons.rotate_left, label: 'หมุนซ้าย', isDark: isDark, onTap: _rotateLeft),
+                        _buildActionItem(context, icon: Icons.rotate_right, label: 'หมุนขวา', isDark: isDark, onTap: _rotateRight),
                         _buildActionItem(context, icon: Icons.crop, label: 'สัดส่วน', isDark: isDark, onTap: _cropImage),
-                        _buildActionItem(context, icon: Icons.zoom_in, label: 'ขยาย', isDark: isDark),
+                        _buildActionItem(context, icon: Icons.zoom_in, label: 'ขยาย', isDark: isDark, onTap: _zoomIn),
+                        _buildActionItem(context, icon: Icons.restore, label: 'รีเซ็ต', isDark: isDark, onTap: _resetImage),
                       ],
                     ),
                   ),
@@ -300,7 +349,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                   
                   // Secondary Action
                   OutlinedButton(
-                    onPressed: () => context.pop(),
+                    onPressed: _pickNewImage,
                     style: OutlinedButton.styleFrom(
                       foregroundColor: isDark ? AppColors.primaryFixedDim : AppColors.primary,
                       side: BorderSide(color: isDark ? AppColors.primaryFixedDim : AppColors.primary),

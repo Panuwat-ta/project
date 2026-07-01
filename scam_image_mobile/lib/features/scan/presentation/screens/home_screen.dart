@@ -67,7 +67,7 @@ class _HomeViewState extends State<_HomeView>
     return BlocConsumer<HomeCubit, HomeState>(
       listener: (context, state) {
         if (state is HomeImageSelected) {
-          context.go('/crop', extra: {
+          context.push('/crop', extra: {
             'filePath': state.filePath,
             'fileSizeBytes': state.fileSizeBytes,
           });
@@ -102,7 +102,7 @@ class _HomeViewState extends State<_HomeView>
                   children: [
                     IconButton(
                       tooltip: 'การแจ้งเตือน',
-                      onPressed: () => context.go('/notifications'),
+                      onPressed: () => context.push('/notifications'),
                       icon: Icon(
                         Icons.notifications_outlined,
                         color: isDark
