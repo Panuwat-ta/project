@@ -1,0 +1,269 @@
+<!DOCTYPE html><html lang="th" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+<title>ScamGuard - การแจ้งเตือน</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Load Tailwind Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-secondary-container": "#007230",
+                "tertiary": "#855300",
+                "on-secondary": "#ffffff",
+                "bg-dark": "#0F1720",
+                "on-surface": "#121c26",
+                "surface-tint": "#006685",
+                "surface-bright": "#f7f9ff",
+                "error-container": "#ffdad6",
+                "outline-variant": "#bdc8cf",
+                "outline": "#6e797f",
+                "on-surface-variant": "#3d484e",
+                "surface-container-lowest": "#ffffff",
+                "on-primary-fixed": "#001f2a",
+                "on-secondary-fixed-variant": "#005320",
+                "on-secondary-fixed": "#002109",
+                "primary-container": "#00a6d6",
+                "on-tertiary-fixed-variant": "#653e00",
+                "tertiary-fixed": "#ffddb8",
+                "background": "#f7f9ff",
+                "secondary": "#006e2d",
+                "primary-fixed-dim": "#6cd2ff",
+                "on-error": "#ffffff",
+                "secondary-fixed": "#7ffc97",
+                "on-background": "#121c26",
+                "inverse-on-surface": "#e8f2ff",
+                "secondary-fixed-dim": "#62df7d",
+                "surface-container-highest": "#d9e3f1",
+                "on-error-container": "#93000a",
+                "inverse-surface": "#27313c",
+                "tertiary-container": "#d68900",
+                "tertiary-fixed-dim": "#ffb95f",
+                "error": "#ba1a1a",
+                "surface": "#f7f9ff",
+                "inverse-primary": "#6cd2ff",
+                "surface-variant": "#d9e3f1",
+                "bg-light": "#F6F8FB",
+                "on-primary-container": "#003649",
+                "danger": "#DC2626",
+                "surface-container-high": "#dfe9f7",
+                "surface-dark": "#162230",
+                "border": "#D8E0EA",
+                "text-secondary": "#5E6B78",
+                "primary": "#006685",
+                "primary-fixed": "#bfe9ff",
+                "on-primary": "#ffffff",
+                "on-tertiary-fixed": "#2a1700",
+                "surface-light": "#FFFFFF",
+                "on-tertiary": "#ffffff",
+                "secondary-container": "#7cf994",
+                "on-tertiary-container": "#492b00",
+                "surface-dim": "#d1dbe9",
+                "surface-container-low": "#edf4ff",
+                "on-primary-fixed-variant": "#004d65",
+                "surface-container": "#e4effd"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "spacing": {
+                "lg": "24px",
+                "xxl": "48px",
+                "safe-margin": "20px",
+                "xs": "4px",
+                "xl": "32px",
+                "sm": "8px",
+                "md": "16px",
+                "gutter": "12px"
+            },
+            "fontFamily": {
+                "display-hero": ["Sarabun"],
+                "headline-lg": ["Sarabun"],
+                "button-label": ["Sarabun"],
+                "headline-lg-mobile": ["Sarabun"],
+                "section-header": ["Sarabun"],
+                "caption": ["Sarabun"],
+                "body-base": ["Sarabun"],
+                "code-data": ["Inter"],
+                "title-md": ["Sarabun"]
+            },
+            "fontSize": {
+                "display-hero": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                "headline-lg": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                "button-label": ["16px", {"lineHeight": "20px", "fontWeight": "600"}],
+                "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                "section-header": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                "caption": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                "body-base": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                "code-data": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                "title-md": ["22px", {"lineHeight": "28px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #0F1720;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .safe-area-top { padding-top: env(safe-area-inset-top); }
+        .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom); }
+        
+        .notification-card {
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s ease;
+        }
+        .notification-card:active {
+            transform: scale(0.98);
+            background-color: #27313c;
+        }
+
+        /* Ambient subtle pulse for critical alerts */
+        @keyframes subtle-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.2); }
+            70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+        }
+        .pulse-danger {
+            animation: subtle-pulse 2s infinite;
+        }
+    </style>
+</head>
+<body class="bg-bg-dark text-white antialiased">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky z-40 bg-surface-dark border-b border-inverse-surface flex justify-between items-center px-safe-margin py-md"><div class="flex items-center gap-md">
+<button class="hover:opacity-80 transition-opacity active:scale-95 transition-transform" onclick="history.back()">
+<span class="material-symbols-outlined text-inverse-primary">arrow_back</span>
+</button>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-inverse-primary tracking-tight">การแจ้งเตือน</h1>
+</div>
+<button class="font-button-label text-caption text-inverse-primary hover:opacity-80 active:scale-95 transition-all" id="clearAllBtn">
+ล้างการแจ้งเตือนทั้งหมด
+</button></header>
+<!-- Main Content Canvas -->
+<main class="min-h-screen pb-xxl px-safe-margin pt-lg max-w-[600px] mx-auto">
+<!-- Notifications List -->
+<div class="space-y-md" id="notificationList">
+<!-- Item 1: Success -->
+<div class="notification-card bg-surface-dark p-md rounded-xl flex gap-md shadow-none border border-inverse-surface hover:border-outline-variant/30">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center text-secondary-fixed">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="flex-1 space-y-xs">
+<div class="flex justify-between items-start">
+<h3 class="font-section-header text-section-header text-white">วิเคราะห์เสร็จสิ้น</h3>
+<span class="font-caption text-caption text-outline-variant">2 นาทีที่แล้ว</span>
+</div>
+<p class="font-body-base text-body-base text-surface-variant leading-tight">รูปภาพสลิปโอนเงินของคุณวิเคราะห์เสร็จแล้ว</p>
+</div>
+</div>
+<!-- Item 2: Risk Alert -->
+<div class="notification-card bg-surface-dark p-md rounded-xl flex gap-md shadow-none border border-inverse-surface hover:border-outline-variant/30 relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-danger"></div>
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-danger/20 flex items-center justify-center text-danger pulse-danger">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">warning</span>
+</div>
+<div class="flex-1 space-y-xs">
+<div class="flex justify-between items-start">
+<h3 class="font-section-header text-section-header text-white font-bold">พบความเสี่ยงใหม่</h3>
+<span class="font-caption text-caption text-outline-variant">1 ชั่วโมงที่แล้ว</span>
+</div>
+<p class="font-body-base text-body-base text-surface-variant leading-tight">Scam Alert: ระวังลิงก์ปลอมจาก SMS กู้เงินด่วน</p>
+</div>
+</div>
+<!-- Item 3: Error/Failure -->
+<div class="notification-card bg-surface-dark p-md rounded-xl flex gap-md shadow-none border border-inverse-surface hover:border-outline-variant/30">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-tertiary-container/20 flex items-center justify-center text-tertiary-fixed-dim">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">error</span>
+</div>
+<div class="flex-1 space-y-xs">
+<div class="flex justify-between items-start">
+<h3 class="font-section-header text-section-header text-white">งานวิเคราะห์ล้มเหลว</h3>
+<span class="font-caption text-caption text-outline-variant">5 ชั่วโมงที่แล้ว</span>
+</div>
+<p class="font-body-base text-body-base text-surface-variant leading-tight">ไม่สามารถประมวลผลรูปภาพได้เนื่องจากขนาดไฟล์ใหญ่เกินไป</p>
+</div>
+</div>
+<!-- History Decoration / Contextual Image -->
+<div class="pt-lg opacity-20">
+<div class="h-32 w-full rounded-xl border-2 border-dashed border-inverse-surface flex flex-col items-center justify-center gap-sm">
+<div class="w-full h-full rounded-xl overflow-hidden grayscale brightness-75">
+<img class="w-full h-full object-cover" data-alt="A minimalist, high-tech security background with soft blue gradients and abstract geometric grid lines. The image evokes a sense of digital safety and professional surveillance, using clean white space and clinical lighting to maintain a corporate security tool aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCULfgaA0L0wuUfno2cWdgpMxpZAsOWTtdzawPizaZJif20vsnN6LVM68JT-nYPQGrZl6TGW88bt0LlpPhKZJ0AYoH3ZZOd6XQxqzgi8C0STsyfECS8zLOuotBKp0YyQQkV4C6KcSoUCatiTRv-VPLw_OakPPtP1AAis3e3jFy1BdWgRRTpP9TjvzgYwx3y5-rcI9jjAk-wThJqyMqdxlWewXi8P1dqstqtxgyR0YqrqbZIUSYQu1c5gfbUhIe3i4i_Qq2YUyGsPV8">
+</div>
+</div>
+</div>
+</div>
+<!-- Empty State (Hidden by default) -->
+<div class="hidden flex flex-col items-center justify-center py-xxl px-xl text-center space-y-md animate-fade-in" id="emptyState">
+<div class="w-24 h-24 rounded-full bg-inverse-surface flex items-center justify-center text-outline-variant">
+<span class="material-symbols-outlined text-5xl" style="font-size: 64px; font-variation-settings: 'FILL' 0, 'wght' 200;">shield</span>
+</div>
+<div class="space-y-xs">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-white">ไม่มีการแจ้งเตือน</h3>
+<p class="font-body-base text-body-base text-outline-variant">คุณจะได้รับการแจ้งเตือนเมื่อระบบตรวจพบความเสี่ยงใหม่หรือวิเคราะห์ข้อมูลเสร็จสิ้น</p>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 bg-surface-dark border-t border-inverse-surface flex justify-around items-center h-16 w-full px-xs safe-area-bottom"><a class="flex flex-col items-center justify-center text-outline-variant hover:text-inverse-primary transition-colors active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-caption text-caption">หน้าหลัก</span>
+</a>
+<a class="flex flex-col items-center justify-center text-outline-variant hover:text-inverse-primary transition-colors active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="font-caption text-caption">ประวัติ</span>
+</a>
+<a class="flex flex-col items-center justify-center text-outline-variant hover:text-inverse-primary transition-colors active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">flag</span>
+<span class="font-caption text-caption">แจ้งรายงาน</span>
+</a>
+<a class="flex flex-col items-center justify-center text-inverse-primary font-bold active:scale-90 transition-transform relative" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-caption text-caption">ตั้งค่า</span>
+<div class="absolute -top-1 right-2 w-2 h-2 bg-danger rounded-full border-2 border-surface-dark"></div>
+</a></nav>
+<script>
+        // Simple Interaction logic for clearing notifications
+        document.getElementById('clearAllBtn').addEventListener('click', function() {
+            const list = document.getElementById('notificationList');
+            const empty = document.getElementById('emptyState');
+            
+            // Add fade out animation
+            list.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+            list.style.opacity = '0';
+            list.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                list.classList.add('hidden');
+                empty.classList.remove('hidden');
+                empty.classList.add('flex');
+                this.style.opacity = '0';
+                this.style.pointerEvents = 'none';
+            }, 400);
+        });
+
+        // Add a micro-interaction to cards
+        document.querySelectorAll('.notification-card').forEach(card => {
+            card.addEventListener('click', function() {
+                // Flash animation to indicate read/selection
+                this.style.backgroundColor = '#162230';
+                this.querySelector('h3').classList.remove('font-bold');
+                this.classList.remove('pulse-danger');
+            });
+        });
+    </script>
+
+
+</body></html>

@@ -1,0 +1,256 @@
+<!DOCTYPE html><html class="dark" lang="th"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+<title>ScamGuard - Image Preview &amp; Crop</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .crop-overlay {
+            background: rgba(0, 0, 0, 0.5);
+            clip-path: polygon(0% 0%, 0% 100%, 5% 100%, 5% 5%, 95% 5%, 95% 95%, 5% 95%, 5% 100%, 100% 100%, 100% 0%);
+        }
+        .shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-background": "#121c26",
+                        "outline-variant": "#bdc8cf",
+                        "on-tertiary-container": "#492b00",
+                        "on-tertiary-fixed": "#2a1700",
+                        "on-surface": "#121c26",
+                        "surface-container-highest": "#d9e3f1",
+                        "on-secondary-container": "#007230",
+                        "surface-container": "#e4effd",
+                        "inverse-primary": "#6cd2ff",
+                        "bg-light": "#F6F8FB",
+                        "primary-container": "#00a6d6",
+                        "danger": "#DC2626",
+                        "surface-dark": "#162230",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#27313c",
+                        "surface-container-high": "#dfe9f7",
+                        "primary-fixed-dim": "#6cd2ff",
+                        "secondary": "#006e2d",
+                        "surface-tint": "#006685",
+                        "tertiary-container": "#d68900",
+                        "bg-dark": "#0F1720",
+                        "on-secondary-fixed": "#002109",
+                        "surface-dim": "#d1dbe9",
+                        "text-secondary": "#5E6B78",
+                        "surface-variant": "#d9e3f1",
+                        "error": "#ba1a1a",
+                        "primary": "#006685",
+                        "error-container": "#ffdad6",
+                        "primary-fixed": "#bfe9ff",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "tertiary": "#855300",
+                        "surface-light": "#FFFFFF",
+                        "background": "#f7f9ff",
+                        "secondary-fixed": "#7ffc97",
+                        "on-secondary-fixed-variant": "#005320",
+                        "on-error": "#ffffff",
+                        "border": "#D8E0EA",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#001f2a",
+                        "on-surface-variant": "#3d484e",
+                        "tertiary-fixed": "#ffddb8",
+                        "secondary-container": "#7cf994",
+                        "surface-bright": "#f7f9ff",
+                        "outline": "#6e797f",
+                        "on-primary-container": "#003649",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "on-primary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "surface": "#f7f9ff",
+                        "secondary-fixed-dim": "#62df7d",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#004d65",
+                        "inverse-on-surface": "#e8f2ff",
+                        "surface-container-low": "#edf4ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "lg": "24px",
+                        "md": "16px",
+                        "xl": "32px",
+                        "safe-margin": "20px",
+                        "gutter": "12px",
+                        "xs": "4px",
+                        "sm": "8px",
+                        "xxl": "48px"
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "caption": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "button-label": ["16px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "section-header": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "headline-lg": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                        "body-base": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "code-data": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                        "title-md": ["22px", {"lineHeight": "28px", "fontWeight": "700"}],
+                        "display-hero": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-bg-light dark:bg-bg-dark text-on-background dark:text-surface-light min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-surface-light dark:bg-surface-dark flex justify-between items-center w-full px-safe-margin h-16 border-b border-border dark:border-outline-variant sticky top-0 z-50">
+<div class="flex items-center gap-2">
+<button class="hover:opacity-80 transition-opacity active:scale-95 transition-transform duration-150 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim" data-icon="arrow_back">arrow_back</span>
+</button>
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim" style="font-variation-settings: &quot;FILL&quot; 1;">shield</span><h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary dark:text-primary-fixed-dim">ScamGuard</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="hover:opacity-80 transition-opacity active:scale-95 transition-transform duration-150">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim" data-icon="notifications">notifications</span>
+</button>
+</div>
+</header>
+<main class="flex-grow flex flex-col px-safe-margin pt-md pb-xxl max-w-[540px] mx-auto w-full">
+<!-- Main Content Area: Preview & Crop -->
+<div class="flex flex-col gap-lg">
+<!-- Headline -->
+<div class="space-y-sm">
+<h2 class="font-section-header text-section-header text-on-surface dark:text-surface-light">ตรวจสอบรูปภาพ</h2>
+<p class="font-body-base text-body-base text-text-secondary dark:text-outline-variant">ปรับแต่งรูปภาพของคุณให้เห็นส่วนที่ต้องการวิเคราะห์ได้ชัดเจนที่สุด</p>
+</div>
+<!-- Image Editor Container -->
+<div class="relative w-full aspect-square bg-surface-container-low dark:bg-surface-dark rounded-xl overflow-hidden shadow-sm border border-border dark:border-outline-variant group">
+<!-- Background Image Placeholder -->
+<div class="absolute inset-0 w-full h-full bg-cover bg-center opacity-90 dark:opacity-80" data-alt="A high-quality mobile interface preview of a digital scam prevention app. The central image shown is a suspicious bank transfer slip with Thai text, displayed on a clean light-mode UI background. The lighting is bright and even, highlighting professional security utility aesthetics with subtle Trust Blue accents and corporate white surfaces." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAlUL3d5G8SCvcLAGQcMlohIDgEDD73Ak7Qn9as8xOV4yQWu4lBAu4CeSESE79TjdzdGvqvcdUjSsV9GgcyfmgjUOWPSWgcFCif4DXF41ghPhoHlSD36AX9hfnUAIPNvosRONrPCMYAkTTgd0JU2OnmdtKBNErr1jyYXpZpZhA-32zSTgy4ZmLmWizUWqAca81pSFz0E0hCFz_CoZelCXd1F9n_qRoacGCohib5aIo3i-BlJGV6m_C1nnTpqPI9gSqtyMrrnN-ySSo')"></div>
+<!-- Crop Grid Overlay (Visual Only) -->
+<div class="absolute inset-0 border-[2px] border-primary-fixed dark:border-inverse-primary opacity-60 m-md pointer-events-none">
+<div class="absolute inset-0 grid grid-cols-3 grid-rows-3">
+<div class="border-r border-b border-primary-fixed dark:border-inverse-primary opacity-40"></div>
+<div class="border-r border-b border-primary-fixed dark:border-inverse-primary opacity-40"></div>
+<div class="border-b border-primary-fixed dark:border-inverse-primary opacity-40"></div>
+<div class="border-r border-b border-primary-fixed dark:border-inverse-primary opacity-40"></div>
+<div class="border-r border-b border-primary-fixed dark:border-inverse-primary opacity-40"></div>
+<div class="border-b border-primary-fixed dark:border-inverse-primary opacity-40"></div>
+<div class="border-r border-primary-fixed dark:border-inverse-primary opacity-40"></div>
+<div class="border-r border-primary-fixed dark:border-inverse-primary opacity-40"></div>
+<div></div>
+</div>
+</div>
+<!-- Resize Handles -->
+<div class="absolute top-md left-md w-6 h-6 border-t-4 border-l-4 border-primary dark:border-inverse-primary rounded-tl-sm"></div>
+<div class="absolute top-md right-md w-6 h-6 border-t-4 border-r-4 border-primary dark:border-inverse-primary rounded-tr-sm"></div>
+<div class="absolute bottom-md left-md w-6 h-6 border-b-4 border-l-4 border-primary dark:border-inverse-primary rounded-bl-sm"></div>
+<div class="absolute bottom-md right-md w-6 h-6 border-b-4 border-r-4 border-primary dark:border-inverse-primary rounded-br-sm"></div>
+</div>
+<!-- Crop Controls Toolset -->
+<div class="flex justify-around items-center bg-surface-light dark:bg-surface-dark rounded-xl p-md border border-border dark:border-outline-variant shadow-sm">
+<button class="flex flex-col items-center gap-xs text-text-secondary dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="rotate_left">rotate_left</span>
+<span class="font-caption text-caption">หมุนซ้าย</span>
+</button>
+<button class="flex flex-col items-center gap-xs text-text-secondary dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="rotate_right">rotate_right</span>
+<span class="font-caption text-caption">หมุนขวา</span>
+</button>
+<button class="flex flex-col items-center gap-xs text-text-secondary dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="aspect_ratio">aspect_ratio</span>
+<span class="font-caption text-caption">สัดส่วน</span>
+</button>
+<button class="flex flex-col items-center gap-xs text-text-secondary dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="zoom_in">zoom_in</span>
+<span class="font-caption text-caption">ขยาย</span>
+</button>
+</div>
+<!-- Security Notice -->
+<div class="flex items-start gap-sm p-md bg-surface-container-low dark:bg-inverse-surface rounded-lg border border-surface-container-highest dark:border-outline-variant">
+<span class="material-symbols-outlined text-primary dark:text-inverse-primary mt-0.5" data-icon="verified_user" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<p class="font-caption text-caption text-on-surface-variant dark:text-surface-light">
+                    รูปภาพจะถูกส่งไปวิเคราะห์บนระบบคลาวด์อย่างปลอดภัย ข้อมูลของคุณจะได้รับการเข้ารหัสและไม่มีการเปิดเผยต่อสาธารณะ
+                </p>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-col gap-md pt-md">
+<button class="w-full h-14 bg-primary dark:bg-inverse-primary text-on-primary dark:text-on-primary-fixed font-button-label text-button-label rounded-xl shadow-lg hover:opacity-90 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" data-icon="search_check">search_check</span>
+                    เริ่มวิเคราะห์
+                </button>
+<button class="w-full h-14 bg-transparent border-2 border-primary dark:border-inverse-primary text-primary dark:text-inverse-primary font-button-label text-button-label rounded-xl hover:bg-surface-container-low dark:hover:bg-inverse-surface active:scale-95 transition-all duration-200 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" data-icon="image">image</span>
+                    เปลี่ยนรูป
+                </button>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Hidden on desktop via style rules if needed, but here as specified) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-gutter py-sm bg-surface-light dark:bg-surface-dark border-t border-border dark:border-outline-variant md:hidden">
+<a class="flex flex-col items-center justify-center dark:text-outline-variant hover:bg-surface-container-low dark:hover:bg-inverse-surface transition-colors active:scale-90 transition-transform duration-200 p-2 rounded-lg text-primary" href="#">
+<span class="material-symbols-outlined" data-icon="home" style="font-variation-settings: &quot;FILL&quot; 1;">home</span>
+<span class="font-caption text-caption">หน้าหลัก</span>
+</a>
+<a class="flex flex-col items-center justify-center text-text-secondary dark:text-outline-variant hover:bg-surface-container-low dark:hover:bg-inverse-surface transition-colors active:scale-90 transition-transform duration-200 p-2 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="font-caption text-caption">ประวัติ</span>
+</a>
+<a class="flex flex-col items-center justify-center text-text-secondary dark:text-outline-variant hover:bg-surface-container-low dark:hover:bg-inverse-surface transition-colors active:scale-90 transition-transform duration-200 p-2 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="flag">flag</span>
+<span class="font-caption text-caption">แจ้งรายงาน</span>
+</a>
+<a class="flex flex-col items-center justify-center text-text-secondary dark:text-outline-variant hover:bg-surface-container-low dark:hover:bg-inverse-surface transition-colors active:scale-90 transition-transform duration-200 p-2 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-caption text-caption">ตั้งค่า</span>
+</a>
+</nav>
+<!-- Micro-interaction Script -->
+<script>
+        // Simple scale effect for the analysis button on click to simulate "processing"
+        document.querySelector('button.bg-primary, button.dark\\:bg-inverse-primary').addEventListener('click', function() {
+            const btn = this;
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <svg class="animate-spin h-5 w-5 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>กำลังประมวลผล...</span>
+                </div>
+            `;
+            btn.disabled = true;
+            btn.classList.add('opacity-80');
+            
+            setTimeout(() => {
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+                btn.classList.remove('opacity-80');
+            }, 2000);
+        });
+    </script>
+
+
+</body></html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html><html class="dark" lang="th"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+<title>ScamGuard - Heatmap Viewer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind Config from Source of Truth -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-background": "#121c26",
+                    "outline-variant": "#bdc8cf",
+                    "on-tertiary-container": "#492b00",
+                    "on-tertiary-fixed": "#2a1700",
+                    "on-surface": "#121c26",
+                    "surface-container-highest": "#d9e3f1",
+                    "on-secondary-container": "#007230",
+                    "surface-container": "#e4effd",
+                    "inverse-primary": "#6cd2ff",
+                    "bg-light": "#F6F8FB",
+                    "bg-dark": "#0F1720",
+                    "primary-container": "#00a6d6",
+                    "danger": "#DC2626",
+                    "surface-dark": "#162230",
+                    "on-error-container": "#93000a",
+                    "inverse-surface": "#27313c",
+                    "surface-light": "#FFFFFF",
+                    "background": "#f7f9ff",
+                    "secondary-fixed": "#7ffc97",
+                    "on-secondary-fixed-variant": "#005320",
+                    "on-error": "#ffffff",
+                    "border": "#D8E0EA",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-fixed": "#001f2a",
+                    "on-surface-variant": "#3d484e",
+                    "tertiary-fixed": "#ffddb8",
+                    "secondary-container": "#7cf994",
+                    "surface-bright": "#f7f9ff",
+                    "outline": "#6e797f",
+                    "on-primary-container": "#003649",
+                    "tertiary-fixed-dim": "#ffb95f",
+                    "on-primary": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "surface": "#f7f9ff",
+                    "secondary-fixed-dim": "#62df7d",
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed-variant": "#004d65",
+                    "inverse-on-surface": "#e8f2ff",
+                    "surface-container-low": "#edf4ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "lg": "24px",
+                    "md": "16px",
+                    "xl": "32px",
+                    "safe-margin": "20px",
+                    "gutter": "12px",
+                    "xs": "4px",
+                    "sm": "8px",
+                    "xxl": "48px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Sarabun"],
+                    "caption": ["Sarabun"],
+                    "button-label": ["Sarabun"],
+                    "section-header": ["Sarabun"],
+                    "headline-lg": ["Sarabun"],
+                    "body-base": ["Sarabun"],
+                    "code-data": ["Inter"],
+                    "title-md": ["Sarabun"],
+                    "display-hero": ["Sarabun"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "caption": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "button-label": ["16px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "section-header": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "headline-lg": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "body-base": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "code-data": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "title-md": ["22px", {"lineHeight": "28px", "fontWeight": "700"}],
+                    "display-hero": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            overflow: hidden;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .heatmap-overlay {
+            mix-blend-mode: multiply;
+            pointer-events: none;
+        }
+        .viewer-container {
+            touch-action: none;
+            user-select: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #6cd2ff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body class="flex flex-col h-screen bg-bg-dark text-surface-light">
+<!-- Top Navigation Bar (Suppressed shared shell for focused task, manual Close action) -->
+<header class="flex justify-between items-center w-full px-safe-margin h-16 bg-surface-dark border-b border-white/10 z-50">
+<div class="flex items-center gap-sm">
+<button class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 transition-colors active:scale-95" onclick="window.history.back()">
+<span class="material-symbols-outlined text-surface-light">close</span>
+</button>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-inverse-primary">ตรวจสอบรายละเอียด</h1>
+</div>
+<div class="flex gap-sm">
+<button class="px-md py-xs rounded-full border border-inverse-primary text-inverse-primary font-button-label text-button-label hover:bg-inverse-primary hover:text-bg-dark transition-all" id="toggleView">
+                ภาพต้นฉบับ
+            </button>
+</div>
+</header>
+<!-- Main Viewer Canvas -->
+<main class="flex-1 relative bg-bg-dark overflow-hidden viewer-container flex items-center justify-center">
+<!-- Interactive Image Layer -->
+<div class="relative transition-transform duration-300 ease-out cursor-grab active:cursor-grabbing" id="imageCanvas" style="transform: scale(1) translate(0px, 0px);">
+<!-- Base Image -->
+<img class="max-h-[707px] w-auto shadow-2xl rounded-lg" data-alt="A high-resolution mobile screenshot of a suspicious chat conversation in Thai language, featuring artificial UI elements and urgent phrasing. The aesthetic is clean, light-mode corporate style, with soft shadows and a professional security utility atmosphere, using Trust Blue accents and neutral grey tones." id="baseImage" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSBFXeD1zd8SlIcTk8U1CKjcgIIDJZD3LUulqow_SVNeuV2ALFzawgfG_ONaGWHQ5L69gNuLwczzLYg5m8muA4tUtqpxBPPLEdaHhhI64WCNfAhdd0p2Wqnqm7y2wavb8bwIU8khwLUmS7e-t7_dZDxqlW66RVB76osP4LsplLjy45hjpfG98gFTyPXEEiXcpgkSDa6-zDwe710ed8EDX4klTwdmfdsZD7Ke4GWPLdWwYRdVf8FDsKk3MRRupgXryqUtZlabhvGh0">
+<!-- Heatmap Overlay -->
+<div class="absolute inset-0 rounded-lg overflow-hidden opacity-70 transition-opacity duration-200" id="heatmapLayer">
+<div class="w-full h-full bg-gradient-to-br from-red-500/80 via-yellow-400/40 to-transparent mix-blend-color-burn"></div>
+<!-- Simulated AI Hotspots -->
+<div class="absolute top-[20%] left-[15%] w-32 h-32 bg-red-600 rounded-full blur-3xl opacity-60"></div>
+<div class="absolute top-[45%] right-[10%] w-48 h-48 bg-orange-500 rounded-full blur-3xl opacity-50"></div>
+<div class="absolute bottom-[25%] left-[30%] w-24 h-24 bg-red-700 rounded-full blur-2xl opacity-40"></div>
+</div>
+</div>
+<!-- Floating Controls (Zoom/Pan Indicators) -->
+<div class="absolute right-safe-margin top-1/2 -translate-y-1/2 flex flex-col gap-md">
+<button class="w-12 h-12 bg-surface-dark/90 border border-white/10 backdrop-blur rounded-xl shadow-lg flex items-center justify-center text-inverse-primary active:scale-90 transition-transform" id="zoomIn">
+<span class="material-symbols-outlined">add_circle</span>
+</button>
+<button class="w-12 h-12 bg-surface-dark/90 border border-white/10 backdrop-blur rounded-xl shadow-lg flex items-center justify-center text-inverse-primary active:scale-90 transition-transform" id="zoomOut">
+<span class="material-symbols-outlined">remove_circle</span>
+</button>
+<button class="w-12 h-12 bg-surface-dark/90 border border-white/10 backdrop-blur rounded-xl shadow-lg flex items-center justify-center text-inverse-primary active:scale-90 transition-transform" id="resetView">
+<span class="material-symbols-outlined">restart_alt</span>
+</button>
+</div>
+<!-- Info Panel (Small text explaining hot areas) -->
+<div class="absolute top-md left-safe-margin max-w-[240px] pointer-events-none">
+<div class="bg-surface-dark/90 backdrop-blur text-surface-light p-sm rounded-lg border border-white/10 flex items-start gap-xs">
+<span class="material-symbols-outlined text-tertiary-fixed text-[18px]">info</span>
+<p class="font-caption text-caption">พื้นที่สีแดงแสดงถึงจุดที่ AI ตรวจพบความผิดปกติของพิกเซลที่มักเกิดจากการตัดต่อหรือการสร้างภาพปลอม</p>
+</div>
+</div>
+</main>
+<!-- Bottom Controls & Opacity Slider -->
+<footer class="bg-surface-dark border-t border-white/10 px-safe-margin py-lg pb-10 flex flex-col gap-md">
+<div class="flex justify-between items-center mb-xs">
+<span class="font-section-header text-section-header text-surface-light">ความเข้มของ Heatmap</span>
+<span class="font-code-data text-code-data text-inverse-primary px-sm py-xs bg-inverse-primary/10 rounded" id="opacityValue">70%</span>
+</div>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined text-outline-variant mr-sm">visibility_off</span>
+<input class="flex-1 h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer" id="opacitySlider" max="100" min="0" type="range" value="70">
+<span class="material-symbols-outlined text-inverse-primary ml-sm">visibility</span>
+</div>
+<div class="grid grid-cols-2 gap-md mt-sm">
+<div class="flex items-center gap-xs text-outline-variant">
+<span class="material-symbols-outlined text-[18px]">gesture</span>
+<span class="font-caption text-caption">ลากเพื่อเลื่อน</span>
+</div>
+<div class="flex items-center gap-xs text-outline-variant justify-end">
+<span class="material-symbols-outlined text-[18px]">pinch</span>
+<span class="font-caption text-caption">จีบเพื่อซูม</span>
+</div>
+</div>
+</footer>
+<script>
+        const canvas = document.getElementById('imageCanvas');
+        const opacitySlider = document.getElementById('opacitySlider');
+        const opacityLayer = document.getElementById('heatmapLayer');
+        const opacityValue = document.getElementById('opacityValue');
+        const toggleView = document.getElementById('toggleView');
+        const zoomIn = document.getElementById('zoomIn');
+        const zoomOut = document.getElementById('zoomOut');
+        const resetView = document.getElementById('resetView');
+
+        let scale = 1;
+        let isOriginal = false;
+
+        // Opacity Logic
+        opacitySlider.addEventListener('input', (e) => {
+            const val = e.target.value;
+            opacityLayer.style.opacity = val / 100;
+            opacityValue.textContent = `${val}%`;
+            
+            if (val == 0) {
+                isOriginal = true;
+                toggleView.textContent = "แสดง Heatmap";
+            } else {
+                isOriginal = false;
+                toggleView.textContent = "ภาพต้นฉบับ";
+            }
+        });
+
+        // Toggle View Logic
+        toggleView.addEventListener('click', () => {
+            if (isOriginal) {
+                opacitySlider.value = 70;
+                opacityLayer.style.opacity = 0.7;
+                opacityValue.textContent = "70%";
+                toggleView.textContent = "ภาพต้นฉบับ";
+                isOriginal = false;
+            } else {
+                opacitySlider.value = 0;
+                opacityLayer.style.opacity = 0;
+                opacityValue.textContent = "0%";
+                toggleView.textContent = "แสดง Heatmap";
+                isOriginal = true;
+            }
+        });
+
+        // Zoom Logic
+        zoomIn.addEventListener('click', () => {
+            scale += 0.2;
+            updateTransform();
+        });
+
+        zoomOut.addEventListener('click', () => {
+            if (scale > 0.5) scale -= 0.2;
+            updateTransform();
+        });
+
+        resetView.addEventListener('click', () => {
+            scale = 1;
+            translateX = 0;
+            translateY = 0;
+            updateTransform();
+        });
+
+        let translateX = 0;
+        let translateY = 0;
+        let isDragging = false;
+        let startX, startY;
+
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX - translateX;
+            startY = e.clientY - translateY;
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            translateX = e.clientX - startX;
+            translateY = e.clientY - startY;
+            updateTransform();
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        // Touch Support
+        canvas.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                isDragging = true;
+                startX = e.touches[0].clientX - translateX;
+                startY = e.touches[0].clientY - translateY;
+            }
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            if (!isDragging || e.touches.length > 1) return;
+            translateX = e.touches[0].clientX - startX;
+            translateY = e.touches[0].clientY - startY;
+            updateTransform();
+        });
+
+        canvas.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+
+        function updateTransform() {
+            canvas.style.transform = `scale(${scale}) translate(${translateX / scale}px, ${translateY / scale}px)`;
+        }
+    </script>
+</body></html>

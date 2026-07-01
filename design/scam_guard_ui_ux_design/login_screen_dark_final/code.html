@@ -1,0 +1,273 @@
+<!DOCTYPE html><html lang="th"><head></head><body class="flex items-center justify-center min-h-screen p-safe-margin bg-bg-dark">```html
+
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>ScamGuard - เข้าสู่ระบบ</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "surface-variant": "#d9e3f1",
+                "on-primary-fixed": "#001f2a",
+                "surface-light": "#FFFFFF",
+                "primary-container": "#00a6d6",
+                "inverse-surface": "#27313c",
+                "on-primary-fixed-variant": "#004d65",
+                "on-background": "#121c26",
+                "on-tertiary": "#ffffff",
+                "tertiary": "#855300",
+                "tertiary-fixed-dim": "#ffb95f",
+                "error-container": "#ffdad6",
+                "surface-container-high": "#dfe9f7",
+                "outline": "#6e797f",
+                "on-tertiary-fixed-variant": "#653e00",
+                "surface-container-lowest": "#ffffff",
+                "surface-container-low": "#edf4ff",
+                "on-secondary": "#ffffff",
+                "on-surface-variant": "#3d484e",
+                "text-secondary": "#5E6B78",
+                "on-primary": "#ffffff",
+                "primary": "#006685",
+                "surface-container": "#e4effd",
+                "surface": "#f7f9ff",
+                "on-primary-container": "#003649",
+                "surface-dim": "#d1dbe9",
+                "primary-fixed": "#bfe9ff",
+                "secondary-fixed": "#7ffc97",
+                "on-secondary-fixed-variant": "#005320",
+                "secondary-fixed-dim": "#62df7d",
+                "on-surface": "#121c26",
+                "surface-tint": "#006685",
+                "inverse-on-surface": "#e8f2ff",
+                "danger": "#DC2626",
+                "on-secondary-fixed": "#002109",
+                "secondary": "#006e2d",
+                "on-tertiary-fixed": "#2a1700",
+                "surface-container-highest": "#d9e3f1",
+                "outline-variant": "#bdc8cf",
+                "background": "#f7f9ff",
+                "surface-bright": "#f7f9ff",
+                "on-secondary-container": "#007230",
+                "error": "#ba1a1a",
+                "primary-fixed-dim": "#6cd2ff",
+                "tertiary-container": "#d68900",
+                "bg-dark": "#0F1720",
+                "inverse-primary": "#6cd2ff",
+                "on-tertiary-container": "#492b00",
+                "border": "#D8E0EA",
+                "on-error": "#ffffff",
+                "tertiary-fixed": "#ffddb8",
+                "secondary-container": "#7cf994",
+                "surface-dark": "#162230",
+                "bg-light": "#F6F8FB",
+                "on-error-container": "#93000a"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "xxl": "48px",
+                "xs": "4px",
+                "safe-margin": "20px",
+                "md": "16px",
+                "lg": "24px",
+                "sm": "8px",
+                "xl": "32px",
+                "gutter": "12px"
+        },
+        "fontFamily": {
+                "section-header": [
+                        "Sarabun"
+                ],
+                "button-label": [
+                        "Sarabun"
+                ],
+                "headline-lg": [
+                        "Sarabun"
+                ],
+                "display-hero": [
+                        "Sarabun"
+                ],
+                "headline-lg-mobile": [
+                        "Sarabun"
+                ],
+                "body-base": [
+                        "Sarabun"
+                ],
+                "code-data": [
+                        "Inter"
+                ],
+                "caption": [
+                        "Sarabun"
+                ],
+                "title-md": [
+                        "Sarabun"
+                ]
+        },
+        "fontSize": {
+                "section-header": [
+                        "18px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "button-label": [
+                        "16px",
+                        {
+                                "lineHeight": "20px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-lg": [
+                        "28px",
+                        {
+                                "lineHeight": "36px",
+                                "fontWeight": "700"
+                        }
+                ],
+                "display-hero": [
+                        "48px",
+                        {
+                                "lineHeight": "56px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "headline-lg-mobile": [
+                        "24px",
+                        {
+                                "lineHeight": "32px",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-base": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "code-data": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "fontWeight": "500"
+                        }
+                ],
+                "caption": [
+                        "13px",
+                        {
+                                "lineHeight": "18px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "title-md": [
+                        "22px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "700"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #0F1720;
+            color: #FFFFFF;
+            overflow-x: hidden;
+        }
+        .glass-card {
+            background: rgba(22, 34, 48, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(189, 200, 207, 0.1);
+            box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.2);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .input-focus-ring:focus-within {
+            border-color: #6cd2ff;
+            box-shadow: 0 0 0 3px rgba(108, 210, 255, 0.1);
+        }
+    </style>
+<!-- Atmospheric Background Decoration -->
+<div class="fixed inset-0 overflow-hidden pointer-events-none">
+<div class="absolute -top-[10%] -right-[10%] w-[50%] h-[50%] bg-surface-container-highest/10 blur-[120px] rounded-full"></div>
+<div class="absolute -bottom-[10%] -left-[10%] w-[50%] h-[50%] bg-primary-container/10 blur-[120px] rounded-full"></div>
+</div>
+<!-- Main Login Canvas -->
+<main class="relative w-full max-w-[440px] z-10">
+<!-- Brand Identity Section -->
+<div class="flex flex-col items-center mb-xl text-center">
+<div class="w-20 h-20 mb-md bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-on-primary text-[48px]" style="font-variation-settings: 'FILL' 1;">shield_lock</span>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-surface-light mb-xs">ScamGuard</h1>
+<p class="font-body-base text-body-base text-outline-variant">ระบบรักษาความปลอดภัยอัจฉริยะ</p>
+</div>
+<!-- Login Form Card -->
+<div class="glass-card rounded-xl p-xl mb-lg">
+<h2 class="font-title-md text-title-md text-surface-light mb-lg">เข้าสู่ระบบ</h2>
+<form class="space-y-md" id="loginForm">
+<!-- Email Input -->
+<div class="space-y-sm">
+<label class="font-button-label text-sm text-outline-variant block" for="email">อีเมล</label>
+<div class="relative group input-focus-ring border border-outline bg-surface-dark rounded-lg transition-all duration-200">
+<div class="absolute inset-y-0 left-0 pl-md flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline text-[20px]">mail</span>
+</div>
+<input class="block w-full pl-10 pr-md py-3 bg-transparent border-none focus:ring-0 font-body-base text-surface-light placeholder:text-outline/50" id="email" name="email" placeholder="example@email.com" required="" type="email">
+</div>
+</div>
+<!-- Password Input -->
+<div class="space-y-sm">
+<div class="flex justify-between items-center">
+<label class="font-button-label text-sm text-outline-variant block" for="password">รหัสผ่าน</label>
+<a class="text-xs font-medium text-inverse-primary hover:underline" href="#">ลืมรหัสผ่าน</a>
+</div>
+<div class="relative group input-focus-ring border border-outline bg-surface-dark rounded-lg transition-all duration-200">
+<div class="absolute inset-y-0 left-0 pl-md flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline text-[20px]">lock</span>
+</div>
+<input class="block w-full pl-10 pr-12 py-3 bg-transparent border-none focus:ring-0 font-body-base text-surface-light placeholder:text-outline/50" id="password" name="password" placeholder="••••••••" required="" type="password">
+<button class="absolute inset-y-0 right-0 pr-md flex items-center text-outline hover:text-surface-light transition-colors" onclick="togglePassword()" type="button">
+<span class="material-symbols-outlined text-[20px]" id="visibilityIcon">visibility</span>
+</button>
+</div>
+</div>
+<!-- Remember Me Toggle -->
+<div class="flex items-center pt-xs">
+<input class="w-4 h-4 text-primary border-outline bg-surface-dark rounded focus:ring-primary" id="remember" type="checkbox">
+<label class="ml-2 font-body-base text-sm text-outline-variant" for="remember">จดจำการใช้งานของฉัน</label>
+</div>
+<!-- Primary CTA -->
+<button class="w-full mt-lg py-4 bg-primary text-on-primary font-button-label text-button-label rounded-lg shadow-md shadow-primary/20 hover:bg-primary-container active:scale-[0.98] transition-all duration-200" type="submit">
+                    เข้าสู่ระบบ
+                </button><!-- Divider -->
+<div class="relative flex items-center py-4">
+<div class="flex-grow border-t border-outline/30"></div>
+<span class="flex-shrink mx-4 text-xs text-outline-variant font-body-base">หรือ</span>
+<div class="flex-grow border-t border-outline/30"></div>
+</div>
+<!-- Social Login Buttons -->
+<div class="space-y-sm">
+<button class="w-full flex items-center justify-center gap-2 py-3 border border-outline bg-surface-dark rounded-lg font-button-label text-surface-light hover:bg-inverse-surface active:scale-[0.98] transition-all duration-200" type="button">
+<svg class="w-5 h-5" viewBox="0 0 24 24">
+<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+<path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-1 .67-2.28 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+</svg></button></div></form></div></main></body></html>

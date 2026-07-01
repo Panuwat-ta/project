@@ -132,15 +132,13 @@
 </head>
 <body class="text-on-surface">
 <!-- Top App Bar -->
-<header class="bg-surface-light dark:bg-surface-dark docked full-width top-0 border-b border-border dark:border-outline-variant flex justify-between items-center w-full px-safe-margin h-16 sticky z-50">
-<div class="flex items-center gap-sm">
-<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim text-[28px]" data-icon="shield_lock">shield_lock</span>
+<header class="bg-surface-light dark:bg-surface-dark docked full-width top-0 border-b border-border dark:border-outline-variant flex justify-between items-center w-full px-safe-margin h-16 sticky z-50"><div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim text-[28px]">shield_lock</span>
 <h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary dark:text-primary-fixed-dim">ScamGuard</h1>
 </div>
-<button class="hover:opacity-80 transition-opacity Active: scale-95 transition-transform duration-150 p-sm rounded-full">
-<span class="material-symbols-outlined text-on-surface-variant dark:text-outline-variant" data-icon="notifications">notifications</span>
-</button>
-</header>
+<button class="hover:opacity-80 transition-opacity active:scale-95 transition-transform duration-150 p-sm rounded-full">
+<span class="material-symbols-outlined text-on-surface-variant dark:text-outline-variant">notifications</span>
+</button></header>
 <main class="pb-32 pt-lg max-w-[600px] mx-auto">
 <!-- User Greeting -->
 <section class="px-safe-margin mb-lg">
@@ -235,24 +233,22 @@
 </section>
 </main>
 <!-- Bottom Navigation Bar -->
-<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-gutter py-sm bg-surface-light dark:bg-surface-dark border-t border-border dark:border-outline-variant h-20">
-<a class="flex flex-col items-center justify-center text-primary dark:text-secondary-fixed-dim font-bold hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors p-sm rounded-xl Active: scale-90 transition-transform duration-200" href="#">
-<span class="material-symbols-outlined text-[24px]" data-icon="home" style="font-variation-settings: 'FILL' 1;">home</span>
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-gutter py-sm bg-surface-light dark:bg-surface-dark border-t border-border dark:border-outline-variant h-20"><a class="flex flex-1 flex-col items-center justify-center text-primary dark:text-secondary-fixed-dim font-bold hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors p-sm rounded-xl active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">home</span>
 <span class="font-caption text-caption mt-1">หน้าหลัก</span>
 </a>
-<a class="flex flex-col items-center justify-center text-text-secondary dark:text-outline-variant hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors p-sm rounded-xl Active: scale-90 transition-transform duration-200" href="#">
-<span class="material-symbols-outlined text-[24px]" data-icon="history">history</span>
+<a class="flex flex-1 flex-col items-center justify-center text-text-secondary dark:text-outline-variant hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors p-sm rounded-xl active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined text-[24px]">history</span>
 <span class="font-caption text-caption mt-1">ประวัติ</span>
 </a>
-<a class="flex flex-col items-center justify-center text-text-secondary dark:text-outline-variant hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors p-sm rounded-xl Active: scale-90 transition-transform duration-200" href="#">
-<span class="material-symbols-outlined text-[24px]" data-icon="flag">flag</span>
+<a class="flex flex-1 flex-col items-center justify-center text-text-secondary dark:text-outline-variant hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors p-sm rounded-xl active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined text-[24px]">flag</span>
 <span class="font-caption text-caption mt-1">แจ้งรายงาน</span>
 </a>
-<a class="flex flex-col items-center justify-center text-text-secondary dark:text-outline-variant hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors p-sm rounded-xl Active: scale-90 transition-transform duration-200" href="#">
-<span class="material-symbols-outlined text-[24px]" data-icon="settings">settings</span>
+<a class="flex flex-1 flex-col items-center justify-center text-text-secondary dark:text-outline-variant hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors p-sm rounded-xl active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined text-[24px]">settings</span>
 <span class="font-caption text-caption mt-1">ตั้งค่า</span>
-</a>
-</nav>
+</a></nav>
 <script>
         // Simple Micro-interaction for buttons
         document.querySelectorAll('button').forEach(button => {
@@ -272,4 +268,6 @@
             // relying on Tailwind classes for static styling.
         });
     </script>
+
+
 </body></html>

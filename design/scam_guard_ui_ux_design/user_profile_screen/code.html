@@ -129,6 +129,27 @@
                     opacity: 0;
                 }
             }
+        </style><style>
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        </style><style>
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        </style><style>
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
         </style></head>
 <body class="flex flex-col min-h-screen text-on-surface">
 <!-- TopAppBar -->
@@ -201,28 +222,26 @@
 </div>
 </main>
 <!-- BottomNavBar -->
-<nav class="fixed bottom-0 w-full z-50 bg-surface border-t border-border flex justify-around items-center h-16 px-xs">
-<!-- Home -->
-<button class="flex flex-col items-center justify-center text-text-secondary hover:text-primary transition-colors active:scale-90 transition-transform">
+<nav class="fixed bottom-0 w-full z-50 bg-surface border-t border-border flex justify-around items-center h-16 px-xs"><!-- Home -->
+<button class="flex flex-col items-center justify-center text-text-secondary hover:text-primary transition-colors active:scale-90">
 <span class="material-symbols-outlined">home</span>
-<span class="font-caption text-caption">Home</span>
+<span class="font-caption text-caption">หน้าหลัก</span>
 </button>
 <!-- History -->
-<button class="flex flex-col items-center justify-center text-text-secondary hover:text-primary transition-colors active:scale-90 transition-transform">
+<button class="flex flex-col items-center justify-center text-text-secondary hover:text-primary transition-colors active:scale-90">
 <span class="material-symbols-outlined">history</span>
-<span class="font-caption text-caption">History</span>
+<span class="font-caption text-caption">ประวัติ</span>
 </button>
 <!-- Report -->
-<button class="flex flex-col items-center justify-center text-text-secondary hover:text-primary transition-colors active:scale-90 transition-transform">
+<button class="flex flex-col items-center justify-center text-text-secondary hover:text-primary transition-colors active:scale-90">
 <span class="material-symbols-outlined">flag</span>
-<span class="font-caption text-caption">Report</span>
+<span class="font-caption text-caption">แจ้งรายงาน</span>
 </button>
 <!-- Settings (Active) -->
-<button class="flex flex-col items-center justify-center text-primary font-bold active:scale-90 transition-transform">
+<button class="flex flex-col items-center justify-center text-primary font-bold active:scale-90">
 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span>
-<span class="font-caption text-caption">Settings</span>
-</button>
-</nav>
+<span class="font-caption text-caption">ตั้งค่า</span>
+</button></nav>
 <script>
         // Simple ripple effect for buttons
         document.querySelectorAll('button').forEach(button => {
@@ -262,4 +281,6 @@
         `;
         document.head.appendChild(style);
     </script>
+
+
 </body></html>

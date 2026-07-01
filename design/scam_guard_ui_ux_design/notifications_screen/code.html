@@ -219,26 +219,23 @@
 </div>
 </main>
 <!-- BottomNavBar -->
-<nav class="fixed bottom-0 w-full z-50 bg-surface border-t border-border flex justify-around items-center h-16 w-full px-xs safe-area-bottom">
-<a class="flex flex-col items-center justify-center text-text-secondary hover:text-primary transition-colors active:scale-90 transition-transform" href="#">
+<nav class="fixed bottom-0 w-full z-50 bg-surface border-t border-border flex justify-around items-center h-16 w-full px-xs safe-area-bottom"><a class="flex flex-col items-center justify-center text-text-secondary hover:text-primary transition-colors active:scale-90 transition-transform" href="#">
 <span class="material-symbols-outlined">home</span>
-<span class="font-caption text-caption">Home</span>
+<span class="font-caption text-caption">หน้าหลัก</span>
 </a>
 <a class="flex flex-col items-center justify-center text-text-secondary hover:text-primary transition-colors active:scale-90 transition-transform" href="#">
 <span class="material-symbols-outlined">history</span>
-<span class="font-caption text-caption">History</span>
+<span class="font-caption text-caption">ประวัติ</span>
 </a>
 <a class="flex flex-col items-center justify-center text-text-secondary hover:text-primary transition-colors active:scale-90 transition-transform" href="#">
 <span class="material-symbols-outlined">flag</span>
-<span class="font-caption text-caption">Report</span>
+<span class="font-caption text-caption">แจ้งรายงาน</span>
 </a>
-<a class="flex flex-col items-center justify-center text-primary font-bold active:scale-90 transition-transform relative" href="#"><span class="material-symbols-outlined">settings</span>
-
-<span class="font-caption text-caption">Settings</span>
-<!-- Contextual Active Marker -->
+<a class="flex flex-col items-center justify-center text-primary font-bold active:scale-90 transition-transform relative" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-caption text-caption">ตั้งค่า</span>
 <div class="absolute -top-1 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface"></div>
-</a>
-</nav>
+</a></nav>
 <script>
         // Simple Interaction logic for clearing notifications
         document.getElementById('clearAllBtn').addEventListener('click', function() {
@@ -269,6 +266,8 @@
             });
         });
     </script>
+
+
 
 
 </body></html>

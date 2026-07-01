@@ -5,19 +5,26 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:scam_image_mobile/main.dart';
 
 void main() {
-  testWidgets('App splash screen smoke test', (WidgetTester tester) async {
+  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const ScamGuardApp());
+    await tester.pumpWidget(const MyApp());
 
-    // Verify that the splash screen shows Scam Image Detection.
-    expect(find.text('Scam Image Detection'), findsOneWidget);
+    // Verify that our counter starts at 0.
+    expect(find.text('0'), findsOneWidget);
+    expect(find.text('1'), findsNothing);
 
-    // รอให้ Timer ในหน้า Splash ทำงานเสร็จสิ้นโดยไม่อิงการเปลี่ยนหน้าต่อเนื่อง
-    await tester.pump(const Duration(seconds: 3));
+    // Tap the '+' icon and trigger a frame.
+    await tester.tap(find.byIcon(Icons.add));
+    await tester.pump();
+
+    // Verify that our counter has incremented.
+    expect(find.text('0'), findsNothing);
+    expect(find.text('1'), findsOneWidget);
   });
 }

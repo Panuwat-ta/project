@@ -127,17 +127,17 @@
 </head>
 <body class="bg-bg-light min-h-screen flex flex-col items-center justify-center">
 <!-- Top AppBar (Suppressed from JSON logic but implemented as a simple header since it's a stand-alone page) -->
-<header class="fixed top-0 left-0 w-full bg-surface-light border-b border-border h-16 flex items-center px-safe-margin z-50">
-<button class="p-2 -ml-2 text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors active:scale-95 duration-150" onclick="window.history.back()">
-<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
-</button>
-<div class="ml-2 flex items-center gap-2">
-<span class="material-symbols-outlined text-primary" data-icon="shield_lock" style="font-variation-settings: 'FILL' 1;">shield_lock</span>
-<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">ScamGuard</h1>
-</div>
-</header>
+<header class="fixed top-0 left-0 w-full bg-surface-light border-b border-border h-16 flex items-center px-safe-margin z-50"><div class="flex items-center justify-between w-full">
+  <div class="flex items-center gap-2">
+    <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">shield_lock</span>
+    <h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">ScamGuard</h1>
+  </div>
+  <button class="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors" onclick="window.history.back()">
+    <span class="material-symbols-outlined">arrow_back</span>
+  </button>
+</div></header>
 <!-- Main Content Canvas -->
-<main class="w-full max-w-[540px] px-safe-margin pt-24 pb-12 flex-grow flex flex-col justify-center">
+<main class="w-full max-w-[540px] px-safe-margin pt-24 flex-grow flex flex-col justify-center pb-24">
 <!-- Registration Card -->
 <div class="bg-surface-light p-xl rounded-xl shadow-[0px_4px_12px_rgba(23,33,43,0.05)] border border-border">
 <div class="mb-lg text-center">
@@ -191,7 +191,7 @@
 </div>
 <!-- Primary CTA -->
 <button class="w-full bg-primary text-on-primary py-4 rounded-lg font-button-label text-button-label shadow-md hover:bg-on-primary-fixed-variant transition-all active:scale-[0.98] duration-150 flex items-center justify-center gap-2 mt-4" type="submit">
-<span>สมัครสมาชิก</span>
+<span class="">สมัครสมาชิก</span>
 <span class="material-symbols-outlined" data-icon="person_add">person_add</span>
 </button>
 </form>
@@ -215,7 +215,24 @@
 </div>
 </main>
 <!-- Footer Security Badge -->
-<footer class="w-full max-w-[540px] px-safe-margin pb-xl text-center">
+<nav class="fixed bottom-0 left-0 w-full bg-surface-light border-t border-border px-safe-margin py-2 flex justify-around items-center z-50">
+  <a href="#" class="flex flex-col items-center gap-1 text-text-secondary hover:text-primary transition-colors">
+    <span class="material-symbols-outlined">home</span>
+    <span class="text-caption">หน้าหลัก</span>
+  </a>
+  <a href="#" class="flex flex-col items-center gap-1 text-text-secondary hover:text-primary transition-colors">
+    <span class="material-symbols-outlined">history</span>
+    <span class="text-caption">ประวัติ</span>
+  </a>
+  <a href="#" class="flex flex-col items-center gap-1 text-text-secondary hover:text-primary transition-colors">
+    <span class="material-symbols-outlined">flag</span>
+    <span class="text-caption">แจ้งรายงาน</span>
+  </a>
+  <a href="#" class="flex flex-col items-center gap-1 text-text-secondary hover:text-primary transition-colors">
+    <span class="material-symbols-outlined">settings</span>
+    <span class="text-caption">ตั้งค่า</span>
+  </a>
+</nav><footer class="w-full max-w-[540px] px-safe-margin pb-xl text-center">
 <div class="inline-flex items-center gap-2 px-3 py-1 bg-surface-container rounded-full border border-outline-variant/30">
 <span class="material-symbols-outlined text-[16px] text-secondary" data-icon="verified_user" style="font-variation-settings: 'FILL' 1;">verified_user</span>
 <span class="text-[12px] font-semibold text-secondary uppercase tracking-wider">End-to-End Encrypted Data Protection</span>
@@ -255,4 +272,6 @@
             });
         });
     </script>
+
+
 </body></html>

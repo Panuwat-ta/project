@@ -130,17 +130,7 @@
 </head>
 <body class="bg-bg-light text-on-surface antialiased">
 <!-- TopAppBar -->
-<header class="w-full top-0 sticky z-40 bg-surface border-b border-border flex justify-between items-center px-safe-margin py-md">
-<div class="flex items-center gap-md">
-<button aria-label="กลับ" class="active:scale-95 transition-transform text-primary">
-<span class="material-symbols-outlined text-headline-lg-mobile">arrow_back</span>
-</button>
-<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary tracking-tight">ความเป็นส่วนตัว</h1>
-</div>
-<button class="active:scale-95 transition-transform text-on-surface-variant hover:opacity-80">
-<span class="material-symbols-outlined">notifications</span>
-</button>
-</header>
+<header class="w-full top-0 sticky z-40 bg-surface border-b border-border flex justify-between items-center px-safe-margin py-md"><div class="flex items-center gap-md"><button aria-label="กลับ" class="active:scale-95 transition-transform text-primary"><span class="material-symbols-outlined text-headline-lg-mobile">arrow_back</span></button><h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary tracking-tight">ความเป็นส่วนตัว</h1></div><button class="active:scale-95 transition-transform text-on-surface-variant hover:opacity-80"><span class="material-symbols-outlined">notifications</span></button></header>
 <main class="max-w-[540px] mx-auto px-safe-margin pt-lg pb-xxl space-y-lg">
 <!-- Hero Illustration / Icon Section -->
 <div class="flex flex-col items-center justify-center py-md text-center">
@@ -223,28 +213,7 @@
 </div>
 </main>
 <!-- BottomNavBar -->
-<nav class="fixed bottom-0 w-full z-50 bg-surface border-t border-border flex justify-around items-center h-16 px-xs safe-bottom">
-<!-- Home -->
-<a class="flex flex-col items-center justify-center text-text-secondary hover:text-primary transition-colors active:scale-90" href="#">
-<span class="material-symbols-outlined">home</span>
-<span class="font-caption text-caption">Home</span>
-</a>
-<!-- History -->
-<a class="flex flex-col items-center justify-center text-text-secondary hover:text-primary transition-colors active:scale-90" href="#">
-<span class="material-symbols-outlined">history</span>
-<span class="font-caption text-caption">History</span>
-</a>
-<!-- Report -->
-<a class="flex flex-col items-center justify-center text-text-secondary hover:text-primary transition-colors active:scale-90" href="#">
-<span class="material-symbols-outlined">flag</span>
-<span class="font-caption text-caption">Report</span>
-</a>
-<!-- Settings (Active) -->
-<a class="flex flex-col items-center justify-center text-primary font-bold active:scale-90" href="#">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span>
-<span class="font-caption text-caption">Settings</span>
-</a>
-</nav>
+<nav class="fixed bottom-0 w-full z-50 bg-surface border-t border-border flex justify-around items-center h-16 px-xs safe-bottom"><a class="flex flex-col items-center justify-center text-text-secondary hover:text-primary transition-colors active:scale-90" href="#"><span class="material-symbols-outlined">home</span><span class="font-caption text-caption">หน้าหลัก</span></a><a class="flex flex-col items-center justify-center text-text-secondary hover:text-primary transition-colors active:scale-90" href="#"><span class="material-symbols-outlined">history</span><span class="font-caption text-caption">ประวัติ</span></a><a class="flex flex-col items-center justify-center text-text-secondary hover:text-primary transition-colors active:scale-90" href="#"><span class="material-symbols-outlined">flag</span><span class="font-caption text-caption">แจ้งรายงาน</span></a><a class="flex flex-col items-center justify-center text-primary font-bold active:scale-90" href="#"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span><span class="font-caption text-caption">ตั้งค่า</span></a></nav>
 <script>
         // Simple micro-interaction for toggle switches
         const toggles = document.querySelectorAll('.toggle-checkbox');
@@ -257,4 +226,6 @@
         
         // Active Scale interaction for buttons handled by Tailwind classes but can be extended here
     </script>
+
+
 </body></html>

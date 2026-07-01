@@ -1,0 +1,307 @@
+<!DOCTYPE html><html class="dark" lang="th"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+<title>ScamGuard - รายละเอียดการตรวจสอบ</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#d9e3f1",
+                    "on-primary-fixed": "#001f2a",
+                    "surface-light": "#FFFFFF",
+                    "primary-container": "#00a6d6",
+                    "inverse-surface": "#27313c",
+                    "on-primary-fixed-variant": "#004d65",
+                    "on-background": "#121c26",
+                    "on-tertiary": "#ffffff",
+                    "tertiary": "#855300",
+                    "tertiary-fixed-dim": "#ffb95f",
+                    "error-container": "#ffdad6",
+                    "surface-container-high": "#dfe9f7",
+                    "outline": "#6e797f",
+                    "on-tertiary-fixed-variant": "#653e00",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-low": "#edf4ff",
+                    "on-secondary": "#ffffff",
+                    "on-surface-variant": "#3d484e",
+                    "text-secondary": "#5E6B78",
+                    "on-primary": "#ffffff",
+                    "primary": "#006685",
+                    "surface-container": "#e4effd",
+                    "surface": "#f7f9ff",
+                    "on-primary-container": "#003649",
+                    "surface-dim": "#d1dbe9",
+                    "primary-fixed": "#bfe9ff",
+                    "secondary-fixed": "#7ffc97",
+                    "on-secondary-fixed-variant": "#005320",
+                    "secondary-fixed-dim": "#62df7d",
+                    "on-surface": "#121c26",
+                    "surface-tint": "#006685",
+                    "inverse-on-surface": "#e8f2ff",
+                    "danger": "#DC2626",
+                    "on-secondary-fixed": "#002109",
+                    "secondary": "#006e2d",
+                    "on-tertiary-fixed": "#2a1700",
+                    "surface-container-highest": "#d9e3f1",
+                    "outline-variant": "#bdc8cf",
+                    "background": "#f7f9ff",
+                    "surface-bright": "#f7f9ff",
+                    "on-secondary-container": "#007230",
+                    "error": "#ba1a1a",
+                    "primary-fixed-dim": "#6cd2ff",
+                    "tertiary-container": "#d68900",
+                    "bg-dark": "#0F1720",
+                    "inverse-primary": "#6cd2ff",
+                    "on-tertiary-container": "#492b00",
+                    "border": "#D8E0EA",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed": "#ffddb8",
+                    "secondary-container": "#7cf994",
+                    "surface-dark": "#162230",
+                    "bg-light": "#F6F8FB",
+                    "on-error-container": "#93000a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "lg": "24px",
+                    "md": "16px",
+                    "xl": "32px",
+                    "safe-margin": "20px",
+                    "gutter": "12px",
+                    "xs": "4px",
+                    "sm": "8px",
+                    "xxl": "48px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Sarabun"],
+                    "caption": ["Sarabun"],
+                    "button-label": ["Sarabun"],
+                    "section-header": ["Sarabun"],
+                    "headline-lg": ["Sarabun"],
+                    "body-base": ["Sarabun"],
+                    "code-data": ["Inter"],
+                    "title-md": ["Sarabun"],
+                    "display-hero": ["Sarabun"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "caption": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "button-label": ["16px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "section-header": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "headline-lg": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "body-base": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "code-data": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "title-md": ["22px", {"lineHeight": "28px", "fontWeight": "700"}],
+                    "display-hero": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #0F1720;
+            font-family: 'Sarabun', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(22, 34, 48, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(39, 49, 60, 0.5);
+        }
+        .risk-glow-red { box-shadow: 0 0 15px rgba(255, 218, 214, 0.1); }
+        .risk-glow-yellow { box-shadow: 0 0 15px rgba(255, 185, 95, 0.1); }
+        .risk-glow-green { box-shadow: 0 0 15px rgba(127, 252, 151, 0.1); }
+        
+        @keyframes pulse-scan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        .scan-line {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #6cd2ff, transparent);
+            animation: pulse-scan 2s infinite linear;
+        }
+    </style>
+</head>
+<body class="text-surface-light">
+<!-- Top AppBar -->
+<header class="bg-surface-dark fixed top-0 left-0 right-0 z-50 border-b border-inverse-surface h-16 flex justify-between items-center px-safe-margin"><div class="flex items-center gap-md"><button class="hover:opacity-80 transition-opacity active:scale-95 transition-transform duration-150" onclick="window.history.back()"><span class="material-symbols-outlined text-primary-fixed-dim">arrow_back</span></button><div class="flex items-center gap-xs"><span class="material-symbols-outlined text-primary-fixed-dim">shield</span><h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary-fixed-dim">ScamGuard</h1></div></div><button class="hover:opacity-80 transition-opacity active:scale-95 transition-transform duration-150"><span class="material-symbols-outlined text-primary-fixed-dim">share</span></button></header>
+<main class="pt-24 pb-32 px-safe-margin max-w-[600px] mx-auto space-y-lg">
+<!-- Summary Header with Gauge -->
+<section class="bg-surface-dark rounded-xl p-md shadow-sm border border-inverse-surface relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full scan-line opacity-50"></div>
+<div class="flex items-center justify-between mb-sm">
+<div>
+<h2 class="font-section-header text-section-header text-surface-light">ความเสี่ยงโดยรวม</h2>
+<p class="font-caption text-caption text-outline-variant">วิเคราะห์ล่าสุดเมื่อ 2 นาทีที่แล้ว</p>
+</div>
+<div class="flex flex-col items-end">
+<span class="px-3 py-1 rounded-full bg-error/20 text-error-container font-bold text-caption uppercase">ความเสี่ยงสูง</span>
+</div>
+</div>
+<div class="flex justify-center py-md">
+<div class="relative w-32 h-32 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-inverse-surface" cx="64" cy="64" fill="transparent" r="58" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-error-container" cx="64" cy="64" fill="transparent" r="58" stroke="currentColor" stroke-dasharray="364" stroke-dashoffset="36" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-headline-lg font-headline-lg text-error-container">92%</span>
+<span class="font-caption text-caption text-outline-variant">Scam Score</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Card 1: Textual Analysis (OCR) -->
+<section class="bg-surface-dark rounded-xl p-md shadow-sm border border-inverse-surface risk-glow-red">
+<div class="flex justify-between items-start mb-md">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary-fixed-dim">description</span>
+<h3 class="font-section-header text-section-header">การวิเคราะห์ข้อความ (OCR)</h3>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-error/20 text-error-container text-[12px] font-bold">เสี่ยงสูง</span>
+</div>
+<div class="space-y-md">
+<div class="p-sm bg-inverse-surface rounded-lg border border-outline/30">
+<p class="font-caption text-caption text-outline-variant mb-xs">ข้อความที่ตรวจพบ:</p>
+<p class="font-body-base text-body-base italic text-surface-light">"ยินดีด้วย! คุณได้รับรางวัลมูลค่า 50,000 บาท คลิกที่ลิงก์เพื่อรับสิทธิ์ด่วนก่อนหมดเวลา..."</p>
+</div>
+<div class="grid grid-cols-2 gap-sm">
+<div class="flex flex-col gap-xs">
+<p class="font-caption text-caption text-outline-variant">คำที่น่าสงสัย</p>
+<div class="flex flex-wrap gap-xs">
+<span class="bg-error/20 text-error-container px-2 py-0.5 rounded text-[12px] font-medium border border-error-container/20">รางวัล</span>
+<span class="bg-error/20 text-error-container px-2 py-0.5 rounded text-[12px] font-medium border border-error-container/20">ด่วน</span>
+<span class="bg-error/20 text-error-container px-2 py-0.5 rounded text-[12px] font-medium border border-error-container/20">คลิกที่ลิงก์</span>
+</div>
+</div>
+<div class="flex flex-col gap-xs text-right">
+<p class="font-caption text-caption text-outline-variant">ความแม่นยำ</p>
+<p class="font-code-data text-code-data text-surface-light">98.5% Match</p>
+</div>
+</div>
+<div class="pt-sm border-t border-inverse-surface">
+<p class="font-body-base text-body-base text-outline-variant">พบรูปแบบประโยคเร่งเร้าและสร้างความตื่นตระหนก ซึ่งเป็นลักษณะเฉพาะของการหลอกลวงแบบ Phishing</p>
+</div>
+</div>
+</section>
+<!-- Card 2: Source Verification -->
+<section class="bg-surface-dark rounded-xl p-md shadow-sm border border-inverse-surface risk-glow-yellow">
+<div class="flex justify-between items-start mb-md">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary-fixed-dim">travel_explore</span>
+<h3 class="font-section-header text-section-header">การตรวจสอบแหล่งที่มา</h3>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-tertiary-container/30 text-tertiary-fixed text-[12px] font-bold">ปานกลาง</span>
+</div>
+<div class="space-y-md">
+<div class="flex justify-between items-center bg-bg-dark p-sm rounded-lg border border-inverse-surface">
+<div class="flex flex-col">
+<span class="font-caption text-caption text-outline-variant">ตรวจพบครั้งแรก</span>
+<span class="font-body-base text-body-base font-medium text-surface-light">12 ม.ค. 2567</span>
+</div>
+<div class="text-right">
+<span class="font-caption text-caption text-outline-variant">จำนวนที่พบซ้ำ</span>
+<span class="font-body-base text-body-base font-medium text-surface-light">42 ครั้ง</span>
+</div>
+</div>
+<div>
+<p class="font-caption text-caption text-outline-variant mb-sm">ลิงก์ที่เกี่ยวข้องและรายงาน:</p>
+<div class="space-y-sm">
+<a class="flex items-center justify-between p-sm hover:bg-inverse-surface rounded-lg transition-colors group" href="#">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary-fixed-dim text-[20px]">link</span>
+<span class="font-body-base text-body-base text-primary-fixed-dim truncate max-w-[200px]">report-scam-th.org/database...</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
+</a>
+<a class="flex items-center justify-between p-sm hover:bg-inverse-surface rounded-lg transition-colors group" href="#">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary-fixed-dim text-[20px]">policy</span>
+<span class="font-body-base text-body-base text-primary-fixed-dim truncate max-w-[200px]">blacklisted-domains.net/p...</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<!-- Card 3: Visual Anomaly Detection -->
+<section class="bg-surface-dark rounded-xl p-md shadow-sm border border-inverse-surface risk-glow-green">
+<div class="flex justify-between items-start mb-md">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary-fixed-dim">visibility</span>
+<h3 class="font-section-header text-section-header">การวิเคราะห์ความผิดปกติทางภาพ</h3>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-secondary-container/30 text-secondary-fixed text-[12px] font-bold">เสี่ยงต่ำ</span>
+</div>
+<div class="space-y-md">
+<div class="grid grid-cols-2 gap-md">
+<div class="aspect-square rounded-lg relative overflow-hidden bg-inverse-surface">
+<img class="w-full h-full object-cover opacity-80" data-alt="A macro scientific photography of a digital screen with visible pixel grid artifacts and subtle compression distortions. The lighting is cool-toned blue, emphasizing technological scrutiny. The image represents the deep visual analysis of a security algorithm detecting tiny inconsistencies in a fraudulent digital image, maintaining a professional and clinical scam-detection UI aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWLjKXvMHNCG0sAzb4U10Pq1-_bSSrwA0Mc3Lqbi8Ug97j0OtE5l4FES3_RIqb8fYy0b2cyYJQbdg4tfdbnyAK7SMLqJBI3YGrjRL81eh-6QxbMAVJDEH0mIcgpstoOzYOiqRtCT-evyBMONvmC_KiGnEyvJsTu3eNfMEarJQdzLgNT1bNXdjZCgv7CwIjfE8uLsfxyTTojMqF3BIL_c9VqlPppm_tJ6FUOGNDPAxPHSrWTW7PwMTvYdeZsx1NTyBAyDgFXh92r4E">
+<div class="absolute inset-0 border-2 border-secondary-fixed/40 rounded-lg pointer-events-none"></div>
+<div class="absolute top-2 left-2 bg-secondary-fixed text-on-secondary-fixed px-2 py-0.5 rounded text-[10px] font-bold uppercase">Heatmap</div>
+</div>
+<div class="flex flex-col justify-center gap-sm">
+<div>
+<p class="font-caption text-caption text-outline-variant">AI-Generated Prob.</p>
+<p class="font-title-md text-title-md text-secondary-fixed">12%</p>
+</div>
+<div>
+<p class="font-caption text-caption text-outline-variant">Anomaly Score</p>
+<p class="font-title-md text-title-md text-surface-light">Low (0.14)</p>
+</div>
+</div>
+</div>
+<div class="p-sm bg-inverse-surface rounded-lg">
+<h4 class="font-button-label text-button-label text-surface-light mb-xs">คำอธิบายจาก AI (XAI)</h4>
+<p class="font-body-base text-body-base text-outline-variant">
+                        ภาพมีโครงสร้างพิกเซลที่สม่ำเสมอ ไม่พบการตัดต่อที่ชัดเจน อย่างไรก็ตาม พบความผิดปกติเล็กน้อยบริเวณโลโก้ธนาคารซึ่งอาจเกิดจากการใช้ภาพคุณภาพต่ำ
+                    </p>
+</div>
+</div>
+</section>
+<!-- Final Action CTA -->
+<div class="flex flex-col gap-sm">
+<button class="w-full h-12 bg-primary-fixed-dim text-on-primary-fixed rounded-xl font-button-label hover:opacity-90 active:scale-95 transition-all shadow-md flex items-center justify-center gap-sm">
+<span class="material-symbols-outlined">report_gmailerrorred</span>
+                ส่งข้อมูลรายงานเจ้าหน้าที่
+            </button>
+<button class="w-full h-12 border border-primary-fixed-dim text-primary-fixed-dim rounded-xl font-button-label hover:bg-inverse-surface transition-all flex items-center justify-center gap-sm" onclick="window.history.back()">
+<span class="material-symbols-outlined">refresh</span>
+                ตรวจสอบรูปภาพอื่น
+            </button>
+</div>
+</main>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-gutter py-sm bg-surface-dark border-t border-inverse-surface"><div class="flex flex-col items-center justify-center text-outline-variant hover:bg-inverse-surface transition-colors p-2 rounded-lg cursor-pointer"><span class="material-symbols-outlined">home</span><span class="font-caption text-caption">หน้าหลัก</span></div><div class="flex flex-col items-center justify-center text-primary-fixed-dim font-bold hover:bg-inverse-surface transition-colors p-2 rounded-lg cursor-pointer"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">history</span><span class="font-caption text-caption">ประวัติ</span></div><div class="flex flex-col items-center justify-center text-outline-variant hover:bg-inverse-surface transition-colors p-2 rounded-lg cursor-pointer"><span class="material-symbols-outlined">flag</span><span class="font-caption text-caption">แจ้งรายงาน</span></div><div class="flex flex-col items-center justify-center text-outline-variant hover:bg-inverse-surface transition-colors p-2 rounded-lg cursor-pointer"><span class="material-symbols-outlined">settings</span><span class="font-caption text-caption">ตั้งค่า</span></div></nav>
+<script>
+        // Micro-interaction for risk cards
+        document.querySelectorAll('section').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-2px)';
+                card.style.transition = 'transform 0.3s ease';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0px)';
+            });
+        });
+    </script>
+
+
+</body></html>

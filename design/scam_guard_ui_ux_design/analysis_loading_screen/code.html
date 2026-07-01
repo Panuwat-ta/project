@@ -156,15 +156,13 @@
 </head>
 <body class="font-body-base text-on-surface antialiased flex flex-col min-h-screen">
 <!-- TopAppBar - Predestined from JSON -->
-<header class="bg-surface-light dark:bg-surface-dark flex justify-between items-center w-full px-safe-margin h-16 border-b border-border dark:border-outline-variant sticky top-0 z-50">
-<div class="flex items-center gap-sm">
+<header class="bg-surface-light dark:bg-surface-dark flex justify-between items-center w-full px-safe-margin h-16 border-b border-border dark:border-outline-variant sticky top-0 z-50"><div class="flex items-center gap-sm">
 <span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim" style="font-variation-settings: 'FILL' 1;">shield_lock</span>
 <span class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary dark:text-primary-fixed-dim">ScamGuard</span>
 </div>
 <button class="hover:opacity-80 transition-opacity active:scale-95 duration-150">
-<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim">notifications</span>
-</button>
-</header>
+<span class="material-symbols-outlined text-on-surface-variant dark:text-outline-variant">notifications</span>
+</button></header>
 <main class="flex-grow flex flex-col items-center justify-center px-safe-margin py-xl">
 <!-- Analysis Container -->
 <div class="w-full max-w-[540px] flex flex-col items-center space-y-xl">
@@ -174,7 +172,7 @@
 <svg class="w-full h-full">
 <circle class="text-surface-container-highest" cx="96" cy="96" fill="transparent" r="84" stroke="currentColor" stroke-width="8"></circle>
 <!-- Progress Foreground -->
-<circle class="text-primary progress-ring__circle" cx="96" cy="96" fill="transparent" r="84" stroke="currentColor" stroke-dasharray="527.78" stroke-dashoffset="180" stroke-linecap="round" stroke-width="8"></circle>
+<circle class="text-primary progress-ring__circle" cx="96" cy="96" fill="transparent" r="84" stroke="currentColor" stroke-dasharray="527.78" stroke-dashoffset="180" stroke-linecap="round" stroke-width="8" style="stroke-dasharray: 527.788, 527.788; stroke-dashoffset: 184.726;"></circle>
 </svg>
 <!-- Center Content: Analysis Preview -->
 <div class="absolute inset-0 flex items-center justify-center p-md">
@@ -244,25 +242,22 @@
 </div>
 </main>
 <!-- BottomNavBar - Predestined from JSON -->
-<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-gutter py-sm bg-surface-light dark:bg-surface-dark border-t border-border dark:border-outline-variant">
-<a class="flex flex-col items-center justify-center text-text-secondary dark:text-outline-variant hover:bg-surface-container-low transition-colors" href="#">
-<span class="material-symbols-outlined">home</span>
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-gutter py-sm bg-surface-light dark:bg-surface-dark border-t border-border dark:border-outline-variant"><a class="flex flex-col items-center justify-center text-primary dark:text-primary-fixed-dim transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
 <span class="font-caption text-caption">หน้าหลัก</span>
 </a>
-<a class="flex flex-col items-center justify-center text-text-secondary dark:text-outline-variant hover:bg-surface-container-low transition-colors" href="#">
+<a class="flex flex-col items-center justify-center text-text-secondary dark:text-outline-variant hover:text-primary transition-colors" href="#">
 <span class="material-symbols-outlined">history</span>
 <span class="font-caption text-caption">ประวัติ</span>
 </a>
-<!-- Active Tab Logic: Since we are in an active scan session, 'หน้าหลัก' or 'แจ้งรายงาน' is closest, but here we keep generic UI inactive to focus on the loading task -->
-<a class="flex flex-col items-center justify-center text-text-secondary dark:text-outline-variant hover:bg-surface-container-low transition-colors" href="#">
+<a class="flex flex-col items-center justify-center text-text-secondary dark:text-outline-variant hover:text-primary transition-colors" href="#">
 <span class="material-symbols-outlined">flag</span>
 <span class="font-caption text-caption">แจ้งรายงาน</span>
 </a>
-<a class="flex flex-col items-center justify-center text-text-secondary dark:text-outline-variant hover:bg-surface-container-low transition-colors" href="#">
+<a class="flex flex-col items-center justify-center text-text-secondary dark:text-outline-variant hover:text-primary transition-colors" href="#">
 <span class="material-symbols-outlined">settings</span>
 <span class="font-caption text-caption">ตั้งค่า</span>
-</a>
-</nav>
+</a></nav>
 <script>
         // Simple script to simulate progress logic for the prominent indicator
         document.addEventListener('DOMContentLoaded', () => {
@@ -292,4 +287,6 @@
             });
         });
     </script>
+
+
 </body></html>

@@ -143,13 +143,18 @@
 <!-- Top Navigation Anchor (Suppressed based on "The Destination Rule" for Transactional/Onboarding) -->
 <main class="min-h-screen flex flex-col max-w-[540px] mx-auto relative overflow-hidden">
 <!-- Header & Identity Section -->
-<header class="pt-xl px-safe-margin text-center">
-<div class="inline-flex items-center justify-center p-sm bg-primary-container/10 rounded-xl mb-md">
-<span class="material-symbols-outlined text-primary text-[32px]" style="font-variation-settings: 'FILL' 1;">shield_lock</span>
-</div>
-<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary tracking-tight">
-                ScamGuard
-            </h1>
+<header class="sticky top-0 z-50 bg-surface-light/80 backdrop-blur-md border-b border-outline-variant px-safe-margin h-16 flex items-center justify-between">
+  <div class="flex items-center gap-2">
+    <div class="w-10 h-10 bg-primary-container/10 rounded-lg flex items-center justify-center">
+      <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">shield_lock</span>
+    </div>
+    <h1 class="font-headline-lg-mobile text-xl text-primary tracking-tight">ScamGuard</h1>
+  </div>
+  <div class="flex items-center gap-md">
+    <button class="p-sm text-on-surface-variant hover:bg-surface-container rounded-full transition-colors">
+      <span class="material-symbols-outlined">notifications</span>
+    </button>
+  </div>
 </header>
 <!-- Illustration Component -->
 <section class="flex-1 flex flex-col items-center justify-center px-safe-margin py-lg">
@@ -205,7 +210,24 @@
                 เวอร์ชัน 1.0.0 • ความปลอดภัยของคุณคือสิ่งสำคัญ
             </p>
 </section>
-</main>
+<nav class="sticky bottom-0 left-0 right-0 bg-surface-light border-t border-outline-variant px-safe-margin py-sm flex items-center justify-around z-50">
+  <a href="#" class="flex flex-col items-center gap-xs text-primary">
+    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+    <span class="text-caption font-bold">หน้าหลัก</span>
+  </a>
+  <a href="#" class="flex flex-col items-center gap-xs text-text-secondary hover:text-primary transition-colors">
+    <span class="material-symbols-outlined">history</span>
+    <span class="text-caption">ประวัติ</span>
+  </a>
+  <a href="#" class="flex flex-col items-center gap-xs text-text-secondary hover:text-primary transition-colors">
+    <span class="material-symbols-outlined">flag</span>
+    <span class="text-caption">แจ้งรายงาน</span>
+  </a>
+  <a href="#" class="flex flex-col items-center gap-xs text-text-secondary hover:text-primary transition-colors">
+    <span class="material-symbols-outlined">settings</span>
+    <span class="text-caption">ตั้งค่า</span>
+  </a>
+</nav></main>
 <!-- Interactive Logic for CTA -->
 <script>
         const termsCheckbox = document.getElementById('terms');
@@ -242,4 +264,6 @@
             }
         });
     </script>
+
+
 </body></html>

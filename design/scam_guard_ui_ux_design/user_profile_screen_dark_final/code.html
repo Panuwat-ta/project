@@ -1,0 +1,272 @@
+<!DOCTYPE html><html class="dark" lang="th"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+<title>ScamGuard User Profile</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-secondary-container": "#007230",
+                      "tertiary": "#855300",
+                      "on-secondary": "#ffffff",
+                      "bg-dark": "#0F1720",
+                      "on-surface": "#121c26",
+                      "surface-tint": "#006685",
+                      "surface-bright": "#f7f9ff",
+                      "error-container": "#ffdad6",
+                      "outline-variant": "#bdc8cf",
+                      "outline": "#6e797f",
+                      "on-surface-variant": "#3d484e",
+                      "surface-container-lowest": "#ffffff",
+                      "on-primary-fixed": "#001f2a",
+                      "on-secondary-fixed-variant": "#005320",
+                      "on-secondary-fixed": "#002109",
+                      "primary-container": "#00a6d6",
+                      "on-tertiary-fixed-variant": "#653e00",
+                      "tertiary-fixed": "#ffddb8",
+                      "background": "#f7f9ff",
+                      "secondary": "#006e2d",
+                      "primary-fixed-dim": "#6cd2ff",
+                      "on-error": "#ffffff",
+                      "secondary-fixed": "#7ffc97",
+                      "on-background": "#121c26",
+                      "inverse-on-surface": "#e8f2ff",
+                      "secondary-fixed-dim": "#62df7d",
+                      "surface-container-highest": "#d9e3f1",
+                      "on-error-container": "#93000a",
+                      "inverse-surface": "#27313c",
+                      "tertiary-container": "#d68900",
+                      "tertiary-fixed-dim": "#ffb95f",
+                      "error": "#ba1a1a",
+                      "surface": "#f7f9ff",
+                      "inverse-primary": "#6cd2ff",
+                      "surface-variant": "#d9e3f1",
+                      "bg-light": "#F6F8FB",
+                      "on-primary-container": "#003649",
+                      "danger": "#DC2626",
+                      "surface-container-high": "#dfe9f7",
+                      "surface-dark": "#162230",
+                      "border": "#D8E0EA",
+                      "text-secondary": "#5E6B78",
+                      "primary": "#006685",
+                      "primary-fixed": "#bfe9ff",
+                      "on-primary": "#ffffff",
+                      "on-tertiary-fixed": "#2a1700",
+                      "surface-light": "#FFFFFF",
+                      "on-tertiary": "#ffffff",
+                      "secondary-container": "#7cf994",
+                      "on-tertiary-container": "#492b00",
+                      "surface-dim": "#d1dbe9",
+                      "surface-container-low": "#edf4ff",
+                      "on-primary-fixed-variant": "#004d65",
+                      "surface-container": "#e4effd"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "lg": "24px",
+                      "xxl": "48px",
+                      "safe-margin": "20px",
+                      "xs": "4px",
+                      "xl": "32px",
+                      "sm": "8px",
+                      "md": "16px",
+                      "gutter": "12px"
+              },
+              "fontFamily": {
+                      "display-hero": ["Sarabun"],
+                      "headline-lg": ["Sarabun"],
+                      "button-label": ["Sarabun"],
+                      "headline-lg-mobile": ["Sarabun"],
+                      "section-header": ["Sarabun"],
+                      "caption": ["Sarabun"],
+                      "body-base": ["Sarabun"],
+                      "code-data": ["Inter"],
+                      "title-md": ["Sarabun"]
+              },
+              "fontSize": {
+                      "display-hero": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-lg": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                      "button-label": ["16px", {"lineHeight": "20px", "fontWeight": "600"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                      "section-header": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                      "caption": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                      "body-base": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "code-data": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                      "title-md": ["22px", {"lineHeight": "28px", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        body {
+            background-color: #0F1720;
+            font-family: 'Sarabun', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .profile-card-shadow {
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+<style>
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        </style><style>
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        </style></head>
+<body class="flex flex-col min-h-screen bg-bg-dark text-inverse-on-surface">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky z-50 bg-surface-dark border-b border-inverse-surface flex justify-between items-center px-safe-margin py-md">
+<button class="active:scale-95 transition-transform hover:opacity-80">
+<span class="material-symbols-outlined text-inverse-primary">arrow_back</span>
+</button>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-inverse-primary tracking-tight">โปรไฟล์</h1>
+<div class="w-6"></div> <!-- Spacer to center title -->
+</header>
+<main class="flex-grow pb-xxl">
+<!-- Profile Header Section -->
+<section class="flex flex-col items-center pt-xl pb-lg px-safe-margin bg-surface-dark mb-sm profile-card-shadow border-b border-inverse-surface">
+<div class="relative mb-md">
+<div class="w-32 h-32 rounded-full overflow-hidden border-4 border-inverse-primary">
+<img class="w-full h-full object-cover" data-alt="A professional studio portrait of a friendly Thai man in his late 30s with a clean haircut, wearing a blue smart-casual polo shirt. The background is a soft-focus office environment with warm morning light. The image has a clean, high-fidelity look that matches a security and trust-based app aesthetic, using a soft corporate color palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDqRkS8urgB7zP51niWyBNHBknbkUKxLiEkzezkxL7-8to---TTeN1iQl7qdFd0044FbjBIEPBuT6j96ld3lM42ivTHcHC1jmhGurR2BM0ZANPGLy2Fesv5z0mqsxElf5BC_E7BIS5KDIWezlMGwVxRgBwbHa32xGq27nak3zBJJujpurXuhd26VF-QqcrN2VSv3dx7S2KyWc4fyhGSZxRkkqXu_a9qTToPKrQk_PeIk6EBs8jxeMZ3yR_LP-wwBH9mrmOVc4I3MI">
+</div>
+<button class="absolute bottom-0 right-0 bg-inverse-primary text-on-primary-container p-2 rounded-full shadow-lg active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+</div>
+<h2 class="font-title-md text-title-md text-inverse-on-surface mb-xs">สมชาย รักความปลอดภัย</h2>
+<p class="font-body-base text-body-base text-outline-variant mb-md">somchai.s@email.com</p>
+<button class="w-full max-w-xs py-md px-lg bg-inverse-primary text-on-primary-container rounded-xl font-button-label text-button-label active:scale-95 transition-transform">
+                แก้ไขโปรไฟล์
+            </button>
+</section>
+<!-- Information List Section -->
+<section class="px-safe-margin mt-lg space-y-md">
+<div class="bg-surface-dark rounded-xl p-md profile-card-shadow space-y-md border border-inverse-surface">
+<!-- Name Row -->
+<div class="flex items-center justify-between py-xs border-b border-inverse-surface">
+<div class="flex flex-col">
+<span class="font-caption text-caption text-outline-variant">ชื่อ-นามสกุล</span>
+<span class="font-body-base text-body-base text-inverse-on-surface">Somchai Rak-Plodpai</span>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+<!-- Email Row -->
+<div class="flex items-center justify-between py-xs border-b border-inverse-surface">
+<div class="flex flex-col">
+<span class="font-caption text-caption text-outline-variant">อีเมล</span>
+<span class="font-body-base text-body-base text-inverse-on-surface">somchai.s@email.com</span>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+<!-- Password Row -->
+<div class="flex items-center justify-between py-xs">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-inverse-primary">lock</span>
+<span class="font-body-base text-body-base text-inverse-on-surface">เปลี่ยนรหัสผ่าน</span>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+</div>
+<!-- Danger Zone Section -->
+<div class="bg-surface-dark rounded-xl p-md profile-card-shadow border border-danger/30">
+<button class="w-full flex items-center gap-md text-inverse-primary hover:opacity-80 active:opacity-70 transition-opacity">
+<span class="material-symbols-outlined text-danger">delete_forever</span>
+<span class="font-button-label text-button-label text-danger">ลบบัญชีผู้ใช้งาน</span>
+</button>
+</div>
+</section>
+<!-- Aesthetic Atmospheric Elements -->
+<div class="mt-xxl flex justify-center opacity-20 px-safe-margin text-center">
+<div class="space-y-sm">
+<span class="material-symbols-outlined text-[48px] text-inverse-primary">verified_user</span>
+<p class="font-caption text-caption text-inverse-on-surface">ScamGuard v2.4.0<br>Your safety is our priority.</p>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 bg-surface-dark border-t border-inverse-surface flex justify-around items-center h-16 px-xs"><!-- Home -->
+<button class="flex flex-col items-center justify-center text-outline-variant hover:text-inverse-primary transition-colors active:scale-90 transition-transform">
+<span class="material-symbols-outlined">home</span>
+<span class="font-caption text-caption">หน้าหลัก</span>
+</button>
+<!-- History -->
+<button class="flex flex-col items-center justify-center text-outline-variant hover:text-inverse-primary transition-colors active:scale-90 transition-transform">
+<span class="material-symbols-outlined">history</span>
+<span class="font-caption text-caption">ประวัติ</span>
+</button>
+<!-- Report -->
+<button class="flex flex-col items-center justify-center text-outline-variant hover:text-inverse-primary transition-colors active:scale-90 transition-transform">
+<span class="material-symbols-outlined">flag</span>
+<span class="font-caption text-caption">แจ้งรายงาน</span>
+</button>
+<!-- Settings (Active) -->
+<button class="flex flex-col items-center justify-center text-inverse-primary font-bold active:scale-90 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-caption text-caption">ตั้งค่า</span>
+</button></nav>
+<script>
+        // Simple ripple effect for buttons
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mousedown', function(e) {
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                let ripple = document.createElement('span');
+                ripple.style.position = 'absolute';
+                ripple.style.width = '100px';
+                ripple.style.height = '100px';
+                ripple.style.background = 'rgba(255, 255, 255, 0.1)';
+                ripple.style.borderRadius = '50%';
+                ripple.style.pointerEvents = 'none';
+                ripple.style.left = `${x - 50}px`;
+                ripple.style.top = `${y - 50}px`;
+                ripple.style.transform = 'scale(0)';
+                ripple.style.animation = 'ripple 0.6s linear';
+                
+                this.style.position = 'relative';
+                this.style.overflow = 'hidden';
+                this.appendChild(ripple);
+                
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+
+
+</body></html>

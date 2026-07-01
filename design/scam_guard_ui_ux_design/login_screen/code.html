@@ -94,7 +94,22 @@
         }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-safe-margin bg-bg-light">
+<body class="flex items-center justify-center min-h-screen p-safe-margin bg-bg-light pt-20 pb-20"><header class="fixed top-0 left-0 right-0 h-16 bg-white border-b border-border flex items-center justify-between px-safe-margin z-50">
+  <div class="flex items-center gap-2">
+    <div class="w-8 h-8 bg-primary rounded flex items-center justify-center">
+      <span class="material-symbols-outlined text-on-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">shield_lock</span>
+    </div>
+    <span class="font-headline-lg-mobile text-lg text-primary">ScamGuard</span>
+  </div>
+  <div class="flex items-center gap-2">
+    <button class="p-2 text-text-secondary hover:bg-bg-light rounded-full">
+      <span class="material-symbols-outlined">notifications</span>
+    </button>
+    <div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center">
+      <span class="material-symbols-outlined text-text-secondary">person</span>
+    </div>
+  </div>
+</header>
 <!-- Atmospheric Background Decoration -->
 <div class="fixed inset-0 overflow-hidden pointer-events-none">
 <div class="absolute -top-[10%] -right-[10%] w-[50%] h-[50%] bg-surface-container-highest/30 blur-[120px] rounded-full"></div>
@@ -218,4 +233,23 @@
     </script>
 
 
-</body></html>
+
+
+<nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-border flex justify-around items-center py-2 z-50">
+  <a href="#" class="flex flex-col items-center gap-1 text-primary">
+    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+    <span class="text-xs font-medium">หน้าหลัก</span>
+  </a>
+  <a href="#" class="flex flex-col items-center gap-1 text-text-secondary hover:text-primary">
+    <span class="material-symbols-outlined">history</span>
+    <span class="text-xs font-medium">ประวัติ</span>
+  </a>
+  <a href="#" class="flex flex-col items-center gap-1 text-text-secondary hover:text-primary">
+    <span class="material-symbols-outlined">flag</span>
+    <span class="text-xs font-medium">แจ้งรายงาน</span>
+  </a>
+  <a href="#" class="flex flex-col items-center gap-1 text-text-secondary hover:text-primary">
+    <span class="material-symbols-outlined">settings</span>
+    <span class="text-xs font-medium">ตั้งค่า</span>
+  </a>
+</nav></body></html>

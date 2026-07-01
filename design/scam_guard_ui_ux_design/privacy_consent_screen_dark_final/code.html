@@ -1,0 +1,335 @@
+<!DOCTYPE html><html class="dark" lang="th"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+<title>Privacy &amp; Consent - ScamGuard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "surface-variant": "#d9e3f1",
+                "on-primary-fixed": "#001f2a",
+                "surface-light": "#FFFFFF",
+                "primary-container": "#00a6d6",
+                "inverse-surface": "#27313c",
+                "on-primary-fixed-variant": "#004d65",
+                "on-background": "#121c26",
+                "on-tertiary": "#ffffff",
+                "tertiary": "#855300",
+                "tertiary-fixed-dim": "#ffb95f",
+                "error-container": "#ffdad6",
+                "surface-container-high": "#dfe9f7",
+                "outline": "#6e797f",
+                "on-tertiary-fixed-variant": "#653e00",
+                "surface-container-lowest": "#ffffff",
+                "surface-container-low": "#edf4ff",
+                "on-secondary": "#ffffff",
+                "on-surface-variant": "#3d484e",
+                "text-secondary": "#5E6B78",
+                "on-primary": "#ffffff",
+                "primary": "#006685",
+                "surface-container": "#e4effd",
+                "surface": "#f7f9ff",
+                "on-primary-container": "#003649",
+                "surface-dim": "#d1dbe9",
+                "primary-fixed": "#bfe9ff",
+                "secondary-fixed": "#7ffc97",
+                "on-secondary-fixed-variant": "#005320",
+                "secondary-fixed-dim": "#62df7d",
+                "on-surface": "#121c26",
+                "surface-tint": "#006685",
+                "inverse-on-surface": "#e8f2ff",
+                "danger": "#DC2626",
+                "on-secondary-fixed": "#002109",
+                "secondary": "#006e2d",
+                "on-tertiary-fixed": "#2a1700",
+                "surface-container-highest": "#d9e3f1",
+                "outline-variant": "#bdc8cf",
+                "background": "#f7f9ff",
+                "surface-bright": "#f7f9ff",
+                "on-secondary-container": "#007230",
+                "error": "#ba1a1a",
+                "primary-fixed-dim": "#6cd2ff",
+                "tertiary-container": "#d68900",
+                "bg-dark": "#0F1720",
+                "inverse-primary": "#6cd2ff",
+                "on-tertiary-container": "#492b00",
+                "border": "#D8E0EA",
+                "on-error": "#ffffff",
+                "tertiary-fixed": "#ffddb8",
+                "secondary-container": "#7cf994",
+                "surface-dark": "#162230",
+                "bg-light": "#F6F8FB",
+                "on-error-container": "#93000a"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "xxl": "48px",
+                "xs": "4px",
+                "safe-margin": "20px",
+                "md": "16px",
+                "lg": "24px",
+                "sm": "8px",
+                "xl": "32px",
+                "gutter": "12px"
+        },
+        "fontFamily": {
+                "section-header": [
+                        "Sarabun"
+                ],
+                "button-label": [
+                        "Sarabun"
+                ],
+                "headline-lg": [
+                        "Sarabun"
+                ],
+                "display-hero": [
+                        "Sarabun"
+                ],
+                "headline-lg-mobile": [
+                        "Sarabun"
+                ],
+                "body-base": [
+                        "Sarabun"
+                ],
+                "code-data": [
+                        "Inter"
+                ],
+                "caption": [
+                        "Sarabun"
+                ],
+                "title-md": [
+                        "Sarabun"
+                ]
+        },
+        "fontSize": {
+                "section-header": [
+                        "18px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "button-label": [
+                        "16px",
+                        {
+                                "lineHeight": "20px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-lg": [
+                        "28px",
+                        {
+                                "lineHeight": "36px",
+                                "fontWeight": "700"
+                        }
+                ],
+                "display-hero": [
+                        "48px",
+                        {
+                                "lineHeight": "56px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "headline-lg-mobile": [
+                        "24px",
+                        {
+                                "lineHeight": "32px",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-base": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "code-data": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "fontWeight": "500"
+                        }
+                ],
+                "caption": [
+                        "13px",
+                        {
+                                "lineHeight": "18px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "title-md": [
+                        "22px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "700"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #0F1720;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .safe-bottom {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #6cd2ff;
+        }
+        .toggle-checkbox:checked + .toggle-label .toggle-dot {
+            transform: translateX(100%);
+        }
+    </style>
+</head>
+<body class="bg-bg-dark text-surface-light antialiased">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky z-40 bg-surface-dark border-b border-outline flex justify-between items-center px-safe-margin py-md"><div class="flex items-center gap-md">
+<button aria-label="กลับ" class="active:scale-95 transition-transform text-inverse-primary">
+<span class="material-symbols-outlined text-headline-lg-mobile">arrow_back</span>
+</button>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-inverse-primary" style="font-variation-settings: 'FILL' 1;">shield</span>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-inverse-primary tracking-tight">ScamGuard</h1>
+</div>
+</div>
+<button class="active:scale-95 transition-transform text-outline-variant hover:opacity-80">
+<span class="material-symbols-outlined">notifications</span>
+</button></header>
+<main class="max-w-[540px] mx-auto px-safe-margin pt-lg pb-xxl space-y-lg">
+<!-- Hero Illustration / Icon Section -->
+<div class="flex flex-col items-center justify-center py-md text-center">
+<div class="w-20 h-20 rounded-full bg-inverse-surface flex items-center justify-center mb-md">
+<span class="material-symbols-outlined text-[40px] text-inverse-primary" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+</div>
+<h2 class="font-title-md text-title-md text-surface-light mb-xs">จัดการความยินยอม</h2>
+<p class="font-body-base text-body-base text-outline-variant">เลือกการตั้งค่าที่คุณต้องการให้ ScamGuard ดูแลข้อมูลของคุณ</p>
+</div>
+<!-- Consent Management List -->
+<section class="bg-surface-dark rounded-xl overflow-hidden shadow-none">
+<div class="p-md space-y-md">
+<!-- Toggle 1 -->
+<div class="flex items-center justify-between gap-md">
+<div class="flex-1">
+<p class="font-button-label text-button-label text-surface-light">ยินยอมให้ประมวลผลรูปภาพ</p>
+<p class="font-caption text-caption text-outline-variant">ใช้เพื่อวิเคราะห์ความเสี่ยงในรูปภาพที่คุณอัปโหลด</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only toggle-checkbox" type="checkbox">
+<div class="toggle-label w-11 h-6 bg-outline rounded-full transition-colors relative">
+<div class="toggle-dot absolute left-0.5 top-0.5 bg-surface-light w-5 h-5 rounded-full transition-transform border border-outline"></div>
+</div>
+</label>
+</div>
+<hr class="border-outline">
+<!-- Toggle 2 -->
+<div class="flex items-center justify-between gap-md">
+<div class="flex-1">
+<p class="font-button-label text-button-label text-surface-light">ยินยอมให้เก็บประวัติการสแกน</p>
+<p class="font-caption text-caption text-outline-variant">ดูประวัติการวิเคราะห์ย้อนหลังได้ทุกเมื่อ</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only toggle-checkbox" type="checkbox">
+<div class="toggle-label w-11 h-6 bg-outline rounded-full transition-colors relative">
+<div class="toggle-dot absolute left-0.5 top-0.5 bg-surface-light w-5 h-5 rounded-full transition-transform border border-outline"></div>
+</div>
+</label>
+</div>
+<hr class="border-outline">
+<!-- Toggle 3 -->
+<div class="flex items-center justify-between gap-md">
+<div class="flex-1">
+<p class="font-button-label text-button-label text-surface-light">ยินยอมให้ใช้ข้อมูลเพื่อพัฒนา AI</p>
+<p class="font-caption text-caption text-outline-variant">ช่วยให้ระบบตรวจจับกลโกงได้แม่นยำยิ่งขึ้นสำหรับทุกคน</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only toggle-checkbox" type="checkbox">
+<div class="toggle-label w-11 h-6 bg-outline rounded-full transition-colors relative">
+<div class="toggle-dot absolute left-0.5 top-0.5 bg-surface-light w-5 h-5 rounded-full transition-transform border border-outline"></div>
+</div>
+</label>
+</div>
+</div>
+</section>
+<!-- Action Buttons Section -->
+<section class="space-y-md">
+<button class="w-full bg-surface-dark border border-inverse-primary text-inverse-primary py-md px-lg rounded-xl font-button-label text-button-label active:scale-[0.98] transition-transform flex items-center justify-center gap-sm">
+<span class="material-symbols-outlined">download</span>
+                ขอสำเนาข้อมูลส่วนตัว
+            </button>
+<button class="w-full bg-surface-dark border border-error text-error-container py-md px-lg rounded-xl font-button-label text-button-label active:scale-[0.98] transition-transform flex items-center justify-center gap-sm">
+<span class="material-symbols-outlined">delete_forever</span>
+                ลบข้อมูลการใช้งานทั้งหมด
+            </button>
+</section>
+<!-- PDPA Compliance Text -->
+<div class="bg-inverse-surface rounded-xl p-md">
+<div class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-inverse-primary" style="font-size: 20px;">info</span>
+<p class="font-caption text-caption text-surface-light leading-relaxed">
+                    ScamGuard ให้ความสำคัญกับความเป็นส่วนตัวของคุณ ข้อมูลของคุณจะถูกประมวลผลตามพระราชบัญญัติคุ้มครองข้อมูลส่วนตัว (PDPA) เราจะเก็บรักษาข้อมูลอย่างปลอดภัยและไม่ส่งต่อให้บุคคลที่สามโดยไม่ได้รับความยินยอม
+                </p>
+</div>
+</div>
+<!-- Visual Element: Security Concept -->
+<div class="relative w-full h-40 rounded-xl overflow-hidden mt-xl">
+<div class="bg-cover bg-center w-full h-full opacity-20 grayscale mix-blend-multiply" data-alt="A clean, minimalist high-tech visualization of digital security. Glowing blue geometric shield icons and interconnected data nodes float in a pristine, bright white space. Soft atmospheric lighting creates a sense of professional reliability and modern technological trust. Professional light mode aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAB-ChObhwT71NY6sNjBhpdFUXM0KGYuWhHUvz99dbGw26eiAwvxLoM-8z5FkArwrcXGhC5ovHfwqxrETOYbEFJZ6ZJKfrvKfuRGaI_Dw74ez1se7JiHE35B1BQAGjTr25qvlmVrf27sNjGG5atF6U-rKnVhaB2GSDm6GMeVsUddZ_dwAteKkL87WDSGBzz6Lqfj2czdJxxAOgCjtusEVfAeftkJXXErrXVZm2k5HTmxiE6P-pwA9K4VPq3nXk48rbg4GJgClbuImw')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-bg-dark to-transparent"></div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 bg-surface-dark border-t border-outline flex justify-around items-center h-16 px-xs safe-bottom"><!-- Home -->
+<a class="flex flex-col items-center justify-center text-outline-variant hover:text-inverse-primary transition-colors active:scale-90" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-caption text-caption">หน้าหลัก</span>
+</a>
+<!-- History -->
+<a class="flex flex-col items-center justify-center text-outline-variant hover:text-inverse-primary transition-colors active:scale-90" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="font-caption text-caption">ประวัติ</span>
+</a>
+<!-- Report -->
+<a class="flex flex-col items-center justify-center text-outline-variant hover:text-inverse-primary transition-colors active:scale-90" href="#">
+<span class="material-symbols-outlined">flag</span>
+<span class="font-caption text-caption">แจ้งรายงาน</span>
+</a>
+<!-- Settings (Active) -->
+<a class="flex flex-col items-center justify-center text-inverse-primary font-bold active:scale-90" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-caption text-caption">ตั้งค่า</span>
+</a></nav>
+<script>
+        // Simple micro-interaction for toggle switches
+        const toggles = document.querySelectorAll('.toggle-checkbox');
+        toggles.forEach(toggle => {
+            toggle.addEventListener('change', function() {
+                // You could add haptic feedback or API calls here
+                console.log('Toggle state changed:', this.checked);
+            });
+        });
+        
+        // Active Scale interaction for buttons handled by Tailwind classes but can be extended here
+    </script>
+
+
+
+
+</body></html>

@@ -1,0 +1,299 @@
+<!DOCTYPE html><html class="dark" lang="th"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+<title>ScamGuard - ประวัติการตรวจสอบ</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-background": "#121c26",
+                    "outline-variant": "#bdc8cf",
+                    "on-tertiary-container": "#492b00",
+                    "on-tertiary-fixed": "#2a1700",
+                    "on-surface": "#121c26",
+                    "surface-container-highest": "#d9e3f1",
+                    "on-secondary-container": "#007230",
+                    "surface-container": "#e4effd",
+                    "inverse-primary": "#6cd2ff",
+                    "bg-light": "#F6F8FB",
+                    "primary-container": "#00a6d6",
+                    "danger": "#DC2626",
+                    "surface-dark": "#162230",
+                    "on-error-container": "#93000a",
+                    "inverse-surface": "#27313c",
+                    "surface-container-high": "#dfe9f7",
+                    "primary-fixed-dim": "#6cd2ff",
+                    "secondary": "#006e2d",
+                    "surface-tint": "#006685",
+                    "tertiary-container": "#d68900",
+                    "bg-dark": "#0F1720",
+                    "on-secondary-fixed": "#002109",
+                    "surface-dim": "#d1dbe9",
+                    "text-secondary": "#5E6B78",
+                    "surface-variant": "#d9e3f1",
+                    "error": "#ba1a1a",
+                    "primary": "#006685",
+                    "error-container": "#ffdad6",
+                    "primary-fixed": "#bfe9ff",
+                    "on-tertiary-fixed-variant": "#653e00",
+                    "tertiary": "#855300",
+                    "surface-light": "#FFFFFF",
+                    "background": "#f7f9ff",
+                    "secondary-fixed": "#7ffc97",
+                    "on-secondary-fixed-variant": "#005320",
+                    "on-error": "#ffffff",
+                    "border": "#D8E0EA",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-fixed": "#001f2a",
+                    "on-surface-variant": "#3d484e",
+                    "tertiary-fixed": "#ffddb8",
+                    "secondary-container": "#7cf994",
+                    "surface-bright": "#f7f9ff",
+                    "outline": "#6e797f",
+                    "on-primary-container": "#003649",
+                    "tertiary-fixed-dim": "#ffb95f",
+                    "on-primary": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "surface": "#f7f9ff",
+                    "secondary-fixed-dim": "#62df7d",
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed-variant": "#004d65",
+                    "inverse-on-surface": "#e8f2ff",
+                    "surface-container-low": "#edf4ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "lg": "24px",
+                    "md": "16px",
+                    "xl": "32px",
+                    "safe-margin": "20px",
+                    "gutter": "12px",
+                    "xs": "4px",
+                    "sm": "8px",
+                    "xxl": "48px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Sarabun"],
+                    "caption": ["Sarabun"],
+                    "button-label": ["Sarabun"],
+                    "section-header": ["Sarabun"],
+                    "headline-lg": ["Sarabun"],
+                    "body-base": ["Sarabun"],
+                    "code-data": ["Inter"],
+                    "title-md": ["Sarabun"],
+                    "display-hero": ["Sarabun"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "caption": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "button-label": ["16px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "section-header": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "headline-lg": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "body-base": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "code-data": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "title-md": ["22px", {"lineHeight": "28px", "fontWeight": "700"}],
+                    "display-hero": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .history-card-shadow {
+            box-shadow: 0px 4px 12px rgba(23, 33, 43, 0.05);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-bg-light dark:bg-bg-dark text-on-surface dark:text-surface-light">
+<!-- Top App Bar -->
+<header class="bg-surface-light dark:bg-surface-dark border-b border-border dark:border-outline-variant fixed top-0 w-full z-50 flex justify-between items-center px-safe-margin h-16"><div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim font-bold">shield_lock</span>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary dark:text-primary-fixed-dim">ScamGuard</h1>
+</div>
+<button class="hover:opacity-80 transition-opacity active:scale-95 duration-150">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim">notifications</span>
+</button></header>
+<main class="pt-20 pb-24 px-safe-margin">
+<!-- Sticky Search & Filter Header -->
+<section class="mb-lg">
+<div class="flex items-center gap-sm mb-md">
+<h2 class="font-section-header text-section-header text-on-surface dark:text-surface-light">ประวัติการตรวจสอบ</h2>
+<span class="bg-primary-container/10 dark:bg-primary-container/20 text-primary dark:text-inverse-primary px-sm py-xs rounded-full font-caption text-caption">12 รายการ</span>
+</div>
+<div class="flex items-center gap-sm">
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary dark:text-outline-variant">search</span>
+<input class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-border dark:border-outline-variant bg-surface-light dark:bg-surface-dark text-on-surface dark:text-surface-light focus:outline-none focus:ring-2 focus:ring-primary/20 dark:focus:ring-inverse-primary/30 focus:border-primary dark:focus:border-inverse-primary transition-all font-body-base text-body-base" placeholder="ค้นหาประวัติ..." type="text">
+</div>
+<button class="w-12 h-12 flex items-center justify-center rounded-xl bg-surface-light dark:bg-surface-dark border border-border dark:border-outline-variant text-primary dark:text-inverse-primary hover:bg-surface-container-low dark:hover:bg-inverse-surface transition-colors active:scale-95">
+<span class="material-symbols-outlined">tune</span>
+</button>
+</div>
+</section>
+<!-- History List (Bento-style items) -->
+<div class="grid grid-cols-1 gap-md">
+<!-- History Item 1: High Risk -->
+<div class="bg-surface-light dark:bg-surface-dark p-md rounded-xl history-card-shadow flex items-start gap-md border border-transparent hover:border-primary/20 dark:hover:border-inverse-primary/30 transition-all cursor-pointer group">
+<div class="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A macro photograph of a digital bank transfer slip on a smartphone screen, showing suspicious blurred fonts and irregular watermarks. The lighting is clinical and sharp, emphasizing the forensic analysis context. The overall tone is alert and serious, with high contrast between the white slip and dark UI background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCojpXJ3dGR58wVEfXR3t-krPI76ki44vbLzplv5xsCRrO3rO7OVtssvTEIRFS1jP0WgpPGoE3-oykQ0xVLw5thblz8RKwapMrIZtqLmLD45g5YI2-1Xg5TlLtm5XOED1rY5prvSDuKXQ_46pVlrqfPCDJpm7irakFhay4z4kB5pTsKcXTgXJK43zn4tN4iQyXEOJEi3tHeXi0MxKSuu24c5CMwouXkEuV2TH8lr1guno9CTGvyZIc0ft2c4-0WXtsKlkNgf8Jkd84">
+<div class="absolute inset-0 bg-danger/10 group-hover:bg-transparent transition-colors"></div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-section-header text-section-header truncate text-on-surface dark:text-surface-light">สลิปโอนเงินธนาคาร</h3>
+<span class="bg-danger/10 text-danger dark:bg-danger/20 dark:text-error-container px-sm py-0.5 rounded-full font-caption text-caption font-bold">ความเสี่ยงสูง</span>
+</div>
+<div class="flex items-center gap-xs text-text-secondary dark:text-outline font-caption text-caption mb-sm">
+<span class="material-symbols-outlined text-[14px]">calendar_today</span>
+<span class="">24 ต.ค. 2566 • 14:20</span>
+</div>
+<div class="flex items-center gap-sm">
+<div class="flex-1 bg-surface-variant dark:bg-inverse-surface h-1.5 rounded-full overflow-hidden">
+<div class="bg-danger h-full w-[92%]"></div>
+</div>
+<span class="font-code-data text-code-data text-danger dark:text-error-container font-bold">92%</span>
+</div>
+</div>
+</div>
+<!-- History Item 2: Medium Risk -->
+<div class="bg-surface-light dark:bg-surface-dark p-md rounded-xl history-card-shadow flex items-start gap-md border border-transparent hover:border-primary/20 dark:hover:border-inverse-primary/30 transition-all cursor-pointer group">
+<div class="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A clean digital capture of a shopping website QR code on a light background. The style is modern corporate minimalist, using professional studio lighting to ensure clarity. The composition focuses on the geometric patterns of the code, hinting at hidden security layers. Calm and neutral color palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_r3Gjx2dMKiOpJz5ekrGvE_iKSi9zsIaIDJXd0Tl-EuFD2Edko6LNU49_fmKNCVGnRfPzQmXsPJeUkBHWo1IjT9EpfCNtsQ3xpY6jynrpGQPhKGZjrAoJxqpwn1LCJ-VG6n_IFmiAMbztkOFC2RAwJoaHajyXBTBFk_ow7u9N3rIgUdTDHv43OQ8gwjxvrK9shn9DlA2b-R1cMHqa1fq_8QUqpWemtLCiOIhGI-acYOGm47YOsfoFM-a0HKQzdcOWnIrPtytRYUc">
+<div class="absolute inset-0 bg-tertiary-container/10 group-hover:bg-transparent transition-colors"></div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-section-header text-section-header truncate text-on-surface dark:text-surface-light">คิวอาร์โค้ดชำระเงิน</h3>
+<span class="bg-tertiary-container/10 text-tertiary-container dark:bg-tertiary-container/20 dark:text-tertiary-fixed px-sm py-0.5 rounded-full font-caption text-caption font-bold">ปานกลาง</span>
+</div>
+<div class="flex items-center gap-xs text-text-secondary dark:text-outline font-caption text-caption mb-sm">
+<span class="material-symbols-outlined text-[14px]">calendar_today</span>
+<span class="">23 ต.ค. 2566 • 10:45</span>
+</div>
+<div class="flex items-center gap-sm">
+<div class="flex-1 bg-surface-variant dark:bg-inverse-surface h-1.5 rounded-full overflow-hidden">
+<div class="bg-tertiary-container dark:bg-tertiary-fixed h-full w-[45%]"></div>
+</div>
+<span class="font-code-data text-code-data text-tertiary dark:text-tertiary-fixed font-bold">45%</span>
+</div>
+</div>
+</div>
+<!-- History Item 3: Low Risk -->
+<div class="bg-surface-light dark:bg-surface-dark p-md rounded-xl history-card-shadow flex items-start gap-md border border-transparent hover:border-primary/20 dark:hover:border-inverse-primary/30 transition-all cursor-pointer group">
+<div class="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A high-resolution photograph of an official government identification document with crisp details and holographic security features shimmering under soft white light. The aesthetic is extremely formal and secure, emphasizing trust and authenticity. Pristine white and deep blue tones define the professional security environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZFWC-4Yw0gUYsWEwRyT8vmlmVttqyX35003JW2t3m7kzKFfjAUo-MAzfg2jRvU_NHlHhibWza-eJHQzP4Fr4CcVmSDnACmE1hKDNWzazNb8cVKTOmOSnbbNrgDykJR8oauzBvg-4TdctnTxO6_RTg8vRvGrOytGy-bYOq1W9KlvyrS9i86TirLbLW8d2-lnPCr8ma29J_vKAVqdgF3EmXwE8s0SBDF4sjIwiSb1Ty_3AXf5oWk0T_KKFu78McmcMvzHA6cdGMzRw">
+<div class="absolute inset-0 bg-secondary/10 group-hover:bg-transparent transition-colors"></div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-section-header text-section-header truncate text-on-surface dark:text-surface-light">เอกสารยืนยันตัวตน</h3>
+<span class="bg-secondary/10 text-secondary dark:bg-secondary/20 dark:text-secondary-container px-sm py-0.5 rounded-full font-caption text-caption font-bold">ปลอดภัย</span>
+</div>
+<div class="flex items-center gap-xs text-text-secondary dark:text-outline font-caption text-caption mb-sm">
+<span class="material-symbols-outlined text-[14px]">calendar_today</span>
+<span class="">22 ต.ค. 2566 • 09:12</span>
+</div>
+<div class="flex items-center gap-sm">
+<div class="flex-1 bg-surface-variant dark:bg-inverse-surface h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary dark:bg-secondary-container h-full w-[12%]"></div>
+</div>
+<span class="font-code-data text-code-data text-secondary dark:text-secondary-container font-bold">12%</span>
+</div>
+</div>
+</div>
+<!-- History Item 4: High Risk -->
+<div class="bg-surface-light dark:bg-surface-dark p-md rounded-xl history-card-shadow flex items-start gap-md border border-transparent hover:border-primary/20 dark:hover:border-inverse-primary/30 transition-all cursor-pointer group">
+<div class="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A screenshot of a deceptive SMS message on a smartphone with a prominent 'Claim Now' button. The lighting is slightly dramatic to signify danger, with red chromatic aberration effects near the edges of the screen. The style is sharp and forensic, focused on the fraudulent UI elements." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCCwIrE6EJNUPYE-SqExQop7NaiKlHzWzH5eqxN-QSGafjoYLAvh_XUUmTC7sIb5glZUvwkoowS5ABF_SAjHp8ohZP7Go9puciMnaPdOifp0T_Q4HZPHDL7vYVan9EoF4KzNQA9IITzOxatbmtKF49gNKRhAdRYyLv2p1DeyDAcZW-vGQ-A44DaHbmd0_4DGoLVY7GlHgGlNsms9GCFMswqNJj2RWEfk_pLp2WLuLONrMLonZcNkBTt2LVvW_Weu09oFuyo0R9tRc">
+<div class="absolute inset-0 bg-danger/10 group-hover:bg-transparent transition-colors"></div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-section-header text-section-header truncate text-on-surface dark:text-surface-light">ลิงก์ข้อความ SMS</h3>
+<span class="bg-danger/10 text-danger dark:bg-danger/20 dark:text-error-container px-sm py-0.5 rounded-full font-caption text-caption font-bold">ความเสี่ยงสูง</span>
+</div>
+<div class="flex items-center gap-xs text-text-secondary dark:text-outline font-caption text-caption mb-sm">
+<span class="material-symbols-outlined text-[14px]">calendar_today</span>
+<span class="">21 ต.ค. 2566 • 18:30</span>
+</div>
+<div class="flex items-center gap-sm">
+<div class="flex-1 bg-surface-variant dark:bg-inverse-surface h-1.5 rounded-full overflow-hidden">
+<div class="bg-danger h-full w-[88%]"></div>
+</div>
+<span class="font-code-data text-code-data text-danger dark:text-error-container font-bold">88%</span>
+</div>
+</div>
+</div>
+<!-- Empty State Illustration Placeholder (Only visible if list empty) -->
+<div class="hidden flex-col items-center justify-center py-24 text-center" id="empty-state">
+<span class="material-symbols-outlined text-[64px] text-outline-variant mb-md">history_off</span>
+<p class="font-title-md text-title-md text-text-secondary dark:text-surface-light mb-xs">ยังไม่มีประวัติการตรวจสอบ</p>
+<p class="font-body-base text-body-base text-outline">เริ่มตรวจสอบภาพของคุณเพื่อความปลอดภัย</p>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-gutter py-sm bg-surface-light dark:bg-surface-dark border-t border-border dark:border-outline-variant h-20"><a class="flex flex-col items-center justify-center text-text-secondary dark:text-outline-variant hover:bg-surface-container-low dark:hover:bg-inverse-surface transition-colors active:scale-90 duration-200 w-1/4 py-1" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-caption text-caption">หน้าหลัก</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary dark:text-inverse-primary font-bold hover:bg-surface-container-low dark:hover:bg-inverse-surface transition-colors active:scale-90 duration-200 w-1/4 py-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">history</span>
+<span class="font-caption text-caption">ประวัติ</span>
+</a>
+<a class="flex flex-col items-center justify-center text-text-secondary dark:text-outline-variant hover:bg-surface-container-low dark:hover:bg-inverse-surface transition-colors active:scale-90 duration-200 w-1/4 py-1" href="#">
+<span class="material-symbols-outlined">flag</span>
+<span class="font-caption text-caption">แจ้งรายงาน</span>
+</a>
+<a class="flex flex-col items-center justify-center text-text-secondary dark:text-outline-variant hover:bg-surface-container-low dark:hover:bg-inverse-surface transition-colors active:scale-90 duration-200 w-1/4 py-1" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-caption text-caption">ตั้งค่า</span>
+</a></nav>
+<script>
+        // Simple Interaction logic
+        document.querySelectorAll('.history-card-shadow').forEach(card => {
+            card.addEventListener('click', () => {
+                // Future detail view logic
+                card.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    card.style.transform = 'scale(1)';
+                }, 100);
+            });
+        });
+
+        // Search logic placeholder
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const items = document.querySelectorAll('.history-card-shadow');
+            items.forEach(item => {
+                const title = item.querySelector('h3').textContent.toLowerCase();
+                if(title.includes(term)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    </script>
+
+
+</body></html>

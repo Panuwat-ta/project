@@ -129,15 +129,13 @@
 </head>
 <body class="bg-bg-light text-on-surface">
 <!-- Top App Bar -->
-<header class="bg-surface-light dark:bg-surface-dark border-b border-border dark:border-outline-variant fixed top-0 w-full z-50 flex justify-between items-center px-safe-margin h-16">
-<div class="flex items-center gap-sm">
+<header class="bg-surface-light dark:bg-surface-dark border-b border-border dark:border-outline-variant fixed top-0 w-full z-50 flex justify-between items-center px-safe-margin h-16"><div class="flex items-center gap-sm">
 <span class="material-symbols-outlined text-primary font-bold">shield_lock</span>
 <h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary dark:text-primary-fixed-dim">ScamGuard</h1>
 </div>
 <button class="hover:opacity-80 transition-opacity active:scale-95 duration-150">
 <span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim">notifications</span>
-</button>
-</header>
+</button></header>
 <main class="pt-20 pb-24 px-safe-margin">
 <!-- Sticky Search & Filter Header -->
 <section class="mb-lg">
@@ -170,7 +168,7 @@
 </div>
 <div class="flex items-center gap-xs text-text-secondary font-caption text-caption mb-sm">
 <span class="material-symbols-outlined text-[14px]">calendar_today</span>
-<span>24 ต.ค. 2566 • 14:20</span>
+<span class="">24 ต.ค. 2566 • 14:20</span>
 </div>
 <div class="flex items-center gap-sm">
 <div class="flex-1 bg-surface-variant h-1.5 rounded-full overflow-hidden">
@@ -193,7 +191,7 @@
 </div>
 <div class="flex items-center gap-xs text-text-secondary font-caption text-caption mb-sm">
 <span class="material-symbols-outlined text-[14px]">calendar_today</span>
-<span>23 ต.ค. 2566 • 10:45</span>
+<span class="">23 ต.ค. 2566 • 10:45</span>
 </div>
 <div class="flex items-center gap-sm">
 <div class="flex-1 bg-surface-variant h-1.5 rounded-full overflow-hidden">
@@ -216,7 +214,7 @@
 </div>
 <div class="flex items-center gap-xs text-text-secondary font-caption text-caption mb-sm">
 <span class="material-symbols-outlined text-[14px]">calendar_today</span>
-<span>22 ต.ค. 2566 • 09:12</span>
+<span class="">22 ต.ค. 2566 • 09:12</span>
 </div>
 <div class="flex items-center gap-sm">
 <div class="flex-1 bg-surface-variant h-1.5 rounded-full overflow-hidden">
@@ -239,7 +237,7 @@
 </div>
 <div class="flex items-center gap-xs text-text-secondary font-caption text-caption mb-sm">
 <span class="material-symbols-outlined text-[14px]">calendar_today</span>
-<span>21 ต.ค. 2566 • 18:30</span>
+<span class="">21 ต.ค. 2566 • 18:30</span>
 </div>
 <div class="flex items-center gap-sm">
 <div class="flex-1 bg-surface-variant h-1.5 rounded-full overflow-hidden">
@@ -258,24 +256,22 @@
 </div>
 </main>
 <!-- Bottom Navigation Bar -->
-<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-gutter py-sm bg-surface-light dark:bg-surface-dark border-t border-border dark:border-outline-variant h-20">
-<a class="flex flex-col items-center justify-center text-text-secondary dark:text-outline-variant hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors active:scale-90 duration-200 w-1/4 py-1" href="#">
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-gutter py-sm bg-surface-light dark:bg-surface-dark border-t border-border dark:border-outline-variant h-20"><a class="flex flex-1 flex-col items-center justify-center text-text-secondary dark:text-outline-variant hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors active:scale-90 duration-200 py-1" href="#">
 <span class="material-symbols-outlined">home</span>
 <span class="font-caption text-caption">หน้าหลัก</span>
 </a>
-<a class="flex flex-col items-center justify-center text-primary dark:text-secondary-fixed-dim font-bold hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors active:scale-90 duration-200 w-1/4 py-1" href="#">
+<a class="flex flex-1 flex-col items-center justify-center text-primary dark:text-secondary-fixed-dim font-bold hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors active:scale-90 duration-200 py-1" href="#">
 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">history</span>
 <span class="font-caption text-caption">ประวัติ</span>
 </a>
-<a class="flex flex-col items-center justify-center text-text-secondary dark:text-outline-variant hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors active:scale-90 duration-200 w-1/4 py-1" href="#">
+<a class="flex flex-1 flex-col items-center justify-center text-text-secondary dark:text-outline-variant hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors active:scale-90 duration-200 py-1" href="#">
 <span class="material-symbols-outlined">flag</span>
 <span class="font-caption text-caption">แจ้งรายงาน</span>
 </a>
-<a class="flex flex-col items-center justify-center text-text-secondary dark:text-outline-variant hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors active:scale-90 duration-200 w-1/4 py-1" href="#">
+<a class="flex flex-1 flex-col items-center justify-center text-text-secondary dark:text-outline-variant hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors active:scale-90 duration-200 py-1" href="#">
 <span class="material-symbols-outlined">settings</span>
 <span class="font-caption text-caption">ตั้งค่า</span>
-</a>
-</nav>
+</a></nav>
 <script>
         // Simple Interaction logic
         document.querySelectorAll('.history-card-shadow').forEach(card => {
@@ -303,4 +299,6 @@
             });
         });
     </script>
+
+
 </body></html>
