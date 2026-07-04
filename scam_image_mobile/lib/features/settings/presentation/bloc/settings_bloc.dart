@@ -10,31 +10,35 @@ import '../../domain/repositories/settings_repository.dart';
 class SettingsState extends Equatable {
   const SettingsState({
     this.themeMode = ThemeMode.light,
+    this.language = 'th',
     this.consent = const ConsentSetting(),
     this.isLoading = false,
     this.error,
   });
 
   final ThemeMode themeMode;
+  final String language;
   final ConsentSetting consent;
   final bool isLoading;
   final String? error;
 
   SettingsState copyWith({
     ThemeMode? themeMode,
+    String? language,
     ConsentSetting? consent,
     bool? isLoading,
     String? error,
   }) =>
       SettingsState(
         themeMode: themeMode ?? this.themeMode,
+        language: language ?? this.language,
         consent: consent ?? this.consent,
         isLoading: isLoading ?? this.isLoading,
         error: error,
       );
 
   @override
-  List<Object?> get props => [themeMode, consent, isLoading, error];
+  List<Object?> get props => [themeMode, language, consent, isLoading, error];
 }
 
 // ── Settings Cubit ────────────────────────────────────────────────────────────
@@ -47,6 +51,11 @@ class SettingsCubit extends Cubit<SettingsState> {
   /// Sets the application theme mode.
   void setTheme(ThemeMode mode) {
     emit(state.copyWith(themeMode: mode));
+  }
+
+  /// Sets the application language.
+  void setLanguage(String lang) {
+    emit(state.copyWith(language: lang));
   }
 
   /// Loads current consent settings from the repository.

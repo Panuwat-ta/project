@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../bloc/home_cubit.dart';
 
@@ -84,14 +85,14 @@ class _HomeViewState extends State<_HomeView>
             actions: [
               // Search button
               IconButton(
-                tooltip: 'ค้นหา',
+                tooltip: 'search'.tr(context),
                 onPressed: () {},
                 icon: Icon(
                   Icons.search_outlined,
                   color: isDark
                       ? AppColors.outlineVariant
                       : AppColors.onSurfaceVariant,
-                  semanticLabel: 'ค้นหา',
+                  semanticLabel: 'search'.tr(context),
                 ),
               ),
               // Notifications button with red dot badge
@@ -101,14 +102,14 @@ class _HomeViewState extends State<_HomeView>
                   clipBehavior: Clip.none,
                   children: [
                     IconButton(
-                      tooltip: 'การแจ้งเตือน',
+                      tooltip: 'notifications'.tr(context),
                       onPressed: () => context.push('/notifications'),
                       icon: Icon(
                         Icons.notifications_outlined,
                         color: isDark
                             ? AppColors.outlineVariant
                             : AppColors.onSurfaceVariant,
-                        semanticLabel: 'การแจ้งเตือน',
+                        semanticLabel: 'notifications'.tr(context),
                       ),
                     ),
                     // Unread indicator dot
@@ -148,7 +149,7 @@ class _HomeViewState extends State<_HomeView>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'สวัสดี, ผู้ใช้งาน',
+                        'greeting'.tr(context),
                         style: AppTypography.headlineLgMobile(
                           color: isDark
                               ? AppColors.inverseOnSurface
@@ -157,7 +158,7 @@ class _HomeViewState extends State<_HomeView>
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'ยินดีต้อนรับกลับสู่ระบบรักษาความปลอดภัยของคุณ',
+                        'greeting_subtitle'.tr(context),
                         style: AppTypography.bodyBase(
                           color: isDark
                               ? AppColors.outlineVariant
@@ -263,7 +264,7 @@ class _UploadCard extends StatelessWidget {
               size: 40,
               color:
                   isDark ? AppColors.primaryFixedDim : AppColors.primary,
-              semanticLabel: 'อัปโหลดรูปภาพ',
+              semanticLabel: 'upload_btn'.tr(context),
             ),
           ),
 
@@ -271,7 +272,7 @@ class _UploadCard extends StatelessWidget {
 
           // Card title
           Text(
-            'ตรวจสอบรูปภาพต้องสงสัย',
+            'upload_title'.tr(context),
             style: AppTypography.sectionHeader(
               color:
                   isDark ? AppColors.primaryFixedDim : AppColors.primary,
@@ -283,7 +284,7 @@ class _UploadCard extends StatelessWidget {
 
           // Description
           Text(
-            'เลือกรูปภาพจากอุปกรณ์เพื่อตรวจสอบความเสี่ยง',
+            'upload_desc'.tr(context),
             style: AppTypography.bodyBase(
               color: isDark
                   ? AppColors.outlineVariant
@@ -319,7 +320,7 @@ class _UploadCard extends StatelessWidget {
             ScaleTransition(
               scale: pulseAnimation,
               child: PrimaryButton(
-                label: 'อัปโหลดรูปภาพ',
+                label: 'upload_btn'.tr(context),
                 isLoading: state is HomeImagePickerLoading,
                 onPressed: state is HomeImagePickerLoading
                     ? null
@@ -358,7 +359,7 @@ class _SafetyTipsSection extends StatelessWidget {
             ),
             const SizedBox(width: AppSpacing.xs),
             Text(
-              'เคล็ดลับความปลอดภัย',
+              'safety_tips'.tr(context),
               style: AppTypography.sectionHeader(
                 color: isDark
                     ? AppColors.inverseOnSurface
@@ -382,7 +383,7 @@ class _SafetyTipsSection extends StatelessWidget {
                     iconColor: isDark
                         ? const Color(0xFF62DF7D) // secondary-fixed-dim
                         : AppColors.success,
-                    text: 'เช็คเครื่องหมายยืนยันตัวตนเสมอ',
+                    text: 'tip_1'.tr(context),
                   ),
                 ),
                 const SizedBox(width: AppSpacing.md),
@@ -393,7 +394,7 @@ class _SafetyTipsSection extends StatelessWidget {
                     iconColor: isDark
                         ? const Color(0xFFFFB95F) // tertiary-fixed-dim
                         : AppColors.tertiary,
-                    text: 'ระวังลิงก์แปลกปลอมในข้อความ',
+                    text: 'tip_2'.tr(context),
                   ),
                 ),
               ],
@@ -405,7 +406,7 @@ class _SafetyTipsSection extends StatelessWidget {
               iconColor: isDark
                   ? AppColors.inversePrimary // #6CD2FF
                   : AppColors.error,
-              text: 'อย่าโอนเงินให้บัญชีบุคคลที่ไม่รู้จัก',
+              text: 'tip_3'.tr(context),
               fullWidth: true,
             ),
           ],
@@ -503,7 +504,7 @@ class _RecentHistorySection extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'ประวัติการสแกนล่าสุด',
+              'recent_history'.tr(context),
               style: AppTypography.sectionHeader(
                 color: isDark
                     ? AppColors.inverseOnSurface
@@ -518,7 +519,7 @@ class _RecentHistorySection extends StatelessWidget {
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
               child: Text(
-                'ดูทั้งหมด',
+                'see_all'.tr(context),
                 style: AppTypography.caption(
                   color: isDark
                       ? AppColors.primaryFixedDim

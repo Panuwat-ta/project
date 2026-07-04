@@ -132,7 +132,7 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'เลือกการตั้งค่าที่คุณต้องการให้ ScamGuard ดูแลข้อมูล\nของคุณ',
+                        'เลือกการตั้งค่าที่คุณต้องการให้ ScamGuard ดูแลข้อมูลของคุณ',
                         textAlign: TextAlign.center,
                         style: AppTypography.bodyBase(color: isDark ? Colors.white54 : AppColors.textSecondary),
                       ),

@@ -76,6 +76,7 @@ class ScamGuardApp extends StatelessWidget {
             title: 'ScamGuard',
             debugShowCheckedModeBanner: false,
             themeMode: state.themeMode,
+            locale: Locale(state.language),
             theme: AppTheme.light,
             darkTheme: AppTheme.dark,
             routerConfig: AppRouter.router,

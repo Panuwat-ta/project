@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_typography.dart';
+import '../localization/app_translations.dart';
 
 /// 4-tab bottom navigation bar.
 ///
@@ -45,26 +46,26 @@ class AppBottomNavigation extends StatelessWidget {
       unselectedLabelStyle: AppTypography.caption(color: inactiveColor).copyWith(
         fontSize: 11,
       ),
-      items: const [
+      items: [
         BottomNavigationBarItem(
-          icon: Icon(Icons.home_outlined),
-          activeIcon: Icon(Icons.home),
-          label: 'หน้าหลัก',
+          icon: const Icon(Icons.home_outlined),
+          activeIcon: const Icon(Icons.home),
+          label: 'home'.tr(context),
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.history_outlined),
-          activeIcon: Icon(Icons.history),
-          label: 'ประวัติ',
+          icon: const Icon(Icons.history_outlined),
+          activeIcon: const Icon(Icons.history),
+          label: 'history'.tr(context),
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.flag_outlined),
-          activeIcon: Icon(Icons.flag),
-          label: 'แจ้งรายงาน',
+          icon: const Icon(Icons.flag_outlined),
+          activeIcon: const Icon(Icons.flag),
+          label: 'report'.tr(context),
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.settings_outlined),
-          activeIcon: Icon(Icons.settings),
-          label: 'ตั้งค่า',
+          icon: const Icon(Icons.settings_outlined),
+          activeIcon: const Icon(Icons.settings),
+          label: 'settings'.tr(context),
         ),
       ],
     );

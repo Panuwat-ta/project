@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../bloc/settings_bloc.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -21,7 +22,7 @@ class _SettingsView extends StatelessWidget {
 
   void _showComingSoon(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('ฟีเจอร์นี้จะพร้อมใช้งานเร็วๆ นี้')),
+      SnackBar(content: Text('coming_soon'.tr(context))),
     );
   }
 
@@ -32,29 +33,29 @@ class _SettingsView extends StatelessWidget {
       builder: (ctx) => AlertDialog(
         backgroundColor: Theme.of(context).colorScheme.surface,
         title: Text(
-          'ล้าง Cache',
+          'clear_cache_title'.tr(context),
           style: AppTypography.titleMd(color: isDark ? Colors.white : AppColors.textPrimary),
         ),
         content: Text(
-          'คุณต้องการล้าง Cache ของแอปใช่หรือไม่?',
+          'clear_cache_desc'.tr(context),
           style: AppTypography.bodyBase(color: isDark ? Colors.white70 : AppColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('ยกเลิก'),
+            child: Text('cancel'.tr(context)),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             child:
-                Text('ล้าง Cache', style: TextStyle(color: isDark ? Colors.white : AppColors.primary)),
+                Text('clear_cache'.tr(context), style: TextStyle(color: isDark ? Colors.white : AppColors.primary)),
           ),
         ],
       ),
     );
     if (confirmed == true && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('ล้าง Cache สำเร็จ')),
+        SnackBar(content: Text('confirm_clear_cache'.tr(context))),
       );
     }
   }
@@ -66,23 +67,23 @@ class _SettingsView extends StatelessWidget {
       builder: (ctx) => AlertDialog(
         backgroundColor: Theme.of(context).colorScheme.surface,
         title: Text(
-          'ออกจากระบบ',
+          'logout_title'.tr(context),
           style: AppTypography.titleMd(color: isDark ? Colors.white : AppColors.textPrimary),
         ),
         content: Text(
-          'คุณแน่ใจหรือไม่ว่าต้องการออกจากระบบ?',
+          'logout_desc'.tr(context),
           style: AppTypography.bodyBase(color: isDark ? Colors.white70 : AppColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('ยกเลิก'),
+            child: Text('cancel'.tr(context)),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             child: Text(
-              'ออกจากระบบ',
-              style: TextStyle(color: AppColors.danger),
+              'logout'.tr(context),
+              style: const TextStyle(color: AppColors.danger),
             ),
           ),
         ],
@@ -93,6 +94,39 @@ class _SettingsView extends StatelessWidget {
     }
   }
 
+  void _showLanguageDialog(BuildContext context) {
+    final currentLanguage = context.read<SettingsCubit>().state.language;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        title: Text('select_language'.tr(context), style: AppTypography.titleMd(color: isDark ? Colors.white : AppColors.textPrimary)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: Text('language_th'.tr(context), style: TextStyle(color: isDark ? Colors.white : AppColors.textPrimary)),
+              trailing: currentLanguage == 'th' ? const Icon(Icons.check, color: AppColors.primary) : null,
+              onTap: () {
+                context.read<SettingsCubit>().setLanguage('th');
+                Navigator.pop(ctx);
+              },
+            ),
+            ListTile(
+              title: Text('language_en'.tr(context), style: TextStyle(color: isDark ? Colors.white : AppColors.textPrimary)),
+              trailing: currentLanguage == 'en' ? const Icon(Icons.check, color: AppColors.primary) : null,
+              onTap: () {
+                context.read<SettingsCubit>().setLanguage('en');
+                Navigator.pop(ctx);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _showThemeDialog(BuildContext context) {
     final currentMode = context.read<SettingsCubit>().state.themeMode;
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -100,29 +134,29 @@ class _SettingsView extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: Theme.of(context).colorScheme.surface,
-        title: Text('เลือกธีม', style: AppTypography.titleMd(color: isDark ? Colors.white : AppColors.textPrimary)),
+        title: Text('select_theme'.tr(context), style: AppTypography.titleMd(color: isDark ? Colors.white : AppColors.textPrimary)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              title: Text('ตามระบบ', style: TextStyle(color: isDark ? Colors.white : AppColors.textPrimary)),
-              trailing: currentMode == ThemeMode.system ? Icon(Icons.check, color: AppColors.primary) : null,
+              title: Text('theme_system'.tr(context), style: TextStyle(color: isDark ? Colors.white : AppColors.textPrimary)),
+              trailing: currentMode == ThemeMode.system ? const Icon(Icons.check, color: AppColors.primary) : null,
               onTap: () {
                 context.read<SettingsCubit>().setTheme(ThemeMode.system);
                 Navigator.pop(ctx);
               },
             ),
             ListTile(
-              title: Text('สว่าง', style: TextStyle(color: isDark ? Colors.white : AppColors.textPrimary)),
-              trailing: currentMode == ThemeMode.light ? Icon(Icons.check, color: AppColors.primary) : null,
+              title: Text('theme_light'.tr(context), style: TextStyle(color: isDark ? Colors.white : AppColors.textPrimary)),
+              trailing: currentMode == ThemeMode.light ? const Icon(Icons.check, color: AppColors.primary) : null,
               onTap: () {
                 context.read<SettingsCubit>().setTheme(ThemeMode.light);
                 Navigator.pop(ctx);
               },
             ),
             ListTile(
-              title: Text('มืด', style: TextStyle(color: isDark ? Colors.white : AppColors.textPrimary)),
-              trailing: currentMode == ThemeMode.dark ? Icon(Icons.check, color: AppColors.primary) : null,
+              title: Text('theme_dark'.tr(context), style: TextStyle(color: isDark ? Colors.white : AppColors.textPrimary)),
+              trailing: currentMode == ThemeMode.dark ? const Icon(Icons.check, color: AppColors.primary) : null,
               onTap: () {
                 context.read<SettingsCubit>().setTheme(ThemeMode.dark);
                 Navigator.pop(ctx);
@@ -219,7 +253,7 @@ class _SettingsView extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'การป้องกันระดับพื้นฐาน • v1.0.0',
+                          'basic_protection'.tr(context) + ' • v1.0.0',
                           style: AppTypography.caption(color: isDark ? Colors.white54 : AppColors.textSecondary),
                         ),
                       ],
@@ -242,31 +276,36 @@ class _SettingsView extends StatelessWidget {
               children: [
                 _SettingsListItem(
                   icon: Icons.person_outline,
-                  title: 'บัญชี',
+                  title: 'account'.tr(context),
                   onTap: () => context.go('/main/settings/profile'),
                 ),
                 Divider(height: 1, thickness: 1, color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
                 _SettingsListItem(
                   icon: Icons.notifications_none,
-                  title: 'การแจ้งเตือน',
-                  onTap: () => _showComingSoon(context),
-                ),
-                Divider(height: 1, thickness: 1, color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
-                _SettingsListItem(
-                  icon: Icons.language_outlined,
-                  title: 'ภาษา',
-                  trailingText: 'ไทย',
+                  title: 'notifications'.tr(context),
                   onTap: () => _showComingSoon(context),
                 ),
                 Divider(height: 1, thickness: 1, color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
                 BlocBuilder<SettingsCubit, SettingsState>(
                   builder: (context, state) {
+                    final languageText = state.language == 'th' ? 'ไทย' : 'English';
+                    return _SettingsListItem(
+                      icon: Icons.language_outlined,
+                      title: 'language'.tr(context),
+                      trailingText: languageText,
+                      onTap: () => _showLanguageDialog(context),
+                    );
+                  },
+                ),
+                Divider(height: 1, thickness: 1, color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
+                BlocBuilder<SettingsCubit, SettingsState>(
+                  builder: (context, state) {
                     final themeText = state.themeMode == ThemeMode.system
-                        ? 'ตามระบบ'
-                        : (state.themeMode == ThemeMode.light ? 'สว่าง' : 'มืด');
+                        ? 'theme_system'.tr(context)
+                        : (state.themeMode == ThemeMode.light ? 'theme_light'.tr(context) : 'theme_dark'.tr(context));
                     return _SettingsListItem(
                       icon: Icons.palette_outlined,
-                      title: 'ธีม',
+                      title: 'theme'.tr(context),
                       trailingText: themeText,
                       onTap: () => _showThemeDialog(context),
                     );
@@ -275,13 +314,13 @@ class _SettingsView extends StatelessWidget {
                 Divider(height: 1, thickness: 1, color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
                 _SettingsListItem(
                   icon: Icons.privacy_tip_outlined,
-                  title: 'ความเป็นส่วนตัว',
+                  title: 'privacy'.tr(context),
                   onTap: () => context.go('/main/settings/privacy'),
                 ),
                 Divider(height: 1, thickness: 1, color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
                 _SettingsListItem(
                   icon: Icons.delete_outline,
-                  title: 'ล้างแคช',
+                  title: 'clear_cache'.tr(context),
                   trailingText: '12.4 MB',
                   onTap: () => _confirmClearCache(context),
                 ),
@@ -294,7 +333,7 @@ class _SettingsView extends StatelessWidget {
           OutlinedButton.icon(
             onPressed: () => _confirmLogout(context),
             icon: const Icon(Icons.logout, color: AppColors.danger),
-            label: const Text('ออกจากระบบ', style: TextStyle(color: AppColors.danger, fontSize: 16)),
+            label: Text('logout'.tr(context), style: const TextStyle(color: AppColors.danger, fontSize: 16)),
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
               side: const BorderSide(color: AppColors.danger),

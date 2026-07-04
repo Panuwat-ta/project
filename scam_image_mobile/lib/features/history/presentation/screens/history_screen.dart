@@ -11,18 +11,9 @@ import '../../../../core/widgets/widgets.dart' as core_widgets;
 import '../../../history/domain/entities/scan_history_item.dart';
 import '../../../result/domain/entities/analysis_result.dart' as domain;
 import '../bloc/history_bloc.dart';
+import '../../../../core/localization/app_translations.dart';
+import '../../../settings/presentation/bloc/settings_bloc.dart';
 
-/// Maps a domain [domain.RiskLevel] to the widget-layer [core_widgets.RiskLevel].
-core_widgets.RiskLevel _toWidgetLevel(domain.RiskLevel l) {
-  switch (l) {
-    case domain.RiskLevel.high:
-      return core_widgets.RiskLevel.high;
-    case domain.RiskLevel.medium:
-      return core_widgets.RiskLevel.medium;
-    case domain.RiskLevel.low:
-      return core_widgets.RiskLevel.low;
-  }
-}
 
 // ── Screen ───────────────────────────────────────────────────────────────────
 
@@ -72,7 +63,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               Icons.notifications_none,
               color: isDark ? AppColors.primaryFixedDim : AppColors.primary,
             ),
-            tooltip: 'การแจ้งเตือน',
+            tooltip: 'notifications'.tr(context),
             onPressed: () => context.push('/notifications'),
           ),
         ],
@@ -94,7 +85,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         children: [
                           Flexible(
                             child: Text(
-                              'ประวัติการตรวจสอบ',
+                              'history_title'.tr(context),
                               style: AppTypography.sectionHeader(
                                   color: isDark ? Colors.white : AppColors.onSurface),
                               overflow: TextOverflow.ellipsis,
@@ -112,7 +103,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               borderRadius: BorderRadius.circular(99),
                             ),
                             child: Text(
-                              '$count รายการ',
+                              '$count ${'items'.tr(context)}',
                               style: AppTypography.caption(
                                   color: isDark ? AppColors.primaryFixedDim : AppColors.primary),
                             ),
@@ -130,7 +121,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           controller: _searchController,
                           style: TextStyle(color: isDark ? Colors.white : AppColors.onSurface),
                           decoration: InputDecoration(
-                            hintText: 'ค้นหาประวัติ...',
+                            hintText: 'search_history'.tr(context),
                             hintStyle: AppTypography.bodyBase(
                               color: AppColors.outlineVariant
                                   .withValues(alpha: 0.6),
@@ -174,7 +165,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               color: isDark ? AppColors.primaryFixedDim : AppColors.primary,
                             ),
                             onPressed: () {}, // Filter dialog — future feature
-                            tooltip: 'กรองผลลัพธ์',
+                            tooltip: 'filter'.tr(context),
                           ),
                         ),
                       ),
@@ -199,8 +190,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   if (state is HistoryEmpty) {
                     return core_widgets.EmptyStateView(
                       icon: Icons.history_toggle_off_outlined,
-                      title: 'ยังไม่มีประวัติการตรวจสอบ',
-                      subtitle: 'เริ่มสแกนรูปภาพแรกของคุณเพื่อความปลอดภัย',
+                      title: 'history_empty_title'.tr(context),
+                      subtitle: 'history_empty_desc'.tr(context),
                     );
                   }
 
@@ -256,16 +247,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               return await showDialog(
                                 context: context,
                                 builder: (ctx) => AlertDialog(
-                                  title: const Text('ยืนยันการลบ'),
-                                  content: const Text('คุณต้องการลบประวัตินี้ใช่หรือไม่?'),
+                                  title: Text('delete_confirm'.tr(context)),
+                                  content: Text('delete_desc'.tr(context)),
                                   actions: [
                                     TextButton(
                                       onPressed: () => Navigator.pop(ctx, false),
-                                      child: const Text('ยกเลิก'),
+                                      child: Text('cancel'.tr(context)),
                                     ),
                                     TextButton(
                                       onPressed: () => Navigator.pop(ctx, true),
-                                      child: const Text('ลบ', style: TextStyle(color: Colors.red)),
+                                      child: Text('delete'.tr(context), style: const TextStyle(color: Colors.red)),
                                     ),
                                   ],
                                 ),
@@ -299,130 +290,203 @@ class _HistoryCard extends StatelessWidget {
 
   final ScanHistoryItem item;
 
-  Color _riskColor(domain.RiskLevel level) {
-    switch (level) {
-      case domain.RiskLevel.high:
-        return AppColors.danger;
-      case domain.RiskLevel.medium:
-        return AppColors.warning;
-      case domain.RiskLevel.low:
-        return AppColors.success;
-    }
-  }
-
-  String _formatThaiDate(DateTime date) {
+  String _formatThaiDate(DateTime date, BuildContext context) {
     const thaiMonths = [
       '', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.',
       'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'
     ];
     final year = date.year > 2500 ? date.year : date.year + 543;
     final month = thaiMonths[date.month];
-    final day = date.day.toString().padLeft(2, '0');
+    final day = date.day.toString();
     final hours = date.hour.toString().padLeft(2, '0');
     final mins = date.minute.toString().padLeft(2, '0');
-    return '$day $month $year • $hours:$mins';
+    return '$day $month $year, $hours:$mins ${context.read<SettingsCubit>().state.language == 'th' ? 'น.' : ''}';
+  }
+
+  Widget _buildRiskBadge(BuildContext context, domain.RiskLevel level, int score) {
+    Color bgColor;
+    IconData icon;
+    String label;
+    
+    switch (level) {
+      case domain.RiskLevel.high:
+        bgColor = const Color(0xFFDC2626); // red-600
+        icon = Icons.warning_amber_rounded;
+        label = 'high_risk'.tr(context);
+        break;
+      case domain.RiskLevel.medium:
+        bgColor = const Color(0xFFD97706); // amber-600
+        icon = Icons.info_outline;
+        label = 'suspicious'.tr(context);
+        break;
+      case domain.RiskLevel.low:
+        bgColor = const Color(0xFF16A34A); // green-600
+        icon = Icons.check_circle_outline;
+        label = 'safe'.tr(context);
+        break;
+    }
+    
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: Colors.white, size: 16),
+          const SizedBox(width: 4),
+          Text(
+            '$label ($score%)',
+            style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<String> _getMockTags(BuildContext context, domain.RiskLevel level) {
+    if (level == domain.RiskLevel.high) {
+      return ['pixel_edge'.tr(context), 'metadata_conflict'.tr(context)];
+    } else if (level == domain.RiskLevel.medium) {
+      return ['light_filter'.tr(context)];
+    } else {
+      return ['original_file'.tr(context)];
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final widgetLevel = _toWidgetLevel(item.riskLevel);
-    final riskColor = _riskColor(item.riskLevel);
-    final dateStr = _formatThaiDate(item.createdAt);
+    final dateStr = _formatThaiDate(item.createdAt, context);
+    final tags = _getMockTags(context, item.riskLevel);
 
     return Container(
-      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1B222C) : Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isDark ? Colors.transparent : Colors.black12,
-        ),
+        color: isDark ? const Color(0xFF1E293B) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: isDark
+            ? []
+            : [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                )
+              ],
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Thumbnail 80×80
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: SizedBox(
-              width: 80,
-              height: 80,
-              child: item.thumbnailUrl != null
-                  ? CachedNetworkImage(
-                      imageUrl: item.thumbnailUrl!,
-                      fit: BoxFit.cover,
-                      placeholder: (ctx, url) =>
-                          Container(color: AppColors.inverseSurface),
-                      errorWidget: (ctx, url, err) => Container(
-                        color: AppColors.inverseSurface,
-                        child: const Icon(
-                          Icons.image_outlined,
-                          color: AppColors.outlineVariant,
+          // ── Image Section ──
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                child: SizedBox(
+                  height: 160,
+                  width: double.infinity,
+                  child: item.thumbnailUrl != null
+                      ? CachedNetworkImage(
+                          imageUrl: item.thumbnailUrl!,
+                          fit: BoxFit.cover,
+                          placeholder: (ctx, url) => Container(color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF1F5F9)),
+                          errorWidget: (ctx, url, err) => Container(
+                            color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF1F5F9),
+                            child: const Icon(Icons.image_outlined, color: Colors.grey, size: 48),
+                          ),
+                        )
+                      : Container(
+                          color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF1F5F9),
+                          child: const Icon(Icons.image_outlined, color: Colors.grey, size: 48),
                         ),
-                      ),
-                    )
-                  : Container(
-                      color: AppColors.inverseSurface,
-                      child: const Icon(
-                        Icons.image_outlined,
-                        color: AppColors.outlineVariant,
-                      ),
-                    ),
-            ),
+                ),
+              ),
+              // Risk Badge Overlay
+              Positioned(
+                top: 12,
+                left: 12,
+                child: _buildRiskBadge(context, item.riskLevel, item.riskScore),
+              ),
+            ],
           ),
-          const SizedBox(width: AppSpacing.md),
-          // Content
-          Expanded(
+          
+          // ── Content Section ──
+          Padding(
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Title & Chevron
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
                       child: Text(
                         item.title ?? item.scanId,
-                        style:
-                            AppTypography.sectionHeader(color: isDark ? Colors.white : AppColors.onSurface),
+                        style: AppTypography.titleMd(color: isDark ? Colors.white : AppColors.textPrimary)
+                            .copyWith(fontWeight: FontWeight.bold),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const SizedBox(width: AppSpacing.sm),
-                    core_widgets.RiskBadge(riskLevel: widgetLevel),
+                    Icon(Icons.chevron_right, color: isDark ? Colors.white54 : Colors.black38, size: 20),
                   ],
                 ),
-                const SizedBox(height: AppSpacing.xs),
+                const SizedBox(height: 6),
+                
+                // Date
                 Row(
                   children: [
-                    const Icon(
-                      Icons.calendar_today_outlined,
-                      size: 14,
-                      color: AppColors.outlineVariant,
-                    ),
-                    const SizedBox(width: AppSpacing.xs),
-                    Flexible(
-                      child: Text(
-                        dateStr,
-                        style: AppTypography.caption(
-                            color: AppColors.outlineVariant),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                // Progress bar with score
-                Row(
-                  children: [
-                    Expanded(
-                      child:
-                          core_widgets.RiskProgressBar(score: item.riskScore),
-                    ),
-                    const SizedBox(width: AppSpacing.sm),
+                    Icon(Icons.calendar_today_outlined, size: 14, color: isDark ? Colors.white54 : AppColors.textSecondary),
+                    const SizedBox(width: 6),
                     Text(
-                      '${item.riskScore}%',
-                      style: AppTypography.codeData(color: riskColor)
-                          .copyWith(fontWeight: FontWeight.w700),
+                      dateStr,
+                      style: AppTypography.bodyBase(color: isDark ? Colors.white54 : AppColors.textSecondary)
+                          .copyWith(fontSize: 13),
+                    ),
+                  ],
+                ),
+                
+                const SizedBox(height: 12),
+                Divider(color: isDark ? Colors.white10 : Colors.black12, height: 1),
+                const SizedBox(height: 12),
+                
+                // Tags
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    ...tags.map((tag) => Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            tag,
+                            style: TextStyle(
+                              color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        )),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFDCFCE7).withValues(alpha: isDark ? 0.1 : 1.0),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        item.status == 'completed' ? 'completed'.tr(context) : item.status,
+                        style: TextStyle(
+                          color: isDark ? const Color(0xFF4ADE80) : const Color(0xFF16A34A),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -434,3 +498,4 @@ class _HistoryCard extends StatelessWidget {
     );
   }
 }
+
