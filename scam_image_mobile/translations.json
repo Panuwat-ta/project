@@ -1,0 +1,898 @@
+{
+  "auto_tr_1": {
+    "th": "เกิดข้อผิดพลาดในการจัดเก็บข้อมูล",
+    "en": "Error occurred while saving data"
+  },
+  "auto_tr_2": {
+    "th": "กรุณาเข้าสู่ระบบใหม่อีกครั้ง",
+    "en": "Please log in again"
+  },
+  "auto_tr_3": {
+    "th": "ไม่สามารถเชื่อมต่ออินเทอร์เน็ตได้",
+    "en": "Cannot connect to the internet"
+  },
+  "auto_tr_4": {
+    "th": "สูง",
+    "en": "High"
+  },
+  "auto_tr_5": {
+    "th": "ปานกลาง",
+    "en": "Medium"
+  },
+  "auto_tr_6": {
+    "th": "ต่ำ",
+    "en": "Low"
+  },
+  "auto_tr_8": {
+    "th": "ลองอีกครั้ง",
+    "en": "Try again"
+  },
+  "auto_tr_9": {
+    "th": "เปิดการตั้งค่า",
+    "en": "Open settings"
+  },
+  "auto_tr_10": {
+    "th": "กรุณาอนุญาตให้แอปเข้าถึงคลังรูปภาพของคุณเพื่อเลือกรูปที่ต้องการตรวจสอบ",
+    "en": "Please allow the app to access your photo library to select an image for checking"
+  },
+  "auto_tr_11": {
+    "th": "ต้องการสิทธิ์เข้าถึงรูปภาพ",
+    "en": "Photo access permission required"
+  },
+  "auto_tr_12": {
+    "th": "ปลอดภัย",
+    "en": "Safe"
+  },
+  "auto_tr_13": {
+    "th": "ความเสี่ยงสูง",
+    "en": "High risk"
+  },
+  "auto_tr_15": {
+    "th": "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง",
+    "en": "An error occurred, please try again"
+  },
+  "auto_tr_16": {
+    "th": "อีเมลนี้ถูกใช้งานแล้ว",
+    "en": "This email is already in use"
+  },
+  "auto_tr_17": {
+    "th": "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
+    "en": "Invalid email or password"
+  },
+  "auto_tr_18": {
+    "th": "สมัครสมาชิก",
+    "en": "Register"
+  },
+  "auto_tr_19": {
+    "th": "ยังไม่มีบัญชีใช่หรือไม่? ",
+    "en": "Don't have an account? "
+  },
+  "auto_tr_20": {
+    "th": "เข้าสู่ระบบช่องทางอื่นๆ",
+    "en": "Login with other methods"
+  },
+  "auto_tr_21": {
+    "th": "เข้าสู่ระบบด้วย Google",
+    "en": "Login with Google"
+  },
+  "auto_tr_22": {
+    "th": "หรือ",
+    "en": "or"
+  },
+  "auto_tr_23": {
+    "th": "เข้าสู่ระบบ",
+    "en": "Login"
+  },
+  "auto_tr_24": {
+    "th": "จดจำการใช้งานของฉัน",
+    "en": "Remember me"
+  },
+  "auto_tr_25": {
+    "th": "กรุณากรอกรหัสผ่าน",
+    "en": "Please enter password"
+  },
+  "auto_tr_26": {
+    "th": "ลืมรหัสผ่าน",
+    "en": "Forgot password"
+  },
+  "auto_tr_27": {
+    "th": "รหัสผ่าน",
+    "en": "Password"
+  },
+  "auto_tr_28": {
+    "th": "กรุณากรอกอีเมล",
+    "en": "Please enter email"
+  },
+  "auto_tr_29": {
+    "th": "อีเมล",
+    "en": "Email"
+  },
+  "auto_tr_30": {
+    "th": "ระบบรักษาความปลอดภัยอัจฉริยะ",
+    "en": "Smart Security System"
+  },
+  "auto_tr_31": {
+    "th": "เข้าสู่ระบบด้วย LINE",
+    "en": "Login with LINE"
+  },
+  "auto_tr_32": {
+    "th": "เข้าสู่ระบบด้วย GitHub",
+    "en": "Login with GitHub"
+  },
+  "auto_tr_33": {
+    "th": "เข้าสู่ระบบด้วย Facebook",
+    "en": "Login with Facebook"
+  },
+  "auto_tr_34": {
+    "th": "เลือกช่องทางเข้าสู่ระบบ",
+    "en": "Choose login method"
+  },
+  "auto_tr_35": {
+    "th": "ตั้งค่า",
+    "en": "Settings"
+  },
+  "auto_tr_36": {
+    "th": "แจ้งรายงาน",
+    "en": "Report"
+  },
+  "auto_tr_37": {
+    "th": "ประวัติ",
+    "en": "History"
+  },
+  "auto_tr_38": {
+    "th": "หน้าหลัก",
+    "en": "Home"
+  },
+  "auto_tr_39": {
+    "th": "เวอร์ชัน 1.0.0 • ความปลอดภัยของคุณคือสิ่งสำคัญ",
+    "en": "Version 1.0.0 • Your security is our priority"
+  },
+  "auto_tr_40": {
+    "th": "เริ่มใช้งาน",
+    "en": "Get Started"
+  },
+  "auto_tr_41": {
+    "th": "ข้อมูลของคุณจะถูกเก็บเป็นความลับเพื่อใช้พัฒนาความแม่นยำของ AI",
+    "en": "Your data will be kept confidential to improve AI accuracy"
+  },
+  "auto_tr_42": {
+    "th": "ยินยอมให้นำข้อมูลไปปรับปรุงระบบ",
+    "en": "Consent to use data for system improvement"
+  },
+  "auto_tr_43": {
+    "th": "อ่านข้อกำหนดและนโยบายความเป็นส่วนตัว",
+    "en": "Read Terms and Privacy Policy"
+  },
+  "auto_tr_44": {
+    "th": "ยอมรับเงื่อนไขการใช้งาน",
+    "en": "Accept Terms of Service"
+  },
+  "auto_tr_45": {
+    "th": "แอปพลิเคชันนี้ถูกออกแบบมาเพื่อช่วยประเมินความเสี่ยงเบื้องต้นของรูปภาพ ผลลัพธ์ที่ได้เป็นการวิเคราะห์ทางเทคนิคเท่านั้น ไม่ใช่คำตัดสินทางกฎหมาย โปรดใช้วิจารณญาณในการใช้งาน",
+    "en": "This application is designed for preliminary image risk assessment. Results are technical analyses only, not legal judgments. Please use with discretion."
+  },
+  "auto_tr_46": {
+    "th": "ตรวจสอบรูปภาพเพื่อความปลอดภัย",
+    "en": "Check image for safety"
+  },
+  "auto_tr_47": {
+    "th": "ตรวจสอบความปลอดภัย",
+    "en": "Security Check"
+  },
+  "auto_tr_48": {
+    "th": "มีบัญชีอยู่แล้ว? ",
+    "en": "Already have an account? "
+  },
+  "auto_tr_49": {
+    "th": " ของระบบ ScamGuard",
+    "en": " of the ScamGuard system"
+  },
+  "auto_tr_50": {
+    "th": "นโยบายความเป็นส่วนตัว",
+    "en": "Privacy Policy"
+  },
+  "auto_tr_51": {
+    "th": " และ ",
+    "en": " and "
+  },
+  "auto_tr_52": {
+    "th": "เงื่อนไขการใช้งาน",
+    "en": "Terms of Service"
+  },
+  "auto_tr_53": {
+    "th": "ฉันยอมรับ ",
+    "en": "I accept "
+  },
+  "auto_tr_54": {
+    "th": "รหัสผ่านไม่ตรงกัน",
+    "en": "Passwords do not match"
+  },
+  "auto_tr_55": {
+    "th": "กรุณายืนยันรหัสผ่าน",
+    "en": "Please confirm password"
+  },
+  "auto_tr_56": {
+    "th": "กรอกรหัสผ่านเดิมอีกครั้ง",
+    "en": "Enter the password again"
+  },
+  "auto_tr_57": {
+    "th": "ยืนยันรหัสผ่านอีกครั้ง",
+    "en": "Confirm password again"
+  },
+  "auto_tr_58": {
+    "th": "รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร",
+    "en": "Password must be at least 8 characters"
+  },
+  "auto_tr_59": {
+    "th": "อย่างน้อย 8 ตัวอักษร",
+    "en": "At least 8 characters"
+  },
+  "auto_tr_60": {
+    "th": "กรุณากรอกชื่อ",
+    "en": "Please enter name"
+  },
+  "auto_tr_61": {
+    "th": "กรอกชื่อและนามสกุลของคุณ",
+    "en": "Enter your full name"
+  },
+  "auto_tr_62": {
+    "th": "ชื่อ-นามสกุล",
+    "en": "Full Name"
+  },
+  "auto_tr_63": {
+    "th": "เข้าร่วมระบบรักษาความปลอดภัยอัจฉริยะ",
+    "en": "Join the smart security system"
+  },
+  "auto_tr_64": {
+    "th": "สมัครสมาชิกใหม่",
+    "en": "Register new account"
+  },
+  "auto_tr_65": {
+    "th": "กรุณายอมรับเงื่อนไขการใช้งาน",
+    "en": "Please accept terms of service"
+  },
+  "auto_tr_66": {
+    "th": "ตรวจสอบความปลอดภัย...",
+    "en": "Checking security..."
+  },
+  "auto_tr_67": {
+    "th": "ตรวจจับรูปภาพหลอกลวง",
+    "en": "Detect scam images"
+  },
+  "auto_tr_68": {
+    "th": "ลิงก์ข้อความ SMS",
+    "en": "SMS message links"
+  },
+  "auto_tr_69": {
+    "th": "เอกสารยืนยันตัวตน",
+    "en": "Identity documents"
+  },
+  "auto_tr_70": {
+    "th": "คิวอาร์โค้ดชำระเงิน",
+    "en": "Payment QR code"
+  },
+  "auto_tr_71": {
+    "th": "สลิปโอนเงินธนาคาร",
+    "en": "Bank transfer slip"
+  },
+  "auto_tr_72": {
+    "th": "ตรวจสอบรูปภาพอื่น",
+    "en": "Check another image"
+  },
+  "auto_tr_73": {
+    "th": "ส่งข้อมูลรายงานเจ้าหน้าที่",
+    "en": "Send report data to officials"
+  },
+  "auto_tr_74": {
+    "th": "ภาพมีโครงสร้างพิกเซลที่สม่ำเสมอ ไม่พบการตัดต่อที่ชัดเจน อย่างไรก็ตาม พบความผิดปกติเล็กน้อยบริเวณโลโก้ธนาคารซึ่งอาจเกิดจากการใช้ภาพคุณภาพต่ำ",
+    "en": "The image has consistent pixel structures with no clear editing. However, minor anomalies are found around the bank logo due to low image quality."
+  },
+  "auto_tr_75": {
+    "th": "คำอธิบายจาก AI (XAI)",
+    "en": "AI Explanation (XAI)"
+  },
+  "auto_tr_76": {
+    "th": "เสี่ยงต่ำ",
+    "en": "Low Risk"
+  },
+  "auto_tr_77": {
+    "th": "การวิเคราะห์ความผิดปกติทางภาพ",
+    "en": "Visual anomaly analysis"
+  },
+  "auto_tr_78": {
+    "th": "ลิงก์ที่เกี่ยวข้องและรายงาน:",
+    "en": "Related links and reports:"
+  },
+  "auto_tr_79": {
+    "th": "42 ครั้ง",
+    "en": "42 times"
+  },
+  "auto_tr_80": {
+    "th": "จำนวนที่พบซ้ำ",
+    "en": "Number of recurring reports"
+  },
+  "auto_tr_81": {
+    "th": "12 ม.ค. 2567",
+    "en": "12 Jan 2024"
+  },
+  "auto_tr_82": {
+    "th": "ตรวจพบครั้งแรก",
+    "en": "First detected"
+  },
+  "auto_tr_83": {
+    "th": "การตรวจสอบแหล่งที่มา",
+    "en": "Source checking"
+  },
+  "auto_tr_84": {
+    "th": "พบรูปแบบประโยคเร่งเร้าและสร้างความตื่นตระหนก ซึ่งเป็นลักษณะเฉพาะของการหลอกลวงแบบ Phishing",
+    "en": "Urgency and panic-inducing patterns detected, typical of Phishing scams."
+  },
+  "auto_tr_85": {
+    "th": "คลิกที่ลิงก์",
+    "en": "Click the link"
+  },
+  "auto_tr_86": {
+    "th": "ด่วน",
+    "en": "Urgent"
+  },
+  "auto_tr_87": {
+    "th": "รางวัล",
+    "en": "Prize"
+  },
+  "auto_tr_88": {
+    "th": "ความแม่นยำ",
+    "en": "Accuracy"
+  },
+  "auto_tr_89": {
+    "th": "คำที่น่าสงสัย",
+    "en": "Suspicious words"
+  },
+  "auto_tr_90": {
+    "th": "ยินดีด้วย! คุณได้รับรางวัลมูลค่า 50,000 บาท คลิกที่ลิงก์เพื่อรับสิทธิ์ด่วนก่อนหมดเวลา...",
+    "en": "Congratulations! You won a prize of 50,000 THB. Click the link to claim urgently before it expires..."
+  },
+  "auto_tr_91": {
+    "th": "ข้อความที่ตรวจพบ:",
+    "en": "Detected text:"
+  },
+  "auto_tr_92": {
+    "th": "เสี่ยงสูง",
+    "en": "High risk"
+  },
+  "auto_tr_93": {
+    "th": "การวิเคราะห์ข้อความ (OCR)",
+    "en": "Text Analysis (OCR)"
+  },
+  "auto_tr_94": {
+    "th": "วิเคราะห์ล่าสุดเมื่อ 2 นาทีที่แล้ว",
+    "en": "Analyzed 2 minutes ago"
+  },
+  "auto_tr_95": {
+    "th": "ความเสี่ยงโดยรวม",
+    "en": "Overall risk"
+  },
+  "auto_tr_96": {
+    "th": "ผลการตรวจจาก ScamGuard",
+    "en": "ScamGuard Result"
+  },
+  "auto_tr_97": {
+    "th": "รายละเอียดผลการตรวจ",
+    "en": "Scan Details"
+  },
+  "auto_tr_111": {
+    "th": "ไม่สามารถประมวลผลรูปภาพได้ เนื่องจากขนาดไฟล์ใหญ่เกินไป",
+    "en": "Cannot process image because file size is too large"
+  },
+  "auto_tr_112": {
+    "th": "งานวิเคราะห์ล้มเหลว",
+    "en": "Analysis failed"
+  },
+  "auto_tr_113": {
+    "th": "Scam Alert: ระวังลิงก์ปลอมจาก SMS กู้เงินด่วน",
+    "en": "Scam Alert: Beware of fake SMS links for quick loans"
+  },
+  "auto_tr_114": {
+    "th": "พบความเสี่ยงใหม่",
+    "en": "New risk detected"
+  },
+  "auto_tr_115": {
+    "th": "รูปภาพสลิปโอนเงินของคุณวิเคราะห์เสร็จแล้ว",
+    "en": "Your transfer slip image has been analyzed"
+  },
+  "auto_tr_116": {
+    "th": "วิเคราะห์เสร็จสิ้น",
+    "en": "Analysis completed"
+  },
+  "auto_tr_120": {
+    "th": "การแจ้งเตือนใหม่จะปรากฏที่นี่",
+    "en": "New notifications will appear here"
+  },
+  "auto_tr_121": {
+    "th": "ไม่มีการแจ้งเตือน",
+    "en": "No notifications"
+  },
+  "auto_tr_122": {
+    "th": "ล้างการแจ้งเตือนทั้งหมด",
+    "en": "Clear all notifications"
+  },
+  "auto_tr_123": {
+    "th": "การแจ้งเตือน",
+    "en": "Notifications"
+  },
+  "auto_tr_124": {
+    "th": "สลิปปลอม",
+    "en": "Fake slip"
+  },
+  "auto_tr_125": {
+    "th": "อื่นๆ",
+    "en": "Other"
+  },
+  "auto_tr_126": {
+    "th": "ภาพ AI หรือ Deepfake",
+    "en": "AI or Deepfake Image"
+  },
+  "auto_tr_127": {
+    "th": "ปลอมแปลงตัวตน",
+    "en": "Impersonation"
+  },
+  "auto_tr_128": {
+    "th": "ลงทุนหรือผลตอบแทนสูง",
+    "en": "High return investments"
+  },
+  "auto_tr_129": {
+    "th": "ซื้อขายออนไลน์",
+    "en": "Online shopping"
+  },
+  "auto_tr_130": {
+    "th": "เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่",
+    "en": "Session expired, please log in again"
+  },
+  "auto_tr_131": {
+    "th": "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต",
+    "en": "Cannot connect to server, please check your internet connection"
+  },
+  "auto_tr_132": {
+    "th": "ข้อมูลของคุณจะถูกเก็บเป็นความลับและใช้เพื่อความปลอดภัยส่วนรวมเท่านั้น",
+    "en": "Your information will be kept confidential and used only for public safety"
+  },
+  "auto_tr_133": {
+    "th": "ส่งรายงาน",
+    "en": "Submit report"
+  },
+  "auto_tr_134": {
+    "th": "ยินยอมให้ใช้ข้อมูลเพื่อพัฒนาโมเดล AI ในการตรวจสอบและป้องกันภัยไซเบอร์",
+    "en": "Consent to use data for AI models in cybersecurity"
+  },
+  "auto_tr_135": {
+    "th": "กรุณาระบุรายละเอียดเพิ่มเติม",
+    "en": "Please provide more details"
+  },
+  "auto_tr_136": {
+    "th": "ระบุลำดับเหตุการณ์ หรือข้อมูลที่น่าสงสัย...",
+    "en": "Specify sequence of events or suspicious information..."
+  },
+  "auto_tr_137": {
+    "th": "รายละเอียดเพิ่มเติม",
+    "en": "Additional details"
+  },
+  "auto_tr_138": {
+    "th": "เช่น Facebook, Line, TikTok",
+    "en": "e.g., Facebook, LINE, TikTok"
+  },
+  "auto_tr_139": {
+    "th": "แพลตฟอร์มที่พบ",
+    "en": "Platform found on"
+  },
+  "auto_tr_140": {
+    "th": "กรุณาเลือกประเภทการหลอกลวง",
+    "en": "Please select scam type"
+  },
+  "auto_tr_141": {
+    "th": "เลือกประเภทการหลอกลวง",
+    "en": "Select scam type"
+  },
+  "auto_tr_142": {
+    "th": "ประเภทเหตุการณ์",
+    "en": "Incident type"
+  },
+  "auto_tr_143": {
+    "th": "เปลี่ยนรูป",
+    "en": "Change image"
+  },
+  "auto_tr_144": {
+    "th": "รูปภาพที่ตรวจสอบ",
+    "en": "Analyzed image"
+  },
+  "auto_tr_145": {
+    "th": "ช่วยเราสร้างสังคมดิจิทัลที่ปลอดภัยยิ่งขึ้นโดยการแจ้งเบาะแส",
+    "en": "Help us build a safer digital society by reporting tips"
+  },
+  "auto_tr_146": {
+    "th": "แจ้งรายงานการหลอกลวง",
+    "en": "Report a scam"
+  },
+  "auto_tr_147": {
+    "th": "ส่งรายงานสำเร็จ ขอบคุณที่ช่วยปกป้องผู้ใช้คนอื่น",
+    "en": "Report submitted. Thank you for protecting others."
+  },
+  "auto_tr_148": {
+    "th": "กรุณาเลือกประเภทเหตุการณ์",
+    "en": "Please select incident type"
+  },
+  "auto_tr_149": {
+    "th": "พบสัญญาณการตัดต่อบริเวณใบหน้า",
+    "en": "Facial editing signs detected"
+  },
+  "auto_tr_150": {
+    "th": "พบความผิดปกติของภาพ",
+    "en": "Image anomalies detected"
+  },
+  "auto_tr_151": {
+    "th": "พบภาพคล้ายกันบนเว็บไซต์อื่น",
+    "en": "Similar images found on other sites"
+  },
+  "auto_tr_152": {
+    "th": "พบภาพใกล้เคียงจากหลายแหล่ง",
+    "en": "Similar images from multiple sources found"
+  },
+  "auto_tr_153": {
+    "th": "พบเลขบัญชีในภาพ",
+    "en": "Account number found in image"
+  },
+  "auto_tr_154": {
+    "th": "พบคำว่า โอนทันที",
+    "en": "Found the phrase 'transfer immediately'"
+  },
+  "auto_tr_155": {
+    "th": "พบข้อความชักชวนให้โอนเงิน",
+    "en": "Found money transfer solicitation text"
+  },
+  "auto_tr_156": {
+    "th": "พบสัญญาณหลายอย่างที่เกี่ยวข้องกับการหลอกลวง ระบบตรวจพบองค์ประกอบที่น่าสงสัยภายในรูปภาพนี้",
+    "en": "Multiple scam signals detected. Suspicious elements found in this image."
+  },
+  "auto_tr_157": {
+    "th": "ผลการตรวจสอบรูปภาพจาก ScamGuard",
+    "en": "Image check result from ScamGuard"
+  },
+  "auto_tr_158": {
+    "th": "แชร์ผลลัพธ์",
+    "en": "Share result"
+  },
+  "auto_tr_159": {
+    "th": "รายงานภาพต้องสงสัย",
+    "en": "Report suspicious image"
+  },
+  "auto_tr_160": {
+    "th": "ดู Heatmap",
+    "en": "View Heatmap"
+  },
+  "auto_tr_161": {
+    "th": "ดูรายละเอียด",
+    "en": "View details"
+  },
+  "auto_tr_162": {
+    "th": "พร้อมดู",
+    "en": "Ready to view"
+  },
+  "auto_tr_163": {
+    "th": "ดูพื้นที่ที่ระบบ AI ตรวจพบความผิดปกติในเชิงลึก",
+    "en": "View areas where AI detected anomalies in depth"
+  },
+  "auto_tr_164": {
+    "th": "ธุรกรรม",
+    "en": "Transaction"
+  },
+  "auto_tr_165": {
+    "th": "น่าสงสัย",
+    "en": "Suspicious"
+  },
+  "auto_tr_166": {
+    "th": "ข้อมูลติดต่อ",
+    "en": "Contact info"
+  },
+  "auto_tr_167": {
+    "th": "สรุปผลการวิเคราะห์",
+    "en": "Analysis summary"
+  },
+  "auto_tr_168": {
+    "th": "จีบเพื่อซูม",
+    "en": "Pinch to zoom"
+  },
+  "auto_tr_169": {
+    "th": "ลากเพื่อเลื่อน",
+    "en": "Drag to pan"
+  },
+  "auto_tr_170": {
+    "th": "ความเข้มของ Heatmap",
+    "en": "Heatmap intensity"
+  },
+  "auto_tr_171": {
+    "th": "พื้นที่สีแดงแสดงถึงจุดที่ AI ตรวจพบความผิดปกติของพิกเซลที่มักเกิดจากการตัดต่อหรือการสร้างภาพปลอม",
+    "en": "Red areas indicate where AI detected pixel anomalies typical of edits or fakes"
+  },
+  "auto_tr_172": {
+    "th": "ภาพต้นฉบับ",
+    "en": "Original Image"
+  },
+  "auto_tr_173": {
+    "th": "ตรวจสอบรายละเอียด",
+    "en": "Check details"
+  },
+  "auto_tr_174": {
+    "th": "รูปแบบไฟล์ไม่รองรับ รองรับเฉพาะ jpg, jpeg, png, webp",
+    "en": "Unsupported file format. Only jpg, jpeg, png, webp are supported"
+  },
+  "auto_tr_175": {
+    "th": "เกิดข้อผิดพลาด",
+    "en": "An error occurred"
+  },
+  "auto_tr_176": {
+    "th": "เกิดข้อผิดพลาดในการอัปโหลด กรุณาลองใหม่",
+    "en": "Upload error, please try again"
+  },
+  "auto_tr_177": {
+    "th": "การวิเคราะห์ล้มเหลว",
+    "en": "Analysis failed"
+  },
+  "auto_tr_178": {
+    "th": "ทำงานเบื้องหลัง",
+    "en": "Run in background"
+  },
+  "auto_tr_179": {
+    "th": "ยกเลิก",
+    "en": "Cancel"
+  },
+  "auto_tr_180": {
+    "th": "กรุณารอครู่หนึ่ง ระบบกำลังประมวลผลด้วย AI",
+    "en": "Please wait, AI is processing"
+  },
+  "auto_tr_181": {
+    "th": "กำลังวิเคราะห์ความปลอดภัย",
+    "en": "Analyzing security"
+  },
+  "auto_tr_182": {
+    "th": "หมดเวลา กรุณาลองใหม่",
+    "en": "Timeout, please try again"
+  },
+  "auto_tr_183": {
+    "th": "ตกลง",
+    "en": "OK"
+  },
+  "auto_tr_184": {
+    "th": "ใช่, ยกเลิก",
+    "en": "Yes, cancel"
+  },
+  "auto_tr_185": {
+    "th": "ไม่, ทำงานต่อ",
+    "en": "No, continue"
+  },
+  "auto_tr_186": {
+    "th": "คุณต้องการยกเลิกการวิเคราะห์รูปภาพนี้ใช่หรือไม่?",
+    "en": "Are you sure you want to cancel the analysis for this image?"
+  },
+  "auto_tr_187": {
+    "th": "ยืนยันการยกเลิก?",
+    "en": "Confirm cancellation?"
+  },
+  "auto_tr_188": {
+    "th": "การวิเคราะห์แบบเข้ารหัส ข้อมูลของคุณจะถูกเก็บเป็นความลับ",
+    "en": "Encrypted analysis. Your data will be kept confidential."
+  },
+  "auto_tr_189": {
+    "th": "การวิเคราะห์แบบเข้ารหัส",
+    "en": "Encrypted analysis"
+  },
+  "auto_tr_190": {
+    "th": "รอการประมวลผล",
+    "en": "Waiting for processing"
+  },
+  "auto_tr_191": {
+    "th": "กำลังประมวลผลด้วย AI...",
+    "en": "Processing with AI..."
+  },
+  "auto_tr_192": {
+    "th": "เสร็จสิ้น",
+    "en": "Completed"
+  },
+  "auto_tr_193": {
+    "th": "กำลังวิเคราะห์ความผิดปกติ",
+    "en": "Analyzing anomalies"
+  },
+  "auto_tr_194": {
+    "th": "กำลังตรวจสอบข้อมูลผู้ส่ง...",
+    "en": "Checking sender information..."
+  },
+  "auto_tr_195": {
+    "th": "กำลังตรวจสอบแหล่งที่มา",
+    "en": "Checking source"
+  },
+  "auto_tr_196": {
+    "th": "กำลังอ่านข้อมูล...",
+    "en": "Reading data..."
+  },
+  "auto_tr_197": {
+    "th": "กำลังอ่านข้อความในภาพ",
+    "en": "Reading text in image"
+  },
+  "auto_tr_198": {
+    "th": "08 ต.ค. 2566 • 18:45",
+    "en": "08 Oct 2023 • 18:45"
+  },
+  "auto_tr_199": {
+    "th": "ข้อความจาก SMS",
+    "en": "Message from SMS"
+  },
+  "auto_tr_200": {
+    "th": "09 ต.ค. 2566 • 09:15",
+    "en": "09 Oct 2023 • 09:15"
+  },
+  "auto_tr_201": {
+    "th": "ใบแจ้งหนี้ปลอม",
+    "en": "Fake invoice"
+  },
+  "auto_tr_202": {
+    "th": "10 ต.ค. 2566 • 14:20",
+    "en": "10 Oct 2023 • 14:20"
+  },
+  "auto_tr_203": {
+    "th": "สลิปโอนเงินต้องสงสัย",
+    "en": "Suspicious transfer slip"
+  },
+  "auto_tr_204": {
+    "th": "เริ่มวิเคราะห์",
+    "en": "Start analysis"
+  },
+  "auto_tr_205": {
+    "th": "รูปภาพจะถูกส่งไปวิเคราะห์บนระบบคลาวด์อย่างปลอดภัย ข้อมูลของคุณจะได้รับการเข้ารหัสและไม่มีการเปิดเผยต่อสาธารณะ",
+    "en": "The image will be securely sent to the cloud for analysis. Your data is encrypted and not disclosed publicly."
+  },
+  "auto_tr_206": {
+    "th": "รีเซ็ต",
+    "en": "Reset"
+  },
+  "auto_tr_207": {
+    "th": "ขยาย",
+    "en": "Expand"
+  },
+  "auto_tr_208": {
+    "th": "สัดส่วน",
+    "en": "Aspect ratio"
+  },
+  "auto_tr_209": {
+    "th": "หมุนขวา",
+    "en": "Rotate Right"
+  },
+  "auto_tr_210": {
+    "th": "หมุนซ้าย",
+    "en": "Rotate Left"
+  },
+  "auto_tr_211": {
+    "th": "ไม่สามารถโหลดรูปภาพได้",
+    "en": "Cannot load image"
+  },
+  "auto_tr_212": {
+    "th": "ปรับแต่งรูปภาพของคุณให้เห็นส่วนที่ต้องการวิเคราะห์ได้ชัดเจนที่สุด",
+    "en": "Adjust your image to clearly show the part to be analyzed"
+  },
+  "auto_tr_213": {
+    "th": "ตรวจสอบรูปภาพ",
+    "en": "Check image"
+  },
+  "auto_tr_214": {
+    "th": "ย้อนกลับ",
+    "en": "Back"
+  },
+  "auto_tr_215": {
+    "th": "ใช่",
+    "en": "Yes"
+  },
+  "auto_tr_216": {
+    "th": "ไม่",
+    "en": "No"
+  },
+  "auto_tr_217": {
+    "th": "รูปภาพที่แก้ไขจะไม่ถูกบันทึก",
+    "en": "Edited image will not be saved"
+  },
+  "auto_tr_218": {
+    "th": "ยกเลิกการแก้ไข?",
+    "en": "Cancel edits?"
+  },
+  "auto_tr_219": {
+    "th": "ครอปรูปภาพ",
+    "en": "Crop image"
+  },
+  "auto_tr_220": {
+    "th": "ScamGuard ให้ความสำคัญกับความเป็นส่วนตัวของคุณ ข้อมูลของคุณจะถูกประมวลผลตามพระราชบัญญัติคุ้มครองข้อมูลส่วนตัว (PDPA) เราจะเก็บรักษาข้อมูลอย่างปลอดภัยและไม่ส่งต่อให้บุคคลที่สามโดยไม่ได้รับความยินยอม",
+    "en": "ScamGuard values your privacy. Your data is processed under the PDPA. We will keep it safe and not share it with third parties without consent."
+  },
+  "auto_tr_221": {
+    "th": "ลบข้อมูลการใช้งานทั้งหมด",
+    "en": "Delete all usage data"
+  },
+  "auto_tr_222": {
+    "th": "ขอสำเนาข้อมูลส่วนตัว",
+    "en": "Request a copy of personal data"
+  },
+  "auto_tr_223": {
+    "th": "ช่วยให้ระบบตรวจจับกลโกงได้แม่นยำยิ่งขึ้นสำหรับทุกคน",
+    "en": "Helps the system detect scams more accurately for everyone"
+  },
+  "auto_tr_224": {
+    "th": "ยินยอมให้ใช้ข้อมูลเพื่อพัฒนา AI",
+    "en": "Consent to use data for AI development"
+  },
+  "auto_tr_225": {
+    "th": "ดูประวัติการวิเคราะห์ย้อนหลังได้ทุกเมื่อ",
+    "en": "View past analysis history at any time"
+  },
+  "auto_tr_226": {
+    "th": "ยินยอมให้เก็บประวัติการสแกน",
+    "en": "Consent to store scan history"
+  },
+  "auto_tr_227": {
+    "th": "ใช้เพื่อวิเคราะห์ความเสี่ยงในรูปภาพที่คุณอัปโหลด",
+    "en": "Used to analyze risks in the images you upload"
+  },
+  "auto_tr_228": {
+    "th": "ยินยอมให้ประมวลผลรูปภาพ",
+    "en": "Consent to image processing"
+  },
+  "auto_tr_229": {
+    "th": "เลือกการตั้งค่าที่คุณต้องการให้ ScamGuard ดูแลข้อมูลของคุณ",
+    "en": "Choose the settings you want ScamGuard to handle your data"
+  },
+  "auto_tr_230": {
+    "th": "จัดการความยินยอม",
+    "en": "Manage Consents"
+  },
+  "auto_tr_231": {
+    "th": "ความเป็นส่วนตัว",
+    "en": "Privacy"
+  },
+  "auto_tr_232": {
+    "th": "ข้อมูลของคุณถูกลบเรียบร้อยแล้ว",
+    "en": "Your data has been successfully deleted"
+  },
+  "auto_tr_233": {
+    "th": "ลบข้อมูล",
+    "en": "Delete Data"
+  },
+  "auto_tr_234": {
+    "th": "คุณต้องการลบข้อมูลการใช้งานทั้งหมดใช่หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้",
+    "en": "Are you sure you want to delete all usage data? This action cannot be undone."
+  },
+  "auto_tr_235": {
+    "th": "ลบข้อมูลการใช้งาน",
+    "en": "Delete Usage Data"
+  },
+  "auto_tr_236": {
+    "th": "กำลังดำเนินการส่งสำเนาข้อมูลของคุณ",
+    "en": "Processing the delivery of your data copy"
+  },
+  "auto_tr_237": {
+    "th": "ไทย",
+    "en": "Thai"
+  },
+  "auto_tr_238": {
+    "th": "ลบบัญชีผู้ใช้งาน",
+    "en": "Delete Account"
+  },
+  "auto_tr_239": {
+    "th": "เปลี่ยนรหัสผ่าน",
+    "en": "Change Password"
+  },
+  "auto_tr_240": {
+    "th": "ฟีเจอร์นี้จะพร้อมใช้งานเร็วๆ นี้",
+    "en": "This feature will be available soon"
+  },
+  "auto_tr_241": {
+    "th": "แก้ไขโปรไฟล์",
+    "en": "Edit Profile"
+  },
+  "auto_tr_242": {
+    "th": "โปรไฟล์",
+    "en": "Profile"
+  }
+}

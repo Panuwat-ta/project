@@ -7,6 +7,7 @@ import '../../domain/entities/auth_token.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../bloc/auth_bloc.dart';
+import '../../../../core/localization/app_translations.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -102,14 +103,14 @@ class _LoginViewState extends State<_LoginView> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                'เลือกช่องทางเข้าสู่ระบบ',
+                'auth_login_choose_method'.tr(context),
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
               _buildLoginOption(
                 iconPath: 'assets/icons/facebook.svg',
-                label: 'เข้าสู่ระบบด้วย Facebook',
+                label: 'auth_login_facebook'.tr(context),
                 textColor: textColor,
                 isDark: isDark,
                 onTap: () {},
@@ -117,7 +118,7 @@ class _LoginViewState extends State<_LoginView> {
               const SizedBox(height: 12),
               _buildLoginOption(
                 iconPath: 'assets/icons/github.svg',
-                label: 'เข้าสู่ระบบด้วย GitHub',
+                label: 'auth_login_github'.tr(context),
                 textColor: textColor,
                 isDarkIcon: true,
                 isDark: isDark,
@@ -126,7 +127,7 @@ class _LoginViewState extends State<_LoginView> {
               const SizedBox(height: 12),
               _buildLoginOption(
                 iconPath: 'assets/icons/line.svg',
-                label: 'เข้าสู่ระบบด้วย LINE',
+                label: 'auth_login_line'.tr(context),
                 textColor: textColor,
                 isDark: isDark,
                 onTap: () {},
@@ -216,7 +217,7 @@ class _LoginViewState extends State<_LoginView> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'ระบบรักษาความปลอดภัยอัจฉริยะ',
+                        'auth_login_title'.tr(context),
                         style: TextStyle(
                           fontSize: 14,
                           color: subtitleColor,
@@ -247,7 +248,7 @@ class _LoginViewState extends State<_LoginView> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text(
-                            'เข้าสู่ระบบ',
+                            'auth_login_button'.tr(context),
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -258,7 +259,7 @@ class _LoginViewState extends State<_LoginView> {
 
                           // Email field
                           Text(
-                            'อีเมล',
+                            'auth_email'.tr(context),
                             style: TextStyle(fontSize: 14, color: subtitleColor, fontWeight: FontWeight.w500),
                           ),
                           const SizedBox(height: 8),
@@ -277,7 +278,7 @@ class _LoginViewState extends State<_LoginView> {
                               enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: inputBorderColor)),
                               focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: primaryColor)),
                             ),
-                            validator: (v) => (v == null || v.isEmpty) ? 'กรุณากรอกอีเมล' : null,
+                            validator: (v) => (v == null || v.isEmpty) ? 'auth_email_hint'.tr(context) : null,
                           ),
                           const SizedBox(height: 16),
 
@@ -286,7 +287,7 @@ class _LoginViewState extends State<_LoginView> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'รหัสผ่าน',
+                                'auth_password'.tr(context),
                                 style: TextStyle(fontSize: 14, color: subtitleColor, fontWeight: FontWeight.w500),
                               ),
                               TextButton(
@@ -297,7 +298,7 @@ class _LoginViewState extends State<_LoginView> {
                                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                 ),
                                 child: Text(
-                                  'ลืมรหัสผ่าน',
+                                  'auth_password_forgot'.tr(context),
                                   style: TextStyle(fontSize: 12, color: primaryColor, fontWeight: FontWeight.w500),
                                 ),
                               ),
@@ -326,7 +327,7 @@ class _LoginViewState extends State<_LoginView> {
                               enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: inputBorderColor)),
                               focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: primaryColor)),
                             ),
-                            validator: (v) => (v == null || v.isEmpty) ? 'กรุณากรอกรหัสผ่าน' : null,
+                            validator: (v) => (v == null || v.isEmpty) ? 'auth_password_hint'.tr(context) : null,
                           ),
                           const SizedBox(height: 16),
 
@@ -347,7 +348,7 @@ class _LoginViewState extends State<_LoginView> {
                               ),
                               const SizedBox(width: 12),
                               Text(
-                                'จดจำการใช้งานของฉัน',
+                                'auth_remember_me'.tr(context),
                                 style: TextStyle(fontSize: 14, color: subtitleColor),
                               ),
                             ],
@@ -370,7 +371,7 @@ class _LoginViewState extends State<_LoginView> {
                                   ),
                                   child: state is AuthLoading
                                       ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                                      : const Text('เข้าสู่ระบบ', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                      : Text('auth_login_button'.tr(context), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                                 );
                               },
                             ),
@@ -383,7 +384,7 @@ class _LoginViewState extends State<_LoginView> {
                               Expanded(child: Divider(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
                               Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                                child: Text('หรือ', style: TextStyle(color: subtitleColor, fontSize: 14)),
+                                child: Text('auth_or'.tr(context), style: TextStyle(color: subtitleColor, fontSize: 14)),
                               ),
                               Expanded(child: Divider(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
                             ],
@@ -410,7 +411,7 @@ class _LoginViewState extends State<_LoginView> {
                                     height: 24,
                                   ),
                                   const SizedBox(width: 12),
-                                  Text('เข้าสู่ระบบด้วย Google', style: TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.w500)),
+                                  Text('auth_login_google'.tr(context), style: TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.w500)),
                                 ],
                               ),
                             ),
@@ -432,7 +433,7 @@ class _LoginViewState extends State<_LoginView> {
                                 children: [
                                   Icon(Icons.more_horiz, color: isDark ? Colors.white : Colors.black, size: 28),
                                   const SizedBox(width: 12),
-                                  Text('เข้าสู่ระบบช่องทางอื่นๆ', style: TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.w500)),
+                                  Text('auth_login_other'.tr(context), style: TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.w500)),
                                 ],
                               ),
                             ),
@@ -448,7 +449,7 @@ class _LoginViewState extends State<_LoginView> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'ยังไม่มีบัญชีใช่หรือไม่? ',
+                        'auth_no_account'.tr(context),
                         style: TextStyle(color: subtitleColor, fontSize: 14),
                       ),
                       TextButton(
@@ -459,7 +460,7 @@ class _LoginViewState extends State<_LoginView> {
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                         child: Text(
-                          'สมัครสมาชิก',
+                          'auth_register_link'.tr(context),
                           style: TextStyle(color: primaryColor, fontSize: 14, fontWeight: FontWeight.bold),
                         ),
                       ),

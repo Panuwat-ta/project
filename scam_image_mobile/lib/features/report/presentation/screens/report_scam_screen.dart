@@ -4,11 +4,11 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../domain/entities/scam_report.dart';
 import '../bloc/report_bloc.dart';
 
-/// Screen that lets the user submit a scam-image report.
 class ReportScamScreen extends StatefulWidget {
   const ReportScamScreen({super.key, this.scanId});
 
@@ -33,14 +33,14 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
   late final ReportBloc _bloc;
 
   // ── Categories ────────────────────────────────────────────────────────────
-  static const _categories = [
-    'Romance Scam',
-    'ซื้อขายออนไลน์',
-    'สลิปปลอม',
-    'ลงทุนหรือผลตอบแทนสูง',
-    'ปลอมแปลงตัวตน',
-    'ภาพ AI หรือ Deepfake',
-    'อื่นๆ',
+  List<String> get _categories => [
+    'cat_romance'.tr(context),
+    'cat_ecommerce'.tr(context),
+    'cat_fake_slip'.tr(context),
+    'cat_investment'.tr(context),
+    'cat_impersonation'.tr(context),
+    'cat_ai'.tr(context),
+    'cat_other'.tr(context),
   ];
 
   @override
@@ -64,7 +64,7 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'กรุณาเลือกประเภทเหตุการณ์',
+            'report_cat_error_toast'.tr(context),
             style: AppTypography.bodyBase(color: Colors.white),
           ),
           backgroundColor: AppColors.danger,
@@ -95,7 +95,7 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'ส่งรายงานสำเร็จ ขอบคุณที่ช่วยปกป้องผู้ใช้คนอื่น',
+            'report_success'.tr(context),
             style: AppTypography.bodyBase(color: Colors.white),
           ),
           backgroundColor: AppColors.success,
@@ -140,7 +140,7 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
             automaticallyImplyLeading: false, // In Figma, this acts like a main tab
             actions: [
               IconButton(
-                tooltip: 'การแจ้งเตือน',
+                tooltip: 'notifications'.tr(context),
                 onPressed: () => context.push('/notifications'),
                 icon: Icon(
                   Icons.notifications_outlined,
@@ -160,13 +160,13 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                 children: [
                   // ── Header ─────────────────────────────────────────────
                   Text(
-                    'แจ้งรายงานการหลอกลวง',
+                    'report_title'.tr(context),
                     style: AppTypography.headlineLgMobile(
                         color: Theme.of(context).colorScheme.onSurface),
                   ),
                   const SizedBox(height: AppSpacing.xs),
                   Text(
-                    'ช่วยเราสร้างสังคมดิจิทัลที่ปลอดภัยยิ่งขึ้นโดยการแจ้งเบาะแส',
+                    'report_subtitle'.tr(context),
                     style: AppTypography.bodyBase(
                         color: AppColors.textSecondary),
                   ),
@@ -196,7 +196,7 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'รูปภาพที่ตรวจสอบ',
+                              'report_image_label'.tr(context),
                               style: AppTypography.titleMd(
                                 color: Theme.of(context).colorScheme.onSurface,
                               ),
@@ -206,7 +206,7 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                                 // TODO: Pick or change image
                               },
                               icon: const Icon(Icons.refresh, size: 18),
-                              label: const Text('เปลี่ยนรูป'),
+                              label: Text('report_change_image'.tr(context)),
                               style: TextButton.styleFrom(
                                 padding: EdgeInsets.zero,
                                 minimumSize: const Size(0, 0),
@@ -252,12 +252,12 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                   const SizedBox(height: AppSpacing.xl),
 
                   // ── Category Dropdown ──────────────────────────────────
-                  _SectionLabel(label: 'ประเภทเหตุการณ์', isDark: isDark),
+                  _SectionLabel(label: 'report_cat_label'.tr(context), isDark: isDark),
                   const SizedBox(height: AppSpacing.sm),
                   DropdownButtonFormField<String>(
                     initialValue: _selectedCategory,
                     decoration: _inputDecoration(
-                      hint: 'เลือกประเภทการหลอกลวง',
+                      hint: 'report_cat_hint'.tr(context),
                       isDark: isDark,
                     ),
                     dropdownColor: Theme.of(context).colorScheme.surface,
@@ -275,19 +275,19 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                       );
                     }).toList(),
                     onChanged: (v) => setState(() => _selectedCategory = v),
-                    validator: (v) => v == null ? 'กรุณาเลือกประเภทการหลอกลวง' : null,
+                    validator: (v) => v == null ? 'report_cat_error'.tr(context) : null,
                   ),
                   const SizedBox(height: AppSpacing.lg),
 
                   // ── Platform TextField ─────────────────────────────────
-                  _SectionLabel(label: 'แพลตฟอร์มที่พบ', isDark: isDark),
+                  _SectionLabel(label: 'report_platform_label'.tr(context), isDark: isDark),
                   const SizedBox(height: AppSpacing.sm),
                   TextFormField(
                     controller: _platformController,
                     style: AppTypography.bodyBase(
                         color: Theme.of(context).colorScheme.onSurface),
                     decoration: _inputDecoration(
-                      hint: 'เช่น Facebook, Line, TikTok',
+                      hint: 'report_platform_hint'.tr(context),
                       isDark: isDark,
                       prefixIcon: const Icon(
                         Icons.public,
@@ -299,7 +299,7 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                   const SizedBox(height: AppSpacing.lg),
 
                   // ── Details Field ──────────────────────────────────────
-                  _SectionLabel(label: 'รายละเอียดเพิ่มเติม', isDark: isDark),
+                  _SectionLabel(label: 'report_details_label'.tr(context), isDark: isDark),
                   const SizedBox(height: AppSpacing.sm),
                   TextFormField(
                     controller: _detailsController,
@@ -308,12 +308,12 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                     style: AppTypography.bodyBase(
                         color: Theme.of(context).colorScheme.onSurface),
                     decoration: _inputDecoration(
-                      hint: 'ระบุลำดับเหตุการณ์ หรือข้อมูลที่น่าสงสัย...',
+                      hint: 'report_details_hint'.tr(context),
                       isDark: isDark,
                     ),
                     validator: (v) {
                       if (v == null || v.trim().length < 5) {
-                        return 'กรุณาระบุรายละเอียดเพิ่มเติม';
+                        return 'report_details_error'.tr(context);
                       }
                       return null;
                     },
@@ -346,7 +346,7 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                         child: GestureDetector(
                           onTap: () => setState(() => _allowAIModel = !_allowAIModel),
                           child: Text(
-                            'ยินยอมให้ใช้ข้อมูลเพื่อพัฒนาโมเดล AI ในการตรวจสอบและป้องกันภัยไซเบอร์',
+                            'report_consent'.tr(context),
                             style: AppTypography.bodyBase(
                               color: Theme.of(context).colorScheme.onSurface,
                             ),
@@ -362,7 +362,7 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                     builder: (context, state) {
                       final isLoading = state is ReportSubmitting;
                       return PrimaryButton(
-                        label: 'ส่งรายงาน',
+                        label: 'report_submit'.tr(context),
                         isLoading: isLoading,
                         onPressed: isLoading ? null : _submit,
                         leadingIcon: isLoading
@@ -375,7 +375,7 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
 
                   // ── Footer note ────────────────────────────────────────
                   Text(
-                    'ข้อมูลของคุณจะถูกเก็บเป็นความลับและใช้เพื่อความปลอดภัยส่วนรวมเท่านั้น',
+                    'report_footer'.tr(context),
                     textAlign: TextAlign.center,
                     style: AppTypography.caption(color: AppColors.textSecondary),
                   ),

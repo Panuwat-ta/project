@@ -6,6 +6,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/widgets/app_bottom_navigation.dart';
 import '../../domain/entities/analysis_result.dart' as domain;
 import '../bloc/result_bloc.dart';
@@ -42,7 +43,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
             Icon(Icons.security, color: isDark ? AppColors.primaryFixedDim : AppColors.primary),
             const SizedBox(width: 8),
             Text(
-              'ScamGuard',
+              'result_title'.tr(context),
               style: AppTypography.titleMd(
                   color: isDark ? Colors.white : AppColors.primary),
             ),
@@ -99,9 +100,9 @@ class _ResultBody extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _buildRiskGauge(),
+          _buildRiskGauge(context),
           const SizedBox(height: AppSpacing.xl),
-          _buildSummaryCard(),
+          _buildSummaryCard(context),
           const SizedBox(height: AppSpacing.md),
           _buildBentoGrid(context),
           const SizedBox(height: AppSpacing.xl),
@@ -112,7 +113,7 @@ class _ResultBody extends StatelessWidget {
     );
   }
 
-  Widget _buildRiskGauge() {
+  Widget _buildRiskGauge(BuildContext context) {
     return Column(
       children: [
         SizedBox(
@@ -131,7 +132,7 @@ class _ResultBody extends StatelessWidget {
                         .copyWith(fontSize: 40, height: 1.0),
                   ),
                   Text(
-                    'RISK SCORE',
+                    'result_risk_score'.tr(context),
                     style: AppTypography.caption(color: AppColors.outlineVariant),
                   ),
                 ],
@@ -152,7 +153,7 @@ class _ResultBody extends StatelessWidget {
               Icon(Icons.warning_amber_rounded, color: isDark ? const Color(0xFFFFB4B4) : AppColors.danger, size: 16),
               const SizedBox(width: 4),
               Text(
-                'ความเสี่ยงสูง',
+                'result_high_risk'.tr(context),
                 style: AppTypography.caption(color: isDark ? const Color(0xFFFFB4B4) : AppColors.danger).copyWith(fontWeight: FontWeight.w600),
               ),
             ],
@@ -162,7 +163,7 @@ class _ResultBody extends StatelessWidget {
     );
   }
 
-  Widget _buildSummaryCard() {
+  Widget _buildSummaryCard(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
@@ -193,14 +194,14 @@ class _ResultBody extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'สรุปผลการวิเคราะห์',
+                  'result_summary_title'.tr(context),
                   style: AppTypography.sectionHeader(
                     color: isDark ? Colors.white : AppColors.onSurface,
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
-                  'พบสัญญาณหลายอย่างที่เกี่ยวข้องกับการหลอกลวง ระบบตรวจพบองค์ประกอบที่น่าสงสัยภายในรูปภาพนี้',
+                  'result_summary_desc'.tr(context),
                   style: AppTypography.bodyBase(
                     color: isDark ? Colors.white70 : AppColors.textSecondary,
                   ),
@@ -221,8 +222,8 @@ class _ResultBody extends StatelessWidget {
             Expanded(
               child: _buildBentoCard(
                 icon: Icons.badge_outlined,
-                caption: 'ข้อมูลติดต่อ',
-                valueText: 'น่าสงสัย',
+                caption: 'result_contact_info'.tr(context),
+                valueText: 'result_suspicious'.tr(context),
                 valueColor: AppColors.danger,
               ),
             ),
@@ -230,8 +231,8 @@ class _ResultBody extends StatelessWidget {
             Expanded(
               child: _buildBentoCard(
                 icon: Icons.account_balance_wallet_outlined,
-                caption: 'ธุรกรรม',
-                valueText: 'ความเสี่ยงสูง',
+                caption: 'result_transaction'.tr(context),
+                valueText: 'result_high_risk'.tr(context),
                 valueColor: AppColors.danger,
               ),
             ),
@@ -270,7 +271,7 @@ class _ResultBody extends StatelessWidget {
                       ),
                       const SizedBox(height: AppSpacing.xs),
                       Text(
-                        'ดูพื้นที่ที่ระบบ AI ตรวจพบความผิดปกติในเชิงลึก',
+                        'result_heatmap_desc'.tr(context),
                         style: AppTypography.caption(
                           color: isDark ? Colors.white70 : AppColors.textSecondary,
                         ),
@@ -290,7 +291,7 @@ class _ResultBody extends StatelessWidget {
                     border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.5)),
                   ),
                   child: Text(
-                    'พร้อมดู',
+                    'heatmap_ready'.tr(context),
                     style: AppTypography.caption(
                       color: isDark ? AppColors.primaryFixedDim : AppColors.primary,
                     ).copyWith(fontWeight: FontWeight.w600),
@@ -346,7 +347,7 @@ class _ResultBody extends StatelessWidget {
             Expanded(
               child: ElevatedButton.icon(
                 icon: const Icon(Icons.visibility_outlined, size: 18),
-                label: const Text('ดูรายละเอียด'),
+                label: Text('result_details'.tr(context)),
                 onPressed: () {
                   context.push('/detail/${result.taskId}');
                 },
@@ -364,7 +365,7 @@ class _ResultBody extends StatelessWidget {
             Expanded(
               child: ElevatedButton.icon(
                 icon: const Icon(Icons.grid_view_outlined, size: 18),
-                label: const Text('ดู Heatmap'),
+                label: Text('result_view_heatmap'.tr(context)),
                 onPressed: () => context.push('/heatmap/${result.taskId}'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryContainer,
@@ -384,7 +385,7 @@ class _ResultBody extends StatelessWidget {
             Expanded(
               child: OutlinedButton.icon(
                 icon: const Icon(Icons.flag_outlined, size: 18),
-                label: const Text('รายงานภาพต้องสงสัย', overflow: TextOverflow.ellipsis),
+                label: Text('result_report_scam'.tr(context), overflow: TextOverflow.ellipsis),
                 onPressed: () => context.go('/main/report'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.danger,
@@ -399,9 +400,10 @@ class _ResultBody extends StatelessWidget {
             Expanded(
               child: OutlinedButton.icon(
                 icon: const Icon(Icons.share_outlined, size: 18),
-                label: const Text('แชร์ผลลัพธ์'),
+                label: Text('result_share'.tr(context)),
                 onPressed: () {
-                  Share.share('ผลการตรวจสอบรูปภาพจาก ScamGuard');
+                  // ignore: deprecated_member_use
+                  Share.share('result_share_text'.tr(context));
                 },
                 style: OutlinedButton.styleFrom(
                   foregroundColor: isDark ? AppColors.primaryFixedDim : AppColors.primary,

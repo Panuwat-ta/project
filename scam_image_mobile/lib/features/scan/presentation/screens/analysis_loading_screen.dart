@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../bloc/scan_bloc.dart';
 import 'package:scam_image_mobile/features/scan/domain/entities/analysis_task.dart';
@@ -261,30 +262,30 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
         children: [
           AnalysisStepTile(
             status: steps.step1,
-            title: 'กำลังอ่านข้อความในภาพ',
+            title: 'loading_step1_title'.tr(context),
             subtitle: steps.step1 == AnalysisStepStatus.done
-                ? 'เสร็จสิ้น'
+                ? 'loading_step_done'.tr(context)
                 : steps.step1 == AnalysisStepStatus.active
-                    ? 'กำลังอ่านข้อมูล...'
-                    : 'รอการประมวลผล',
+                    ? 'loading_step1_desc_active'.tr(context)
+                    : 'loading_step_wait'.tr(context),
           ),
           AnalysisStepTile(
             status: steps.step2,
-            title: 'กำลังตรวจสอบแหล่งที่มา',
+            title: 'loading_step2_title'.tr(context),
             subtitle: steps.step2 == AnalysisStepStatus.done
-                ? 'เสร็จสิ้น'
+                ? 'loading_step_done'.tr(context)
                 : steps.step2 == AnalysisStepStatus.active
-                    ? 'กำลังตรวจสอบข้อมูลผู้ส่ง...'
-                    : 'รอการประมวลผล',
+                    ? 'loading_step2_desc_active'.tr(context)
+                    : 'loading_step_wait'.tr(context),
           ),
           AnalysisStepTile(
             status: steps.step3,
-            title: 'กำลังวิเคราะห์ความผิดปกติ',
+            title: 'loading_step3_title'.tr(context),
             subtitle: steps.step3 == AnalysisStepStatus.done
-                ? 'เสร็จสิ้น'
+                ? 'loading_step_done'.tr(context)
                 : steps.step3 == AnalysisStepStatus.active
-                    ? 'กำลังประมวลผลด้วย AI...'
-                    : 'รอการประมวลผล',
+                    ? 'loading_step3_desc_active'.tr(context)
+                    : 'loading_step_wait'.tr(context),
           ),
         ],
       ),
@@ -304,16 +305,16 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
+          Icon(
             Icons.verified_user_outlined,
             size: 18,
             color: AppColors.outlineVariant,
-            semanticLabel: 'การวิเคราะห์แบบเข้ารหัส',
+            semanticLabel: 'loading_encryption'.tr(context),
           ),
           const SizedBox(width: AppSpacing.xs),
           Flexible(
             child: Text(
-              'การวิเคราะห์แบบเข้ารหัส ข้อมูลของคุณจะถูกเก็บเป็นความลับ',
+              'loading_encryption'.tr(context),
               style: AppTypography.caption(color: AppColors.outlineVariant),
               textAlign: TextAlign.center,
             ),
@@ -328,16 +329,16 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('ยืนยันการยกเลิก?'),
-        content: const Text('คุณต้องการยกเลิกการวิเคราะห์รูปภาพนี้ใช่หรือไม่?'),
+        title: Text('loading_cancel_title'.tr(context)),
+        content: Text('loading_cancel_desc'.tr(context)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('ไม่, ทำงานต่อ'),
+            child: Text('loading_cancel_no'.tr(context)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('ใช่, ยกเลิก', style: TextStyle(color: Colors.red)),
+            child: Text('loading_cancel_yes'.tr(context), style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -352,16 +353,16 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('ทำงานเบื้องหลัง'),
-        content: const Text('การวิเคราะห์จะทำงานต่อไปในเบื้องหลัง คุณสามารถตรวจสอบผลลัพธ์ได้ในหน้า "ประวัติ" เมื่อการวิเคราะห์เสร็จสิ้น ระบบจะส่งการแจ้งเตือนให้คุณทราบ'),
+        title: Text('loading_bg_title'.tr(context)),
+        content: Text('loading_bg_desc'.tr(context)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('ยกเลิก'),
+            child: Text('loading_cancel'.tr(context)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('ตกลง'),
+            child: Text('loading_bg_ok'.tr(context)),
           ),
         ],
       ),
@@ -390,8 +391,8 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
           if (context.mounted) context.go('/main/home');
         } else if (state is ScanTimeout) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('หมดเวลา กรุณาลองใหม่'),
+            SnackBar(
+              content: Text('loading_timeout'.tr(context)),
               backgroundColor: AppColors.error,
             ),
           );
@@ -404,7 +405,7 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
           automaticallyImplyLeading: false,
           actions: [
             IconButton(
-              tooltip: 'การแจ้งเตือน',
+              tooltip: 'notifications'.tr(context),
               onPressed: () => context.push('/notifications'),
               icon: Icon(
                 Icons.notifications_outlined,
@@ -439,7 +440,7 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
 
                   // 2. Title
                   Text(
-                    'กำลังวิเคราะห์ความปลอดภัย',
+                    'loading_title'.tr(context),
                     style: AppTypography.headlineLgMobile(
                         color: isDark ? Colors.white : AppColors.onSurface),
                     textAlign: TextAlign.center,
@@ -451,7 +452,7 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       Text(
-                        'กรุณารอครู่หนึ่ง ระบบกำลังประมวลผลด้วย AI',
+                        'loading_subtitle'.tr(context),
                         style: AppTypography.bodyBase(
                             color: AppColors.outlineVariant),
                         textAlign: TextAlign.center,
@@ -478,14 +479,14 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
                     children: [
                       Expanded(
                         child: SecondaryButton(
-                          label: 'ยกเลิก',
+                          label: 'loading_cancel'.tr(context),
                           onPressed: () => _showCancelDialog(context),
                         ),
                       ),
                       const SizedBox(width: AppSpacing.md),
                       Expanded(
                         child: PrimaryButton(
-                          label: 'ทำงานเบื้องหลัง',
+                          label: 'loading_bg'.tr(context),
                           onPressed: () => _showBackgroundDialog(context),
                         ),
                       ),

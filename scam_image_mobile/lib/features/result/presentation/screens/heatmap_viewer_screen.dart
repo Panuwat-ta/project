@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../core/localization/app_translations.dart';
 
 class HeatmapViewerScreen extends StatefulWidget {
   const HeatmapViewerScreen({
@@ -26,12 +27,14 @@ class _HeatmapViewerScreenState extends State<HeatmapViewerScreen> {
 
   void _zoomIn() {
     final Matrix4 matrix = _transformationController.value;
+    // ignore: deprecated_member_use
     matrix.scale(1.2);
     _transformationController.value = matrix;
   }
 
   void _zoomOut() {
     final Matrix4 matrix = _transformationController.value;
+    // ignore: deprecated_member_use
     matrix.scale(0.8);
     _transformationController.value = matrix;
   }
@@ -115,7 +118,7 @@ class _HeatmapViewerScreenState extends State<HeatmapViewerScreen> {
           onPressed: () => Navigator.of(context).maybePop(),
         ),
         title: Text(
-          'ตรวจสอบรายละเอียด',
+          'heatmap_check_details'.tr(context),
           style: AppTypography.sectionHeader(color: isDark ? Colors.white : AppColors.onSurface),
         ),
         centerTitle: true,
@@ -130,7 +133,7 @@ class _HeatmapViewerScreenState extends State<HeatmapViewerScreen> {
                 border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.5)),
               ),
               child: Text(
-                'ภาพต้นฉบับ',
+                'heatmap_original_image'.tr(context),
                 style: AppTypography.caption(color: isDark ? Colors.white : AppColors.onSurface),
               ),
             ),
@@ -155,7 +158,7 @@ class _HeatmapViewerScreenState extends State<HeatmapViewerScreen> {
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Text(
-                    'พื้นที่สีแดงแสดงถึงจุดที่ AI ตรวจพบความผิดปกติของพิกเซลที่มักเกิดจากการตัดต่อหรือการสร้างภาพปลอม',
+                    'heatmap_desc'.tr(context),
                     style: AppTypography.caption(color: isDark ? Colors.white70 : AppColors.textSecondary),
                   ),
                 ),
@@ -214,7 +217,7 @@ class _HeatmapViewerScreenState extends State<HeatmapViewerScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'ความเข้มของ Heatmap',
+                      'heatmap_intensity'.tr(context),
                       style: AppTypography.bodyBase(color: isDark ? Colors.white : AppColors.onSurface).copyWith(fontWeight: FontWeight.w600),
                     ),
                     Container(
@@ -266,14 +269,14 @@ class _HeatmapViewerScreenState extends State<HeatmapViewerScreen> {
                       children: [
                         Icon(Icons.swipe, color: AppColors.outlineVariant, size: 18),
                         const SizedBox(width: 4),
-                        Text('ลากเพื่อเลื่อน', style: AppTypography.caption(color: AppColors.outlineVariant)),
+                        Text('heatmap_drag_to_pan'.tr(context), style: AppTypography.caption(color: AppColors.outlineVariant)),
                       ],
                     ),
                     Row(
                       children: [
                         Icon(Icons.pinch, color: AppColors.outlineVariant, size: 18),
                         const SizedBox(width: 4),
-                        Text('จีบเพื่อซูม', style: AppTypography.caption(color: AppColors.outlineVariant)),
+                        Text('heatmap_pinch_to_zoom'.tr(context), style: AppTypography.caption(color: AppColors.outlineVariant)),
                       ],
                     ),
                   ],

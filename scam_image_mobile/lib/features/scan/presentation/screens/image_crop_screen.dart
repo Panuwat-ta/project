@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/widgets/widgets.dart';
 
 /// Full-screen image preview + crop screen.
@@ -43,12 +44,12 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
       compressQuality: 85,
       uiSettings: [
         AndroidUiSettings(
-          toolbarTitle: 'ครอปรูปภาพ',
+          toolbarTitle: 'crop_title'.tr(context),
           lockAspectRatio: false,
           toolbarColor: Theme.of(context).scaffoldBackgroundColor,
           toolbarWidgetColor: isDark ? Colors.white : AppColors.onSurface,
         ),
-        IOSUiSettings(title: 'ครอปรูปภาพ'),
+        IOSUiSettings(title: 'crop_title'.tr(context)),
       ],
     );
     if (croppedFile != null) {
@@ -62,16 +63,16 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('ยกเลิกการแก้ไข?'),
-        content: const Text('รูปภาพที่แก้ไขจะไม่ถูกบันทึก'),
+        title: Text('crop_discard_title'.tr(context)),
+        content: Text('crop_discard_desc'.tr(context)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('ไม่'),
+            child: Text('crop_no'.tr(context)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('ใช่'),
+            child: Text('crop_yes'.tr(context)),
           ),
         ],
       ),
@@ -135,7 +136,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
           elevation: 0,
           leading: IconButton(
             icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : AppColors.onSurface),
-            tooltip: 'ย้อนกลับ',
+            tooltip: 'crop_back_tooltip'.tr(context),
             onPressed: () async {
               final confirmed = await _confirmDiscard(context);
               if (confirmed && context.mounted) {
@@ -144,7 +145,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
             },
           ),
           title: Text(
-            'ตรวจสอบรูปภาพ',
+            'crop_check_image'.tr(context),
             style: AppTypography.sectionHeader(color: isDark ? Colors.white : AppColors.onSurface),
           ),
           actions: [
@@ -160,7 +161,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
               child: Text(
-                'ปรับแต่งรูปภาพของคุณให้เห็นส่วนที่ต้องการวิเคราะห์ได้ชัดเจนที่สุด',
+                'crop_subtitle'.tr(context),
                 style: AppTypography.bodyBase(color: isDark ? AppColors.outlineVariant : AppColors.textSecondary),
               ),
             ),
@@ -194,7 +195,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                                       color: isDark ? Colors.white54 : AppColors.textSecondary, size: 64),
                                   const SizedBox(height: AppSpacing.sm),
                                   Text(
-                                    'ไม่สามารถโหลดรูปภาพได้',
+                                    'crop_error_load'.tr(context),
                                     style: AppTypography.bodyBase(color: isDark ? Colors.white54 : AppColors.textSecondary),
                                   ),
                                 ],
@@ -303,11 +304,11 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        _buildActionItem(context, icon: Icons.rotate_left, label: 'หมุนซ้าย', isDark: isDark, onTap: _rotateLeft),
-                        _buildActionItem(context, icon: Icons.rotate_right, label: 'หมุนขวา', isDark: isDark, onTap: _rotateRight),
-                        _buildActionItem(context, icon: Icons.crop, label: 'สัดส่วน', isDark: isDark, onTap: _cropImage),
-                        _buildActionItem(context, icon: Icons.zoom_in, label: 'ขยาย', isDark: isDark, onTap: _zoomIn),
-                        _buildActionItem(context, icon: Icons.restore, label: 'รีเซ็ต', isDark: isDark, onTap: _resetImage),
+                        _buildActionItem(context, icon: Icons.rotate_left, label: 'crop_rotate_left'.tr(context), isDark: isDark, onTap: _rotateLeft),
+                        _buildActionItem(context, icon: Icons.rotate_right, label: 'crop_rotate_right'.tr(context), isDark: isDark, onTap: _rotateRight),
+                        _buildActionItem(context, icon: Icons.crop, label: 'crop_aspect_ratio'.tr(context), isDark: isDark, onTap: _cropImage),
+                        _buildActionItem(context, icon: Icons.zoom_in, label: 'crop_zoom'.tr(context), isDark: isDark, onTap: _zoomIn),
+                        _buildActionItem(context, icon: Icons.restore, label: 'crop_reset'.tr(context), isDark: isDark, onTap: _resetImage),
                       ],
                     ),
                   ),
@@ -328,7 +329,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                         const SizedBox(width: AppSpacing.sm),
                         Expanded(
                           child: Text(
-                            'รูปภาพจะถูกส่งไปวิเคราะห์บนระบบคลาวด์อย่างปลอดภัย ข้อมูลของคุณจะได้รับการเข้ารหัสและไม่มีการเปิดเผยต่อสาธารณะ',
+                            'crop_info'.tr(context),
                             style: AppTypography.caption(color: isDark ? AppColors.outlineVariant : AppColors.textSecondary),
                           ),
                         ),
@@ -339,7 +340,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                   
                   // Primary Action
                   PrimaryButton(
-                    label: 'เริ่มวิเคราะห์',
+                    label: 'crop_start_analysis'.tr(context),
                     leadingIcon: const Icon(Icons.search, size: 20),
                     onPressed: () {
                       context.go('/loading', extra: {'filePath': _displayPath});
@@ -361,7 +362,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                       children: [
                         const Icon(Icons.image_outlined, size: 20),
                         const SizedBox(width: AppSpacing.sm),
-                        Text('เปลี่ยนรูป', style: AppTypography.buttonLabel(color: isDark ? AppColors.primaryFixedDim : AppColors.primary)),
+                        Text('crop_change_image'.tr(context), style: AppTypography.buttonLabel(color: isDark ? AppColors.primaryFixedDim : AppColors.primary)),
                       ],
                     ),
                   ),

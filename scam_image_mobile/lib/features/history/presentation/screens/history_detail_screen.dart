@@ -6,6 +6,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../result/presentation/bloc/result_bloc.dart';
 
 class HistoryDetailScreen extends StatefulWidget {
@@ -47,7 +48,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
           scrolledUnderElevation: 0,
           centerTitle: true,
           title: Text(
-            'รายละเอียดผลการตรวจ',
+            'result_scan_details'.tr(context),
             style: AppTypography.sectionHeader(
                 color: isDark ? Colors.white : AppColors.primary),
           ),
@@ -59,7 +60,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
             IconButton(
               icon: Icon(Icons.share_outlined, color: isDark ? AppColors.primaryFixedDim : AppColors.primary),
               onPressed: () {
-                Share.share('ผลการตรวจจาก ScamGuard');
+                Share.share('result_share_text'.tr(context));
               },
             ),
           ],
@@ -138,12 +139,12 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'ความเสี่ยงโดยรวม',
+                      'result_overall_risk'.tr(context),
                       style: AppTypography.titleMd(
                           color: isDark ? Colors.white : AppColors.onSurface),
                     ),
                     Text(
-                      'วิเคราะห์ล่าสุดเมื่อ 2 นาทีที่แล้ว',
+                      'result_analyzed_recently'.tr(context),
                       style: AppTypography.caption(color: AppColors.outlineVariant),
                     ),
                   ],
@@ -151,7 +152,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
               ),
               const SizedBox(width: AppSpacing.sm),
               _buildPill(
-                'ความเสี่ยงสูง',
+                'result_high_risk'.tr(context),
                 isDark ? const Color(0xFF4A1818) : const Color(0xFFFFEBEB),
                 isDark ? const Color(0xFFFFB4B4) : AppColors.danger,
               ),
@@ -210,7 +211,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                     const SizedBox(width: AppSpacing.sm),
                     Expanded(
                       child: Text(
-                        'การวิเคราะห์ข้อความ (OCR)',
+                        'result_ocr'.tr(context),
                         style: AppTypography.sectionHeader(
                             color: isDark ? Colors.white : AppColors.onSurface),
                         overflow: TextOverflow.ellipsis,
@@ -221,7 +222,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
               ),
               const SizedBox(width: AppSpacing.sm),
               _buildPill(
-                'เสี่ยงสูง',
+                'result_high'.tr(context),
                 isDark ? const Color(0xFF4A1818) : const Color(0xFFFFEBEB),
                 isDark ? const Color(0xFFFFB4B4) : AppColors.danger,
               ),
@@ -238,12 +239,12 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'ข้อความที่ตรวจพบ:',
+                  'result_text_detected'.tr(context),
                   style: AppTypography.caption(color: AppColors.outlineVariant),
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
-                  '"ยินดีด้วย! คุณได้รับรางวัลมูลค่า 50,000 บาท คลิกที่ลิงก์เพื่อรับสิทธิ์ด่วนก่อนหมดเวลา..."',
+                  'result_sample_ocr_text'.tr(context),
                   style: AppTypography.bodyBase(
                       color: isDark ? Colors.white : AppColors.onSurface).copyWith(fontStyle: FontStyle.italic),
                 ),
@@ -255,14 +256,14 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'คำที่น่าสงสัย',
+                'result_suspicious_words'.tr(context),
                 style: AppTypography.caption(color: AppColors.outlineVariant),
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    'ความแม่นยำ',
+                    'result_accuracy'.tr(context),
                     style: AppTypography.caption(color: AppColors.outlineVariant),
                   ),
                   Text(
@@ -279,16 +280,16 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
             spacing: 8,
             runSpacing: 8,
             children: [
-              _buildSuspiciousChip('รางวัล', isDark),
-              _buildSuspiciousChip('ด่วน', isDark),
-              _buildSuspiciousChip('คลิกที่ลิงก์', isDark),
+              _buildSuspiciousChip('result_suspicious_word_1'.tr(context), isDark),
+              _buildSuspiciousChip('result_suspicious_word_2'.tr(context), isDark),
+              _buildSuspiciousChip('result_suspicious_word_3'.tr(context), isDark),
             ],
           ),
           const SizedBox(height: AppSpacing.md),
           Divider(color: AppColors.border.withValues(alpha: isDark ? 0.2 : 1)),
           const SizedBox(height: AppSpacing.sm),
           Text(
-            'พบรูปแบบประโยคเร่งเร้าและสร้างความตื่นตระหนก ซึ่งเป็นลักษณะเฉพาะของการหลอกลวงแบบ Phishing',
+            'result_ocr_analysis_desc'.tr(context),
             style: AppTypography.bodyBase(color: AppColors.textSecondary),
           ),
         ],
@@ -328,7 +329,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                     const SizedBox(width: AppSpacing.sm),
                     Expanded(
                       child: Text(
-                        'การตรวจสอบแหล่งที่มา',
+                        'result_source_check'.tr(context),
                         style: AppTypography.sectionHeader(
                             color: isDark ? Colors.white : AppColors.onSurface),
                         overflow: TextOverflow.ellipsis,
@@ -339,7 +340,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
               ),
               const SizedBox(width: AppSpacing.sm),
               _buildPill(
-                'ปานกลาง',
+                'result_medium'.tr(context),
                 isDark ? const Color(0xFF4A3818) : const Color(0xFFFFF4E5),
                 isDark ? const Color(0xFFFFD494) : AppColors.warning,
               ),
@@ -359,11 +360,11 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'ตรวจพบครั้งแรก',
+                      'result_first_detected'.tr(context),
                       style: AppTypography.caption(color: AppColors.outlineVariant),
                     ),
                     Text(
-                      '12 ม.ค. 2567',
+                      'result_sample_date'.tr(context),
                       style: AppTypography.bodyBase(
                           color: isDark ? Colors.white : AppColors.onSurface).copyWith(fontWeight: FontWeight.w600),
                     ),
@@ -373,11 +374,11 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      'จำนวนที่พบซ้ำ',
+                      'result_recurring'.tr(context),
                       style: AppTypography.caption(color: AppColors.outlineVariant),
                     ),
                     Text(
-                      '42 ครั้ง',
+                      'result_sample_count'.tr(context),
                       style: AppTypography.bodyBase(
                           color: isDark ? Colors.white : AppColors.onSurface).copyWith(fontWeight: FontWeight.w600),
                     ),
@@ -388,7 +389,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
           ),
           const SizedBox(height: AppSpacing.md),
           Text(
-            'ลิงก์ที่เกี่ยวข้องและรายงาน:',
+            'result_related_links'.tr(context),
             style: AppTypography.caption(color: AppColors.outlineVariant),
           ),
           const SizedBox(height: AppSpacing.sm),
@@ -435,7 +436,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                     const SizedBox(width: AppSpacing.sm),
                     Expanded(
                       child: Text(
-                        'การวิเคราะห์ความผิดปกติทางภาพ',
+                        'result_visual_analysis'.tr(context),
                         style: AppTypography.sectionHeader(
                             color: isDark ? Colors.white : AppColors.onSurface),
                         overflow: TextOverflow.ellipsis,
@@ -446,7 +447,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
               ),
               const SizedBox(width: AppSpacing.sm),
               _buildPill(
-                'เสี่ยงต่ำ',
+                'result_low'.tr(context),
                 isDark ? const Color(0xFF183C25) : const Color(0xFFE6F4EA),
                 isDark ? const Color(0xFF81C995) : AppColors.success,
               ),
@@ -519,13 +520,13 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'คำอธิบายจาก AI (XAI)',
+                  'result_xai'.tr(context),
                   style: AppTypography.bodyBase(
                       color: isDark ? Colors.white : AppColors.onSurface).copyWith(fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
-                  'ภาพมีโครงสร้างพิกเซลที่สม่ำเสมอ ไม่พบการตัดต่อที่ชัดเจน อย่างไรก็ตาม พบความผิดปกติเล็กน้อยบริเวณโลโก้ธนาคารซึ่งอาจเกิดจากการใช้ภาพคุณภาพต่ำ',
+                  'result_xai_desc'.tr(context),
                   style: AppTypography.caption(color: AppColors.textSecondary),
                 ),
               ],
@@ -542,7 +543,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
         ElevatedButton.icon(
           onPressed: () {},
           icon: const Icon(Icons.info_outline, size: 20),
-          label: const Text('ส่งข้อมูลรายงานเจ้าหน้าที่'),
+          label: Text('result_report_official'.tr(context)),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
             foregroundColor: Colors.white,
@@ -555,7 +556,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
         OutlinedButton.icon(
           onPressed: () => context.go('/main/history'),
           icon: const Icon(Icons.refresh, size: 20),
-          label: const Text('ตรวจสอบรูปภาพอื่น'),
+          label: Text('result_check_another'.tr(context)),
           style: OutlinedButton.styleFrom(
             foregroundColor: isDark ? AppColors.primaryFixedDim : AppColors.primary,
             side: BorderSide(color: isDark ? AppColors.primaryFixedDim : AppColors.primary),

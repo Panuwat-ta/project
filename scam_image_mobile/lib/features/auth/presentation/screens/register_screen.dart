@@ -7,6 +7,7 @@ import '../../domain/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/consent_cubit.dart';
+import '../../../../core/localization/app_translations.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -83,7 +84,7 @@ class _RegisterViewState extends State<_RegisterView> {
     if (!_formKey.currentState!.validate()) return;
     if (!_termsAccepted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('กรุณายอมรับเงื่อนไขการใช้งาน'), backgroundColor: Colors.red),
+        SnackBar(content: Text('auth_terms_error'.tr(context)), backgroundColor: Colors.red),
       );
       return;
     }
@@ -166,7 +167,7 @@ class _RegisterViewState extends State<_RegisterView> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text(
-                            'สมัครสมาชิกใหม่',
+                            'auth_register_title'.tr(context),
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
@@ -176,7 +177,7 @@ class _RegisterViewState extends State<_RegisterView> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'เข้าร่วมระบบรักษาความปลอดภัยอัจฉริยะ',
+                            'auth_register_subtitle'.tr(context),
                             style: TextStyle(fontSize: 14, color: subtitleColor),
                             textAlign: TextAlign.center,
                           ),
@@ -184,7 +185,7 @@ class _RegisterViewState extends State<_RegisterView> {
 
                           // Name field
                           Text(
-                            'ชื่อ-นามสกุล',
+                            'auth_fullname'.tr(context),
                             style: TextStyle(fontSize: 14, color: subtitleColor, fontWeight: FontWeight.w500),
                           ),
                           const SizedBox(height: 8),
@@ -192,7 +193,7 @@ class _RegisterViewState extends State<_RegisterView> {
                             controller: _displayNameController,
                             style: TextStyle(color: textColor),
                             decoration: InputDecoration(
-                              hintText: 'กรอกชื่อและนามสกุลของคุณ',
+                              hintText: 'auth_fullname_hint'.tr(context),
                               hintStyle: TextStyle(color: subtitleColor.withValues(alpha: 0.5)),
                               prefixIcon: Icon(Icons.person_outline, color: subtitleColor),
                               filled: true,
@@ -202,13 +203,13 @@ class _RegisterViewState extends State<_RegisterView> {
                               enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: inputBorderColor)),
                               focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: primaryColor)),
                             ),
-                            validator: (v) => (v == null || v.isEmpty) ? 'กรุณากรอกชื่อ' : null,
+                            validator: (v) => (v == null || v.isEmpty) ? 'auth_fullname_error'.tr(context) : null,
                           ),
                           const SizedBox(height: 16),
 
                           // Email field
                           Text(
-                            'อีเมล',
+                            'auth_email'.tr(context),
                             style: TextStyle(fontSize: 14, color: subtitleColor, fontWeight: FontWeight.w500),
                           ),
                           const SizedBox(height: 8),
@@ -227,13 +228,13 @@ class _RegisterViewState extends State<_RegisterView> {
                               enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: inputBorderColor)),
                               focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: primaryColor)),
                             ),
-                            validator: (v) => (v == null || v.isEmpty) ? 'กรุณากรอกอีเมล' : null,
+                            validator: (v) => (v == null || v.isEmpty) ? 'auth_email_hint'.tr(context) : null,
                           ),
                           const SizedBox(height: 16),
 
                           // Password field
                           Text(
-                            'รหัสผ่าน',
+                            'auth_password'.tr(context),
                             style: TextStyle(fontSize: 14, color: subtitleColor, fontWeight: FontWeight.w500),
                           ),
                           const SizedBox(height: 8),
@@ -242,7 +243,7 @@ class _RegisterViewState extends State<_RegisterView> {
                             obscureText: _obscurePassword,
                             style: TextStyle(color: textColor),
                             decoration: InputDecoration(
-                              hintText: 'อย่างน้อย 8 ตัวอักษร',
+                              hintText: 'auth_password_min_hint'.tr(context),
                               hintStyle: TextStyle(color: subtitleColor.withValues(alpha: 0.5)),
                               prefixIcon: Icon(Icons.lock_outline, color: subtitleColor),
                               suffixIcon: IconButton(
@@ -259,13 +260,13 @@ class _RegisterViewState extends State<_RegisterView> {
                               enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: inputBorderColor)),
                               focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: primaryColor)),
                             ),
-                            validator: (v) => (v == null || v.length < 8) ? 'รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร' : null,
+                            validator: (v) => (v == null || v.length < 8) ? 'auth_password_min_error'.tr(context) : null,
                           ),
                           const SizedBox(height: 16),
 
                           // Confirm Password field
                           Text(
-                            'ยืนยันรหัสผ่านอีกครั้ง',
+                            'auth_password_confirm'.tr(context),
                             style: TextStyle(fontSize: 14, color: subtitleColor, fontWeight: FontWeight.w500),
                           ),
                           const SizedBox(height: 8),
@@ -274,7 +275,7 @@ class _RegisterViewState extends State<_RegisterView> {
                             obscureText: _obscureConfirm,
                             style: TextStyle(color: textColor),
                             decoration: InputDecoration(
-                              hintText: 'กรอกรหัสผ่านเดิมอีกครั้ง',
+                              hintText: 'auth_password_confirm_hint'.tr(context),
                               hintStyle: TextStyle(color: subtitleColor.withValues(alpha: 0.5)),
                               prefixIcon: Icon(Icons.sync_lock, color: subtitleColor),
                               suffixIcon: IconButton(
@@ -292,8 +293,8 @@ class _RegisterViewState extends State<_RegisterView> {
                               focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: primaryColor)),
                             ),
                             validator: (v) {
-                              if (v == null || v.isEmpty) return 'กรุณายืนยันรหัสผ่าน';
-                              if (v != _passwordController.text) return 'รหัสผ่านไม่ตรงกัน';
+                              if (v == null || v.isEmpty) return 'auth_password_confirm_error'.tr(context);
+                              if (v != _passwordController.text) return 'auth_password_match_error'.tr(context);
                               return null;
                             },
                           ),
@@ -321,11 +322,11 @@ class _RegisterViewState extends State<_RegisterView> {
                                   text: TextSpan(
                                     style: TextStyle(fontSize: 12, color: subtitleColor, height: 1.5),
                                     children: [
-                                      const TextSpan(text: 'ฉันยอมรับ '),
-                                      TextSpan(text: 'เงื่อนไขการใช้งาน', style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold)),
-                                      const TextSpan(text: ' และ '),
-                                      TextSpan(text: 'นโยบายความเป็นส่วนตัว', style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold)),
-                                      const TextSpan(text: ' ของระบบ ScamGuard'),
+                                      TextSpan(text: 'auth_terms_accept'.tr(context)),
+                                      TextSpan(text: 'auth_terms_link'.tr(context), style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold)),
+                                      TextSpan(text: 'auth_terms_and'.tr(context)),
+                                      TextSpan(text: 'auth_privacy_link'.tr(context), style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold)),
+                                      TextSpan(text: 'auth_terms_suffix'.tr(context)),
                                     ],
                                   ),
                                 ),
@@ -353,7 +354,7 @@ class _RegisterViewState extends State<_RegisterView> {
                                       : const Icon(Icons.person_add_alt_1),
                                   label: state is AuthLoading
                                       ? const SizedBox.shrink()
-                                      : const Text('สมัครสมาชิก', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                      : Text('auth_register_link'.tr(context), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                                 );
                               },
                             ),
@@ -366,7 +367,7 @@ class _RegisterViewState extends State<_RegisterView> {
                               Expanded(child: Divider(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
                               Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                                child: Text('หรือ', style: TextStyle(color: subtitleColor, fontSize: 14)),
+                                child: Text('auth_or'.tr(context), style: TextStyle(color: subtitleColor, fontSize: 14)),
                               ),
                               Expanded(child: Divider(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
                             ],
@@ -378,7 +379,7 @@ class _RegisterViewState extends State<_RegisterView> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                'มีบัญชีอยู่แล้ว? ',
+                                'auth_has_account'.tr(context),
                                 style: TextStyle(color: subtitleColor, fontSize: 14),
                               ),
                               TextButton(
@@ -389,7 +390,7 @@ class _RegisterViewState extends State<_RegisterView> {
                                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                 ),
                                 child: Text(
-                                  'เข้าสู่ระบบ',
+                                  'auth_login_button'.tr(context),
                                   style: TextStyle(color: primaryColor, fontSize: 14, fontWeight: FontWeight.bold),
                                 ),
                               ),
