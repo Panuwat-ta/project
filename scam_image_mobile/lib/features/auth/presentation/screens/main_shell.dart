@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../core/localization/app_translations.dart';
 
 /// Real main shell with themed bottom navigation bar.
 ///
@@ -51,7 +52,7 @@ class MainShell extends StatelessWidget {
                 _NavItem(
                   icon: Icons.home_outlined,
                   activeIcon: Icons.home,
-                  label: 'หน้าหลัก',
+                  label: 'home'.tr(context),
                   isActive: currentIndex == 0,
                   activeColor: activeColor,
                   inactiveColor: inactiveColor,
@@ -60,7 +61,7 @@ class MainShell extends StatelessWidget {
                 _NavItem(
                   icon: Icons.history_outlined,
                   activeIcon: Icons.history,
-                  label: 'ประวัติ',
+                  label: 'history'.tr(context),
                   isActive: currentIndex == 1,
                   activeColor: activeColor,
                   inactiveColor: inactiveColor,
@@ -69,7 +70,7 @@ class MainShell extends StatelessWidget {
                 _NavItem(
                   icon: Icons.flag_outlined,
                   activeIcon: Icons.flag,
-                  label: 'แจ้งรายงาน',
+                  label: 'report'.tr(context),
                   isActive: currentIndex == 2,
                   activeColor: activeColor,
                   inactiveColor: inactiveColor,
@@ -78,7 +79,7 @@ class MainShell extends StatelessWidget {
                 _NavItem(
                   icon: Icons.settings_outlined,
                   activeIcon: Icons.settings,
-                  label: 'ตั้งค่า',
+                  label: 'settings'.tr(context),
                   isActive: currentIndex == 3,
                   activeColor: activeColor,
                   inactiveColor: inactiveColor,

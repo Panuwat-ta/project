@@ -265,7 +265,7 @@ class _ResultBody extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Visual Heatmap',
+                        'result_visual_heatmap'.tr(context),
                         style: AppTypography.sectionHeader(
                             color: isDark ? Colors.white : AppColors.onSurface),
                       ),
@@ -347,7 +347,7 @@ class _ResultBody extends StatelessWidget {
             Expanded(
               child: ElevatedButton.icon(
                 icon: const Icon(Icons.visibility_outlined, size: 18),
-                label: Text('result_details'.tr(context)),
+                label: Flexible(child: Text('result_details'.tr(context), overflow: TextOverflow.ellipsis)),
                 onPressed: () {
                   context.push('/detail/${result.taskId}');
                 },
@@ -365,7 +365,7 @@ class _ResultBody extends StatelessWidget {
             Expanded(
               child: ElevatedButton.icon(
                 icon: const Icon(Icons.grid_view_outlined, size: 18),
-                label: Text('result_view_heatmap'.tr(context)),
+                label: Flexible(child: Text('result_view_heatmap'.tr(context), overflow: TextOverflow.ellipsis)),
                 onPressed: () => context.push('/heatmap/${result.taskId}'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryContainer,
@@ -385,7 +385,7 @@ class _ResultBody extends StatelessWidget {
             Expanded(
               child: OutlinedButton.icon(
                 icon: const Icon(Icons.flag_outlined, size: 18),
-                label: Text('result_report_scam'.tr(context), overflow: TextOverflow.ellipsis),
+                label: Flexible(child: Text('result_report_scam'.tr(context), overflow: TextOverflow.ellipsis)),
                 onPressed: () => context.go('/main/report'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.danger,
@@ -400,7 +400,7 @@ class _ResultBody extends StatelessWidget {
             Expanded(
               child: OutlinedButton.icon(
                 icon: const Icon(Icons.share_outlined, size: 18),
-                label: Text('result_share'.tr(context)),
+                label: Flexible(child: Text('result_share'.tr(context), overflow: TextOverflow.ellipsis)),
                 onPressed: () {
                   // ignore: deprecated_member_use
                   Share.share('result_share_text'.tr(context));
