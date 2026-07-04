@@ -9,7 +9,7 @@
 ScamGuard Mobile App เป็นแอปพลิเคชัน Flutter สำหรับผู้ใช้ทั่วไปที่ต้องการตรวจสอบความน่าเชื่อถือของรูปภาพก่อนนำไปใช้ตัดสินใจ โดยเชื่อมต่อกับ Backend API เพื่อวิเคราะห์ความเสี่ยงของภาพและแสดงผลในรูปแบบที่เข้าใจง่าย
 
 ### 1.2 Scope
-แอปพัฒนาด้วย Flutter รองรับ Android และ iOS ใช้ Dark Mode เป็นธีมหลัก สถาปัตยกรรม Clean Architecture + BLoC State Management ครอบคลุม 16 หน้าจอตาม UI/UX Design ที่กำหนด
+แอปพัฒนาด้วย Flutter รองรับ Android ใช้ Dark Mode เป็นธีมหลัก สถาปัตยกรรม Clean Architecture + BLoC State Management ครอบคลุม 16 หน้าจอตาม UI/UX Design ที่กำหนด
 
 ---
 

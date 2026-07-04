@@ -28,6 +28,7 @@ import '../../features/report/data/repositories/report_repository_impl.dart';
 import '../../features/report/domain/repositories/report_repository.dart';
 
 // ── Settings ──────────────────────────────────────────────────────────────────
+import '../../features/settings/data/datasources/settings_local_datasource.dart';
 import '../../features/settings/data/datasources/settings_remote_datasource.dart';
 import '../../features/settings/data/repositories/settings_repository_impl.dart';
 import '../../features/settings/domain/repositories/settings_repository.dart';
@@ -92,7 +93,10 @@ class ServiceLocator {
 
     // ── Settings ──────────────────────────────────────────────────────────────
     final settingsRemote = SettingsRemoteDataSourceImpl(dio: dio);
-    settingsRepository =
-        SettingsRepositoryImpl(remoteDataSource: settingsRemote);
+    final settingsLocal = SettingsLocalDataSourceImpl(secureStorage: secureStorage);
+    settingsRepository = SettingsRepositoryImpl(
+      remoteDataSource: settingsRemote,
+      localDataSource: settingsLocal,
+    );
   }
 }
