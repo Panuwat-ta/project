@@ -124,14 +124,6 @@ class _LoginViewState extends State<_LoginView> {
                 isDark: isDark,
                 onTap: () {},
               ),
-              const SizedBox(height: 12),
-              _buildLoginOption(
-                iconPath: 'assets/icons/line.svg',
-                label: 'auth_login_line'.tr(context),
-                textColor: textColor,
-                isDark: isDark,
-                onTap: () {},
-              ),
             ],
           ),
         );
