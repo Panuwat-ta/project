@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -36,8 +37,51 @@ class MainShell extends StatelessWidget {
         ? AppColors.outlineVariant.withValues(alpha: 0.3)
         : AppColors.border;
 
-    return Scaffold(
-      body: child,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+
+        final router = GoRouter.of(context);
+        if (router.canPop()) {
+          router.pop();
+          return;
+        }
+
+        final bool? shouldPop = await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            backgroundColor: Theme.of(ctx).colorScheme.surface,
+            title: Text(
+              'exit_app_title'.tr(context),
+              style: AppTypography.titleMd(color: isDark ? Colors.white : AppColors.textPrimary),
+            ),
+            content: Text(
+              'exit_app_desc'.tr(context),
+              style: AppTypography.bodyBase(color: isDark ? Colors.white70 : AppColors.textSecondary),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(false),
+                child: Text('cancel'.tr(context)),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(true),
+                child: Text(
+                  'exit'.tr(context),
+                  style: const TextStyle(color: AppColors.danger),
+                ),
+              ),
+            ],
+          ),
+        );
+
+        if (shouldPop == true) {
+          SystemNavigator.pop();
+        }
+      },
+      child: Scaffold(
+        body: child,
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: bgColor,
@@ -89,6 +133,7 @@ class MainShell extends StatelessWidget {
             ),
           ),
         ),
+      ),
       ),
     );
   }

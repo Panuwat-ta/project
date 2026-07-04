@@ -266,7 +266,14 @@ class _SettingsView extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.lg),
 
-          // ── Settings List Card ────────────────────────────────────────────
+          // ── Account Settings ────────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.only(left: 8, bottom: 8),
+            child: Text(
+              'settings_category_account'.tr(context),
+              style: AppTypography.caption(color: isDark ? Colors.white54 : AppColors.textSecondary).copyWith(fontWeight: FontWeight.bold),
+            ),
+          ),
           Container(
             decoration: BoxDecoration(
               color: isDark ? const Color(0xFF1B222C) : Colors.white,
@@ -285,7 +292,26 @@ class _SettingsView extends StatelessWidget {
                   title: 'notifications'.tr(context),
                   onTap: () => _showComingSoon(context),
                 ),
-                Divider(height: 1, thickness: 1, color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.lg),
+
+          // ── App Preferences ────────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.only(left: 8, bottom: 8),
+            child: Text(
+              'settings_category_preferences'.tr(context),
+              style: AppTypography.caption(color: isDark ? Colors.white54 : AppColors.textSecondary).copyWith(fontWeight: FontWeight.bold),
+            ),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF1B222C) : Colors.white,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              children: [
                 BlocBuilder<SettingsCubit, SettingsState>(
                   builder: (context, state) {
                     final languageText = state.language == 'th' ? 'ไทย' : 'English';
@@ -311,7 +337,26 @@ class _SettingsView extends StatelessWidget {
                     );
                   },
                 ),
-                Divider(height: 1, thickness: 1, color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.lg),
+
+          // ── Data & Privacy ────────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.only(left: 8, bottom: 8),
+            child: Text(
+              'settings_category_data_privacy'.tr(context),
+              style: AppTypography.caption(color: isDark ? Colors.white54 : AppColors.textSecondary).copyWith(fontWeight: FontWeight.bold),
+            ),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF1B222C) : Colors.white,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              children: [
                 _SettingsListItem(
                   icon: Icons.privacy_tip_outlined,
                   title: 'privacy'.tr(context),
