@@ -8,6 +8,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/localization/app_translations.dart';
 import '../../../../core/widgets/app_bottom_navigation.dart';
+import '../../../../core/widgets/app_top_bar.dart';
 import '../../domain/entities/analysis_result.dart' as domain;
 import '../bloc/result_bloc.dart';
 
@@ -34,22 +35,8 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
 
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF0F1720) : const Color(0xFFF6F8FB),
-      appBar: AppBar(
-        backgroundColor: isDark ? const Color(0xFF162230) : Colors.white,
-        elevation: 0,
-        scrolledUnderElevation: 0,
+      appBar: AppTopBar(
         automaticallyImplyLeading: false,
-        title: Row(
-          children: [
-            Icon(Icons.security, color: isDark ? AppColors.primaryFixedDim : AppColors.primary),
-            const SizedBox(width: 8),
-            Text(
-              'result_title'.tr(context),
-              style: AppTypography.titleMd(
-                  color: isDark ? Colors.white : AppColors.primary),
-            ),
-          ],
-        ),
         actions: [
           IconButton(
             icon: Icon(Icons.notifications_none,
@@ -252,69 +239,8 @@ class _ResultBody extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: AppSpacing.sm),
-        GestureDetector(
-          onTap: () {
-            context.push(
-              '/heatmap/${result.taskId}',
-              extra: <String, dynamic>{
-                if (result.imageUrl != null) 'imageUrl': result.imageUrl,
-                if (result.heatmapUrl != null) 'heatmapUrl': result.heatmapUrl,
-              },
-            );
-          },
-          child: Container(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF162230) : Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: isDark ? const Color(0xFF27313C) : AppColors.border,
-              ),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'result_visual_heatmap'.tr(context),
-                        style: AppTypography.sectionHeader(
-                            color: isDark ? Colors.white : AppColors.onSurface),
-                      ),
-                      const SizedBox(height: AppSpacing.xs),
-                      Text(
-                        'result_heatmap_desc'.tr(context),
-                        style: AppTypography.caption(
-                          color: isDark ? Colors.white70 : AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.sm),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isDark ? Colors.white12 : Colors.white54,
-                    borderRadius: BorderRadius.circular(9999),
-                    border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.5)),
-                  ),
-                  child: Text(
-                    'heatmap_ready'.tr(context),
-                    style: AppTypography.caption(
-                      color: isDark ? AppColors.primaryFixedDim : AppColors.primary,
-                    ).copyWith(fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+        const SizedBox(height: AppSpacing.md),
+        _buildVisualAnomalyCard(context),
       ],
     );
   }
@@ -429,6 +355,182 @@ class _ResultBody extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildVisualAnomalyCard(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF162230) : Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isDark ? const Color(0xFF27313C) : AppColors.border,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Header
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(Icons.image_search, color: isDark ? Colors.white : const Color(0xFF0F172A)),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'visual_anomaly_title'.tr(context),
+                        style: AppTypography.sectionHeader(
+                          color: isDark ? Colors.white : const Color(0xFF0F172A),
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFE4E6),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  '88%',
+                  style: AppTypography.caption(color: const Color(0xFFE11D48)).copyWith(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          
+          // Image / Slider container
+          GestureDetector(
+            onTap: () {
+              context.push(
+                '/heatmap/${result.taskId}',
+                extra: <String, dynamic>{
+                  if (result.imageUrl != null) 'imageUrl': result.imageUrl,
+                  if (result.heatmapUrl != null) 'heatmapUrl': result.heatmapUrl,
+                },
+              );
+            },
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Stack(
+                children: [
+                  // Image Placeholder or Network image
+                  Container(
+                    height: 200,
+                    width: double.infinity,
+                    color: const Color(0xFF0F172A),
+                    child: result.imageUrl != null 
+                        ? Image.network(result.imageUrl!, fit: BoxFit.cover)
+                        : const Center(child: Icon(Icons.image, color: Colors.white24, size: 48)),
+                  ),
+                  // Slider overlay at bottom
+                  Positioned(
+                    bottom: 8,
+                    left: 8,
+                    right: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.85),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.visibility, color: Color(0xFF64748B), size: 20),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Container(
+                              height: 6,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFE2E8F0),
+                                borderRadius: BorderRadius.circular(3),
+                              ),
+                              child: FractionallySizedBox(
+                                alignment: Alignment.centerLeft,
+                                widthFactor: 0.7, // Simulated value
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF0284C7),
+                                    borderRadius: BorderRadius.circular(3),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          const Icon(Icons.layers, color: Color(0xFF0284C7), size: 20),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          
+          // Alerts
+          _buildAlertItem(
+            icon: Icons.error,
+            iconColor: const Color(0xFFE11D48),
+            title: 'anomaly_edit_title'.tr(context),
+            subtitle: 'anomaly_edit_desc'.tr(context),
+            isDark: isDark,
+          ),
+          const SizedBox(height: 12),
+          _buildAlertItem(
+            icon: Icons.warning,
+            iconColor: const Color(0xFFF59E0B),
+            title: 'anomaly_pixel_title'.tr(context),
+            subtitle: 'anomaly_pixel_desc'.tr(context),
+            isDark: isDark,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAlertItem({
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String subtitle,
+    required bool isDark,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, color: iconColor, size: 24),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: AppTypography.bodyBase(
+                  color: isDark ? Colors.white : const Color(0xFF1E293B),
+                ).copyWith(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                subtitle,
+                style: AppTypography.caption(
+                  color: isDark ? Colors.white70 : const Color(0xFF64748B),
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );

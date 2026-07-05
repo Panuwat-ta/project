@@ -37,6 +37,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
   Future<void> deleteAccount() => remoteDataSource.deleteAccount();
 
   @override
+<<<<<<< HEAD
   Future<ThemeMode> getThemeMode() => localDataSource.getThemeMode();
 
   @override
@@ -47,4 +48,18 @@ class SettingsRepositoryImpl implements SettingsRepository {
 
   @override
   Future<void> saveLanguage(String language) => localDataSource.saveLanguage(language);
+=======
+  Future<String?> getThemeMode() => localDataSource.getThemeMode();
+
+  @override
+  Future<void> setThemeMode(String mode) =>
+      localDataSource.setThemeMode(mode);
+
+  @override
+  Future<String?> getLanguage() => localDataSource.getLanguage();
+
+  @override
+  Future<void> setLanguage(String lang) =>
+      localDataSource.setLanguage(lang);
+>>>>>>> 821656eeb2a76b54dc7b21b232bc919fe6f9e099
 }
