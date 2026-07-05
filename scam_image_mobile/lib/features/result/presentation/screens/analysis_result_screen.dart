@@ -33,18 +33,36 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F1720) : const Color(0xFFF6F8FB),
-      appBar: AppTopBar(
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.notifications_none,
-                color: isDark ? Colors.white : AppColors.onSurface),
-            onPressed: () {},
+    final bool canPop = context.canPop();
+
+    return PopScope(
+      canPop: canPop,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        context.go('/main/home');
+      },
+      child: Scaffold(
+        backgroundColor: isDark ? const Color(0xFF0F1720) : const Color(0xFFF6F8FB),
+        appBar: AppTopBar(
+          automaticallyImplyLeading: false,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : AppColors.onSurface),
+            onPressed: () {
+              if (canPop) {
+                context.pop();
+              } else {
+                context.go('/main/home');
+              }
+            },
           ),
-        ],
-      ),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.notifications_none,
+                  color: isDark ? Colors.white : AppColors.onSurface),
+              onPressed: () {},
+            ),
+          ],
+        ),
       body: BlocBuilder<ResultBloc, ResultState>(
         builder: (context, state) {
           if (state is ResultLoading || state is ResultInitial) {
@@ -71,6 +89,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           if (index == 2) context.go('/main/report');
           if (index == 3) context.go('/main/settings');
         },
+      ),
       ),
     );
   }
@@ -362,7 +381,7 @@ class _ResultBody extends StatelessWidget {
           child: OutlinedButton.icon(
             icon: const Icon(Icons.add_photo_alternate_outlined, size: 18),
             label: Text('result_check_another'.tr(context)),
-            onPressed: () => context.go('/main/home'),
+            onPressed: () => context.go('/main/history'),
             style: OutlinedButton.styleFrom(
               foregroundColor: isDark ? Colors.white : AppColors.textPrimary,
               side: BorderSide(color: AppColors.outlineVariant),

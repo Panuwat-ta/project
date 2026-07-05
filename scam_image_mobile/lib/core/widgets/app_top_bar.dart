@@ -10,10 +10,12 @@ import '../constants/app_typography.dart';
 class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
   const AppTopBar({
     super.key,
+    this.leading,
     this.actions,
     this.automaticallyImplyLeading = true,
   });
 
+  final Widget? leading;
   final List<Widget>? actions;
   final bool automaticallyImplyLeading;
 
@@ -28,6 +30,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
 
     return AppBar(
       toolbarHeight: 50,
+      leading: leading,
       automaticallyImplyLeading: automaticallyImplyLeading,
       backgroundColor: isDark ? AppColors.bgDark : AppColors.bgLight,
       elevation: 0,
