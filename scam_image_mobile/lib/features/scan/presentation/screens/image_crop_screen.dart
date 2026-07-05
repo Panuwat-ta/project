@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../../../core/constants/app_colors.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
-import '../../../../core/constants/app_typography.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../core/localization/app_translations.dart';
 import '../../../../core/widgets/widgets.dart';
 
@@ -174,7 +174,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
               child: Text(
                 'crop_subtitle'.tr(context),
-                style: AppTypography.bodyBase(color: isDark ? AppColors.outlineVariant : AppColors.textSecondary),
+                style: AppTypography.bodyBase(color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             ),
             
@@ -342,7 +342,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                         Expanded(
                           child: Text(
                             'crop_info'.tr(context),
-                            style: AppTypography.caption(color: isDark ? AppColors.outlineVariant : AppColors.textSecondary),
+                            style: AppTypography.caption(color: Theme.of(context).colorScheme.onSurfaceVariant),
                           ),
                         ),
                       ],
@@ -439,7 +439,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
         children: [
           Icon(icon, color: isDark ? AppColors.outlineVariant : AppColors.onSurface, size: 24),
           const SizedBox(height: 4),
-          Text(label, style: AppTypography.caption(color: isDark ? AppColors.outlineVariant : AppColors.textSecondary)),
+          Text(label, style: AppTypography.caption(color: Theme.of(context).colorScheme.onSurfaceVariant)),
         ],
       ),
     );

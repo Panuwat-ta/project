@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
-import '../../../../core/constants/app_typography.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../core/localization/app_translations.dart';
 
 class HeatmapViewerScreen extends StatefulWidget {
@@ -267,16 +267,16 @@ class _HeatmapViewerScreenState extends State<HeatmapViewerScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.swipe, color: AppColors.outlineVariant, size: 18),
+                        Icon(Icons.swipe, color: Theme.of(context).colorScheme.onSurfaceVariant, size: 18),
                         const SizedBox(width: 4),
-                        Text('heatmap_drag_to_pan'.tr(context), style: AppTypography.caption(color: AppColors.outlineVariant)),
+                        Text('heatmap_drag_to_pan'.tr(context), style: AppTypography.caption(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                       ],
                     ),
                     Row(
                       children: [
-                        Icon(Icons.pinch, color: AppColors.outlineVariant, size: 18),
+                        Icon(Icons.pinch, color: Theme.of(context).colorScheme.onSurfaceVariant, size: 18),
                         const SizedBox(width: 4),
-                        Text('heatmap_pinch_to_zoom'.tr(context), style: AppTypography.caption(color: AppColors.outlineVariant)),
+                        Text('heatmap_pinch_to_zoom'.tr(context), style: AppTypography.caption(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                       ],
                     ),
                   ],

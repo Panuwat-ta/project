@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import '../constants/app_colors.dart';
-import '../constants/app_typography.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_typography.dart';
 
 /// Semicircle (bottom half) gauge rendered via [CustomPainter].
 ///

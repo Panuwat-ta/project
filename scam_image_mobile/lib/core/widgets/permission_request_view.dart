@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../constants/app_colors.dart';
+import '../theme/app_colors.dart';
 import '../constants/app_spacing.dart';
-import '../constants/app_typography.dart';
+import '../theme/app_typography.dart';
 
 /// Displayed when the user has denied gallery / camera permission.
 ///
@@ -42,7 +42,7 @@ class PermissionRequestView extends StatelessWidget {
         Text(
           'กรุณาอนุญาตให้แอปเข้าถึงคลังรูปภาพของคุณเพื่อเลือกรูปที่ต้องการตรวจสอบ',
           style: AppTypography.bodyBase(
-            color: isDark ? AppColors.outlineVariant : AppColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
           textAlign: TextAlign.center,
         ),

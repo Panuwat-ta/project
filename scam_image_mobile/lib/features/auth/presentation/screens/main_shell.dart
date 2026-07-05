@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_typography.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../core/localization/app_translations.dart';
 
 /// Real main shell with themed bottom navigation bar.
@@ -30,7 +30,7 @@ class MainShell extends StatelessWidget {
     final activeColor =
         isDark ? AppColors.primaryFixedDim : AppColors.primary;
     final inactiveColor =
-        isDark ? AppColors.outlineVariant : AppColors.textSecondary;
+        Theme.of(context).colorScheme.onSurfaceVariant;
     final bgColor =
         Theme.of(context).colorScheme.surface;
     final borderColor = isDark

@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../../../../core/constants/app_colors.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
-import '../../../../core/constants/app_typography.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../core/localization/app_translations.dart';
 import '../../../../core/widgets/app_bottom_navigation.dart';
 import '../../../../core/widgets/app_top_bar.dart';
@@ -153,7 +153,7 @@ class _ResultBody extends StatelessWidget {
                   ),
                   Text(
                     'result_risk_score'.tr(context),
-                    style: AppTypography.caption(color: AppColors.outlineVariant),
+                    style: AppTypography.caption(color: Theme.of(context).colorScheme.onSurfaceVariant),
                   ),
                 ],
               ),

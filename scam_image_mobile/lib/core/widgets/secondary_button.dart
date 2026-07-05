@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constants/app_colors.dart';
 import '../constants/app_spacing.dart';
-import '../constants/app_typography.dart';
 
 /// Full-width outlined secondary button.
 class SecondaryButton extends StatelessWidget {
@@ -21,24 +19,12 @@ class SecondaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isDisabled = !enabled || onPressed == null;
-    final Color fgColor = AppColors.primary;
 
     return SizedBox(
       width: double.infinity,
       height: 54,
       child: OutlinedButton(
         onPressed: isDisabled ? null : onPressed,
-        style: OutlinedButton.styleFrom(
-          foregroundColor: fgColor,
-          disabledForegroundColor: fgColor.withValues(alpha: 0.4),
-          side: BorderSide(
-            color: isDisabled
-                ? AppColors.primary.withValues(alpha: 0.3)
-                : AppColors.primary,
-          ),
-          shape: const StadiumBorder(),
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
@@ -47,7 +33,7 @@ class SecondaryButton extends StatelessWidget {
               leadingIcon!,
               const SizedBox(width: AppSpacing.sm),
             ],
-            Text(label, style: AppTypography.buttonLabel(color: fgColor)),
+            Text(label),
           ],
         ),
       ),

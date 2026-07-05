@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../../../../core/constants/app_colors.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
-import '../../../../core/constants/app_typography.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../core/localization/app_translations.dart';
 import '../../../result/presentation/bloc/result_bloc.dart';
 
@@ -145,7 +145,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                     ),
                     Text(
                       'result_analyzed_recently'.tr(context),
-                      style: AppTypography.caption(color: AppColors.outlineVariant),
+                      style: AppTypography.caption(color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
                   ],
                 ),
@@ -182,7 +182,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                   Text(
                     'Scam Score',
                     style: AppTypography.caption(
-                        color: isDark ? AppColors.outlineVariant : AppColors.textSecondary),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
                   ),
                 ],
               ),
@@ -240,7 +240,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
               children: [
                 Text(
                   'result_text_detected'.tr(context),
-                  style: AppTypography.caption(color: AppColors.outlineVariant),
+                  style: AppTypography.caption(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
@@ -257,14 +257,14 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
             children: [
               Text(
                 'result_suspicious_words'.tr(context),
-                style: AppTypography.caption(color: AppColors.outlineVariant),
+                style: AppTypography.caption(color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
                     'result_accuracy'.tr(context),
-                    style: AppTypography.caption(color: AppColors.outlineVariant),
+                    style: AppTypography.caption(color: Theme.of(context).colorScheme.onSurfaceVariant),
                   ),
                   Text(
                     '98.5% Match',
@@ -361,7 +361,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                   children: [
                     Text(
                       'result_first_detected'.tr(context),
-                      style: AppTypography.caption(color: AppColors.outlineVariant),
+                      style: AppTypography.caption(color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
                     Text(
                       'result_sample_date'.tr(context),
@@ -375,7 +375,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                   children: [
                     Text(
                       'result_recurring'.tr(context),
-                      style: AppTypography.caption(color: AppColors.outlineVariant),
+                      style: AppTypography.caption(color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
                     Text(
                       'result_sample_count'.tr(context),
@@ -390,7 +390,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
           const SizedBox(height: AppSpacing.md),
           Text(
             'result_related_links'.tr(context),
-            style: AppTypography.caption(color: AppColors.outlineVariant),
+            style: AppTypography.caption(color: Theme.of(context).colorScheme.onSurfaceVariant),
           ),
           const SizedBox(height: AppSpacing.sm),
           _buildLinkRow('report-scam-th.org/database', Icons.link, isDark),
@@ -414,7 +414,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
             overflow: TextOverflow.ellipsis,
           ),
         ),
-        Icon(Icons.chevron_right, color: AppColors.outlineVariant),
+        Icon(Icons.chevron_right, color: Theme.of(context).colorScheme.onSurfaceVariant),
       ],
     );
   }
@@ -488,7 +488,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                   children: [
                     Text(
                       'AI-Generated Prob.',
-                      style: AppTypography.caption(color: AppColors.outlineVariant),
+                      style: AppTypography.caption(color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
                     Text(
                       '88%',
@@ -497,7 +497,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                     const SizedBox(height: AppSpacing.sm),
                     Text(
                       'Anomaly Score',
-                      style: AppTypography.caption(color: AppColors.outlineVariant),
+                      style: AppTypography.caption(color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
                     Text(
                       'High (0.88)',

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../constants/app_colors.dart';
-import '../constants/app_typography.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_typography.dart';
 import '../localization/app_translations.dart';
 
 /// 4-tab bottom navigation bar.

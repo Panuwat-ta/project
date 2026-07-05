@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../constants/app_colors.dart';
+import '../theme/app_colors.dart';
 import '../constants/app_spacing.dart';
-import '../constants/app_typography.dart';
+import '../theme/app_typography.dart';
 
 /// Full-screen (or contained) semi-transparent overlay with a spinner.
 ///

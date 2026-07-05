@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../core/constants/app_colors.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
-import '../../../../core/constants/app_typography.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../core/localization/app_translations.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../../settings/presentation/bloc/settings_bloc.dart';
@@ -196,7 +196,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                                         color: notification.type == NotificationType.scamAlert
                                                             ? AppColors.danger
                                                             : (notification.isRead
-                                                                ? (isDark ? AppColors.outlineVariant : AppColors.textSecondary)
+                                                                ? Theme.of(context).colorScheme.onSurfaceVariant
                                                                 : Theme.of(context).colorScheme.onSurface),
                                                       ).copyWith(
                                                         fontWeight: notification.isRead
@@ -211,7 +211,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                                   Text(
                                                     _formatTimeRelative(notification.createdAt, context),
                                                     style: AppTypography.caption(
-                                                      color: isDark ? AppColors.outlineVariant : AppColors.textSecondary,
+                                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                                                     ).copyWith(fontSize: 11),
                                                   ),
                                                 ],

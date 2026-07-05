@@ -3,9 +3,9 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/constants/app_colors.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
-import '../../../../core/constants/app_typography.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../core/localization/app_translations.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../bloc/scan_bloc.dart';
@@ -309,14 +309,14 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
           Icon(
             Icons.verified_user_outlined,
             size: 18,
-            color: AppColors.outlineVariant,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
             semanticLabel: 'loading_encryption'.tr(context),
           ),
           const SizedBox(width: AppSpacing.xs),
           Flexible(
             child: Text(
               'loading_encryption'.tr(context),
-              style: AppTypography.caption(color: AppColors.outlineVariant),
+              style: AppTypography.caption(color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
           ),
@@ -455,7 +455,7 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
                       Text(
                         'loading_subtitle'.tr(context),
                         style: AppTypography.bodyBase(
-                            color: AppColors.outlineVariant),
+                            color: Theme.of(context).colorScheme.onSurfaceVariant),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(width: AppSpacing.xs),

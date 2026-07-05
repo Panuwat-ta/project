@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../constants/app_colors.dart';
+import '../theme/app_colors.dart';
 import '../constants/app_spacing.dart';
-import '../constants/app_typography.dart';
+
 
 /// Full-width primary ElevatedButton with optional loading state.
 ///
@@ -35,8 +35,6 @@ class PrimaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final Color bgColor =
-        isDark ? AppColors.primaryFixedDim : AppColors.primary;
     final Color fgColor = isDark ? AppColors.bgDark : AppColors.onPrimary;
     final bool isDisabled = !enabled || onPressed == null || isLoading;
 
@@ -45,14 +43,6 @@ class PrimaryButton extends StatelessWidget {
       height: 54,
       child: ElevatedButton(
         onPressed: isDisabled ? null : onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: bgColor,
-          foregroundColor: fgColor,
-          disabledBackgroundColor: bgColor.withValues(alpha: 0.4),
-          disabledForegroundColor: fgColor.withValues(alpha: 0.6),
-          elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-        ),
         child: isLoading
             ? SizedBox(
                 width: 22,
@@ -73,7 +63,6 @@ class PrimaryButton extends StatelessWidget {
                   Flexible(
                     child: Text(
                       label,
-                      style: AppTypography.buttonLabel(color: fgColor),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
