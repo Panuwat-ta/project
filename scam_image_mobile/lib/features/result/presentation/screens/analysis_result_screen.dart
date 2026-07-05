@@ -188,7 +188,7 @@ class _ResultBody extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF162230) : Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isDark ? const Color(0xFF27313C) : AppColors.border,
         ),
@@ -274,7 +274,7 @@ class _ResultBody extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF162230) : Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isDark ? const Color(0xFF27313C) : AppColors.border,
         ),
@@ -299,40 +299,54 @@ class _ResultBody extends StatelessWidget {
   }
 
   Widget _buildActionButtons(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Column(
       children: [
         Row(
           children: [
             Expanded(
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.visibility_outlined, size: 18),
-                label: Flexible(child: Text('result_details'.tr(context), overflow: TextOverflow.ellipsis)),
-                onPressed: () {
-                  context.push('/detail/${result.taskId}');
-                },
+              child: ElevatedButton(
+                onPressed: () => context.push('/detail/${result.taskId}'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
-                  minimumSize: const Size(0, 52),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  minimumSize: const Size(0, 54),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   elevation: 0,
-                  textStyle: AppTypography.buttonLabel(),
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.visibility_outlined, size: 18),
+                    const SizedBox(width: 6),
+                    Expanded(child: Text('result_details'.tr(context), overflow: TextOverflow.ellipsis, style: AppTypography.buttonLabel())),
+                  ],
                 ),
               ),
             ),
             const SizedBox(width: AppSpacing.sm),
             Expanded(
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.grid_view_outlined, size: 18),
-                label: Flexible(child: Text('result_view_heatmap'.tr(context), overflow: TextOverflow.ellipsis)),
+              child: ElevatedButton(
                 onPressed: () => context.push('/heatmap/${result.taskId}'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryContainer,
                   foregroundColor: Colors.white,
-                  minimumSize: const Size(0, 52),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  minimumSize: const Size(0, 54),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   elevation: 0,
-                  textStyle: AppTypography.buttonLabel(),
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.local_fire_department_outlined, size: 18),
+                    const SizedBox(width: 6),
+                    Expanded(child: Text('result_view_heatmap'.tr(context), overflow: TextOverflow.ellipsis, style: AppTypography.buttonLabel())),
+                  ],
                 ),
               ),
             ),
@@ -342,24 +356,29 @@ class _ResultBody extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: OutlinedButton.icon(
-                icon: const Icon(Icons.flag_outlined, size: 18),
-                label: Flexible(child: Text('result_report_scam'.tr(context), overflow: TextOverflow.ellipsis)),
+              child: OutlinedButton(
                 onPressed: () => context.go('/main/report'),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.danger,
-                  side: const BorderSide(color: AppColors.danger),
-                  minimumSize: const Size(0, 52),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  textStyle: AppTypography.buttonLabel(),
+                  foregroundColor: const Color(0xFFE53935),
+                  side: const BorderSide(color: Color(0xFFEF5350)),
+                  minimumSize: const Size(0, 54),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.flag_outlined, size: 18),
+                    const SizedBox(width: 6),
+                    Expanded(child: Text('result_report_scam'.tr(context), overflow: TextOverflow.ellipsis, style: AppTypography.buttonLabel())),
+                  ],
                 ),
               ),
             ),
             const SizedBox(width: AppSpacing.sm),
             Expanded(
-              child: OutlinedButton.icon(
-                icon: const Icon(Icons.share_outlined, size: 18),
-                label: Flexible(child: Text('result_share'.tr(context), overflow: TextOverflow.ellipsis)),
+              child: OutlinedButton(
                 onPressed: () {
                   // ignore: deprecated_member_use
                   Share.share('result_share_text'.tr(context));
@@ -367,27 +386,47 @@ class _ResultBody extends StatelessWidget {
                 style: OutlinedButton.styleFrom(
                   foregroundColor: isDark ? AppColors.primaryFixedDim : AppColors.primary,
                   side: BorderSide(color: isDark ? AppColors.primaryFixedDim : AppColors.primary),
-                  minimumSize: const Size(0, 52),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  textStyle: AppTypography.buttonLabel(),
+                  minimumSize: const Size(0, 54),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.share_outlined, size: 18),
+                    const SizedBox(width: 6),
+                    Expanded(child: Text('result_share'.tr(context), overflow: TextOverflow.ellipsis, style: AppTypography.buttonLabel())),
+                  ],
                 ),
               ),
             ),
           ],
         ),
-        const SizedBox(height: AppSpacing.sm),
+        const SizedBox(height: AppSpacing.md),
+        Divider(height: 1, thickness: 1, color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
+        const SizedBox(height: AppSpacing.md),
         SizedBox(
           width: double.infinity,
-          child: OutlinedButton.icon(
-            icon: const Icon(Icons.add_photo_alternate_outlined, size: 18),
-            label: Text('result_check_another'.tr(context)),
+          child: ElevatedButton(
             onPressed: () => context.go('/main/history'),
-            style: OutlinedButton.styleFrom(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFF8F9FA),
               foregroundColor: isDark ? Colors.white : AppColors.textPrimary,
-              side: BorderSide(color: AppColors.outlineVariant),
-              minimumSize: const Size(0, 52),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              textStyle: AppTypography.buttonLabel(),
+              side: isDark ? BorderSide.none : const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
+              minimumSize: const Size(0, 54),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Icon(Icons.photo_camera_outlined, size: 18),
+                const SizedBox(width: 8),
+                Text('result_check_another'.tr(context), style: AppTypography.buttonLabel()),
+              ],
             ),
           ),
         ),
@@ -400,7 +439,7 @@ class _ResultBody extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF162230) : Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isDark ? const Color(0xFF27313C) : AppColors.border,
         ),
@@ -457,7 +496,7 @@ class _ResultBody extends StatelessWidget {
               );
             },
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
               child: Stack(
                 children: [
                   // Image Placeholder or Network image
