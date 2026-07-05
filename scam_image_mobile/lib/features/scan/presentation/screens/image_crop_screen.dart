@@ -32,6 +32,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
   final ImageCropper _imageCropper = ImageCropper();
   final ImagePicker _imagePicker = ImagePicker();
   final TextEditingController _nameController = TextEditingController();
+  bool _hasNameError = false;
   
   double _rotation = 0.0;
   double _scale = 1.0;
@@ -353,8 +354,12 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                   TextFormField(
                     controller: _nameController,
                     style: AppTypography.bodyBase(color: isDark ? Colors.white : AppColors.textPrimary),
+                    onChanged: (value) {
+                      if (_hasNameError) setState(() => _hasNameError = false);
+                    },
                     decoration: InputDecoration(
                       hintText: 'crop_name_hint'.tr(context),
+                      errorText: _hasNameError ? 'crop_error_empty_name'.tr(context) : null,
                       hintStyle: AppTypography.bodyBase(color: AppColors.outlineVariant),
                       prefixIcon: const Icon(Icons.edit_document, color: AppColors.outlineVariant, size: 20),
                       filled: true,
@@ -382,12 +387,10 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                     leadingIcon: const Icon(Icons.search, size: 20),
                     onPressed: () {
                       if (_nameController.text.trim().isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('crop_error_empty_name'.tr(context)),
-                            backgroundColor: AppColors.danger,
-                          ),
-                        );
+                        setState(() {
+                          _hasNameError = true;
+                        });
+                        FocusScope.of(context).unfocus();
                         return;
                       }
                       context.go('/loading', extra: {
