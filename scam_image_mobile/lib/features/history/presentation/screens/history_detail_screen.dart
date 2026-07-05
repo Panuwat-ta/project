@@ -447,9 +447,9 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
               ),
               const SizedBox(width: AppSpacing.sm),
               _buildPill(
-                'result_low'.tr(context),
-                isDark ? const Color(0xFF183C25) : const Color(0xFFE6F4EA),
-                isDark ? const Color(0xFF81C995) : AppColors.success,
+                'result_high_risk'.tr(context),
+                isDark ? const Color(0xFF4A1818) : const Color(0xFFFFEBEB),
+                isDark ? const Color(0xFFFFB4B4) : AppColors.danger,
               ),
             ],
           ),
@@ -491,8 +491,8 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                       style: AppTypography.caption(color: AppColors.outlineVariant),
                     ),
                     Text(
-                      '12%',
-                      style: AppTypography.titleMd(color: AppColors.success),
+                      '88%',
+                      style: AppTypography.titleMd(color: AppColors.danger),
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     Text(
@@ -500,7 +500,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                       style: AppTypography.caption(color: AppColors.outlineVariant),
                     ),
                     Text(
-                      'Low (0.14)',
+                      'High (0.88)',
                       style: AppTypography.titleMd(
                           color: isDark ? Colors.white : AppColors.onSurface),
                     ),
