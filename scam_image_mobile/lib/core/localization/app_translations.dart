@@ -69,7 +69,7 @@ class AppTranslations {
       // Analysis Result
       'result_title': 'ScamGuard',
       'result_overall_risk': 'ความเสี่ยงโดยรวม',
-      'result_details': 'รายละเอียดผลการตรวจ',
+      'result_details': 'รายละเอียด',
       'result_xai_explain': 'คำอธิบายจาก AI (XAI)',
       'result_xai_desc': 'AI ตรวจพบความผิดปกติบริเวณมุมขวาบนของภาพ ซึ่งมีลักษณะของการตัดต่อที่ไม่เป็นธรรมชาติ นอกจากนี้ยังพบความไม่สม่ำเสมอของคุณภาพพิกเซลที่เกิดจากการบีบอัดภาพซ้อนทับกันหลายชั้น ซึ่งเป็นสัญญาณบ่งชี้ถึงการดัดแปลงภาพ',
       'result_ocr': 'การวิเคราะห์ข้อความ',
@@ -82,7 +82,7 @@ class AppTranslations {
       'result_source_links': 'ลิงก์ที่เกี่ยวข้องและรายงาน:',
       'result_anomaly': 'ตรวจจับความผิดปกติ',
       'result_view_heatmap': 'ดู Heatmap',
-      'result_report_scam': 'รายงานภาพต้องสงสัย',
+      'result_report_scam': 'แจ้งรายงาน',
       'result_share': 'แชร์ผลลัพธ์',
       'result_share_text': 'ผลการตรวจสอบรูปภาพจาก ScamGuard',
       // Report Screen

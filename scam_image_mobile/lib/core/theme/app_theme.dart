@@ -78,19 +78,19 @@ class AppTheme {
         color: AppColors.surfaceDark,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
+          borderRadius: BorderRadius.all(Radius.circular(16)),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primaryFixedDim,
           foregroundColor: AppColors.bgDark,
-          minimumSize: const Size(double.infinity, 52),
+          minimumSize: const Size(double.infinity, 54),
           shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(12)),
+            borderRadius: BorderRadius.all(Radius.circular(16)),
           ),
           textStyle: GoogleFonts.sarabun(
-            fontSize: 16,
+            fontSize: 15,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -98,13 +98,13 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.primaryFixedDim,
-          minimumSize: const Size(double.infinity, 52),
+          minimumSize: const Size(double.infinity, 54),
           side: const BorderSide(color: AppColors.primaryFixedDim),
           shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(12)),
+            borderRadius: BorderRadius.all(Radius.circular(16)),
           ),
           textStyle: GoogleFonts.sarabun(
-            fontSize: 16,
+            fontSize: 15,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -117,19 +117,19 @@ class AppTheme {
           vertical: 14,
         ),
         border: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
+          borderRadius: BorderRadius.all(Radius.circular(16)),
           borderSide: BorderSide.none,
         ),
         enabledBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
+          borderRadius: BorderRadius.all(Radius.circular(16)),
           borderSide: BorderSide(color: AppColors.outline, width: 1),
         ),
         focusedBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
+          borderRadius: BorderRadius.all(Radius.circular(16)),
           borderSide: BorderSide(color: AppColors.primaryFixedDim, width: 1.5),
         ),
         errorBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
+          borderRadius: BorderRadius.all(Radius.circular(16)),
           borderSide: BorderSide(color: AppColors.error, width: 1),
         ),
         hintStyle: GoogleFonts.sarabun(
@@ -236,19 +236,19 @@ class AppTheme {
         color: AppColors.surfaceLight,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
+          borderRadius: BorderRadius.all(Radius.circular(16)),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: AppColors.onPrimary,
-          minimumSize: const Size(double.infinity, 52),
+          minimumSize: const Size(double.infinity, 54),
           shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(12)),
+            borderRadius: BorderRadius.all(Radius.circular(16)),
           ),
           textStyle: GoogleFonts.sarabun(
-            fontSize: 16,
+            fontSize: 15,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -256,13 +256,13 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.primary,
-          minimumSize: const Size(double.infinity, 52),
+          minimumSize: const Size(double.infinity, 54),
           side: const BorderSide(color: AppColors.primary),
           shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(12)),
+            borderRadius: BorderRadius.all(Radius.circular(16)),
           ),
           textStyle: GoogleFonts.sarabun(
-            fontSize: 16,
+            fontSize: 15,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -275,19 +275,19 @@ class AppTheme {
           vertical: 14,
         ),
         border: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
+          borderRadius: BorderRadius.all(Radius.circular(16)),
           borderSide: BorderSide.none,
         ),
         enabledBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
+          borderRadius: BorderRadius.all(Radius.circular(16)),
           borderSide: BorderSide(color: AppColors.border, width: 1),
         ),
         focusedBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
+          borderRadius: BorderRadius.all(Radius.circular(16)),
           borderSide: BorderSide(color: AppColors.primary, width: 1.5),
         ),
         errorBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
+          borderRadius: BorderRadius.all(Radius.circular(16)),
           borderSide: BorderSide(color: AppColors.error, width: 1),
         ),
         hintStyle: GoogleFonts.sarabun(

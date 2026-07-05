@@ -42,7 +42,7 @@ class PrimaryButton extends StatelessWidget {
 
     return SizedBox(
       width: double.infinity,
-      height: 52,
+      height: 54,
       child: ElevatedButton(
         onPressed: isDisabled ? null : onPressed,
         style: ElevatedButton.styleFrom(
@@ -50,7 +50,7 @@ class PrimaryButton extends StatelessWidget {
           foregroundColor: fgColor,
           disabledBackgroundColor: bgColor.withValues(alpha: 0.4),
           disabledForegroundColor: fgColor.withValues(alpha: 0.6),
-          shape: const StadiumBorder(),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
         ),

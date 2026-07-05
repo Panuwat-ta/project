@@ -322,7 +322,7 @@ class _ResultBody extends StatelessWidget {
                   children: [
                     const Icon(Icons.visibility_outlined, size: 18),
                     const SizedBox(width: 6),
-                    Expanded(child: Text('result_details'.tr(context), overflow: TextOverflow.ellipsis, style: AppTypography.buttonLabel())),
+                    Expanded(child: Text('result_details'.tr(context), overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: AppTypography.buttonLabel())),
                   ],
                 ),
               ),
@@ -345,7 +345,7 @@ class _ResultBody extends StatelessWidget {
                   children: [
                     const Icon(Icons.local_fire_department_outlined, size: 18),
                     const SizedBox(width: 6),
-                    Expanded(child: Text('result_view_heatmap'.tr(context), overflow: TextOverflow.ellipsis, style: AppTypography.buttonLabel())),
+                    Expanded(child: Text('result_view_heatmap'.tr(context), overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: AppTypography.buttonLabel())),
                   ],
                 ),
               ),
@@ -371,7 +371,7 @@ class _ResultBody extends StatelessWidget {
                   children: [
                     const Icon(Icons.flag_outlined, size: 18),
                     const SizedBox(width: 6),
-                    Expanded(child: Text('result_report_scam'.tr(context), overflow: TextOverflow.ellipsis, style: AppTypography.buttonLabel())),
+                    Expanded(child: Text('result_report_scam'.tr(context), overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: AppTypography.buttonLabel())),
                   ],
                 ),
               ),
@@ -396,7 +396,7 @@ class _ResultBody extends StatelessWidget {
                   children: [
                     const Icon(Icons.share_outlined, size: 18),
                     const SizedBox(width: 6),
-                    Expanded(child: Text('result_share'.tr(context), overflow: TextOverflow.ellipsis, style: AppTypography.buttonLabel())),
+                    Expanded(child: Text('result_share'.tr(context), overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: AppTypography.buttonLabel())),
                   ],
                 ),
               ),
