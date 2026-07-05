@@ -356,6 +356,22 @@ class _ResultBody extends StatelessWidget {
             ),
           ],
         ),
+        const SizedBox(height: AppSpacing.sm),
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            icon: const Icon(Icons.add_photo_alternate_outlined, size: 18),
+            label: Text('result_check_another'.tr(context)),
+            onPressed: () => context.go('/main/home'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: isDark ? Colors.white : AppColors.textPrimary,
+              side: BorderSide(color: AppColors.outlineVariant),
+              minimumSize: const Size(0, 52),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              textStyle: AppTypography.buttonLabel(),
+            ),
+          ),
+        ),
       ],
     );
   }
