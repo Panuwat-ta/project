@@ -4,7 +4,7 @@
 
 ## 1. ภาพรวมของแอป
 
-ScamGuard เป็นแอปพลิเคชัน Flutter สำหรับ Android และ iOS ที่ช่วยให้ผู้ใช้ทั่วไปสามารถตรวจสอบความน่าเชื่อถือของรูปภาพก่อนนำไปใช้ตัดสินใจ เช่น รูปสลิปโอนเงิน หลักฐานการชำระเงิน คิวอาร์โค้ด หรือเอกสารที่ส่งมาทางโซเชียลมีเดีย แอปส่งรูปภาพไปยัง ระบบหลังบ้าน (Backend) API เพื่อวิเคราะห์และแสดงผลระดับความเสี่ยงในรูปแบบที่เข้าใจง่าย
+ScamGuard เป็นแอปพลิเคชัน Flutter สำหรับ Android ที่ช่วยให้ผู้ใช้ทั่วไปสามารถตรวจสอบความน่าเชื่อถือของรูปภาพก่อนนำไปใช้ตัดสินใจ เช่น รูปสลิปโอนเงิน หลักฐานการชำระเงิน คิวอาร์โค้ด หรือเอกสารที่ส่งมาทางโซเชียลมีเดีย แอปส่งรูปภาพไปยัง ระบบหลังบ้าน (Backend) API เพื่อวิเคราะห์และแสดงผลระดับความเสี่ยงในรูปแบบที่เข้าใจง่าย
 
 ชื่อแพ็กเกจ: `scam_image_mobile`
 เวอร์ชัน: `1.0.0+1`
@@ -32,6 +32,7 @@ lib/
     constants/     app_colors.dart, app_typography.dart, app_spacing.dart
     di/            injection_container.dart (ServiceLocator)
     errors/        failures.dart, exceptions.dart
+    localization/  app_translations.dart
     network/       dio_client.dart, api_endpoints.dart
     router/        app_router.dart
     storage/       secure_storage.dart
@@ -205,7 +206,6 @@ Base URL ของ API ถูกอ่านจาก ตัวแปรสภ�
 
 /main/home                 HomeScreen          (ShellRoute - bottom nav)
 /main/history              HistoryScreen       (ShellRoute)
-/main/history/:id          HistoryDetailScreen (ShellRoute - sub-route)
 /main/report               ReportScamScreen    (ShellRoute)
 /main/settings             SettingsScreen      (ShellRoute)
 /main/settings/profile     UserProfileScreen   (ShellRoute - sub-route)
@@ -216,6 +216,7 @@ Base URL ของ API ถูกอ่านจาก ตัวแปรสภ�
 /result/:scanId            AnalysisResultScreen
 /heatmap/:scanId           HeatmapViewerScreen (รับ imageUrl, heatmapUrl ผ่าน extra)
 /notifications             NotificationsScreen
+/detail/:scanId            HistoryDetailScreen (standalone)
 ```
 
 ### 6.2 ShellRoute (Bottom Navigation)
@@ -573,7 +574,7 @@ Requirement: REQ-009
 
 Requirement: REQ-010
 
-### 10.11 HistoryDetailScreen (`/main/history/:id`)
+### 10.11 HistoryDetailScreen (`/detail/:scanId`)
 
 รับ `scanId` จาก เส้นทาง (path) พารามิเตอร์ (parameter)
 
@@ -717,17 +718,18 @@ Requirement: REQ-016
 |---------|---------|--------|
 | flutter_bloc | ^9.1.1 | สถานะ (state) management (BLoC pattern) |
 | equatable | ^2.0.7 | Value equality สำหรับ entities และ states |
-| go_router | ^15.1.2 | Declarative routing |
+| go_router | ^17.3.0 | Declarative routing |
 | dio | ^5.8.0+1 | HTTP client |
-| flutter_secure_storage | ^9.2.4 | เก็บ โทเคน (token) อย่างปลอดภัย |
+| flutter_secure_storage | ^10.3.1 | เก็บ โทเคน (token) อย่างปลอดภัย |
 | image_picker | ^1.1.2 | เลือกรูปจาก gallery/camera |
-| image_cropper | ^9.0.0 | crop และ rotate รูป |
+| image_cropper | ^12.2.1 | crop และ rotate รูป |
 | cached_network_image | ^3.4.1 | แสดงรูปจาก URL พร้อม แคช (cache) |
-| google_fonts | ^6.2.1 | Sarabun + Inter fonts |
+| google_fonts | ^8.1.0 | Sarabun + Inter fonts |
 | uuid | ^4.5.1 | สร้าง clientRequestId |
 | intl | ^0.20.2 | date formatting |
 | cupertino_icons | ^1.0.8 | iOS-style icons |
-| share_plus | ^10.1.4 | share ผลลัพธ์ผ่านแอปอื่น |
+| share_plus | ^13.2.0 | share ผลลัพธ์ผ่านแอปอื่น |
+| flutter_svg | ^2.3.0 | แสดงผลไฟล์ SVG |
 
 ### Dev dependencies
 
@@ -845,7 +847,7 @@ test/
 /main/history
   -> HistoryBloc load GET /history
   -> รายการ scan items
-  -> แตะรายการ -> /main/history/:id
+  -> แตะรายการ -> /detail/:scanId
      -> แสดงผล analysis เดิม
      -> "สแกนภาพใหม่" -> /main/home
   -> Swipe left -> delete item

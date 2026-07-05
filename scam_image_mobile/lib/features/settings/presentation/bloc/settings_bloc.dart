@@ -48,13 +48,30 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   final SettingsRepository repository;
 
+  /// Loads the initial settings from the repository.
+  Future<void> loadSettings() async {
+    final themeModeStr = await repository.getThemeMode();
+    final language = await repository.getLanguage() ?? 'th';
+
+    ThemeMode themeMode = ThemeMode.light;
+    if (themeModeStr == 'ThemeMode.dark') {
+      themeMode = ThemeMode.dark;
+    } else if (themeModeStr == 'ThemeMode.system') {
+      themeMode = ThemeMode.system;
+    }
+
+    emit(state.copyWith(themeMode: themeMode, language: language));
+  }
+
   /// Sets the application theme mode.
-  void setTheme(ThemeMode mode) {
+  Future<void> setTheme(ThemeMode mode) async {
+    await repository.setThemeMode(mode.toString());
     emit(state.copyWith(themeMode: mode));
   }
 
   /// Sets the application language.
-  void setLanguage(String lang) {
+  Future<void> setLanguage(String lang) async {
+    await repository.setLanguage(lang);
     emit(state.copyWith(language: lang));
   }
 
@@ -101,6 +118,9 @@ class SettingsCubit extends Cubit<SettingsState> {
 // ── Mock repository stub (for local UI development) ──────────────────────────
 
 class MockSettingsRepository implements SettingsRepository {
+  String? _themeMode;
+  String? _language;
+
   @override
   Future<ConsentSetting> getConsents() async {
     await Future.delayed(const Duration(milliseconds: 300));
@@ -119,4 +139,16 @@ class MockSettingsRepository implements SettingsRepository {
 
   @override
   Future<void> deleteAccount() async {}
+
+  @override
+  Future<String?> getThemeMode() async => _themeMode;
+
+  @override
+  Future<void> setThemeMode(String mode) async => _themeMode = mode;
+
+  @override
+  Future<String?> getLanguage() async => _language;
+
+  @override
+  Future<void> setLanguage(String lang) async => _language = lang;
 }

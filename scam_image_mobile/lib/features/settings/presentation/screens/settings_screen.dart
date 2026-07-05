@@ -253,7 +253,7 @@ class _SettingsView extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'basic_protection'.tr(context) + ' • v1.0.0',
+                          '${'basic_protection'.tr(context)} • v1.0.0',
                           style: AppTypography.caption(color: isDark ? Colors.white54 : AppColors.textSecondary),
                         ),
                       ],

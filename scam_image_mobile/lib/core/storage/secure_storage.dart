@@ -9,10 +9,7 @@ const String kHasSeenOnboarding = 'has_seen_onboarding';
 /// provides typed, async helpers for token management.
 class SecureStorage {
   SecureStorage({FlutterSecureStorage? storage})
-      : _storage = storage ??
-            const FlutterSecureStorage(
-              aOptions: AndroidOptions(encryptedSharedPreferences: true),
-            );
+      : _storage = storage ?? const FlutterSecureStorage();
 
   final FlutterSecureStorage _storage;
 

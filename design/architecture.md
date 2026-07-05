@@ -294,7 +294,7 @@ $$Risk\ Score = (S_{text} \times 0.25) + (S_{visual} \times 0.45) + (S_{source} 
 
 | ส่วนของระบบ | เทคโนโลยีที่เลือกใช้ | เหตุผลเชิงวิศวกรรมซอฟต์แวร์ |
 | :--- | :--- | :--- |
-| **Mobile App (Frontend)** | Flutter | รองรับการทำงาน Cross-platform (iOS, Android) ด้วย Codebase ชุดเดียว และง่ายต่อการปรับปรุง UI/UX ด้วยธีม Dark Mode |
+| **Mobile App (Frontend)** | Flutter | รองรับการทำงาน (Android) ด้วย Codebase ชุดเดียว และง่ายต่อการปรับปรุง UI/UX ด้วยธีม Dark Mode |
 | **Admin Portal (Frontend)** | React.js + Tailwind CSS | โหลดข้อมูลแบบ Dynamic ได้รวดเร็ว, จัดการ State ของหน้าต่างแอดมินได้ดี และสร้าง UI ในรูปแบบ Dashboard ได้เหมาะสม |
 | **Backend & Orchestrator** | Python FastAPI | ทำงานแบบ Asynchronous ได้มีประสิทธิภาพสูง, อัตราความเร็วใกล้เคียง Go/Node.js, มีระบบ Validate ข้อมูลและสร้าง API Doc อัตโนมัติ |
 | **AI Processing Framework** | PyTorch / ONNX Runtime | ปฏิบัติการคำนวณ Deep Learning โมเดลได้ดี, ONNX Runtime ช่วยเพิ่มความเร็วในการ Inference ได้มากกว่า PyTorch ดั้งเดิมถึง 2-5 เท่า |
@@ -302,4 +302,4 @@ $$Risk\ Score = (S_{text} \times 0.25) + (S_{visual} \times 0.45) + (S_{source} 
 | **Caching Engine** | Redis Cache | ช่วยดึงค่า Image Hash ที่เคยตรวจสอบแล้วอย่างรวดเร็ว (ลด latency จากหลายวินาทีให้เหลือหลักมิลลิวินาที) |
 | **File Storage** | Cloud Storage | รองรับการจัดเก็บไฟล์อิมเมจและรูป Heatmap ได้ในปริมาณมหาศาลบนระบบคลาวด์สตอเรจ พร้อมระบบกำหนดอายุลิงก์ชั่วคราว (Presigned URLs) |
 | **External Search API** | Google Vision API | ใช้กลไก Reverse Image Search เพื่อสืบค้นข้อมูลภาพแอบอ้างในโลกออนไลน์ได้อย่างแม่นยำและครอบคลุมที่สุด |
-| **Push Notification** | Firebase Cloud Messaging (FCM) | เป็นระบบส่ง Push Alert ที่เป็นมาตรฐาน เสถียรสูง และรองรับทั้งอุปกรณ์ iOS และ Android โดยไม่มีค่าใช้จ่ายพื้นฐาน |
+| **Push Notification** | Firebase Cloud Messaging (FCM) | เป็นระบบส่ง Push Alert ที่เป็นมาตรฐาน เสถียรสูง และรองรับอุปกรณ์ Android โดยไม่มีค่าใช้จ่ายพื้นฐาน |
