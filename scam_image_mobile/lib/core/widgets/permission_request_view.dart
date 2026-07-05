@@ -49,7 +49,7 @@ class PermissionRequestView extends StatelessWidget {
         const SizedBox(height: AppSpacing.lg),
         SizedBox(
           width: double.infinity,
-          height: 52,
+          height: 54,
           child: ElevatedButton.icon(
             onPressed: onOpenSettings,
             icon: const Icon(Icons.settings_outlined),

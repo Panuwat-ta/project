@@ -33,7 +33,7 @@ class GlassCard extends StatelessWidget {
         color: isDark
             ? AppColors.surfaceDark.withValues(alpha: 0.8)
             : Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isDark
               ? AppColors.outlineVariant.withValues(alpha: 0.1)

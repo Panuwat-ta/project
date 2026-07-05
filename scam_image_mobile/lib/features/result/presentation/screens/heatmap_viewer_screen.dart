@@ -293,14 +293,14 @@ class _HeatmapViewerScreenState extends State<HeatmapViewerScreen> {
     return Material(
       color: isDark ? const Color(0xFF162230) : Colors.white,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         side: BorderSide(color: isDark ? const Color(0xFF27313C) : AppColors.border),
       ),
       elevation: 2,
       shadowColor: Colors.black12,
       child: InkWell(
         onTap: onPressed,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         child: Container(
           width: 48,
           height: 48,

@@ -176,7 +176,7 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                   Container(
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.surface,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
                       border: Border.all(
                         color: AppColors.outlineVariant.withValues(alpha: 0.3),
                       ),
@@ -209,7 +209,6 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                               label: Text('report_change_image'.tr(context)),
                               style: TextButton.styleFrom(
                                 padding: EdgeInsets.zero,
-                                minimumSize: const Size(0, 0),
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
                             ),

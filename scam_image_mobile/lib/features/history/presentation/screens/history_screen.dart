@@ -133,11 +133,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             filled: true,
                             fillColor: isDark ? const Color(0xFF141921) : Colors.white,
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(16),
                               borderSide: BorderSide(color: isDark ? Colors.white24 : Colors.black12),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(16),
                               borderSide: BorderSide(color: isDark ? Colors.white24 : Colors.black12),
                             ),
                             contentPadding: const EdgeInsets.symmetric(
@@ -154,7 +154,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         child: DecoratedBox(
                           decoration: BoxDecoration(
                             color: isDark ? const Color(0xFF141921) : Colors.white,
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(16),
                             border: Border.all(
                               color: isDark ? Colors.white24 : Colors.black12,
                             ),
@@ -233,7 +233,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               decoration: BoxDecoration(
                                 color:
                                     AppColors.danger.withValues(alpha: 0.8),
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(16),
                               ),
                               child: const Icon(
                                 Icons.delete_outline,

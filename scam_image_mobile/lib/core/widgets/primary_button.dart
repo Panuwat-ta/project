@@ -50,7 +50,6 @@ class PrimaryButton extends StatelessWidget {
           foregroundColor: fgColor,
           disabledBackgroundColor: bgColor.withValues(alpha: 0.4),
           disabledForegroundColor: fgColor.withValues(alpha: 0.6),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
         ),

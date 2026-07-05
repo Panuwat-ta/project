@@ -186,13 +186,13 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: isDark ? Colors.black26 : Colors.black12,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(16),
                         child: Transform.scale(
                           scale: _scale,
                           child: Transform.rotate(
@@ -310,7 +310,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                     padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.surface,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
                       border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.3)),
                     ),
                     child: Row(
@@ -331,7 +331,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                     padding: const EdgeInsets.all(AppSpacing.md),
                     decoration: BoxDecoration(
                       color: isDark ? AppColors.primaryFixedDim.withValues(alpha: 0.1) : const Color(0xFFF0F5FF),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
                       border: Border.all(color: isDark ? Colors.transparent : AppColors.primaryFixedDim.withValues(alpha: 0.2)),
                     ),
                     child: Row(
@@ -366,15 +366,15 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                       fillColor: isDark ? AppColors.inverseSurface : Colors.white,
                       contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.md),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(16),
                         borderSide: BorderSide(color: AppColors.outlineVariant.withValues(alpha: 0.5)),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(16),
                         borderSide: BorderSide(color: AppColors.outlineVariant.withValues(alpha: 0.5)),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(16),
                         borderSide: BorderSide(color: isDark ? AppColors.primaryFixedDim : AppColors.primary, width: 1.5),
                       ),
                     ),
@@ -407,8 +407,6 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                     style: OutlinedButton.styleFrom(
                       foregroundColor: isDark ? AppColors.primaryFixedDim : AppColors.primary,
                       side: BorderSide(color: isDark ? AppColors.primaryFixedDim : AppColors.primary),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      minimumSize: const Size(double.infinity, 52),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,

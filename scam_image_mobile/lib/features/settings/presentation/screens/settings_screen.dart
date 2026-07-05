@@ -389,7 +389,6 @@ class _SettingsView extends StatelessWidget {
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
               side: const BorderSide(color: AppColors.danger),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               backgroundColor: isDark ? Colors.transparent : Colors.white,
             ),
           ),

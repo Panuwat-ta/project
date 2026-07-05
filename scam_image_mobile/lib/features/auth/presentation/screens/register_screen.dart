@@ -199,9 +199,9 @@ class _RegisterViewState extends State<_RegisterView> {
                               filled: true,
                               fillColor: inputFillColor,
                               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: inputBorderColor)),
-                              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: inputBorderColor)),
-                              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: primaryColor)),
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: inputBorderColor)),
+                              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: inputBorderColor)),
+                              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: primaryColor)),
                             ),
                             validator: (v) => (v == null || v.isEmpty) ? 'auth_fullname_error'.tr(context) : null,
                           ),
@@ -224,9 +224,9 @@ class _RegisterViewState extends State<_RegisterView> {
                               filled: true,
                               fillColor: inputFillColor,
                               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: inputBorderColor)),
-                              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: inputBorderColor)),
-                              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: primaryColor)),
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: inputBorderColor)),
+                              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: inputBorderColor)),
+                              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: primaryColor)),
                             ),
                             validator: (v) => (v == null || v.isEmpty) ? 'auth_email_hint'.tr(context) : null,
                           ),
@@ -256,9 +256,9 @@ class _RegisterViewState extends State<_RegisterView> {
                               filled: true,
                               fillColor: inputFillColor,
                               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: inputBorderColor)),
-                              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: inputBorderColor)),
-                              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: primaryColor)),
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: inputBorderColor)),
+                              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: inputBorderColor)),
+                              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: primaryColor)),
                             ),
                             validator: (v) => (v == null || v.length < 8) ? 'auth_password_min_error'.tr(context) : null,
                           ),
@@ -288,9 +288,9 @@ class _RegisterViewState extends State<_RegisterView> {
                               filled: true,
                               fillColor: inputFillColor,
                               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: inputBorderColor)),
-                              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: inputBorderColor)),
-                              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: primaryColor)),
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: inputBorderColor)),
+                              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: inputBorderColor)),
+                              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: primaryColor)),
                             ),
                             validator: (v) {
                               if (v == null || v.isEmpty) return 'auth_password_confirm_error'.tr(context);
@@ -313,7 +313,6 @@ class _RegisterViewState extends State<_RegisterView> {
                                   activeColor: primaryColor,
                                   checkColor: Colors.white,
                                   side: BorderSide(color: subtitleColor.withValues(alpha: 0.5)),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                                 ),
                               ),
                               const SizedBox(width: 12),
@@ -338,7 +337,7 @@ class _RegisterViewState extends State<_RegisterView> {
                           // Register Button
                           SizedBox(
                             width: double.infinity,
-                            height: 52,
+                            height: 54,
                             child: BlocBuilder<AuthBloc, AuthState>(
                               builder: (context, state) {
                                 return ElevatedButton.icon(
@@ -346,7 +345,6 @@ class _RegisterViewState extends State<_RegisterView> {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: primaryColor,
                                     foregroundColor: Colors.white,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                     elevation: 0,
                                   ),
                                   icon: state is AuthLoading
@@ -386,7 +384,6 @@ class _RegisterViewState extends State<_RegisterView> {
                                 onPressed: () => context.go('/login'),
                                 style: TextButton.styleFrom(
                                   padding: EdgeInsets.zero,
-                                  minimumSize: const Size(0, 0),
                                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                 ),
                                 child: Text(

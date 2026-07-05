@@ -144,7 +144,6 @@ class _LoginViewState extends State<_LoginView> {
       style: OutlinedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 14),
         side: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -266,9 +265,9 @@ class _LoginViewState extends State<_LoginView> {
                               filled: true,
                               fillColor: inputFillColor,
                               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: inputBorderColor)),
-                              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: inputBorderColor)),
-                              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: primaryColor)),
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: inputBorderColor)),
+                              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: inputBorderColor)),
+                              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: primaryColor)),
                             ),
                             validator: (v) => (v == null || v.isEmpty) ? 'auth_email_hint'.tr(context) : null,
                           ),
@@ -286,7 +285,6 @@ class _LoginViewState extends State<_LoginView> {
                                 onPressed: () {},
                                 style: TextButton.styleFrom(
                                   padding: EdgeInsets.zero,
-                                  minimumSize: const Size(0, 0),
                                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                 ),
                                 child: Text(
@@ -315,9 +313,9 @@ class _LoginViewState extends State<_LoginView> {
                               filled: true,
                               fillColor: inputFillColor,
                               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: inputBorderColor)),
-                              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: inputBorderColor)),
-                              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: primaryColor)),
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: inputBorderColor)),
+                              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: inputBorderColor)),
+                              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: primaryColor)),
                             ),
                             validator: (v) => (v == null || v.isEmpty) ? 'auth_password_hint'.tr(context) : null,
                           ),
@@ -335,7 +333,6 @@ class _LoginViewState extends State<_LoginView> {
                                   activeColor: primaryColor,
                                   checkColor: Colors.white,
                                   side: BorderSide(color: subtitleColor.withValues(alpha: 0.5)),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                                 ),
                               ),
                               const SizedBox(width: 12),
@@ -350,7 +347,7 @@ class _LoginViewState extends State<_LoginView> {
                           // Login Button
                           SizedBox(
                             width: double.infinity,
-                            height: 52,
+                            height: 54,
                             child: BlocBuilder<AuthBloc, AuthState>(
                               builder: (context, state) {
                                 return ElevatedButton(
@@ -358,7 +355,6 @@ class _LoginViewState extends State<_LoginView> {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: primaryColor,
                                     foregroundColor: Colors.white,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                     elevation: 0,
                                   ),
                                   child: state is AuthLoading
@@ -386,12 +382,11 @@ class _LoginViewState extends State<_LoginView> {
                           // Google Button
                           SizedBox(
                             width: double.infinity,
-                            height: 52,
+                            height: 54,
                             child: OutlinedButton(
                               onPressed: () {},
                               style: OutlinedButton.styleFrom(
                                 side: BorderSide(color: inputBorderColor),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                 backgroundColor: isDark ? const Color(0xFF141F2B) : Colors.white,
                               ),
                               child: Row(
@@ -412,12 +407,11 @@ class _LoginViewState extends State<_LoginView> {
                           // Apple Button
                           SizedBox(
                             width: double.infinity,
-                            height: 52,
+                            height: 54,
                             child: OutlinedButton(
                               onPressed: () => _showOtherLogins(context),
                               style: OutlinedButton.styleFrom(
                                 side: BorderSide(color: inputBorderColor),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                 backgroundColor: isDark ? const Color(0xFF141F2B) : Colors.white,
                               ),
                               child: Row(
@@ -448,7 +442,6 @@ class _LoginViewState extends State<_LoginView> {
                         onPressed: () => context.go('/register'),
                         style: TextButton.styleFrom(
                           padding: EdgeInsets.zero,
-                          minimumSize: const Size(0, 0),
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                         child: Text(

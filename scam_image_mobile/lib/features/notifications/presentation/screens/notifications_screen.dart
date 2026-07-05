@@ -129,7 +129,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       padding: const EdgeInsets.only(right: AppSpacing.lg),
                       decoration: BoxDecoration(
                         color: AppColors.danger.withValues(alpha: 0.8),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(16),
                       ),
                       child: const Icon(Icons.delete_outline, color: Colors.white, size: 24),
                     ),
@@ -144,7 +144,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       child: Container(
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.surface,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(16),
                           boxShadow: isDark ? null : [
                             BoxShadow(
                               color: Colors.black.withValues(alpha: 0.03),
@@ -157,7 +157,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                           ),
                         ),
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(16),
                           child: IntrinsicHeight(
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.stretch,

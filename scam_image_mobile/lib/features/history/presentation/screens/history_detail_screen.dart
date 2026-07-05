@@ -542,26 +542,22 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
       children: [
         ElevatedButton.icon(
           onPressed: () {},
-          icon: const Icon(Icons.info_outline, size: 20),
+          icon: const Icon(Icons.info_outline, size: 18),
           label: Text('result_report_official'.tr(context)),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
             foregroundColor: Colors.white,
-            minimumSize: const Size.fromHeight(52),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             textStyle: AppTypography.buttonLabel(),
           ),
         ),
         const SizedBox(height: AppSpacing.sm),
         OutlinedButton.icon(
           onPressed: () => context.go('/main/history'),
-          icon: const Icon(Icons.refresh, size: 20),
+          icon: const Icon(Icons.refresh, size: 18),
           label: Text('result_check_another'.tr(context)),
           style: OutlinedButton.styleFrom(
             foregroundColor: isDark ? AppColors.primaryFixedDim : AppColors.primary,
             side: BorderSide(color: isDark ? AppColors.primaryFixedDim : AppColors.primary),
-            minimumSize: const Size.fromHeight(52),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             textStyle: AppTypography.buttonLabel(),
           ),
         ),

@@ -173,8 +173,6 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
                   style: OutlinedButton.styleFrom(
                     foregroundColor: isDark ? AppColors.primaryFixedDim : AppColors.primary,
                     side: BorderSide(color: isDark ? AppColors.primaryFixedDim : AppColors.primary),
-                    minimumSize: const Size(double.infinity, 56),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                 ),
                 const SizedBox(height: AppSpacing.md),
@@ -184,8 +182,6 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
                   label: Text('privacy_delete_all_data'.tr(context), style: const TextStyle(color: AppColors.danger, fontSize: 16)),
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: AppColors.danger),
-                    minimumSize: const Size(double.infinity, 56),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                 ),
                 const SizedBox(height: AppSpacing.lg),
@@ -195,7 +191,7 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: isDark ? const Color(0xFF2A3441) : const Color(0xFFEAF5FF),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,

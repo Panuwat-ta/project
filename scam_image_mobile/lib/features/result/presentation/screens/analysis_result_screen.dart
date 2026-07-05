@@ -282,13 +282,22 @@ class _ResultBody extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: AppColors.outlineVariant, size: 28),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            caption,
-            style: AppTypography.caption(color: isDark ? Colors.white70 : AppColors.textSecondary),
+          Row(
+            children: [
+              Icon(icon, color: AppColors.outlineVariant, size: 28),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  caption,
+                  style: AppTypography.caption(color: isDark ? Colors.white70 : AppColors.textSecondary).copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: AppSpacing.xs),
+          const SizedBox(height: 12),
           Text(
             valueText,
             style: AppTypography.sectionHeader(color: valueColor),
@@ -311,18 +320,17 @@ class _ResultBody extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
-                  minimumSize: const Size(0, 54),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(horizontal: 4),
                 ),
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const Icon(Icons.visibility_outlined, size: 18),
                     const SizedBox(width: 6),
-                    Expanded(child: Text('result_details'.tr(context), overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: AppTypography.buttonLabel())),
+                    Flexible(child: Text('result_details'.tr(context), overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: AppTypography.buttonLabel())),
                   ],
                 ),
               ),
@@ -334,8 +342,6 @@ class _ResultBody extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryContainer,
                   foregroundColor: Colors.white,
-                  minimumSize: const Size(0, 54),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(horizontal: 4),
                 ),
@@ -345,7 +351,7 @@ class _ResultBody extends StatelessWidget {
                   children: [
                     const Icon(Icons.local_fire_department_outlined, size: 18),
                     const SizedBox(width: 6),
-                    Expanded(child: Text('result_view_heatmap'.tr(context), overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: AppTypography.buttonLabel())),
+                    Flexible(child: Text('result_view_heatmap'.tr(context), overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: AppTypography.buttonLabel())),
                   ],
                 ),
               ),
@@ -361,8 +367,6 @@ class _ResultBody extends StatelessWidget {
                 style: OutlinedButton.styleFrom(
                   foregroundColor: const Color(0xFFE53935),
                   side: const BorderSide(color: Color(0xFFEF5350)),
-                  minimumSize: const Size(0, 54),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   padding: const EdgeInsets.symmetric(horizontal: 4),
                 ),
                 child: Row(
@@ -371,7 +375,7 @@ class _ResultBody extends StatelessWidget {
                   children: [
                     const Icon(Icons.flag_outlined, size: 18),
                     const SizedBox(width: 6),
-                    Expanded(child: Text('result_report_scam'.tr(context), overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: AppTypography.buttonLabel())),
+                    Flexible(child: Text('result_report_scam'.tr(context), overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: AppTypography.buttonLabel())),
                   ],
                 ),
               ),
@@ -386,8 +390,6 @@ class _ResultBody extends StatelessWidget {
                 style: OutlinedButton.styleFrom(
                   foregroundColor: isDark ? AppColors.primaryFixedDim : AppColors.primary,
                   side: BorderSide(color: isDark ? AppColors.primaryFixedDim : AppColors.primary),
-                  minimumSize: const Size(0, 54),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   padding: const EdgeInsets.symmetric(horizontal: 4),
                 ),
                 child: Row(
@@ -396,7 +398,7 @@ class _ResultBody extends StatelessWidget {
                   children: [
                     const Icon(Icons.share_outlined, size: 18),
                     const SizedBox(width: 6),
-                    Expanded(child: Text('result_share'.tr(context), overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: AppTypography.buttonLabel())),
+                    Flexible(child: Text('result_share'.tr(context), overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: AppTypography.buttonLabel())),
                   ],
                 ),
               ),
@@ -414,12 +416,11 @@ class _ResultBody extends StatelessWidget {
               backgroundColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFF8F9FA),
               foregroundColor: isDark ? Colors.white : AppColors.textPrimary,
               side: isDark ? BorderSide.none : const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
-              minimumSize: const Size(0, 54),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               elevation: 0,
               padding: const EdgeInsets.symmetric(horizontal: 4),
             ),
             child: Row(
+              mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [

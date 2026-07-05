@@ -44,7 +44,7 @@ class _OnboardingView extends StatelessWidget {
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: isDark ? const Color(0xFF1E2936) : const Color(0xFFE0F2FE),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                   child: Icon(Icons.shield, color: primaryColor, size: 24),
                 ),
@@ -279,7 +279,6 @@ class _ConsentTile extends StatelessWidget {
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         activeColor: const Color(0xFF007293),
         checkColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         side: BorderSide(color: isDark ? const Color(0xFF475569) : const Color(0xFFCBD5E1), width: 1.5),
       ),
     );

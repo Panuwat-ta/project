@@ -140,14 +140,14 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
               children: [
                 // Image
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(16),
                   child: Container(
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: AppColors.primaryFixedDim
                             .withValues(alpha: 0.2),
                       ),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(11),
@@ -253,7 +253,7 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: AppColors.outlineVariant.withValues(alpha: 0.3),
         ),
@@ -298,7 +298,7 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.md),
       decoration: BoxDecoration(
         color: isDark ? AppColors.inverseSurface.withValues(alpha: 0.5) : AppColors.bgLight.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: AppColors.outlineVariant.withValues(alpha: 0.2),
         ),
