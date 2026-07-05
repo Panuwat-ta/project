@@ -12,9 +12,10 @@ import '../../domain/entities/analysis_result.dart' as domain;
 import '../bloc/result_bloc.dart';
 
 class AnalysisResultScreen extends StatefulWidget {
-  const AnalysisResultScreen({super.key, required this.taskId});
+  const AnalysisResultScreen({super.key, required this.taskId, this.scanName});
 
   final String taskId;
+  final String? scanName;
 
   @override
   State<AnalysisResultScreen> createState() => _AnalysisResultScreenState();
@@ -66,7 +67,11 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
             return Center(child: Text(state.message));
           }
           if (state is ResultLoaded) {
-            return _ResultBody(result: state.result, isDark: isDark);
+            return _ResultBody(
+              result: state.result,
+              isDark: isDark,
+              scanName: widget.scanName,
+            );
           }
           return const SizedBox.shrink();
         },
@@ -85,10 +90,11 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
 }
 
 class _ResultBody extends StatelessWidget {
-  const _ResultBody({required this.result, required this.isDark});
+  const _ResultBody({required this.result, required this.isDark, this.scanName});
 
   final domain.AnalysisResult result;
   final bool isDark;
+  final String? scanName;
 
   @override
   Widget build(BuildContext context) {
@@ -100,6 +106,14 @@ class _ResultBody extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          if (scanName != null && scanName!.isNotEmpty) ...[
+            Text(
+              scanName!,
+              textAlign: TextAlign.center,
+              style: AppTypography.headlineLgMobile(color: isDark ? Colors.white : AppColors.primary).copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+          ],
           _buildRiskGauge(context),
           const SizedBox(height: AppSpacing.xl),
           _buildSummaryCard(context),

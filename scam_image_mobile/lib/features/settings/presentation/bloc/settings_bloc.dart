@@ -48,13 +48,22 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   final SettingsRepository repository;
 
+  /// Loads the theme and language settings on app startup.
+  Future<void> loadSettings() async {
+    final mode = await repository.getThemeMode();
+    final lang = await repository.getLanguage();
+    emit(state.copyWith(themeMode: mode, language: lang));
+  }
+
   /// Sets the application theme mode.
-  void setTheme(ThemeMode mode) {
+  Future<void> setTheme(ThemeMode mode) async {
+    await repository.saveThemeMode(mode);
     emit(state.copyWith(themeMode: mode));
   }
 
   /// Sets the application language.
-  void setLanguage(String lang) {
+  Future<void> setLanguage(String lang) async {
+    await repository.saveLanguage(lang);
     emit(state.copyWith(language: lang));
   }
 
@@ -101,22 +110,40 @@ class SettingsCubit extends Cubit<SettingsState> {
 // ── Mock repository stub (for local UI development) ──────────────────────────
 
 class MockSettingsRepository implements SettingsRepository {
+  ConsentSetting _consent = const ConsentSetting(
+    processingConsent: true,
+    historyConsent: true,
+    researchConsent: false,
+  );
+  ThemeMode _themeMode = ThemeMode.system;
+  String _language = 'th';
+
   @override
   Future<ConsentSetting> getConsents() async {
     await Future.delayed(const Duration(milliseconds: 300));
-    return const ConsentSetting(
-      processingConsent: true,
-      historyConsent: true,
-      researchConsent: false,
-    );
+    return _consent;
   }
 
   @override
-  Future<void> updateConsents(ConsentSetting setting) async {}
+  Future<void> updateConsents(ConsentSetting setting) async {
+    _consent = setting;
+  }
 
   @override
   Future<void> exportPrivacyData() async {}
 
   @override
   Future<void> deleteAccount() async {}
+
+  @override
+  Future<ThemeMode> getThemeMode() async => _themeMode;
+
+  @override
+  Future<void> saveThemeMode(ThemeMode mode) async => _themeMode = mode;
+
+  @override
+  Future<String> getLanguage() async => _language;
+
+  @override
+  Future<void> saveLanguage(String language) async => _language = language;
 }

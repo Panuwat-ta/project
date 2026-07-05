@@ -31,6 +31,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
   late String _currentPath = widget.filePath;
   final ImageCropper _imageCropper = ImageCropper();
   final ImagePicker _imagePicker = ImagePicker();
+  final TextEditingController _nameController = TextEditingController();
   
   double _rotation = 0.0;
   double _scale = 1.0;
@@ -100,6 +101,12 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
     setState(() => _rotation += 3.14159 / 2);
   }
 
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
   void _zoomIn() {
     setState(() {
       _scale += 0.5;
@@ -155,8 +162,12 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
             ),
           ],
         ),
-        body: Column(
-          children: [
+        body: CustomScrollView(
+          slivers: [
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Column(
+                children: [
             // ── Subtitle ──────────────────────────────────────────────────
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
@@ -337,13 +348,52 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                     ),
                   ),
                   const SizedBox(height: AppSpacing.lg),
+
+                  // Scan Name Input
+                  TextFormField(
+                    controller: _nameController,
+                    style: AppTypography.bodyBase(color: isDark ? Colors.white : AppColors.textPrimary),
+                    decoration: InputDecoration(
+                      hintText: 'crop_name_hint'.tr(context),
+                      hintStyle: AppTypography.bodyBase(color: AppColors.outlineVariant),
+                      prefixIcon: const Icon(Icons.edit_document, color: AppColors.outlineVariant, size: 20),
+                      filled: true,
+                      fillColor: isDark ? AppColors.inverseSurface : Colors.white,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.md),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: AppColors.outlineVariant.withValues(alpha: 0.5)),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: AppColors.outlineVariant.withValues(alpha: 0.5)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: isDark ? AppColors.primaryFixedDim : AppColors.primary, width: 1.5),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
                   
                   // Primary Action
                   PrimaryButton(
                     label: 'crop_start_analysis'.tr(context),
                     leadingIcon: const Icon(Icons.search, size: 20),
                     onPressed: () {
-                      context.go('/loading', extra: {'filePath': _displayPath});
+                      if (_nameController.text.trim().isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('crop_error_empty_name'.tr(context)),
+                            backgroundColor: AppColors.danger,
+                          ),
+                        );
+                        return;
+                      }
+                      context.go('/loading', extra: {
+                        'filePath': _displayPath,
+                        'scanName': _nameController.text.trim(),
+                      });
                     },
                   ),
                   const SizedBox(height: AppSpacing.md),
@@ -366,15 +416,18 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                       ],
                     ),
                   ),
-                  SizedBox(height: MediaQuery.of(context).padding.bottom),
+                  SizedBox(height: MediaQuery.of(context).padding.bottom + 16),
                 ],
               ),
             ),
           ],
         ),
       ),
-    );
-  }
+    ],
+  ),
+),
+);
+}
 
   Widget _buildActionItem(BuildContext context, {required IconData icon, required String label, required bool isDark, VoidCallback? onTap}) {
     return GestureDetector(

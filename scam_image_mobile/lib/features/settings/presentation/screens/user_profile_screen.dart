@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/widgets/primary_button.dart';
+import '../../../auth/presentation/bloc/auth_bloc.dart';
 
 class UserProfileScreen extends StatelessWidget {
   const UserProfileScreen({super.key});
@@ -11,6 +14,14 @@ class UserProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    final authState = context.watch<AuthBloc>().state;
+    String userName = 'panuwat takham';
+    String userEmail = 'panuwat@gmail.com';
+    if (authState is AuthAuthenticated) {
+      userName = authState.user.displayName;
+      userEmail = authState.user.email;
+    }
 
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF141921) : const Color(0xFFF5F6F8),
@@ -20,7 +31,7 @@ class UserProfileScreen extends StatelessWidget {
         leading: const BackButton(),
         centerTitle: true,
         title: Text(
-          'โปรไฟล์',
+          'profile_title'.tr(context),
           style: TextStyle(
             color: isDark ? AppColors.primaryFixedDim : AppColors.primary,
             fontWeight: FontWeight.bold,
@@ -73,20 +84,20 @@ class UserProfileScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: AppSpacing.md),
                   Text(
-                    'panuwat takham',
+                    userName,
                     style: AppTypography.headlineLgMobile(color: isDark ? Colors.white : AppColors.textPrimary).copyWith(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'panuwat@gmail.com',
+                    userEmail,
                     style: AppTypography.bodyBase(color: isDark ? Colors.white54 : AppColors.textSecondary),
                   ),
                   const SizedBox(height: AppSpacing.lg),
                   PrimaryButton(
-                    label: 'แก้ไขโปรไฟล์',
+                    label: 'profile_edit'.tr(context),
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('ฟีเจอร์นี้จะพร้อมใช้งานเร็วๆ นี้')),
+                        SnackBar(content: Text('coming_soon'.tr(context))),
                       );
                     },
                   ),
@@ -107,20 +118,20 @@ class UserProfileScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     _ProfileListItem(
-                      title: 'ชื่อ-นามสกุล',
-                      value: 'panuwat takham',
+                      title: 'profile_fullname'.tr(context),
+                      value: userName,
                       onTap: () {},
                     ),
                     Divider(height: 1, thickness: 1, color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
                     _ProfileListItem(
-                      title: 'อีเมล',
-                      value: 'panuwat@gmail.com',
+                      title: 'profile_email'.tr(context),
+                      value: userEmail,
                       onTap: () {},
                     ),
                     Divider(height: 1, thickness: 1, color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
                     _ProfileListItem(
                       icon: Icons.lock_outline,
-                      title: 'เปลี่ยนรหัสผ่าน',
+                      title: 'profile_change_password'.tr(context),
                       onTap: () {},
                     ),
                   ],
@@ -136,7 +147,7 @@ class UserProfileScreen extends StatelessWidget {
               child: OutlinedButton.icon(
                 onPressed: () {},
                 icon: const Icon(Icons.cancel_presentation, color: AppColors.danger),
-                label: const Text('ลบบัญชีผู้ใช้งาน', style: TextStyle(color: AppColors.danger, fontSize: 16)),
+                label: Text('profile_delete_account'.tr(context), style: const TextStyle(color: AppColors.danger, fontSize: 16)),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   side: const BorderSide(color: AppColors.danger),

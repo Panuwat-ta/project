@@ -62,7 +62,9 @@ class ScamGuardApp extends StatelessWidget {
         // Settings
         BlocProvider<SettingsCubit>(
           create: (_) =>
-              SettingsCubit(repository: ServiceLocator.settingsRepository),
+              SettingsCubit(repository: ServiceLocator.settingsRepository)
+                ..loadSettings()
+                ..loadConsents(),
         ),
 
         // Notifications (no external repository — loads mock/push data)

@@ -6,6 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/localization/app_translations.dart';
+import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../bloc/settings_bloc.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -172,6 +173,12 @@ class _SettingsView extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     
+    final authState = context.watch<AuthBloc>().state;
+    String userName = 'panuwat takham';
+    if (authState is AuthAuthenticated) {
+      userName = authState.user.displayName;
+    }
+
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF141921) : const Color(0xFFF5F6F8),
       appBar: AppBar(
@@ -248,7 +255,7 @@ class _SettingsView extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'panuwat takham',
+                          userName,
                           style: AppTypography.titleMd(color: isDark ? Colors.white : AppColors.textPrimary).copyWith(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 4),

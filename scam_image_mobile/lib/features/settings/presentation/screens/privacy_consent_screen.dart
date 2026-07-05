@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../bloc/settings_bloc.dart';
 
 class PrivacyConsentScreen extends StatefulWidget {
@@ -15,26 +16,12 @@ class PrivacyConsentScreen extends StatefulWidget {
 }
 
 class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
-  late final SettingsCubit _cubit;
-
-  @override
-  void initState() {
-    super.initState();
-    _cubit = SettingsCubit(repository: MockSettingsRepository());
-    _cubit.loadConsents();
-  }
-
-  @override
-  void dispose() {
-    _cubit.close();
-    super.dispose();
-  }
 
   Future<void> _exportData() async {
-    await _cubit.exportData();
+    await context.read<SettingsCubit>().exportData();
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('กำลังดำเนินการส่งสำเนาข้อมูลของคุณ')),
+        SnackBar(content: Text('privacy_exporting'.tr(context))),
       );
     }
   }
@@ -46,17 +33,17 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: Theme.of(context).colorScheme.surface,
         title: Text(
-          'ลบข้อมูลการใช้งาน',
+          'privacy_delete_title'.tr(context),
           style: AppTypography.titleMd(color: AppColors.danger),
         ),
         content: Text(
-          'คุณต้องการลบข้อมูลการใช้งานทั้งหมดใช่หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้',
+          'privacy_delete_desc'.tr(context),
           style: AppTypography.bodyBase(color: isDark ? Colors.white70 : AppColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('ยกเลิก'),
+            child: Text('cancel'.tr(context)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -64,7 +51,7 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
               foregroundColor: Colors.white,
             ),
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('ลบข้อมูล'),
+            child: Text('delete_data'.tr(context)),
           ),
         ],
       ),
@@ -72,7 +59,7 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
     
     if (confirmed == true && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('ข้อมูลของคุณถูกลบเรียบร้อยแล้ว')),
+        SnackBar(content: Text('privacy_deleted'.tr(context))),
       );
     }
   }
@@ -80,16 +67,14 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return BlocProvider.value(
-      value: _cubit,
-      child: Scaffold(
-        backgroundColor: isDark ? const Color(0xFF141921) : const Color(0xFFF5F6F8),
+    return Scaffold(
+      backgroundColor: isDark ? const Color(0xFF141921) : const Color(0xFFF5F6F8),
         appBar: AppBar(
           elevation: 0,
           backgroundColor: isDark ? const Color(0xFF1B222C) : Colors.white,
           leading: const BackButton(),
           title: Text(
-            'ความเป็นส่วนตัว',
+            'privacy_title'.tr(context),
             style: TextStyle(
               color: isDark ? AppColors.primaryFixedDim : AppColors.primary,
               fontWeight: FontWeight.bold,
@@ -127,12 +112,12 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
                       ),
                       const SizedBox(height: AppSpacing.md),
                       Text(
-                        'จัดการความยินยอม',
+                        'privacy_manage_consent'.tr(context),
                         style: AppTypography.headlineLgMobile(color: isDark ? Colors.white : AppColors.textPrimary).copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'เลือกการตั้งค่าที่คุณต้องการให้ ScamGuard ดูแลข้อมูลของคุณ',
+                        'privacy_manage_desc'.tr(context),
                         textAlign: TextAlign.center,
                         style: AppTypography.bodyBase(color: isDark ? Colors.white54 : AppColors.textSecondary),
                       ),
@@ -150,15 +135,15 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
                   child: Column(
                     children: [
                       _ConsentTile(
-                        title: 'ยินยอมให้ประมวลผลรูปภาพ',
-                        subtitle: 'ใช้เพื่อวิเคราะห์ความเสี่ยงในรูปภาพที่คุณอัปโหลด',
+                        title: 'privacy_consent_process_title'.tr(context),
+                        subtitle: 'privacy_consent_process_desc'.tr(context),
                         value: state.consent.processingConsent,
                         onChanged: null, 
                       ),
                       Divider(height: 1, thickness: 1, color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
                       _ConsentTile(
-                        title: 'ยินยอมให้เก็บประวัติการสแกน',
-                        subtitle: 'ดูประวัติการวิเคราะห์ย้อนหลังได้ทุกเมื่อ',
+                        title: 'privacy_consent_history_title'.tr(context),
+                        subtitle: 'privacy_consent_history_desc'.tr(context),
                         value: state.consent.historyConsent,
                         onChanged: (val) {
                           final updated = state.consent.copyWith(historyConsent: val);
@@ -167,8 +152,8 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
                       ),
                       Divider(height: 1, thickness: 1, color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
                       _ConsentTile(
-                        title: 'ยินยอมให้ใช้ข้อมูลเพื่อพัฒนา AI',
-                        subtitle: 'ช่วยให้ระบบตรวจจับกลโกงได้แม่นยำยิ่งขึ้นสำหรับทุกคน',
+                        title: 'privacy_consent_ai_title'.tr(context),
+                        subtitle: 'privacy_consent_ai_desc'.tr(context),
                         value: state.consent.researchConsent,
                         onChanged: (val) {
                           final updated = state.consent.copyWith(researchConsent: val);
@@ -184,7 +169,7 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
                 OutlinedButton.icon(
                   onPressed: _exportData,
                   icon: const Icon(Icons.download_outlined),
-                  label: const Text('ขอสำเนาข้อมูลส่วนตัว', style: TextStyle(fontSize: 16)),
+                  label: Text('privacy_export_data'.tr(context), style: const TextStyle(fontSize: 16)),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: isDark ? AppColors.primaryFixedDim : AppColors.primary,
                     side: BorderSide(color: isDark ? AppColors.primaryFixedDim : AppColors.primary),
@@ -196,7 +181,7 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
                 OutlinedButton.icon(
                   onPressed: _deleteAllData,
                   icon: const Icon(Icons.cancel_presentation, color: AppColors.danger),
-                  label: const Text('ลบข้อมูลการใช้งานทั้งหมด', style: TextStyle(color: AppColors.danger, fontSize: 16)),
+                  label: Text('privacy_delete_all_data'.tr(context), style: const TextStyle(color: AppColors.danger, fontSize: 16)),
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: AppColors.danger),
                     minimumSize: const Size(double.infinity, 56),
@@ -219,7 +204,7 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'ScamGuard ให้ความสำคัญกับความเป็นส่วนตัวของคุณ ข้อมูลของคุณจะถูกประมวลผลตามพระราชบัญญัติคุ้มครองข้อมูลส่วนตัว (PDPA) เราจะเก็บรักษาข้อมูลอย่างปลอดภัยและไม่ส่งต่อให้บุคคลที่สามโดยไม่ได้รับความยินยอม',
+                          'privacy_info_desc'.tr(context),
                           style: AppTypography.caption(color: isDark ? Colors.white70 : AppColors.textSecondary).copyWith(height: 1.5),
                         ),
                       ),
@@ -240,8 +225,7 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
             );
           },
         ),
-      ),
-    );
+      );
   }
 }
 

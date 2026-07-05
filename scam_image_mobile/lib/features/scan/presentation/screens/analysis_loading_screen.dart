@@ -22,9 +22,10 @@ import 'package:scam_image_mobile/features/scan/domain/entities/analysis_task.da
 /// - [ScanError]     → show SnackBar, then pop after 1 second
 /// - [ScanTimeout]   → show SnackBar "หมดเวลา กรุณาลองใหม่", then pop
 class AnalysisLoadingScreen extends StatefulWidget {
-  const AnalysisLoadingScreen({super.key, required this.filePath});
+  const AnalysisLoadingScreen({super.key, required this.filePath, this.scanName});
 
   final String filePath;
+  final String? scanName;
 
   @override
   State<AnalysisLoadingScreen> createState() =>
@@ -379,7 +380,7 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
     return BlocListener<ScanBloc, ScanState>(
       listener: (context, state) async {
         if (state is ScanCompleted) {
-          context.go('/result/${state.taskId}');
+          context.go('/result/${state.taskId}', extra: {'scanName': widget.scanName});
         } else if (state is ScanError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

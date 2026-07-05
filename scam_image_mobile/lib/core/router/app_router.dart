@@ -116,12 +116,16 @@ class AppRouter {
           filePath: (state.extra as Map<String, dynamic>?)?['filePath']
                   as String? ??
               '',
+          scanName: (state.extra as Map<String, dynamic>?)?['scanName']
+                  as String?,
         ),
       ),
       GoRoute(
         path: '/result/:scanId',
         builder: (context, state) => AnalysisResultScreen(
           taskId: state.pathParameters['scanId']!,
+          scanName: (state.extra as Map<String, dynamic>?)?['scanName']
+              as String?,
         ),
       ),
       GoRoute(
