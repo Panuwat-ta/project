@@ -94,10 +94,6 @@ class ServiceLocator {
     // ── Settings ──────────────────────────────────────────────────────────────
     final settingsLocal = SettingsLocalDataSourceImpl(secureStorage: secureStorage);
     final settingsRemote = SettingsRemoteDataSourceImpl(dio: dio);
-<<<<<<< HEAD
-=======
-    final settingsLocal = SettingsLocalDataSourceImpl(secureStorage: secureStorage);
->>>>>>> 821656eeb2a76b54dc7b21b232bc919fe6f9e099
     settingsRepository = SettingsRepositoryImpl(
       remoteDataSource: settingsRemote,
       localDataSource: settingsLocal,

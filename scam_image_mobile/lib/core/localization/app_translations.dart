@@ -239,7 +239,6 @@ class AppTranslations {
       'result_low_risk': 'ความเสี่ยงต่ำ',
       'result_medium': 'ปานกลาง',
       'result_low': 'เสี่ยงต่ำ',
-<<<<<<< HEAD
       // Privacy Settings
       'privacy_title': 'ความเป็นส่วนตัว',
       'privacy_manage_consent': 'จัดการความยินยอม',
@@ -265,13 +264,11 @@ class AppTranslations {
       'profile_email': 'อีเมล',
       'profile_change_password': 'เปลี่ยนรหัสผ่าน',
       'profile_delete_account': 'ลบบัญชีผู้ใช้งาน',
-=======
       'visual_anomaly_title': 'ตรวจจับความผิดปกติ',
       'anomaly_edit_title': 'ร่องรอยการตัดต่อ',
       'anomaly_edit_desc': 'พบรอยต่อที่ไม่เป็นธรรมชาติบริเวณมุมขวาบน',
       'anomaly_pixel_title': 'คุณภาพพิกเซลไม่สม่ำเสมอ',
       'anomaly_pixel_desc': 'มีการบีบอัดภาพซ้อนทับกันหลายชั้น',
->>>>>>> 821656eeb2a76b54dc7b21b232bc919fe6f9e099
     },
     'en': {
       'settings': 'Settings',
@@ -508,7 +505,6 @@ class AppTranslations {
       'exit_app_title': 'Exit App',
       'exit_app_desc': 'Are you sure you want to exit ScamGuard?',
       'exit': 'Exit',
-<<<<<<< HEAD
       // Privacy Settings
       'privacy_title': 'Privacy',
       'privacy_manage_consent': 'Manage Consents',
@@ -534,13 +530,11 @@ class AppTranslations {
       'profile_email': 'Email',
       'profile_change_password': 'Change Password',
       'profile_delete_account': 'Delete Account',
-=======
       'visual_anomaly_title': 'Visual Anomaly',
       'anomaly_edit_title': 'Editing traces detected',
       'anomaly_edit_desc': 'Unnatural editing traces found in the upper right corner',
       'anomaly_pixel_title': 'Inconsistent pixel quality',
       'anomaly_pixel_desc': 'Multiple layers of image compression detected',
->>>>>>> 821656eeb2a76b54dc7b21b232bc919fe6f9e099
     }
   };
 }

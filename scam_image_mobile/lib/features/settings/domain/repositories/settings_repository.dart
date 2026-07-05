@@ -15,7 +15,6 @@ abstract class SettingsRepository {
   /// Permanently deletes the authenticated user's account.
   Future<void> deleteAccount();
 
-<<<<<<< HEAD
   /// Gets the saved theme mode.
   Future<ThemeMode> getThemeMode();
 
@@ -27,17 +26,4 @@ abstract class SettingsRepository {
 
   /// Saves the language.
   Future<void> saveLanguage(String language);
-=======
-  /// Retrieves the saved theme mode.
-  Future<String?> getThemeMode();
-
-  /// Saves the theme mode.
-  Future<void> setThemeMode(String mode);
-
-  /// Retrieves the saved language.
-  Future<String?> getLanguage();
-
-  /// Saves the language.
-  Future<void> setLanguage(String lang);
->>>>>>> 821656eeb2a76b54dc7b21b232bc919fe6f9e099
 }

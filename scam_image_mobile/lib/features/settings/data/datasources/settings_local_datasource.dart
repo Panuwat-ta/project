@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import 'package:flutter/material.dart';
 import '../../../../core/storage/secure_storage.dart';
 import '../../domain/entities/consent_setting.dart';
@@ -18,15 +17,6 @@ abstract class SettingsLocalDataSource {
   
   Future<ConsentSetting> getConsents();
   Future<void> saveConsents(ConsentSetting setting);
-=======
-import '../../../../core/storage/secure_storage.dart';
-
-abstract class SettingsLocalDataSource {
-  Future<String?> getThemeMode();
-  Future<void> setThemeMode(String mode);
-  Future<String?> getLanguage();
-  Future<void> setLanguage(String lang);
->>>>>>> 821656eeb2a76b54dc7b21b232bc919fe6f9e099
 }
 
 class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
@@ -35,7 +25,6 @@ class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
   final SecureStorage secureStorage;
 
   @override
-<<<<<<< HEAD
   Future<ThemeMode> getThemeMode() async {
     final mode = await secureStorage.getToken(kThemeMode);
     if (mode == 'ThemeMode.dark') return ThemeMode.dark;
@@ -78,18 +67,4 @@ class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
     await secureStorage.saveToken(kConsentHistory, setting.historyConsent.toString());
     await secureStorage.saveToken(kConsentResearch, setting.researchConsent.toString());
   }
-=======
-  Future<String?> getThemeMode() => secureStorage.getToken('theme_mode');
-
-  @override
-  Future<void> setThemeMode(String mode) =>
-      secureStorage.saveToken('theme_mode', mode);
-
-  @override
-  Future<String?> getLanguage() => secureStorage.getToken('language');
-
-  @override
-  Future<void> setLanguage(String lang) =>
-      secureStorage.saveToken('language', lang);
->>>>>>> 821656eeb2a76b54dc7b21b232bc919fe6f9e099
 }

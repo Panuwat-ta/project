@@ -48,46 +48,22 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   final SettingsRepository repository;
 
-<<<<<<< HEAD
   /// Loads the theme and language settings on app startup.
   Future<void> loadSettings() async {
     final mode = await repository.getThemeMode();
     final lang = await repository.getLanguage();
     emit(state.copyWith(themeMode: mode, language: lang));
-=======
-  /// Loads the initial settings from the repository.
-  Future<void> loadSettings() async {
-    final themeModeStr = await repository.getThemeMode();
-    final language = await repository.getLanguage() ?? 'th';
-
-    ThemeMode themeMode = ThemeMode.light;
-    if (themeModeStr == 'ThemeMode.dark') {
-      themeMode = ThemeMode.dark;
-    } else if (themeModeStr == 'ThemeMode.system') {
-      themeMode = ThemeMode.system;
-    }
-
-    emit(state.copyWith(themeMode: themeMode, language: language));
->>>>>>> 821656eeb2a76b54dc7b21b232bc919fe6f9e099
   }
 
   /// Sets the application theme mode.
   Future<void> setTheme(ThemeMode mode) async {
-<<<<<<< HEAD
     await repository.saveThemeMode(mode);
-=======
-    await repository.setThemeMode(mode.toString());
->>>>>>> 821656eeb2a76b54dc7b21b232bc919fe6f9e099
     emit(state.copyWith(themeMode: mode));
   }
 
   /// Sets the application language.
   Future<void> setLanguage(String lang) async {
-<<<<<<< HEAD
     await repository.saveLanguage(lang);
-=======
-    await repository.setLanguage(lang);
->>>>>>> 821656eeb2a76b54dc7b21b232bc919fe6f9e099
     emit(state.copyWith(language: lang));
   }
 
@@ -134,7 +110,6 @@ class SettingsCubit extends Cubit<SettingsState> {
 // ── Mock repository stub (for local UI development) ──────────────────────────
 
 class MockSettingsRepository implements SettingsRepository {
-<<<<<<< HEAD
   ConsentSetting _consent = const ConsentSetting(
     processingConsent: true,
     historyConsent: true,
@@ -142,10 +117,6 @@ class MockSettingsRepository implements SettingsRepository {
   );
   ThemeMode _themeMode = ThemeMode.system;
   String _language = 'th';
-=======
-  String? _themeMode;
-  String? _language;
->>>>>>> 821656eeb2a76b54dc7b21b232bc919fe6f9e099
 
   @override
   Future<ConsentSetting> getConsents() async {
@@ -165,7 +136,6 @@ class MockSettingsRepository implements SettingsRepository {
   Future<void> deleteAccount() async {}
 
   @override
-<<<<<<< HEAD
   Future<ThemeMode> getThemeMode() async => _themeMode;
 
   @override
@@ -176,16 +146,4 @@ class MockSettingsRepository implements SettingsRepository {
 
   @override
   Future<void> saveLanguage(String language) async => _language = language;
-=======
-  Future<String?> getThemeMode() async => _themeMode;
-
-  @override
-  Future<void> setThemeMode(String mode) async => _themeMode = mode;
-
-  @override
-  Future<String?> getLanguage() async => _language;
-
-  @override
-  Future<void> setLanguage(String lang) async => _language = lang;
->>>>>>> 821656eeb2a76b54dc7b21b232bc919fe6f9e099
 }
