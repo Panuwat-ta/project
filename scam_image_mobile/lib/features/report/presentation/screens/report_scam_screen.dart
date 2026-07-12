@@ -23,10 +23,12 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
   // ── Form ──────────────────────────────────────────────────────────────────
   final _formKey = GlobalKey<FormState>();
   final _platformController = TextEditingController();
+  final _otherCategoryController = TextEditingController();
   final _detailsController = TextEditingController();
 
   // ── Form state ────────────────────────────────────────────────────────────
   String? _selectedCategory;
+  String? _selectedPlatform;
   bool _allowAIModel = false;
 
   // ── BLoC ──────────────────────────────────────────────────────────────────
@@ -43,6 +45,15 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
     'cat_other'.tr(context),
   ];
 
+  List<String> get _platforms => [
+    'Facebook',
+    'Instagram',
+    'LINE',
+    'TikTok',
+    'X (Twitter)',
+    'cat_other'.tr(context),
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -52,6 +63,7 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
   @override
   void dispose() {
     _platformController.dispose();
+    _otherCategoryController.dispose();
     _detailsController.dispose();
     _bloc.close();
     super.dispose();
@@ -73,15 +85,23 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
       return;
     }
 
+    final finalCategory = _selectedCategory == 'cat_other'.tr(context)
+        ? _otherCategoryController.text.trim()
+        : _selectedCategory!;
+    
+    final finalPlatform = _selectedPlatform == 'cat_other'.tr(context)
+        ? _platformController.text.trim()
+        : _selectedPlatform;
+
     _bloc.add(
       ReportSubmitted(
         ScamReport(
           scanId: widget.scanId,
-          category: _selectedCategory!,
+          category: finalCategory,
           description: _detailsController.text.trim(),
-          platform: _platformController.text.trim().isEmpty
+          platform: (finalPlatform == null || finalPlatform.isEmpty)
               ? null
-              : _platformController.text.trim(),
+              : finalPlatform,
           referenceUrl: null,
           allowResearchUse: _allowAIModel,
         ),
@@ -253,48 +273,164 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                   // ── Category Dropdown ──────────────────────────────────
                   _SectionLabel(label: 'report_cat_label'.tr(context), isDark: isDark),
                   const SizedBox(height: AppSpacing.sm),
-                  DropdownButtonFormField<String>(
+                  FormField<String>(
                     initialValue: _selectedCategory,
-                    decoration: _inputDecoration(
-                      hint: 'report_cat_hint'.tr(context),
-                      isDark: isDark,
-                    ),
-                    dropdownColor: Theme.of(context).colorScheme.surface,
-                    style: AppTypography.bodyBase(
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                    icon: const Icon(
-                      Icons.keyboard_arrow_down,
-                      color: AppColors.outlineVariant,
-                    ),
-                    items: _categories.map((cat) {
-                      return DropdownMenuItem(
-                        value: cat,
-                        child: Text(cat),
-                      );
-                    }).toList(),
-                    onChanged: (v) => setState(() => _selectedCategory = v),
                     validator: (v) => v == null ? 'report_cat_error'.tr(context) : null,
+                    builder: (FormFieldState<String> state) {
+                      return DropdownMenu<String>(
+                        initialSelection: state.value,
+                        hintText: 'report_cat_hint'.tr(context),
+                        expandedInsets: EdgeInsets.zero,
+                        errorText: state.errorText,
+                        menuStyle: MenuStyle(
+                          shape: WidgetStateProperty.all(
+                            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          ),
+                          elevation: WidgetStateProperty.all(4),
+                          backgroundColor: WidgetStateProperty.all(Theme.of(context).colorScheme.surface),
+                        ),
+                        inputDecorationTheme: InputDecorationTheme(
+                          filled: true,
+                          fillColor: isDark ? AppColors.inverseSurface : Colors.white,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.md,
+                            vertical: AppSpacing.md,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: AppColors.outlineVariant.withValues(alpha: 0.5)),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: AppColors.outlineVariant.withValues(alpha: 0.5)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: isDark ? AppColors.primaryFixedDim : AppColors.primary, width: 1.5),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: AppColors.error, width: 1),
+                          ),
+                        ),
+                        textStyle: AppTypography.bodyBase(
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                        onSelected: (v) {
+                          if (v != null) {
+                            state.didChange(v);
+                            setState(() => _selectedCategory = v);
+                          }
+                        },
+                        dropdownMenuEntries: _categories.map((cat) {
+                          return DropdownMenuEntry<String>(
+                            value: cat,
+                            label: cat,
+                            style: MenuItemButton.styleFrom(
+                              textStyle: AppTypography.bodyBase(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      );
+                    },
                   ),
+                  if (_selectedCategory == 'cat_other'.tr(context)) ...[
+                    const SizedBox(height: AppSpacing.sm),
+                    TextFormField(
+                      controller: _otherCategoryController,
+                      style: AppTypography.bodyBase(
+                          color: Theme.of(context).colorScheme.onSurface),
+                      decoration: _inputDecoration(
+                        hint: 'โปรดระบุ (Please specify)',
+                        isDark: isDark,
+                      ),
+                      validator: (v) => v == null || v.isEmpty ? 'กรุณาระบุประเภท' : null,
+                    ),
+                  ],
                   const SizedBox(height: AppSpacing.lg),
 
                   // ── Platform TextField ─────────────────────────────────
                   _SectionLabel(label: 'report_platform_label'.tr(context), isDark: isDark),
                   const SizedBox(height: AppSpacing.sm),
-                  TextFormField(
-                    controller: _platformController,
-                    style: AppTypography.bodyBase(
-                        color: Theme.of(context).colorScheme.onSurface),
-                    decoration: _inputDecoration(
-                      hint: 'report_platform_hint'.tr(context),
-                      isDark: isDark,
-                      prefixIcon: const Icon(
-                        Icons.public,
-                        size: 20,
-                        color: AppColors.outlineVariant,
-                      ),
-                    ),
+                  FormField<String>(
+                    initialValue: _selectedPlatform,
+                    builder: (FormFieldState<String> state) {
+                      return DropdownMenu<String>(
+                        initialSelection: state.value,
+                        hintText: 'report_platform_hint'.tr(context),
+                        expandedInsets: EdgeInsets.zero,
+                        errorText: state.errorText,
+                        menuStyle: MenuStyle(
+                          shape: WidgetStateProperty.all(
+                            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          ),
+                          elevation: WidgetStateProperty.all(4),
+                          backgroundColor: WidgetStateProperty.all(Theme.of(context).colorScheme.surface),
+                        ),
+                        inputDecorationTheme: InputDecorationTheme(
+                          filled: true,
+                          fillColor: isDark ? AppColors.inverseSurface : Colors.white,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.md,
+                            vertical: AppSpacing.md,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: AppColors.outlineVariant.withValues(alpha: 0.5)),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: AppColors.outlineVariant.withValues(alpha: 0.5)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: isDark ? AppColors.primaryFixedDim : AppColors.primary, width: 1.5),
+                          ),
+                        ),
+                        textStyle: AppTypography.bodyBase(
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                        onSelected: (v) {
+                          if (v != null) {
+                            state.didChange(v);
+                            setState(() => _selectedPlatform = v);
+                          }
+                        },
+                        dropdownMenuEntries: _platforms.map((plat) {
+                          return DropdownMenuEntry<String>(
+                            value: plat,
+                            label: plat,
+                            style: MenuItemButton.styleFrom(
+                              textStyle: AppTypography.bodyBase(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      );
+                    },
                   ),
+                  if (_selectedPlatform == 'cat_other'.tr(context)) ...[
+                    const SizedBox(height: AppSpacing.sm),
+                    TextFormField(
+                      controller: _platformController,
+                      style: AppTypography.bodyBase(
+                          color: Theme.of(context).colorScheme.onSurface),
+                      decoration: _inputDecoration(
+                        hint: 'โปรดระบุ (Please specify)',
+                        isDark: isDark,
+                      ),
+                      validator: (v) => v == null || v.isEmpty ? 'กรุณาระบุแพลตฟอร์ม' : null,
+                    ),
+                  ],
                   const SizedBox(height: AppSpacing.lg),
 
                   // ── Details Field ──────────────────────────────────────
@@ -370,6 +506,19 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                       );
                     },
                   ),
+                  if (_selectedCategory == 'cat_other'.tr(context)) ...[
+                    const SizedBox(height: AppSpacing.sm),
+                    TextFormField(
+                      controller: _otherCategoryController,
+                      style: AppTypography.bodyBase(
+                          color: Theme.of(context).colorScheme.onSurface),
+                      decoration: _inputDecoration(
+                        hint: 'โปรดระบุ (Please specify)',
+                        isDark: isDark,
+                      ),
+                      validator: (v) => v == null || v.isEmpty ? 'กรุณาระบุประเภท' : null,
+                    ),
+                  ],
                   const SizedBox(height: AppSpacing.lg),
 
                   // ── Footer note ────────────────────────────────────────
