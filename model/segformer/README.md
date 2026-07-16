@@ -15,15 +15,16 @@ python -m venv env
 source env/bin/activate
 ```
 
-2. ติดตั้งแพ็กเกจพื้นฐานตามที่ล็อกสเปคไว้ (PyTorch, Numpy, OpenCV ฯลฯ):
+2. ติดตั้งแพ็กเกจ (สำหรับ RTX 5050 - สถาปัตยกรรม Blackwell แนะนำให้ใช้ `requirements-v1.txt` แทน):
 ```bash
+# สำหรับการ์ดจอทั่วไป
 pip install -r requirements.txt
-```
-
-3. ติดตั้ง MMCV ผ่าน `mim` เพื่อดึงไฟล์สำเร็จรูปมาใช้โดยไม่ต้องคอมไพล์เอง:
-```bash
 mim install "mmcv==2.1.0"
+
+# สำหรับ RTX 5050 (ใช้ PyTorch Nightly และ mmcv-lite แก้ปัญหาติดตั้งไม่ผ่าน)
+pip install -r requirements-v1.txt
 ```
+*หมายเหตุ: หากพบปัญหาในการติดตั้ง mmcv บนการ์ดจอรุ่นใหม่ๆ สามารถอ่านรายละเอียดการแก้ไขได้ในไฟล์ `error.md`*
 
 ---
 
@@ -36,13 +37,19 @@ AI จะไม่รู้ว่า "รอยตัดต่อ" คืออ�
 
 Google Drive: [dataset](https://drive.google.com/file/d/1jxQS3HwH0DHHHaCtf_prKPj6fMUpZ5jp/view?usp=sharing)
 
+3. **รันสคริปต์เตรียมข้อมูล**: เพื่อจัดแบ่งชุดข้อมูลเข้าสู่โฟลเดอร์สำหรับเทรนโดยอัตโนมัติ ให้รันคำสั่ง:
+```bash
+python prepare_dataset.py
+```
+
 ---
 
 ## 2: การตั้งค่าคอนฟิก (Configuration)
-เราจะใช้ไฟล์ `configs/segformer_mit-b2.py` เป็นตัวคุมพฤติกรรมของ AI 
+เราจะใช้ไฟล์คอนฟิกเป็นตัวคุมพฤติกรรมของ AI (เช่น `configs/segformer_mit-b2.py` หรือ `configs/segformer_mit-b2-v1.py`) 
 มันถูกเขียนทับ (Override) ค่าพื้นฐานเพื่อ:
 1. เปลี่ยนคลาสให้รู้จักแค่ 2 ชนิด (ปกติ กับ ตัดต่อ) 
-2. ชี้ Path ของ Dataloader ไปที่โฟลเดอร์ `data/scam_dataset/` ที่เราเก็บรูปไว้
+2. ชี้ Path ของ Dataloader ไปที่โฟลเดอร์ชุดข้อมูลที่เราเตรียมไว้ (เช่น `data/dataset_CASIA2.0/` หรือ `data/scam_dataset/`)
+3. ในเวอร์ชัน v1 มีการปรับค่า Learning Rate และปิดการอัปเดตโมเดลส่วน Backbone เพื่อทำ Fine-tuning เฉพาะส่วน Head
 
 ---
 
@@ -52,20 +59,27 @@ Google Drive: [dataset](https://drive.google.com/file/d/1jxQS3HwH0DHHHaCtf_prKPj
 
 ```bash
 python library/mmsegmentation/tools/train.py configs/segformer_mit-b2.py
+# หรือหากใช้คอนฟิกเวอร์ชัน v1
+python library/mmsegmentation/tools/train.py configs/segformer_mit-b2-v1.py
 
 # การหยุดและกลับมาทำต่อ
 python library/mmsegmentation/tools/train.py configs/segformer_mit-b2.py --resume
 ```
-**ผลลัพธ์ที่ได้:** เมื่อรอจนกระบวนการเทรนเสร็จสิ้น ระบบจะสร้างไฟล์ `.pth ตัวใหม่` ของคุณเอง (ชื่อ `latest.pth`) ไว้ในโฟลเดอร์ `work_dirs/` 
+**ผลลัพธ์ที่ได้:** เมื่อรอจนกระบวนการเทรนเสร็จสิ้น ระบบจะสร้างไฟล์ `.pth ตัวใหม่` ของคุณเอง (ชื่อ `latest.pth` หรือตามเวอร์ชันที่กำหนด) ไว้ในโฟลเดอร์ `work_dirs/` 
 
 ---
 
 ## 4: การนำไปใช้จริงบน Backend API (Inference)
 ตอนนี้คุณได้ AI ที่ฉลาดและพร้อมทำงานแล้ว ให้นำไฟล์ `.pth` ตัวใหม่ มาใช้งานในเซิร์ฟเวอร์
 
-สามารถดูตัวอย่างการเรียกใช้งานได้ในไฟล์ `predict.py` 
-คำสั่งรันทดสอบ:
+สามารถทดสอบรันโมเดลได้ผ่านไฟล์ `predict.py` ซึ่งรองรับการส่งพารามิเตอร์ผ่าน Command Line เพื่อให้ใช้งานได้ยืดหยุ่น:
 ```bash
+# รันด้วยค่าเริ่มต้น (รูป test_scam.jpg, โมเดล v2.0.0)
 python predict.py
+
+# หรือระบุไฟล์รูปภาพ, คอนฟิก, และโมเดลที่ต้องการ
+python predict.py --image "test_scam.jpg" --config "configs/segformer_mit-b2-v1.py" --checkpoint "work_dirs/segformer_v2.0.0/latest.pth" --output "result_heatmap.jpg"
 ```
-เมื่อรันสำเร็จ สคริปต์จะสร้างภาพ `result_heatmap.jpg` ส่งกลับมาให้ดูว่า AI จับผิดจุดไหนได้บ้าง
+*หมายเหตุ: สคริปต์จะตรวจสอบ GPU ให้อัตโนมัติ หากไม่มีจะใช้ CPU แทน (สามารถบังคับใช้ CPU ได้โดยเติม `--device cpu`)*
+
+เมื่อรันสำเร็จ สคริปต์จะสร้างภาพ `result_heatmap.jpg` (หรือชื่อไฟล์ที่ระบุใน `--output`) ส่งกลับมาให้ดูว่า AI จับผิดจุดไหนได้บ้าง

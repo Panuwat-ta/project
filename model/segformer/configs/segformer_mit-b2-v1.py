@@ -37,8 +37,8 @@ test_pipeline = [
 ]
 
 train_dataloader = dict(
-    batch_size=2, # สามารถเพิ่มได้ตาม VRAM
-    num_workers=2,
+    batch_size=16, 
+    num_workers=4,
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
@@ -49,8 +49,8 @@ train_dataloader = dict(
 )
 
 val_dataloader = dict(
-    batch_size=1,
-    num_workers=1,
+    batch_size=4,
+    num_workers=4,
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
@@ -86,7 +86,7 @@ default_hooks = dict(
 # ตั้งค่าให้ตรงกับ design/training.md
 optim_wrapper = dict(
     type='OptimWrapper',
-    accumulative_counts=2,  # [เพิ่มใหม่] Gradient Accumulation: 2 (รอบ) * batch_size (2) = เสมือนการใช้ batch_size 4 โดยไม่กินแรมการ์ดจอเพิ่ม
+    accumulative_counts=1,  # ปิด Gradient Accumulation เนื่องจาก RTX 5050 มี VRAM เพียงพอแล้ว
     # Fine-tuning: ปรับ Learning Rate ให้ต่ำลงกว่าปกติ (จากเดิม 0.00006 เหลือ 0.00001)
     optimizer=dict(type='AdamW', lr=0.00001, betas=(0.9, 0.999), weight_decay=0.01),
     paramwise_cfg=dict(

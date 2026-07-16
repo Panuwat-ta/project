@@ -1,17 +1,17 @@
 import os
+import argparse
 import torch
 import numpy as np
 import cv2
 from mmseg.apis import init_model, inference_model
 
-def run_inference(image_path, config_file, checkpoint_file, device='cuda:0'):
+def run_inference(image_path, config_file, checkpoint_file, output_path, device='cuda:0'):
     """
     ฟังก์ชันสำหรับรันโมเดล SegFormer เพื่อตรวจหาการตัดต่อรูปภาพ
     """
     print(f"กำลังโหลดโมเดลจากคอนฟิก: {config_file}")
     
     # 1. โหลดโมเดลจาก Config และ Checkpoint
-    # หากรันบน CPU ให้เปลี่ยน device='cpu'
     model = init_model(config_file, checkpoint_file, device=device)
     
     print(f"กำลังวิเคราะห์ภาพ: {image_path}")
@@ -40,25 +40,40 @@ def run_inference(image_path, config_file, checkpoint_file, device='cuda:0'):
         alpha = 0.5
         overlay_image = cv2.addWeighted(original_image, 1.0, red_heatmap, alpha, 0)
         
-        output_path = "result_heatmap.jpg"
         cv2.imwrite(output_path, overlay_image)
         print(f"บันทึกผลลัพธ์ภาพ Heatmap สำเร็จที่: {output_path}")
     else:
-        print("ไม่พบไฟล์รูปภาพต้นฉบับ")
+        print(f"ข้อผิดพลาด: ไม่สามารถอ่านไฟล์รูปภาพต้นฉบับได้ ({image_path})")
+
+def main():
+    parser = argparse.ArgumentParser(description="สคริปต์สำหรับรันโมเดล SegFormer เพื่อตรวจหาสลิปปลอม")
+    parser.add_argument("--config", type=str, default="configs/segformer_mit-b2-v1.py",
+                        help="พาธของไฟล์คอนฟิก (default: configs/segformer_mit-b2-v1.py)")
+    parser.add_argument("--checkpoint", type=str, default="work_dirs/segformer_v2.0.0/latest.pth",
+                        help="พาธของไฟล์โมเดล .pth (default: work_dirs/segformer_v2.0.0/latest.pth)")
+    parser.add_argument("--image", type=str, default="test_scam.jpg",
+                        help="ภาพที่ต้องการตรวจสอบ (default: test_scam.jpg)")
+    parser.add_argument("--output", type=str, default="result_heatmap.jpg",
+                        help="พาธสำหรับบันทึกภาพผลลัพธ์ (default: result_heatmap.jpg)")
+    
+    # เช็คว่ามี GPU (CUDA) ให้ใช้หรือไม่
+    default_device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+    parser.add_argument("--device", type=str, default=default_device,
+                        help=f"อุปกรณ์ที่ใช้รัน เช่น 'cuda:0' หรือ 'cpu' (default: {default_device})")
+
+    args = parser.parse_args()
+
+    if not os.path.exists(args.config):
+        print(f"ไม่พบไฟล์คอนฟิก: {args.config}")
+        return
+    if not os.path.exists(args.checkpoint):
+        print(f"ไม่พบไฟล์ Checkpoint: {args.checkpoint} (คุณต้องรันเทรนโมเดลก่อน)")
+        return
+    if not os.path.exists(args.image):
+        print(f"ไม่พบไฟล์รูปภาพ: {args.image}")
+        return
+
+    run_inference(args.image, args.config, args.checkpoint, args.output, device=args.device)
 
 if __name__ == '__main__':
-    # กำหนดพาธของไฟล์คอนฟิก (อ้างอิงไปที่โฟลเดอร์ configs ของเราเอง)
-    CONFIG_PATH = "configs/segformer_mit-b2.py"
-    
-    # ไฟล์น้ำหนักโมเดล (ต้องผ่านการเทรนมาก่อนถึงจะมี)
-    CHECKPOINT_PATH = "work_dirs/segformer_mit-b2/latest.pth" 
-    
-    # ภาพทดสอบ
-    IMAGE_PATH = "test_scam.jpg"
-    
-    if not os.path.exists(CONFIG_PATH):
-        print(f"ไม่พบไฟล์คอนฟิก: {CONFIG_PATH}")
-    elif not os.path.exists(CHECKPOINT_PATH):
-        print(f"ไม่พบไฟล์ Checkpoint: {CHECKPOINT_PATH} (รันเทรนโมเดลก่อน)")
-    else:
-        run_inference(IMAGE_PATH, CONFIG_PATH, CHECKPOINT_PATH, device='cpu')
+    main()
