@@ -64,11 +64,13 @@ test_dataloader = val_dataloader
 val_evaluator = dict(type='IoUMetric', iou_metrics=['mIoU'])
 test_evaluator = val_evaluator
 
+# ตั้งค่าให้โหลดน้ำหนักความรู้เดิมมาเทรนต่อ (เอา # ออกหากต้องการเทรนต่อจากโมเดลเดิม)
+# load_from = './work_dirs/segformer_mit-b2_scam_detection/latest.pth'
 # ==========================================
 # 7. Model Version
 # ==========================================
 # Versioning: ใช้ระบบ Tagging หรือ Semantic Versioning เพื่อแยกแยะรุ่นของโมเดล
-model_version = 'segformer_v1.0.0'
+model_version = 'segformer_v2.0.0'
 work_dir = f'./work_dirs/{model_version}'
 
 # Checkpoint: ไฟล์น้ำหนักของโมเดล (Weights)
@@ -84,6 +86,7 @@ default_hooks = dict(
 # ตั้งค่าให้ตรงกับ design/training.md
 optim_wrapper = dict(
     type='OptimWrapper',
+    accumulative_counts=2,  # [เพิ่มใหม่] Gradient Accumulation: 2 (รอบ) * batch_size (2) = เสมือนการใช้ batch_size 4 โดยไม่กินแรมการ์ดจอเพิ่ม
     # Fine-tuning: ปรับ Learning Rate ให้ต่ำลงกว่าปกติ (จากเดิม 0.00006 เหลือ 0.00001)
     optimizer=dict(type='AdamW', lr=0.00001, betas=(0.9, 0.999), weight_decay=0.01),
     paramwise_cfg=dict(

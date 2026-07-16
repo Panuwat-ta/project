@@ -54,7 +54,7 @@ if __name__ == '__main__':
     CHECKPOINT_PATH = "work_dirs/segformer_mit-b2/latest.pth" 
     
     # ภาพทดสอบ
-    IMAGE_PATH = "test_slip.jpg"
+    IMAGE_PATH = "test_scam.jpg"
     
     if not os.path.exists(CONFIG_PATH):
         print(f"ไม่พบไฟล์คอนฟิก: {CONFIG_PATH}")

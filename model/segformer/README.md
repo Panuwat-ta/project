@@ -42,7 +42,7 @@ Google Drive: [dataset](https://drive.google.com/file/d/1jxQS3HwH0DHHHaCtf_prKPj
 เราจะใช้ไฟล์ `configs/segformer_mit-b2.py` เป็นตัวคุมพฤติกรรมของ AI 
 มันถูกเขียนทับ (Override) ค่าพื้นฐานเพื่อ:
 1. เปลี่ยนคลาสให้รู้จักแค่ 2 ชนิด (ปกติ กับ ตัดต่อ) 
-2. ชี้ Path ของ Dataloader ไปที่โฟลเดอร์ `data/slip_dataset/` ที่เราเก็บรูปไว้
+2. ชี้ Path ของ Dataloader ไปที่โฟลเดอร์ `data/scam_dataset/` ที่เราเก็บรูปไว้
 
 ---
 
@@ -52,6 +52,9 @@ Google Drive: [dataset](https://drive.google.com/file/d/1jxQS3HwH0DHHHaCtf_prKPj
 
 ```bash
 python library/mmsegmentation/tools/train.py configs/segformer_mit-b2.py
+
+# การหยุดและกลับมาทำต่อ
+python library/mmsegmentation/tools/train.py configs/segformer_mit-b2.py --resume
 ```
 **ผลลัพธ์ที่ได้:** เมื่อรอจนกระบวนการเทรนเสร็จสิ้น ระบบจะสร้างไฟล์ `.pth ตัวใหม่` ของคุณเอง (ชื่อ `latest.pth`) ไว้ในโฟลเดอร์ `work_dirs/` 
 

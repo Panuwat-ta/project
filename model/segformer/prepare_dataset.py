@@ -6,7 +6,7 @@ import shutil
 import random
 
 def main():
-    base_dir = '/home/panuwat/project/model/segformer/data/slip_dataset'
+    base_dir = '/home/panuwat/project/model/segformer/data/dataset_CASIA2.0'
     casia_dir = os.path.join(base_dir, 'CASIA2.0_revised')
     
     au_dir = os.path.join(casia_dir, 'Au')
