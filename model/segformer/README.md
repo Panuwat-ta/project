@@ -78,7 +78,7 @@ python library/mmsegmentation/tools/train.py configs/segformer_mit-b2.py --resum
 python predict.py
 
 # หรือระบุไฟล์รูปภาพ, คอนฟิก, และโมเดลที่ต้องการ
-python predict.py --image "test_scam.jpg" --config "configs/segformer_mit-b2-v1.py" --checkpoint "work_dirs/segformer_v2.0.0/latest.pth" --output "result_heatmap.jpg"
+python predict.py --image "test_scam.jpg" --config "configs/segformer_mit-b2-v1.py" --checkpoint "work_dirs/segformer_v1.0.0/best_mIoU_iter_128000.pth" --output "result_heatmap.jpg"
 ```
 *หมายเหตุ: สคริปต์จะตรวจสอบ GPU ให้อัตโนมัติ หากไม่มีจะใช้ CPU แทน (สามารถบังคับใช้ CPU ได้โดยเติม `--device cpu`)*
 
