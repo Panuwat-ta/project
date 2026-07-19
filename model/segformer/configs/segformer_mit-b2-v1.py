@@ -1,80 +1,31 @@
-# ============================================================
-# SegFormer MiT-B2 - Forgery Localization Training Config
-# ============================================================
+_base_ = ['../library/mmsegmentation/configs/segformer/segformer_mit-b0_8xb2-160k_ade20k-512x512.py']
 
-_base_ = [
-    '../library/mmsegmentation/configs/segformer/'
-    'segformer_mit-b0_8xb2-160k_ade20k-512x512.py'
-]
+checkpoint = 'https://download.openmmlab.com/mmsegmentation/v0.5/pretrain/segformer/mit_b2_20220624-66e8bf70.pth'
 
-# ============================================================
-# Model Settings
-# ============================================================
-
-checkpoint = (
-    'https://download.openmmlab.com/mmsegmentation/v0.5/'
-    'pretrain/segformer/'
-    'mit_b2_20220624-66e8bf70.pth'
-)
-
+# ตั้งค่าโมเดลหลัก (Model Settings)
 model = dict(
     backbone=dict(
-        type='MixVisionTransformer',
-        init_cfg=dict(
-            type='Pretrained',
-            checkpoint=checkpoint
-        ),
+        init_cfg=dict(type='Pretrained', checkpoint=checkpoint),
         embed_dims=64,
         num_heads=[1, 2, 5, 8],
-        num_layers=[3, 4, 6, 3]
-    ),
-
+        num_layers=[3, 4, 6, 3]),
     decode_head=dict(
-        type='SegformerHead',
         in_channels=[64, 128, 320, 512],
-        channels=256,
-        num_classes=2,
-        ignore_index=255,
-
-        loss_decode=[
-            dict(
-                type='CrossEntropyLoss',
-                use_sigmoid=False,
-                loss_weight=1.0
-            ),
-            dict(
-                type='DiceLoss',
-                loss_weight=1.0,
-                ignore_index=255
-            )
-        ]
+        num_classes=2,  # เปลี่ยนเป็น 2 คลาส (0: พื้นหลัง, 1: รอยตัดต่อ)
+        ignore_index=255 # ละเว้นสีที่ไม่เกี่ยวข้อง
     )
 )
 
-# ============================================================
-# Dataset Settings
-# ============================================================
-
-dataset_type = 'BaseSegDataset'
-
-data_root = 'data/dataset_CASIA2.0/'
-
-metainfo = dict(
-    classes=('background', 'forgery'),
-    palette=[[0, 0, 0], [255, 0, 0]]
-)
-
-# ============================================================
-# Data Pipeline
-# ============================================================
+# ตั้งค่าชุดข้อมูล (Dataset Settings)
+dataset_type = 'BaseSegDataset' 
+data_root = 'data/dataset_CASIA2.0/' 
+metainfo = dict(classes=('background', 'forgery'), palette=[[0, 0, 0], [255, 0, 0]])
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='LoadAnnotations', reduce_zero_label=False),
-    dict(type='RandomResize', scale=(512, 512), ratio_range=(0.5, 2.0)),
-    dict(type='RandomCrop', crop_size=(512, 512)),
+    dict(type='Resize', scale=(512, 512), keep_ratio=False),
     dict(type='RandomFlip', prob=0.5),
-    dict(type='PhotoMetricDistortion'),
     dict(type='PackSegInputs')
 ]
 
@@ -85,141 +36,64 @@ test_pipeline = [
     dict(type='PackSegInputs')
 ]
 
-# ============================================================
-# Dataloader
-# ============================================================
-
 train_dataloader = dict(
-    batch_size=8,
-    num_workers=4,
-    persistent_workers=True,
-
+    batch_size=2, # สามารถเพิ่มได้ตาม VRAM
+    num_workers=2,
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
         metainfo=metainfo,
-
-        data_prefix=dict(
-            img_path='images/train',
-            seg_map_path='annotations/train'
-        ),
-
+        data_prefix=dict(img_path='images/train', seg_map_path='annotations/train'),
         pipeline=train_pipeline
     )
 )
 
 val_dataloader = dict(
-    batch_size=4,
-    num_workers=4,
-    persistent_workers=True,
-
+    batch_size=1,
+    num_workers=1,
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
         metainfo=metainfo,
-
-        data_prefix=dict(
-            img_path='images/val',
-            seg_map_path='annotations/val'
-        ),
-
+        data_prefix=dict(img_path='images/val', seg_map_path='annotations/val'),
         pipeline=test_pipeline
     )
 )
-
 test_dataloader = val_dataloader
 
-# ============================================================
-# Evaluation Metrics
-# ============================================================
-
-val_evaluator = dict(
-    type='IoUMetric',
-    iou_metrics=['mIoU', 'mDice']
-)
-
+val_evaluator = dict(type='IoUMetric', iou_metrics=['mIoU'])
 test_evaluator = val_evaluator
 
-# ============================================================
-# Fine-tuning / Incremental Learning
-# ============================================================
+# ==========================================
+# 7. Model Version
+# ==========================================
+# Versioning: ใช้ระบบ Tagging หรือ Semantic Versioning เพื่อแยกแยะรุ่นของโมเดล
+model_version = 'segformer_v1.0.0'
+work_dir = f'./work_dirs/{model_version}'
 
-# ใช้เมื่อ train ต่อจากโมเดลเดิม (เอาคอมเมนต์ออกแล้วแก้ไข path เมื่อต้องการใช้)
-# load_from = './work_dirs/segformer_forgery_v1.0.0/best_mIoU.pth'
-
-# ============================================================
-# Optimizer
-# ============================================================
-
-optim_wrapper = dict(
-    type='AmpOptimWrapper',
-    
-    # หากรันแล้วเจอ Error CUDA Out of Memory ให้ปรับ train_dataloader batch_size=4 
-    # และเปิดใช้งาน accumulative_counts=2 ด้านล่างนี้แทน
-    # accumulative_counts=2, 
-    
-    optimizer=dict(
-        type='AdamW',
-        lr=1e-5,
-        betas=(0.9, 0.999),
-        weight_decay=0.01
-    ),
-
-    paramwise_cfg=dict(
-        custom_keys={
-            # Backbone เรียนช้า ป้องกันลืม feature เดิม
-            'backbone': dict(lr_mult=0.1, decay_mult=1.0),
-            # Decoder เรียนเร็ว
-            'decode_head': dict(lr_mult=10.0)
-        }
-    )
-)
-
-# ============================================================
-# Scheduler
-# ============================================================
-
-param_scheduler = [
-    dict(
-        type='LinearLR',
-        start_factor=1e-6,
-        begin=0,
-        end=1500,
-        by_epoch=False
-    ),
-    dict(
-        type='PolyLR',
-        eta_min=0,
-        power=1.0,
-        begin=1500,
-        end=160000,
-        by_epoch=False
-    )
-]
-
-# ============================================================
-# Training Runtime
-# ============================================================
-
-train_cfg = dict(
-    type='IterBasedTrainLoop',
-    max_iters=160000,
-    val_interval=4000
-)
-
-# ============================================================
-# Checkpoint
-# ============================================================
-
-model_version = 'segformer_v2.0.0'
-work_dir = './work_dirs/' + model_version
-
+# Checkpoint: ไฟล์น้ำหนักของโมเดล (Weights)
 default_hooks = dict(
     checkpoint=dict(
-        type='CheckpointHook',
-        interval=4000,
-        save_best='mIoU',
-        rule='greater',
-        max_keep_ckpts=5
+        type='CheckpointHook', 
+        interval=4000,          # เซฟ Checkpoint ทุกๆ 4000 iterations
+        save_best='mIoU',       # บันทึกโมเดลที่ดีที่สุดอัตโนมัติตามค่า mIoU
+        max_keep_ckpts=5        # เก็บ Checkpoint ย้อนหลังไว้สูงสุด 5 ไฟล์
+    )
+)
+
+# ตั้งค่าให้ตรงกับ design/training.md
+optim_wrapper = dict(
+    type='OptimWrapper',
+    # Fine-tuning: ปรับ Learning Rate ให้ต่ำลงกว่าปกติ (จากเดิม 0.00006 เหลือ 0.00001)
+    optimizer=dict(type='AdamW', lr=0.00001, betas=(0.9, 0.999), weight_decay=0.01),
+    paramwise_cfg=dict(
+        custom_keys={
+            # Freeze Encoder: แช่แข็งน้ำหนัก Backbone (Mit Encoder) ไม่ให้อัปเดต
+            'backbone': dict(lr_mult=0.0, decay_mult=0.0), 
+            'pos_block': dict(decay_mult=0.0),
+            'norm': dict(decay_mult=0.0),
+            # ปล่อยให้สอนเฉพาะ Decode Head เท่านั้น (เร่งให้เรียนรู้เร็วขึ้น)
+            'head': dict(lr_mult=10.0) 
+        }
     )
 )

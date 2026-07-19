@@ -1,6 +1,6 @@
-# คู่มือฉบับละเอียด: การสร้างและใช้งานโมเดล SegFormer ตรวจจับสลิปปลอม
+# คู่มือฉบับละเอียด: การสร้างและใช้งานโมเดล SegFormer ตรวจจับภาพหลอกลวง (Scam Image Detection)
 
-พื้นที่นี้ (`model/segformer/`) คือหัวใจหลักของ **AI Inference Service** ในระบบหลังบ้าน (Backend) ของคุณ โดยทำหน้าที่รับรูปภาพสลิปมาวิเคราะห์และส่งแผนที่ความร้อน (Heatmap) ที่ระบุจุดตัดต่อกลับไปยัง Mobile App
+พื้นที่นี้ (`model/segformer/`) คือหัวใจหลักของ **AI Inference Service** ในระบบหลังบ้าน (Backend) ของคุณ โดยทำหน้าที่รับรูปภาพมาวิเคราะห์และส่งแผนที่ความร้อน (Heatmap) ที่ระบุจุดตัดต่อดัดแปลงกลับไปยัง Mobile App
 
 การทำงานจะแบ่งเป็น 4 ระยะ (Phases) ดังนี้:
 
@@ -29,11 +29,11 @@ pip install -r requirements-v1.txt
 ---
 
 ## 1: การเตรียมข้อมูลสอน AI (Dataset Preparation)
-AI จะไม่รู้ว่า "รอยตัดต่อ" คืออะไรจนกว่าเราจะสอนมัน คุณต้องสร้างชุดข้อมูล (Dataset) เลียนแบบของจริง โดยต้องมีภาพ 2 ประเภทคู่กันเสมอ:
-1. **ภาพสลิป (Images):** ภาพสลิปโอนเงินทั้งของจริงและของปลอม
-2. **ภาพหน้ากาก (Masks/Annotations):** ภาพขาวดำล้วนๆ ที่มีขนาดเท่ากับภาพสลิปเป๊ะๆ 
+AI จะไม่รู้ว่า "รอยตัดต่อ" คืออะไรจนกว่าเราจะสอนมัน คุณต้องสร้างชุดข้อมูล (Dataset) ตัวอย่าง โดยต้องมีภาพ 2 ประเภทคู่กันเสมอ:
+1. **ภาพต้นฉบับ (Images):** ภาพถ่ายปกติทั่วไปและภาพที่มีการตัดต่อหลอกลวง
+2. **ภาพหน้ากาก (Masks/Annotations):** ภาพขาวดำล้วนๆ ที่มีขนาดเท่ากับภาพต้นฉบับเป๊ะๆ 
    - **พิกเซลสีดำ (ค่า 0):** คือบริเวณที่ปกติ
-   - **พิกเซลสีขาว (ค่า 1):** คือบริเวณที่ถูกแก้ตัวเลข หรือตัดต่อ
+   - **พิกเซลสีขาว (ค่า 1):** คือบริเวณที่มีการดัดแปลงหรือตัดต่อ
 
 Google Drive: [dataset](https://drive.google.com/file/d/1jxQS3HwH0DHHHaCtf_prKPj6fMUpZ5jp/view?usp=sharing)
 
@@ -45,11 +45,12 @@ python prepare_dataset.py
 ---
 
 ## 2: การตั้งค่าคอนฟิก (Configuration)
-เราจะใช้ไฟล์คอนฟิกเป็นตัวคุมพฤติกรรมของ AI (เช่น `configs/segformer_mit-b2.py` หรือ `configs/segformer_mit-b2-v1.py`) 
+เราจะใช้ไฟล์คอนฟิกเป็นตัวคุมพฤติกรรมของ AI (เช่น `configs/segformer_mit-b2-v2.py`) 
 มันถูกเขียนทับ (Override) ค่าพื้นฐานเพื่อ:
 1. เปลี่ยนคลาสให้รู้จักแค่ 2 ชนิด (ปกติ กับ ตัดต่อ) 
-2. ชี้ Path ของ Dataloader ไปที่โฟลเดอร์ชุดข้อมูลที่เราเตรียมไว้ (เช่น `data/dataset_CASIA2.0/` หรือ `data/scam_dataset/`)
-3. ในเวอร์ชัน v1 มีการปรับค่า Learning Rate และปิดการอัปเดตโมเดลส่วน Backbone เพื่อทำ Fine-tuning เฉพาะส่วน Head
+2. ชี้ Path ของ Dataloader ไปที่โฟลเดอร์ชุดข้อมูลที่เราเตรียมไว้ (เช่น `data/dataset_CASIA2.0/`)
+3. ในบางเวอร์ชันมีการปรับค่า Learning Rate แยกส่วน (Parameter-wise Fine-tuning) เพื่อให้ปรับตัวเข้ากับโดเมนใหม่ได้ดีขึ้น
+4. **Automated Version Increment**: ในเวอร์ชัน v2 มีสคริปต์ตรวจจับโฟลเดอร์เวอร์ชันใน `work_dirs/` และบวกเลขเวอร์ชันใหม่โดยอัตโนมัติ ทำให้การรันแต่ละรอบไม่เกิดการเขียนทับผลลัพธ์เก่า
 
 ---
 
@@ -58,14 +59,13 @@ python prepare_dataset.py
 เปิด Terminal ตรวจสอบว่าอยู่ในโฟลเดอร์ `model/segformer/` แล้วรันคำสั่ง:
 
 ```bash
-python library/mmsegmentation/tools/train.py configs/segformer_mit-b2.py
-# หรือหากใช้คอนฟิกเวอร์ชัน v1
-python library/mmsegmentation/tools/train.py configs/segformer_mit-b2-v1.py
+# เทรนด้วยคอนฟิก v2 (รองรับการบวกเวอร์ชันอัตโนมัติ)
+python library/mmsegmentation/tools/train.py configs/segformer_mit-b2-v2.py
 
 # การหยุดและกลับมาทำต่อ
-python library/mmsegmentation/tools/train.py configs/segformer_mit-b2.py --resume
+python library/mmsegmentation/tools/train.py configs/segformer_mit-b2-v2.py --resume
 ```
-**ผลลัพธ์ที่ได้:** เมื่อรอจนกระบวนการเทรนเสร็จสิ้น ระบบจะสร้างไฟล์ `.pth ตัวใหม่` ของคุณเอง (ชื่อ `latest.pth` หรือตามเวอร์ชันที่กำหนด) ไว้ในโฟลเดอร์ `work_dirs/` 
+**ผลลัพธ์ที่ได้:** เมื่อกระบวนการเสร็จสิ้น ระบบจะสร้างไฟล์ `.pth` ภายในโฟลเดอร์เวอร์ชันใหม่ (เช่น `work_dirs/v1.0.0/`) พร้อมผลการประเมิน
 
 ---
 
