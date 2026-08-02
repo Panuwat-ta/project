@@ -44,7 +44,7 @@
 * **Post Processing**: การแปลงผลลัพธ์ดิบจาก Tensor กลับเป็นไฟล์รูปภาพ (เช่น PNG) การกรองสัญญาณรบกวน (Noise) ออก และรวมผลคะแนน (Risk Score)
 
 ## 7. Model Version
-* **Versioning**: ใช้ระบบ Tagging หรือ Semantic Versioning (เช่น `v1.2.0-segformer`) เพื่อแยกแยะรุ่นของโมเดล
+* **Versioning**: ใช้ระบบ Tagging หรือ Semantic Versioning (เช่น `segformer_v1.0.0`) เพื่อแยกแยะรุ่นของโมเดล
 * **Checkpoint**: ไฟล์น้ำหนักของโมเดล (Weights)
 * **ONNX**: การแปลงโมเดลให้อยู่ในฟอร์แมตมาตรฐาน ONNX (Open Neural Network Exchange) เพื่อทำ Inference ให้รวดเร็วและเป็นอิสระจาก Framework ตอนฝึกสอน
 * **Model Registry**: แหล่งเก็บข้อมูลโมเดลเวอร์ชันต่างๆ ที่พร้อมใช้งาน (Production-ready)
