@@ -1,57 +1,80 @@
 <!doctype html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Error Level Analysis (ELA) - ScamGuard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
   <link rel="stylesheet" href="../shared-theme.css">
-  
 </head>
+
 <body>
   <main class="document">
-    <h1 id="error-level-analysis-ela">Error Level Analysis (ELA)</h1>
-<p class="lede">เทคนิคนิติวิทยาศาสตร์ภาพถ่ายที่ตรวจจับบริเวณที่ถูกดัดแปลงโดยอาศัยความไม่สม่ำเสมอของ JPEG Compression Artifact</p>
-<div class="divider"></div>
-<h2 id="ela">หลักการทำงานของ ELA</h2>
-<p>ภาพ JPEG ใช้การบีบอัดแบบ Lossy ทุกครั้งที่บันทึก artifact ของการบีบอัดจะสะสมเพิ่มขึ้น สิ่งสำคัญคือ ทุกส่วนของภาพ JPEG ที่ <strong>ไม่ถูกแก้ไข</strong> จะเสื่อมสภาพในอัตราเดียวกันเมื่อบันทึกซ้ำ</p>
-<p>เมื่อภาพ <strong>ถูกดัดแปลง</strong> (เช่น วางตัวเลขใหม่ทับสลิป หรือเปลี่ยนใบหน้า) บริเวณที่แก้ไขถูกบันทึกด้วย compression level ที่แตกต่างจากส่วนอื่น การ Re-save ภาพที่ถูกดัดแปลงด้วย quality level ที่กำหนดจะเผยให้เห็นความไม่สอดคล้องนี้</p>
-<p><strong>ขั้นตอน:</strong>
-1. Re-save ภาพด้วย JPEG quality ที่กำหนด (เช่น 95%)
-2. คำนวณ Pixel-wise Difference ระหว่างภาพต้นฉบับกับภาพที่ Re-save แล้ว
-3. ขยายค่า Difference เพื่อให้มองเห็นชัดขึ้น
-4. บริเวณที่เปลี่ยนแปลงมาก = น่าจะถูกดัดแปลง</p>
-<div class="divider"></div>
-<h2 id="ela_1">ประเภทการปลอมแปลงที่ ELA ตรวจจับได้</h2>
-<dl class="facts"><div><dt>Splicing</dt><dd>นำบริเวณจากรูปอื่นมาวาง</dd></div><div><dt>Copy-Move</dt><dd>คัดลอกบริเวณในรูปเดิมแล้วย้ายไปที่อื่น</dd></div><div><dt>Retouching</dt><dd>แก้ไขพิกเซลเฉพาะจุด (เช่น เปลี่ยนตัวเลขบนสลิป)</dd></div></dl>
-<div class="divider"></div>
-<h2 id="ela_2">ELA ในระบบนี้</h2>
-<p>ELA คือสัญญาณหลักที่ใช้โดย [[architecture/ai-inference-service|AI Inference Service]] โมเดล [[concepts/ai-model-segformer]] ถูก Train ให้จดจำรูปแบบ ELA และสร้าง Segmentation Mask ระดับพิกเซล</p>
-<p>กระบวนการ:
-1. API ส่งภาพไปยัง AI Inference Service
-2. AI Inference Service ทำ ELA Preprocessing (Re-save + คำนวณ Difference Map)
-3. ผลลัพธ์ ELA (Difference Map) ถูกส่งเข้าโมเดล SegFormer
-4. SegFormer สร้าง Segmentation Mask
-5. Mask ถูกแปลงเป็น [[concepts/explainable-ai|Grad-CAM Heatmap]] สำหรับผู้ใช้</p>
-<div class="divider"></div>
-<h2 id="_1">ข้อจำกัด</h2>
-<ul>
-<li><strong>การ Re-compress หลายครั้ง</strong> — ถ้าภาพถูก compress ซ้ำหลายรอบ (เช่น ส่งต่อผ่านแอปแชท) สัญญาณ ELA เสื่อมลงและอาจให้ False Negative</li>
-<li><strong>PNG และ Lossless Format</strong> — ELA ได้ผลดีที่สุดกับภาพ JPEG รูปแบบ Lossless ไม่มี Compression Artifact แบบเดียวกัน</li>
-<li><strong>ภาพ AI-Generated ทั้งหมด</strong> — ไม่ได้ "ถูกตัดต่อ" ในแบบดั้งเดิม ELA เพียงอย่างเดียวจึงตรวจจับไม่ได้ ต้องใช้โมเดล AI-Gen Detection แยกต่างหาก</li>
-</ul>
-<div class="divider"></div>
-<h2 id="_2">ประเด็นสำคัญ</h2>
-<ul>
-<li>ELA ใช้ฟิสิกส์ของการ JPEG Compression เพื่อทำให้การแก้ไขพิกเซลมองเห็นได้</li>
-<li>เป็นขั้นตอน Preprocessing ที่ป้อนให้กับโมเดล SegFormer ไม่ใช่ตัวตรวจจับอิสระ</li>
-<li>ได้ผลดีกับประเภทภาพหลอกลวงที่พบบ่อยที่สุด: สลิปที่ถูกแก้ไขตัวเลข, ใบเสร็จปลอม, รูปโปรไฟล์ที่เปลี่ยนใบหน้า</li>
-<li>เสื่อมประสิทธิภาพบนภาพที่ถูก Re-compress มาก — ปัญหาที่รับรู้ในระบบตรวจจับ ELA ทุกระบบ</li>
-</ul>
-<div class="divider"></div>
+    <h1>Error Level Analysis (ELA)</h1>
+        <p class="lede">เทคนิคนิติวิทยาศาสตร์ภาพถ่ายที่ตรวจจับบริเวณที่ถูกดัดแปลงโดยอาศัยความไม่สม่ำเสมอของ JPEG Compression Artifact</p>
+    <div class="divider"></div>
+    <h2>หลักการทำงานของ ELA</h2>
+    <p>ภาพ JPEG ใช้การบีบอัดแบบ Lossy ทุกครั้งที่บันทึก artifact ของการบีบอัดจะสะสมเพิ่มขึ้น สิ่งสำคัญคือ ทุกส่วนของภาพ JPEG ที่ <strong>ไม่ถูกแก้ไข</strong> จะเสื่อมสภาพในอัตราเดียวกันเมื่อบันทึกซ้ำ</p>
+    <p>เมื่อภาพ <strong>ถูกดัดแปลง</strong> (เช่น วางตัวเลขใหม่ทับสลิป หรือเปลี่ยนใบหน้า) บริเวณที่แก้ไขถูกบันทึกด้วย compression level ที่แตกต่างจากส่วนอื่น การ Re-save ภาพที่ถูกดัดแปลงด้วย quality level ที่กำหนดจะเผยให้เห็นความไม่สอดคล้องนี้</p>
+    <p><strong>ขั้นตอน:</strong>
+    1. Re-save ภาพด้วย JPEG quality ที่กำหนด (เช่น 95%)
+    2. คำนวณ Pixel-wise Difference ระหว่างภาพต้นฉบับกับภาพที่ Re-save แล้ว
+    3. ขยายค่า Difference เพื่อให้มองเห็นชัดขึ้น
+    4. บริเวณที่เปลี่ยนแปลงมาก = น่าจะถูกดัดแปลง</p>
+    <div class="divider"></div>
+    <h2>ประเภทการปลอมแปลงที่ ELA ตรวจจับได้</h2>
+    <table>
+    <thead>
+    <tr>
+    <th style="text-align: left;">ประเภทการปลอมแปลง</th>
+    <th style="text-align: left;">คำอธิบาย</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td style="text-align: left;">Splicing</td>
+    <td style="text-align: left;">นำบริเวณจากรูปอื่นมาวาง</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Copy-Move</td>
+    <td style="text-align: left;">คัดลอกบริเวณในรูปเดิมแล้วย้ายไปที่อื่น</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Retouching</td>
+    <td style="text-align: left;">แก้ไขพิกเซลเฉพาะจุด (เช่น เปลี่ยนตัวเลขบนสลิป)</td>
+    </tr>
+    </tbody>
+    </table>
+    <div class="divider"></div>
+    <h2>ELA ในระบบนี้</h2>
+    <p>ELA คือสัญญาณหลักที่ใช้โดย  โมเดล  ถูก Train ให้จดจำรูปแบบ ELA และสร้าง Segmentation Mask ระดับพิกเซล</p>
+    <p>กระบวนการ:
+    1. API ส่งภาพไปยัง AI Inference Service
+    2. AI Inference Service ทำ ELA Preprocessing (Re-save + คำนวณ Difference Map)
+    3. ผลลัพธ์ ELA (Difference Map) ถูกส่งเข้าโมเดล SegFormer
+    4. SegFormer สร้าง Segmentation Mask
+    5. Mask ถูกแปลงเป็น  สำหรับผู้ใช้</p>
+    <div class="divider"></div>
+    <h2>ข้อจำกัด</h2>
+    <ul>
+    <li><strong>การ Re-compress หลายครั้ง</strong> — ถ้าภาพถูก compress ซ้ำหลายรอบ (เช่น ส่งต่อผ่านแอปแชท) สัญญาณ ELA เสื่อมลงและอาจให้ False Negative</li>
+    <li><strong>PNG และ Lossless Format</strong> — ELA ได้ผลดีที่สุดกับภาพ JPEG รูปแบบ Lossless ไม่มี Compression Artifact แบบเดียวกัน</li>
+    <li><strong>ภาพ AI-Generated ทั้งหมด</strong> — ไม่ได้ "ถูกตัดต่อ" ในแบบดั้งเดิม ELA เพียงอย่างเดียวจึงตรวจจับไม่ได้ ต้องใช้โมเดล AI-Gen Detection แยกต่างหาก</li>
+    </ul>
+    <div class="divider"></div>
+    <h2>ประเด็นสำคัญ</h2>
+    <ul>
+    <li>ELA ใช้ฟิสิกส์ของการ JPEG Compression เพื่อทำให้การแก้ไขพิกเซลมองเห็นได้</li>
+    <li>เป็นขั้นตอน Preprocessing ที่ป้อนให้กับโมเดล SegFormer ไม่ใช่ตัวตรวจจับอิสระ</li>
+    <li>ได้ผลดีกับประเภทภาพหลอกลวงที่พบบ่อยที่สุด: สลิปที่ถูกแก้ไขตัวเลข, ใบเสร็จปลอม, รูปโปรไฟล์ที่เปลี่ยนใบหน้า</li>
+    <li>เสื่อมประสิทธิภาพบนภาพที่ถูก Re-compress มาก — ปัญหาที่รับรู้ในระบบตรวจจับ ELA ทุกระบบ</li>
+    </ul>
   </main>
-  
+
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
@@ -60,7 +83,7 @@
   <script>
     mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
   </script>
-  
+
   <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -68,7 +91,7 @@
         const btn = document.createElement('button');
         btn.className = 'btn-expand-mermaid';
         btn.innerHTML = '🔍 Fullscreen';
-        
+
         btn.onclick = () => {
           const originalSvg = container.querySelector('svg');
           if (!originalSvg) return;
@@ -84,7 +107,7 @@
           overlay.style.display = 'flex';
           overlay.style.alignItems = 'center';
           overlay.style.justifyContent = 'center';
-          
+
           const closeBtn = document.createElement('button');
           closeBtn.innerHTML = '✖ Close';
           closeBtn.style.position = 'absolute';
@@ -100,7 +123,7 @@
           closeBtn.style.borderRadius = '8px';
           closeBtn.style.zIndex = '1000000';
           closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
-          
+
           closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
           closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
 
@@ -109,7 +132,7 @@
           clonedSvg.style.height = '100%';
           clonedSvg.style.maxWidth = '100vw';
           clonedSvg.style.maxHeight = '100vh';
-          
+
           overlay.appendChild(clonedSvg);
           overlay.appendChild(closeBtn);
           document.body.appendChild(overlay);
@@ -137,6 +160,5 @@
       });
     });
   </script>
-
 </body>
 </html>

@@ -46,8 +46,6 @@ body {
     color: var(--text-main);
     font-family: 'Sarabun', sans-serif;
     background-color: var(--paper);
-    background-image: radial-gradient(circle at 1px 1px, oklch(0.47 0.06 271 / 0.13) 1px, transparent 0);
-    background-size: 18px 18px;
 }
 
 .document {
@@ -116,7 +114,10 @@ body {
 
 dt {
     color: var(--text-muted);
-    font: 500 .75rem/1.4 'IBM Plex Mono', monospace;
+    font-family: 'IBM Plex Mono', 'Sarabun', monospace;
+    font-weight: 500;
+    font-size: .75rem;
+    line-height: 1.4;
     letter-spacing: .08em;
     text-transform: uppercase;
 }

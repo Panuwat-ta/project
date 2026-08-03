@@ -1,59 +1,61 @@
 <!doctype html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ผู้ใช้ระบบ (Actors) - ScamGuard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
   <link rel="stylesheet" href="../shared-theme.css">
-  
 </head>
+
 <body>
   <main class="document">
-    <h1 id="actors">ผู้ใช้ระบบ (Actors)</h1>
-<p class="lede">บุคคลและบทบาทที่มีชื่อซึ่งใช้งานระบบ Scam Image Detection</p>
-<div class="divider"></div>
-<h2 id="general-user">ผู้ใช้ทั่วไป (General User)</h2>
-<p><strong>ผู้คือ:</strong> ประชาชนทั่วไปที่ต้องการตรวจสอบว่ารูปภาพน่าจะถูกตัดต่อหรือใช้ในการหลอกลวงหรือไม่</p>
-<p><strong>ส่วนติดต่อผู้ใช้ (Interface):</strong> Flutter Mobile App (Android)</p>
-<p><strong>Use Cases ทั่วไป:</strong>
-- ได้รับสลิปโอนเงินที่น่าสงสัยและต้องการตรวจสอบ
-- กำลังจะเชื่อใจรูปโปรไฟล์จากคนแปลกหน้าบนโลกออนไลน์
-- พบรูปภาพโปรโมทที่น่าสงสัยซึ่งรับประกันผลตอบแทนสูง
-- ต้องการตรวจสอบรูปภาพก่อนแชร์ต่อ</p>
-<p><strong>สิ่งที่ทำได้:</strong>
-- สมัครสมาชิกและเข้าสู่ระบบ (Email/Password หรือ Google OAuth)
-- อัปโหลดหรือถ่ายรูปเพื่อตรวจสอบ
-- ตัดภาพ (Crop) ก่อนส่งเพื่อโฟกัสบริเวณใดบริเวณหนึ่ง
-- ดู Risk Score และ Grad-CAM Heatmap overlay
-- ดูประวัติการสแกน
-- ส่งรายงานแจ้งว่ารูปนี้เป็น Scam ที่ยืนยันแล้ว
-- จัดการตั้งค่ายินยอม PDPA (รวมถึงถอนยินยอมการวิจัย)</p>
-<p><strong>สิ่งที่ทำไม่ได้:</strong>
-- เข้าถึง Admin Dashboard หรือเครื่องมือจัดการโมเดล
-- ดูการสแกนของผู้ใช้อื่น
-- อนุมัติหรือปฏิเสธ Scam Report</p>
-<div class="divider"></div>
-<h2 id="admin-researcher">แอดมิน / นักวิจัย (Admin / Researcher)</h2>
-<p><strong>ผู้คือ:</strong> เจ้าหน้าที่ภายใน, นักวิจัย AI หรือทีมสนับสนุนของโปรเจค</p>
-<p><strong>ส่วนติดต่อผู้ใช้ (Interface):</strong> React.js Admin Web Portal</p>
-<p><strong>สิ่งที่ทำได้:</strong>
-- ดูสถิติทั้งระบบ: จำนวนสแกนรวม, Accuracy Metrics, ปริมาณ Traffic
-- ตรวจสอบคิว Scam Report จากผู้ใช้ และทำเครื่องหมายยืนยันหรือเพิกเฉย
-- นำรูป Scam ที่ยืนยันแล้วไปสร้างและคัดกรอง Training Dataset
-- อัปโหลด Model Weight ไฟล์ใหม่และสั่ง Deploy โมเดล
-- จัดการบัญชีผู้ใช้ (CRUD ตามที่สิทธิ์ RBAC อนุญาต)</p>
-<p><strong>หมายเหตุเรื่อง RBAC:</strong> สิทธิ์ Admin บังคับใช้ที่ระดับ API ผ่าน JWT Claims ถึงจะมีคนเข้าถึง URL ของ Admin Portal ได้ แต่ API Endpoint สำหรับ Admin จะปฏิเสธ Token ของผู้ใช้ทั่วไปทั้งหมด</p>
-<div class="divider"></div>
-<h2 id="automated-actor">ระบบ (Automated Actor)</h2>
-<p>ไม่ใช่คน แต่เป็น Actor ที่ควรบันทึกไว้:
-- <strong>Redis Cache</strong> — ส่งคืนผลลัพธ์จาก Cache อัตโนมัติ โดยไม่มีคนเข้ามาเกี่ยวข้อง
-- <strong>FCM</strong> — ส่ง Push Notification อัตโนมัติเมื่องานสแกนเสร็จสิ้น
-- <strong>Scheduled Model Retraining</strong> — ระบบอัตโนมัติที่วางแผนไว้ในอนาคต เมื่อมี Scam Report ที่ยืนยันแล้ว ระบบจะกระตุ้นให้เทรนโมเดลใหม่แบบ Incremental</p>
-<div class="divider"></div>
+    <h1>ผู้ใช้ระบบ (Actors)</h1>
+        <p class="lede">บุคคลและบทบาทที่มีชื่อซึ่งใช้งานระบบ Scam Image Detection</p>
+    <div class="divider"></div>
+    <h2>ผู้ใช้ทั่วไป (General User)</h2>
+    <p><strong>ผู้คือ:</strong> ประชาชนทั่วไปที่ต้องการตรวจสอบว่ารูปภาพน่าจะถูกตัดต่อหรือใช้ในการหลอกลวงหรือไม่</p>
+    <p><strong>ส่วนติดต่อผู้ใช้ (Interface):</strong> Flutter Mobile App (Android)</p>
+    <p><strong>Use Cases ทั่วไป:</strong>
+    - ได้รับสลิปโอนเงินที่น่าสงสัยและต้องการตรวจสอบ
+    - กำลังจะเชื่อใจรูปโปรไฟล์จากคนแปลกหน้าบนโลกออนไลน์
+    - พบรูปภาพโปรโมทที่น่าสงสัยซึ่งรับประกันผลตอบแทนสูง
+    - ต้องการตรวจสอบรูปภาพก่อนแชร์ต่อ</p>
+    <p><strong>สิ่งที่ทำได้:</strong>
+    - สมัครสมาชิกและเข้าสู่ระบบ (Email/Password หรือ Google OAuth)
+    - อัปโหลดหรือถ่ายรูปเพื่อตรวจสอบ
+    - ตัดภาพ (Crop) ก่อนส่งเพื่อโฟกัสบริเวณใดบริเวณหนึ่ง
+    - ดู Risk Score และ Grad-CAM Heatmap overlay
+    - ดูประวัติการสแกน
+    - ส่งรายงานแจ้งว่ารูปนี้เป็น Scam ที่ยืนยันแล้ว
+    - จัดการตั้งค่ายินยอม PDPA (รวมถึงถอนยินยอมการวิจัย)</p>
+    <p><strong>สิ่งที่ทำไม่ได้:</strong>
+    - เข้าถึง Admin Dashboard หรือเครื่องมือจัดการโมเดล
+    - ดูการสแกนของผู้ใช้อื่น
+    - อนุมัติหรือปฏิเสธ Scam Report</p>
+    <div class="divider"></div>
+    <h2>แอดมิน / นักวิจัย (Admin / Researcher)</h2>
+    <p><strong>ผู้คือ:</strong> เจ้าหน้าที่ภายใน, นักวิจัย AI หรือทีมสนับสนุนของโปรเจค</p>
+    <p><strong>ส่วนติดต่อผู้ใช้ (Interface):</strong> React.js Admin Web Portal</p>
+    <p><strong>สิ่งที่ทำได้:</strong>
+    - ดูสถิติทั้งระบบ: จำนวนสแกนรวม, Accuracy Metrics, ปริมาณ Traffic
+    - ตรวจสอบคิว Scam Report จากผู้ใช้ และทำเครื่องหมายยืนยันหรือเพิกเฉย
+    - นำรูป Scam ที่ยืนยันแล้วไปสร้างและคัดกรอง Training Dataset
+    - อัปโหลด Model Weight ไฟล์ใหม่และสั่ง Deploy โมเดล
+    - จัดการบัญชีผู้ใช้ (CRUD ตามที่สิทธิ์ RBAC อนุญาต)</p>
+    <p><strong>หมายเหตุเรื่อง RBAC:</strong> สิทธิ์ Admin บังคับใช้ที่ระดับ API ผ่าน JWT Claims ถึงจะมีคนเข้าถึง URL ของ Admin Portal ได้ แต่ API Endpoint สำหรับ Admin จะปฏิเสธ Token ของผู้ใช้ทั่วไปทั้งหมด</p>
+    <div class="divider"></div>
+    <h2>ระบบ (Automated Actor)</h2>
+    <p>ไม่ใช่คน แต่เป็น Actor ที่ควรบันทึกไว้:
+    - <strong>Redis Cache</strong> — ส่งคืนผลลัพธ์จาก Cache อัตโนมัติ โดยไม่มีคนเข้ามาเกี่ยวข้อง
+    - <strong>FCM</strong> — ส่ง Push Notification อัตโนมัติเมื่องานสแกนเสร็จสิ้น
+    - <strong>Scheduled Model Retraining</strong> — ระบบอัตโนมัติที่วางแผนไว้ในอนาคต เมื่อมี Scam Report ที่ยืนยันแล้ว ระบบจะกระตุ้นให้เทรนโมเดลใหม่แบบ Incremental</p>
   </main>
-  
+
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
@@ -62,7 +64,7 @@
   <script>
     mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
   </script>
-  
+
   <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -70,7 +72,7 @@
         const btn = document.createElement('button');
         btn.className = 'btn-expand-mermaid';
         btn.innerHTML = '🔍 Fullscreen';
-        
+
         btn.onclick = () => {
           const originalSvg = container.querySelector('svg');
           if (!originalSvg) return;
@@ -86,7 +88,7 @@
           overlay.style.display = 'flex';
           overlay.style.alignItems = 'center';
           overlay.style.justifyContent = 'center';
-          
+
           const closeBtn = document.createElement('button');
           closeBtn.innerHTML = '✖ Close';
           closeBtn.style.position = 'absolute';
@@ -102,7 +104,7 @@
           closeBtn.style.borderRadius = '8px';
           closeBtn.style.zIndex = '1000000';
           closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
-          
+
           closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
           closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
 
@@ -111,7 +113,7 @@
           clonedSvg.style.height = '100%';
           clonedSvg.style.maxWidth = '100vw';
           clonedSvg.style.maxHeight = '100vh';
-          
+
           overlay.appendChild(clonedSvg);
           overlay.appendChild(closeBtn);
           document.body.appendChild(overlay);
@@ -139,6 +141,5 @@
       });
     });
   </script>
-
 </body>
 </html>

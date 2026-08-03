@@ -1,82 +1,225 @@
 <!doctype html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ขอบเขตโครงการ (Project Scope) - ScamGuard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
   <link rel="stylesheet" href="../shared-theme.css">
-  
 </head>
+
 <body>
   <main class="document">
-    <h1 id="project-scope">ขอบเขตโครงการ (Project Scope)</h1>
-<p class="lede">กำหนดสิ่งที่จะพัฒนา กรอบการทำงานของ 4 Containers หลัก และการแบ่งกลุ่มงานสำหรับสมาชิกทีม</p>
-<div class="divider"></div>
-<h2 id="system-overview">ภาพรวมระบบ (System Overview)</h2>
-<p>โครงการนี้ถูกแบ่งการพัฒนาออกเป็น <strong>4 Development Containers</strong> บวกกับ <strong>1 Integration Layer</strong>:</p>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">Container</th>
-<th style="text-align: left;">เทคโนโลยีหลัก</th>
-<th style="text-align: left;">ความรับผิดชอบหลัก (Lead)</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">Mobile App</td>
-<td style="text-align: left;">Flutter</td>
-<td style="text-align: left;">ภานุวัฒน์ + เอกพันธ์</td>
-</tr>
-<tr>
-<td style="text-align: left;">API Backend</td>
-<td style="text-align: left;">Python FastAPI</td>
-<td style="text-align: left;">ภานุวัฒน์</td>
-</tr>
-<tr>
-<td style="text-align: left;">AI Inference Engine</td>
-<td style="text-align: left;">PyTorch / ONNX</td>
-<td style="text-align: left;">ภานุวัฒน์</td>
-</tr>
-<tr>
-<td style="text-align: left;">Admin Portal</td>
-<td style="text-align: left;">React.js</td>
-<td style="text-align: left;">ภานุวัฒน์</td>
-</tr>
-<tr>
-<td style="text-align: left;">External Integrations</td>
-<td style="text-align: left;">Google Vision, FCM</td>
-<td style="text-align: left;">ภานุวัฒน์ (ออกแบบ)</td>
-</tr>
-</tbody>
-</table>
-<div class="divider"></div>
-<h2 id="mobile-app">กลุ่มงาน Mobile App</h2>
-<dl class="facts"><div><dt>Authentication</dt><dd>สมัครและล็อกอินด้วยอีเมล/รหัสผ่าน, Google OAuth, และระบบ Secure Storage</dd></div><div><dt>Image Input</dt><dd>ส่วนการเลือกรูปภาพ, การถ่ายภาพ, และโหมด Crop ตัดรูปภาพก่อนส่งให้ระบบ</dd></div><div><dt>Risk Visualization</dt><dd>ส่วนแสดงผล Risk Score (เกจสี เขียว/เหลือง/แดง), ภาพ Grad-CAM ทับซ้อน, พร้อมรายละเอียดผลสแกน</dd></div><div><dt>History &amp; PDPA</dt><dd>แสดงหน้าต่างประวัติการตรวจสอบย้อนหลัง, หน้าต่างยอมรับข้อตกลง PDPA และการยกเลิกอนุญาตข้อมูล</dd></div><div><dt>Scam Report</dt><dd>แบบฟอร์มกดแจ้งเตือนภาพ Scam ให้ตรวจสอบเพิ่มเติม พร้อมคุณสมบัติ Share ข้อมูล</dd></div></dl>
-<div class="divider"></div>
-<h2 id="api-backend">กลุ่มงาน API Backend</h2>
-<dl class="facts"><div><dt>API Gateway</dt><dd>โครงสร้าง FastAPI พื้นฐาน, Routing, กฎ CORS, และตรวจสอบ JWT Middleware</dd></div><div><dt>Metadata / EXIF</dt><dd>โค้ดดึงรายละเอียดจากไฟล์ EXIF Metadata ของภาพที่อัปโหลด</dd></div><div><dt>OCR + NLP</dt><dd>บริหารและเชื่อมต่อ Surya-OCR สำหรับข้อความ (ไทย/อังกฤษ) และ NLP วิเคราะห์คีย์เวิร์ด</dd></div><div><dt>Redis Cache Logic</dt><dd>ค้นหารหัสรูป (Image Hash) และตัดสินใจดึงจาก Cache (Hit/Miss Routing)</dd></div><div><dt>PostgreSQL Schema</dt><dd>ดูแลโครงสร้างระบบตาราง: ผู้ใช้, รายงานสแกน, ระบบส่งรีพอร์ต และ Audit Log พร้อมทำระบบ Alembic Migrations</dd></div></dl>
-<div class="divider"></div>
-<h2 id="ai-engine">กลุ่มงาน AI Engine</h2>
-<dl class="facts"><div><dt>ELA</dt><dd>พัฒนาระบบ Preprocessing ตัดภาพ ELA (Error Level Analysis) ออกมา</dd></div><div><dt>GenAI Detection</dt><dd>พัฒนาและเชื่อมต่อระบบจำแนกและคัดกรองรูปภาพที่มาจากคำสั่ง AI อัตโนมัติ</dd></div><div><dt>PyTorch to ONNX</dt><dd>ขั้นตอนส่งออกตัว Model ให้อยู่ในมาตรฐานเปิด ONNX สำหรับการโหลดเข้าระบบในตอนรันจริง (Inference)</dd></div><div><dt>Grad-CAM</dt><dd>แปลงผลลัพธ์จาก Segmentation Mask เพื่อผลิตภาพ Heatmap คาดทับในขั้นสุดท้าย</dd></div></dl>
-<div class="divider"></div>
-<h2 id="admin-portal">กลุ่มงาน Admin Portal</h2>
-<dl class="facts"><div><dt>RBAC + Dashboard</dt><dd>ตรวจสอบ Role ของ Admin แดชบอร์ดสรุปผลภาพรวม</dd></div><div><dt>User Management</dt><dd>โค้ดที่ต้องบริหารข้อมูล (CRUD) ผู้ใช้งานในระบบต่างๆ</dd></div><div><dt>Scam Report Queue</dt><dd>ลำดับการอนุมัติ (Approve) หรือปฏิเสธ (Dismiss) เมื่อได้รับ Scam Report</dd></div><div><dt>Model Update Console</dt><dd>หน้าต่างสำหรับกดปุ่มรันเพื่อเปลี่ยนน้ำหนัก Model ไฟล์ตัวใหม่เข้าสู่ระบบ</dd></div></dl>
-<div class="divider"></div>
-<h2 id="out-of-scope-v1">สิ่งที่อยู่นอกเหนือโครงการในเวลานี้ (Out of Scope v1)</h2>
-<dl class="facts"><div><dt>ระบบ iOS (iOS Support)</dt><dd>เก็บไว้ทำในอนาคต (ณ ตอนนี้รองรับเฉพาะ Android)</dd></div><div><dt>วิเคราะห์วิดีโอ (Video Analysis)</dt><dd>เก็บไว้ทำในอนาคต โดยการใช้ Keyframe Extraction</dd></div><div><dt>บนมือถือล้วนๆ (On-device Inference)</dt><dd>เก็บไว้ทำในอนาคต — ต้องผ่านกระบวนการทำ Model Quantization (INT8/FP16) เป็นหลักเสียก่อน</dd></div><div><dt>การแชร์และตัดสินใจรีวิวแบบ Real-time</dt><dd>ไม่ได้ระบุไว้ในแผน (Not Planned)</dd></div><div><dt>ระบบของ Google SynthID</dt><dd>ระบุไว้ว่าน่าสนใจแต่ยังไม่มีกระบวนการดีไซน์ในเวลาปัจจุบัน</dd></div><div><dt>บริการ Google Gemini LLM</dt><dd>ระบุไว้ว่าน่าสนใจแต่ยังไม่มีกระบวนการดีไซน์ในเวลาปัจจุบัน</dd></div></dl>
-<div class="divider"></div>
-<h2 id="key-points">ประเด็นสำคัญ (Key Points)</h2>
-<ul>
-<li>ภาระงานมีขนาดกว้างมากสำหรับนักศึกษาทำร่วมกัน 2 คน โดย ภานุวัฒน์ แบกรับหน้าที่รับผิดชอบเกือบ 70% ในหลาย Containers พร้อมกัน</li>
-<li>Critical Path ของโครงการประกอบด้วย: การเทรนโมเดล AI (ต้องได้ Accuracy ขั้นต่ำ), API Backend (คือฐานหลักที่เชื่อมโยงทุกส่วน) และตัวแอป Mobile (ที่เป็นสิ่งที่ผู้ใช้สัมผัส)</li>
-<li>PDPA Compliance เป็นโจทย์สำคัญที่คลุมทับการพัฒนาทุกกระบวนการ ทั้ง Frontend, Backend และ AI</li>
-</ul>
-<div class="divider"></div>
+    <h1>ขอบเขตโครงการ (Project Scope)</h1>
+        <p class="lede">กำหนดสิ่งที่จะพัฒนา กรอบการทำงานของ 4 Containers หลัก และการแบ่งกลุ่มงานสำหรับสมาชิกทีม</p>
+    <div class="divider"></div>
+    <h2>ภาพรวมระบบ (System Overview)</h2>
+    <p>โครงการนี้ถูกแบ่งการพัฒนาออกเป็น <strong>4 Development Containers</strong> บวกกับ <strong>1 Integration Layer</strong>:</p>
+    <table>
+    <thead>
+    <tr>
+    <th style="text-align: left;">Container</th>
+    <th style="text-align: left;">เทคโนโลยีหลัก</th>
+    <th style="text-align: left;">ความรับผิดชอบหลัก (Lead)</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td style="text-align: left;">Mobile App</td>
+    <td style="text-align: left;">Flutter</td>
+    <td style="text-align: left;">ภานุวัฒน์ + เอกพันธ์</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">API Backend</td>
+    <td style="text-align: left;">Python FastAPI</td>
+    <td style="text-align: left;">ภานุวัฒน์</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">AI Inference Engine</td>
+    <td style="text-align: left;">PyTorch / ONNX</td>
+    <td style="text-align: left;">ภานุวัฒน์</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Admin Portal</td>
+    <td style="text-align: left;">React.js</td>
+    <td style="text-align: left;">ภานุวัฒน์</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">External Integrations</td>
+    <td style="text-align: left;">Google Vision, FCM</td>
+    <td style="text-align: left;">ภานุวัฒน์ (ออกแบบ)</td>
+    </tr>
+    </tbody>
+    </table>
+    <div class="divider"></div>
+    <h2>กลุ่มงาน Mobile App</h2>
+    <table>
+    <thead>
+    <tr>
+    <th style="text-align: left;">กลุ่มงาน (Task Group)</th>
+    <th style="text-align: left;">รายละเอียด (Tasks)</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td style="text-align: left;">Authentication</td>
+    <td style="text-align: left;">สมัครและล็อกอินด้วยอีเมล/รหัสผ่าน, Google OAuth, และระบบ Secure Storage</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Image Input</td>
+    <td style="text-align: left;">ส่วนการเลือกรูปภาพ, การถ่ายภาพ, และโหมด Crop ตัดรูปภาพก่อนส่งให้ระบบ</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Risk Visualization</td>
+    <td style="text-align: left;">ส่วนแสดงผล Risk Score (เกจสี เขียว/เหลือง/แดง), ภาพ Grad-CAM ทับซ้อน, พร้อมรายละเอียดผลสแกน</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">History &amp; PDPA</td>
+    <td style="text-align: left;">แสดงหน้าต่างประวัติการตรวจสอบย้อนหลัง, หน้าต่างยอมรับข้อตกลง PDPA และการยกเลิกอนุญาตข้อมูล</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Scam Report</td>
+    <td style="text-align: left;">แบบฟอร์มกดแจ้งเตือนภาพ Scam ให้ตรวจสอบเพิ่มเติม พร้อมคุณสมบัติ Share ข้อมูล</td>
+    </tr>
+    </tbody>
+    </table>
+    <div class="divider"></div>
+    <h2>กลุ่มงาน API Backend</h2>
+    <table>
+    <thead>
+    <tr>
+    <th style="text-align: left;">กลุ่มงาน (Task Group)</th>
+    <th style="text-align: left;">รายละเอียด (Tasks)</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td style="text-align: left;">API Gateway</td>
+    <td style="text-align: left;">โครงสร้าง FastAPI พื้นฐาน, Routing, กฎ CORS, และตรวจสอบ JWT Middleware</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Metadata / EXIF</td>
+    <td style="text-align: left;">โค้ดดึงรายละเอียดจากไฟล์ EXIF Metadata ของภาพที่อัปโหลด</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">OCR + NLP</td>
+    <td style="text-align: left;">บริหารและเชื่อมต่อ Surya-OCR สำหรับข้อความ (ไทย/อังกฤษ) และ NLP วิเคราะห์คีย์เวิร์ด</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Redis Cache Logic</td>
+    <td style="text-align: left;">ค้นหารหัสรูป (Image Hash) และตัดสินใจดึงจาก Cache (Hit/Miss Routing)</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">PostgreSQL Schema</td>
+    <td style="text-align: left;">ดูแลโครงสร้างระบบตาราง: ผู้ใช้, รายงานสแกน, ระบบส่งรีพอร์ต และ Audit Log พร้อมทำระบบ Alembic Migrations</td>
+    </tr>
+    </tbody>
+    </table>
+    <div class="divider"></div>
+    <h2>กลุ่มงาน AI Engine</h2>
+    <table>
+    <thead>
+    <tr>
+    <th style="text-align: left;">กลุ่มงาน (Task Group)</th>
+    <th style="text-align: left;">รายละเอียด (Tasks)</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td style="text-align: left;">ELA</td>
+    <td style="text-align: left;">พัฒนาระบบ Preprocessing ตัดภาพ ELA (Error Level Analysis) ออกมา</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">GenAI Detection</td>
+    <td style="text-align: left;">พัฒนาและเชื่อมต่อระบบจำแนกและคัดกรองรูปภาพที่มาจากคำสั่ง AI อัตโนมัติ</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">PyTorch to ONNX</td>
+    <td style="text-align: left;">ขั้นตอนส่งออกตัว Model ให้อยู่ในมาตรฐานเปิด ONNX สำหรับการโหลดเข้าระบบในตอนรันจริง (Inference)</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Grad-CAM</td>
+    <td style="text-align: left;">แปลงผลลัพธ์จาก Segmentation Mask เพื่อผลิตภาพ Heatmap คาดทับในขั้นสุดท้าย</td>
+    </tr>
+    </tbody>
+    </table>
+    <div class="divider"></div>
+    <h2>กลุ่มงาน Admin Portal</h2>
+    <table>
+    <thead>
+    <tr>
+    <th style="text-align: left;">กลุ่มงาน (Task Group)</th>
+    <th style="text-align: left;">รายละเอียด (Tasks)</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td style="text-align: left;">RBAC + Dashboard</td>
+    <td style="text-align: left;">ตรวจสอบ Role ของ Admin แดชบอร์ดสรุปผลภาพรวม</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">User Management</td>
+    <td style="text-align: left;">โค้ดที่ต้องบริหารข้อมูล (CRUD) ผู้ใช้งานในระบบต่างๆ</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Scam Report Queue</td>
+    <td style="text-align: left;">ลำดับการอนุมัติ (Approve) หรือปฏิเสธ (Dismiss) เมื่อได้รับ Scam Report</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Model Update Console</td>
+    <td style="text-align: left;">หน้าต่างสำหรับกดปุ่มรันเพื่อเปลี่ยนน้ำหนัก Model ไฟล์ตัวใหม่เข้าสู่ระบบ</td>
+    </tr>
+    </tbody>
+    </table>
+    <div class="divider"></div>
+    <h2>สิ่งที่อยู่นอกเหนือโครงการในเวลานี้ (Out of Scope v1)</h2>
+    <table>
+    <thead>
+    <tr>
+    <th style="text-align: left;">คุณสมบัติ (Feature)</th>
+    <th style="text-align: left;">สถานะ</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td style="text-align: left;">ระบบ iOS (iOS Support)</td>
+    <td style="text-align: left;">เก็บไว้ทำในอนาคต (ณ ตอนนี้รองรับเฉพาะ Android)</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">วิเคราะห์วิดีโอ (Video Analysis)</td>
+    <td style="text-align: left;">เก็บไว้ทำในอนาคต โดยการใช้ Keyframe Extraction</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">บนมือถือล้วนๆ (On-device Inference)</td>
+    <td style="text-align: left;">เก็บไว้ทำในอนาคต — ต้องผ่านกระบวนการทำ Model Quantization (INT8/FP16) เป็นหลักเสียก่อน</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">การแชร์และตัดสินใจรีวิวแบบ Real-time</td>
+    <td style="text-align: left;">ไม่ได้ระบุไว้ในแผน (Not Planned)</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">ระบบของ Google SynthID</td>
+    <td style="text-align: left;">ระบุไว้ว่าน่าสนใจแต่ยังไม่มีกระบวนการดีไซน์ในเวลาปัจจุบัน</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">บริการ Google Gemini LLM</td>
+    <td style="text-align: left;">ระบุไว้ว่าน่าสนใจแต่ยังไม่มีกระบวนการดีไซน์ในเวลาปัจจุบัน</td>
+    </tr>
+    </tbody>
+    </table>
+    <div class="divider"></div>
+    <h2>ประเด็นสำคัญ (Key Points)</h2>
+    <ul>
+    <li>ภาระงานมีขนาดกว้างมากสำหรับนักศึกษาทำร่วมกัน 2 คน โดย ภานุวัฒน์ แบกรับหน้าที่รับผิดชอบเกือบ 70% ในหลาย Containers พร้อมกัน</li>
+    <li>Critical Path ของโครงการประกอบด้วย: การเทรนโมเดล AI (ต้องได้ Accuracy ขั้นต่ำ), API Backend (คือฐานหลักที่เชื่อมโยงทุกส่วน) และตัวแอป Mobile (ที่เป็นสิ่งที่ผู้ใช้สัมผัส)</li>
+    <li>PDPA Compliance เป็นโจทย์สำคัญที่คลุมทับการพัฒนาทุกกระบวนการ ทั้ง Frontend, Backend และ AI</li>
+    </ul>
   </main>
-  
+
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
@@ -85,7 +228,7 @@
   <script>
     mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
   </script>
-  
+
   <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -93,7 +236,7 @@
         const btn = document.createElement('button');
         btn.className = 'btn-expand-mermaid';
         btn.innerHTML = '🔍 Fullscreen';
-        
+
         btn.onclick = () => {
           const originalSvg = container.querySelector('svg');
           if (!originalSvg) return;
@@ -109,7 +252,7 @@
           overlay.style.display = 'flex';
           overlay.style.alignItems = 'center';
           overlay.style.justifyContent = 'center';
-          
+
           const closeBtn = document.createElement('button');
           closeBtn.innerHTML = '✖ Close';
           closeBtn.style.position = 'absolute';
@@ -125,7 +268,7 @@
           closeBtn.style.borderRadius = '8px';
           closeBtn.style.zIndex = '1000000';
           closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
-          
+
           closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
           closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
 
@@ -134,7 +277,7 @@
           clonedSvg.style.height = '100%';
           clonedSvg.style.maxWidth = '100vw';
           clonedSvg.style.maxHeight = '100vh';
-          
+
           overlay.appendChild(clonedSvg);
           overlay.appendChild(closeBtn);
           document.body.appendChild(overlay);
@@ -162,6 +305,5 @@
       });
     });
   </script>
-
 </body>
 </html>

@@ -1,82 +1,84 @@
 <!doctype html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>การเชื่อมต่อบริการภายนอก (External Integrations) - ScamGuard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
   <link rel="stylesheet" href="../shared-theme.css">
-  
 </head>
+
 <body>
   <main class="document">
-    <h1 id="external-integrations">การเชื่อมต่อบริการภายนอก (External Integrations)</h1>
-<p class="lede">บริการภายนอก 2 รายการที่เชื่อมต่อในระบบ ทั้งคู่เรียกผ่าน API Application เท่านั้น ไม่ใช่จาก Client โดยตรง</p>
-<div class="divider"></div>
-<h2 id="google-vision-api-reverse-image-search">Google Vision API — Reverse Image Search</h2>
-<p><strong>ผู้ให้บริการ:</strong> Google Cloud Vision API (มี Bing Visual Search เป็น Alternative)</p>
-<p><strong>หน้าที่:</strong> ชั้น Source Verification ของ [[concepts/multi-layer-analysis|การวิเคราะห์หลายชั้น]] ตรวจสอบว่ารูปภาพที่อัปโหลดปรากฏในอินเทอร์เน็ตที่อื่นหรือไม่</p>
-<p><strong>การทำงาน:</strong>
-1. API Application ส่งรูปภาพ Binary หรือ URL ไปยัง Google Vision API
-2. Google Vision ส่งคืน URL ของหน้าเว็บที่พบรูปคล้ายกัน
-3. ระบบนับ Domain ที่ไม่ซ้ำกัน
-4. &gt;= 3 Domain → ความเสี่ยงแหล่งที่มาสูง
-5. &lt;= 1 Domain → ความเสี่ยงต่ำ</p>
-<p><strong>มีส่วนใน:</strong> คะแนน S_source (30% ของ Risk Score รวม)</p>
-<p><strong>กรณี Failure:</strong> ถ้า External API Timeout หรือ Error ระบบจะใช้คะแนน S_source กลางและระบุว่า "Source Verification ไม่พร้อมใช้งาน" ใน Response</p>
-<div class="divider"></div>
-<h2 id="firebase-cloud-messaging-fcm">Firebase Cloud Messaging (FCM)</h2>
-<p><strong>ผู้ให้บริการ:</strong> Google Firebase</p>
-<p><strong>หน้าที่:</strong> Push Notification สำหรับการวิเคราะห์แบบ Asynchronous</p>
-<p><strong>การทำงาน:</strong>
-- การวิเคราะห์เต็มรูปแบบ (Cache Miss) ใช้เวลาสูงสุด 15 วินาที
-- แทนที่จะ Hold HTTP Connection ไว้ 15 วินาที Mobile App รับ FCM Push Notification เมื่อผลลัพธ์พร้อม
-- Notification Payload มี Scan ID และ Risk Grade (Low/Medium/High)
-- Mobile App ดึงผลลัพธ์เต็มจาก API ต่อจาก Notification</p>
-<p><strong>เหตุผลที่เลือก FCM:</strong> ฟรีสำหรับ Volume มาตรฐาน, เสถียรบน Android, ไม่ต้องบริหาร Infrastructure</p>
-<div class="divider"></div>
-<h2 id="integration">Integration ที่วางแผนในอนาคต</h2>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">บริการ</th>
-<th style="text-align: left;">หน้าที่</th>
-<th style="text-align: left;">สถานะ</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">Bing Visual Search</td>
-<td style="text-align: left;">ทางเลือกสำรองสำหรับ Reverse Image Search</td>
-<td style="text-align: left;">วางแผนแล้ว (Fallback)</td>
-</tr>
-<tr>
-<td style="text-align: left;">SynthID (Google DeepMind)</td>
-<td style="text-align: left;">ตรวจจับภาพ AI ผ่าน Watermark</td>
-<td style="text-align: left;">กล่าวถึงใน README แต่ยังไม่ได้ออกแบบ</td>
-</tr>
-<tr>
-<td style="text-align: left;">Gemini (Google AI)</td>
-<td style="text-align: left;">วิเคราะห์บริบทภาพด้วย LLM</td>
-<td style="text-align: left;">กล่าวถึงใน README แต่ยังไม่ได้ออกแบบ</td>
-</tr>
-</tbody>
-</table>
-<blockquote>
-<p><strong>NOTE:</strong><br/>
-SynthID และ Gemini ถูกอ้างถึงใน README ภายใต้ "เทคโนโลยีระดับสูง" สำหรับ Visual Anomaly Detection แต่การออกแบบ Integration ยังไม่มีเอกสาร ให้ ingest เอกสารที่เกี่ยวข้องเมื่อมีความคืบหน้า</p>
-</blockquote>
-<div class="divider"></div>
-<h2 id="_1">ประเด็นสำคัญ</h2>
-<ul>
-<li>ทั้งสองบริการเรียกผ่าน API Application เท่านั้น Client ไม่เรียก External API โดยตรง</li>
-<li>ทั้งคู่มี Fallback/Partial-failure Handling เพื่อป้องกันไม่ให้ Outage ของบริการภายนอกบล็อกการสแกนทั้งหมด</li>
-<li>Google Vision API คือบริการภายนอกเพียงรายการเดียวในการออกแบบปัจจุบันที่มีค่าใช้จ่าย</li>
-</ul>
-<div class="divider"></div>
+    <h1>การเชื่อมต่อบริการภายนอก (External Integrations)</h1>
+        <p class="lede">บริการภายนอก 2 รายการที่เชื่อมต่อในระบบ ทั้งคู่เรียกผ่าน API Application เท่านั้น ไม่ใช่จาก Client โดยตรง</p>
+    <div class="divider"></div>
+    <h2>Google Vision API — Reverse Image Search</h2>
+    <p><strong>ผู้ให้บริการ:</strong> Google Cloud Vision API (มี Bing Visual Search เป็น Alternative)</p>
+    <p><strong>หน้าที่:</strong> ชั้น Source Verification ของ  ตรวจสอบว่ารูปภาพที่อัปโหลดปรากฏในอินเทอร์เน็ตที่อื่นหรือไม่</p>
+    <p><strong>การทำงาน:</strong>
+    1. API Application ส่งรูปภาพ Binary หรือ URL ไปยัง Google Vision API
+    2. Google Vision ส่งคืน URL ของหน้าเว็บที่พบรูปคล้ายกัน
+    3. ระบบนับ Domain ที่ไม่ซ้ำกัน
+    4. &gt;= 3 Domain → ความเสี่ยงแหล่งที่มาสูง
+    5. &lt;= 1 Domain → ความเสี่ยงต่ำ</p>
+    <p><strong>มีส่วนใน:</strong> คะแนน S_source (30% ของ Risk Score รวม)</p>
+    <p><strong>กรณี Failure:</strong> ถ้า External API Timeout หรือ Error ระบบจะใช้คะแนน S_source กลางและระบุว่า "Source Verification ไม่พร้อมใช้งาน" ใน Response</p>
+    <div class="divider"></div>
+    <h2>Firebase Cloud Messaging (FCM)</h2>
+    <p><strong>ผู้ให้บริการ:</strong> Google Firebase</p>
+    <p><strong>หน้าที่:</strong> Push Notification สำหรับการวิเคราะห์แบบ Asynchronous</p>
+    <p><strong>การทำงาน:</strong>
+    - การวิเคราะห์เต็มรูปแบบ (Cache Miss) ใช้เวลาสูงสุด 15 วินาที
+    - แทนที่จะ Hold HTTP Connection ไว้ 15 วินาที Mobile App รับ FCM Push Notification เมื่อผลลัพธ์พร้อม
+    - Notification Payload มี Scan ID และ Risk Grade (Low/Medium/High)
+    - Mobile App ดึงผลลัพธ์เต็มจาก API ต่อจาก Notification</p>
+    <p><strong>เหตุผลที่เลือก FCM:</strong> ฟรีสำหรับ Volume มาตรฐาน, เสถียรบน Android, ไม่ต้องบริหาร Infrastructure</p>
+    <div class="divider"></div>
+    <h2>Integration ที่วางแผนในอนาคต</h2>
+    <table>
+    <thead>
+    <tr>
+    <th style="text-align: left;">บริการ</th>
+    <th style="text-align: left;">หน้าที่</th>
+    <th style="text-align: left;">สถานะ</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td style="text-align: left;">Bing Visual Search</td>
+    <td style="text-align: left;">ทางเลือกสำรองสำหรับ Reverse Image Search</td>
+    <td style="text-align: left;">วางแผนแล้ว (Fallback)</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">SynthID (Google DeepMind)</td>
+    <td style="text-align: left;">ตรวจจับภาพ AI ผ่าน Watermark</td>
+    <td style="text-align: left;">กล่าวถึงใน README แต่ยังไม่ได้ออกแบบ</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Gemini (Google AI)</td>
+    <td style="text-align: left;">วิเคราะห์บริบทภาพด้วย LLM</td>
+    <td style="text-align: left;">กล่าวถึงใน README แต่ยังไม่ได้ออกแบบ</td>
+    </tr>
+    </tbody>
+    </table>
+    <blockquote>
+    <p><strong>NOTE:</strong><br />
+    SynthID และ Gemini ถูกอ้างถึงใน README ภายใต้ "เทคโนโลยีระดับสูง" สำหรับ Visual Anomaly Detection แต่การออกแบบ Integration ยังไม่มีเอกสาร ให้ ingest เอกสารที่เกี่ยวข้องเมื่อมีความคืบหน้า</p>
+    </blockquote>
+    <div class="divider"></div>
+    <h2>ประเด็นสำคัญ</h2>
+    <ul>
+    <li>ทั้งสองบริการเรียกผ่าน API Application เท่านั้น Client ไม่เรียก External API โดยตรง</li>
+    <li>ทั้งคู่มี Fallback/Partial-failure Handling เพื่อป้องกันไม่ให้ Outage ของบริการภายนอกบล็อกการสแกนทั้งหมด</li>
+    <li>Google Vision API คือบริการภายนอกเพียงรายการเดียวในการออกแบบปัจจุบันที่มีค่าใช้จ่าย</li>
+    </ul>
   </main>
-  
+
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
@@ -85,7 +87,7 @@ SynthID และ Gemini ถูกอ้างถึงใน README ภาย�
   <script>
     mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
   </script>
-  
+
   <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -93,7 +95,7 @@ SynthID และ Gemini ถูกอ้างถึงใน README ภาย�
         const btn = document.createElement('button');
         btn.className = 'btn-expand-mermaid';
         btn.innerHTML = '🔍 Fullscreen';
-        
+
         btn.onclick = () => {
           const originalSvg = container.querySelector('svg');
           if (!originalSvg) return;
@@ -109,7 +111,7 @@ SynthID และ Gemini ถูกอ้างถึงใน README ภาย�
           overlay.style.display = 'flex';
           overlay.style.alignItems = 'center';
           overlay.style.justifyContent = 'center';
-          
+
           const closeBtn = document.createElement('button');
           closeBtn.innerHTML = '✖ Close';
           closeBtn.style.position = 'absolute';
@@ -125,7 +127,7 @@ SynthID และ Gemini ถูกอ้างถึงใน README ภาย�
           closeBtn.style.borderRadius = '8px';
           closeBtn.style.zIndex = '1000000';
           closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
-          
+
           closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
           closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
 
@@ -134,7 +136,7 @@ SynthID และ Gemini ถูกอ้างถึงใน README ภาย�
           clonedSvg.style.height = '100%';
           clonedSvg.style.maxWidth = '100vw';
           clonedSvg.style.maxHeight = '100vh';
-          
+
           overlay.appendChild(clonedSvg);
           overlay.appendChild(closeBtn);
           document.body.appendChild(overlay);
@@ -162,6 +164,5 @@ SynthID และ Gemini ถูกอ้างถึงใน README ภาย�
       });
     });
   </script>
-
 </body>
 </html>

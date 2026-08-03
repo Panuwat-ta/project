@@ -1,88 +1,90 @@
 <!doctype html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>การวิเคราะห์หลายชั้น (Multi-layer Analysis) - ScamGuard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
   <link rel="stylesheet" href="../shared-theme.css">
-  
 </head>
+
 <body>
   <main class="document">
-    <h1 id="multi-layer-analysis">การวิเคราะห์หลายชั้น (Multi-layer Analysis)</h1>
-<p class="lede">กลยุทธ์การตรวจจับหลักของระบบ แทนที่จะพึ่งพาสัญญาณเดียว ระบบรัน 3 ชั้นการวิเคราะห์โดยอิสระและรวมผลออกมาเป็นคะแนนความเสี่ยงเดียว</p>
-<div class="divider"></div>
-<h2 id="1-textual-analysis-25">ชั้นที่ 1: วิเคราะห์ข้อความ (Textual Analysis) — น้ำหนัก 25%</h2>
-<p>ดึงข้อมูลและวิเคราะห์ข้อความที่ฝังอยู่ในรูปภาพ</p>
-<p><strong>ขั้นตอน:</strong>
-1. <strong>OCR</strong> — ส่งภาพเข้า Surya-OCR (รองรับภาษาไทยและอังกฤษ) เพื่อดึงข้อความทั้งหมด
-2. <strong>NLP keyword matching</strong> — นำข้อความที่ได้มาวิเคราะห์ด้วย Regular Expression และ/หรือโมเดล NLP ขนาดเล็ก เพื่อหารูปแบบที่บ่งชี้การหลอกลวง</p>
-<p><strong>สัญญาณที่ตรวจจับ:</strong>
-- ภาษาแสดงความเร่งด่วน ("ด่วน", "urgent", "โอนด่วน")
-- คำสัญญาผลตอบแทนสูง ("รับปันผลสูง", "กำไรรับประกัน")
-- ชื่อบัญชีหรือเบอร์โทรที่อยู่ใน Blacklist
-- คำสั่งทางการเงินที่น่าสงสัย</p>
-<p><strong>ผลลัพธ์:</strong> คะแนนความเสี่ยงจากข้อความ (S_text) 0–100</p>
-<div class="divider"></div>
-<h2 id="2-source-verification-30">ชั้นที่ 2: ตรวจสอบแหล่งที่มา (Source Verification) — น้ำหนัก 30%</h2>
-<p>ตรวจสอบว่ารูปภาพเคยถูกเผยแพร่บนอินเทอร์เน็ตหรือไม่ — เป็นตัวบ่งชี้สำคัญของการนำภาพไปใช้ซ้ำในเชิงหลอกลวง</p>
-<p><strong>ขั้นตอน:</strong>
-1. ส่งรูปภาพ (หรือ URL) ไปยัง <strong>Google Vision API</strong> เพื่อค้นหาภาพย้อนกลับ (Reverse Image Search)
-2. ระบบนับจำนวนแหล่งที่มาที่แตกต่างกันที่พบภาพคล้ายกัน</p>
-<p><strong>เกณฑ์การให้คะแนน:</strong>
-- พบ &gt;= 3 แหล่งที่แตกต่างกัน → ความเสี่ยงจากแหล่งที่มาสูง (ภาพถูกเผยแพร่กว้าง อาจเป็นภาพแอบอ้าง)
-- พบ &lt;= 1 แหล่ง → ความเสี่ยงต่ำ (ดำเนินการตรวจสอบภาพ AI-Generated ต่อ)</p>
-<p><strong>ผลลัพธ์:</strong> คะแนนความเสี่ยงจากแหล่งที่มา (S_source) 0–100</p>
-<div class="divider"></div>
-<h2 id="3-visual-anomaly-detection-45">ชั้นที่ 3: ตรวจจับความผิดปกติทางภาพ (Visual Anomaly Detection) — น้ำหนัก 45%</h2>
-<p>ชั้นที่มีน้ำหนักสูงสุด ใช้ Deep Learning ตรวจจับการดัดแปลงระดับพิกเซล</p>
-<p>การตรวจสอบย่อย 2 อย่าง:
-- <strong>ตรวจจับการตัดต่อภาพ (ELA-based)</strong> — ตรวจจับ splicing, copy-move และการแก้ไขพิกเซล ดูที่ [[concepts/ela-technique]] และ [[concepts/ai-model-segformer]]
-- <strong>ตรวจจับภาพสังเคราะห์จาก AI</strong> — จำแนกว่าภาพถูกสร้างโดยโมเดล Generative AI (เช่น GAN, Diffusion model) หรือไม่</p>
-<p><strong>ผลลัพธ์:</strong> คะแนนความเสี่ยงทางภาพ (S_visual) 0–100 พร้อม <strong>Grad-CAM Heatmap</strong> สำหรับ XAI ดูที่ [[concepts/explainable-ai]]</p>
-<div class="divider"></div>
-<h2 id="pipeline">การไหลของ Pipeline</h2>
-<pre><code>ผู้ใช้อัปโหลดภาพ
-        |
-  ตรวจสอบและ Preprocess
-        |
-  ตรวจสอบ Redis Cache
-  ├── Cache Hit → ดึงผลลัพธ์เก่ากลับมาทันที
-  └── Cache Miss → รัน Pipeline:
-          Task 1: ดึง Metadata/EXIF
-          Task 2: OCR &amp; Textual Analysis  → S_text
-          Task 3: Visual Forgery Detection → S_visual (บางส่วน)
-               |
-          พบคำหลอกลวง? → ส่งไป Aggregator ทันที
-               |
-          Task 4: Reverse Image Search → S_source
-               |
-          &gt;= 3 แหล่ง? → ความเสี่ยงแหล่งที่มาสูง
-          &lt; 2 แหล่ง? → Task 5: AI-Gen Detection → S_visual (ครบ)
-               |
-          Aggregator: คำนวณ Weighted Risk Score
-               |
-          สร้างคำอธิบาย XAI
-               |
-          เก็บข้อมูลใน PostgreSQL, cache hash ใน Redis
-               |
-          ส่ง JSON ผลลัพธ์กลับ Client
-</code></pre>
-<div class="divider"></div>
-<h2 id="exif-metadata-pipeline">EXIF Metadata กับ Pipeline</h2>
-<p>ก่อนรัน 3 ชั้นหลัก API Gateway จะดึง <strong>EXIF Metadata</strong> (พิกัด GPS, รุ่นกล้อง, Software ที่ใช้, วันเวลา) เพื่อตรวจหาความไม่สอดคล้องเบื้องต้น เช่น ไม่มีข้อมูล GPS ทั้งที่อ้างว่าถ่ายที่ใดที่หนึ่ง หรือ metadata แสดงว่าใช้โปรแกรมแต่งภาพ</p>
-<div class="divider"></div>
-<h2 id="_1">ประเด็นสำคัญ</h2>
-<ul>
-<li>ทั้ง 3 ชั้นออกแบบมาให้เสริมซึ่งกันและกัน — ภาพหลอกลวงอาจทำให้ triggered เพียงชั้นเดียวหรือทั้ง 3 ชั้น</li>
-<li>ชั้น Visual Anomaly มีน้ำหนักมากที่สุด (45%) เพราะเป็นสัญญาณที่แม่นยำที่สุดในระดับนิติวิทยาศาสตร์</li>
-<li>การ Cache ด้วย Redis image hash ทำให้การส่งรูปซ้ำได้รับคำตอบทันทีโดยไม่ต้องรัน AI ซ้ำ</li>
-</ul>
-<div class="divider"></div>
+    <h1>การวิเคราะห์หลายชั้น (Multi-layer Analysis)</h1>
+        <p class="lede">กลยุทธ์การตรวจจับหลักของระบบ แทนที่จะพึ่งพาสัญญาณเดียว ระบบรัน 3 ชั้นการวิเคราะห์โดยอิสระและรวมผลออกมาเป็นคะแนนความเสี่ยงเดียว</p>
+    <div class="divider"></div>
+    <h2>ชั้นที่ 1: วิเคราะห์ข้อความ (Textual Analysis) — น้ำหนัก 25%</h2>
+    <p>ดึงข้อมูลและวิเคราะห์ข้อความที่ฝังอยู่ในรูปภาพ</p>
+    <p><strong>ขั้นตอน:</strong>
+    1. <strong>OCR</strong> — ส่งภาพเข้า Surya-OCR (รองรับภาษาไทยและอังกฤษ) เพื่อดึงข้อความทั้งหมด
+    2. <strong>NLP keyword matching</strong> — นำข้อความที่ได้มาวิเคราะห์ด้วย Regular Expression และ/หรือโมเดล NLP ขนาดเล็ก เพื่อหารูปแบบที่บ่งชี้การหลอกลวง</p>
+    <p><strong>สัญญาณที่ตรวจจับ:</strong>
+    - ภาษาแสดงความเร่งด่วน ("ด่วน", "urgent", "โอนด่วน")
+    - คำสัญญาผลตอบแทนสูง ("รับปันผลสูง", "กำไรรับประกัน")
+    - ชื่อบัญชีหรือเบอร์โทรที่อยู่ใน Blacklist
+    - คำสั่งทางการเงินที่น่าสงสัย</p>
+    <p><strong>ผลลัพธ์:</strong> คะแนนความเสี่ยงจากข้อความ (S_text) 0–100</p>
+    <div class="divider"></div>
+    <h2>ชั้นที่ 2: ตรวจสอบแหล่งที่มา (Source Verification) — น้ำหนัก 30%</h2>
+    <p>ตรวจสอบว่ารูปภาพเคยถูกเผยแพร่บนอินเทอร์เน็ตหรือไม่ — เป็นตัวบ่งชี้สำคัญของการนำภาพไปใช้ซ้ำในเชิงหลอกลวง</p>
+    <p><strong>ขั้นตอน:</strong>
+    1. ส่งรูปภาพ (หรือ URL) ไปยัง <strong>Google Vision API</strong> เพื่อค้นหาภาพย้อนกลับ (Reverse Image Search)
+    2. ระบบนับจำนวนแหล่งที่มาที่แตกต่างกันที่พบภาพคล้ายกัน</p>
+    <p><strong>เกณฑ์การให้คะแนน:</strong>
+    - พบ &gt;= 3 แหล่งที่แตกต่างกัน → ความเสี่ยงจากแหล่งที่มาสูง (ภาพถูกเผยแพร่กว้าง อาจเป็นภาพแอบอ้าง)
+    - พบ &lt;= 1 แหล่ง → ความเสี่ยงต่ำ (ดำเนินการตรวจสอบภาพ AI-Generated ต่อ)</p>
+    <p><strong>ผลลัพธ์:</strong> คะแนนความเสี่ยงจากแหล่งที่มา (S_source) 0–100</p>
+    <div class="divider"></div>
+    <h2>ชั้นที่ 3: ตรวจจับความผิดปกติทางภาพ (Visual Anomaly Detection) — น้ำหนัก 45%</h2>
+    <p>ชั้นที่มีน้ำหนักสูงสุด ใช้ Deep Learning ตรวจจับการดัดแปลงระดับพิกเซล</p>
+    <p>การตรวจสอบย่อย 2 อย่าง:
+    - <strong>ตรวจจับการตัดต่อภาพ (ELA-based)</strong> — ตรวจจับ splicing, copy-move และการแก้ไขพิกเซล
+    - <strong>ตรวจจับภาพสังเคราะห์จาก AI</strong> — จำแนกว่าภาพถูกสร้างโดยโมเดล Generative AI (เช่น GAN, Diffusion model) หรือไม่</p>
+    <p><strong>ผลลัพธ์:</strong> คะแนนความเสี่ยงทางภาพ (S_visual) 0–100 พร้อม <strong>Grad-CAM Heatmap</strong> สำหรับ XAI</p>
+    <div class="divider"></div>
+    <h2>การไหลของ Pipeline</h2>
+    <pre><code>ผู้ใช้อัปโหลดภาพ
+            |
+      ตรวจสอบและ Preprocess
+            |
+      ตรวจสอบ Redis Cache
+      ├── Cache Hit → ดึงผลลัพธ์เก่ากลับมาทันที
+      └── Cache Miss → รัน Pipeline:
+              Task 1: ดึง Metadata/EXIF
+              Task 2: OCR &amp; Textual Analysis  → S_text
+              Task 3: Visual Forgery Detection → S_visual (บางส่วน)
+                   |
+              พบคำหลอกลวง? → ส่งไป Aggregator ทันที
+                   |
+              Task 4: Reverse Image Search → S_source
+                   |
+              &gt;= 3 แหล่ง? → ความเสี่ยงแหล่งที่มาสูง
+              &lt; 2 แหล่ง? → Task 5: AI-Gen Detection → S_visual (ครบ)
+                   |
+              Aggregator: คำนวณ Weighted Risk Score
+                   |
+              สร้างคำอธิบาย XAI
+                   |
+              เก็บข้อมูลใน PostgreSQL, cache hash ใน Redis
+                   |
+              ส่ง JSON ผลลัพธ์กลับ Client
+    </code></pre>
+    <div class="divider"></div>
+    <h2>EXIF Metadata กับ Pipeline</h2>
+    <p>ก่อนรัน 3 ชั้นหลัก API Gateway จะดึง <strong>EXIF Metadata</strong> (พิกัด GPS, รุ่นกล้อง, Software ที่ใช้, วันเวลา) เพื่อตรวจหาความไม่สอดคล้องเบื้องต้น เช่น ไม่มีข้อมูล GPS ทั้งที่อ้างว่าถ่ายที่ใดที่หนึ่ง หรือ metadata แสดงว่าใช้โปรแกรมแต่งภาพ</p>
+    <div class="divider"></div>
+    <h2>ประเด็นสำคัญ</h2>
+    <ul>
+    <li>ทั้ง 3 ชั้นออกแบบมาให้เสริมซึ่งกันและกัน — ภาพหลอกลวงอาจทำให้ triggered เพียงชั้นเดียวหรือทั้ง 3 ชั้น</li>
+    <li>ชั้น Visual Anomaly มีน้ำหนักมากที่สุด (45%) เพราะเป็นสัญญาณที่แม่นยำที่สุดในระดับนิติวิทยาศาสตร์</li>
+    <li>การ Cache ด้วย Redis image hash ทำให้การส่งรูปซ้ำได้รับคำตอบทันทีโดยไม่ต้องรัน AI ซ้ำ</li>
+    </ul>
   </main>
-  
+
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
@@ -91,7 +93,7 @@
   <script>
     mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
   </script>
-  
+
   <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -99,7 +101,7 @@
         const btn = document.createElement('button');
         btn.className = 'btn-expand-mermaid';
         btn.innerHTML = '🔍 Fullscreen';
-        
+
         btn.onclick = () => {
           const originalSvg = container.querySelector('svg');
           if (!originalSvg) return;
@@ -115,7 +117,7 @@
           overlay.style.display = 'flex';
           overlay.style.alignItems = 'center';
           overlay.style.justifyContent = 'center';
-          
+
           const closeBtn = document.createElement('button');
           closeBtn.innerHTML = '✖ Close';
           closeBtn.style.position = 'absolute';
@@ -131,7 +133,7 @@
           closeBtn.style.borderRadius = '8px';
           closeBtn.style.zIndex = '1000000';
           closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
-          
+
           closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
           closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
 
@@ -140,7 +142,7 @@
           clonedSvg.style.height = '100%';
           clonedSvg.style.maxWidth = '100vw';
           clonedSvg.style.maxHeight = '100vh';
-          
+
           overlay.appendChild(clonedSvg);
           overlay.appendChild(closeBtn);
           document.body.appendChild(overlay);
@@ -168,6 +170,5 @@
       });
     });
   </script>
-
 </body>
 </html>

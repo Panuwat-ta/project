@@ -1,102 +1,147 @@
 <!doctype html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ภาพรวมโปรเจค: Scam Image Detection - ScamGuard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <title>ภาพรวมโปรเจค — Scam Image Detection - ScamGuard</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
   <link rel="stylesheet" href="shared-theme.css">
-  
 </head>
+
 <body>
   <main class="document">
-    <h1 id="scam-image-detection">ภาพรวมโปรเจค: Scam Image Detection</h1>
-<p class="lede">แอปพลิเคชันมือถือที่ใช้การวิเคราะห์หลายชั้นด้วย AI เพื่อช่วยให้ผู้ใช้ทั่วไปตรวจสอบว่ารูปภาพถูกตัดต่อหรือถูกนำมาใช้ในการหลอกลวงหรือไม่ ก่อนที่จะเชื่อหรือโอนเงิน</p>
-<div class="divider"></div>
-<h2 id="_1">ปัญหาที่โปรเจคนี้แก้ไข</h2>
-<p>การหลอกลวงโดยใช้รูปภาพพบได้บ่อยในประเทศไทยและทั่วโลก รูปแบบการโจมตีที่พบบ่อย ได้แก่:</p>
-<ul>
-<li><strong>Romance Scam</strong> — รูปโปรไฟล์ที่สร้างด้วย AI หรือขโมยจากคนอื่น</li>
-<li><strong>การตัดต่อภาพ (Image Forgery)</strong> — สกรีนช็อตที่ดัดแปลง, สลิปโอนเงินปลอม, ใบเสร็จที่แก้ไขตัวเลข</li>
-<li><strong>ภาพสังเคราะห์จาก AI</strong> — ใบหน้าหรือฉากที่สร้างขึ้นทั้งหมดเพื่อหลอกลวง</li>
-<li><strong>การแอบอ้างตัวตน</strong> — นำรูปจากบริบทหนึ่งไปใช้อ้างตัวตนในอีกบริบท</li>
-</ul>
-<p>ผู้ใช้ทั่วไปไม่สามารถตรวจจับสิ่งเหล่านี้ได้ด้วยตาเปล่า แอปนี้คือเครื่องมือนิติวิทยาศาสตร์ดิจิทัลในกระเป๋า</p>
-<blockquote>
-<p><strong>IMPORTANT:</strong><br/>
-โปรเจคนี้ตรวจจับ <strong>ภาพหลอกลวงในวงกว้าง</strong> ไม่ใช่เฉพาะ "สลิปปลอม" การแยกแยะประเภทการปลอมแปลง (splicing, copy-move, AI-generation, reverse image identity theft) คือฟีเจอร์หลักของระบบ</p>
-</blockquote>
-<div class="divider"></div>
-<h2 id="_2">แนวทางหลัก: การวิเคราะห์หลายชั้น</h2>
-<p>ระบบไม่พึ่งพาวิธีตรวจจับเดียว แต่รันการวิเคราะห์ 3 ชั้นพร้อมกันและรวมผลเป็น <strong>Weighted Risk Score</strong> เดียว ดูรายละเอียดที่ [[concepts/multi-layer-analysis]]</p>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">ชั้นการวิเคราะห์</th>
-<th style="text-align: left;">วิธีการ</th>
-<th style="text-align: left;">น้ำหนัก</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">วิเคราะห์ข้อความ (Textual Analysis)</td>
-<td style="text-align: left;">OCR + NLP ตรวจจับคำหลอกลวง</td>
-<td style="text-align: left;">25%</td>
-</tr>
-<tr>
-<td style="text-align: left;">ตรวจสอบแหล่งที่มา (Source Verification)</td>
-<td style="text-align: left;">Reverse Image Search ผ่าน Google Vision API</td>
-<td style="text-align: left;">30%</td>
-</tr>
-<tr>
-<td style="text-align: left;">ตรวจจับความผิดปกติทางภาพ (Visual Anomaly)</td>
-<td style="text-align: left;">Deep Learning (SegFormer + ELA) + Grad-CAM</td>
-<td style="text-align: left;">45%</td>
-</tr>
-</tbody>
-</table>
-<p>คะแนนรวมอยู่ระหว่าง 0–100 ดูเกณฑ์การตัดสินที่ [[concepts/risk-scoring]]</p>
-<div class="divider"></div>
-<h2 id="_3">สรุปสถาปัตยกรรมระบบ</h2>
-<p>ระบบเป็นแบบ Cloud-Native และแยกส่วนออกเป็น 3 ชั้น:</p>
-<ol class="steps">
-<li><strong>Frontend</strong> — Flutter Mobile App (Android) สำหรับผู้ใช้ทั่วไป; React.js Admin Portal สำหรับนักวิจัยและเจ้าหน้าที่</li>
-<li><strong>Backend</strong> — Python FastAPI ทำหน้าที่เป็น Orchestrator/API Gateway; AI Inference Service (PyTorch/ONNX) แยกต่างหากสำหรับประมวลผลโมเดล</li>
-<li><strong>Storage</strong> — PostgreSQL สำหรับข้อมูลเชิงสัมพันธ์; Redis สำหรับ cache; Cloud Storage สำหรับไฟล์รูปภาพและ Heatmap</li>
-</ol>
-<p>ดูสถาปัตยกรรมเต็มที่ [[architecture/system-architecture]]</p>
-<div class="divider"></div>
-<h2 id="_4">เทคโนโลยีหลัก</h2>
-<dl class="facts"><div><dt>Mobile App</dt><dd>Flutter (Dart) — Android</dd></div><div><dt>Admin Portal</dt><dd>React.js + Tailwind CSS</dd></div><div><dt>API Backend</dt><dd>Python FastAPI</dd></div><div><dt>โมเดล AI</dt><dd>SegFormer (PyTorch → ONNX)</dd></div><div><dt>ฐานข้อมูล</dt><dd>PostgreSQL</dd></div><div><dt>Cache</dt><dd>Redis</dd></div><div><dt>เก็บไฟล์</dt><dd>Cloud Object Storage</dd></div><div><dt>ค้นหาภาพย้อนกลับ</dt><dd>Google Vision API</dd></div><div><dt>Push Notification</dt><dd>Firebase Cloud Messaging (FCM)</dd></div></dl>
-<p>ดูรายละเอียดที่ [[entities/tech-stack]] และ [[decisions/technology-choices]]</p>
-<div class="divider"></div>
-<h2 id="_5">ผลลัพธ์ที่ผู้ใช้ได้รับ</h2>
-<ol class="steps">
-<li><strong>Weighted Risk Score</strong> (0–100) แสดงเป็น color gauge (เขียว/เหลือง/แดง)</li>
-<li><strong>Grad-CAM Heatmap</strong> ซ้อนทับรูปภาพต้นฉบับแสดงจุดที่โมเดลตรวจพบความผิดปกติ</li>
-<li><strong>ผลการวิเคราะห์ข้อความ</strong> — คำหลอกลวงหรือรูปแบบน่าสงสัยที่พบในภาพ</li>
-<li><strong>ผลการตรวจสอบแหล่งที่มา</strong> — รูปนี้พบในเว็บไซต์ใดบ้างและกี่แหล่ง</li>
-</ol>
-<p>Heatmap เป็นหัวใจของการออกแบบ <strong>Explainable AI (XAI)</strong> ดูที่ [[concepts/explainable-ai]]</p>
-<div class="divider"></div>
-<h2 id="_6">ข้อจำกัดของโปรเจค</h2>
-<ul>
-<li><strong>PDPA</strong> — ผู้ใช้ต้องยินยอมก่อนที่รูปภาพจะถูกเก็บหรือใช้เพื่อ training โมเดล ยินยอมแบบแยกส่วนและถอนได้ ดูที่ [[requirements/non-functional-requirements]]</li>
-<li><strong>เป้าหมายประสิทธิภาพ</strong> — Cache hit &lt; 3 วินาที; Full AI inference &lt; 15 วินาทีต่อรูป</li>
-<li><strong>เป้าหมายความแม่นยำ</strong> — โมเดล AI ต้องได้ &gt;= 85% accuracy และ F1-score บน test set</li>
-<li><strong>เป้าหมาย Availability</strong> — API และ AI Inference Service uptime &gt;= 99.5%</li>
-</ul>
-<div class="divider"></div>
-<h2 id="v1">สิ่งที่อยู่นอกขอบเขต (v1)</h2>
-<ul>
-<li>วิเคราะห์วิดีโอ (วางแผนในอนาคตด้วย keyframe extraction)</li>
-<li>รองรับ iOS (Android เท่านั้นใน v1)</li>
-<li>Inference บนอุปกรณ์ (วางแผนด้วย model quantization)</li>
-</ul>
-<div class="divider"></div>
+    <h1>ภาพรวมโปรเจค: Scam Image Detection</h1>
+        <p class="lede">แอปพลิเคชันมือถือที่ใช้การวิเคราะห์หลายชั้นด้วย AI เพื่อช่วยให้ผู้ใช้ทั่วไปตรวจสอบว่ารูปภาพถูกตัดต่อหรือถูกนำมาใช้ในการหลอกลวงหรือไม่ ก่อนที่จะเชื่อหรือโอนเงิน</p>
+    <div class="divider"></div>
+    <h2>ปัญหาที่โปรเจคนี้แก้ไข</h2>
+    <p>การหลอกลวงโดยใช้รูปภาพพบได้บ่อยในประเทศไทยและทั่วโลก รูปแบบการโจมตีที่พบบ่อย ได้แก่:</p>
+    <ul>
+    <li><strong>Romance Scam</strong> — รูปโปรไฟล์ที่สร้างด้วย AI หรือขโมยจากคนอื่น</li>
+    <li><strong>การตัดต่อภาพ (Image Forgery)</strong> — สกรีนช็อตที่ดัดแปลง, สลิปโอนเงินปลอม, ใบเสร็จที่แก้ไขตัวเลข</li>
+    <li><strong>ภาพสังเคราะห์จาก AI</strong> — ใบหน้าหรือฉากที่สร้างขึ้นทั้งหมดเพื่อหลอกลวง</li>
+    <li><strong>การแอบอ้างตัวตน</strong> — นำรูปจากบริบทหนึ่งไปใช้อ้างตัวตนในอีกบริบท</li>
+    </ul>
+    <p>ผู้ใช้ทั่วไปไม่สามารถตรวจจับสิ่งเหล่านี้ได้ด้วยตาเปล่า แอปนี้คือเครื่องมือนิติวิทยาศาสตร์ดิจิทัลในกระเป๋า</p>
+    <blockquote>
+    <p><strong>IMPORTANT:</strong><br />
+    โปรเจคนี้ตรวจจับ <strong>ภาพหลอกลวงในวงกว้าง</strong> ไม่ใช่เฉพาะ "สลิปปลอม" การแยกแยะประเภทการปลอมแปลง (splicing, copy-move, AI-generation, reverse image identity theft) คือฟีเจอร์หลักของระบบ</p>
+    </blockquote>
+    <div class="divider"></div>
+    <h2>แนวทางหลัก: การวิเคราะห์หลายชั้น</h2>
+    <p>ระบบไม่พึ่งพาวิธีตรวจจับเดียว แต่รันการวิเคราะห์ 3 ชั้นพร้อมกันและรวมผลเป็น <strong>Weighted Risk Score</strong> เดียว</p>
+    <table>
+    <thead>
+    <tr>
+    <th style="text-align: left;">ชั้นการวิเคราะห์</th>
+    <th style="text-align: left;">วิธีการ</th>
+    <th style="text-align: left;">น้ำหนัก</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td style="text-align: left;">วิเคราะห์ข้อความ (Textual Analysis)</td>
+    <td style="text-align: left;">OCR + NLP ตรวจจับคำหลอกลวง</td>
+    <td style="text-align: left;">25%</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">ตรวจสอบแหล่งที่มา (Source Verification)</td>
+    <td style="text-align: left;">Reverse Image Search ผ่าน Google Vision API</td>
+    <td style="text-align: left;">30%</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">ตรวจจับความผิดปกติทางภาพ (Visual Anomaly)</td>
+    <td style="text-align: left;">Deep Learning (SegFormer + ELA) + Grad-CAM</td>
+    <td style="text-align: left;">45%</td>
+    </tr>
+    </tbody>
+    </table>
+    <p>คะแนนรวมอยู่ระหว่าง 0–100</p>
+    <div class="divider"></div>
+    <h2>สรุปสถาปัตยกรรมระบบ</h2>
+    <p>ระบบเป็นแบบ Cloud-Native และแยกส่วนออกเป็น 3 ชั้น:</p>
+    <ol>
+    <li><strong>Frontend</strong> — Flutter Mobile App (Android) สำหรับผู้ใช้ทั่วไป; React.js Admin Portal สำหรับนักวิจัยและเจ้าหน้าที่</li>
+    <li><strong>Backend</strong> — Python FastAPI ทำหน้าที่เป็น Orchestrator/API Gateway; AI Inference Service (PyTorch/ONNX) แยกต่างหากสำหรับประมวลผลโมเดล</li>
+    <li><strong>Storage</strong> — PostgreSQL สำหรับข้อมูลเชิงสัมพันธ์; Redis สำหรับ cache; Cloud Storage สำหรับไฟล์รูปภาพและ Heatmap</li>
+    </ol>
+    <div class="divider"></div>
+    <h2>เทคโนโลยีหลัก</h2>
+    <table>
+    <thead>
+    <tr>
+    <th style="text-align: left;">งาน</th>
+    <th style="text-align: left;">เทคโนโลยี</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td style="text-align: left;">Mobile App</td>
+    <td style="text-align: left;">Flutter (Dart) — Android</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Admin Portal</td>
+    <td style="text-align: left;">React.js + Tailwind CSS</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">API Backend</td>
+    <td style="text-align: left;">Python FastAPI</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">โมเดล AI</td>
+    <td style="text-align: left;">SegFormer (PyTorch → ONNX)</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">ฐานข้อมูล</td>
+    <td style="text-align: left;">PostgreSQL</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Cache</td>
+    <td style="text-align: left;">Redis</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">เก็บไฟล์</td>
+    <td style="text-align: left;">Cloud Object Storage</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">ค้นหาภาพย้อนกลับ</td>
+    <td style="text-align: left;">Google Vision API</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Push Notification</td>
+    <td style="text-align: left;">Firebase Cloud Messaging (FCM)</td>
+    </tr>
+    </tbody>
+    </table>
+    <div class="divider"></div>
+    <h2>ผลลัพธ์ที่ผู้ใช้ได้รับ</h2>
+    <ol>
+    <li><strong>Weighted Risk Score</strong> (0–100) แสดงเป็น color gauge (เขียว/เหลือง/แดง)</li>
+    <li><strong>Grad-CAM Heatmap</strong> ซ้อนทับรูปภาพต้นฉบับแสดงจุดที่โมเดลตรวจพบความผิดปกติ</li>
+    <li><strong>ผลการวิเคราะห์ข้อความ</strong> — คำหลอกลวงหรือรูปแบบน่าสงสัยที่พบในภาพ</li>
+    <li><strong>ผลการตรวจสอบแหล่งที่มา</strong> — รูปนี้พบในเว็บไซต์ใดบ้างและกี่แหล่ง</li>
+    </ol>
+    <p>Heatmap เป็นหัวใจของการออกแบบ <strong>Explainable AI (XAI)</strong></p>
+    <div class="divider"></div>
+    <h2>ข้อจำกัดของโปรเจค</h2>
+    <ul>
+    <li><strong>PDPA</strong> — ผู้ใช้ต้องยินยอมก่อนที่รูปภาพจะถูกเก็บหรือใช้เพื่อ training โมเดล ยินยอมแบบแยกส่วนและถอนได้</li>
+    <li><strong>เป้าหมายประสิทธิภาพ</strong> — Cache hit &lt; 3 วินาที; Full AI inference &lt; 15 วินาทีต่อรูป</li>
+    <li><strong>เป้าหมายความแม่นยำ</strong> — โมเดล AI ต้องได้ &gt;= 85% accuracy และ F1-score บน test set</li>
+    <li><strong>เป้าหมาย Availability</strong> — API และ AI Inference Service uptime &gt;= 99.5%</li>
+    </ul>
+    <div class="divider"></div>
+    <h2>สิ่งที่อยู่นอกขอบเขต (v1)</h2>
+    <ul>
+    <li>วิเคราะห์วิดีโอ (วางแผนในอนาคตด้วย keyframe extraction)</li>
+    <li>รองรับ iOS (Android เท่านั้นใน v1)</li>
+    <li>Inference บนอุปกรณ์ (วางแผนด้วย model quantization)</li>
+    </ul>
   </main>
-  
+
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
@@ -105,7 +150,7 @@
   <script>
     mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
   </script>
-  
+
   <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -113,7 +158,7 @@
         const btn = document.createElement('button');
         btn.className = 'btn-expand-mermaid';
         btn.innerHTML = '🔍 Fullscreen';
-        
+
         btn.onclick = () => {
           const originalSvg = container.querySelector('svg');
           if (!originalSvg) return;
@@ -129,7 +174,7 @@
           overlay.style.display = 'flex';
           overlay.style.alignItems = 'center';
           overlay.style.justifyContent = 'center';
-          
+
           const closeBtn = document.createElement('button');
           closeBtn.innerHTML = '✖ Close';
           closeBtn.style.position = 'absolute';
@@ -145,7 +190,7 @@
           closeBtn.style.borderRadius = '8px';
           closeBtn.style.zIndex = '1000000';
           closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
-          
+
           closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
           closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
 
@@ -154,7 +199,7 @@
           clonedSvg.style.height = '100%';
           clonedSvg.style.maxWidth = '100vw';
           clonedSvg.style.maxHeight = '100vh';
-          
+
           overlay.appendChild(clonedSvg);
           overlay.appendChild(closeBtn);
           document.body.appendChild(overlay);
@@ -182,6 +227,5 @@
       });
     });
   </script>
-
 </body>
 </html>

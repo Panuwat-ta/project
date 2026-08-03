@@ -1,100 +1,102 @@
 <!doctype html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>การคำนวณคะแนนความเสี่ยง (Risk Scoring) - ScamGuard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
   <link rel="stylesheet" href="../shared-theme.css">
-  
 </head>
+
 <body>
   <main class="document">
-    <h1 id="risk-scoring">การคำนวณคะแนนความเสี่ยง (Risk Scoring)</h1>
-<p class="lede">ระบบรวมผลลัพธ์จาก 3 ชั้นการวิเคราะห์เป็น <strong>Weighted Risk Score</strong> (0–100) และแสดงผลเป็นระดับความเสี่ยงแบบ color-coded ให้ผู้ใช้</p>
-<div class="divider"></div>
-<h2 id="_1">สูตรคำนวณ</h2>
-<p>$$\text{Risk Score} = (S_{\text{text}} \times 0.25) + (S_{\text{visual}} \times 0.45) + (S_{\text{source}} \times 0.30)$$</p>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">ส่วนประกอบ</th>
-<th style="text-align: left;">ตัวแปร</th>
-<th style="text-align: left;">น้ำหนัก</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">วิเคราะห์ข้อความ</td>
-<td style="text-align: left;">S_text</td>
-<td style="text-align: left;">25%</td>
-</tr>
-<tr>
-<td style="text-align: left;">ตรวจจับความผิดปกติทางภาพ</td>
-<td style="text-align: left;">S_visual</td>
-<td style="text-align: left;">45%</td>
-</tr>
-<tr>
-<td style="text-align: left;">ตรวจสอบแหล่งที่มา</td>
-<td style="text-align: left;">S_source</td>
-<td style="text-align: left;">30%</td>
-</tr>
-</tbody>
-</table>
-<p>คะแนนแต่ละส่วนถูก normalize เป็น 0–100 ก่อนคูณน้ำหนัก</p>
-<div class="divider"></div>
-<h2 id="_2">ระดับความเสี่ยง</h2>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">ช่วงคะแนน</th>
-<th style="text-align: left;">ระดับ</th>
-<th style="text-align: left;">สี</th>
-<th style="text-align: left;">ความหมาย</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">0 – 39</td>
-<td style="text-align: left;">ความเสี่ยงต่ำ</td>
-<td style="text-align: left;">เขียว</td>
-<td style="text-align: left;">ไม่พบสัญญาณการดัดแปลงหรือหลอกลวงที่ชัดเจน</td>
-</tr>
-<tr>
-<td style="text-align: left;">40 – 69</td>
-<td style="text-align: left;">ความเสี่ยงปานกลาง</td>
-<td style="text-align: left;">เหลือง</td>
-<td style="text-align: left;">พบสัญญาณน่าสงสัยบางจุด ควรใช้วิจารณญาณประกอบ</td>
-</tr>
-<tr>
-<td style="text-align: left;">70 – 100</td>
-<td style="text-align: left;">ความเสี่ยงสูง</td>
-<td style="text-align: left;">แดง</td>
-<td style="text-align: left;">พบหลักฐานการตัดต่อ คำหลอกลวง หรือภาพที่ถูกนำไปใช้ซ้ำชัดเจน</td>
-</tr>
-</tbody>
-</table>
-<div class="divider"></div>
-<h2 id="_3">เหตุผลของการกำหนดน้ำหนัก</h2>
-<p>ชั้น Visual Anomaly มีน้ำหนักสูงสุด (45%) เพราะเป็นสัญญาณที่แม่นยำที่สุดในระดับนิติวิทยาศาสตร์ — ตรวจจับการดัดแปลงพิกเซลโดยตรง ชั้น Source Verification (30%) เป็นสัญญาณแรงเมื่อ fired แต่ให้ false negative สำหรับภาพหลอกลวงที่เพิ่งสร้างใหม่ ชั้น Textual (25%) รวดเร็วและประหยัดทรัพยากร แต่อาจไม่ทำงานเลยหากภาพไม่มีข้อความ</p>
-<div class="divider"></div>
-<h2 id="cache">พฤติกรรมการ Cache</h2>
-<p>เมื่อคำนวณ Risk Score สำหรับภาพใดแล้ว จะ hash รูปภาพและเก็บไว้ใน <strong>Redis</strong> ถ้ามีการส่งรูปเดิมซ้ำ จะดึงผลลัพธ์จาก <strong>PostgreSQL</strong> ทันทีโดยไม่รัน AI Pipeline ซ้ำ ทำให้ latency ลดจาก 15 วินาทีเหลือต่ำกว่า 3 วินาทีสำหรับภาพที่เคยวิเคราะห์แล้ว</p>
-<div class="divider"></div>
-<h2 id="partial-failure">การจัดการ Partial Failure</h2>
-<p>ถ้าชั้นการวิเคราะห์ใดชั้นหนึ่งล้มเหลว (เช่น Reverse Image Search API timeout) ระบบยังคำนวณคะแนนบางส่วนจากชั้นที่ทำงานสำเร็จได้ และระบุใน response ว่าชั้นใดบ้างที่มีส่วนร่วมในการคำนวณ</p>
-<div class="divider"></div>
-<h2 id="_4">ประเด็นสำคัญ</h2>
-<ul>
-<li>คะแนนเป็นตัวเลขต่อเนื่อง 0–100 ไม่ใช่ pass/fail</li>
-<li>ชั้น Visual Anomaly มีอิทธิพลมากที่สุดต่อคะแนนรวม</li>
-<li>UI แสดงคะแนนเป็น color gauge และเปอร์เซ็นต์</li>
-<li>การ Cache ขจัดการคำนวณซ้ำบนรูปที่เคยส่งมาแล้ว</li>
-</ul>
-<div class="divider"></div>
+    <h1>การคำนวณคะแนนความเสี่ยง (Risk Scoring)</h1>
+        <p class="lede">ระบบรวมผลลัพธ์จาก 3 ชั้นการวิเคราะห์เป็น <strong>Weighted Risk Score</strong> (0–100) และแสดงผลเป็นระดับความเสี่ยงแบบ color-coded ให้ผู้ใช้</p>
+    <div class="divider"></div>
+    <h2>สูตรคำนวณ</h2>
+    <p>$$\text{Risk Score} = (S_{\text{text}} \times 0.25) + (S_{\text{visual}} \times 0.45) + (S_{\text{source}} \times 0.30)$$</p>
+    <table>
+    <thead>
+    <tr>
+    <th style="text-align: left;">ส่วนประกอบ</th>
+    <th style="text-align: left;">ตัวแปร</th>
+    <th style="text-align: left;">น้ำหนัก</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td style="text-align: left;">วิเคราะห์ข้อความ</td>
+    <td style="text-align: left;">S_text</td>
+    <td style="text-align: left;">25%</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">ตรวจจับความผิดปกติทางภาพ</td>
+    <td style="text-align: left;">S_visual</td>
+    <td style="text-align: left;">45%</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">ตรวจสอบแหล่งที่มา</td>
+    <td style="text-align: left;">S_source</td>
+    <td style="text-align: left;">30%</td>
+    </tr>
+    </tbody>
+    </table>
+    <p>คะแนนแต่ละส่วนถูก normalize เป็น 0–100 ก่อนคูณน้ำหนัก</p>
+    <div class="divider"></div>
+    <h2>ระดับความเสี่ยง</h2>
+    <table>
+    <thead>
+    <tr>
+    <th style="text-align: left;">ช่วงคะแนน</th>
+    <th style="text-align: left;">ระดับ</th>
+    <th style="text-align: left;">สี</th>
+    <th style="text-align: left;">ความหมาย</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td style="text-align: left;">0 – 39</td>
+    <td style="text-align: left;">ความเสี่ยงต่ำ</td>
+    <td style="text-align: left;">เขียว</td>
+    <td style="text-align: left;">ไม่พบสัญญาณการดัดแปลงหรือหลอกลวงที่ชัดเจน</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">40 – 69</td>
+    <td style="text-align: left;">ความเสี่ยงปานกลาง</td>
+    <td style="text-align: left;">เหลือง</td>
+    <td style="text-align: left;">พบสัญญาณน่าสงสัยบางจุด ควรใช้วิจารณญาณประกอบ</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">70 – 100</td>
+    <td style="text-align: left;">ความเสี่ยงสูง</td>
+    <td style="text-align: left;">แดง</td>
+    <td style="text-align: left;">พบหลักฐานการตัดต่อ คำหลอกลวง หรือภาพที่ถูกนำไปใช้ซ้ำชัดเจน</td>
+    </tr>
+    </tbody>
+    </table>
+    <div class="divider"></div>
+    <h2>เหตุผลของการกำหนดน้ำหนัก</h2>
+    <p>ชั้น Visual Anomaly มีน้ำหนักสูงสุด (45%) เพราะเป็นสัญญาณที่แม่นยำที่สุดในระดับนิติวิทยาศาสตร์ — ตรวจจับการดัดแปลงพิกเซลโดยตรง ชั้น Source Verification (30%) เป็นสัญญาณแรงเมื่อ fired แต่ให้ false negative สำหรับภาพหลอกลวงที่เพิ่งสร้างใหม่ ชั้น Textual (25%) รวดเร็วและประหยัดทรัพยากร แต่อาจไม่ทำงานเลยหากภาพไม่มีข้อความ</p>
+    <div class="divider"></div>
+    <h2>พฤติกรรมการ Cache</h2>
+    <p>เมื่อคำนวณ Risk Score สำหรับภาพใดแล้ว จะ hash รูปภาพและเก็บไว้ใน <strong>Redis</strong> ถ้ามีการส่งรูปเดิมซ้ำ จะดึงผลลัพธ์จาก <strong>PostgreSQL</strong> ทันทีโดยไม่รัน AI Pipeline ซ้ำ ทำให้ latency ลดจาก 15 วินาทีเหลือต่ำกว่า 3 วินาทีสำหรับภาพที่เคยวิเคราะห์แล้ว</p>
+    <div class="divider"></div>
+    <h2>การจัดการ Partial Failure</h2>
+    <p>ถ้าชั้นการวิเคราะห์ใดชั้นหนึ่งล้มเหลว (เช่น Reverse Image Search API timeout) ระบบยังคำนวณคะแนนบางส่วนจากชั้นที่ทำงานสำเร็จได้ และระบุใน response ว่าชั้นใดบ้างที่มีส่วนร่วมในการคำนวณ</p>
+    <div class="divider"></div>
+    <h2>ประเด็นสำคัญ</h2>
+    <ul>
+    <li>คะแนนเป็นตัวเลขต่อเนื่อง 0–100 ไม่ใช่ pass/fail</li>
+    <li>ชั้น Visual Anomaly มีอิทธิพลมากที่สุดต่อคะแนนรวม</li>
+    <li>UI แสดงคะแนนเป็น color gauge และเปอร์เซ็นต์</li>
+    <li>การ Cache ขจัดการคำนวณซ้ำบนรูปที่เคยส่งมาแล้ว</li>
+    </ul>
   </main>
-  
+
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
@@ -103,7 +105,7 @@
   <script>
     mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
   </script>
-  
+
   <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -111,7 +113,7 @@
         const btn = document.createElement('button');
         btn.className = 'btn-expand-mermaid';
         btn.innerHTML = '🔍 Fullscreen';
-        
+
         btn.onclick = () => {
           const originalSvg = container.querySelector('svg');
           if (!originalSvg) return;
@@ -127,7 +129,7 @@
           overlay.style.display = 'flex';
           overlay.style.alignItems = 'center';
           overlay.style.justifyContent = 'center';
-          
+
           const closeBtn = document.createElement('button');
           closeBtn.innerHTML = '✖ Close';
           closeBtn.style.position = 'absolute';
@@ -143,7 +145,7 @@
           closeBtn.style.borderRadius = '8px';
           closeBtn.style.zIndex = '1000000';
           closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
-          
+
           closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
           closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
 
@@ -152,7 +154,7 @@
           clonedSvg.style.height = '100%';
           clonedSvg.style.maxWidth = '100vw';
           clonedSvg.style.maxHeight = '100vh';
-          
+
           overlay.appendChild(clonedSvg);
           overlay.appendChild(closeBtn);
           document.body.appendChild(overlay);
@@ -180,6 +182,5 @@
       });
     });
   </script>
-
 </body>
 </html>
