@@ -230,17 +230,6 @@
       position: relative;
       min-height: 0;
       padding: clamp(16px, 2.5vw, 32px);
-      display: flex;
-      flex-direction: column;
-    }
-
-    .iframe-wrapper {
-      background: #fff;
-      border: 1px solid var(--rule);
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(18, 23, 43, 0.08);
-      flex-grow: 1;
-      overflow: hidden;
     }
 
     iframe {
@@ -250,6 +239,8 @@
       min-height: 540px;
       background: transparent;
       border: none;
+      border-radius: 0;
+      box-shadow: none;
     }
   </style>
 </head>
@@ -388,9 +379,7 @@
         <div class="doc-number" id="documentNumber">DOC 01/07</div>
       </header>
       <section class="viewer">
-        <div class="iframe-wrapper">
-          <iframe id="contentFrame" src=""></iframe>
-        </div>
+        <iframe id="contentFrame" src=""></iframe>
       </section>
     </main>
   </div>
