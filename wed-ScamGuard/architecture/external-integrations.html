@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>การเชื่อมต่อบริการภายนอก (External Integrations) - ScamGuard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../shared-theme.css">
+  <style>
+    body { display: block; min-height: 100vh; overflow: auto; background-color: var(--paper); margin: 0; }
+    .document { width: 100%; margin: 0; padding: 30px clamp(15px, 2vw, 30px); }
+    h1 { max-width: 850px; font: 600 1.85rem/1.2 Taviraj\, serif !important; margin-bottom: 0.5rem; color: var(--ink); }
+    h2 { font: 600 1.3rem/1.3 Taviraj\, serif; color: var(--indigo); margin-top: 2rem; margin-bottom: 18px; border-bottom: none; padding-bottom: 0; }
+    .lede { max-width: 720px; margin: 0 0 2rem; color: var(--text-muted); font-size: 1rem; line-height: 1.6; }
+    .divider { height: 1px; margin: 36px 0; background: var(--rule); }
+    .file-separator { height: 2px; margin: 60px 0; background: var(--amber); opacity: 0.5; }
+    .panel { padding: 0; background: transparent; border: none; border-radius: 0; margin-bottom: 30px; }
+    .facts { display: grid; gap: 0; margin: 0; }
+    .facts div { display: grid; grid-template-columns: minmax(130px, max-content) 1fr; gap: 18px; padding: 12px 0; border-bottom: 1px solid var(--rule); }
+    .facts div:last-child { border: 0; padding-bottom: 0; }
+    dt { color: var(--text-muted); font: 500 .75rem/1.4 IBM Plex Mono\, monospace; letter-spacing: .08em; text-transform: uppercase; }
+    .steps { display: grid; gap: 12px; margin: 1rem 0; padding: 0; list-style: none; counter-reset: plan; }
+    .steps li { position: relative; margin: 0; padding: 0 0 0 32px; background: transparent; border: none; counter-increment: plan; }
+    .steps li::before { position: absolute; top: 0; left: 0; color: var(--indigo); content: "0" counter(plan) "."; font: 600 .85rem/1.6 IBM Plex Mono\, monospace; }
+    dd, p, li { margin: 0; color: var(--text-main); font-size: 0.95rem !important; line-height: 1.6 !important; }
+    p { margin-bottom: 1rem; }
+    ul { padding-left: 1.5rem; margin-bottom: 1rem; }
+    li { margin-bottom: 0.5rem; }
+    @media (max-width:720px) { .facts div { grid-template-columns: 1fr; gap: 4px; } }
+  </style>
+</head>
+<body>
+  <main class="document">
+    <h1 id="external-integrations">การเชื่อมต่อบริการภายนอก (External Integrations)</h1>
+<p class="lede">บริการภายนอก 2 รายการที่เชื่อมต่อในระบบ ทั้งคู่เรียกผ่าน API Application เท่านั้น ไม่ใช่จาก Client โดยตรง</p>
+<div class="divider"></div>
+<h2 id="google-vision-api-reverse-image-search">Google Vision API — Reverse Image Search</h2>
+<p><strong>ผู้ให้บริการ:</strong> Google Cloud Vision API (มี Bing Visual Search เป็น Alternative)</p>
+<p><strong>หน้าที่:</strong> ชั้น Source Verification ของ [[concepts/multi-layer-analysis|การวิเคราะห์หลายชั้น]] ตรวจสอบว่ารูปภาพที่อัปโหลดปรากฏในอินเทอร์เน็ตที่อื่นหรือไม่</p>
+<p><strong>การทำงาน:</strong>
+1. API Application ส่งรูปภาพ Binary หรือ URL ไปยัง Google Vision API
+2. Google Vision ส่งคืน URL ของหน้าเว็บที่พบรูปคล้ายกัน
+3. ระบบนับ Domain ที่ไม่ซ้ำกัน
+4. &gt;= 3 Domain → ความเสี่ยงแหล่งที่มาสูง
+5. &lt;= 1 Domain → ความเสี่ยงต่ำ</p>
+<p><strong>มีส่วนใน:</strong> คะแนน S_source (30% ของ Risk Score รวม)</p>
+<p><strong>กรณี Failure:</strong> ถ้า External API Timeout หรือ Error ระบบจะใช้คะแนน S_source กลางและระบุว่า "Source Verification ไม่พร้อมใช้งาน" ใน Response</p>
+<div class="divider"></div>
+<h2 id="firebase-cloud-messaging-fcm">Firebase Cloud Messaging (FCM)</h2>
+<p><strong>ผู้ให้บริการ:</strong> Google Firebase</p>
+<p><strong>หน้าที่:</strong> Push Notification สำหรับการวิเคราะห์แบบ Asynchronous</p>
+<p><strong>การทำงาน:</strong>
+- การวิเคราะห์เต็มรูปแบบ (Cache Miss) ใช้เวลาสูงสุด 15 วินาที
+- แทนที่จะ Hold HTTP Connection ไว้ 15 วินาที Mobile App รับ FCM Push Notification เมื่อผลลัพธ์พร้อม
+- Notification Payload มี Scan ID และ Risk Grade (Low/Medium/High)
+- Mobile App ดึงผลลัพธ์เต็มจาก API ต่อจาก Notification</p>
+<p><strong>เหตุผลที่เลือก FCM:</strong> ฟรีสำหรับ Volume มาตรฐาน, เสถียรบน Android, ไม่ต้องบริหาร Infrastructure</p>
+<div class="divider"></div>
+<h2 id="integration">Integration ที่วางแผนในอนาคต</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">บริการ</th>
+<th style="text-align: left;">หน้าที่</th>
+<th style="text-align: left;">สถานะ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Bing Visual Search</td>
+<td style="text-align: left;">ทางเลือกสำรองสำหรับ Reverse Image Search</td>
+<td style="text-align: left;">วางแผนแล้ว (Fallback)</td>
+</tr>
+<tr>
+<td style="text-align: left;">SynthID (Google DeepMind)</td>
+<td style="text-align: left;">ตรวจจับภาพ AI ผ่าน Watermark</td>
+<td style="text-align: left;">กล่าวถึงใน README แต่ยังไม่ได้ออกแบบ</td>
+</tr>
+<tr>
+<td style="text-align: left;">Gemini (Google AI)</td>
+<td style="text-align: left;">วิเคราะห์บริบทภาพด้วย LLM</td>
+<td style="text-align: left;">กล่าวถึงใน README แต่ยังไม่ได้ออกแบบ</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>NOTE:</strong><br/>
+SynthID และ Gemini ถูกอ้างถึงใน README ภายใต้ "เทคโนโลยีระดับสูง" สำหรับ Visual Anomaly Detection แต่การออกแบบ Integration ยังไม่มีเอกสาร ให้ ingest เอกสารที่เกี่ยวข้องเมื่อมีความคืบหน้า</p>
+</blockquote>
+<div class="divider"></div>
+<h2 id="_1">ประเด็นสำคัญ</h2>
+<ul>
+<li>ทั้งสองบริการเรียกผ่าน API Application เท่านั้น Client ไม่เรียก External API โดยตรง</li>
+<li>ทั้งคู่มี Fallback/Partial-failure Handling เพื่อป้องกันไม่ให้ Outage ของบริการภายนอกบล็อกการสแกนทั้งหมด</li>
+<li>Google Vision API คือบริการภายนอกเพียงรายการเดียวในการออกแบบปัจจุบันที่มีค่าใช้จ่าย</li>
+</ul>
+<div class="divider"></div>
+  </main>
+  
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
+  </script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.mermaid-container').forEach(container => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-expand-mermaid';
+        btn.innerHTML = '🔍 Fullscreen';
+        
+        btn.onclick = () => {
+          const originalSvg = container.querySelector('svg');
+          if (!originalSvg) return;
+
+          const overlay = document.createElement('div');
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.backgroundColor = 'var(--paper, #F6F4EE)';
+          overlay.style.zIndex = '999999';
+          overlay.style.display = 'flex';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+          
+          const closeBtn = document.createElement('button');
+          closeBtn.innerHTML = '✖ Close';
+          closeBtn.style.position = 'absolute';
+          closeBtn.style.top = '20px';
+          closeBtn.style.right = '20px';
+          closeBtn.style.padding = '8px 16px';
+          closeBtn.style.fontSize = '1rem';
+          closeBtn.style.fontWeight = 'bold';
+          closeBtn.style.cursor = 'pointer';
+          closeBtn.style.backgroundColor = '#ff4d4d';
+          closeBtn.style.color = '#fff';
+          closeBtn.style.border = 'none';
+          closeBtn.style.borderRadius = '8px';
+          closeBtn.style.zIndex = '1000000';
+          closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+          
+          closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
+          closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
+
+          const clonedSvg = originalSvg.cloneNode(true);
+          clonedSvg.style.width = '100%';
+          clonedSvg.style.height = '100%';
+          clonedSvg.style.maxWidth = '100vw';
+          clonedSvg.style.maxHeight = '100vh';
+          
+          overlay.appendChild(clonedSvg);
+          overlay.appendChild(closeBtn);
+          document.body.appendChild(overlay);
+
+          const oldOverflow = document.body.style.overflow;
+          document.body.style.overflow = 'hidden';
+
+          const panZoomInstance = svgPanZoom(clonedSvg, {
+            zoomEnabled: true,
+            controlIconsEnabled: true,
+            fit: true,
+            center: true,
+            minZoom: 0.5,
+            maxZoom: 10,
+            mouseWheelZoomEnabled: true
+          });
+
+          closeBtn.onclick = () => {
+            panZoomInstance.destroy();
+            document.body.removeChild(overlay);
+            document.body.style.overflow = oldOverflow;
+          };
+        };
+        container.appendChild(btn);
+      });
+    });
+  </script>
+
+</body>
+</html>

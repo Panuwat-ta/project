@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>เทคโนโลยีที่ใช้ (Technology Stack) - ScamGuard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../shared-theme.css">
+  <style>
+    body { display: block; min-height: 100vh; overflow: auto; background-color: var(--paper); margin: 0; }
+    .document { width: 100%; margin: 0; padding: 30px clamp(15px, 2vw, 30px); }
+    h1 { max-width: 850px; font: 600 1.85rem/1.2 Taviraj\, serif !important; margin-bottom: 0.5rem; color: var(--ink); }
+    h2 { font: 600 1.3rem/1.3 Taviraj\, serif; color: var(--indigo); margin-top: 2rem; margin-bottom: 18px; border-bottom: none; padding-bottom: 0; }
+    .lede { max-width: 720px; margin: 0 0 2rem; color: var(--text-muted); font-size: 1rem; line-height: 1.6; }
+    .divider { height: 1px; margin: 36px 0; background: var(--rule); }
+    .file-separator { height: 2px; margin: 60px 0; background: var(--amber); opacity: 0.5; }
+    .panel { padding: 0; background: transparent; border: none; border-radius: 0; margin-bottom: 30px; }
+    .facts { display: grid; gap: 0; margin: 0; }
+    .facts div { display: grid; grid-template-columns: minmax(130px, max-content) 1fr; gap: 18px; padding: 12px 0; border-bottom: 1px solid var(--rule); }
+    .facts div:last-child { border: 0; padding-bottom: 0; }
+    dt { color: var(--text-muted); font: 500 .75rem/1.4 IBM Plex Mono\, monospace; letter-spacing: .08em; text-transform: uppercase; }
+    .steps { display: grid; gap: 12px; margin: 1rem 0; padding: 0; list-style: none; counter-reset: plan; }
+    .steps li { position: relative; margin: 0; padding: 0 0 0 32px; background: transparent; border: none; counter-increment: plan; }
+    .steps li::before { position: absolute; top: 0; left: 0; color: var(--indigo); content: "0" counter(plan) "."; font: 600 .85rem/1.6 IBM Plex Mono\, monospace; }
+    dd, p, li { margin: 0; color: var(--text-main); font-size: 0.95rem !important; line-height: 1.6 !important; }
+    p { margin-bottom: 1rem; }
+    ul { padding-left: 1.5rem; margin-bottom: 1rem; }
+    li { margin-bottom: 0.5rem; }
+    @media (max-width:720px) { .facts div { grid-template-columns: 1fr; gap: 4px; } }
+  </style>
+</head>
+<body>
+  <main class="document">
+    <h1 id="technology-stack">เทคโนโลยีที่ใช้ (Technology Stack)</h1>
+<p class="lede">รายการเทคโนโลยีที่เลือกใช้สำหรับโปรเจค พร้อมเหตุผลทางวิศวกรรม</p>
+<div class="divider"></div>
+<h2 id="full-stack">สรุป Full Stack</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">ส่วนประกอบ</th>
+<th style="text-align: left;">เทคโนโลยี</th>
+<th style="text-align: left;">เหตุผล</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Mobile App</strong></td>
+<td style="text-align: left;">Flutter (Dart)</td>
+<td style="text-align: left;">รองรับ Android (และ iOS ในอนาคต) ด้วย Codebase เดียว; รองรับ Dark Mode ดีเยี่ยม; ใช้ BLoC State Management</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Admin Portal</strong></td>
+<td style="text-align: left;">React.js + Tailwind CSS</td>
+<td style="text-align: left;">โหลดข้อมูล Dynamic รวดเร็ว; จัดการ State สำหรับ Dashboard ได้ดี; เขียนแบบ Component-based</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>API Backend</strong></td>
+<td style="text-align: left;">Python FastAPI</td>
+<td style="text-align: left;">Async I/O ประสิทธิภาพเทียบเท่า Go/Node.js; ตรวจสอบ Pydantic อัตโนมัติ; Auto-generated OpenAPI Docs</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>AI Training</strong></td>
+<td style="text-align: left;">PyTorch</td>
+<td style="text-align: left;">Framework มาตรฐานอุตสาหกรรมสำหรับ Deep Learning; มี Ecosystem ของ SegFormer รองรับดี</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>AI Inference</strong></td>
+<td style="text-align: left;">ONNX Runtime</td>
+<td style="text-align: left;">เร็วกว่า Native PyTorch 2–5 เท่าตอน Serving; ไม่ยึดติดกับ Framework</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Primary Database</strong></td>
+<td style="text-align: left;">PostgreSQL</td>
+<td style="text-align: left;">ACID Transactions; ความถูกต้องของ Relational Data; รองรับ PostGIS สำหรับฟีเจอร์พิกัดในอนาคต</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Cache</strong></td>
+<td style="text-align: left;">Redis</td>
+<td style="text-align: left;">ค้นหา Image Hash ไวระดับ Sub-millisecond; ลดโหลด AI Inference สำหรับรูปซ้ำได้มหาศาล</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>File Storage</strong></td>
+<td style="text-align: left;">Cloud Object Storage</td>
+<td style="text-align: left;">ขยายได้ไม่จำกัด; ใช้ Presigned URL เพื่อความปลอดภัยของ Client</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Reverse Image Search</strong></td>
+<td style="text-align: left;">Google Vision API</td>
+<td style="text-align: left;">ค้นหาภาพย้อนกลับครอบคลุมและแม่นยำที่สุด</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Push Notifications</strong></td>
+<td style="text-align: left;">Firebase Cloud Messaging (FCM)</td>
+<td style="text-align: left;">ฟรี, เสถียรบน Android, ไม่ต้องบริหาร Infrastructure เอง</td>
+</tr>
+</tbody>
+</table>
+<div class="divider"></div>
+<h2 id="mobile-app">รายละเอียดฝั่ง Mobile App</h2>
+<ul>
+<li><strong>State Management:</strong> BLoC (Business Logic Component)</li>
+<li><strong>HTTP Client:</strong> Dio + Secure Storage สำหรับเก็บ JWT</li>
+<li><strong>จัดการรูปภาพ:</strong> <code>image_picker</code> + <code>image_cropper</code></li>
+<li><strong>Platform:</strong> Android (หลัก), iOS (อนาคต)</li>
+<li><strong>Architecture:</strong> Clean Architecture (Presentation / Domain / Data)</li>
+</ul>
+<p>ดูเพิ่มเติมที่ [[architecture/mobile-app]]</p>
+<div class="divider"></div>
+<h2 id="ai">รายละเอียดฝั่ง AI</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">ส่วน</th>
+<th style="text-align: left;">เทคโนโลยี</th>
+<th style="text-align: left;">หมายเหตุ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Core Model</td>
+<td style="text-align: left;">SegFormer</td>
+<td style="text-align: left;">Transformer-based Semantic Segmentation</td>
+</tr>
+<tr>
+<td style="text-align: left;">Training Framework</td>
+<td style="text-align: left;">PyTorch</td>
+<td style="text-align: left;">มาตรฐาน; Ecosystem ใหญ่</td>
+</tr>
+<tr>
+<td style="text-align: left;">Serving Format</td>
+<td style="text-align: left;">ONNX</td>
+<td style="text-align: left;">แปลงจาก PyTorch หลัง Train เสร็จ</td>
+</tr>
+<tr>
+<td style="text-align: left;">Inference Runtime</td>
+<td style="text-align: left;">ONNX Runtime</td>
+<td style="text-align: left;">Engine สำหรับ Serving ที่ Optimized แล้ว</td>
+</tr>
+<tr>
+<td style="text-align: left;">XAI</td>
+<td style="text-align: left;">Grad-CAM</td>
+<td style="text-align: left;">คำนวณจาก Segmentation Mask หลัง Inference</td>
+</tr>
+<tr>
+<td style="text-align: left;">OCR</td>
+<td style="text-align: left;">Surya-OCR</td>
+<td style="text-align: left;">ดึงข้อความภาษาไทย + อังกฤษ</td>
+</tr>
+<tr>
+<td style="text-align: left;">ฟีเจอร์ AI อนาคต</td>
+<td style="text-align: left;">SynthID, Gemini</td>
+<td style="text-align: left;">ตรวจจับ Watermark, วิเคราะห์ด้วย LLM (ยังไม่ได้ออกแบบ)</td>
+</tr>
+</tbody>
+</table>
+<div class="divider"></div>
+<h2 id="react-native-mobile">ทำไมไม่ใช้ React Native สำหรับ Mobile?</h2>
+<blockquote>
+<p><strong>NOTE:</strong><br/>
+ใน SRS (<code>doc/objective.md</code>) ขัอ OBJ-01 ระบุว่า "Cross-Platform (React Native)" แต่ในเอกสารการออกแบบ (<code>design/architecture.md</code>, <code>design/mobile.md</code>) ระบุ <strong>Flutter</strong> อย่างสม่ำเสมอ เอกสารการออกแบบเป็นเวอร์ชันที่ใหม่กว่าและใช้อ้างอิงเป็นหลัก — Flutter คือเทคโนโลยีที่ถูกนำมาใช้จริง ดูบันทึกฉบับเต็มได้ที่ [[decisions/technology-choices]]</p>
+</blockquote>
+<div class="divider"></div>
+  </main>
+  
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
+  </script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.mermaid-container').forEach(container => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-expand-mermaid';
+        btn.innerHTML = '🔍 Fullscreen';
+        
+        btn.onclick = () => {
+          const originalSvg = container.querySelector('svg');
+          if (!originalSvg) return;
+
+          const overlay = document.createElement('div');
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.backgroundColor = 'var(--paper, #F6F4EE)';
+          overlay.style.zIndex = '999999';
+          overlay.style.display = 'flex';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+          
+          const closeBtn = document.createElement('button');
+          closeBtn.innerHTML = '✖ Close';
+          closeBtn.style.position = 'absolute';
+          closeBtn.style.top = '20px';
+          closeBtn.style.right = '20px';
+          closeBtn.style.padding = '8px 16px';
+          closeBtn.style.fontSize = '1rem';
+          closeBtn.style.fontWeight = 'bold';
+          closeBtn.style.cursor = 'pointer';
+          closeBtn.style.backgroundColor = '#ff4d4d';
+          closeBtn.style.color = '#fff';
+          closeBtn.style.border = 'none';
+          closeBtn.style.borderRadius = '8px';
+          closeBtn.style.zIndex = '1000000';
+          closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+          
+          closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
+          closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
+
+          const clonedSvg = originalSvg.cloneNode(true);
+          clonedSvg.style.width = '100%';
+          clonedSvg.style.height = '100%';
+          clonedSvg.style.maxWidth = '100vw';
+          clonedSvg.style.maxHeight = '100vh';
+          
+          overlay.appendChild(clonedSvg);
+          overlay.appendChild(closeBtn);
+          document.body.appendChild(overlay);
+
+          const oldOverflow = document.body.style.overflow;
+          document.body.style.overflow = 'hidden';
+
+          const panZoomInstance = svgPanZoom(clonedSvg, {
+            zoomEnabled: true,
+            controlIconsEnabled: true,
+            fit: true,
+            center: true,
+            minZoom: 0.5,
+            maxZoom: 10,
+            mouseWheelZoomEnabled: true
+          });
+
+          closeBtn.onclick = () => {
+            panZoomInstance.destroy();
+            document.body.removeChild(overlay);
+            document.body.style.overflow = oldOverflow;
+          };
+        };
+        container.appendChild(btn);
+      });
+    });
+  </script>
+
+</body>
+</html>

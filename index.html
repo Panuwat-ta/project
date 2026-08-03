@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ScamGuard Documentation Portal</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --ink: #12172B;
+      --ink-soft: #1C2340;
+      --paper: #F6F4EE;
+      --paper-warm: #EFE9DA;
+      --rule: #DBD5C6;
+      --indigo: #3D4B94;
+      --indigo-deep: #2A3570;
+      --amber: #C1832A;
+      --text-main: #1B1F2B;
+      --text-muted: #6B6F7D;
+    }
+
+    * {
+      box-sizing: border-box;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(107, 111, 125, 0.4) transparent;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(107, 111, 125, 0.3);
+      border-radius: 4px;
+    }
+
+    body {
+      min-width: 320px;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+      color: var(--text-main);
+      font-family: 'Sarabun', sans-serif;
+      background-color: var(--paper);
+      background-image: radial-gradient(circle at 1px 1px, oklch(.47 .06 271 / .13) 1px, transparent 0);
+      background-size: 18px 18px;
+    }
+
+    .portal {
+      display: grid;
+      grid-template-columns: 292px minmax(0, 1fr);
+      height: 100vh;
+    }
+
+    .sidebar {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      padding: 30px 18px 20px;
+      overflow-y: auto;
+      color: var(--paper);
+      background: var(--ink);
+    }
+
+    .brand {
+      padding: 4px 14px 28px;
+      border-bottom: 1px solid rgb(246 244 238 / .16);
+    }
+
+    .brand-mark,
+    .doc-number {
+      font: 500 .75rem/1.4 'IBM Plex Mono', monospace;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .brand-mark {
+      color: var(--amber);
+    }
+
+    .brand h1 {
+      margin: 8px 0 0;
+      color: var(--paper);
+      font: 600 1.85rem/1.1 'Taviraj', serif;
+    }
+
+    .project-name {
+      margin: 8px 0 0;
+      color: rgb(246 244 238 / .68);
+      font-size: .85rem;
+      line-height: 1.45;
+    }
+
+    .nav-group {
+      margin-top: 20px;
+    }
+
+    .nav-list {
+      display: grid;
+      gap: 5px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .nav-item {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      width: 100%;
+      min-height: 54px;
+      padding: 6px 10px;
+      color: rgb(246 244 238 / .75);
+      text-align: left;
+      cursor: pointer;
+      background: transparent;
+      border: 0;
+      border-left: 3px solid transparent;
+      font: 500 .95rem/1.2 'Sarabun', sans-serif;
+      transition: all .3s ease;
+    }
+
+    .nav-item:hover,
+    .nav-item.is-active {
+      color: var(--paper);
+      background: var(--ink-soft);
+      border-left-color: var(--amber);
+    }
+
+    .stamp {
+      display: grid;
+      flex: 0 0 32px;
+      width: 32px;
+      height: 32px;
+      place-items: center;
+      color: rgb(246 244 238 / .45);
+      font: 500 .75rem 'IBM Plex Mono', monospace;
+      border: 1px solid rgb(246 244 238 / .15);
+      border-radius: 4px;
+      transition: all .3s ease;
+    }
+
+    .nav-item:hover .stamp,
+    .nav-item.is-expanded .stamp {
+      color: var(--ink);
+      background: var(--amber);
+      border-color: var(--amber);
+      transform: rotate(-7deg);
+    }
+
+    .nav-copy {
+      display: grid;
+      gap: 2px;
+    }
+
+    /* Dropdown/Accordion styling */
+    .sub-menu-container {
+      display: none;
+      padding: 4px 0 4px 44px;
+    }
+
+    .sub-item {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      border: none;
+      color: rgb(246 244 238 / .6);
+      font-size: .85rem;
+      padding: 6px 8px;
+      cursor: pointer;
+      transition: color 0.2s, background-color 0.2s;
+      border-radius: 4px;
+    }
+
+    .sub-item:hover,
+    .sub-item.is-active {
+      color: var(--paper);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    main {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      min-width: 0;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px clamp(20px, 4vw, 48px);
+      background: var(--paper-warm);
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .eyebrow {
+      margin: 0 0 2px;
+      color: var(--indigo);
+      font: 500 .75rem/1.3 'IBM Plex Mono', monospace;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .page-title {
+      margin: 0;
+      color: var(--text-main);
+      font: 600 1.5rem/1.15 'Taviraj', serif;
+    }
+
+    .doc-number {
+      padding: 8px 10px;
+      color: var(--indigo-deep);
+      border: 1px solid var(--rule);
+      background: var(--paper);
+    }
+
+    .viewer {
+      position: relative;
+      min-height: 0;
+      padding: clamp(16px, 2.5vw, 32px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .iframe-wrapper {
+      background: #fff;
+      border: 1px solid var(--rule);
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(18, 23, 43, 0.08);
+      flex-grow: 1;
+      overflow: hidden;
+    }
+
+    iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 540px;
+      background: transparent;
+      border: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="portal">
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-mark">ScamGuard</span>
+        <h1>Documentation</h1>
+        <p class="project-name">Web Scam Prevention System</p>
+      </div>
+      <nav>
+        <div class="nav-group">
+          <ul class="nav-list">
+
+            <li>
+              <button class="nav-item category-toggle" type="button" data-cat="0">
+                <span class="stamp">01</span>
+                <span class="nav-copy">
+                  <span class="nav-phase">Overview</span>
+                </span>
+              </button>
+              <div id="cat-0" class="sub-menu-container">
+                <button class="sub-item" data-cat="0" data-sub="0">&bull; ภาพรวมโปรเจค: Scam Image Detection</button>
+
+              </div>
+            </li>
+
+            <li>
+              <button class="nav-item category-toggle" type="button" data-cat="1">
+                <span class="stamp">02</span>
+                <span class="nav-copy">
+                  <span class="nav-phase">Architecture</span>
+                </span>
+              </button>
+              <div id="cat-1" class="sub-menu-container">
+                <button class="sub-item" data-cat="1" data-sub="0">&bull; AI Inference Service</button>
+                <button class="sub-item" data-cat="1" data-sub="1">&bull; Backend API — FastAPI Orchestrator</button>
+                <button class="sub-item" data-cat="1" data-sub="2">&bull; โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</button>
+                <button class="sub-item" data-cat="1" data-sub="3">&bull; การเชื่อมต่อบริการภายนอก (External
+                  Integrations)</button>
+                <button class="sub-item" data-cat="1" data-sub="4">&bull; สถาปัตยกรรม Mobile App</button>
+                <button class="sub-item" data-cat="1" data-sub="5">&bull; สถาปัตยกรรมระบบ</button>
+
+              </div>
+            </li>
+
+            <li>
+              <button class="nav-item category-toggle" type="button" data-cat="2">
+                <span class="stamp">03</span>
+                <span class="nav-copy">
+                  <span class="nav-phase">Concepts</span>
+                </span>
+              </button>
+              <div id="cat-2" class="sub-menu-container">
+                <button class="sub-item" data-cat="2" data-sub="0">&bull; โมเดล AI — SegFormer</button>
+                <button class="sub-item" data-cat="2" data-sub="1">&bull; Error Level Analysis (ELA)</button>
+                <button class="sub-item" data-cat="2" data-sub="2">&bull; ปัญญาประดิษฐ์ที่อธิบายได้ (XAI)</button>
+                <button class="sub-item" data-cat="2" data-sub="3">&bull; การวิเคราะห์หลายชั้น (Multi-layer
+                  Analysis)</button>
+                <button class="sub-item" data-cat="2" data-sub="4">&bull; การคำนวณคะแนนความเสี่ยง (Risk
+                  Scoring)</button>
+
+              </div>
+            </li>
+
+            <li>
+              <button class="nav-item category-toggle" type="button" data-cat="3">
+                <span class="stamp">04</span>
+                <span class="nav-copy">
+                  <span class="nav-phase">Requirements</span>
+                </span>
+              </button>
+              <div id="cat-3" class="sub-menu-container">
+                <button class="sub-item" data-cat="3" data-sub="0">&bull; ความต้องการเชิงฟังก์ชัน (Functional
+                  Requirements)</button>
+                <button class="sub-item" data-cat="3" data-sub="1">&bull; ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional
+                  Requirements)</button>
+                <button class="sub-item" data-cat="3" data-sub="2">&bull; วัตถุประสงค์และตัวชี้วัดความสำเร็จ
+                  (KPIs)</button>
+
+              </div>
+            </li>
+
+            <li>
+              <button class="nav-item category-toggle" type="button" data-cat="4">
+                <span class="stamp">05</span>
+                <span class="nav-copy">
+                  <span class="nav-phase">Entities</span>
+                </span>
+              </button>
+              <div id="cat-4" class="sub-menu-container">
+                <button class="sub-item" data-cat="4" data-sub="0">&bull; ผู้ใช้ระบบ (Actors)</button>
+                <button class="sub-item" data-cat="4" data-sub="1">&bull; เทคโนโลยีที่ใช้ (Technology Stack)</button>
+
+              </div>
+            </li>
+
+            <li>
+              <button class="nav-item category-toggle" type="button" data-cat="5">
+                <span class="stamp">06</span>
+                <span class="nav-copy">
+                  <span class="nav-phase">Planning</span>
+                </span>
+              </button>
+              <div id="cat-5" class="sub-menu-container">
+                <button class="sub-item" data-cat="5" data-sub="0">&bull; ขอบเขตโครงการ (Project Scope)</button>
+                <button class="sub-item" data-cat="5" data-sub="1">&bull; ทีมงานและผู้รับผิดชอบ (Team)</button>
+
+              </div>
+            </li>
+
+            <li>
+              <button class="nav-item category-toggle" type="button" data-cat="6">
+                <span class="stamp">07</span>
+                <span class="nav-copy">
+                  <span class="nav-phase">Decisions</span>
+                </span>
+              </button>
+              <div id="cat-6" class="sub-menu-container">
+                <button class="sub-item" data-cat="6" data-sub="0">&bull; การตัดสินใจเลือกเทคโนโลยี</button>
+
+              </div>
+            </li>
+
+          </ul>
+        </div>
+      </nav>
+    </aside>
+    <main>
+      <header class="topbar">
+        <div>
+          <p class="eyebrow" id="breadcrumb">เนื้อหา</p>
+          <h2 class="page-title" id="documentTitle">Overview</h2>
+        </div>
+        <div class="doc-number" id="documentNumber">DOC 01/07</div>
+      </header>
+      <section class="viewer">
+        <div class="iframe-wrapper">
+          <iframe id="contentFrame" src=""></iframe>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script>
+    const documents = [{ "phase": "\u0e40\u0e19\u0e37\u0e49\u0e2d\u0e2b\u0e32 \u00b7 OVERVIEW", "title": "Overview", "sub_titles": [{ "title": "\u0e20\u0e32\u0e1e\u0e23\u0e27\u0e21\u0e42\u0e1b\u0e23\u0e40\u0e08\u0e04: Scam Image Detection", "path": "wed-ScamGuard/overview.html" }] }, { "phase": "\u0e40\u0e19\u0e37\u0e49\u0e2d\u0e2b\u0e32 \u00b7 ARCHITECTURE", "title": "Architecture", "sub_titles": [{ "title": "AI Inference Service", "path": "wed-ScamGuard/architecture/ai-inference-service.html" }, { "title": "Backend API \u2014 FastAPI Orchestrator", "path": "wed-ScamGuard/architecture/backend-api.html" }, { "title": "\u0e42\u0e04\u0e23\u0e07\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e10\u0e32\u0e19\u0e02\u0e49\u0e2d\u0e21\u0e39\u0e25\u0e41\u0e25\u0e30\u0e01\u0e32\u0e23\u0e08\u0e31\u0e14\u0e40\u0e01\u0e47\u0e1a\u0e02\u0e49\u0e2d\u0e21\u0e39\u0e25", "path": "wed-ScamGuard/architecture/database-schema.html" }, { "title": "\u0e01\u0e32\u0e23\u0e40\u0e0a\u0e37\u0e48\u0e2d\u0e21\u0e15\u0e48\u0e2d\u0e1a\u0e23\u0e34\u0e01\u0e32\u0e23\u0e20\u0e32\u0e22\u0e19\u0e2d\u0e01 (External Integrations)", "path": "wed-ScamGuard/architecture/external-integrations.html" }, { "title": "\u0e2a\u0e16\u0e32\u0e1b\u0e31\u0e15\u0e22\u0e01\u0e23\u0e23\u0e21 Mobile App", "path": "wed-ScamGuard/architecture/mobile-app.html" }, { "title": "\u0e2a\u0e16\u0e32\u0e1b\u0e31\u0e15\u0e22\u0e01\u0e23\u0e23\u0e21\u0e23\u0e30\u0e1a\u0e1a", "path": "wed-ScamGuard/architecture/system-architecture.html" }] }, { "phase": "\u0e40\u0e19\u0e37\u0e49\u0e2d\u0e2b\u0e32 \u00b7 CONCEPTS", "title": "Concepts", "sub_titles": [{ "title": "\u0e42\u0e21\u0e40\u0e14\u0e25 AI \u2014 SegFormer", "path": "wed-ScamGuard/concepts/ai-model-segformer.html" }, { "title": "Error Level Analysis (ELA)", "path": "wed-ScamGuard/concepts/ela-technique.html" }, { "title": "\u0e1b\u0e31\u0e0d\u0e0d\u0e32\u0e1b\u0e23\u0e30\u0e14\u0e34\u0e29\u0e10\u0e4c\u0e17\u0e35\u0e48\u0e2d\u0e18\u0e34\u0e1a\u0e32\u0e22\u0e44\u0e14\u0e49 (XAI)", "path": "wed-ScamGuard/concepts/explainable-ai.html" }, { "title": "\u0e01\u0e32\u0e23\u0e27\u0e34\u0e40\u0e04\u0e23\u0e32\u0e30\u0e2b\u0e4c\u0e2b\u0e25\u0e32\u0e22\u0e0a\u0e31\u0e49\u0e19 (Multi-layer Analysis)", "path": "wed-ScamGuard/concepts/multi-layer-analysis.html" }, { "title": "\u0e01\u0e32\u0e23\u0e04\u0e33\u0e19\u0e27\u0e13\u0e04\u0e30\u0e41\u0e19\u0e19\u0e04\u0e27\u0e32\u0e21\u0e40\u0e2a\u0e35\u0e48\u0e22\u0e07 (Risk Scoring)", "path": "wed-ScamGuard/concepts/risk-scoring.html" }] }, { "phase": "\u0e40\u0e19\u0e37\u0e49\u0e2d\u0e2b\u0e32 \u00b7 REQUIREMENTS", "title": "Requirements", "sub_titles": [{ "title": "\u0e04\u0e27\u0e32\u0e21\u0e15\u0e49\u0e2d\u0e07\u0e01\u0e32\u0e23\u0e40\u0e0a\u0e34\u0e07\u0e1f\u0e31\u0e07\u0e01\u0e4c\u0e0a\u0e31\u0e19 (Functional Requirements)", "path": "wed-ScamGuard/requirements/functional-requirements.html" }, { "title": "\u0e04\u0e27\u0e32\u0e21\u0e15\u0e49\u0e2d\u0e07\u0e01\u0e32\u0e23\u0e17\u0e35\u0e48\u0e44\u0e21\u0e48\u0e43\u0e0a\u0e48\u0e1f\u0e31\u0e07\u0e01\u0e4c\u0e0a\u0e31\u0e19 (Non-Functional Requirements)", "path": "wed-ScamGuard/requirements/non-functional-requirements.html" }, { "title": "\u0e27\u0e31\u0e15\u0e16\u0e38\u0e1b\u0e23\u0e30\u0e2a\u0e07\u0e04\u0e4c\u0e41\u0e25\u0e30\u0e15\u0e31\u0e27\u0e0a\u0e35\u0e49\u0e27\u0e31\u0e14\u0e04\u0e27\u0e32\u0e21\u0e2a\u0e33\u0e40\u0e23\u0e47\u0e08 (KPIs)", "path": "wed-ScamGuard/requirements/objectives-kpis.html" }] }, { "phase": "\u0e40\u0e19\u0e37\u0e49\u0e2d\u0e2b\u0e32 \u00b7 ENTITIES", "title": "Entities", "sub_titles": [{ "title": "\u0e1c\u0e39\u0e49\u0e43\u0e0a\u0e49\u0e23\u0e30\u0e1a\u0e1a (Actors)", "path": "wed-ScamGuard/entities/actors.html" }, { "title": "\u0e40\u0e17\u0e04\u0e42\u0e19\u0e42\u0e25\u0e22\u0e35\u0e17\u0e35\u0e48\u0e43\u0e0a\u0e49 (Technology Stack)", "path": "wed-ScamGuard/entities/tech-stack.html" }] }, { "phase": "\u0e40\u0e19\u0e37\u0e49\u0e2d\u0e2b\u0e32 \u00b7 PLANNING", "title": "Planning", "sub_titles": [{ "title": "\u0e02\u0e2d\u0e1a\u0e40\u0e02\u0e15\u0e42\u0e04\u0e23\u0e07\u0e01\u0e32\u0e23 (Project Scope)", "path": "wed-ScamGuard/planning/project-scope.html" }, { "title": "\u0e17\u0e35\u0e21\u0e07\u0e32\u0e19\u0e41\u0e25\u0e30\u0e1c\u0e39\u0e49\u0e23\u0e31\u0e1a\u0e1c\u0e34\u0e14\u0e0a\u0e2d\u0e1a (Team)", "path": "wed-ScamGuard/planning/team.html" }] }, { "phase": "\u0e40\u0e19\u0e37\u0e49\u0e2d\u0e2b\u0e32 \u00b7 DECISIONS", "title": "Decisions", "sub_titles": [{ "title": "\u0e01\u0e32\u0e23\u0e15\u0e31\u0e14\u0e2a\u0e34\u0e19\u0e43\u0e08\u0e40\u0e25\u0e37\u0e2d\u0e01\u0e40\u0e17\u0e04\u0e42\u0e19\u0e42\u0e25\u0e22\u0e35", "path": "wed-ScamGuard/decisions/technology-choices.html" }] }];
+    const frame = document.getElementById('contentFrame');
+    const navItems = [...document.querySelectorAll('.nav-item')];
+
+    function toggleDropdown(index) {
+      const navItem = document.querySelector(`.nav-item[data-cat="${index}"]`);
+      const subContainer = document.getElementById(`cat-${index}`);
+      const isExpanded = navItem.classList.contains('is-expanded');
+
+      // Close all others
+      document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('is-expanded'));
+      document.querySelectorAll('.sub-menu-container').forEach(container => container.style.display = 'none');
+
+      // Toggle current
+      if (!isExpanded) {
+        navItem.classList.add('is-expanded');
+        subContainer.style.display = 'block';
+      }
+    }
+
+    function loadDocument(catIndex, subIndex) {
+      const doc = documents[catIndex];
+      const subDoc = doc.sub_titles[subIndex];
+
+      // Update UI breadcrumbs
+      document.getElementById('breadcrumb').textContent = doc.phase;
+      document.getElementById('documentTitle').textContent = subDoc.title;
+      document.getElementById('documentNumber').textContent = `DOC ${String(catIndex + 1).padStart(2, '0')}`;
+
+      // Update active sub-item
+      document.querySelectorAll('.sub-item').forEach(el => el.classList.remove('is-active'));
+      const activeSubBtn = document.querySelector(`.sub-item[data-cat="${catIndex}"][data-sub="${subIndex}"]`);
+      if (activeSubBtn) activeSubBtn.classList.add('is-active');
+
+      // Load iframe
+      frame.title = subDoc.title;
+      frame.src = subDoc.path;
+    }
+
+    document.addEventListener('click', (e) => {
+      const navItem = e.target.closest('.nav-item');
+      if (navItem) {
+        const index = Number(navItem.dataset.cat);
+        toggleDropdown(index);
+      }
+
+      const subItem = e.target.closest('.sub-item');
+      if (subItem) {
+        const catIndex = Number(subItem.dataset.cat);
+        const subIndex = Number(subItem.dataset.sub);
+        loadDocument(catIndex, subIndex);
+      }
+    });
+
+    // Open first category and first document by default
+    if (documents.length > 0 && documents[0].sub_titles.length > 0) {
+      toggleDropdown(0);
+      loadDocument(0, 0);
+    }
+  </script>
+</body>
+
+</html>

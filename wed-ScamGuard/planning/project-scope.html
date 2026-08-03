@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ขอบเขตโครงการ (Project Scope) - ScamGuard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../shared-theme.css">
+  <style>
+    body { display: block; min-height: 100vh; overflow: auto; background-color: var(--paper); margin: 0; }
+    .document { width: 100%; margin: 0; padding: 30px clamp(15px, 2vw, 30px); }
+    h1 { max-width: 850px; font: 600 1.85rem/1.2 Taviraj\, serif !important; margin-bottom: 0.5rem; color: var(--ink); }
+    h2 { font: 600 1.3rem/1.3 Taviraj\, serif; color: var(--indigo); margin-top: 2rem; margin-bottom: 18px; border-bottom: none; padding-bottom: 0; }
+    .lede { max-width: 720px; margin: 0 0 2rem; color: var(--text-muted); font-size: 1rem; line-height: 1.6; }
+    .divider { height: 1px; margin: 36px 0; background: var(--rule); }
+    .file-separator { height: 2px; margin: 60px 0; background: var(--amber); opacity: 0.5; }
+    .panel { padding: 0; background: transparent; border: none; border-radius: 0; margin-bottom: 30px; }
+    .facts { display: grid; gap: 0; margin: 0; }
+    .facts div { display: grid; grid-template-columns: minmax(130px, max-content) 1fr; gap: 18px; padding: 12px 0; border-bottom: 1px solid var(--rule); }
+    .facts div:last-child { border: 0; padding-bottom: 0; }
+    dt { color: var(--text-muted); font: 500 .75rem/1.4 IBM Plex Mono\, monospace; letter-spacing: .08em; text-transform: uppercase; }
+    .steps { display: grid; gap: 12px; margin: 1rem 0; padding: 0; list-style: none; counter-reset: plan; }
+    .steps li { position: relative; margin: 0; padding: 0 0 0 32px; background: transparent; border: none; counter-increment: plan; }
+    .steps li::before { position: absolute; top: 0; left: 0; color: var(--indigo); content: "0" counter(plan) "."; font: 600 .85rem/1.6 IBM Plex Mono\, monospace; }
+    dd, p, li { margin: 0; color: var(--text-main); font-size: 0.95rem !important; line-height: 1.6 !important; }
+    p { margin-bottom: 1rem; }
+    ul { padding-left: 1.5rem; margin-bottom: 1rem; }
+    li { margin-bottom: 0.5rem; }
+    @media (max-width:720px) { .facts div { grid-template-columns: 1fr; gap: 4px; } }
+  </style>
+</head>
+<body>
+  <main class="document">
+    <h1 id="project-scope">ขอบเขตโครงการ (Project Scope)</h1>
+<p class="lede">กำหนดสิ่งที่จะพัฒนา กรอบการทำงานของ 4 Containers หลัก และการแบ่งกลุ่มงานสำหรับสมาชิกทีม</p>
+<div class="divider"></div>
+<h2 id="system-overview">ภาพรวมระบบ (System Overview)</h2>
+<p>โครงการนี้ถูกแบ่งการพัฒนาออกเป็น <strong>4 Development Containers</strong> บวกกับ <strong>1 Integration Layer</strong>:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Container</th>
+<th style="text-align: left;">เทคโนโลยีหลัก</th>
+<th style="text-align: left;">ความรับผิดชอบหลัก (Lead)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Mobile App</td>
+<td style="text-align: left;">Flutter</td>
+<td style="text-align: left;">ภานุวัฒน์ + เอกพันธ์</td>
+</tr>
+<tr>
+<td style="text-align: left;">API Backend</td>
+<td style="text-align: left;">Python FastAPI</td>
+<td style="text-align: left;">ภานุวัฒน์</td>
+</tr>
+<tr>
+<td style="text-align: left;">AI Inference Engine</td>
+<td style="text-align: left;">PyTorch / ONNX</td>
+<td style="text-align: left;">ภานุวัฒน์</td>
+</tr>
+<tr>
+<td style="text-align: left;">Admin Portal</td>
+<td style="text-align: left;">React.js</td>
+<td style="text-align: left;">ภานุวัฒน์</td>
+</tr>
+<tr>
+<td style="text-align: left;">External Integrations</td>
+<td style="text-align: left;">Google Vision, FCM</td>
+<td style="text-align: left;">ภานุวัฒน์ (ออกแบบ)</td>
+</tr>
+</tbody>
+</table>
+<div class="divider"></div>
+<h2 id="mobile-app">กลุ่มงาน Mobile App</h2>
+<dl class="facts"><div><dt>Authentication</dt><dd>สมัครและล็อกอินด้วยอีเมล/รหัสผ่าน, Google OAuth, และระบบ Secure Storage</dd></div><div><dt>Image Input</dt><dd>ส่วนการเลือกรูปภาพ, การถ่ายภาพ, และโหมด Crop ตัดรูปภาพก่อนส่งให้ระบบ</dd></div><div><dt>Risk Visualization</dt><dd>ส่วนแสดงผล Risk Score (เกจสี เขียว/เหลือง/แดง), ภาพ Grad-CAM ทับซ้อน, พร้อมรายละเอียดผลสแกน</dd></div><div><dt>History &amp; PDPA</dt><dd>แสดงหน้าต่างประวัติการตรวจสอบย้อนหลัง, หน้าต่างยอมรับข้อตกลง PDPA และการยกเลิกอนุญาตข้อมูล</dd></div><div><dt>Scam Report</dt><dd>แบบฟอร์มกดแจ้งเตือนภาพ Scam ให้ตรวจสอบเพิ่มเติม พร้อมคุณสมบัติ Share ข้อมูล</dd></div></dl>
+<div class="divider"></div>
+<h2 id="api-backend">กลุ่มงาน API Backend</h2>
+<dl class="facts"><div><dt>API Gateway</dt><dd>โครงสร้าง FastAPI พื้นฐาน, Routing, กฎ CORS, และตรวจสอบ JWT Middleware</dd></div><div><dt>Metadata / EXIF</dt><dd>โค้ดดึงรายละเอียดจากไฟล์ EXIF Metadata ของภาพที่อัปโหลด</dd></div><div><dt>OCR + NLP</dt><dd>บริหารและเชื่อมต่อ Surya-OCR สำหรับข้อความ (ไทย/อังกฤษ) และ NLP วิเคราะห์คีย์เวิร์ด</dd></div><div><dt>Redis Cache Logic</dt><dd>ค้นหารหัสรูป (Image Hash) และตัดสินใจดึงจาก Cache (Hit/Miss Routing)</dd></div><div><dt>PostgreSQL Schema</dt><dd>ดูแลโครงสร้างระบบตาราง: ผู้ใช้, รายงานสแกน, ระบบส่งรีพอร์ต และ Audit Log พร้อมทำระบบ Alembic Migrations</dd></div></dl>
+<div class="divider"></div>
+<h2 id="ai-engine">กลุ่มงาน AI Engine</h2>
+<dl class="facts"><div><dt>ELA</dt><dd>พัฒนาระบบ Preprocessing ตัดภาพ ELA (Error Level Analysis) ออกมา</dd></div><div><dt>GenAI Detection</dt><dd>พัฒนาและเชื่อมต่อระบบจำแนกและคัดกรองรูปภาพที่มาจากคำสั่ง AI อัตโนมัติ</dd></div><div><dt>PyTorch to ONNX</dt><dd>ขั้นตอนส่งออกตัว Model ให้อยู่ในมาตรฐานเปิด ONNX สำหรับการโหลดเข้าระบบในตอนรันจริง (Inference)</dd></div><div><dt>Grad-CAM</dt><dd>แปลงผลลัพธ์จาก Segmentation Mask เพื่อผลิตภาพ Heatmap คาดทับในขั้นสุดท้าย</dd></div></dl>
+<div class="divider"></div>
+<h2 id="admin-portal">กลุ่มงาน Admin Portal</h2>
+<dl class="facts"><div><dt>RBAC + Dashboard</dt><dd>ตรวจสอบ Role ของ Admin แดชบอร์ดสรุปผลภาพรวม</dd></div><div><dt>User Management</dt><dd>โค้ดที่ต้องบริหารข้อมูล (CRUD) ผู้ใช้งานในระบบต่างๆ</dd></div><div><dt>Scam Report Queue</dt><dd>ลำดับการอนุมัติ (Approve) หรือปฏิเสธ (Dismiss) เมื่อได้รับ Scam Report</dd></div><div><dt>Model Update Console</dt><dd>หน้าต่างสำหรับกดปุ่มรันเพื่อเปลี่ยนน้ำหนัก Model ไฟล์ตัวใหม่เข้าสู่ระบบ</dd></div></dl>
+<div class="divider"></div>
+<h2 id="out-of-scope-v1">สิ่งที่อยู่นอกเหนือโครงการในเวลานี้ (Out of Scope v1)</h2>
+<dl class="facts"><div><dt>ระบบ iOS (iOS Support)</dt><dd>เก็บไว้ทำในอนาคต (ณ ตอนนี้รองรับเฉพาะ Android)</dd></div><div><dt>วิเคราะห์วิดีโอ (Video Analysis)</dt><dd>เก็บไว้ทำในอนาคต โดยการใช้ Keyframe Extraction</dd></div><div><dt>บนมือถือล้วนๆ (On-device Inference)</dt><dd>เก็บไว้ทำในอนาคต — ต้องผ่านกระบวนการทำ Model Quantization (INT8/FP16) เป็นหลักเสียก่อน</dd></div><div><dt>การแชร์และตัดสินใจรีวิวแบบ Real-time</dt><dd>ไม่ได้ระบุไว้ในแผน (Not Planned)</dd></div><div><dt>ระบบของ Google SynthID</dt><dd>ระบุไว้ว่าน่าสนใจแต่ยังไม่มีกระบวนการดีไซน์ในเวลาปัจจุบัน</dd></div><div><dt>บริการ Google Gemini LLM</dt><dd>ระบุไว้ว่าน่าสนใจแต่ยังไม่มีกระบวนการดีไซน์ในเวลาปัจจุบัน</dd></div></dl>
+<div class="divider"></div>
+<h2 id="key-points">ประเด็นสำคัญ (Key Points)</h2>
+<ul>
+<li>ภาระงานมีขนาดกว้างมากสำหรับนักศึกษาทำร่วมกัน 2 คน โดย ภานุวัฒน์ แบกรับหน้าที่รับผิดชอบเกือบ 70% ในหลาย Containers พร้อมกัน</li>
+<li>Critical Path ของโครงการประกอบด้วย: การเทรนโมเดล AI (ต้องได้ Accuracy ขั้นต่ำ), API Backend (คือฐานหลักที่เชื่อมโยงทุกส่วน) และตัวแอป Mobile (ที่เป็นสิ่งที่ผู้ใช้สัมผัส)</li>
+<li>PDPA Compliance เป็นโจทย์สำคัญที่คลุมทับการพัฒนาทุกกระบวนการ ทั้ง Frontend, Backend และ AI</li>
+</ul>
+<div class="divider"></div>
+  </main>
+  
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
+  </script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.mermaid-container').forEach(container => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-expand-mermaid';
+        btn.innerHTML = '🔍 Fullscreen';
+        
+        btn.onclick = () => {
+          const originalSvg = container.querySelector('svg');
+          if (!originalSvg) return;
+
+          const overlay = document.createElement('div');
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.backgroundColor = 'var(--paper, #F6F4EE)';
+          overlay.style.zIndex = '999999';
+          overlay.style.display = 'flex';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+          
+          const closeBtn = document.createElement('button');
+          closeBtn.innerHTML = '✖ Close';
+          closeBtn.style.position = 'absolute';
+          closeBtn.style.top = '20px';
+          closeBtn.style.right = '20px';
+          closeBtn.style.padding = '8px 16px';
+          closeBtn.style.fontSize = '1rem';
+          closeBtn.style.fontWeight = 'bold';
+          closeBtn.style.cursor = 'pointer';
+          closeBtn.style.backgroundColor = '#ff4d4d';
+          closeBtn.style.color = '#fff';
+          closeBtn.style.border = 'none';
+          closeBtn.style.borderRadius = '8px';
+          closeBtn.style.zIndex = '1000000';
+          closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+          
+          closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
+          closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
+
+          const clonedSvg = originalSvg.cloneNode(true);
+          clonedSvg.style.width = '100%';
+          clonedSvg.style.height = '100%';
+          clonedSvg.style.maxWidth = '100vw';
+          clonedSvg.style.maxHeight = '100vh';
+          
+          overlay.appendChild(clonedSvg);
+          overlay.appendChild(closeBtn);
+          document.body.appendChild(overlay);
+
+          const oldOverflow = document.body.style.overflow;
+          document.body.style.overflow = 'hidden';
+
+          const panZoomInstance = svgPanZoom(clonedSvg, {
+            zoomEnabled: true,
+            controlIconsEnabled: true,
+            fit: true,
+            center: true,
+            minZoom: 0.5,
+            maxZoom: 10,
+            mouseWheelZoomEnabled: true
+          });
+
+          closeBtn.onclick = () => {
+            panZoomInstance.destroy();
+            document.body.removeChild(overlay);
+            document.body.style.overflow = oldOverflow;
+          };
+        };
+        container.appendChild(btn);
+      });
+    });
+  </script>
+
+</body>
+</html>

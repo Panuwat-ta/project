@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>สถาปัตยกรรม Mobile App - ScamGuard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../shared-theme.css">
+  <style>
+    body { display: block; min-height: 100vh; overflow: auto; background-color: var(--paper); margin: 0; }
+    .document { width: 100%; margin: 0; padding: 30px clamp(15px, 2vw, 30px); }
+    h1 { max-width: 850px; font: 600 1.85rem/1.2 Taviraj\, serif !important; margin-bottom: 0.5rem; color: var(--ink); }
+    h2 { font: 600 1.3rem/1.3 Taviraj\, serif; color: var(--indigo); margin-top: 2rem; margin-bottom: 18px; border-bottom: none; padding-bottom: 0; }
+    .lede { max-width: 720px; margin: 0 0 2rem; color: var(--text-muted); font-size: 1rem; line-height: 1.6; }
+    .divider { height: 1px; margin: 36px 0; background: var(--rule); }
+    .file-separator { height: 2px; margin: 60px 0; background: var(--amber); opacity: 0.5; }
+    .panel { padding: 0; background: transparent; border: none; border-radius: 0; margin-bottom: 30px; }
+    .facts { display: grid; gap: 0; margin: 0; }
+    .facts div { display: grid; grid-template-columns: minmax(130px, max-content) 1fr; gap: 18px; padding: 12px 0; border-bottom: 1px solid var(--rule); }
+    .facts div:last-child { border: 0; padding-bottom: 0; }
+    dt { color: var(--text-muted); font: 500 .75rem/1.4 IBM Plex Mono\, monospace; letter-spacing: .08em; text-transform: uppercase; }
+    .steps { display: grid; gap: 12px; margin: 1rem 0; padding: 0; list-style: none; counter-reset: plan; }
+    .steps li { position: relative; margin: 0; padding: 0 0 0 32px; background: transparent; border: none; counter-increment: plan; }
+    .steps li::before { position: absolute; top: 0; left: 0; color: var(--indigo); content: "0" counter(plan) "."; font: 600 .85rem/1.6 IBM Plex Mono\, monospace; }
+    dd, p, li { margin: 0; color: var(--text-main); font-size: 0.95rem !important; line-height: 1.6 !important; }
+    p { margin-bottom: 1rem; }
+    ul { padding-left: 1.5rem; margin-bottom: 1rem; }
+    li { margin-bottom: 0.5rem; }
+    @media (max-width:720px) { .facts div { grid-template-columns: 1fr; gap: 4px; } }
+  </style>
+</head>
+<body>
+  <main class="document">
+    <h1 id="mobile-app">สถาปัตยกรรม Mobile App</h1>
+<p class="lede">แอปพลิเคชัน Android ที่พัฒนาด้วย Flutter สำหรับผู้ใช้ทั่วไปในการส่งรูปภาพและรับรายงานความเสี่ยง</p>
+<div class="divider"></div>
+<h2 id="_1">เทคโนโลยีที่ใช้</h2>
+<ul>
+<li><strong>Framework:</strong> Flutter (Dart)</li>
+<li><strong>Platform:</strong> Android (หลัก) — iOS ไม่อยู่ในขอบเขต v1</li>
+<li><strong>รูปแบบสถาปัตยกรรม:</strong> Clean Architecture + MVVM</li>
+<li><strong>State Management:</strong> BLoC (Business Logic Component)</li>
+<li><strong>HTTP Client:</strong> Dio (พร้อม Secure Storage สำหรับ JWT Token)</li>
+</ul>
+<div class="divider"></div>
+<h2 id="clean-architecture">ชั้นของ Clean Architecture</h2>
+<dl class="facts"><div><dt>Presentation Layer</dt><dd>Flutter Widgets, หน้าจอต่างๆ, สถานะ UI</dd></div><div><dt>Domain Layer</dt><dd>Use Case, Business Rules, Entities</dd></div><div><dt>Data Layer</dt><dd>API Client, Local Storage, Repository Implementation</dd></div></dl>
+<p>การแบ่งชั้นนี้ทำให้ UI ไม่ขึ้นตรงต่อ Networking หรือ Business Logic โดยตรง ทำให้ทดสอบและบำรุงรักษาได้ง่าย</p>
+<div class="divider"></div>
+<h2 id="user-flow">หน้าจอหลัก / User Flow</h2>
+<ol class="steps">
+<li><strong>หน้าจอ Authentication</strong> — สมัครสมาชิก, Login (email/password + Google OAuth)</li>
+<li><strong>หน้าจอรับรูปภาพ</strong> — เลือกจาก Gallery หรือถ่ายด้วยกล้อง พร้อม Image Cropper เพื่อโฟกัสบริเวณที่ต้องการตรวจก่อนส่ง</li>
+<li><strong>หน้าจอรอประมวลผล</strong> — แสดงระหว่าง Pipeline ทำงาน (สูงสุด 15 วินาที หรือเกือบทันทีสำหรับ Cache Hit)</li>
+<li><strong>หน้าจอรายงานความเสี่ยง</strong> — แสดง:</li>
+<li>Weighted Risk Score แบบ color gauge (เขียว / เหลือง / แดง)</li>
+<li>Grad-CAM Heatmap ซ้อนทับรูป — toggle เปิด/ปิดได้</li>
+<li>คำหลอกลวงที่พบ (ถ้ามี)</li>
+<li>ผลการ Reverse Image Search</li>
+<li>คะแนนแยกตามชั้นการวิเคราะห์</li>
+<li><strong>หน้าจอประวัติสแกน</strong> — รายการสแกนก่อนหน้าพร้อม timestamp และคะแนน พร้อมการควบคุม PDPA</li>
+<li><strong>หน้าจอรายงาน Scam</strong> — ผู้ใช้แจ้งว่าภาพนี้เป็น Scam จริงเพื่อให้ Admin ตรวจสอบ</li>
+</ol>
+<div class="divider"></div>
+<h2 id="_2">ขั้นตอนการอัปโหลดรูปภาพ</h2>
+<pre><code>ผู้ใช้เลือก/ถ่ายรูป
+        |
+  Image Cropper (ถ้าต้องการ)
+        |
+  Multipart HTTP POST → API Gateway
+        |
+  Polling หรือ WebSocket รอผลลัพธ์
+  (หรือรับ FCM Push Notification เมื่อ Async Job เสร็จ)
+        |
+  แสดงหน้าจอรายงานความเสี่ยง
+</code></pre>
+<div class="divider"></div>
+<h2 id="app">ความปลอดภัยใน App</h2>
+<ul>
+<li>JWT Token เก็บใน <strong>Secure Storage</strong> (ไม่ใช่ SharedPreferences หรือไฟล์ธรรมดา)</li>
+<li>ไม่เก็บข้อมูลรูปภาพบนอุปกรณ์หลังส่งประมวลผลแล้ว</li>
+<li>แสดงหน้าจอยินยอม PDPA ตอน Launch ครั้งแรก สามารถถอนยินยอมได้ในหน้าตั้งค่า</li>
+</ul>
+<div class="divider"></div>
+<h2 id="flutter">โครงสร้างโฟลเดอร์ Flutter</h2>
+<pre><code>lib/
+  core/           # Config ส่วนกลาง, Theme, Routing, DI
+  features/
+    auth/         # Login, Register screens + BLoC
+    scan/         # อัปโหลดรูป, แสดงผล, ประวัติ
+    report/       # ส่งรายงาน Scam
+  main.dart
+</code></pre>
+<blockquote>
+<p><strong>NOTE:</strong><br/>
+โครงสร้างโฟลเดอร์โดยละเอียดพร้อม Feature subdirectory ทั้งหมดอยู่ใน <code>design/mobile.md</code> ซึ่งยังไม่ได้ ingest ครบ</p>
+</blockquote>
+<div class="divider"></div>
+<h2 id="admin-portal">Admin Portal (แยกต่างหาก)</h2>
+<p>Admin Web Portal เป็น React.js + Tailwind CSS แยกต่างหากสำหรับใช้งานภายใน ไม่ใช่ Mobile App ดู [[architecture/backend-api]] สำหรับ Endpoint ที่ใช้</p>
+<p><strong>ความสามารถของ Admin Portal:</strong>
+- Dashboard สถิติระบบและ Accuracy Metrics
+- Report Management — ตรวจสอบและยืนยัน/ปฏิเสธรายงาน Scam จากผู้ใช้
+- Data Enrichment — รวบรวมรูปภาพ Scam ที่ยืนยันแล้วสำหรับ Training Dataset
+- Model Deployment — อัปโหลดและเปิดใช้งาน Model Weight ใหม่</p>
+<div class="divider"></div>
+  </main>
+  
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
+  </script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.mermaid-container').forEach(container => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-expand-mermaid';
+        btn.innerHTML = '🔍 Fullscreen';
+        
+        btn.onclick = () => {
+          const originalSvg = container.querySelector('svg');
+          if (!originalSvg) return;
+
+          const overlay = document.createElement('div');
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.backgroundColor = 'var(--paper, #F6F4EE)';
+          overlay.style.zIndex = '999999';
+          overlay.style.display = 'flex';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+          
+          const closeBtn = document.createElement('button');
+          closeBtn.innerHTML = '✖ Close';
+          closeBtn.style.position = 'absolute';
+          closeBtn.style.top = '20px';
+          closeBtn.style.right = '20px';
+          closeBtn.style.padding = '8px 16px';
+          closeBtn.style.fontSize = '1rem';
+          closeBtn.style.fontWeight = 'bold';
+          closeBtn.style.cursor = 'pointer';
+          closeBtn.style.backgroundColor = '#ff4d4d';
+          closeBtn.style.color = '#fff';
+          closeBtn.style.border = 'none';
+          closeBtn.style.borderRadius = '8px';
+          closeBtn.style.zIndex = '1000000';
+          closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+          
+          closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
+          closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
+
+          const clonedSvg = originalSvg.cloneNode(true);
+          clonedSvg.style.width = '100%';
+          clonedSvg.style.height = '100%';
+          clonedSvg.style.maxWidth = '100vw';
+          clonedSvg.style.maxHeight = '100vh';
+          
+          overlay.appendChild(clonedSvg);
+          overlay.appendChild(closeBtn);
+          document.body.appendChild(overlay);
+
+          const oldOverflow = document.body.style.overflow;
+          document.body.style.overflow = 'hidden';
+
+          const panZoomInstance = svgPanZoom(clonedSvg, {
+            zoomEnabled: true,
+            controlIconsEnabled: true,
+            fit: true,
+            center: true,
+            minZoom: 0.5,
+            maxZoom: 10,
+            mouseWheelZoomEnabled: true
+          });
+
+          closeBtn.onclick = () => {
+            panZoomInstance.destroy();
+            document.body.removeChild(overlay);
+            document.body.style.overflow = oldOverflow;
+          };
+        };
+        container.appendChild(btn);
+      });
+    });
+  </script>
+
+</body>
+</html>

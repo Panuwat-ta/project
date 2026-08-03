@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>การตัดสินใจเลือกเทคโนโลยี - ScamGuard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../shared-theme.css">
+  <style>
+    body { display: block; min-height: 100vh; overflow: auto; background-color: var(--paper); margin: 0; }
+    .document { width: 100%; margin: 0; padding: 30px clamp(15px, 2vw, 30px); }
+    h1 { max-width: 850px; font: 600 1.85rem/1.2 Taviraj\, serif !important; margin-bottom: 0.5rem; color: var(--ink); }
+    h2 { font: 600 1.3rem/1.3 Taviraj\, serif; color: var(--indigo); margin-top: 2rem; margin-bottom: 18px; border-bottom: none; padding-bottom: 0; }
+    .lede { max-width: 720px; margin: 0 0 2rem; color: var(--text-muted); font-size: 1rem; line-height: 1.6; }
+    .divider { height: 1px; margin: 36px 0; background: var(--rule); }
+    .file-separator { height: 2px; margin: 60px 0; background: var(--amber); opacity: 0.5; }
+    .panel { padding: 0; background: transparent; border: none; border-radius: 0; margin-bottom: 30px; }
+    .facts { display: grid; gap: 0; margin: 0; }
+    .facts div { display: grid; grid-template-columns: minmax(130px, max-content) 1fr; gap: 18px; padding: 12px 0; border-bottom: 1px solid var(--rule); }
+    .facts div:last-child { border: 0; padding-bottom: 0; }
+    dt { color: var(--text-muted); font: 500 .75rem/1.4 IBM Plex Mono\, monospace; letter-spacing: .08em; text-transform: uppercase; }
+    .steps { display: grid; gap: 12px; margin: 1rem 0; padding: 0; list-style: none; counter-reset: plan; }
+    .steps li { position: relative; margin: 0; padding: 0 0 0 32px; background: transparent; border: none; counter-increment: plan; }
+    .steps li::before { position: absolute; top: 0; left: 0; color: var(--indigo); content: "0" counter(plan) "."; font: 600 .85rem/1.6 IBM Plex Mono\, monospace; }
+    dd, p, li { margin: 0; color: var(--text-main); font-size: 0.95rem !important; line-height: 1.6 !important; }
+    p { margin-bottom: 1rem; }
+    ul { padding-left: 1.5rem; margin-bottom: 1rem; }
+    li { margin-bottom: 0.5rem; }
+    @media (max-width:720px) { .facts div { grid-template-columns: 1fr; gap: 4px; } }
+  </style>
+</head>
+<body>
+  <main class="document">
+    <h1 id="_1">การตัดสินใจเลือกเทคโนโลยี</h1>
+<p class="lede">การตัดสินใจเลือกเทคโนโลยีหลัก ทางเลือกที่พิจารณา และเหตุผลทางวิศวกรรม</p>
+<div class="divider"></div>
+<h2 id="1-flutter-react-native-mobile">การตัดสินใจ 1: ใช้ Flutter แทน React Native สำหรับ Mobile</h2>
+<p><strong>สิ่งที่เลือก:</strong> Flutter (Dart)
+<strong>ทางเลือก:</strong> React Native (JavaScript)</p>
+<p><strong>เหตุผล:</strong>
+- Flutter ให้ Codebase เดียว (Dart) สำหรับ Android (และ iOS ในอนาคต)
+- ประสิทธิภาพการ Render ดีกว่า — Flutter วาด Widget ของตัวเองโดยไม่ต้องพึ่ง Native UI Component Bridge
+- รองรับ Dark Mode ทันที
+- BLoC State Management มี Document ครบถ้วนและเขียน Test ง่าย</p>
+<p><strong>ความคลาดเคลื่อน:</strong> OBJ-01 ใน <code>doc/objective.md</code> ระบุ "React Native" แต่เอกสาร Architecture/Design ระบุ Flutter ทั้งหมด เรายึด Design Document เป็นหลัก — ดังนั้น Flutter คือเทคโนโลยีที่ถูกสร้างจริง ดูที่ [[entities/tech-stack]]</p>
+<div class="divider"></div>
+<h2 id="2-segformer-cnn">การตัดสินใจ 2: ใช้ SegFormer แทน CNN สำหรับตรวจภาพตัดต่อ</h2>
+<p><strong>สิ่งที่เลือก:</strong> SegFormer (Transformer-based semantic segmentation)
+<strong>ทางเลือก:</strong> CNN-based Classifiers (ResNet, EfficientNet), Traditional ELA Standalone</p>
+<p><strong>เหตุผล:</strong>
+- งานนี้ต้องระบุการดัดแปลงใน <strong>ระดับพิกเซล</strong> ซึ่งเป็นปัญหา Segmentation ไม่ใช่ Classification แบบ CNN ที่บอกแค่ Label รวมๆ
+- SegFormer จัดการเรื่อง Multi-scale Features (ทั้ง Global Context และ Local Pixel Detail) ได้ดีกว่า Transformer รุ่นแรกๆ
+- ไม่มี Fixed Positional Encoding → Generalize กับรูปหลายขนาดได้ดีกว่า
+- เร็วกว่า ViT-based Model ตัวเต็ม
+- นำไปใช้ร่วมกับ ELA Preprocessing ได้ดี</p>
+<p><strong>ข้อแลกเปลี่ยน (Trade-off):</strong> กิน RAM/VRAM มากกว่า CNN Classifier แต่ยอมรับได้เมื่อรันบน Cloud</p>
+<div class="divider"></div>
+<h2 id="3-fastapi-djangoflasknodejs-backend">การตัดสินใจ 3: ใช้ FastAPI แทน Django/Flask/Node.js สำหรับ Backend</h2>
+<p><strong>สิ่งที่เลือก:</strong> Python FastAPI
+<strong>ทางเลือก:</strong> Django REST Framework, Flask, Node.js Express</p>
+<p><strong>เหตุผล:</strong>
+- <strong>Async I/O</strong> — FastAPI จัดการ Concurrent Request ได้อย่างมีประสิทธิภาพโดยไม่ติดเรื่อง Threading Overhead
+- <strong>Performance</strong> — Throughput สำหรับงาน I/O-bound เทียบชั้นได้กับ Go และ Node.js
+- <strong>Pydantic Validation</strong> — ตรวจสอบ Schema เข้า-ออกแบบอัตโนมัติ
+- <strong>OpenAPI Docs</strong> — สร้าง API Document ให้โดยอัตโนมัติที่ <code>/docs</code>
+- ใช้ภาษา Python เช่นเดียวกับฝั่ง AI/ML ทำให้ทีมดูแลรักษาง่ายกว่าต้องสลับภาษา</p>
+<div class="divider"></div>
+<h2 id="4-onnx-runtime-native-pytorch-serving">การตัดสินใจ 4: ใช้ ONNX Runtime แทน Native PyTorch เพื่อ Serving</h2>
+<p><strong>สิ่งที่เลือก:</strong> ONNX Runtime (เฉพาะตอน Serving)
+<strong>การเทรน (Training):</strong> ยังใช้ PyTorch เหมือนเดิม</p>
+<p><strong>เหตุผล:</strong>
+- Inference เร็วกว่า Native PyTorch 2–5 เท่า
+- ONNX ทำงานแยกจาก Framework — สามารถรัน Model ได้โดยไม่ต้องลง PyTorch ในฝั่ง Inference
+- ลด Dependency และขนาด Container ของฝั่ง Serving
+- Flow มาตรฐาน: Train ใน PyTorch → Export เป็น ONNX → Serve ด้วย ONNX Runtime</p>
+<div class="divider"></div>
+<h2 id="5-postgresql">การตัดสินใจ 5: ใช้ PostgreSQL เป็นฐานข้อมูลหลัก</h2>
+<p><strong>สิ่งที่เลือก:</strong> PostgreSQL
+<strong>ทางเลือก:</strong> MongoDB, Firestore (NoSQL)</p>
+<p><strong>เหตุผล:</strong>
+- ระบบต้องการ <strong>ACID Transactions</strong> เพื่อรักษาความถูกต้องของข้อมูลสแกนและการเก็บ Consent PDPA
+- ข้อมูลมีโครงสร้างแบบ Relational ชัดเจน (Users → Scans → Results, Reports)
+- มี Extension PostGIS เผื่ออนาคตหากต้องการฟีเจอร์แผนที่จาก EXIF GPS
+- เป็นฐานข้อมูลที่มีเสถียรภาพและได้รับความนิยมสูง</p>
+<div class="divider"></div>
+<h2 id="6-google-vision-api-reverse-image-search">การตัดสินใจ 6: ใช้ Google Vision API สำหรับ Reverse Image Search</h2>
+<p><strong>สิ่งที่เลือก:</strong> Google Vision API
+<strong>ทางเลือก:</strong> Bing Visual Search</p>
+<p><strong>เหตุผล:</strong>
+- ฐานข้อมูลภาพบนเว็บใหญ่และครอบคลุมที่สุด
+- เรียก API ครั้งเดียวสามารถค้นหาครอบคลุมอินเทอร์เน็ตส่วนใหญ่
+- เสถียรและมี Document อธิบาย API ดีเยี่ยม</p>
+<p><strong>ความเสี่ยง:</strong> ยึดติดกับบริการภายนอก — หาก Google Vision ล่ม ระบบตรวจสอบความเสี่ยงจะคืนค่าคะแนนกลางสำหรับส่วนนี้ (Source Verification) โดยมี Bing เป็นแผนสำรอง</p>
+<div class="divider"></div>
+<h2 id="_2">ประเด็นสำคัญ</h2>
+<ul>
+<li>การตัดสินใจเลือกเทคโนโลยีเกือบทั้งหมดอิงจาก Requirement: เช่น ต้องการผลระดับพิกเซล, PDPA Compliance, ประสิทธิภาพ, และทีมถนัด Python</li>
+<li>Trade-off ที่ยอมรับคือ SegFormer กิน Memory เยอะกว่า แต่นำมาซึ่งความแม่นยำของ Segmentation</li>
+<li>ONNX Runtime คือการ Optimization เพื่อความเร็วล้วนๆ ไม่ต้องแลกเปลี่ยนกับประสิทธิภาพของอัลกอริทึม</li>
+</ul>
+<div class="divider"></div>
+  </main>
+  
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
+  </script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.mermaid-container').forEach(container => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-expand-mermaid';
+        btn.innerHTML = '🔍 Fullscreen';
+        
+        btn.onclick = () => {
+          const originalSvg = container.querySelector('svg');
+          if (!originalSvg) return;
+
+          const overlay = document.createElement('div');
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.backgroundColor = 'var(--paper, #F6F4EE)';
+          overlay.style.zIndex = '999999';
+          overlay.style.display = 'flex';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+          
+          const closeBtn = document.createElement('button');
+          closeBtn.innerHTML = '✖ Close';
+          closeBtn.style.position = 'absolute';
+          closeBtn.style.top = '20px';
+          closeBtn.style.right = '20px';
+          closeBtn.style.padding = '8px 16px';
+          closeBtn.style.fontSize = '1rem';
+          closeBtn.style.fontWeight = 'bold';
+          closeBtn.style.cursor = 'pointer';
+          closeBtn.style.backgroundColor = '#ff4d4d';
+          closeBtn.style.color = '#fff';
+          closeBtn.style.border = 'none';
+          closeBtn.style.borderRadius = '8px';
+          closeBtn.style.zIndex = '1000000';
+          closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+          
+          closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
+          closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
+
+          const clonedSvg = originalSvg.cloneNode(true);
+          clonedSvg.style.width = '100%';
+          clonedSvg.style.height = '100%';
+          clonedSvg.style.maxWidth = '100vw';
+          clonedSvg.style.maxHeight = '100vh';
+          
+          overlay.appendChild(clonedSvg);
+          overlay.appendChild(closeBtn);
+          document.body.appendChild(overlay);
+
+          const oldOverflow = document.body.style.overflow;
+          document.body.style.overflow = 'hidden';
+
+          const panZoomInstance = svgPanZoom(clonedSvg, {
+            zoomEnabled: true,
+            controlIconsEnabled: true,
+            fit: true,
+            center: true,
+            minZoom: 0.5,
+            maxZoom: 10,
+            mouseWheelZoomEnabled: true
+          });
+
+          closeBtn.onclick = () => {
+            panZoomInstance.destroy();
+            document.body.removeChild(overlay);
+            document.body.style.overflow = oldOverflow;
+          };
+        };
+        container.appendChild(btn);
+      });
+    });
+  </script>
+
+</body>
+</html>
