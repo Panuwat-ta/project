@@ -1,0 +1,226 @@
+{
+  "main": {
+    "id": "217869b0eb37d493",
+    "type": "split",
+    "children": [
+      {
+        "id": "a054ed31397564bf",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "fadfa26f57d30f79",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "overview.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "overview"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "6c21c6a1b289e5af",
+    "type": "split",
+    "children": [
+      {
+        "id": "1d164c1c5f387e7d",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "207666910d61bc5c",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "74d95868b81c7bfe",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "4e9809ef34df05b2",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 273.8671875
+  },
+  "right": {
+    "id": "cf23add8fbe82617",
+    "type": "split",
+    "children": [
+      {
+        "id": "426f821d51fbe551",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "4397d068e8235b65",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "overview.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "eafccb3927caa9e5",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "index.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "cd463b762d3527c9",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "76f1b9180db7b9cc",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "b746dd8379a37198",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "index.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "fadfa26f57d30f79",
+  "lastOpenFiles": [
+    "architecture/backend-api.md",
+    "architecture/ai-inference-service.md",
+    "overview.md",
+    "architecture/system-architecture.md",
+    "Untitled.canvas",
+    "architecture/mobile-app.md",
+    "architecture/external-integrations.md",
+    "planning/project-scope.md",
+    "planning/team.md",
+    "requirements/functional-requirements.md",
+    "index.md",
+    "concepts/risk-scoring.md",
+    "log.md",
+    "howto.md",
+    "test.md",
+    "planning",
+    "requirements/non-functional-requirements.md",
+    "requirements/objectives-kpis.md",
+    "requirements",
+    "decisions/technology-choices.md",
+    "decisions",
+    "entities/tech-stack.md",
+    "entities/actors.md",
+    "entities",
+    "architecture/database-schema.md",
+    "architecture",
+    "concepts/ela-technique.md",
+    "concepts/ai-model-segformer.md",
+    "concepts/explainable-ai.md",
+    "concepts/multi-layer-analysis.md",
+    "concepts",
+    "AGENTS.md"
+  ]
+}
