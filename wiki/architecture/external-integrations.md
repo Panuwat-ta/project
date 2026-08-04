@@ -19,6 +19,7 @@ updated: 2026-08-02
 **หน้าที่:** ชั้น Source Verification ของ [[concepts/multi-layer-analysis|การวิเคราะห์หลายชั้น]] ตรวจสอบว่ารูปภาพที่อัปโหลดปรากฏในอินเทอร์เน็ตที่อื่นหรือไม่
 
 **การทำงาน:**
+
 1. API Application ส่งรูปภาพ Binary หรือ URL ไปยัง Google Vision API
 2. Google Vision ส่งคืน URL ของหน้าเว็บที่พบรูปคล้ายกัน
 3. ระบบนับ Domain ที่ไม่ซ้ำกัน
@@ -38,6 +39,7 @@ updated: 2026-08-02
 **หน้าที่:** Push Notification สำหรับการวิเคราะห์แบบ Asynchronous
 
 **การทำงาน:**
+
 - การวิเคราะห์เต็มรูปแบบ (Cache Miss) ใช้เวลาสูงสุด 15 วินาที
 - แทนที่จะ Hold HTTP Connection ไว้ 15 วินาที Mobile App รับ FCM Push Notification เมื่อผลลัพธ์พร้อม
 - Notification Payload มี Scan ID และ Risk Grade (Low/Medium/High)

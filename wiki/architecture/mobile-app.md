@@ -97,6 +97,7 @@ lib/
 Admin Web Portal เป็น React.js + Tailwind CSS แยกต่างหากสำหรับใช้งานภายใน ไม่ใช่ Mobile App ดู [[architecture/backend-api]] สำหรับ Endpoint ที่ใช้
 
 **ความสามารถของ Admin Portal:**
+
 - Dashboard สถิติระบบและ Accuracy Metrics
 - Report Management — ตรวจสอบและยืนยัน/ปฏิเสธรายงาน Scam จากผู้ใช้
 - Data Enrichment — รวบรวมรูปภาพ Scam ที่ยืนยันแล้วสำหรับ Training Dataset

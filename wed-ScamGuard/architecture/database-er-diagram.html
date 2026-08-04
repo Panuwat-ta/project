@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entity Relationship Diagram (ER Diagram) - ScamGuard</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../shared-theme.css">
+</head>
+
+<body>
+  <main class="document">
+    <h1>ER Diagram for ScamGuard</h1>
+        <p class="lede">แผนผังแสดงความสัมพันธ์ของฐานข้อมูลหลัก (PostgreSQL) ที่ออกแบบไว้สำหรับระบบ Scam Image Detection</p>
+    <div class="mermaid-container"><div class="mermaid">erDiagram
+        users {
+            int id PK
+            string email
+            string hashed_password
+            string full_name
+            string role "user, admin"
+            boolean is_active
+            boolean consent_analysis
+            boolean consent_research
+            datetime consent_revoked_at
+            datetime created_at
+            datetime updated_at
+        }
+    
+        scans {
+            uuid id PK
+            int user_id FK
+            string image_hash
+            string raw_image_url
+            string heatmap_image_url
+            int text_score
+            int visual_score
+            int source_score
+            int total_risk_score
+            jsonb exif_data
+            text ocr_text
+            jsonb scam_keywords_found
+            jsonb reverse_search_results
+            float ai_gen_probability
+            string status
+            datetime created_at
+            datetime completed_at
+        }
+    
+        scan_results {
+            int id PK
+            uuid scan_id FK
+            string mask_url
+            string heatmap_url
+            jsonb keywords
+            jsonb source_urls
+        }
+    
+        scam_reports {
+            int id PK
+            int user_id FK
+            uuid scan_id FK
+            text reason
+            string status "pending, approved, rejected"
+            int moderated_by FK
+            datetime moderated_at
+            datetime created_at
+        }
+    
+        consent_logs {
+            int id PK
+            int user_id FK
+            boolean system_consent
+            boolean research_consent
+            string ip_address
+            text user_agent
+            datetime created_at
+        }
+    
+        model_versions {
+            int id PK
+            string version_tag
+            string file_path
+            boolean is_active
+            datetime deployed_at
+        }
+    
+        audit_log {
+            int id PK
+            int admin_id FK
+            string action
+            text details
+            datetime created_at
+        }
+    
+        %% Relationships
+        users ||--o{ scans : "performs"
+        users ||--o{ scam_reports : "submits"
+        users ||--o{ consent_logs : "records"
+        users ||--o{ scam_reports : "moderates (admin)"
+        users ||--o{ audit_log : "performs (admin)"
+    
+        scans ||--o| scan_results : "has details"
+        scans ||--o{ scam_reports : "is reported in"
+    </div></div>
+    <h2>รายละเอียดแต่ละตาราง</h2>
+    <ul>
+    <li><strong>users</strong>: เก็บข้อมูลบัญชีผู้ใช้และสถานะความยินยอม (Consent)</li>
+    <li><strong>scans</strong>: เก็บข้อมูลสรุปของการสแกนรูปภาพ พร้อมคะแนนความเสี่ยง</li>
+    <li><strong>scan_results</strong>: (ทางเลือก) เก็บข้อมูลรายละเอียดเพิ่มเติมในกรณีที่มีหลาย Layer ลึกๆ</li>
+    <li><strong>scam_reports</strong>: การรายงานภาพว่าเป็น Scam โดยผู้ใช้ และแอดมินใช้พิจารณา</li>
+    <li><strong>consent_logs</strong>: ใช้เก็บประวัติการยินยอมเพื่อทำ PDPA Compliance</li>
+    <li><strong>model_versions</strong>: ข้อมูลโมเดล AI ที่ Deploy แต่ละเวอร์ชัน</li>
+    <li><strong>audit_log</strong>: บันทึกกิจกรรมสำคัญที่กระทำโดย Admin (Append-only)</li>
+    </ul>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.mermaid-container').forEach(container => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-expand-mermaid';
+        btn.innerHTML = '🔍 Fullscreen';
+
+        btn.onclick = () => {
+          const originalSvg = container.querySelector('svg');
+          if (!originalSvg) return;
+
+          const overlay = document.createElement('div');
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.backgroundColor = 'var(--paper, #F6F4EE)';
+          overlay.style.zIndex = '999999';
+          overlay.style.display = 'flex';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+
+          const closeBtn = document.createElement('button');
+          closeBtn.innerHTML = '✖ Close';
+          closeBtn.style.position = 'absolute';
+          closeBtn.style.top = '20px';
+          closeBtn.style.right = '20px';
+          closeBtn.style.padding = '8px 16px';
+          closeBtn.style.fontSize = '1rem';
+          closeBtn.style.fontWeight = 'bold';
+          closeBtn.style.cursor = 'pointer';
+          closeBtn.style.backgroundColor = '#ff4d4d';
+          closeBtn.style.color = '#fff';
+          closeBtn.style.border = 'none';
+          closeBtn.style.borderRadius = '8px';
+          closeBtn.style.zIndex = '1000000';
+          closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+
+          closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
+          closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
+
+          const clonedSvg = originalSvg.cloneNode(true);
+          clonedSvg.style.width = '100%';
+          clonedSvg.style.height = '100%';
+          clonedSvg.style.maxWidth = '100vw';
+          clonedSvg.style.maxHeight = '100vh';
+
+          overlay.appendChild(clonedSvg);
+          overlay.appendChild(closeBtn);
+          document.body.appendChild(overlay);
+
+          const oldOverflow = document.body.style.overflow;
+          document.body.style.overflow = 'hidden';
+
+          const panZoomInstance = svgPanZoom(clonedSvg, {
+            zoomEnabled: true,
+            controlIconsEnabled: true,
+            fit: true,
+            center: true,
+            minZoom: 0.5,
+            maxZoom: 10,
+            mouseWheelZoomEnabled: true
+          });
+
+          closeBtn.onclick = () => {
+            panZoomInstance.destroy();
+            document.body.removeChild(overlay);
+            document.body.style.overflow = oldOverflow;
+          };
+        };
+        container.appendChild(btn);
+      });
+    });
+  </script>
+</body>
+</html>

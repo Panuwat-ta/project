@@ -55,10 +55,12 @@
     </tbody>
     </table>
     <h3>Field ที่เกี่ยวกับ PDPA</h3>
-    <p>ตาราง <code>users</code> มี:
-    - <code>consent_analysis</code> — ยินยอมให้ประมวลผลรูปภาพ (จำเป็น ถ้าไม่ยินยอมใช้แอปไม่ได้)
-    - <code>consent_research</code> — ยินยอมให้นำรูปภาพไป Train AI (ไม่บังคับ ถอนได้)
-    - <code>consent_revoked_at</code> — Timestamp ถ้าผู้ใช้ถอนยินยอมการวิจัย</p>
+    <p>ตาราง <code>users</code> มี:</p>
+    <ul>
+    <li><code>consent_analysis</code> — ยินยอมให้ประมวลผลรูปภาพ (จำเป็น ถ้าไม่ยินยอมใช้แอปไม่ได้)</li>
+    <li><code>consent_research</code> — ยินยอมให้นำรูปภาพไป Train AI (ไม่บังคับ ถอนได้)</li>
+    <li><code>consent_revoked_at</code> — Timestamp ถ้าผู้ใช้ถอนยินยอมการวิจัย</li>
+    </ul>
     <div class="divider"></div>
     <h2>Redis — Cache Store</h2>
     <p><strong>หน้าที่:</strong> ค้นหาภาพที่เคยวิเคราะห์แล้วด้วยความเร็วสูง เพื่อหลีกเลี่ยงการรัน AI ซ้ำ</p>

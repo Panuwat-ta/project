@@ -40,10 +40,12 @@
     </tr>
     </tbody>
     </table>
-    <p><strong>หมายเหตุ:</strong>
-    - เป้าหมาย Cache Hit 3 วินาที คิดจาก Redis Lookup + PostgreSQL Fetch โดยไม่ต้องมี AI Inference
-    - เป้าหมาย Full Inference 15 วินาที ครอบคลุมถึง: EXIF + OCR + ตรวจสอบผ่าน API + AI Inference + ผลิต Heatmap + จัดเก็บผลลัพธ์
-    - ค่าที่ระบุเป็นเป้าหมายสำหรับการทำ Testing Phase ส่วนระดับ SLA ใน Production สามารถระบุเพิ่มเติมได้ภายหลัง</p>
+    <p><strong>หมายเหตุ:</strong></p>
+    <ul>
+    <li>เป้าหมาย Cache Hit 3 วินาที คิดจาก Redis Lookup + PostgreSQL Fetch โดยไม่ต้องมี AI Inference</li>
+    <li>เป้าหมาย Full Inference 15 วินาที ครอบคลุมถึง: EXIF + OCR + ตรวจสอบผ่าน API + AI Inference + ผลิต Heatmap + จัดเก็บผลลัพธ์</li>
+    <li>ค่าที่ระบุเป็นเป้าหมายสำหรับการทำ Testing Phase ส่วนระดับ SLA ใน Production สามารถระบุเพิ่มเติมได้ภายหลัง</li>
+    </ul>
     <div class="divider"></div>
     <h2>ความแม่นยำของ AI (AI Model Accuracy)</h2>
     <table>
@@ -100,9 +102,11 @@
     <li>ไม่เก็บข้อมูลอื่นที่ไม่อยู่ในจุดประสงค์</li>
     </ul>
     <h3>การจัดการความยินยอม (Consent Management)</h3>
-    <p>มีกระบวนการแสดง Consent ให้ยินยอม 2 ระดับ ตอนที่เปิดแอปพลิเคชันครั้งแรก:
-    1. <strong>System Consent (บังคับ)</strong> — ต้องยินยอมให้ประมวลผลรูปภาพเพื่อการตรวจสอบ หากไม่ให้ จะไม่สามารถใช้งานระบบได้เลย
-    2. <strong>Research Consent (ไม่บังคับ/เลือกได้)</strong> — การยินยอมให้เก็บรวบรวมรูปภาพ (แบบนิรนาม) สู่ Dataset งานวิจัย AI สามารถเปิดและปิด (Opt-in / Opt-out) ภายหลังได้เสมอ</p>
+    <p>มีกระบวนการแสดง Consent ให้ยินยอม 2 ระดับ ตอนที่เปิดแอปพลิเคชันครั้งแรก:</p>
+    <ol>
+    <li><strong>System Consent (บังคับ)</strong> — ต้องยินยอมให้ประมวลผลรูปภาพเพื่อการตรวจสอบ หากไม่ให้ จะไม่สามารถใช้งานระบบได้เลย</li>
+    <li><strong>Research Consent (ไม่บังคับ/เลือกได้)</strong> — การยินยอมให้เก็บรวบรวมรูปภาพ (แบบนิรนาม) สู่ Dataset งานวิจัย AI สามารถเปิดและปิด (Opt-in / Opt-out) ภายหลังได้เสมอ</li>
+    </ol>
     <h3>การทำข้อมูลนิรนาม (Data Anonymization)</h3>
     <ul>
     <li>ระบบล้างข้อมูล EXIF GPS, รุ่นสมาร์ตโฟน และ Metadata ระบุพิกัดหรือตัวตนทั้งหมดก่อนเข้าฐานข้อมูล</li>

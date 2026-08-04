@@ -20,40 +20,50 @@
     <h2>ผู้ใช้ทั่วไป (General User)</h2>
     <p><strong>ผู้คือ:</strong> ประชาชนทั่วไปที่ต้องการตรวจสอบว่ารูปภาพน่าจะถูกตัดต่อหรือใช้ในการหลอกลวงหรือไม่</p>
     <p><strong>ส่วนติดต่อผู้ใช้ (Interface):</strong> Flutter Mobile App (Android)</p>
-    <p><strong>Use Cases ทั่วไป:</strong>
-    - ได้รับสลิปโอนเงินที่น่าสงสัยและต้องการตรวจสอบ
-    - กำลังจะเชื่อใจรูปโปรไฟล์จากคนแปลกหน้าบนโลกออนไลน์
-    - พบรูปภาพโปรโมทที่น่าสงสัยซึ่งรับประกันผลตอบแทนสูง
-    - ต้องการตรวจสอบรูปภาพก่อนแชร์ต่อ</p>
-    <p><strong>สิ่งที่ทำได้:</strong>
-    - สมัครสมาชิกและเข้าสู่ระบบ (Email/Password หรือ Google OAuth)
-    - อัปโหลดหรือถ่ายรูปเพื่อตรวจสอบ
-    - ตัดภาพ (Crop) ก่อนส่งเพื่อโฟกัสบริเวณใดบริเวณหนึ่ง
-    - ดู Risk Score และ Grad-CAM Heatmap overlay
-    - ดูประวัติการสแกน
-    - ส่งรายงานแจ้งว่ารูปนี้เป็น Scam ที่ยืนยันแล้ว
-    - จัดการตั้งค่ายินยอม PDPA (รวมถึงถอนยินยอมการวิจัย)</p>
-    <p><strong>สิ่งที่ทำไม่ได้:</strong>
-    - เข้าถึง Admin Dashboard หรือเครื่องมือจัดการโมเดล
-    - ดูการสแกนของผู้ใช้อื่น
-    - อนุมัติหรือปฏิเสธ Scam Report</p>
+    <p><strong>Use Cases ทั่วไป:</strong></p>
+    <ul>
+    <li>ได้รับสลิปโอนเงินที่น่าสงสัยและต้องการตรวจสอบ</li>
+    <li>กำลังจะเชื่อใจรูปโปรไฟล์จากคนแปลกหน้าบนโลกออนไลน์</li>
+    <li>พบรูปภาพโปรโมทที่น่าสงสัยซึ่งรับประกันผลตอบแทนสูง</li>
+    <li>ต้องการตรวจสอบรูปภาพก่อนแชร์ต่อ</li>
+    </ul>
+    <p><strong>สิ่งที่ทำได้:</strong></p>
+    <ul>
+    <li>สมัครสมาชิกและเข้าสู่ระบบ (Email/Password หรือ Google OAuth)</li>
+    <li>อัปโหลดหรือถ่ายรูปเพื่อตรวจสอบ</li>
+    <li>ตัดภาพ (Crop) ก่อนส่งเพื่อโฟกัสบริเวณใดบริเวณหนึ่ง</li>
+    <li>ดู Risk Score และ Grad-CAM Heatmap overlay</li>
+    <li>ดูประวัติการสแกน</li>
+    <li>ส่งรายงานแจ้งว่ารูปนี้เป็น Scam ที่ยืนยันแล้ว</li>
+    <li>จัดการตั้งค่ายินยอม PDPA (รวมถึงถอนยินยอมการวิจัย)</li>
+    </ul>
+    <p><strong>สิ่งที่ทำไม่ได้:</strong></p>
+    <ul>
+    <li>เข้าถึง Admin Dashboard หรือเครื่องมือจัดการโมเดล</li>
+    <li>ดูการสแกนของผู้ใช้อื่น</li>
+    <li>อนุมัติหรือปฏิเสธ Scam Report</li>
+    </ul>
     <div class="divider"></div>
     <h2>แอดมิน / นักวิจัย (Admin / Researcher)</h2>
     <p><strong>ผู้คือ:</strong> เจ้าหน้าที่ภายใน, นักวิจัย AI หรือทีมสนับสนุนของโปรเจค</p>
     <p><strong>ส่วนติดต่อผู้ใช้ (Interface):</strong> React.js Admin Web Portal</p>
-    <p><strong>สิ่งที่ทำได้:</strong>
-    - ดูสถิติทั้งระบบ: จำนวนสแกนรวม, Accuracy Metrics, ปริมาณ Traffic
-    - ตรวจสอบคิว Scam Report จากผู้ใช้ และทำเครื่องหมายยืนยันหรือเพิกเฉย
-    - นำรูป Scam ที่ยืนยันแล้วไปสร้างและคัดกรอง Training Dataset
-    - อัปโหลด Model Weight ไฟล์ใหม่และสั่ง Deploy โมเดล
-    - จัดการบัญชีผู้ใช้ (CRUD ตามที่สิทธิ์ RBAC อนุญาต)</p>
+    <p><strong>สิ่งที่ทำได้:</strong></p>
+    <ul>
+    <li>ดูสถิติทั้งระบบ: จำนวนสแกนรวม, Accuracy Metrics, ปริมาณ Traffic</li>
+    <li>ตรวจสอบคิว Scam Report จากผู้ใช้ และทำเครื่องหมายยืนยันหรือเพิกเฉย</li>
+    <li>นำรูป Scam ที่ยืนยันแล้วไปสร้างและคัดกรอง Training Dataset</li>
+    <li>อัปโหลด Model Weight ไฟล์ใหม่และสั่ง Deploy โมเดล</li>
+    <li>จัดการบัญชีผู้ใช้ (CRUD ตามที่สิทธิ์ RBAC อนุญาต)</li>
+    </ul>
     <p><strong>หมายเหตุเรื่อง RBAC:</strong> สิทธิ์ Admin บังคับใช้ที่ระดับ API ผ่าน JWT Claims ถึงจะมีคนเข้าถึง URL ของ Admin Portal ได้ แต่ API Endpoint สำหรับ Admin จะปฏิเสธ Token ของผู้ใช้ทั่วไปทั้งหมด</p>
     <div class="divider"></div>
     <h2>ระบบ (Automated Actor)</h2>
-    <p>ไม่ใช่คน แต่เป็น Actor ที่ควรบันทึกไว้:
-    - <strong>Redis Cache</strong> — ส่งคืนผลลัพธ์จาก Cache อัตโนมัติ โดยไม่มีคนเข้ามาเกี่ยวข้อง
-    - <strong>FCM</strong> — ส่ง Push Notification อัตโนมัติเมื่องานสแกนเสร็จสิ้น
-    - <strong>Scheduled Model Retraining</strong> — ระบบอัตโนมัติที่วางแผนไว้ในอนาคต เมื่อมี Scam Report ที่ยืนยันแล้ว ระบบจะกระตุ้นให้เทรนโมเดลใหม่แบบ Incremental</p>
+    <p>ไม่ใช่คน แต่เป็น Actor ที่ควรบันทึกไว้:</p>
+    <ul>
+    <li><strong>Redis Cache</strong> — ส่งคืนผลลัพธ์จาก Cache อัตโนมัติ โดยไม่มีคนเข้ามาเกี่ยวข้อง</li>
+    <li><strong>FCM</strong> — ส่ง Push Notification อัตโนมัติเมื่องานสแกนเสร็จสิ้น</li>
+    <li><strong>Scheduled Model Retraining</strong> — ระบบอัตโนมัติที่วางแผนไว้ในอนาคต เมื่อมี Scam Report ที่ยืนยันแล้ว ระบบจะกระตุ้นให้เทรนโมเดลใหม่แบบ Incremental</li>
+    </ul>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>

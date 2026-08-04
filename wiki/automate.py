@@ -144,6 +144,8 @@ def parse_frontmatter(text):
             
     return fm, content
 
+import html as html_lib
+
 def convert_markdown_to_html(md_content):
     # Remove wikilinks and related text
     md_content = re.sub(r'(?:---\n+)?## หน้าที่เกี่ยวข้อง\n+(?:-\s*\[\[.*?\]\]\n*)*', '', md_content)
@@ -158,6 +160,18 @@ def convert_markdown_to_html(md_content):
     # Post-process html structure for the theme
     html = html.replace('<hr />', '<div class="divider"></div>')
     html = re.sub(r'</h1>\s*<p>', '</h1>\n    <p class="lede">', html)
+    
+    # Process mermaid blocks
+    def replace_mermaid(match):
+        code = html_lib.unescape(match.group(1))
+        return f'<div class="mermaid-container"><div class="mermaid">{code}</div></div>'
+        
+    html = re.sub(
+        r'<pre><code class="language-mermaid">(.*?)</code></pre>',
+        replace_mermaid,
+        html,
+        flags=re.DOTALL
+    )
     
     # Indent content properly
     html = '\n'.join('    ' + line for line in html.splitlines())

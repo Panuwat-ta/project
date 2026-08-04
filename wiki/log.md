@@ -18,6 +18,7 @@ grep "^## \[" wiki/log.md | tail -5
 **ประเภทงาน:** สร้าง wiki ครั้งแรก — นำเข้าเอกสารต้นฉบับที่มีอยู่ทั้งหมด
 
 **เอกสารที่ประมวลผล:**
+
 - `README.md` — ภาพรวมโปรเจค, ทีม, ลิงก์ workspace
 - `doc/objective.md` — วัตถุประสงค์ (OBJ-01 ถึง OBJ-04) และ KPI
 - `doc/scop.md` — ขอบเขตโปรเจคและ Work Package
@@ -26,6 +27,7 @@ grep "^## \[" wiki/log.md | tail -5
 - `design/server.md` — โครงสร้าง Backend FastAPI และ Database
 
 **หน้าที่สร้าง:**
+
 - `AGENTS.md` — schema และคู่มือการดำเนินงานสำหรับ LLM
 - `index.md` — สารบัญทุกหน้า
 - `log.md` — ไฟล์นี้
@@ -58,3 +60,34 @@ grep "^## \[" wiki/log.md | tail -5
 ## [2026-08-02] update | แปลทุกหน้าเป็นภาษาไทย
 
 **ประเภทงาน:** แปลเนื้อหาทั้งหมดเป็นภาษาไทย คงคำศัพท์เทคนิคภาษาอังกฤษตามมาตรฐานวิชาชีพ
+
+---
+
+## [2026-08-04] update | Phase 4 OCR Integration & Qwen2.5-VL Fix
+
+**ประเภทงาน:** ติดตั้งและปรับแต่งโมเดล Surya OCR 2 (GGUF)
+
+**รายละเอียด:**
+
+- ปรับปรุงไฟล์ `inference_service.py` ให้โหลด `surya-2.gguf` ผ่าน `llama-cpp-python`
+- อัปเดต `scan_service.py` เพื่อนำ `ocr_text` ที่อ่านได้มาคิดคะแนน `text_score` ร่วมกับ Scam Keywords (เช่น ด่วน, โบนัส, ลงทุน)
+- **Problem Solving:** แก้บั๊ก Context Memory ของ Qwen2-VL โดยการเปลี่ยน Chat Handler ไปใช้ `Qwen25VLChatHandler` แทน `Llava15ChatHandler` และขยาย `n_ctx=8192` ทำให้สามารถประมวลผลรูปภาพความละเอียดสูงได้สมบูรณ์
+- **GPU Optimization:** แนะนำและวางแนวทางการติดตั้ง `cuda-toolkit` OS-level เพื่อนำเข้าไดรเวอร์ `libcudart` ให้ `llama-cpp-python` รันบน VRAM (RTX 3050) ได้ 100% (n_gpu_layers=-1)
+
+---
+
+## [2026-08-04] mass_ingest | ย้ายเอกสารต้นฉบับเข้า Wiki
+
+**ประเภทงาน:** รวบรวมเอกสารจากโฟลเดอร์ `doc/`, `design/`, `database/`, และ `server/` เข้าสู่สารบบ Wiki แบบอัตโนมัติ
+
+**รายการไฟล์ที่นำเข้า (พร้อมเพิ่ม Frontmatter):**
+
+- **Requirements:** `srs.md`, `use-case-diagram.md`
+- **Architecture:** `c1-system-context-diagram.md`, `c2-container-diagram.md`, `flowchart.md`, `design-overview.md`, `mobile-design.md`, `database-er-diagram.md`
+- **Concepts:** `model-training.md`
+- **Planning:** `backend-howto.md`
+
+**รายละเอียด:**
+
+- ใช้สคริปต์ `mass_ingest.py` จัดการคัดลอกไฟล์ทั้งหมดและแทรก YAML Frontmatter ด้านบนของไฟล์โดยอัตโนมัติ เพื่อรักษาโครงสร้างเดิมของโปรเจคไว้
+- สั่ง Build HTML ใหม่ เพื่อให้เอกสารทั้งหมดเข้าไปอยู่ใน Web Portal (`wed-ScamGuard`) อย่างสมบูรณ์

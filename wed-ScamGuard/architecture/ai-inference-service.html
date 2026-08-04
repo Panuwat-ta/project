@@ -18,11 +18,13 @@
         <p class="lede">Container ประมวลผลเฉพาะสำหรับรัน Deep Learning Model แยกจาก API Application เพื่อให้ Scale GPU-intensive Task ได้อย่างอิสระ</p>
     <div class="divider"></div>
     <h2>บทบาท</h2>
-    <p>AI Inference Service คือ <strong>หน่วย Deploy แยก</strong> (Container) ที่รับ Task วิเคราะห์รูปภาพจาก  และส่งคืน:
-    - <strong>Segmentation Mask</strong> ระบุพิกเซลที่ถูกดัดแปลง
-    - <strong>Grad-CAM Heatmap</strong> สำหรับ XAI overlay
-    - <strong>คะแนนตรวจจับภาพ AI-Generated</strong>
-    - <strong>Visual Risk Score (S_visual)</strong> — น้ำหนัก 45% ของ Risk Score รวม</p>
+    <p>AI Inference Service คือ <strong>หน่วย Deploy แยก</strong> (Container) ที่รับ Task วิเคราะห์รูปภาพจาก  และส่งคืน:</p>
+    <ul>
+    <li><strong>Segmentation Mask</strong> ระบุพิกเซลที่ถูกดัดแปลง</li>
+    <li><strong>Grad-CAM Heatmap</strong> สำหรับ XAI overlay</li>
+    <li><strong>คะแนนตรวจจับภาพ AI-Generated</strong></li>
+    <li><strong>Visual Risk Score (S_visual)</strong> — น้ำหนัก 45% ของ Risk Score รวม</li>
+    </ul>
     <div class="divider"></div>
     <h2>โมเดลที่ทำงานใน Service นี้</h2>
     <h3>1. ตรวจจับการตัดต่อภาพ (SegFormer + ELA)</h3>
@@ -62,6 +64,10 @@
         - รวม Risk Score จาก Mask Coverage × Confidence
             |
       AI-Gen Classifier Forward Pass แยก
+            |
+      OCR &amp; Text Extraction (Surya OCR 2 GGUF):
+        - รันโมเดล Qwen2.5-VL เพื่อดึงข้อความจากภาพ
+        - ส่งมอบ ocr_text ให้ Scam Keyword Matching
             |
       แต่งสี Grad-CAM และสร้างภาพ Overlay
             |

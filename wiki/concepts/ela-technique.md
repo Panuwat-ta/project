@@ -19,6 +19,7 @@ updated: 2026-08-02
 เมื่อภาพ **ถูกดัดแปลง** (เช่น วางตัวเลขใหม่ทับสลิป หรือเปลี่ยนใบหน้า) บริเวณที่แก้ไขถูกบันทึกด้วย compression level ที่แตกต่างจากส่วนอื่น การ Re-save ภาพที่ถูกดัดแปลงด้วย quality level ที่กำหนดจะเผยให้เห็นความไม่สอดคล้องนี้
 
 **ขั้นตอน:**
+
 1. Re-save ภาพด้วย JPEG quality ที่กำหนด (เช่น 95%)
 2. คำนวณ Pixel-wise Difference ระหว่างภาพต้นฉบับกับภาพที่ Re-save แล้ว
 3. ขยายค่า Difference เพื่อให้มองเห็นชัดขึ้น
@@ -41,6 +42,7 @@ updated: 2026-08-02
 ELA คือสัญญาณหลักที่ใช้โดย [[architecture/ai-inference-service|AI Inference Service]] โมเดล [[concepts/ai-model-segformer]] ถูก Train ให้จดจำรูปแบบ ELA และสร้าง Segmentation Mask ระดับพิกเซล
 
 กระบวนการ:
+
 1. API ส่งภาพไปยัง AI Inference Service
 2. AI Inference Service ทำ ELA Preprocessing (Re-save + คำนวณ Difference Map)
 3. ผลลัพธ์ ELA (Difference Map) ถูกส่งเข้าโมเดล SegFormer

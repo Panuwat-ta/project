@@ -63,23 +63,27 @@ server/
 ## ความรับผิดชอบหลัก
 
 ### 1. Authentication และ Authorization
+
 - ลงทะเบียนและ Login ด้วย Email/Password
 - Google OAuth (Social Login)
 - ออก JWT Token เมื่อ Login สำเร็จ ตรวจสอบทุก Protected Endpoint
 - **RBAC** — แยก Role ผู้ใช้ทั่วไปและ Admin Endpoint ที่เป็น Admin Only ล็อคด้วย Dependency Injection
 
 ### 2. การดึง EXIF Metadata
+
 - ดึง Metadata ที่ซ่อนอยู่ในรูปภาพ (พิกัด GPS, รุ่นกล้อง, วันที่สร้าง, Software ที่ใช้)
 - ความไม่สอดคล้องของ Metadata (เช่น มี "Photoshop" ใน Software Field, GPS ไม่ตรง) มีส่วนในการประเมินความเสี่ยง
 - รันใน Process เดียวกับ API Application ไม่ต้องเรียก External Service
 
 ### 3. OCR และ NLP วิเคราะห์ข้อความ
+
 - **OCR Engine:** Surya-OCR (รองรับภาษาไทยและอังกฤษ)
 - ข้อความที่ดึงได้ → ส่งให้ NLP Module (RegEx Pattern + โมเดล NLP ขนาดเล็ก)
 - ตรวจจับคำหลอกลวง: คำแสดงความเร่งด่วน, สัญญาผลตอบแทนสูง, ชื่อที่อยู่ใน Blacklist
 - สร้างคะแนน `S_text` (0–100) ซึ่งมีน้ำหนัก 25% ของ Risk Score รวม
 
 ### 4. ประสานงาน Job
+
 - ตรวจสอบ Redis Cache สำหรับ Image Hash ที่เคยวิเคราะห์แล้ว
 - Cache Miss: ส่ง Task ตามลำดับ (Metadata → OCR → Visual → Source → AI-Gen)
 - รวมผลลัพธ์บางส่วนจาก AI Inference Service เป็น Weighted Risk Score

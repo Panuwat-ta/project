@@ -18,6 +18,7 @@ updated: 2026-08-02
 **ทางเลือก:** React Native (JavaScript)
 
 **เหตุผล:**
+
 - Flutter ให้ Codebase เดียว (Dart) สำหรับ Android (และ iOS ในอนาคต)
 - ประสิทธิภาพการ Render ดีกว่า — Flutter วาด Widget ของตัวเองโดยไม่ต้องพึ่ง Native UI Component Bridge
 - รองรับ Dark Mode ทันที
@@ -33,6 +34,7 @@ updated: 2026-08-02
 **ทางเลือก:** CNN-based Classifiers (ResNet, EfficientNet), Traditional ELA Standalone
 
 **เหตุผล:**
+
 - งานนี้ต้องระบุการดัดแปลงใน **ระดับพิกเซล** ซึ่งเป็นปัญหา Segmentation ไม่ใช่ Classification แบบ CNN ที่บอกแค่ Label รวมๆ
 - SegFormer จัดการเรื่อง Multi-scale Features (ทั้ง Global Context และ Local Pixel Detail) ได้ดีกว่า Transformer รุ่นแรกๆ
 - ไม่มี Fixed Positional Encoding → Generalize กับรูปหลายขนาดได้ดีกว่า
@@ -49,6 +51,7 @@ updated: 2026-08-02
 **ทางเลือก:** Django REST Framework, Flask, Node.js Express
 
 **เหตุผล:**
+
 - **Async I/O** — FastAPI จัดการ Concurrent Request ได้อย่างมีประสิทธิภาพโดยไม่ติดเรื่อง Threading Overhead
 - **Performance** — Throughput สำหรับงาน I/O-bound เทียบชั้นได้กับ Go และ Node.js
 - **Pydantic Validation** — ตรวจสอบ Schema เข้า-ออกแบบอัตโนมัติ
@@ -63,6 +66,7 @@ updated: 2026-08-02
 **การเทรน (Training):** ยังใช้ PyTorch เหมือนเดิม
 
 **เหตุผล:**
+
 - Inference เร็วกว่า Native PyTorch 2–5 เท่า
 - ONNX ทำงานแยกจาก Framework — สามารถรัน Model ได้โดยไม่ต้องลง PyTorch ในฝั่ง Inference
 - ลด Dependency และขนาด Container ของฝั่ง Serving
@@ -76,6 +80,7 @@ updated: 2026-08-02
 **ทางเลือก:** MongoDB, Firestore (NoSQL)
 
 **เหตุผล:**
+
 - ระบบต้องการ **ACID Transactions** เพื่อรักษาความถูกต้องของข้อมูลสแกนและการเก็บ Consent PDPA
 - ข้อมูลมีโครงสร้างแบบ Relational ชัดเจน (Users → Scans → Results, Reports)
 - มี Extension PostGIS เผื่ออนาคตหากต้องการฟีเจอร์แผนที่จาก EXIF GPS
@@ -89,11 +94,24 @@ updated: 2026-08-02
 **ทางเลือก:** Bing Visual Search
 
 **เหตุผล:**
+
 - ฐานข้อมูลภาพบนเว็บใหญ่และครอบคลุมที่สุด
 - เรียก API ครั้งเดียวสามารถค้นหาครอบคลุมอินเทอร์เน็ตส่วนใหญ่
 - เสถียรและมี Document อธิบาย API ดีเยี่ยม
 
 **ความเสี่ยง:** ยึดติดกับบริการภายนอก — หาก Google Vision ล่ม ระบบตรวจสอบความเสี่ยงจะคืนค่าคะแนนกลางสำหรับส่วนนี้ (Source Verification) โดยมี Bing เป็นแผนสำรอง
+
+## การตัดสินใจ 7: ใช้ Surya OCR 2 (GGUF/Qwen2.5-VL) แทน Tesseract สำหรับอ่านตัวอักษร
+
+**สิ่งที่เลือก:** Surya OCR 2 (รันผ่าน llama-cpp-python รูปแบบ GGUF)
+**ทางเลือก:** Tesseract OCR (ดั้งเดิม), Google Cloud Vision API (Text Detection)
+
+**เหตุผล:**
+
+- Tesseract OCR ขาดความแม่นยำในการอ่านภาษาไทย โดยเฉพาะรูปที่มีพื้นหลังลวดลายเยอะหรือมีสัญญาณรบกวน (Noise)
+- Surya OCR 2 อาศัยสถาปัตยกรรม Vision-Language Model (Qwen2.5-VL) ทำให้มีความเข้าใจบริบท โครงสร้างภาพ (Layout) และภาษาไทยได้แม่นยำกว่ามาก
+- การใช้ GGUF + `llama-cpp-python` ช่วยให้สามารถรันโมเดลบน GPU VRAM 4GB (เช่น RTX 3050) ได้อย่างมีประสิทธิภาพ และยัง Fallback ไปรันบน CPU ได้ถ้าไม่มี GPU
+- ช่วยคัดกรอง "Scam Keywords" หลอกลวง (เช่น ด่วน, โบนัส, กู้เงิน) ได้แม่นยำ ลด False Negative
 
 ---
 

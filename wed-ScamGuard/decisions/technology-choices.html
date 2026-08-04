@@ -20,60 +20,82 @@
     <h2>การตัดสินใจ 1: ใช้ Flutter แทน React Native สำหรับ Mobile</h2>
     <p><strong>สิ่งที่เลือก:</strong> Flutter (Dart)
     <strong>ทางเลือก:</strong> React Native (JavaScript)</p>
-    <p><strong>เหตุผล:</strong>
-    - Flutter ให้ Codebase เดียว (Dart) สำหรับ Android (และ iOS ในอนาคต)
-    - ประสิทธิภาพการ Render ดีกว่า — Flutter วาด Widget ของตัวเองโดยไม่ต้องพึ่ง Native UI Component Bridge
-    - รองรับ Dark Mode ทันที
-    - BLoC State Management มี Document ครบถ้วนและเขียน Test ง่าย</p>
+    <p><strong>เหตุผล:</strong></p>
+    <ul>
+    <li>Flutter ให้ Codebase เดียว (Dart) สำหรับ Android (และ iOS ในอนาคต)</li>
+    <li>ประสิทธิภาพการ Render ดีกว่า — Flutter วาด Widget ของตัวเองโดยไม่ต้องพึ่ง Native UI Component Bridge</li>
+    <li>รองรับ Dark Mode ทันที</li>
+    <li>BLoC State Management มี Document ครบถ้วนและเขียน Test ง่าย</li>
+    </ul>
     <p><strong>ความคลาดเคลื่อน:</strong> OBJ-01 ใน <code>doc/objective.md</code> ระบุ "React Native" แต่เอกสาร Architecture/Design ระบุ Flutter ทั้งหมด เรายึด Design Document เป็นหลัก — ดังนั้น Flutter คือเทคโนโลยีที่ถูกสร้างจริง</p>
     <div class="divider"></div>
     <h2>การตัดสินใจ 2: ใช้ SegFormer แทน CNN สำหรับตรวจภาพตัดต่อ</h2>
     <p><strong>สิ่งที่เลือก:</strong> SegFormer (Transformer-based semantic segmentation)
     <strong>ทางเลือก:</strong> CNN-based Classifiers (ResNet, EfficientNet), Traditional ELA Standalone</p>
-    <p><strong>เหตุผล:</strong>
-    - งานนี้ต้องระบุการดัดแปลงใน <strong>ระดับพิกเซล</strong> ซึ่งเป็นปัญหา Segmentation ไม่ใช่ Classification แบบ CNN ที่บอกแค่ Label รวมๆ
-    - SegFormer จัดการเรื่อง Multi-scale Features (ทั้ง Global Context และ Local Pixel Detail) ได้ดีกว่า Transformer รุ่นแรกๆ
-    - ไม่มี Fixed Positional Encoding → Generalize กับรูปหลายขนาดได้ดีกว่า
-    - เร็วกว่า ViT-based Model ตัวเต็ม
-    - นำไปใช้ร่วมกับ ELA Preprocessing ได้ดี</p>
+    <p><strong>เหตุผล:</strong></p>
+    <ul>
+    <li>งานนี้ต้องระบุการดัดแปลงใน <strong>ระดับพิกเซล</strong> ซึ่งเป็นปัญหา Segmentation ไม่ใช่ Classification แบบ CNN ที่บอกแค่ Label รวมๆ</li>
+    <li>SegFormer จัดการเรื่อง Multi-scale Features (ทั้ง Global Context และ Local Pixel Detail) ได้ดีกว่า Transformer รุ่นแรกๆ</li>
+    <li>ไม่มี Fixed Positional Encoding → Generalize กับรูปหลายขนาดได้ดีกว่า</li>
+    <li>เร็วกว่า ViT-based Model ตัวเต็ม</li>
+    <li>นำไปใช้ร่วมกับ ELA Preprocessing ได้ดี</li>
+    </ul>
     <p><strong>ข้อแลกเปลี่ยน (Trade-off):</strong> กิน RAM/VRAM มากกว่า CNN Classifier แต่ยอมรับได้เมื่อรันบน Cloud</p>
     <div class="divider"></div>
     <h2>การตัดสินใจ 3: ใช้ FastAPI แทน Django/Flask/Node.js สำหรับ Backend</h2>
     <p><strong>สิ่งที่เลือก:</strong> Python FastAPI
     <strong>ทางเลือก:</strong> Django REST Framework, Flask, Node.js Express</p>
-    <p><strong>เหตุผล:</strong>
-    - <strong>Async I/O</strong> — FastAPI จัดการ Concurrent Request ได้อย่างมีประสิทธิภาพโดยไม่ติดเรื่อง Threading Overhead
-    - <strong>Performance</strong> — Throughput สำหรับงาน I/O-bound เทียบชั้นได้กับ Go และ Node.js
-    - <strong>Pydantic Validation</strong> — ตรวจสอบ Schema เข้า-ออกแบบอัตโนมัติ
-    - <strong>OpenAPI Docs</strong> — สร้าง API Document ให้โดยอัตโนมัติที่ <code>/docs</code>
-    - ใช้ภาษา Python เช่นเดียวกับฝั่ง AI/ML ทำให้ทีมดูแลรักษาง่ายกว่าต้องสลับภาษา</p>
+    <p><strong>เหตุผล:</strong></p>
+    <ul>
+    <li><strong>Async I/O</strong> — FastAPI จัดการ Concurrent Request ได้อย่างมีประสิทธิภาพโดยไม่ติดเรื่อง Threading Overhead</li>
+    <li><strong>Performance</strong> — Throughput สำหรับงาน I/O-bound เทียบชั้นได้กับ Go และ Node.js</li>
+    <li><strong>Pydantic Validation</strong> — ตรวจสอบ Schema เข้า-ออกแบบอัตโนมัติ</li>
+    <li><strong>OpenAPI Docs</strong> — สร้าง API Document ให้โดยอัตโนมัติที่ <code>/docs</code></li>
+    <li>ใช้ภาษา Python เช่นเดียวกับฝั่ง AI/ML ทำให้ทีมดูแลรักษาง่ายกว่าต้องสลับภาษา</li>
+    </ul>
     <div class="divider"></div>
     <h2>การตัดสินใจ 4: ใช้ ONNX Runtime แทน Native PyTorch เพื่อ Serving</h2>
     <p><strong>สิ่งที่เลือก:</strong> ONNX Runtime (เฉพาะตอน Serving)
     <strong>การเทรน (Training):</strong> ยังใช้ PyTorch เหมือนเดิม</p>
-    <p><strong>เหตุผล:</strong>
-    - Inference เร็วกว่า Native PyTorch 2–5 เท่า
-    - ONNX ทำงานแยกจาก Framework — สามารถรัน Model ได้โดยไม่ต้องลง PyTorch ในฝั่ง Inference
-    - ลด Dependency และขนาด Container ของฝั่ง Serving
-    - Flow มาตรฐาน: Train ใน PyTorch → Export เป็น ONNX → Serve ด้วย ONNX Runtime</p>
+    <p><strong>เหตุผล:</strong></p>
+    <ul>
+    <li>Inference เร็วกว่า Native PyTorch 2–5 เท่า</li>
+    <li>ONNX ทำงานแยกจาก Framework — สามารถรัน Model ได้โดยไม่ต้องลง PyTorch ในฝั่ง Inference</li>
+    <li>ลด Dependency และขนาด Container ของฝั่ง Serving</li>
+    <li>Flow มาตรฐาน: Train ใน PyTorch → Export เป็น ONNX → Serve ด้วย ONNX Runtime</li>
+    </ul>
     <div class="divider"></div>
     <h2>การตัดสินใจ 5: ใช้ PostgreSQL เป็นฐานข้อมูลหลัก</h2>
     <p><strong>สิ่งที่เลือก:</strong> PostgreSQL
     <strong>ทางเลือก:</strong> MongoDB, Firestore (NoSQL)</p>
-    <p><strong>เหตุผล:</strong>
-    - ระบบต้องการ <strong>ACID Transactions</strong> เพื่อรักษาความถูกต้องของข้อมูลสแกนและการเก็บ Consent PDPA
-    - ข้อมูลมีโครงสร้างแบบ Relational ชัดเจน (Users → Scans → Results, Reports)
-    - มี Extension PostGIS เผื่ออนาคตหากต้องการฟีเจอร์แผนที่จาก EXIF GPS
-    - เป็นฐานข้อมูลที่มีเสถียรภาพและได้รับความนิยมสูง</p>
+    <p><strong>เหตุผล:</strong></p>
+    <ul>
+    <li>ระบบต้องการ <strong>ACID Transactions</strong> เพื่อรักษาความถูกต้องของข้อมูลสแกนและการเก็บ Consent PDPA</li>
+    <li>ข้อมูลมีโครงสร้างแบบ Relational ชัดเจน (Users → Scans → Results, Reports)</li>
+    <li>มี Extension PostGIS เผื่ออนาคตหากต้องการฟีเจอร์แผนที่จาก EXIF GPS</li>
+    <li>เป็นฐานข้อมูลที่มีเสถียรภาพและได้รับความนิยมสูง</li>
+    </ul>
     <div class="divider"></div>
     <h2>การตัดสินใจ 6: ใช้ Google Vision API สำหรับ Reverse Image Search</h2>
     <p><strong>สิ่งที่เลือก:</strong> Google Vision API
     <strong>ทางเลือก:</strong> Bing Visual Search</p>
-    <p><strong>เหตุผล:</strong>
-    - ฐานข้อมูลภาพบนเว็บใหญ่และครอบคลุมที่สุด
-    - เรียก API ครั้งเดียวสามารถค้นหาครอบคลุมอินเทอร์เน็ตส่วนใหญ่
-    - เสถียรและมี Document อธิบาย API ดีเยี่ยม</p>
+    <p><strong>เหตุผล:</strong></p>
+    <ul>
+    <li>ฐานข้อมูลภาพบนเว็บใหญ่และครอบคลุมที่สุด</li>
+    <li>เรียก API ครั้งเดียวสามารถค้นหาครอบคลุมอินเทอร์เน็ตส่วนใหญ่</li>
+    <li>เสถียรและมี Document อธิบาย API ดีเยี่ยม</li>
+    </ul>
     <p><strong>ความเสี่ยง:</strong> ยึดติดกับบริการภายนอก — หาก Google Vision ล่ม ระบบตรวจสอบความเสี่ยงจะคืนค่าคะแนนกลางสำหรับส่วนนี้ (Source Verification) โดยมี Bing เป็นแผนสำรอง</p>
+    <h2>การตัดสินใจ 7: ใช้ Surya OCR 2 (GGUF/Qwen2.5-VL) แทน Tesseract สำหรับอ่านตัวอักษร</h2>
+    <p><strong>สิ่งที่เลือก:</strong> Surya OCR 2 (รันผ่าน llama-cpp-python รูปแบบ GGUF)
+    <strong>ทางเลือก:</strong> Tesseract OCR (ดั้งเดิม), Google Cloud Vision API (Text Detection)</p>
+    <p><strong>เหตุผล:</strong></p>
+    <ul>
+    <li>Tesseract OCR ขาดความแม่นยำในการอ่านภาษาไทย โดยเฉพาะรูปที่มีพื้นหลังลวดลายเยอะหรือมีสัญญาณรบกวน (Noise)</li>
+    <li>Surya OCR 2 อาศัยสถาปัตยกรรม Vision-Language Model (Qwen2.5-VL) ทำให้มีความเข้าใจบริบท โครงสร้างภาพ (Layout) และภาษาไทยได้แม่นยำกว่ามาก</li>
+    <li>การใช้ GGUF + <code>llama-cpp-python</code> ช่วยให้สามารถรันโมเดลบน GPU VRAM 4GB (เช่น RTX 3050) ได้อย่างมีประสิทธิภาพ และยัง Fallback ไปรันบน CPU ได้ถ้าไม่มี GPU</li>
+    <li>ช่วยคัดกรอง "Scam Keywords" หลอกลวง (เช่น ด่วน, โบนัส, กู้เงิน) ได้แม่นยำ ลด False Negative</li>
+    </ul>
     <div class="divider"></div>
     <h2>ประเด็นสำคัญ</h2>
     <ul>

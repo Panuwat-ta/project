@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UX/UI & System Design Overview - ScamGuard</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../shared-theme.css">
+</head>
+
+<body>
+  <main class="document">
+    <h1>การออกแบบแอปพลิเคชันบนอุปกรณ์เคลื่อนที่ (Mobile Application Design)</h1>
+    <h2>โครงงาน: แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง (Scam Image Detection)</h2>
+    <p>เอกสารฉบับนี้อธิบายรายละเอียดโครงสร้างการออกแบบส่วนหน้าบ้าน (Frontend Mobile Application) ที่พัฒนาด้วย Flutter ของระบบ Scam Image Detection โดยครอบคลุมสถาปัตยกรรมซอฟต์แวร์, ระบบการออกแบบ UI/UX, โครงสร้างหน้าจอ และแผนผังการไหลของข้อมูลผู้ใช้งาน (User Flow)</p>
+    <div class="divider"></div>
+    <h2>1. สถาปัตยกรรมซอฟต์แวร์ฝั่ง Mobile App (Software Architecture)</h2>
+    <p>แอปพลิเคชันพัฒนาด้วย Flutter โดยยึดตามหลักการออกแบบ Clean Architecture และแบ่งการเขียนโค้ดตามรูปแบบ MVVM (Model-View-ViewModel) ร่วมกับ State Management ของ BLoC (Business Logic Component) เพื่อแยก Logic การทำงานออกจาก UI อย่างชัดเจน</p>
+    <div class="mermaid-container"><div class="mermaid">flowchart TD
+        subgraph UI_Layer [Presentation Layer / UI]
+            Views("Views (Widgets)<br>[UI Elements]")
+            Blocs("ViewModels (BLoC)<br>[State Management]")
+        end
+    
+        subgraph Domain_Layer [Domain Layer / Business Rules]
+            Entities("Entities<br>[Data Models]")
+            UseCases("Use Cases<br>[Business Logic]")
+        end
+    
+        subgraph Data_Layer [Data Layer / Source]
+            Repositories("Repositories Interface<br>& Implementation")
+            DataSources("Data Sources<br>[Local Cache & REST API via Dio]")
+        end
+    
+        %% Connections
+        Views --> Blocs
+        Blocs --> UseCases
+        UseCases --> Entities
+        UseCases --> Repositories
+        Repositories --> DataSources
+    </div></div>
+    <h3>รายละเอียดโครงสร้าง Layer</h3>
+    <ul>
+    <li><strong>Presentation Layer:</strong> ประกอบด้วย Widget ต่าง ๆ ที่ทำหน้าที่แสดงผลหน้าตาแอป และ BLoC ที่ทำหน้าที่รับ Event จากหน้าจอ ประมวลผลเปลี่ยนสถานะ (State) แล้วส่งผลลัพธ์กลับไปอัปเดต UI</li>
+    <li><strong>Domain Layer:</strong> แกนกลางที่ไม่ขึ้นตรงกับเฟรมเวิร์กใด ๆ ประกอบด้วยโมเดลข้อมูลหลัก (Entities) และคลาสคำสั่งธุรกิจ (Use Cases) เช่น การส่งตรวจวิเคราะห์ภาพ หรือการเรียกดูประวัติ</li>
+    <li><strong>Data Layer:</strong> จัดการเชื่อมต่อกับแหล่งข้อมูลภายนอก โดยเชื่อมต่อ REST API ผ่าน HTTP Client (คลาส Dio) และการจัดเก็บโทเคนความปลอดภัยใน Secure Storage</li>
+    </ul>
+    <div class="divider"></div>
+    <h2>2. ระบบการออกแบบ UI/UX และธีมสี (Design System &amp; Theme)</h2>
+    <p>แอปพลิเคชันออกแบบภายใต้ธีม Dark Mode เพื่อเน้นความล้ำสมัย ปลอดภัย และลดอาการเมื่อยล้าสายตา โดยใช้สีและแบบอักษรที่คัดสรรเป็นพิเศษดังนี้:</p>
+    <h3>โทนสีของระบบ (Color Palette)</h3>
+    <ul>
+    <li><strong>สีพื้นหลังหลัก (Primary Background):</strong> Slate Gray (#121824) ให้ความรู้สึกมั่นคง สบายตา</li>
+    <li><strong>สีพื้นหลังรอง (Secondary Background):</strong> Navy Blue Gray (#1A2333) สำหรับการสร้างกล่องข้อความและส่วนประกอบย่อย</li>
+    <li><strong>สีเน้นการทำงาน (Accent/Primary Color):</strong> Neon Cyan (#00E5FF) สีฟ้าสว่าง ใช้สำหรับปุ่มกดหลักและองค์ประกอบที่ต้องการเน้นสายตา</li>
+    <li><strong>สีสถานะความเสี่ยง (Risk Indicators):</strong></li>
+    <li>ความเสี่ยงต่ำ (Low Risk): Emerald Green (#00E676)</li>
+    <li>ความเสี่ยงปานกลาง (Medium Risk): Amber Yellow (#FFD700)</li>
+    <li>ความเสี่ยงสูง (High Risk): Crimson Red (#FF1744)</li>
+    </ul>
+    <h3>ตัวอักษร (Typography)</h3>
+    <ul>
+    <li>เลือกใช้แบบอักษร <strong>Outfit</strong> (จาก Google Fonts) สำหรับข้อความภาษาอังกฤษและตัวเลขเพื่อให้ความลื่นไหล ทันสมัย</li>
+    <li>ใช้แบบอักษร <strong>Sarabun</strong> สำหรับการแสดงผลข้อความภาษาไทยเพื่อให้อ่านง่ายและมีความเป็นทางการ</li>
+    </ul>
+    <div class="divider"></div>
+    <h2>3. โครงสร้างหน้าจอและทางเดินของผู้ใช้ (App Screen Structure &amp; Navigation)</h2>
+    <p>หน้าจอหลักของแอปพลิเคชันประกอบไปด้วย 5 หน้าจอหลักที่เชื่อมต่อผ่านระบบ Bottom Navigation Bar:</p>
+    <div class="mermaid-container"><div class="mermaid">flowchart LR
+        Splash[Splash Screen] --> Login[Login / OAuth]
+        Login --> Home[Home Screen]
+    
+        Home --> Nav[Navigation Bar]
+        Nav --> NavHome[Home / Scan Screen]
+        Nav --> NavHistory[History Screen]
+        Nav --> NavSettings[Settings & PDPA Screen]
+    
+        NavHome --> Result[Analysis Result Screen]
+        Result --> Report[Report Scam Screen]
+    </div></div>
+    <h3>รายละเอียดหน้าที่ของแต่ละหน้าจอ</h3>
+    <h4>1. Splash Screen</h4>
+    <ul>
+    <li>ทำหน้าที่โหลดการตั้งค่าระบบ ตรวจเช็กโทเคนการเข้าสู่ระบบเดิม (Session Token)</li>
+    <li>หากผู้ใช้เคยล็อกอินค้างไว้ ระบบจะข้ามไปหน้า Home ทันที หากไม่มีจะพาไปหน้า Login</li>
+    </ul>
+    <h4>2. Login &amp; Authentication Screen</h4>
+    <ul>
+    <li>หน้าจอกรอก Email/Password และช่องทางล็อกอินแบบรวดเร็ว (Google Login / Apple ID)</li>
+    <li>มีลิงก์สำหรับสมัครสมาชิกใหม่ และระบบขอเปลี่ยนรหัสผ่านใหม่ (Forgot Password)</li>
+    </ul>
+    <h4>3. Home / Scan Screen (หน้าแรกและนำเข้ารูปภาพ)</h4>
+    <ul>
+    <li>เป็นหน้าหลักเมื่อเปิดแอป ประกอบด้วย:</li>
+    <li>ปุ่มกดสำหรับ นำเข้ารูปภาพจากคลังภาพ (Gallery) เพื่ออัปโหลดเข้าสู่ระบบ</li>
+    <li>เมนูแนะนำภัยออนไลน์ (Scam Alerts Feed) สำหรับอัปเดตกลโกงใหม่ ๆ จากผู้ดูแลระบบ</li>
+    <li>เมื่อเลือกรูปภาพเสร็จ แอปจะส่งไปยังหน้าครอปตัดรูป (Image Cropper Widget) ก่อนจะเริ่มส่งขึ้น API และแสดงสถานะกำลังวิเคราะห์ (Loading Shimmer Effect)</li>
+    </ul>
+    <h4>4. Analysis Result Screen (หน้าแสดงผลลัพธ์)</h4>
+    <ul>
+    <li>แสดงผลคะแนนความเสี่ยงรวม (Weighted Risk Score) ในรูปของมาตรวัดวงกลมสี (Radial Risk Gauge)</li>
+    <li>ตัวเลือกระหว่าง:</li>
+    <li>หน้าแสดงข้อมูลภาพต้นฉบับ</li>
+    <li>หน้าภาพ Heatmap (แสดง Grad-CAM ที่ชี้พิกเซลผิดปกติจาก AI)</li>
+    <li>รายละเอียดผลวิเคราะห์ 3 ชั้น (Multi-layer Analysis Breakdown):</li>
+    <li>ผลตรวจสอบ OCR &amp; คำอันตราย (Textual Detection)</li>
+    <li>ผลตรวจสอบข้อมูลไฟล์และอุปกรณ์ที่ใช้บันทึกภาพ (Metadata Check)</li>
+    <li>ผลตรวจสอบแหล่งที่มาดั้งเดิม (Reverse Image Search Results)</li>
+    <li>ปุ่มกดรายงานเบาะแสเข้าระบบกลาง (Report to Scam DB) และปุ่มแชร์รูปภาพแจ้งเตือน (Share Scam Alert)</li>
+    </ul>
+    <h4>5. History Screen (หน้าประวัติการสแกน)</h4>
+    <ul>
+    <li>หน้าแสดงรายการการสแกนที่ผ่านมา จัดเรียงตามวัน-เวลา</li>
+    <li>แสดงข้อมูลสรุปย่อ เช่น รูปตัวอย่าง, วันที่สแกน, และระดับความเสี่ยง</li>
+    <li>ฟังก์ชันการลบประวัติทีละรายการ (Slide to delete) หรือลบทั้งหมดในครั้งเดียว</li>
+    </ul>
+    <h4>6. Settings &amp; PDPA Screen (หน้าการตั้งค่าและสิทธิ์)</h4>
+    <ul>
+    <li>จัดการข้อมูลส่วนตัว และเปลี่ยนรหัสผ่าน</li>
+    <li>ส่วนจัดการข้อตกลงความเป็นส่วนตัว (PDPA / Consent Management) ให้ผู้ใช้สามารถกดยกเลิกความยินยอมการส่งไฟล์ภาพเข้าคลังวิจัยย้อนหลังได้ตลอดเวลา</li>
+    </ul>
+    <div class="divider"></div>
+    <h2>4. แผนผังการทำงานและการประมวลผลข้อมูล (Sequence Flow)</h2>
+    <p>ขั้นตอนการส่งรูปภาพขึ้นไปประมวลผลและส่งการแจ้งเตือนกลับมายังแอปพลิเคชันมือถือ:</p>
+    <div class="mermaid-container"><div class="mermaid">sequenceDiagram
+        actor User as General User
+        participant App as Mobile App (Flutter)
+        participant API as API Application (FastAPI)
+        participant AI as AI Inference Service
+        participant Push as FCM Service
+    
+        User->>App: เลือก/อัปโหลดรูปภาพ
+        App->>API: ส่งรูปภาพดิบ (POST Multipart/form-data)
+        Note over API: ดึงค่า Metadata & รัน OCR ค้นหาคำอันตราย
+        API-->>App: ส่งรหัสติดตามงานสแกน (Scan Task ID)
+        Note over App: แสดงหน้า Loading ประมวลผลเบื้องหลัง
+    
+        API->>AI: ส่งรูปภาพไปตรวจสอบระดับพิกเซล (ELA & GenAI check)
+        Note over AI: ประมวลผลรูปภาพสร้างแผนที่ความร้อน (Heatmap)
+        AI-->>API: ส่งผลการคำนวณและรูปภาพ Grad-CAM
+    
+        Note over API: คำนวณ Weighted Risk Score สรุปผลภาพรวม
+        API->>Push: ส่งคำสั่งแจ้งเตือนพร้อมสแกนเสร็จสิ้น (Push Payload)
+        Push-->>App: เด้งหน้าต่างแจ้งเตือนที่เครื่องผู้ใช้ (Scan Completed)
+    
+        User->>App: กดดูการแจ้งเตือน
+        App->>API: เรียกข้อมูลผลลัพธ์ผ่าน Task ID
+        API-->>App: ส่งกลับข้อมูล Risk Score, Heatmap URL, และรายละเอียดวิเคราะห์
+        App->>User: แสดงรายงานระดับความเสี่ยงบนหน้าจอ
+    </div></div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.mermaid-container').forEach(container => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-expand-mermaid';
+        btn.innerHTML = '🔍 Fullscreen';
+
+        btn.onclick = () => {
+          const originalSvg = container.querySelector('svg');
+          if (!originalSvg) return;
+
+          const overlay = document.createElement('div');
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.backgroundColor = 'var(--paper, #F6F4EE)';
+          overlay.style.zIndex = '999999';
+          overlay.style.display = 'flex';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+
+          const closeBtn = document.createElement('button');
+          closeBtn.innerHTML = '✖ Close';
+          closeBtn.style.position = 'absolute';
+          closeBtn.style.top = '20px';
+          closeBtn.style.right = '20px';
+          closeBtn.style.padding = '8px 16px';
+          closeBtn.style.fontSize = '1rem';
+          closeBtn.style.fontWeight = 'bold';
+          closeBtn.style.cursor = 'pointer';
+          closeBtn.style.backgroundColor = '#ff4d4d';
+          closeBtn.style.color = '#fff';
+          closeBtn.style.border = 'none';
+          closeBtn.style.borderRadius = '8px';
+          closeBtn.style.zIndex = '1000000';
+          closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+
+          closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
+          closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
+
+          const clonedSvg = originalSvg.cloneNode(true);
+          clonedSvg.style.width = '100%';
+          clonedSvg.style.height = '100%';
+          clonedSvg.style.maxWidth = '100vw';
+          clonedSvg.style.maxHeight = '100vh';
+
+          overlay.appendChild(clonedSvg);
+          overlay.appendChild(closeBtn);
+          document.body.appendChild(overlay);
+
+          const oldOverflow = document.body.style.overflow;
+          document.body.style.overflow = 'hidden';
+
+          const panZoomInstance = svgPanZoom(clonedSvg, {
+            zoomEnabled: true,
+            controlIconsEnabled: true,
+            fit: true,
+            center: true,
+            minZoom: 0.5,
+            maxZoom: 10,
+            mouseWheelZoomEnabled: true
+          });
+
+          closeBtn.onclick = () => {
+            panZoomInstance.destroy();
+            document.body.removeChild(overlay);
+            document.body.style.overflow = oldOverflow;
+          };
+        };
+        container.appendChild(btn);
+      });
+    });
+  </script>
+</body>
+</html>

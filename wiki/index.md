@@ -24,6 +24,8 @@ updated: 2026-08-02
 | [[requirements/objectives-kpis]] | วัตถุประสงค์โปรเจค (OBJ-01 ถึง OBJ-04) และ KPI เชิงปริมาณ/เชิงคุณภาพ |
 | [[requirements/functional-requirements]] | ความต้องการเชิงฟังก์ชันจาก SRS และ Use Case |
 | [[requirements/non-functional-requirements]] | ประสิทธิภาพ, ความปลอดภัย, ความพร้อมใช้งาน และการปฏิบัติตาม PDPA |
+| [[requirements/srs]] | Software Requirements Specification (SRS) ฉบับสมบูรณ์ |
+| [[requirements/use-case-diagram]] | Use Case Diagram และรายละเอียด Actor/System |
 
 ---
 
@@ -37,6 +39,12 @@ updated: 2026-08-02
 | [[architecture/ai-inference-service]] | PyTorch/ONNX AI Node: ELA, ตรวจจับภาพ AI-Gen, สร้าง Grad-CAM |
 | [[architecture/database-schema]] | PostgreSQL schema, Redis cache strategy, Cloud Object Storage layout |
 | [[architecture/external-integrations]] | Google Vision API (reverse search), Firebase FCM และ integration อื่นๆ ในอนาคต |
+| [[architecture/c1-system-context-diagram]] | C1 System Context Diagram ภาพรวมระบบระดับกว้าง |
+| [[architecture/c2-container-diagram]] | C2 Container Diagram เจาะลึกระดับ Container ภายใน |
+| [[architecture/flowchart]] | System Flowchart แสดงการทำงานแต่ละขั้นตอนของระบบสแกน |
+| [[architecture/design-overview]] | UX/UI & System Design Overview ภาพรวมการออกแบบทั้งหมด |
+| [[architecture/mobile-design]] | Mobile App Architecture & Design แบบเจาะลึก |
+| [[architecture/database-er-diagram]] | Entity Relationship Diagram (ER Diagram) โครงสร้างฐานข้อมูล |
 
 ---
 
@@ -49,6 +57,7 @@ updated: 2026-08-02
 | [[concepts/explainable-ai]] | แนวทาง XAI: การสร้าง Grad-CAM Heatmap, overlay ลงรูปภาพ และการแสดงผล UI |
 | [[concepts/ai-model-segformer]] | สถาปัตยกรรม SegFormer, MiT encoder, All-MLP decoder และ output ระดับพิกเซล |
 | [[concepts/ela-technique]] | Error Level Analysis — หลักการทำงานและการตรวจจับบริเวณที่ถูกดัดแปลง |
+| [[concepts/model-training]] | AI Model Training Workflow ขั้นตอนการฝึกและเทรนโมเดล |
 
 ---
 
@@ -75,3 +84,4 @@ updated: 2026-08-02
 | :--- | :--- |
 | [[planning/project-scope]] | 4 Development Container, Work Package และงานที่ยังไม่ได้พัฒนา |
 | [[planning/team]] | สมาชิกทีม, ความรับผิดชอบ และข้อมูลอาจารย์ที่ปรึกษา |
+| [[planning/backend-howto]] | Backend Development How-To คู่มือการเริ่มพัฒนาโค้ดฝั่ง Server |

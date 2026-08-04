@@ -30,6 +30,7 @@ updated: 2026-08-02
 ### Field ที่เกี่ยวกับ PDPA
 
 ตาราง `users` มี:
+
 - `consent_analysis` — ยินยอมให้ประมวลผลรูปภาพ (จำเป็น ถ้าไม่ยินยอมใช้แอปไม่ได้)
 - `consent_research` — ยินยอมให้นำรูปภาพไป Train AI (ไม่บังคับ ถอนได้)
 - `consent_revoked_at` — Timestamp ถ้าผู้ใช้ถอนยินยอมการวิจัย

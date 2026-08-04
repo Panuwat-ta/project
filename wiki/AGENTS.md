@@ -1,6 +1,7 @@
 # Wiki Operating Guide — Scam Image Detection
 
 ## Project Context
+
 This wiki serves as the persistent knowledge base for the **Scam Image Detection** project, developed by Software Engineering students at RMUTL (Academic Year 2/2568).
 
 > **CRITICAL DOMAIN RESTRICTION:** Do NOT conflate this project with standard "fake bank slip detection." This project aims to detect scam-related image manipulations in a broader context (e.g., romance scams, forged documents, AI-generated synthetic images), not just bank slips.
@@ -54,6 +55,7 @@ wiki/
 ## Page Convention
 
 ### Frontmatter (YAML)
+
 Every page MUST begin with the following YAML frontmatter:
 
 ```yaml
@@ -67,11 +69,13 @@ updated: YYYY-MM-DD
 ```
 
 ### Cross-references
+
 - Use Obsidian-style wikilinks: `[[page-name]]` or `[[page-name|Display Text]]`.
 - Any concept mentioned for the first time in a document MUST be linked to its dedicated page.
 - Every page MUST contain a "Related Pages" (หน้าที่เกี่ยวข้อง) section at the very bottom.
 
 ### Page Structure
+
 1. A brief, one-sentence summary immediately following the frontmatter.
 2. Main content organized logically with H2/H3 headers.
 3. A "Key Points" or "Summary" (ประเด็นสำคัญ) section.
@@ -82,7 +86,9 @@ updated: YYYY-MM-DD
 ## LLM Agent Workflow
 
 ### 1. Ingesting New Documents
+
 When instructed to ingest a document from `doc/`, `design/`, or elsewhere:
+
 1. Read the entire raw source document.
 2. Identify core concepts, entities, decisions, and key information.
 3. Create or update the relevant wiki pages in the appropriate directories.
@@ -90,13 +96,16 @@ When instructed to ingest a document from `doc/`, `design/`, or elsewhere:
 5. Append a new entry to `log.md` in the exact format: `## [YYYY-MM-DD] ingest | <Document Name>`
 
 ### 2. Querying (Answering User Questions)
+
 1. Read `index.md` to locate relevant pages.
 2. Read the identified pages to gather context.
 3. Summarize the answer and explicitly cite the source wiki pages using wikilinks.
 4. If the generated answer holds persistent value, offer to save it as a new wiki page.
 
 ### 3. Linting
+
 When instructed to lint the wiki, scan for:
+
 - Orphan pages (pages with no incoming links).
 - Conflicting information across different pages.
 - Important concepts that are frequently mentioned but lack a dedicated page.

@@ -15,6 +15,7 @@ Container ประมวลผลเฉพาะสำหรับรัน Dee
 ## บทบาท
 
 AI Inference Service คือ **หน่วย Deploy แยก** (Container) ที่รับ Task วิเคราะห์รูปภาพจาก [[architecture/backend-api|API Application]] และส่งคืน:
+
 - **Segmentation Mask** ระบุพิกเซลที่ถูกดัดแปลง
 - **Grad-CAM Heatmap** สำหรับ XAI overlay
 - **คะแนนตรวจจับภาพ AI-Generated**
@@ -25,16 +26,19 @@ AI Inference Service คือ **หน่วย Deploy แยก** (Container) 
 ## โมเดลที่ทำงานใน Service นี้
 
 ### 1. ตรวจจับการตัดต่อภาพ (SegFormer + ELA)
+
 - **เทคนิค:** ELA Preprocessing → [[concepts/ai-model-segformer|SegFormer]] Model Inference
 - **ผลลัพธ์:** Binary Segmentation Mask + Confidence Heatmap
 - **หน้าที่:** ตรวจจับ Splicing, Copy-Move และการแก้ไขพิกเซล
 
 ### 2. ตรวจจับภาพสังเคราะห์จาก AI (AI-Gen Classifier)
+
 - **เทคนิค:** CNN หรือ ViT-based Binary Classifier แยกต่างหาก
 - **ผลลัพธ์:** ค่าความน่าจะเป็น (0–1) ว่าภาพสร้างจาก Generative AI
 - **หน้าที่:** จับภาพจาก GAN, Diffusion Model ที่ไม่มี Splice Artifact แบบดั้งเดิม
 
 ### 3. สร้าง Grad-CAM Heatmap
+
 - **Input:** ผลลัพธ์ Segmentation จาก SegFormer
 - **ผลลัพธ์:** ไฟล์ PNG Heatmap ที่แต่งสีแล้ว พร้อม overlay บนรูปต้นฉบับ
 - เก็บใน Cloud Object Storage สำหรับ Mobile App ดึงไปแสดงผล
@@ -61,6 +65,10 @@ API ส่ง POST { image_bytes, task_id }
     - รวม Risk Score จาก Mask Coverage × Confidence
         |
   AI-Gen Classifier Forward Pass แยก
+        |
+  OCR & Text Extraction (Surya OCR 2 GGUF):
+    - รันโมเดล Qwen2.5-VL เพื่อดึงข้อความจากภาพ
+    - ส่งมอบ ocr_text ให้ Scam Keyword Matching
         |
   แต่งสี Grad-CAM และสร้างภาพ Overlay
         |

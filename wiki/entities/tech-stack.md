@@ -21,10 +21,10 @@ updated: 2026-08-02
 | **API Backend** | Python FastAPI | Async I/O ประสิทธิภาพเทียบเท่า Go/Node.js; ตรวจสอบ Pydantic อัตโนมัติ; Auto-generated OpenAPI Docs |
 | **AI Training** | PyTorch | Framework มาตรฐานอุตสาหกรรมสำหรับ Deep Learning; มี Ecosystem ของ SegFormer รองรับดี |
 | **AI Inference** | ONNX Runtime | เร็วกว่า Native PyTorch 2–5 เท่าตอน Serving; ไม่ยึดติดกับ Framework |
-| **Primary Database**| PostgreSQL | ACID Transactions; ความถูกต้องของ Relational Data; รองรับ PostGIS สำหรับฟีเจอร์พิกัดในอนาคต |
+| **Primary Database** | PostgreSQL | ACID Transactions; ความถูกต้องของ Relational Data; รองรับ PostGIS สำหรับฟีเจอร์พิกัดในอนาคต |
 | **Cache** | Redis | ค้นหา Image Hash ไวระดับ Sub-millisecond; ลดโหลด AI Inference สำหรับรูปซ้ำได้มหาศาล |
 | **File Storage** | Cloud Object Storage | ขยายได้ไม่จำกัด; ใช้ Presigned URL เพื่อความปลอดภัยของ Client |
-| **Reverse Image Search**| Google Vision API | ค้นหาภาพย้อนกลับครอบคลุมและแม่นยำที่สุด |
+| **Reverse Image Search** | Google Vision API | ค้นหาภาพย้อนกลับครอบคลุมและแม่นยำที่สุด |
 | **Push Notifications** | Firebase Cloud Messaging (FCM) | ฟรี, เสถียรบน Android, ไม่ต้องบริหาร Infrastructure เอง |
 
 ---
@@ -46,7 +46,7 @@ updated: 2026-08-02
 | ส่วน | เทคโนโลยี | หมายเหตุ |
 | :--- | :--- | :--- |
 | Core Model | SegFormer | Transformer-based Semantic Segmentation |
-| Training Framework| PyTorch | มาตรฐาน; Ecosystem ใหญ่ |
+| Training Framework | PyTorch | มาตรฐาน; Ecosystem ใหญ่ |
 | Serving Format | ONNX | แปลงจาก PyTorch หลัง Train เสร็จ |
 | Inference Runtime | ONNX Runtime | Engine สำหรับ Serving ที่ Optimized แล้ว |
 | XAI | Grad-CAM | คำนวณจาก Segmentation Mask หลัง Inference |
