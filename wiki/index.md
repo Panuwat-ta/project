@@ -84,4 +84,4 @@ updated: 2026-08-02
 | :--- | :--- |
 | [[planning/project-scope]] | 4 Development Container, Work Package และงานที่ยังไม่ได้พัฒนา |
 | [[planning/team]] | สมาชิกทีม, ความรับผิดชอบ และข้อมูลอาจารย์ที่ปรึกษา |
-| [[planning/backend-howto]] | Backend Development How-To คู่มือการเริ่มพัฒนาโค้ดฝั่ง Server |
+| [[planning/backend-documentation]] | Backend Documentation คู่มือการเริ่มพัฒนาโค้ดฝั่ง Server |
