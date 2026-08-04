@@ -242,10 +242,70 @@
       border-radius: 0;
       box-shadow: none;
     }
+    /* Mobile Responsive Styles */
+    .menu-btn {
+      display: none;
+      background: transparent;
+      border: none;
+      color: var(--ink);
+      cursor: pointer;
+      padding: 6px;
+      margin-left: -8px;
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(18, 23, 43, 0.4);
+      backdrop-filter: blur(2px);
+      z-index: 99;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .sidebar-overlay.open {
+      display: block;
+      opacity: 1;
+    }
+
+    @media (max-width: 850px) {
+      .portal {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        position: fixed;
+        top: 0; left: -320px;
+        width: 292px;
+        height: 100vh;
+        z-index: 100;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 4px 0 24px rgba(18, 23, 43, 0.2);
+      }
+      .sidebar.open {
+        left: 0;
+      }
+      .menu-btn {
+        display: block;
+      }
+      .doc-number {
+        display: none; /* Hide doc number on small screens to save space */
+      }
+      .topbar {
+        padding: 12px 20px;
+      }
+      .page-title {
+        font-size: 1.15rem;
+      }
+      .eyebrow {
+        font-size: 0.65rem;
+      }
+    }
   </style>
 </head>
 
 <body>
+  <div id="sidebar-overlay" class="sidebar-overlay"></div>
   <div class="portal">
     <aside class="sidebar">
       <div class="brand"><span class="brand-mark">ScamGuard</span>
@@ -361,9 +421,14 @@
     </aside>
     <main>
       <header class="topbar">
-        <div>
-          <p class="eyebrow" id="breadcrumb">เนื้อหา</p>
-          <h2 class="page-title" id="documentTitle">Overview</h2>
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <button id="menu-btn" class="menu-btn" aria-label="Open menu">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+          </button>
+          <div>
+            <p class="eyebrow" id="breadcrumb">เนื้อหา</p>
+            <h2 class="page-title" id="documentTitle">Overview</h2>
+          </div>
         </div>
         <div class="doc-number" id="documentNumber">DOC 01/07</div>
       </header>
@@ -412,6 +477,30 @@
       frame.src = subDoc.path;
     }
 
+    // Mobile sidebar toggle
+    const menuBtn = document.getElementById('menu-btn');
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+
+    function toggleSidebar() {
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('open');
+      
+      // Handle display change for transition
+      if (overlay.classList.contains('open')) {
+        overlay.style.display = 'block';
+        setTimeout(() => overlay.style.opacity = '1', 10);
+      } else {
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+          if(!overlay.classList.contains('open')) overlay.style.display = 'none';
+        }, 300);
+      }
+    }
+
+    menuBtn.addEventListener('click', toggleSidebar);
+    overlay.addEventListener('click', toggleSidebar);
+
     document.addEventListener('click', (e) => {
       const navItem = e.target.closest('.nav-item');
       if (navItem) {
@@ -424,6 +513,11 @@
         const catIndex = Number(subItem.dataset.cat);
         const subIndex = Number(subItem.dataset.sub);
         loadDocument(catIndex, subIndex);
+        
+        // Auto-close sidebar on mobile after selecting a document
+        if (window.innerWidth <= 850 && sidebar.classList.contains('open')) {
+          toggleSidebar();
+        }
       }
     });
 

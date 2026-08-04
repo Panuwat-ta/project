@@ -497,6 +497,18 @@ a:focus-visible {
         overflow-x: auto;
         white-space: normal;
     }
+
+    h2 {
+        font-size: 1.15rem;
+    }
+
+    h3 {
+        font-size: 1.05rem;
+    }
+
+    dd, p, li {
+        font-size: 0.85rem !important;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
