@@ -15,3 +15,5 @@ ftfy
 regex
 
 -e ./library/mmsegmentation
+onnx
+onnxscript
