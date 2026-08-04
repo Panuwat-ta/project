@@ -1,5 +1,5 @@
 ---
-title: "Backend Development How-To"
+title: "Backend Documentation"
 category: planning
 tags: [planning, backend, fastapi, howto]
 sources: [server/howto.md]
@@ -846,10 +846,3 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 # -> http://localhost:8000/docs
 ```
 
----
-
-## สิ่งที่ควรทำถัดไปหลังจากอ่านเอกสารนี้
-
-1. ตัดสินใจว่าจะเริ่ม Phase 1 ด้วยตนเอง หรือจะให้ Agent ช่วยสร้างโค้ด Foundation ให้
-2. เตรียม PostgreSQL + Redis (ใช้ Docker ง่ายที่สุด)
-3. ตรวจสอบว่ามีไฟล์ ONNX พร้อมใช้งานหรือยัง (หากยังไม่มี ให้ Mock AI ไปก่อนใน Phase 3 แล้วค่อยเชื่อม ONNX จริงใน Phase 4)
