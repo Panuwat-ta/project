@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ความต้องการเชิงฟังก์ชัน (Functional Requirements) - ScamGuard</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../shared-theme.css">
+</head>
+
+<body>
+  <main class="document">
+    <h1>ความต้องการเชิงฟังก์ชัน (Functional Requirements)</h1>
+        <p class="lede">ความสามารถหลักที่ระบบต้องทำได้ จัดกลุ่มตามผู้ใช้และระบบย่อย</p>
+    <div class="divider"></div>
+    <h2>ฟังก์ชันฝั่งผู้ใช้ (Mobile App)</h2>
+    <h3>การยืนยันตัวตน (Authentication)</h3>
+    <ul>
+    <li><strong>FR-AUTH-01:</strong> ผู้ใช้สมัครสมาชิกด้วย Email/Password ได้</li>
+    <li><strong>FR-AUTH-02:</strong> ผู้ใช้เข้าสู่ระบบด้วย Email/Password ได้</li>
+    <li><strong>FR-AUTH-03:</strong> ผู้ใช้เข้าสู่ระบบด้วย Google OAuth (Social Login) ได้</li>
+    <li><strong>FR-AUTH-04:</strong> โทเค็นเซสชั่นเก็บอย่างปลอดภัยในเครื่อง (Secure Storage)</li>
+    <li><strong>FR-AUTH-05:</strong> ผู้ใช้ออกจากระบบ (Logout) เพื่อล้างค่าเซสชั่นได้</li>
+    </ul>
+    <h3>การรับภาพ (Image Input)</h3>
+    <ul>
+    <li><strong>FR-INPUT-01:</strong> ผู้ใช้เลือกรูปจากแกลเลอรีในเครื่องได้</li>
+    <li><strong>FR-INPUT-02:</strong> ผู้ใช้ใช้กล้องถ่ายรูปได้</li>
+    <li><strong>FR-INPUT-03:</strong> ผู้ใช้ปรับขนาดและครอบตัด (Crop) ภาพก่อนส่งได้ เพื่อเน้นจุดสนใจ</li>
+    <li><strong>FR-INPUT-04:</strong> แอปอัปโหลดภาพผ่าน Multipart HTTP เพื่อส่งไปวิเคราะห์</li>
+    </ul>
+    <h3>การแสดงรายงานความเสี่ยง (Risk Report Display)</h3>
+    <ul>
+    <li><strong>FR-REPORT-01:</strong> แอปแสดงคะแนน Weighted Risk Score รวม (0-100) แบบ Color Gauge (เขียว/เหลือง/แดง)</li>
+    <li><strong>FR-REPORT-02:</strong> แอปแสดงภาพ Grad-CAM Heatmap ซ้อนทับรูปจริง</li>
+    <li><strong>FR-REPORT-03:</strong> ผู้ใช้กดเปิด/ปิด (Toggle) ภาพ Heatmap ซ้อนทับได้</li>
+    <li><strong>FR-REPORT-04:</strong> แอปแสดงคะแนนความเสี่ยงแยกย่อยแต่ละชั้น (Textual, Source, Visual)</li>
+    <li><strong>FR-REPORT-05:</strong> แอปแสดงคำที่เข้าข่ายน่าสงสัย/หลอกลวง (ถ้าพบโดยโมดูล OCR/NLP)</li>
+    <li><strong>FR-REPORT-06:</strong> แอปแสดงผล Source Verification (จำนวนเว็บไซต์ที่พบภาพเดียวกัน)</li>
+    </ul>
+    <h3>ประวัติการสแกน (Scan History)</h3>
+    <ul>
+    <li><strong>FR-HIST-01:</strong> ผู้ใช้ดูประวัติผลการสแกนย้อนหลังตามลำดับเวลาได้</li>
+    <li><strong>FR-HIST-02:</strong> ผู้ใช้กดเปิดดูรายงานแบบละเอียดของการสแกนเก่าได้</li>
+    </ul>
+    <h3>แจ้งรายงานหลอกลวง (Scam Reporting)</h3>
+    <ul>
+    <li><strong>FR-RPT-01:</strong> ผู้ใช้แจ้งยืนยันว่าผลสแกนคือการหลอกลวงจริง เพื่อส่งให้แอดมินตรวจสอบได้</li>
+    </ul>
+    <h3>การจัดการข้อมูลส่วนบุคคล (PDPA Controls)</h3>
+    <ul>
+    <li><strong>FR-PDPA-01:</strong> แสดงหน้าความยินยอม (Consent Screen) การประมวลผลข้อมูลในครั้งแรกที่เปิดแอป</li>
+    <li><strong>FR-PDPA-02:</strong> ผู้ใช้สามารถถอนความยินยอมในการเข้าร่วมวิจัยได้จากหน้าการตั้งค่าตลอดเวลา</li>
+    <li><strong>FR-PDPA-03:</strong> หากถอนความยินยอม ระบบต้องลบภาพของผู้ใช้ออกจาก Dataset ของงานวิจัย</li>
+    </ul>
+    <div class="divider"></div>
+    <h2>ฟังก์ชันฝั่งแอดมิน (Admin Portal)</h2>
+    <ul>
+    <li><strong>FR-ADM-01:</strong> แอดมินดูสถิติภาพรวมระบบ (จำนวนการสแกน, สถิติความแม่นยำ, ยอดใช้งาน) ได้</li>
+    <li><strong>FR-ADM-02:</strong> แอดมินตรวจสอบรายการ Scam Report จากผู้ใช้ และอนุมัติ/ปัดตก ได้</li>
+    <li><strong>FR-ADM-03:</strong> แอดมิน Export ภาพ Scam ที่ถูกยืนยันแล้ว ไปทำ Dataset ได้</li>
+    <li><strong>FR-ADM-04:</strong> แอดมินอัปโหลดไฟล์น้ำหนัก AI Model ล่าสุด และสั่ง Deploy ได้</li>
+    <li><strong>FR-ADM-05:</strong> แอดมินจัดการบัญชีผู้ใช้งาน (ดูข้อมูล, แบนผู้ใช้) ได้</li>
+    </ul>
+    <div class="divider"></div>
+    <h2>ฟังก์ชันระบบอัตโนมัติ (Backend / AI)</h2>
+    <ul>
+    <li><strong>FR-SYS-01:</strong> ระบบดึงข้อมูล EXIF Metadata ออกจากรูปที่อัปโหลด</li>
+    <li><strong>FR-SYS-02:</strong> ระบบสกัดข้อความ (OCR) รองรับภาษาไทยและอังกฤษ</li>
+    <li><strong>FR-SYS-03:</strong> ระบบตรวจจับคำหลอกลวงหรือคีย์เวิร์ดเฝ้าระวังด้วย NLP</li>
+    <li><strong>FR-SYS-04:</strong> ระบบสแกนหาที่มาภาพย้อนกลับด้วย Google Vision API</li>
+    <li><strong>FR-SYS-05:</strong> ระบบตรวจสอบร่องรอยการดัดแปลงภาพระดับพิกเซลด้วย Deep Learning (ELA + SegFormer)</li>
+    <li><strong>FR-SYS-06:</strong> ระบบคัดกรองรูปภาพที่สร้างจาก AI ด้วย Classifier</li>
+    <li><strong>FR-SYS-07:</strong> ระบบประมวลผลคะแนนความเสี่ยง Weighted Risk Score สุทธิจากทุกโมดูล</li>
+    <li><strong>FR-SYS-08:</strong> ระบบจำลองภาพ Grad-CAM Heatmap</li>
+    <li><strong>FR-SYS-09:</strong> ระบบเก็บผลสแกนลง Cache (Redis) เพื่อตอบกลับคำขอที่ซ้ำกันให้เร็วขึ้น</li>
+    <li><strong>FR-SYS-10:</strong> ระบบยิง FCM Push Notification แจ้งเตือนเมื่อประมวลผลแบบเบื้องหลัง (Async) เสร็จ</li>
+    </ul>
+    <div class="divider"></div>
+    <blockquote>
+    <p><strong>NOTE:</strong><br />
+    หน้านี้มาจากการนำเข้า (Ingest) ข้อมูลเบื้องต้นจาก <code>doc/srs.md</code> และ <code>doc/Use-Case-Diagram.md</code> แหล่งข้อมูล SRS ฉบับเต็มมีความยาวถึง 571 บรรทัด มีข้อมูล FR และ Priority ที่ละเอียดกว่า การนำเข้าให้ครบทุกส่วนจะทำให้หน้านี้สมบูรณ์มากขึ้น</p>
+    </blockquote>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.mermaid-container').forEach(container => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-expand-mermaid';
+        btn.innerHTML = '🔍 Fullscreen';
+
+        btn.onclick = () => {
+          const originalSvg = container.querySelector('svg');
+          if (!originalSvg) return;
+
+          const overlay = document.createElement('div');
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.backgroundColor = 'var(--paper, #F6F4EE)';
+          overlay.style.zIndex = '999999';
+          overlay.style.display = 'flex';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+
+          const closeBtn = document.createElement('button');
+          closeBtn.innerHTML = '✖ Close';
+          closeBtn.style.position = 'absolute';
+          closeBtn.style.top = '20px';
+          closeBtn.style.right = '20px';
+          closeBtn.style.padding = '8px 16px';
+          closeBtn.style.fontSize = '1rem';
+          closeBtn.style.fontWeight = 'bold';
+          closeBtn.style.cursor = 'pointer';
+          closeBtn.style.backgroundColor = '#ff4d4d';
+          closeBtn.style.color = '#fff';
+          closeBtn.style.border = 'none';
+          closeBtn.style.borderRadius = '8px';
+          closeBtn.style.zIndex = '1000000';
+          closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+
+          closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
+          closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
+
+          const clonedSvg = originalSvg.cloneNode(true);
+          clonedSvg.style.width = '100%';
+          clonedSvg.style.height = '100%';
+          clonedSvg.style.maxWidth = '100vw';
+          clonedSvg.style.maxHeight = '100vh';
+
+          overlay.appendChild(clonedSvg);
+          overlay.appendChild(closeBtn);
+          document.body.appendChild(overlay);
+
+          const oldOverflow = document.body.style.overflow;
+          document.body.style.overflow = 'hidden';
+
+          const panZoomInstance = svgPanZoom(clonedSvg, {
+            zoomEnabled: true,
+            controlIconsEnabled: true,
+            fit: true,
+            center: true,
+            minZoom: 0.5,
+            maxZoom: 10,
+            mouseWheelZoomEnabled: true
+          });
+
+          closeBtn.onclick = () => {
+            panZoomInstance.destroy();
+            document.body.removeChild(overlay);
+            document.body.style.overflow = oldOverflow;
+          };
+        };
+        container.appendChild(btn);
+      });
+    });
+  </script>
+</body>
+</html>

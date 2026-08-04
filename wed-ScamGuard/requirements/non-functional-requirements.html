@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements) - ScamGuard</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../shared-theme.css">
+</head>
+
+<body>
+  <main class="document">
+    <h1>ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements)</h1>
+        <p class="lede">ข้อกำหนดด้านประสิทธิภาพ, ความปลอดภัย, ความเป็นส่วนตัว, และกฎระเบียบต่างๆ</p>
+    <div class="divider"></div>
+    <h2>ประสิทธิภาพ (Performance)</h2>
+    <table>
+    <thead>
+    <tr>
+    <th style="text-align: left;">ข้อกำหนด</th>
+    <th style="text-align: left;">เป้าหมาย</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td style="text-align: left;">ความเร็วตอบสนอง — แบบ Cache Hit</td>
+    <td style="text-align: left;">&lt;= 3 วินาที (End-to-End)</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">ความเร็วตอบสนอง — แบบ Full Inference (Cache Miss)</td>
+    <td style="text-align: left;">&lt;= 15 วินาทีต่อภาพ</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">System Availability (API + AI Inference)</td>
+    <td style="text-align: left;">Uptime &gt;= 99.5% ในช่วงทดสอบ</td>
+    </tr>
+    </tbody>
+    </table>
+    <p><strong>หมายเหตุ:</strong></p>
+    <ul>
+    <li>เป้าหมาย Cache Hit 3 วินาที คิดจาก Redis Lookup + PostgreSQL Fetch โดยไม่ต้องมี AI Inference</li>
+    <li>เป้าหมาย Full Inference 15 วินาที ครอบคลุมถึง: EXIF + OCR + ตรวจสอบผ่าน API + AI Inference + ผลิต Heatmap + จัดเก็บผลลัพธ์</li>
+    <li>ค่าที่ระบุเป็นเป้าหมายสำหรับการทำ Testing Phase ส่วนระดับ SLA ใน Production สามารถระบุเพิ่มเติมได้ภายหลัง</li>
+    </ul>
+    <div class="divider"></div>
+    <h2>ความแม่นยำของ AI (AI Model Accuracy)</h2>
+    <table>
+    <thead>
+    <tr>
+    <th style="text-align: left;">ตัวชี้วัด</th>
+    <th style="text-align: left;">เป้าหมาย</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td style="text-align: left;">ความแม่นยำ (Accuracy) การตรวจจับภาพตัดต่อ</td>
+    <td style="text-align: left;">&gt;= 85% บน Test Set</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">ค่า F1-Score การตรวจจับภาพตัดต่อ</td>
+    <td style="text-align: left;">&gt;= 85% บน Test Set</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">ความแม่นยำ (Accuracy) การคัดกรอง AI-Generated</td>
+    <td style="text-align: left;">&gt;= 85% บน Test Set</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">ค่า F1-Score การคัดกรอง AI-Generated</td>
+    <td style="text-align: left;">&gt;= 85% บน Test Set</td>
+    </tr>
+    </tbody>
+    </table>
+    <div class="divider"></div>
+    <h2>ความปลอดภัย (Security)</h2>
+    <h3>Transport Security</h3>
+    <ul>
+    <li>ทุกช่องทางการเชื่อมต่อระหว่าง Mobile App และ Server ใช้โปรโตคอล <strong>HTTPS/TLS Encryption</strong></li>
+    <li>ไม่อนุญาตให้มีการส่งข้อมูลรูปภาพ หรือ รหัสผ่านแบบ Plaintext เด็ดขาด</li>
+    </ul>
+    <h3>Authentication และ Authorization</h3>
+    <ul>
+    <li><strong>JWT (JSON Web Token)</strong> — ออกให้เพื่อรับรองการ Login และบังคับตรวจสอบทุก Endpoint ป้องกันระดับสิทธิ์</li>
+    <li>นำ Token ไปเก็บใน <strong>Secure Storage</strong> ของสมาร์ตโฟนผู้ใช้ (ไม่ใช่ Shared Preferences หรือไฟล์ข้อความธรรมดา)</li>
+    <li><strong>RBAC (Role-Based Access Control)</strong> — แยกสิทธิ์ระหว่าง User ธรรมดา และ Admin ป้องกันการละเมิด</li>
+    <li>Endpoint ของ Admin ทั้งหมดจะปฏิเสธ Token ผู้ใช้ระดับธรรมดาทันที</li>
+    </ul>
+    <h3>ข้อมูล (Data Security)</h3>
+    <ul>
+    <li>ภาพต้นฉบับจะถูกลบออกจาก Cloud Storage อัตโนมัติหลังจากวิเคราะห์ผลเสร็จ (Minimal Retention เก็บเท่าน้อยสุดที่จำเป็น)</li>
+    <li>ใช้ Presigned URL ซึ่งเป็นลิงก์แบบมีอายุจำกัด เพื่อส่งมอบข้อมูลที่เข้ารหัสให้เฉพาะ Client ไม่มีการเปิดเผย Credential พื้นฐานออกไป</li>
+    </ul>
+    <div class="divider"></div>
+    <h2>กฎหมาย PDPA และความเป็นส่วนตัว</h2>
+    <p>กฎหมายว่าด้วยการคุ้มครองข้อมูลส่วนบุคคลของไทย (PDPA) มีผลบังคับใช้กับโครงการนี้อย่างเคร่งครัด</p>
+    <h3>Privacy by Design</h3>
+    <ul>
+    <li>ระบบออกแบบมาให้จัดเก็บข้อมูลน้อยที่สุดเท่าที่จำเป็น</li>
+    <li>ไม่เก็บข้อมูลอื่นที่ไม่อยู่ในจุดประสงค์</li>
+    </ul>
+    <h3>การจัดการความยินยอม (Consent Management)</h3>
+    <p>มีกระบวนการแสดง Consent ให้ยินยอม 2 ระดับ ตอนที่เปิดแอปพลิเคชันครั้งแรก:</p>
+    <ol>
+    <li><strong>System Consent (บังคับ)</strong> — ต้องยินยอมให้ประมวลผลรูปภาพเพื่อการตรวจสอบ หากไม่ให้ จะไม่สามารถใช้งานระบบได้เลย</li>
+    <li><strong>Research Consent (ไม่บังคับ/เลือกได้)</strong> — การยินยอมให้เก็บรวบรวมรูปภาพ (แบบนิรนาม) สู่ Dataset งานวิจัย AI สามารถเปิดและปิด (Opt-in / Opt-out) ภายหลังได้เสมอ</li>
+    </ol>
+    <h3>การทำข้อมูลนิรนาม (Data Anonymization)</h3>
+    <ul>
+    <li>ระบบล้างข้อมูล EXIF GPS, รุ่นสมาร์ตโฟน และ Metadata ระบุพิกัดหรือตัวตนทั้งหมดก่อนเข้าฐานข้อมูล</li>
+    <li>รูปทุกรูปในฝั่งวิจัยและพัฒนาจะไม่เชื่อมต่อกลับไปยังตัวบุคคล</li>
+    </ul>
+    <h3>การถอนความยินยอม (Consent Revocation)</h3>
+    <ul>
+    <li>ผู้ใช้สามารถกดถอนความยินยอมของงานวิจัยจากหน้าจอตั้งค่า</li>
+    <li>การกดยกเลิก ส่งผลให้ระบบล้างข้อมูลรูปภาพของผู้ใช้ท่านนั้นๆ ออกจาก Research Dataset ทันที</li>
+    </ul>
+    <div class="divider"></div>
+    <h2>ความสามารถในการใช้งาน (Usability)</h2>
+    <table>
+    <thead>
+    <tr>
+    <th style="text-align: left;">ข้อกำหนด</th>
+    <th style="text-align: left;">เป้าหมาย</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td style="text-align: left;">ความสามารถในการอธิบายผล Heatmap</td>
+    <td style="text-align: left;">&gt;= 80% ของผู้ใช้งานรวม 100 ท่าน เข้าใจว่าบริเวณไหนในภาพที่ต้องสงสัย (โดยที่ไม่ต้องมีพื้นฐานด้านไอที)</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">ความพึงพอใจโดยรวมของผู้ใช้ (Likert 1-5)</td>
+    <td style="text-align: left;">ระดับคะแนน Mean &gt;= 4.00 ("Good" ขึ้นไป)</td>
+    </tr>
+    </tbody>
+    </table>
+    <div class="divider"></div>
+    <h2>การขยายระบบ (Scalability)</h2>
+    <ul>
+    <li>AI Inference Service ออกแบบโครงสร้างให้เป็น Container อิสระ เผื่อรับมือช่วงที่ระบบต้องประมวลผลเยอะจนมีอาการหน่วงได้</li>
+    <li>ลดจำนวนการทำงานด้วย Redis Cache เป็นส่วนเสริมเพื่อตอบคำถามโดยไม่ต้องรัน AI (Graceful Degradation สำหรับคำถามเดิมๆ ช่วง High Load)</li>
+    </ul>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.mermaid-container').forEach(container => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-expand-mermaid';
+        btn.innerHTML = '🔍 Fullscreen';
+
+        btn.onclick = () => {
+          const originalSvg = container.querySelector('svg');
+          if (!originalSvg) return;
+
+          const overlay = document.createElement('div');
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.backgroundColor = 'var(--paper, #F6F4EE)';
+          overlay.style.zIndex = '999999';
+          overlay.style.display = 'flex';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+
+          const closeBtn = document.createElement('button');
+          closeBtn.innerHTML = '✖ Close';
+          closeBtn.style.position = 'absolute';
+          closeBtn.style.top = '20px';
+          closeBtn.style.right = '20px';
+          closeBtn.style.padding = '8px 16px';
+          closeBtn.style.fontSize = '1rem';
+          closeBtn.style.fontWeight = 'bold';
+          closeBtn.style.cursor = 'pointer';
+          closeBtn.style.backgroundColor = '#ff4d4d';
+          closeBtn.style.color = '#fff';
+          closeBtn.style.border = 'none';
+          closeBtn.style.borderRadius = '8px';
+          closeBtn.style.zIndex = '1000000';
+          closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+
+          closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
+          closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
+
+          const clonedSvg = originalSvg.cloneNode(true);
+          clonedSvg.style.width = '100%';
+          clonedSvg.style.height = '100%';
+          clonedSvg.style.maxWidth = '100vw';
+          clonedSvg.style.maxHeight = '100vh';
+
+          overlay.appendChild(clonedSvg);
+          overlay.appendChild(closeBtn);
+          document.body.appendChild(overlay);
+
+          const oldOverflow = document.body.style.overflow;
+          document.body.style.overflow = 'hidden';
+
+          const panZoomInstance = svgPanZoom(clonedSvg, {
+            zoomEnabled: true,
+            controlIconsEnabled: true,
+            fit: true,
+            center: true,
+            minZoom: 0.5,
+            maxZoom: 10,
+            mouseWheelZoomEnabled: true
+          });
+
+          closeBtn.onclick = () => {
+            panZoomInstance.destroy();
+            document.body.removeChild(overlay);
+            document.body.style.overflow = oldOverflow;
+          };
+        };
+        container.appendChild(btn);
+      });
+    });
+  </script>
+</body>
+</html>

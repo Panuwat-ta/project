@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>โมเดล AI — SegFormer - ScamGuard</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../shared-theme.css">
+</head>
+
+<body>
+  <main class="document">
+    <h1>โมเดล AI — SegFormer</h1>
+        <p class="lede">โมเดล Deep Learning หลักที่ใช้ตรวจจับการตัดต่อภาพในระดับพิกเซล SegFormer เป็นสถาปัตยกรรม Transformer ที่ออกแบบมาสำหรับงาน Semantic Segmentation โดยเฉพาะ</p>
+    <div class="divider"></div>
+    <h2>ทำไมถึงเลือก SegFormer?</h2>
+    <p>งานหลักคือการหาว่า <em>พิกเซลใด</em> ถูกดัดแปลง — ซึ่งเป็นปัญหา <strong>Semantic Segmentation</strong> ไม่ใช่แค่ Classification ธรรมดา SegFormer ถูกเลือกเพราะ:</p>
+    <ul>
+    <li>ออกแบบมาสำหรับงาน Semantic Segmentation (การระบุป้ายกำกับระดับพิกเซล) โดยเฉพาะ</li>
+    <li>ไม่ใช้ Positional Encoding แบบซับซ้อน ทำให้เร็วขึ้นและ generalize ได้ดีกว่า Vision Transformer รุ่นเก่า</li>
+    <li>จัดการทั้ง <strong>Global Context</strong> (โครงสร้างภาพโดยรวม) และ <strong>Local Details</strong> (รายละเอียดพิกเซลละเอียด) ผ่าน Multi-scale Features</li>
+    <li>เบากว่าโมเดล ViT-based ทั่วไป</li>
+    <li>แปลงเป็น ONNX ได้ง่ายหลัง training ใน PyTorch</li>
+    </ul>
+    <p><strong>ข้อจำกัด:</strong> ใช้ RAM/VRAM สูงกว่า CNN แบบดั้งเดิม ยอมรับได้ในระดับ Server Inference แต่เป็นแรงผลักดันให้วางแผน On-device Quantization ในอนาคต</p>
+    <div class="divider"></div>
+    <h2>สถาปัตยกรรม</h2>
+    <pre><code>รูปภาพ Input (RGB เช่น 512×512)
+            |
+      Preprocessing: Resize + Normalize
+            |
+      MiT Encoder (Mix Transformer Encoder)
+      ├── ดึง Feature หลายระดับความละเอียด (Hierarchical)
+      ├── Efficient Self-Attention (ไม่ใช้ Fixed Positional Encoding)
+      └── ส่งออก Multi-scale Feature Maps (F1, F2, F3, F4)
+            |
+      All-MLP Decoder (SegFormer Decoder)
+      ├── รวม Feature จาก Encoder หลายระดับ
+      └── สร้าง Probability Map ระดับพิกเซล
+            |
+      Pixel Prediction
+      ├── Class 0: พิกเซลดั้งเดิม
+      └── Class 1: พิกเซลที่ถูกดัดแปลง
+            |
+      Post-processing:
+      ├── Segmentation Mask (binary, ขนาดเท่า input)
+      ├── Heatmap (ค่าความเชื่อมั่นต่อพิกเซล)
+      └── Risk Score (รวมจาก mask coverage × confidence)
+    </code></pre>
+    <div class="divider"></div>
+    <h2>รูปแบบข้อมูล</h2>
+    <table>
+    <thead>
+    <tr>
+    <th style="text-align: left;">ขั้นตอน</th>
+    <th style="text-align: left;">รูปแบบ</th>
+    <th style="text-align: left;">คำอธิบาย</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td style="text-align: left;">Input</td>
+    <td style="text-align: left;">Tensor <code>[B, 3, H, W]</code></td>
+    <td style="text-align: left;">เช่น <code>[1, 3, 512, 512]</code> สำหรับ 1 ภาพ</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Encoder output</td>
+    <td style="text-align: left;">Multi-scale feature maps</td>
+    <td style="text-align: left;">การแทนค่าแบบลำดับชั้น</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Decoder output</td>
+    <td style="text-align: left;">Tensor <code>[B, 2, H, W]</code></td>
+    <td style="text-align: left;">ความน่าจะเป็นต่อพิกเซลทุก class</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Segmentation Mask</td>
+    <td style="text-align: left;">PNG ขาวดำ</td>
+    <td style="text-align: left;">ขาว = ถูกดัดแปลง, ดำ = ดั้งเดิม</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Heatmap</td>
+    <td style="text-align: left;">Float array</td>
+    <td style="text-align: left;">ค่าความเชื่อมั่นต่อพิกเซล (0.0–1.0)</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Risk Score</td>
+    <td style="text-align: left;">Float 0–100</td>
+    <td style="text-align: left;">คำนวณจาก mask coverage และ confidence</td>
+    </tr>
+    </tbody>
+    </table>
+    <div class="divider"></div>
+    <h2>Versioning และการ Deploy</h2>
+    <ul>
+    <li>Version โมเดลใช้ Semantic Versioning เช่น <code>segformer_v1.0.0</code></li>
+    <li>Train ใน PyTorch แล้ว export เป็น <strong>ONNX format</strong> สำหรับ Production Inference</li>
+    <li>ONNX Runtime ให้ความเร็ว Inference 2–5 เท่าเทียบกับ Native PyTorch</li>
+    <li>น้ำหนักโมเดลเก็บใน <strong>Model Registry</strong> (Version-controlled file store)</li>
+    <li>Admin สามารถ deploy โมเดลเวอร์ชันใหม่ผ่าน Admin Portal โดยไม่ต้อง Redeploy service</li>
+    </ul>
+    <div class="divider"></div>
+    <h2>ข้อจำกัดที่รู้จัก</h2>
+    <ol>
+    <li><strong>การ Re-compress ซ้ำหลายครั้ง</strong> — ความแม่นยำลดลงถ้าภาพถูก compress หลายรอบ (เช่น ส่งต่อผ่านแอปแชท) เพราะ artifact จาก compression บดบัง ELA signal</li>
+    <li><strong>ภาพ AI-Generated ทั้งหมด</strong> — SegFormer ตรวจจับ <em>การตัดต่อ</em> ระดับพิกเซล ภาพ synthetic ทั้งหมดไม่มี splice artifact แบบดั้งเดิม ต้องใช้ AI-Gen classifier แยกต่างหาก</li>
+    </ol>
+    <div class="divider"></div>
+    <h2>แผนพัฒนาในอนาคต</h2>
+    <ul>
+    <li><strong>Ensemble Model</strong> — เพิ่มโมเดลตรวจจับภาพ AI-Generated ควบคู่กับ SegFormer</li>
+    <li><strong>Model Quantization</strong> (INT8/FP16) — เพื่อ Inference บนอุปกรณ์มือถือโดยตรง ขจัดการรอ Network Round-trip</li>
+    </ul>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.mermaid-container').forEach(container => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-expand-mermaid';
+        btn.innerHTML = '🔍 Fullscreen';
+
+        btn.onclick = () => {
+          const originalSvg = container.querySelector('svg');
+          if (!originalSvg) return;
+
+          const overlay = document.createElement('div');
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.backgroundColor = 'var(--paper, #F6F4EE)';
+          overlay.style.zIndex = '999999';
+          overlay.style.display = 'flex';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+
+          const closeBtn = document.createElement('button');
+          closeBtn.innerHTML = '✖ Close';
+          closeBtn.style.position = 'absolute';
+          closeBtn.style.top = '20px';
+          closeBtn.style.right = '20px';
+          closeBtn.style.padding = '8px 16px';
+          closeBtn.style.fontSize = '1rem';
+          closeBtn.style.fontWeight = 'bold';
+          closeBtn.style.cursor = 'pointer';
+          closeBtn.style.backgroundColor = '#ff4d4d';
+          closeBtn.style.color = '#fff';
+          closeBtn.style.border = 'none';
+          closeBtn.style.borderRadius = '8px';
+          closeBtn.style.zIndex = '1000000';
+          closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+
+          closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
+          closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
+
+          const clonedSvg = originalSvg.cloneNode(true);
+          clonedSvg.style.width = '100%';
+          clonedSvg.style.height = '100%';
+          clonedSvg.style.maxWidth = '100vw';
+          clonedSvg.style.maxHeight = '100vh';
+
+          overlay.appendChild(clonedSvg);
+          overlay.appendChild(closeBtn);
+          document.body.appendChild(overlay);
+
+          const oldOverflow = document.body.style.overflow;
+          document.body.style.overflow = 'hidden';
+
+          const panZoomInstance = svgPanZoom(clonedSvg, {
+            zoomEnabled: true,
+            controlIconsEnabled: true,
+            fit: true,
+            center: true,
+            minZoom: 0.5,
+            maxZoom: 10,
+            mouseWheelZoomEnabled: true
+          });
+
+          closeBtn.onclick = () => {
+            panZoomInstance.destroy();
+            document.body.removeChild(overlay);
+            document.body.style.overflow = oldOverflow;
+          };
+        };
+        container.appendChild(btn);
+      });
+    });
+  </script>
+</body>
+</html>

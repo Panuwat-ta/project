@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Flowchart - ScamGuard</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../shared-theme.css">
+</head>
+
+<body>
+  <main class="document">
+    <h1>Mobile App: Scam Image Detection</h1>
+    <h2>👤 User Flow (การทำงานฝั่งผู้ใช้)</h2>
+    <div class="mermaid-container"><div class="mermaid">graph TD
+        Start([เริ่มใช้งาน]) --> Home[หน้าแรก]
+        Home -- "เลือกเมนู" --> Gallery[เลือกรูปภาพจาก Gallery]
+        Gallery --> Image[ปรับแต่ง / Crop รูป]
+    
+        Image -- "PNG" --> Preview[แสดง Preview รูปภาพ]
+        Preview -- "upload images" --> CheckBtn[/กดปุ่มตรวจสอบ/]
+        CheckBtn --> S3(("upload img Cloud Storage"))
+    
+        S3 --> Analyzing{"ระบบกำลังวิเคราะห์... (System Logic)"}
+    
+        Analyzing -- "สำเร็จ" --> Result["หน้าผลลัพธ์ (Risk Score + Evidence)"]
+        Analyzing -- "ล้มเหลว" --> Error[แจ้งเตือนข้อผิดพลาด]
+    
+        Result --> AutoSave[(Auto-Save ลง DB)]
+    
+        AutoSave --> Action{Action}
+    
+        Action -- "แชร์" --> Share[แชร์ผลลัพธ์]
+        Action -- "ไม่แชร์" --> End([จบการทำงาน])
+    
+        Share --> End
+    
+        Error --> Options{ทางเลือก}
+        Options -- "นำเข้ารูปใหม่" --> ImportMethod
+        Options -- "ยกเลิก" --> End
+    
+        %% Styling
+        classDef blue fill:#0050ef,stroke:#001DBC,color:#fff
+        classDef green fill:#d5e8d4,stroke:#82b366,color:#000
+        classDef yellow fill:#fff2cc,stroke:#d6b656,color:#000
+        classDef purple fill:#e1d5e7,stroke:#9673a6,color:#000
+        classDef cloud fill:#dae8fc,stroke:#6c8ebf,color:#000
+        classDef error fill:#f8cecc,stroke:#b85450,color:#000
+    
+        class Start,End blue
+        class Home,Gallery,Image,Preview,Result,Error,Share green
+        class Analyzing,Action,Options yellow
+        class CheckBtn,RetCache,Gen purple
+        class S3,AutoSave cloud
+    </div></div>
+    <h3>คำอธิบาย User Flow</h3>
+    <ol>
+    <li><strong>เริ่มต้น (Start)</strong>: ผู้ใช้เข้าสู่แอปพลิเคชัน</li>
+    <li><strong>หน้าแรก (Home)</strong>: แสดงเมนูหลัก</li>
+    <li><strong>นำเข้าภาพ (Import)</strong>: เลือกรูปภาพที่น่าสงสัยจากคลังภาพ (Gallery) เพื่อเตรียมอัปโหลด</li>
+    <li><strong>ปรับแต่ง (Edit)</strong>: Crop หรือปรับขนาดภาพก่อนส่ง (PNG)</li>
+    <li><strong>ตรวจสอบ (Check)</strong>: กดปุ่มตรวจสอบเพื่อส่งข้อมูล</li>
+    <li><strong>ประมวลผล (Processing)</strong>: อัปโหลดภาพไปยังระบบจัดเก็บคลาวด์ (Cloud Storage) และเข้าสู่กระบวนการวิเคราะห์ System Logic</li>
+    <li><strong>ผลลัพธ์ (Result)</strong>:</li>
+    <li><strong>สำเร็จ</strong>: แสดงคะแนนความเสี่ยง (Risk Score) และหลักฐาน (Evidence) จากนั้น Auto-Save ลงฐานข้อมูล</li>
+    <li><strong>ล้มเหลว</strong>: แจ้งเตือนข้อผิดพลาด และให้ทางเลือก (ลองใหม่ หรือ ยกเลิก)</li>
+    <li><strong>Action</strong>: ผู้ใช้เลือกแชร์ผลลัพธ์ หรือจบการทำงาน</li>
+    </ol>
+    <div class="divider"></div>
+    <h2>⚙️ System Logic (การทำงานฝั่งระบบ)</h2>
+    <div class="mermaid-container"><div class="mermaid">graph TD
+        %% Source & Initial Validation
+        S3([Cloud Storage]) -- import_image --> Receive[/รับไฟล์รูปภาพ/]
+        Receive --> NodeValidate{ตรวจสอบไฟล์ Valid Image}
+    
+        NodeValidate -- ไม่ใช่รูปหรือไฟล์เสีย --> Reject[คืนค่า Error]
+        NodeValidate -- ถูกต้อง --> Preprocess[Preprocessing]
+    
+        %% Cache Mechanism
+        Preprocess --> NodeCache{เคยตรวจรูปนี้ไหม Redis}
+        NodeCache -- Hit_เคยตรวจ --> RetCache[ดึงผลเก่าจาก DB]
+    
+        %% Processing Tasks (ส่วนที่เป็นข้อความสีดำบนพื้นเทา)
+        NodeCache -- Miss_ไม่เคย --> Task1[Task 1 Metadata]
+        Task1 --> Task2[Task 2 OCR]
+        Task2 --> Task3[Task 3 Forgery]
+    
+        %% Error Handling & Logic Branching
+        Task3 --> PartialFail[Partial Failure Timeout 5s]
+        PartialFail --> NodeKeyword{เจอ Keyword อันตราย}
+    
+        NodeKeyword -- ไม่เจอความเสี่ยงชัดเจน --> Task4[Task 4 Source]
+        Task4 --> NodeSearch{ค้นหารูปในเน็ต}
+    
+        NodeSearch -- มากกว่าหรือเท่ากับ 3 --> SourceHigh[เจอรูปมีที่มามากกว่า 3 ที่]
+        NodeSearch -- น้อยกว่าหรือเท่ากับ 1 --> SourceLow[เจอรูปมีที่มาน้อยกว่า 1 ที่]
+    
+        SourceLow --> Task5[Task 5 AI-Gen]
+    
+        %% Aggregation Point (Collector)
+        Collector(( ))
+        NodeKeyword -- เจอ --> Collector
+        SourceHigh -- เจอ --> Collector
+        Task5 -- เจอ --> Collector
+    
+        %% Final Calculation & Storage
+        Collector --> Calc[คำนวณคะแนนความเสี่ยง]
+        Calc --> Gen[สร้างคำอธิบายผลลัพธ์]
+        Gen --> DB[(บันทึกลง Database)]
+    
+        %% Output
+        DB --> Output[/ส่ง JSON กลับ Client/]
+        RetCache --> Output
+    
+        %% Styling (กำหนดสีข้อความเป็นสีดำด้วย color:#000)
+        style S3 fill:#dae8fc,stroke:#6c8ebf,color:#000
+        style Receive fill:#0050ef,color:#fff
+        style NodeValidate fill:#f5f5f5,stroke:#666,color:#000
+        style Reject fill:#f8cecc,stroke:#b85450,color:#000
+        style Preprocess fill:#dae8fc,stroke:#6c8ebf,color:#000
+        style NodeCache fill:#ffe6cc,stroke:#d79b00,color:#000
+        style RetCache fill:#e1d5e7,stroke:#9673a6,color:#000
+        style Task1 fill:#f5f5f5,stroke:#666,color:#000
+        style Task2 fill:#f5f5f5,stroke:#666,color:#000
+        style Task3 fill:#f5f5f5,stroke:#666,color:#000
+        style Task4 fill:#f5f5f5,stroke:#666,color:#000
+        style Task5 fill:#f5f5f5,stroke:#666,color:#000
+        style PartialFail fill:#d5e8d4,stroke:#82b366,color:#000
+        style NodeKeyword fill:#ffe6cc,stroke:#d79b00,color:#000
+        style NodeSearch fill:#ffe6cc,stroke:#d79b00,color:#000
+        style SourceHigh fill:#d5e8d4,stroke:#82b366,color:#000
+        style SourceLow fill:#d5e8d4,stroke:#82b366,color:#000
+        style Calc fill:#d5e8d4,stroke:#82b366,color:#000
+        style DB fill:#ffe6cc,stroke:#d79b00,color:#000
+        style Output fill:#0050ef,color:#fff
+    </div></div>
+    <h3>คำอธิบาย System Logic</h3>
+    <ol>
+    <li><strong>Input</strong>: รับไฟล์รูปภาพจากระบบคลาวด์สตอเรจ (Cloud Storage)</li>
+    <li><strong>Validation</strong>: ตรวจสอบว่าไฟล์รูปภาพถูกต้องหรือไม่</li>
+    <li>หากเสีย/ไม่ใช่รูป: Reject คืนค่า Error</li>
+    <li>หากถูกต้อง: ส่งไป Preprocessing</li>
+    <li><strong>Preprocessing</strong>: ปรับขนาด (Resize) และ Normalize ภาพ</li>
+    <li><strong>Caching</strong>: ตรวจสอบ Hash ใน Redis</li>
+    <li><strong>Hit</strong>: เคยตรวจแล้ว ให้ดึงผลเก่าจาก Database ส่งคืนทันที</li>
+    <li><strong>Miss</strong>: ไม่เคยตรวจ ให้เข้าสู่ Pipeline การตรวจสอบ</li>
+    <li><strong>Analysis Tasks</strong>:</li>
+    <li><strong>Task 1 Metadata</strong>: ดึงข้อมูล EXIF/GPS</li>
+    <li><strong>Task 2 OCR</strong>: อ่านข้อความในภาพ</li>
+    <li><strong>Task 3 Forgery</strong>: ตรวจสอบการตัดต่อ (ELA)</li>
+    <li><strong>Partial Failure</strong>: ดักจับกรณี Timeout</li>
+    <li><strong>Keyword Check</strong>: ตรวจสอบคำเสี่ยงสูง</li>
+    <li><strong>Task 4 Source</strong>: ค้นหาที่มาของภาพ<ul>
+    <li>หากพบน้อย (&lt;=1): ความเสี่ยงต่ำ ส่งไปตรวจ AI-Gen (Task 5)</li>
+    <li>หากพบมาก (&gt;=3): ความเสี่ยงสูง</li>
+    </ul>
+    </li>
+    <li><strong>Scoring</strong>: คำนวณคะแนน Weighted Risk Score จากผลลัพธ์ทุกส่วน</li>
+    <li><strong>Output</strong>: สร้างคำอธิบาย บันทึกลง Database และส่ง JSON กลับ Client</li>
+    </ol>
+    <div class="divider"></div>
+    <h3><a href="https://drive.google.com/file/d/1vf9so53ErwXpJDqi6HplX7wtufLqP1hv/view?usp=sharing">Diagram Link</a></h3>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.mermaid-container').forEach(container => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-expand-mermaid';
+        btn.innerHTML = '🔍 Fullscreen';
+
+        btn.onclick = () => {
+          const originalSvg = container.querySelector('svg');
+          if (!originalSvg) return;
+
+          const overlay = document.createElement('div');
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.backgroundColor = 'var(--paper, #F6F4EE)';
+          overlay.style.zIndex = '999999';
+          overlay.style.display = 'flex';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+
+          const closeBtn = document.createElement('button');
+          closeBtn.innerHTML = '✖ Close';
+          closeBtn.style.position = 'absolute';
+          closeBtn.style.top = '20px';
+          closeBtn.style.right = '20px';
+          closeBtn.style.padding = '8px 16px';
+          closeBtn.style.fontSize = '1rem';
+          closeBtn.style.fontWeight = 'bold';
+          closeBtn.style.cursor = 'pointer';
+          closeBtn.style.backgroundColor = '#ff4d4d';
+          closeBtn.style.color = '#fff';
+          closeBtn.style.border = 'none';
+          closeBtn.style.borderRadius = '8px';
+          closeBtn.style.zIndex = '1000000';
+          closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+
+          closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
+          closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
+
+          const clonedSvg = originalSvg.cloneNode(true);
+          clonedSvg.style.width = '100%';
+          clonedSvg.style.height = '100%';
+          clonedSvg.style.maxWidth = '100vw';
+          clonedSvg.style.maxHeight = '100vh';
+
+          overlay.appendChild(clonedSvg);
+          overlay.appendChild(closeBtn);
+          document.body.appendChild(overlay);
+
+          const oldOverflow = document.body.style.overflow;
+          document.body.style.overflow = 'hidden';
+
+          const panZoomInstance = svgPanZoom(clonedSvg, {
+            zoomEnabled: true,
+            controlIconsEnabled: true,
+            fit: true,
+            center: true,
+            minZoom: 0.5,
+            maxZoom: 10,
+            mouseWheelZoomEnabled: true
+          });
+
+          closeBtn.onclick = () => {
+            panZoomInstance.destroy();
+            document.body.removeChild(overlay);
+            document.body.style.overflow = oldOverflow;
+          };
+        };
+        container.appendChild(btn);
+      });
+    });
+  </script>
+</body>
+</html>

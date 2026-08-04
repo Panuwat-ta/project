@@ -1,3 +1,30 @@
+# Dataset / Data
 data/
+*.zip
+*.tar.gz
+*.csv
+*.jsonl
 
+# Model Weights
 *.pth
+*.pt
+*.onnx
+*.gguf
+*.bin
+*.safetensors
+*.ckpt
+
+# Checkpoints / Logs
+work_dirs/
+logs/
+.cache/
+
+# Python / Environment
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+
+segformer/library/

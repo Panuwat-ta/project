@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Use Case Diagram - ScamGuard</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../shared-theme.css">
+</head>
+
+<body>
+  <main class="document">
+    <h1>Use Case Diagram</h1>
+    <div class="mermaid-container"><div class="mermaid">flowchart LR
+        %% การตั้งค่า Class สีต่างๆ (กำหนด color:black ตามมาตรฐานเดิม)
+        classDef actorFill fill:#fff2cc,stroke:#d6b656,color:black
+        classDef ucFill fill:#dae8fc,stroke:#6c8ebf,color:black
+        classDef extFill fill:#f5f5f5,stroke:#666666,color:black
+    
+        %% Actors Boundary
+        subgraph Actors [ผู้เกี่ยวข้อง / Actors]
+            User("General User<br>[Actor]")
+            Admin("Admin<br>[Actor]")
+            SystemActor("System (Automated)<br>[Actor]")
+        end
+    
+        %% System Boundary
+        subgraph SystemBoundary [Scam Image Detection System]
+            direction TB
+    
+            UC01("UC-01: เข้าสู่ระบบ / ยืนยันตัวตน<br>(Login & Authentication)")
+            UC02("UC-02: นำเข้ารูปภาพ<br>(Upload Image)")
+            UC03("UC-03: ประมวลผลภาพขั้นต้น<br>(Primary Analysis)")
+            UC04("UC-04: วิเคราะห์ด้วย AI<br>(AI Inference)")
+            UC05("UC-05: ตรวจสอบผลลัพธ์และแผนที่ความร้อน<br>(View Result & Heatmap)")
+            UC06("UC-06: รับการแจ้งเตือน<br>(Receive Push Notification)")
+            UC07("UC-07: จัดการประวัติการสแกน<br>(History Management)")
+            UC08("UC-08: รายงานและแชร์ผลลัพธ์<br>(Report & Share)")
+            UC09("UC-09: จัดการผู้ใช้และแดชบอร์ด<br>(Admin Dashboard & RBAC)")
+            UC10("UC-10: จัดการชุดข้อมูลและอัปเดตโมเดล<br>(Dataset & Model Management)")
+        end
+    
+        %% External Services
+        subgraph ExternalServices [External Services]
+            GoogleVision("Google Vision API<br>[Reverse Search]")
+            FCM("Firebase Cloud Messaging<br>[FCM]")
+        end
+    
+        %% Relationships / Associations
+        User --> UC01
+        User --> UC02
+        User --> UC05
+        User --> UC06
+        User --> UC07
+        User --> UC08
+    
+        Admin --> UC01
+        Admin --> UC09
+        Admin --> UC10
+    
+        SystemActor --> UC03
+        SystemActor --> UC04
+    
+        %% External Connections
+        UC03 --> GoogleVision
+        UC06 --> FCM
+    
+        %% Apply Styles
+        class User,Admin,SystemActor actorFill
+        class UC01,UC02,UC03,UC04,UC05,UC06,UC07,UC08,UC09,UC10 ucFill
+        class GoogleVision,FCM extFill
+    </div></div>
+    <div class="divider"></div>
+    <h3>คำอธิบายรายละเอียดกรณีการใช้งาน (Use Case Details)</h3>
+    <ul>
+    <li><strong>UC-01: เข้าสู่ระบบ / ยืนยันตัวตน (Login &amp; Authentication):</strong></li>
+    <li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User, Admin</li>
+    <li><strong>รายละเอียด:</strong> กระบวนการยืนยันตัวตนเพื่อรักษาความปลอดภัยก่อนเข้าใช้งานระบบ โดยเข้าผ่าน Email/Password หรือ Social Login เพื่อทำการตรวจสอบและกำหนดสิทธิ์การดูข้อมูลตามบทบาท (Role-Based Access Control)</li>
+    <li>
+    <p><strong>ความต้องการทางระบบ (FR):</strong> FR-01 - ระบบเข้าสู่ระบบและยืนยันตัวตน (Authentication): ผู้ใช้และผู้ดูแลระบบสามารถเข้าสู่ระบบผ่าน Email/Password หรือโซเชียลมีเดีย พร้อมระบบกู้คืนรหัสผ่าน</p>
+    </li>
+    <li>
+    <p><strong>UC-02: นำเข้ารูปภาพ (Upload Image):</strong></p>
+    </li>
+    <li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User</li>
+    <li><strong>รายละเอียด:</strong> ผู้ใช้งานสามารถอัปโหลดภาพที่ต้องการตรวจสอบ เช่น สลิปโอนเงิน หรือรูปโปรไฟล์บุคคลอื่น โดยเลือกรูปที่มีอยู่แล้วในคลังรูปภาพ (Gallery) ของอุปกรณ์เคลื่อนที่</li>
+    <li>
+    <p><strong>ความต้องการทางระบบ (FR):</strong> FR-02 - ระบบนำเข้ารูปภาพ (Image Input): ผู้ใช้สามารถอัปโหลดรูปภาพที่ต้องการตรวจสอบได้จากคลังภาพ (Gallery) หรืออัปโหลดไฟล์ภาพเข้าสู่ระบบ</p>
+    </li>
+    <li>
+    <p><strong>UC-03: ประมวลผลภาพขั้นต้น (Primary Analysis):</strong></p>
+    </li>
+    <li><strong>ผู้เกี่ยวข้อง (Actors):</strong> System (Automated)</li>
+    <li><strong>รายละเอียด:</strong> การดึงข้อมูลเมทาดาตา (Metadata/EXIF) ของภาพ, การสกัดตัวอักษรด้วยเทคนิค OCR เพื่อวิเคราะห์ Keyword อันตรายร่วมกับเทคนิค NLP และการส่งข้อมูลรูปภาพไปสืบค้นหาแหล่งที่มาดั้งเดิมด้วย Google Vision API</li>
+    <li>
+    <p><strong>ความต้องการทางระบบ (FR):</strong> FR-03 - ระบบวิเคราะห์ข้อมูลชั้นต้น (Primary Analysis): ระบบสามารถดึงข้อมูลแฝง (Metadata/EXIF), สกัดข้อความในภาพ (OCR), และค้นหาแหล่งที่มาของภาพ (Reverse Image Search) ได้โดยอัตโนมัติ</p>
+    </li>
+    <li>
+    <p><strong>UC-04: วิเคราะห์ด้วย AI (AI Inference):</strong></p>
+    </li>
+    <li><strong>ผู้เกี่ยวข้อง (Actors):</strong> System (Automated)</li>
+    <li><strong>รายละเอียด:</strong> ส่งรูปภาพเพื่อนำเข้าโมเดลปัญญาประดิษฐ์เชิงลึก (Deep Learning) ในการตรวจสอบการแก้ไขระดับพิกเซล (ELA) เพื่อหาร่องรอยการตัดต่อ (Image Forgery) และตรวจสอบลักษณะว่าภาพถูกสังเคราะห์ด้วย Generative AI หรือไม่</li>
+    <li>
+    <p><strong>ความต้องการทางระบบ (FR):</strong> FR-04 - ระบบวิเคราะห์ด้วยปัญญาประดิษฐ์ (AI Inference): ระบบส่งภาพเข้าสู่โมเดล Deep Learning เพื่อตรวจสอบร่องรอยการตัดต่อ (Image Forgery/ELA) และตรวจสอบภาพที่สร้างด้วยปัญญาประดิษฐ์ (AI-Generated)</p>
+    </li>
+    <li>
+    <p><strong>UC-05: ตรวจสอบผลลัพธ์และแผนที่ความร้อน (View Result &amp; Heatmap):</strong></p>
+    </li>
+    <li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User</li>
+    <li><strong>รายละเอียด:</strong> หน้าจอแสดงค่าคะแนนความเสี่ยงรวม (Weighted Risk Score) พร้อมแสดงผลสรุปเหตุผลความผิดปกติ และแสดงแผนที่ความร้อน (Grad-CAM Heatmap) บนจุดที่น่าสงสัยของภาพ เพื่อตอบโจทย์ความโปร่งใสของปัญญาประดิษฐ์ (XAI)</li>
+    <li>
+    <p><strong>ความต้องการทางระบบ (FR):</strong> FR-05 - ระบบแสดงผลลัพธ์ (Result &amp; Visualization): ระบบคำนวณคะแนนความเสี่ยงรวม (Weighted Risk Score) และสร้างแผนที่ความร้อน (Grad-CAM Heatmap) เพื่ออธิบายผลลัพธ์ให้ผู้ใช้เข้าใจ</p>
+    </li>
+    <li>
+    <p><strong>UC-06: รับการแจ้งเตือน (Receive Push Notification):</strong></p>
+    </li>
+    <li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User</li>
+    <li><strong>รายละเอียด:</strong> การรับข้อความการแจ้งเตือนแบบพุช (Push Notification) ผ่านระบบ Firebase Cloud Messaging (FCM) เมื่อระบบทำการตรวจสอบวิเคราะห์รูปภาพบนเซิร์ฟเวอร์เบื้องหลัง (Background Task) เสร็จสิ้นสมบูรณ์</li>
+    <li>
+    <p><strong>ความต้องการทางระบบ (FR):</strong> FR-06 - ระบบแจ้งเตือน (Push Notification): ระบบสามารถส่งข้อความแจ้งเตือนผู้ใช้งานผ่าน Firebase Cloud Messaging (FCM) เมื่อการวิเคราะห์ภาพเบื้องหลัง (Background Task) เสร็จสิ้น</p>
+    </li>
+    <li>
+    <p><strong>UC-07: จัดการประวัติการสแกน (History Management):</strong></p>
+    </li>
+    <li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User</li>
+    <li><strong>รายละเอียด:</strong> ผู้ใช้งานทั่วไปสามารถเรียกดูประวัติรูปภาพและผลคะแนนความเสี่ยงย้อนหลังที่เคยส่งตรวจสอบ เพื่อเก็บบันทึกข้อมูลหรือเรียกดูใหม่ และผู้ใช้สามารถกดลบข้อมูลการสแกนประวัติตนเองได้ตามนโยบาย PDPA</li>
+    <li>
+    <p><strong>ความต้องการทางระบบ (FR):</strong> FR-07 - ระบบจัดการประวัติการสแกน (History Management): ระบบบันทึกประวัติการตรวจสอบภาพของผู้ใช้โดยสามารถเรียกดูผลลัพธ์ย้อนหลัง หรือลบประวัติได้</p>
+    </li>
+    <li>
+    <p><strong>UC-08: รายงานและแชร์ผลลัพธ์ (Report &amp; Share):</strong></p>
+    </li>
+    <li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User</li>
+    <li><strong>รายละเอียด:</strong> การกดรายงาน (Report) ส่งยืนยันภาพหลอกลวงเข้าคลังสแกมเมอร์ส่วนกลางเพื่อเป็นประโยชน์ในอนาคต และสามารถกดแชร์ภาพสรุปความเสี่ยงหรือคำเตือนภัยไปยังสื่อโซเชียลภายนอก (เช่น LINE) เพื่อเตือนภัยบุคคลใกล้ชิด</li>
+    <li>
+    <p><strong>ความต้องการทางระบบ (FR):</strong> FR-08 - ระบบรายงานและแชร์ข้อมูล (Report &amp; Share): ผู้ใช้สามารถกดรายงาน (Report) ภาพหลอกลวงเข้าสู่ฐานข้อมูลกลาง และสามารถแชร์ภาพผลลัพธ์/คำเตือนไปยังแอปพลิเคชันภายนอกได้</p>
+    </li>
+    <li>
+    <p><strong>UC-09: จัดการผู้ใช้และแดชบอร์ด (Admin Dashboard &amp; RBAC):</strong></p>
+    </li>
+    <li><strong>ผู้เกี่ยวข้อง (Actors):</strong> Admin</li>
+    <li><strong>รายละเอียด:</strong> แอดมินเข้าใช้งานหน้าเว็บแผงควบคุมระบบ (Admin Panel) เพื่อติดตามกราฟสถิติการใช้งาน, จัดการข้อมูลของผู้ใช้งาน, ตรวจสอบสิทธิ์การเข้าถึง และการอนุมัติจัดการรายงานต่าง ๆ</li>
+    <li>
+    <p><strong>ความต้องการทางระบบ (FR):</strong> FR-09 - ระบบผู้ดูแลและการจัดการสิทธิ์ (Admin &amp; RBAC): มีหน้าแดชบอร์ดให้ผู้ดูแลระบบตรวจสอบสถิติการใช้งาน, จัดการข้อมูลผู้ใช้, และกำหนดสิทธิ์การเข้าถึงระบบตามบทบาท</p>
+    </li>
+    <li>
+    <p><strong>UC-10: จัดการชุดข้อมูลและอัปเดตโมเดล (Dataset &amp; Model Management):</strong></p>
+    </li>
+    <li><strong>ผู้เกี่ยวข้อง (Actors):</strong> Admin</li>
+    <li><strong>รายละเอียด:</strong> แอดมินทำหน้าที่ตรวจสอบรูปภาพสแกมที่ผู้ใช้รายงาน ตรวจจัดหมวดหมู่เพื่อส่งเข้าชุดข้อมูล (Scam Dataset) สำหรับนำไปเทรนและวิเคราะห์เพิ่มเติม พร้อมทำการอัปโหลดไฟล์น้ำหนักโมเดล (Model Weights) เวอร์ชันใหม่ขึ้นระบบ</li>
+    <li><strong>ความต้องการทางระบบ (FR):</strong> FR-10 - ระบบจัดการข้อมูลและโมเดล (Dataset &amp; Model Management): ผู้ดูแลระบบสามารถตรวจสอบรูปภาพที่ถูกผู้ใช้รายงาน นำไปจัดหมวดหมู่ชุดข้อมูล และอัปโหลดโมเดล AI (Weights) เวอร์ชันใหม่เข้าสู่ระบบได้</li>
+    </ul>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.mermaid-container').forEach(container => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-expand-mermaid';
+        btn.innerHTML = '🔍 Fullscreen';
+
+        btn.onclick = () => {
+          const originalSvg = container.querySelector('svg');
+          if (!originalSvg) return;
+
+          const overlay = document.createElement('div');
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.backgroundColor = 'var(--paper, #F6F4EE)';
+          overlay.style.zIndex = '999999';
+          overlay.style.display = 'flex';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+
+          const closeBtn = document.createElement('button');
+          closeBtn.innerHTML = '✖ Close';
+          closeBtn.style.position = 'absolute';
+          closeBtn.style.top = '20px';
+          closeBtn.style.right = '20px';
+          closeBtn.style.padding = '8px 16px';
+          closeBtn.style.fontSize = '1rem';
+          closeBtn.style.fontWeight = 'bold';
+          closeBtn.style.cursor = 'pointer';
+          closeBtn.style.backgroundColor = '#ff4d4d';
+          closeBtn.style.color = '#fff';
+          closeBtn.style.border = 'none';
+          closeBtn.style.borderRadius = '8px';
+          closeBtn.style.zIndex = '1000000';
+          closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+
+          closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
+          closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
+
+          const clonedSvg = originalSvg.cloneNode(true);
+          clonedSvg.style.width = '100%';
+          clonedSvg.style.height = '100%';
+          clonedSvg.style.maxWidth = '100vw';
+          clonedSvg.style.maxHeight = '100vh';
+
+          overlay.appendChild(clonedSvg);
+          overlay.appendChild(closeBtn);
+          document.body.appendChild(overlay);
+
+          const oldOverflow = document.body.style.overflow;
+          document.body.style.overflow = 'hidden';
+
+          const panZoomInstance = svgPanZoom(clonedSvg, {
+            zoomEnabled: true,
+            controlIconsEnabled: true,
+            fit: true,
+            center: true,
+            minZoom: 0.5,
+            maxZoom: 10,
+            mouseWheelZoomEnabled: true
+          });
+
+          closeBtn.onclick = () => {
+            panZoomInstance.destroy();
+            document.body.removeChild(overlay);
+            document.body.style.overflow = oldOverflow;
+          };
+        };
+        container.appendChild(btn);
+      });
+    });
+  </script>
+</body>
+</html>

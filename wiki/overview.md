@@ -1,0 +1,112 @@
+---
+title: "ภาพรวมโปรเจค — Scam Image Detection"
+category: overview
+tags: [ภาพรวม, synthesis, scam-detection, mobile-app, AI]
+sources: [README.md, doc/objective.md, design/architecture.md]
+updated: 2026-08-02
+---
+
+# ภาพรวมโปรเจค: Scam Image Detection
+
+แอปพลิเคชันมือถือที่ใช้การวิเคราะห์หลายชั้นด้วย AI เพื่อช่วยให้ผู้ใช้ทั่วไปตรวจสอบว่ารูปภาพถูกตัดต่อหรือถูกนำมาใช้ในการหลอกลวงหรือไม่ ก่อนที่จะเชื่อหรือโอนเงิน
+
+---
+
+## ปัญหาที่โปรเจคนี้แก้ไข
+
+การหลอกลวงโดยใช้รูปภาพพบได้บ่อยในประเทศไทยและทั่วโลก รูปแบบการโจมตีที่พบบ่อย ได้แก่:
+
+- **Romance Scam** — รูปโปรไฟล์ที่สร้างด้วย AI หรือขโมยจากคนอื่น
+- **การตัดต่อภาพ (Image Forgery)** — สกรีนช็อตที่ดัดแปลง, สลิปโอนเงินปลอม, ใบเสร็จที่แก้ไขตัวเลข
+- **ภาพสังเคราะห์จาก AI** — ใบหน้าหรือฉากที่สร้างขึ้นทั้งหมดเพื่อหลอกลวง
+- **การแอบอ้างตัวตน** — นำรูปจากบริบทหนึ่งไปใช้อ้างตัวตนในอีกบริบท
+
+ผู้ใช้ทั่วไปไม่สามารถตรวจจับสิ่งเหล่านี้ได้ด้วยตาเปล่า แอปนี้คือเครื่องมือนิติวิทยาศาสตร์ดิจิทัลในกระเป๋า
+
+> [!IMPORTANT]
+> โปรเจคนี้ตรวจจับ **ภาพหลอกลวงในวงกว้าง** ไม่ใช่เฉพาะ "สลิปปลอม" การแยกแยะประเภทการปลอมแปลง (splicing, copy-move, AI-generation, reverse image identity theft) คือฟีเจอร์หลักของระบบ
+
+---
+
+## แนวทางหลัก: การวิเคราะห์หลายชั้น
+
+ระบบไม่พึ่งพาวิธีตรวจจับเดียว แต่รันการวิเคราะห์ 3 ชั้นพร้อมกันและรวมผลเป็น **Weighted Risk Score** เดียว ดูรายละเอียดที่ [[concepts/multi-layer-analysis]]
+
+| ชั้นการวิเคราะห์ | วิธีการ | น้ำหนัก |
+| :--- | :--- | :--- |
+| วิเคราะห์ข้อความ (Textual Analysis) | OCR + NLP ตรวจจับคำหลอกลวง | 25% |
+| ตรวจสอบแหล่งที่มา (Source Verification) | Reverse Image Search ผ่าน Google Vision API | 30% |
+| ตรวจจับความผิดปกติทางภาพ (Visual Anomaly) | Deep Learning (SegFormer + ELA) + Grad-CAM | 45% |
+
+คะแนนรวมอยู่ระหว่าง 0–100 ดูเกณฑ์การตัดสินที่ [[concepts/risk-scoring]]
+
+---
+
+## สรุปสถาปัตยกรรมระบบ
+
+ระบบเป็นแบบ Cloud-Native และแยกส่วนออกเป็น 3 ชั้น:
+
+1. **Frontend** — Flutter Mobile App (Android) สำหรับผู้ใช้ทั่วไป; React.js Admin Portal สำหรับนักวิจัยและเจ้าหน้าที่
+2. **Backend** — Python FastAPI ทำหน้าที่เป็น Orchestrator/API Gateway; AI Inference Service (PyTorch/ONNX) แยกต่างหากสำหรับประมวลผลโมเดล
+3. **Storage** — PostgreSQL สำหรับข้อมูลเชิงสัมพันธ์; Redis สำหรับ cache; Cloud Storage สำหรับไฟล์รูปภาพและ Heatmap
+
+ดูสถาปัตยกรรมเต็มที่ [[architecture/system-architecture]]
+
+---
+
+## เทคโนโลยีหลัก
+
+| งาน | เทคโนโลยี |
+| :--- | :--- |
+| Mobile App | Flutter (Dart) — Android |
+| Admin Portal | React.js + Tailwind CSS |
+| API Backend | Python FastAPI |
+| โมเดล AI | SegFormer (PyTorch → ONNX) |
+| ฐานข้อมูล | PostgreSQL |
+| Cache | Redis |
+| เก็บไฟล์ | Cloud Object Storage |
+| ค้นหาภาพย้อนกลับ | Google Vision API |
+| Push Notification | Firebase Cloud Messaging (FCM) |
+
+ดูรายละเอียดที่ [[entities/tech-stack]] และ [[decisions/technology-choices]]
+
+---
+
+## ผลลัพธ์ที่ผู้ใช้ได้รับ
+
+1. **Weighted Risk Score** (0–100) แสดงเป็น color gauge (เขียว/เหลือง/แดง)
+2. **Grad-CAM Heatmap** ซ้อนทับรูปภาพต้นฉบับแสดงจุดที่โมเดลตรวจพบความผิดปกติ
+3. **ผลการวิเคราะห์ข้อความ** — คำหลอกลวงหรือรูปแบบน่าสงสัยที่พบในภาพ
+4. **ผลการตรวจสอบแหล่งที่มา** — รูปนี้พบในเว็บไซต์ใดบ้างและกี่แหล่ง
+
+Heatmap เป็นหัวใจของการออกแบบ **Explainable AI (XAI)** ดูที่ [[concepts/explainable-ai]]
+
+---
+
+## ข้อจำกัดของโปรเจค
+
+- **PDPA** — ผู้ใช้ต้องยินยอมก่อนที่รูปภาพจะถูกเก็บหรือใช้เพื่อ training โมเดล ยินยอมแบบแยกส่วนและถอนได้ ดูที่ [[requirements/non-functional-requirements]]
+- **เป้าหมายประสิทธิภาพ** — Cache hit < 3 วินาที; Full AI inference < 15 วินาทีต่อรูป
+- **เป้าหมายความแม่นยำ** — โมเดล AI ต้องได้ >= 85% accuracy และ F1-score บน test set
+- **เป้าหมาย Availability** — API และ AI Inference Service uptime >= 99.5%
+
+---
+
+## สิ่งที่อยู่นอกขอบเขต (v1)
+
+- วิเคราะห์วิดีโอ (วางแผนในอนาคตด้วย keyframe extraction)
+- รองรับ iOS (Android เท่านั้นใน v1)
+- Inference บนอุปกรณ์ (วางแผนด้วย model quantization)
+
+---
+
+## หน้าที่เกี่ยวข้อง
+
+- [[concepts/multi-layer-analysis]]
+- [[concepts/risk-scoring]]
+- [[concepts/explainable-ai]]
+- [[architecture/system-architecture]]
+- [[requirements/objectives-kpis]]
+- [[planning/project-scope]]
+- [[planning/team]]
+- [[entities/tech-stack]]
