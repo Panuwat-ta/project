@@ -96,8 +96,6 @@ async def get_dashboard_stats(db: AsyncSession) -> Dict[str, Any]:
     }
 
 async def get_reports(db: AsyncSession, page: int = 1, limit: int = 20, status: str = None, category: str = None) -> Tuple[List[Dict], int]:
-    # Need to join with User and Scan manually or use relationships.
-    # To keep it simple, we do basic queries for relations.
     stmt = select(ScamReport).order_by(desc(ScamReport.created_at))
     if status:
         stmt = stmt.where(ScamReport.status == status)
@@ -111,39 +109,38 @@ async def get_reports(db: AsyncSession, page: int = 1, limit: int = 20, status: 
     result = await db.execute(stmt)
     reports = result.scalars().all()
     
+    # Batch load related users and scans to avoid N+1 queries
+    user_ids = {r.user_id for r in reports if r.user_id}
+    scan_ids = {r.scan_id for r in reports if r.scan_id}
+    
+    users_map = {}
+    if user_ids:
+        user_result = await db.execute(select(User).where(User.id.in_(user_ids)))
+        for u in user_result.scalars().all():
+            users_map[u.id] = {"id": u.id, "email": u.email, "full_name": u.full_name}
+    
+    scans_map = {}
+    if scan_ids:
+        scan_result = await db.execute(select(Scan).where(Scan.id.in_(scan_ids)))
+        for s in scan_result.scalars().all():
+            risk_grade = "low"
+            if s.total_risk_score >= 70:
+                risk_grade = "high"
+            elif s.total_risk_score >= 40:
+                risk_grade = "medium"
+            scans_map[s.id] = {
+                "id": s.id,
+                "thumbnail_url": s.raw_image_url,
+                "total_risk_score": s.total_risk_score,
+                "risk_grade": risk_grade
+            }
+    
     items = []
     for r in reports:
-        # Load user
-        user = None
-        if r.user_id:
-            user_result = await db.execute(select(User).where(User.id == r.user_id))
-            u = user_result.scalar_one_or_none()
-            if u:
-                user = {"id": u.id, "email": u.email, "full_name": u.full_name}
-                
-        # Load scan
-        scan_data = None
-        if r.scan_id:
-            scan_result = await db.execute(select(Scan).where(Scan.id == r.scan_id))
-            s = scan_result.scalar_one_or_none()
-            if s:
-                risk_grade = "low"
-                if s.total_risk_score >= 70:
-                    risk_grade = "high"
-                elif s.total_risk_score >= 40:
-                    risk_grade = "medium"
-                
-                scan_data = {
-                    "id": s.id,
-                    "thumbnail_url": s.raw_image_url, # Using raw for thumb for now
-                    "total_risk_score": s.total_risk_score,
-                    "risk_grade": risk_grade
-                }
-                
         items.append({
             "id": r.id,
-            "user": user,
-            "scan": scan_data,
+            "user": users_map.get(r.user_id),
+            "scan": scans_map.get(r.scan_id),
             "category": r.category,
             "description": r.reason,
             "platform": r.platform,

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.api.deps import get_current_admin
-from app.models.user import User
+from app.models.admin import Admin as AdminModel
 from app.schemas.admin import (
     DashboardResponse, AdminReportListResponse, AdminReportDetailResponse, 
     ReportDecisionRequest, UserAdminListResponse, UserAdminDetailResponse, 
@@ -41,7 +41,7 @@ async def admin_login(form_data: OAuth2PasswordRequestForm = Depends(), db: Asyn
 @router.get("/dashboard", response_model=DashboardResponse)
 async def get_dashboard(
     db: AsyncSession = Depends(get_db),
-    current_admin: User = Depends(get_current_admin)
+    current_admin: AdminModel = Depends(get_current_admin)
 ):
     """GET /api/v1/admin/dashboard"""
     return await admin_service.get_dashboard_stats(db)
@@ -53,7 +53,7 @@ async def get_reports(
     status: str = None,
     category: str = None,
     db: AsyncSession = Depends(get_db),
-    current_admin: User = Depends(get_current_admin)
+    current_admin: AdminModel = Depends(get_current_admin)
 ):
     """GET /api/v1/admin/reports"""
     items, total = await admin_service.get_reports(db, page, limit, status, category)
@@ -64,7 +64,7 @@ async def review_report(
     report_id: int,
     decision: ReportDecisionRequest,
     db: AsyncSession = Depends(get_db),
-    current_admin: User = Depends(get_current_admin)
+    current_admin: AdminModel = Depends(get_current_admin)
 ):
     """PATCH /api/v1/admin/reports/{report_id}"""
     report = await admin_service.review_report(db, report_id, current_admin.id, decision)
@@ -82,7 +82,7 @@ async def get_users(
     page: int = 1,
     limit: int = 20,
     db: AsyncSession = Depends(get_db),
-    current_admin: User = Depends(get_current_admin)
+    current_admin: AdminModel = Depends(get_current_admin)
 ):
     """GET /api/v1/admin/users"""
     items, total = await admin_service.get_users(db, page, limit)
@@ -93,7 +93,7 @@ async def update_user(
     user_id: int,
     update_req: UserUpdateRequest,
     db: AsyncSession = Depends(get_db),
-    current_admin: User = Depends(get_current_admin)
+    current_admin: AdminModel = Depends(get_current_admin)
 ):
     """PATCH /api/v1/admin/users/{user_id}"""
     user = await admin_service.update_user(db, user_id, current_admin.id, update_req)
@@ -108,7 +108,7 @@ async def update_user(
 @router.get("/models", response_model=ModelVersionListResponse)
 async def get_models(
     db: AsyncSession = Depends(get_db),
-    current_admin: User = Depends(get_current_admin)
+    current_admin: AdminModel = Depends(get_current_admin)
 ):
     """GET /api/v1/admin/models"""
     items, total = await admin_service.get_model_versions(db)
@@ -118,7 +118,7 @@ async def get_models(
 async def deploy_model(
     model_id: int,
     db: AsyncSession = Depends(get_db),
-    current_admin: User = Depends(get_current_admin)
+    current_admin: AdminModel = Depends(get_current_admin)
 ):
     """POST /api/v1/admin/models/{model_id}/deploy"""
     model = await admin_service.deploy_model(db, model_id, current_admin.id)
@@ -135,7 +135,7 @@ async def get_audit_logs(
     page: int = 1,
     limit: int = 50,
     db: AsyncSession = Depends(get_db),
-    current_admin: User = Depends(get_current_admin)
+    current_admin: AdminModel = Depends(get_current_admin)
 ):
     """GET /api/v1/admin/audit-logs"""
     items, total = await admin_service.get_audit_logs(db, page, limit)
