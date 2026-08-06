@@ -1,8 +1,10 @@
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Users, Zap, Flag, Activity } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Pie, PieChart, Cell, Bar, BarChart, CartesianGrid } from "recharts";
+import { PageLoader } from "@/components/PageLoader";
 
 const scanTrendData = [
   { name: '1 Aug', count: 120 },
@@ -30,6 +32,18 @@ const categoryData = [
 ];
 
 export function Dashboard() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate fetching data
+    const timer = setTimeout(() => setIsLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return <PageLoader text="Loading dashboard data..." />;
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">

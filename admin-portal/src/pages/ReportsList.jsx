@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Filter, Eye } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { PageLoader } from "@/components/PageLoader";
 
 // Mock Data
 const reportsData = [
@@ -24,7 +25,19 @@ const reportsData = [
 
 export function ReportsList() {
   const [activeTab, setActiveTab] = useState("All");
-  
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate fetching data based on tab change
+    setIsLoading(true);
+    const timer = setTimeout(() => setIsLoading(false), 600);
+    return () => clearTimeout(timer);
+  }, [activeTab]);
+
+  if (isLoading) {
+    return <PageLoader text="Loading reports..." />;
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
