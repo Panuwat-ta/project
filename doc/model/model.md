@@ -52,14 +52,8 @@ flowchart TD
 ### Surya-OCR 2 (GGUF Format)
 **Surya-OCR 2** เป็นโมเดลสำหรับอ่านตัวอักษรและวิเคราะห์โครงสร้างเอกสารสมัยใหม่ (Modern OCR) ขับเคลื่อนด้วย VLM (Vision-Language Model) เพื่อลดข้อผิดพลาดที่มักเกิดใน OCR ยุคเก่า โดยในโปรเจกต์นี้เลือกใช้ในรูปแบบ **GGUF Format** (`datalab-to/surya-ocr-2-gguf`) เพื่อรีดประสิทธิภาพการทำงานบน Local Server (CPU / Apple Silicon หรือ GPU ขนาดเล็ก) ผ่าน `llama.cpp`
 
-* **คุณสมบัติหลัก (Key Features):**
-  * **Multi-lingual Support:** รองรับการอ่านมากกว่า 90 ภาษา รวมทั้งภาษาไทยและภาษาอังกฤษได้อย่างแม่นยำ
-  * **GGUF Optimized:** แปลงน้ำหนักโมเดล (Quantization) ให้อยู่ในฟอร์แมต GGUF ทำให้กินทรัพยากรน้อยลง แต่ยังคงความแม่นยำสูง (อิงสถาปัตยกรรมระดับ 0.65B Params)
-  * **Layout Detection:** สามารถวิเคราะห์บรรทัดและฟิลด์ของสลิปโอนเงิน (เช่น การแยกแยะจุดที่เป็นชื่อผู้รับเงิน ออกจากยอดเงิน) ทำให้โครงสร้างข้อความไม่สับสน
-  * **Robust to Noise:** ทนทานต่อภาพที่มีความละเอียดต่ำ ภาพเบลอ หรือภาพที่ผ่านการบีบอัดไฟล์ผ่านแอปแชต
-* **บทบาทในระบบ:**
-  * รับรูปภาพอินพุตมาเพื่อแปลงออกมาเป็นสตริงข้อความ (Text Recognition) และระบุขอบเขต (Layout)
-  * ส่งข้อมูลสตริงที่ได้ให้ทาง Backend API กรองต่อด้วยอัลกอริทึมจับคู่คำ (Scam Keyword Matching)
+* **สามารถดูรายละเอียดเชิงลึกของสถาปัตยกรรม คุณสมบัติหลัก และสมการคณิตศาสตร์ได้ที่:**
+  * [เอกสารรายละเอียดโมเดล Surya-OCR](./Surya-OCR.md)
 
 ---
 
@@ -70,28 +64,8 @@ flowchart TD
 ### SegFormer (Semantic Segmentation using Transformers)
 **SegFormer** เป็นโมเดลสถาปัตยกรรมแบบ Transformer ที่เบาแต่มีประสิทธิภาพสูงมากในงานแยกส่วนภาพ (Semantic Segmentation) โดยถูกนำมาใช้เป็นโมเดลหลักในการระบุตำแหน่งพิกเซลที่ผิดปกติ แทนที่สถาปัตยกรรมแบบ Hybrid ที่ซับซ้อนเกินจำเป็น
 
-* **โครงสร้างและหลักการทำงาน (Mechanism):**
-  * **MiT Encoder (Mix Transformer):** สกัดลักษณะเด่นของรูปภาพ (Feature Extraction) จากหลายสเกลความละเอียด ทำให้ AI สามารถพิจารณาบริบทภาพรวมและรายละเอียดระดับพิกเซลไปพร้อมกันได้โดยไม่ต้องใช้ Positional Encoding
-  * **All-MLP Decoder:** ถอดรหัสโครงสร้างพิกเซลเพื่อสร้าง Segmentation Mask แบบ Binary (จริง/ปลอม) ว่าจุดไหนในภาพเป็นภาพดั้งเดิม และจุดไหนคือจุดที่ถูกดัดแปลง
-
-### อัลกอริทึมและสมการคณิตศาสตร์ของ SegFormer (Mathematical Formulation)
-การทำงานของ Mix Transformer (MiT) อาศัยกระบวนการลดรูปของ Self-Attention เพื่อประหยัดหน่วยความจำ (Efficient Self-Attention) โดยสามารถเขียนเป็นสมการได้ดังนี้:
-
-1. **Efficient Self-Attention:**
-   ในกรณีที่อินพุตคือ $X \in \mathbb{R}^{H \times W \times C}$ จะถูกแปลงให้แบนราบ (Flatten) เป็น Sequence $N = H \times W$
-   โดยกระบวนการ Sequence Reduction จะลดมิติของ Key และ Value ลงด้วยอัตราส่วน $R$ เพื่อลดภาระการคำนวณ:
-   $$K' = \text{Reshape}\left(\frac{N}{R}, C \cdot R\right)(K) \cdot W_K$$
-   $$V' = \text{Reshape}\left(\frac{N}{R}, C \cdot R\right)(V) \cdot W_V$$
-   $$ \text{Attention}(Q, K', V') = \text{Softmax}\left( \frac{Q (K')^T}{\sqrt{d_k}} \right) V' $$
-   เมื่อ $Q$ คือ Query, $K'$ และ $V'$ คือ Key และ Value ที่ลดมิติแล้ว, และ $d_k$ คือมิติของ Key
-
-2. **Mix-FFN (Mix Feed-Forward Network):**
-   เพื่อหลีกเลี่ยงการใช้ Positional Encoding แบบตายตัว SegFormer ใช้ 3x3 Convolution ใน Feed-Forward Network เพื่อพิจารณาตำแหน่งจากบริบท:
-   $$x_{out} = \text{MLP}(\text{GELU}(\text{Conv}_{3\times3}(\text{MLP}(x_{in})))) + x_{in}$$
-
-* **บทบาทในระบบ:**
-  * ทำหน้าที่ทำนายความน่าจะเป็นระดับพิกเซลของร่องรอยการปลอมแปลง (Pixel-level Prediction)
-  * คืนค่าผลลัพธ์เป็น Segmentation Mask ซึ่งจะถูกแปลง (Post-Processing) ให้อยู่ในรูปของ **แผนภูมิความร้อน (Grad-CAM Heatmap)** เพื่อใช้วางซ้อน (Overlay) บนรูปต้นฉบับ แจ้งให้ผู้ใช้งานเห็นพื้นที่ดัดแปลงอย่างชัดเจนผ่านแอปพลิเคชัน
+* **สามารถดูรายละเอียดเชิงลึกของสถาปัตยกรรม โครงสร้าง และสมการคณิตศาสตร์ได้ที่:**
+  * [เอกสารรายละเอียดโมเดล SegFormer](./SegFormer.md)
 
 ---
 
