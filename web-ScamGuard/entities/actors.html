@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ผู้ใช้ระบบ (Actors) - ScamGuard</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../shared-theme.css">
+</head>
+
+<body>
+  <main class="document">
+    <h1>ผู้ใช้ระบบ (Actors)</h1>
+        <p class="lede">บุคคลและบทบาทที่มีชื่อซึ่งใช้งานระบบ Scam Image Detection</p>
+    <div class="divider"></div>
+    <h2>ผู้ใช้ทั่วไป (General User)</h2>
+    <p><strong>ผู้คือ:</strong> ประชาชนทั่วไปที่ต้องการตรวจสอบว่ารูปภาพน่าจะถูกตัดต่อหรือใช้ในการหลอกลวงหรือไม่</p>
+    <p><strong>ส่วนติดต่อผู้ใช้ (Interface):</strong> Flutter Mobile App (Android)</p>
+    <p><strong>Use Cases ทั่วไป:</strong></p>
+    <ul>
+    <li>ได้รับสลิปโอนเงินที่น่าสงสัยและต้องการตรวจสอบ</li>
+    <li>กำลังจะเชื่อใจรูปโปรไฟล์จากคนแปลกหน้าบนโลกออนไลน์</li>
+    <li>พบรูปภาพโปรโมทที่น่าสงสัยซึ่งรับประกันผลตอบแทนสูง</li>
+    <li>ต้องการตรวจสอบรูปภาพก่อนแชร์ต่อ</li>
+    </ul>
+    <p><strong>สิ่งที่ทำได้:</strong></p>
+    <ul>
+    <li>สมัครสมาชิกและเข้าสู่ระบบ (Email/Password หรือ Google OAuth)</li>
+    <li>อัปโหลดหรือถ่ายรูปเพื่อตรวจสอบ</li>
+    <li>ตัดภาพ (Crop) ก่อนส่งเพื่อโฟกัสบริเวณใดบริเวณหนึ่ง</li>
+    <li>ดู Risk Score และ Grad-CAM Heatmap overlay</li>
+    <li>ดูประวัติการสแกน</li>
+    <li>ส่งรายงานแจ้งว่ารูปนี้เป็น Scam ที่ยืนยันแล้ว</li>
+    <li>จัดการตั้งค่ายินยอม PDPA (รวมถึงถอนยินยอมการวิจัย)</li>
+    </ul>
+    <p><strong>สิ่งที่ทำไม่ได้:</strong></p>
+    <ul>
+    <li>เข้าถึง Admin Dashboard หรือเครื่องมือจัดการโมเดล</li>
+    <li>ดูการสแกนของผู้ใช้อื่น</li>
+    <li>อนุมัติหรือปฏิเสธ Scam Report</li>
+    </ul>
+    <div class="divider"></div>
+    <h2>แอดมิน / นักวิจัย (Admin / Researcher)</h2>
+    <p><strong>ผู้คือ:</strong> เจ้าหน้าที่ภายใน, นักวิจัย AI หรือทีมสนับสนุนของโปรเจค</p>
+    <p><strong>ส่วนติดต่อผู้ใช้ (Interface):</strong> React.js Admin Web Portal</p>
+    <p><strong>สิ่งที่ทำได้:</strong></p>
+    <ul>
+    <li>ดูสถิติทั้งระบบ: จำนวนสแกนรวม, Accuracy Metrics, ปริมาณ Traffic</li>
+    <li>ตรวจสอบคิว Scam Report จากผู้ใช้ และทำเครื่องหมายยืนยันหรือเพิกเฉย</li>
+    <li>นำรูป Scam ที่ยืนยันแล้วไปสร้างและคัดกรอง Training Dataset</li>
+    <li>อัปโหลด Model Weight ไฟล์ใหม่และสั่ง Deploy โมเดล</li>
+    <li>จัดการบัญชีผู้ใช้ (CRUD ตามที่สิทธิ์ RBAC อนุญาต)</li>
+    </ul>
+    <p><strong>หมายเหตุเรื่อง RBAC:</strong> สิทธิ์ Admin บังคับใช้ที่ระดับ API ผ่าน JWT Claims ถึงจะมีคนเข้าถึง URL ของ Admin Portal ได้ แต่ API Endpoint สำหรับ Admin จะปฏิเสธ Token ของผู้ใช้ทั่วไปทั้งหมด</p>
+    <div class="divider"></div>
+    <h2>ระบบ (Automated Actor)</h2>
+    <p>ไม่ใช่คน แต่เป็น Actor ที่ควรบันทึกไว้:</p>
+    <ul>
+    <li><strong>Redis Cache</strong> — ส่งคืนผลลัพธ์จาก Cache อัตโนมัติ โดยไม่มีคนเข้ามาเกี่ยวข้อง</li>
+    <li><strong>FCM</strong> — ส่ง Push Notification อัตโนมัติเมื่องานสแกนเสร็จสิ้น</li>
+    <li><strong>Scheduled Model Retraining</strong> — ระบบอัตโนมัติที่วางแผนไว้ในอนาคต เมื่อมี Scam Report ที่ยืนยันแล้ว ระบบจะกระตุ้นให้เทรนโมเดลใหม่แบบ Incremental</li>
+    </ul>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
+  </script>
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\(', '\)']],
+        displayMath: [['$$', '$$'], ['\[', '\]']]
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.mermaid-container').forEach(container => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-expand-mermaid';
+        btn.innerHTML = '🔍 Fullscreen';
+
+        btn.onclick = () => {
+          const originalSvg = container.querySelector('svg');
+          if (!originalSvg) return;
+
+          const overlay = document.createElement('div');
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.backgroundColor = 'var(--paper, #F6F4EE)';
+          overlay.style.zIndex = '999999';
+          overlay.style.display = 'flex';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+
+          const closeBtn = document.createElement('button');
+          closeBtn.innerHTML = '✖ Close';
+          closeBtn.style.position = 'absolute';
+          closeBtn.style.top = '20px';
+          closeBtn.style.right = '20px';
+          closeBtn.style.padding = '8px 16px';
+          closeBtn.style.fontSize = '1rem';
+          closeBtn.style.fontWeight = 'bold';
+          closeBtn.style.cursor = 'pointer';
+          closeBtn.style.backgroundColor = '#ff4d4d';
+          closeBtn.style.color = '#fff';
+          closeBtn.style.border = 'none';
+          closeBtn.style.borderRadius = '8px';
+          closeBtn.style.zIndex = '1000000';
+          closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+
+          closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
+          closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
+
+          const clonedSvg = originalSvg.cloneNode(true);
+          clonedSvg.style.width = '100%';
+          clonedSvg.style.height = '100%';
+          clonedSvg.style.maxWidth = '100vw';
+          clonedSvg.style.maxHeight = '100vh';
+
+          overlay.appendChild(clonedSvg);
+          overlay.appendChild(closeBtn);
+          document.body.appendChild(overlay);
+
+          const oldOverflow = document.body.style.overflow;
+          document.body.style.overflow = 'hidden';
+
+          const panZoomInstance = svgPanZoom(clonedSvg, {
+            zoomEnabled: true,
+            controlIconsEnabled: true,
+            fit: true,
+            center: true,
+            minZoom: 0.5,
+            maxZoom: 10,
+            mouseWheelZoomEnabled: true
+          });
+
+          closeBtn.onclick = () => {
+            panZoomInstance.destroy();
+            document.body.removeChild(overlay);
+            document.body.style.overflow = oldOverflow;
+          };
+        };
+        container.appendChild(btn);
+      });
+    });
+  </script>
+</body>
+</html>

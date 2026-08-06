@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C1 System Context Diagram - ScamGuard</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../shared-theme.css">
+</head>
+
+<body>
+  <main class="document">
+    <h1>C1: System Context Diagram</h1>
+    <div class="mermaid-container"><div class="mermaid">flowchart TD
+        %% การตั้งค่า Class สีต่างๆ (กำหนด color:black ตามคำสั่ง)
+        classDef mainSystem fill:#0050ef,stroke:#001DBC,color:black
+        classDef userFill fill:#fff2cc,stroke:#d6b656,color:black
+        classDef adminFill fill:#dae8fc,stroke:#6c8ebf,color:black
+        classDef extFill fill:#f5f5f5,stroke:#666666,color:black
+    
+        %% Title Area
+        subgraph Context [C1: System Context Diagram]
+            direction TB
+    
+            %% Nodes (โหนดต่างๆ)
+            User("General User<br>[Person]")
+    
+            System("Mobile App: Scam Image Detection<br>[Software System]<br>Allows users to upload images to detect forgery,<br>AI generation, and existing scams.")
+    
+            Admin("Admin<br>[Person]")
+    
+            ExtSearch("Reverse Image Search Provider<br>[External System]<br>Google Vision API / Bing Visual Search<br>(Used to find similar images on the web)")
+    
+            ExtNotify("Push Notification Service<br>[External System]<br>Firebase Cloud Messaging (FCM)<br>(Sends alerts/results to mobile)")
+    
+            %% Relationships (เส้นเชื่อมโยง)
+            User -- "1. อัปโหลดรูปเพื่อตรวจสอบ<br>2. ดูรายงานความเสี่ยง" --> System
+    
+            System -- "ส่ง URL รูปภาพ / ข้อมูลไบนารี" --> ExtSearch
+            ExtSearch -.->|"ส่งคืน URL รูปภาพที่คล้ายกัน"| System
+    
+            System -- "ส่งข้อมูลการแจ้งเตือน (Payload)" --> ExtNotify
+    
+            Admin -- "ตรวจสอบรูปที่ถูกรายงาน /<br>อัปเดตข้อมูลโมเดล" --> System
+        end
+    
+        %% Apply Styles (การระบายสี)
+        class System mainSystem
+        class User userFill
+        class Admin adminFill
+        class ExtSearch,ExtNotify extFill
+    
+    </div></div>
+    <h3>1. ระบบหลัก (The Software System)</h3>
+    <ul>
+    <li><strong>Mobile App: Scam Image Detection :</strong></li>
+    <li><strong>หน้าที่:</strong> เป็นแอปพลิเคชันบนมือถือที่ให้ผู้ใช้เข้ามาอัปโหลดรูปภาพที่น่าสงสัย ระบบจะทำการวิเคราะห์ เช็คค่า EXIF/GPS ข้อมูลรายละเอียดของไฟล์รูปภาพและข้อมูลพิกัด (ถ้ามี), เช็คการตัดต่อระดับพิกเซล (Error Level Analysis), อ่านข้อความในภาพเพื่อหา Keyword อันตราย, วิเคราะห์ภาพเพื่อดูว่าเป็นภาพที่สร้างจาก AI หรือไม่</li>
+    </ul>
+    <h3>2. ผู้ใช้งาน (People)</h3>
+    <ul>
+    <li><strong>General User (ผู้ใช้งานทั่วไป):</strong></li>
+    <li>คือคนธรรมดาที่อาจจะได้รับรูปภาพแปลกๆ (เช่น สลิปโอนเงินปลอม, รูปโปรไฟล์หลอกลงทุน)</li>
+    <li>
+    <p><strong>การกระทำ:</strong> ส่งรูปเข้ามาในแอป (Upload) และรอรับผลการตรวจสอบ (View Report) เพื่อดูว่ารูปนั้นเสี่ยงแค่ไหน</p>
+    </li>
+    <li>
+    <p><strong>Admin (ผู้ดูแลระบบ):</strong></p>
+    </li>
+    <li>คือทีมงานหลังบ้าน หรือนักวิจัย</li>
+    <li><strong>การกระทำ:</strong> เข้ามาดูรูปที่ถูก Report เข้ามา เพื่อยืนยันความถูกต้อง หรือนำข้อมูลใหม่ๆ ไปอัปเดตให้โมเดล AI ฉลาดขึ้น (Updates model data)</li>
+    </ul>
+    <h3>3. ระบบภายนอก (External Systems)</h3>
+    <p>ระบบของเราไม่ได้ทำงานด้วยตัวคนเดียว แต่มีการเชื่อมต่อกับบริการอื่นเพื่อลดภาระงานและเพิ่มประสิทธิภาพ:</p>
+    <ul>
+    <li><strong>Reverse Image Search Provider :</strong></li>
+    <li><strong>คืออะไร:</strong> บริการค้นหารูปภาพระดับโลก เช่น Google Vision API หรือ Bing Visual Search</li>
+    <li><strong>ทำไมต้องใช้:</strong> ระบบของเราส่งรูปไปถามเจ้านี้ว่า "เคยเห็นรูปนี้ที่ไหนในเน็ตไหม?" (Send URL/Binary)</li>
+    <li>
+    <p><strong>สิ่งที่ได้กลับมา:</strong> แหล่งที่มาของภาพ (Similar URLs) เช่น ถ้าเป็นรูปโปรไฟล์สาวสวย แต่ไปเจอว่าเป็นดาราเกาหลี ก็แสดงว่าปลอมแน่นอน</p>
+    </li>
+    <li>
+    <p><strong>Push Notification Service :</strong></p>
+    </li>
+    <li><strong>คืออะไร:</strong> บริการส่งการแจ้งเตือน</li>
+    <li><strong>ทำไมต้องใช้:</strong> การวิเคราะห์รูปภาพอาจใช้เวลา (2-10 วินาที หรือมากกว่า) เราจึงไม่ให้ผู้ใช้รอนิ่งๆ หน้าจอ แต่เมื่อระบบประมวลผลเสร็จ จะส่งข้อมูล (Payload) ไปที่ FCM เพื่อเด้งแจ้งเตือนที่มือถือผู้ใช้ว่า "ตรวจสอบเสร็จแล้ว!"</li>
+    </ul>
+    <div class="divider"></div>
+    <h3>สรุปขั้นตอนการทำงาน (Workflow Scenario)</h3>
+    <ol>
+    <li><strong>User</strong> อัปโหลดรูปสลิปโอนเงินที่สงสัยเข้ามาใน <strong>App</strong></li>
+    <li><strong>App</strong> ส่งรูปนั้นไปเช็คกับ <strong>Google/Bing (External)</strong> ว่ารูปนี้ไปก๊อปมาจากเว็บไหนไหม</li>
+    <li><strong>App</strong> ประมวลผลภายใน (เช็คการตัดต่อ/AI)</li>
+    <li>เมื่อได้ผลลัพธ์ครบ <strong>App</strong> สั่งงาน <strong>FCM (External)</strong> ให้แจ้งเตือนผู้ใช้</li>
+    <li><strong>User</strong> เปิดดูผลลัพธ์คะแนนความเสี่ยง</li>
+    <li>(Optional) หากเป็นเคสใหม่ <strong>Admin</strong> จะเข้ามาตรวจสอบข้อมูลเพื่อปรับปรุงระบบในภายหลัง</li>
+    </ol>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
+  </script>
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\(', '\)']],
+        displayMath: [['$$', '$$'], ['\[', '\]']]
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.mermaid-container').forEach(container => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-expand-mermaid';
+        btn.innerHTML = '🔍 Fullscreen';
+
+        btn.onclick = () => {
+          const originalSvg = container.querySelector('svg');
+          if (!originalSvg) return;
+
+          const overlay = document.createElement('div');
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.backgroundColor = 'var(--paper, #F6F4EE)';
+          overlay.style.zIndex = '999999';
+          overlay.style.display = 'flex';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+
+          const closeBtn = document.createElement('button');
+          closeBtn.innerHTML = '✖ Close';
+          closeBtn.style.position = 'absolute';
+          closeBtn.style.top = '20px';
+          closeBtn.style.right = '20px';
+          closeBtn.style.padding = '8px 16px';
+          closeBtn.style.fontSize = '1rem';
+          closeBtn.style.fontWeight = 'bold';
+          closeBtn.style.cursor = 'pointer';
+          closeBtn.style.backgroundColor = '#ff4d4d';
+          closeBtn.style.color = '#fff';
+          closeBtn.style.border = 'none';
+          closeBtn.style.borderRadius = '8px';
+          closeBtn.style.zIndex = '1000000';
+          closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+
+          closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
+          closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
+
+          const clonedSvg = originalSvg.cloneNode(true);
+          clonedSvg.style.width = '100%';
+          clonedSvg.style.height = '100%';
+          clonedSvg.style.maxWidth = '100vw';
+          clonedSvg.style.maxHeight = '100vh';
+
+          overlay.appendChild(clonedSvg);
+          overlay.appendChild(closeBtn);
+          document.body.appendChild(overlay);
+
+          const oldOverflow = document.body.style.overflow;
+          document.body.style.overflow = 'hidden';
+
+          const panZoomInstance = svgPanZoom(clonedSvg, {
+            zoomEnabled: true,
+            controlIconsEnabled: true,
+            fit: true,
+            center: true,
+            minZoom: 0.5,
+            maxZoom: 10,
+            mouseWheelZoomEnabled: true
+          });
+
+          closeBtn.onclick = () => {
+            panZoomInstance.destroy();
+            document.body.removeChild(overlay);
+            document.body.style.overflow = oldOverflow;
+          };
+        };
+        container.appendChild(btn);
+      });
+    });
+  </script>
+</body>
+</html>

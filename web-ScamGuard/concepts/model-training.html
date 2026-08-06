@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Model Training Workflow - ScamGuard</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../shared-theme.css">
+</head>
+
+<body>
+  <main class="document">
+    <h1>การออกแบบระบบฝึกสอนโมเดล (Model Training Design)</h1>
+        <p class="lede">เอกสารนี้ตอบคำถามว่า <strong>โมเดลถูกสร้างและอัปเดตอย่างไร</strong> ครอบคลุมวงจรชีวิตของ AI ในการเทรน การปรับปรุงอย่างต่อเนื่อง และการนำขึ้นระบบ</p>
+    <h2>1. ภาพรวมของระบบ Training</h2>
+    <p>ระบบถูกออกแบบเพื่อรองรับกระบวนการเตรียมข้อมูล การฝึกสอน (Training) การวัดผล และการแปลงโมเดลให้อยู่ในรูปแบบที่พร้อมใช้งาน โดยรองรับทั้งการเทรนรอบแรก (Initial Training) และการเรียนรู้เพิ่มเติม (Incremental Learning) ในอนาคต</p>
+    <h2>2. Dataset Design</h2>
+    <ul>
+    <li>การคัดเลือกชุดข้อมูลภาพ (Dataset) ที่ประกอบไปด้วยภาพปกติและภาพตัดต่อ (Forged) หรือชุดข้อมูลมาตรฐาน (CASIA, IMD2020)</li>
+    <li>การกำหนดโครงสร้าง Annotation ในรูปแบบ Segmentation Mask (ภาพขาวดำที่ชี้จุดดัดแปลง) เพื่อสอน AI ในระดับพิกเซล</li>
+    </ul>
+    <h2>3. Data Preprocessing</h2>
+    <ul>
+    <li><strong>การทำความสะอาดข้อมูล</strong>: การจัดระเบียบโครงสร้างโฟลเดอร์ให้สอดคล้องกับ Dataloader</li>
+    <li><strong>Data Augmentation</strong>: ใช้เทคนิคต่างๆ เช่น <code>RandomResize</code>, <code>RandomCrop</code>, <code>RandomFlip</code> และที่สำคัญคือ <code>PhotoMetricDistortion</code> (ปรับแต่งแสง/สี) เพื่อให้โมเดลทนทานต่อการแต่งแสงหลอก</li>
+    <li>การแบ่งชุดข้อมูลเป็น Train, Validation, และ Test Set อย่างเหมาะสม (เช่น 80:10:10)</li>
+    </ul>
+    <h2>4. Initial Training</h2>
+    <ul>
+    <li>การนำน้ำหนักเริ่มต้น (Pre-trained Weights) ของโมเดล SegFormer มาใช้งานเพื่อย่นระยะเวลาการเรียนรู้</li>
+    <li>การสอนบนชุดข้อมูลหลักทั้งหมด (Base Dataset) เพื่อปรับพื้นฐานโมเดลให้รู้จักลักษณะของรอยตัดต่อดิจิทัล</li>
+    </ul>
+    <h2>5. Fine-tuning</h2>
+    <ul>
+    <li>การปรับจูนโมเดลกับชุดข้อมูลภาพหลอกลวงแบบเฉพาะเจาะจง</li>
+    <li>ใช้ค่า Learning Rate ที่ต่ำลงกว่ารอบแรกเพื่อค่อย ๆ ปรับน้ำหนักโดยไม่ทำลายความรู้เดิม</li>
+    </ul>
+    <h2>6. Incremental Fine-tuning</h2>
+    <ul>
+    <li>การอัปเดตโมเดลเป็นระยะ (เช่น ทุกสัปดาห์หรือทุกเดือน) เมื่อมีภาพกลโกงชนิดใหม่ถูกรายงานเข้ามาในระบบ</li>
+    <li>เป็นการเรียนรู้ต่อเนื่องโดยไม่ต้องเริ่มต้นเทรนใหม่ทั้งหมดจากศูนย์</li>
+    </ul>
+    <h2>7. Parameter-wise Fine-tuning</h2>
+    <ul>
+    <li>การกำหนดอัตราการเรียนรู้ (Learning Rate) แยกตามชิ้นส่วนโมเดล เพื่อรักษาฟีเจอร์เดิมแต่ยังปรับตัวเข้ากับโดเมนใหม่ได้</li>
+    <li>Backbone (MiT Encoder): ปรับตัวช้าๆ (<code>lr_mult=0.1</code>) เพื่อไม่ให้ลืมความรู้การมองภาพรวม</li>
+    <li>Decode Head (SegFormer Head): เรียนรู้อย่างรวดเร็ว (<code>lr_mult=10.0</code>) เพื่อจับรอยตัดต่อ</li>
+    </ul>
+    <h2>8. Replay Dataset</h2>
+    <ul>
+    <li>กลยุทธ์การนำรูปภาพส่วนหนึ่งจากฐานข้อมูลดั้งเดิมมาผสมกับข้อมูลชุดใหม่ในระหว่างการทำ Incremental Training</li>
+    <li>เพื่อป้องกันปัญหา Catastrophic Forgetting (การที่ AI ลืมวิธีตรวจจับกลโกงแบบเก่า หลังจากเรียนรู้กลโกงแบบใหม่)</li>
+    </ul>
+    <h2>9. Validation</h2>
+    <ul>
+    <li>การประเมินผลระหว่างการเทรนในแต่ละรอบ (Epoch) ด้วยชุดข้อมูล Validation Set</li>
+    <li>คอยตรวจสอบค่า Loss เพื่อดูพัฒนาการของโมเดลว่าไม่ได้กำลังจดจำคำตอบ (Overfitting)</li>
+    </ul>
+    <h2>10. Model Evaluation</h2>
+    <ul>
+    <li>การวัดผลประสิทธิภาพบน Test Set เพื่อคัดเลือกโมเดลที่ดีที่สุด ด้วยมาตรวัด (Metrics) เช่น:</li>
+    <li><strong>IoU (Intersection over Union)</strong>: วัดความทับซ้อนของพื้นที่ตรวจพบเทียบกับพื้นที่จริง</li>
+    <li><strong>F1-Score</strong>: การหาความสมดุลระหว่างความแม่นยำและความครอบคลุม</li>
+    <li><strong>Pixel Accuracy</strong>: สัดส่วนพิกเซลที่ทายถูกทั้งหมด</li>
+    </ul>
+    <h2>11. Hyperparameters &amp; Hardware Optimization</h2>
+    <ul>
+    <li><strong>VRAM Optimization</strong>: ใช้ <code>AmpOptimWrapper</code> (Mixed Precision) เพื่อลดการใช้หน่วยความจำ ทำให้เทรนบนอุปกรณ์ที่มี VRAM จำกัดได้อย่างเต็มประสิทธิภาพ</li>
+    <li><strong>Optimizer &amp; Scheduler</strong>: ใช้ AdamW ร่วมกับ LinearLR (Warmup) และ PolyLR</li>
+    <li><strong>Loss Function</strong>: ใช้ <code>CrossEntropyLoss</code> ควบคู่กับ <code>DiceLoss</code> เพื่อแก้ปัญหา Class Imbalance (พื้นที่รอยปลอมแปลงเล็กมากเมื่อเทียบกับพื้นหลัง)</li>
+    </ul>
+    <h2>12. Checkpoint &amp; Version Management</h2>
+    <ul>
+    <li>การจัดเก็บสถานะน้ำหนักโมเดล (Model State Dict) ทุกครั้งที่มีผลลัพธ์ที่ดีขึ้นบน Validation Set เป็นไฟล์นามสกุล <code>.pth</code> หรือ <code>.pt</code></li>
+    <li><strong>Automated Version Increment</strong>: ระบบมีการจัดการเวอร์ชันของโมเดลอัตโนมัติ (เช่น <code>v1.0.1</code>, <code>v1.1.0</code>) โดยจะเข้าไปอ่านประวัติการเทรนใน <code>work_dirs</code> เพื่อหาเวอร์ชันที่สูงที่สุด แล้วบวกเพิ่ม 1 ให้เสมอ ช่วยป้องกันการเขียนทับผลรันรอบก่อนหน้า และรับประกันว่าจะไม่มีการย้อนกลับไปใช้เลขเวอร์ชันเดิมที่น้อยกว่า</li>
+    </ul>
+    <h2>13. Export ONNX</h2>
+    <ul>
+    <li>ขั้นตอนการนำไฟล์ Checkpoint (.pth) ที่ดีที่สุด มาแปลงร่าง (Export) ให้อยู่ในฟอร์แมต ONNX</li>
+    <li>ช่วยเพิ่มความเร็วในการทำ Inference ลดการพึ่งพาไลบรารีขนาดใหญ่ในฝั่ง Backend</li>
+    </ul>
+    <h2>14. Model Deployment</h2>
+    <ul>
+    <li>กระบวนการนำไฟล์ ONNX และไฟล์การตั้งค่าที่เกี่ยวข้อง (Config) จัดเก็บลงใน Model Registry หรือส่งต่อให้ API Server</li>
+    </ul>
+    <h2>15. Hot Reload</h2>
+    <ul>
+    <li>กลไกของฝั่ง Backend Server ในการโหลดไฟล์โมเดลเวอร์ชันใหม่เข้าสู่ระบบ และนำไปใช้ประมวลผลคำขอใหม่ทันที โดยไม่ต้องปิด/เปิด Server ใหม่ (Zero-downtime)</li>
+    </ul>
+    <h2>16. Rollback</h2>
+    <ul>
+    <li>แผนสำรองในการปรับย้อน (Revert) ไปใช้งานโมเดลเวอร์ชันก่อนหน้าทันที หากพบว่าโมเดลตัวใหม่สร้างผลลัพธ์ผิดพลาด (False Positive) อย่างรุนแรงในสภาพแวดล้อมจริง (Production)</li>
+    </ul>
+    <h2>17. Training Workflow</h2>
+    <ul>
+    <li>ภาพรวมผังงาน (Workflow) แบบอัตโนมัติ (เช่น MLOps หรือ CI/CD สำหรับ AI) เพื่อจัดการตั้งแต่ การรับข้อมูลชุดใหม่ -&gt; การทดสอบการเทรน -&gt; การแพ็กเกจจิ้งไฟล์ -&gt; จนถึงการ Deploy อย่างเป็นระบบ</li>
+    </ul>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
+  </script>
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\(', '\)']],
+        displayMath: [['$$', '$$'], ['\[', '\]']]
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.mermaid-container').forEach(container => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-expand-mermaid';
+        btn.innerHTML = '🔍 Fullscreen';
+
+        btn.onclick = () => {
+          const originalSvg = container.querySelector('svg');
+          if (!originalSvg) return;
+
+          const overlay = document.createElement('div');
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.backgroundColor = 'var(--paper, #F6F4EE)';
+          overlay.style.zIndex = '999999';
+          overlay.style.display = 'flex';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+
+          const closeBtn = document.createElement('button');
+          closeBtn.innerHTML = '✖ Close';
+          closeBtn.style.position = 'absolute';
+          closeBtn.style.top = '20px';
+          closeBtn.style.right = '20px';
+          closeBtn.style.padding = '8px 16px';
+          closeBtn.style.fontSize = '1rem';
+          closeBtn.style.fontWeight = 'bold';
+          closeBtn.style.cursor = 'pointer';
+          closeBtn.style.backgroundColor = '#ff4d4d';
+          closeBtn.style.color = '#fff';
+          closeBtn.style.border = 'none';
+          closeBtn.style.borderRadius = '8px';
+          closeBtn.style.zIndex = '1000000';
+          closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+
+          closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
+          closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
+
+          const clonedSvg = originalSvg.cloneNode(true);
+          clonedSvg.style.width = '100%';
+          clonedSvg.style.height = '100%';
+          clonedSvg.style.maxWidth = '100vw';
+          clonedSvg.style.maxHeight = '100vh';
+
+          overlay.appendChild(clonedSvg);
+          overlay.appendChild(closeBtn);
+          document.body.appendChild(overlay);
+
+          const oldOverflow = document.body.style.overflow;
+          document.body.style.overflow = 'hidden';
+
+          const panZoomInstance = svgPanZoom(clonedSvg, {
+            zoomEnabled: true,
+            controlIconsEnabled: true,
+            fit: true,
+            center: true,
+            minZoom: 0.5,
+            maxZoom: 10,
+            mouseWheelZoomEnabled: true
+          });
+
+          closeBtn.onclick = () => {
+            panZoomInstance.destroy();
+            document.body.removeChild(overlay);
+            document.body.style.overflow = oldOverflow;
+          };
+        };
+        container.appendChild(btn);
+      });
+    });
+  </script>
+</body>
+</html>

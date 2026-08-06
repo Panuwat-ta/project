@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล - ScamGuard</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../shared-theme.css">
+</head>
+
+<body>
+  <main class="document">
+    <h1>โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</h1>
+        <p class="lede">ระบบใช้ Storage 3 ประเภทร่วมกัน: PostgreSQL สำหรับข้อมูลเชิงสัมพันธ์, Redis สำหรับ Cache และ Cloud Object Storage สำหรับไฟล์</p>
+    <div class="divider"></div>
+    <h2>PostgreSQL — ฐานข้อมูลหลัก</h2>
+    <p><strong>หน้าที่:</strong> เก็บข้อมูลเชิงสัมพันธ์ที่มีโครงสร้างทั้งหมดด้วย ACID Transaction</p>
+    <h3>ตารางหลัก</h3>
+    <table>
+    <thead>
+    <tr>
+    <th style="text-align: left;">ตาราง</th>
+    <th style="text-align: left;">คำอธิบาย</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td style="text-align: left;"><code>users</code></td>
+    <td style="text-align: left;">บัญชีผู้ใช้, Role (user/admin), สถานะ Consent, เวลาสมัคร</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;"><code>scans</code></td>
+    <td style="text-align: left;">แต่ละ Scan: อ้างอิงรูปภาพ, Risk Score, คะแนนแต่ละชั้น, สถานะ, เวลาสร้าง</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;"><code>scan_results</code></td>
+    <td style="text-align: left;">ผลลัพธ์ละเอียดต่อ Scan: Mask URL, Heatmap URL, Keywords, Source URLs</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;"><code>reports</code></td>
+    <td style="text-align: left;">รายงาน Scam จากผู้ใช้: Image ID, Reporter ID, สถานะการตรวจสอบของ Admin</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;"><code>model_versions</code></td>
+    <td style="text-align: left;">Registry โมเดลที่ Deploy แล้วพร้อม Timestamp</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;"><code>audit_log</code></td>
+    <td style="text-align: left;">บันทึก Append-only ของ Admin Actions ทั้งหมด (Deploy โมเดล, ตัดสิน Report)</td>
+    </tr>
+    </tbody>
+    </table>
+    <h3>Field ที่เกี่ยวกับ PDPA</h3>
+    <p>ตาราง <code>users</code> มี:</p>
+    <ul>
+    <li><code>consent_analysis</code> — ยินยอมให้ประมวลผลรูปภาพ (จำเป็น ถ้าไม่ยินยอมใช้แอปไม่ได้)</li>
+    <li><code>consent_research</code> — ยินยอมให้นำรูปภาพไป Train AI (ไม่บังคับ ถอนได้)</li>
+    <li><code>consent_revoked_at</code> — Timestamp ถ้าผู้ใช้ถอนยินยอมการวิจัย</li>
+    </ul>
+    <div class="divider"></div>
+    <h2>Redis — Cache Store</h2>
+    <p><strong>หน้าที่:</strong> ค้นหาภาพที่เคยวิเคราะห์แล้วด้วยความเร็วสูง เพื่อหลีกเลี่ยงการรัน AI ซ้ำ</p>
+    <h3>การทำงาน</h3>
+    <ol>
+    <li>เมื่อรับรูปภาพ API คำนวณ <strong>Perceptual Hash (pHash)</strong> ของรูป</li>
+    <li>ใช้ Hash นั้นเป็น Key ใน Redis</li>
+    <li><strong>Cache Hit</strong> — พบ Hash ใน Redis → ดึงผลลัพธ์เต็มจาก PostgreSQL → ส่งคืนทันที (เป้าหมาย &lt; 3 วินาที)</li>
+    <li><strong>Cache Miss</strong> — ไม่พบ Hash → รัน Multi-layer Pipeline ครบ → เก็บใน PostgreSQL → เขียน Hash ลง Redis</li>
+    </ol>
+    <h3>Cache Invalidation</h3>
+    <ul>
+    <li>Redis Key หมดอายุตาม TTL ที่ตั้งไว้</li>
+    <li>เมื่อ Deploy โมเดลใหม่ (น้ำหนักใหม่) Cache entry เก่าอาจ Stale — Admin สั่ง Cache Invalidation แบบ Forced ได้</li>
+    </ul>
+    <div class="divider"></div>
+    <h2>Cloud Object Storage</h2>
+    <p><strong>หน้าที่:</strong> เก็บไฟล์ Binary ที่ไม่เหมาะเก็บในฐานข้อมูล Relational</p>
+    <h3>โครงสร้างการจัดเก็บ</h3>
+    <pre><code>bucket/
+      uploads/
+        {user_id}/
+          {scan_id}/
+            original.jpg       # รูปที่อัปโหลดมา (เก็บชั่วคราว)
+      heatmaps/
+        {scan_id}/
+          heatmap.png          # Grad-CAM Heatmap Overlay
+      models/
+        segformer_v1.0.0.onnx  # Model Weight เวอร์ชัน Production
+        segformer_v1.1.0.onnx
+    </code></pre>
+    <h3>Access Control</h3>
+    <ul>
+    <li>Upload Path ใช้ <strong>Presigned URL</strong> — URL จำกัดเวลาต่อ Request ให้ Mobile App อัปโหลดตรงไปยัง Storage โดยไม่เปิดเผย Credential ถาวร</li>
+    <li>ไฟล์ Heatmap ผู้ใช้ดาวน์โหลดผ่าน Presigned URL ชั่วคราวเช่นกัน</li>
+    </ul>
+    <h3>การเก็บรักษาข้อมูล</h3>
+    <ul>
+    <li>รูปต้นฉบับที่อัปโหลด <strong>ถูกลบออกจาก Storage</strong> เมื่อวิเคราะห์เสร็จ (ตาม PDPA: เก็บน้อยที่สุด)</li>
+    <li>ไฟล์ Heatmap เก็บไว้เชื่อมกับ Scan Record เพื่อแสดงในประวัติสแกน</li>
+    <li>ถ้าผู้ใช้ถอนยินยอมการวิจัย รูปภาพของพวกเขาถูกลบออกจาก Research Dataset</li>
+    </ul>
+    <div class="divider"></div>
+    <h2>ประเด็นสำคัญ</h2>
+    <ul>
+    <li>PostgreSQL คือ Source of Truth สำหรับข้อมูลที่มีโครงสร้างทั้งหมด</li>
+    <li>Redis คือ Performance Optimization ไม่ใช่ Data Store — ล้างและสร้างใหม่ได้</li>
+    <li>Cloud Storage รับผิดชอบไฟล์ Binary ทั้งหมด ฐานข้อมูล Relational เก็บแค่ Path/URL</li>
+    <li>PDPA Compliance บังคับที่ระดับ Storage: เก็บน้อยที่สุด, ต้องยินยอมชัดเจน, ถอนได้</li>
+    </ul>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
+  </script>
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\(', '\)']],
+        displayMath: [['$$', '$$'], ['\[', '\]']]
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.mermaid-container').forEach(container => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-expand-mermaid';
+        btn.innerHTML = '🔍 Fullscreen';
+
+        btn.onclick = () => {
+          const originalSvg = container.querySelector('svg');
+          if (!originalSvg) return;
+
+          const overlay = document.createElement('div');
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.backgroundColor = 'var(--paper, #F6F4EE)';
+          overlay.style.zIndex = '999999';
+          overlay.style.display = 'flex';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+
+          const closeBtn = document.createElement('button');
+          closeBtn.innerHTML = '✖ Close';
+          closeBtn.style.position = 'absolute';
+          closeBtn.style.top = '20px';
+          closeBtn.style.right = '20px';
+          closeBtn.style.padding = '8px 16px';
+          closeBtn.style.fontSize = '1rem';
+          closeBtn.style.fontWeight = 'bold';
+          closeBtn.style.cursor = 'pointer';
+          closeBtn.style.backgroundColor = '#ff4d4d';
+          closeBtn.style.color = '#fff';
+          closeBtn.style.border = 'none';
+          closeBtn.style.borderRadius = '8px';
+          closeBtn.style.zIndex = '1000000';
+          closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+
+          closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
+          closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
+
+          const clonedSvg = originalSvg.cloneNode(true);
+          clonedSvg.style.width = '100%';
+          clonedSvg.style.height = '100%';
+          clonedSvg.style.maxWidth = '100vw';
+          clonedSvg.style.maxHeight = '100vh';
+
+          overlay.appendChild(clonedSvg);
+          overlay.appendChild(closeBtn);
+          document.body.appendChild(overlay);
+
+          const oldOverflow = document.body.style.overflow;
+          document.body.style.overflow = 'hidden';
+
+          const panZoomInstance = svgPanZoom(clonedSvg, {
+            zoomEnabled: true,
+            controlIconsEnabled: true,
+            fit: true,
+            center: true,
+            minZoom: 0.5,
+            maxZoom: 10,
+            mouseWheelZoomEnabled: true
+          });
+
+          closeBtn.onclick = () => {
+            panZoomInstance.destroy();
+            document.body.removeChild(overlay);
+            document.body.style.overflow = oldOverflow;
+          };
+        };
+        container.appendChild(btn);
+      });
+    });
+  </script>
+</body>
+</html>
