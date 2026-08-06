@@ -12,9 +12,9 @@ const navItems = [
   { name: "Audit Log", path: "/admin/audit-log", icon: FileText },
 ];
 
-export function Sidebar() {
+export function SidebarContent({ onNavigate }) {
   return (
-    <aside className="w-[260px] h-screen fixed left-0 top-0 bg-secondary border-r border-border hidden md:flex flex-col z-40 transition-all duration-250 ease-in-out">
+    <>
       <div className="h-16 flex items-center px-6 border-b border-border">
         <h1 className="text-primary font-heading font-bold text-xl tracking-wide flex items-center gap-2">
           <span className="bg-primary text-primary-foreground p-1 rounded-md text-sm leading-none">SG</span>
@@ -31,6 +31,7 @@ export function Sidebar() {
           <NavLink
             key={item.name}
             to={item.path}
+            onClick={onNavigate}
             className={({ isActive }) =>
               cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors relative group",
@@ -67,6 +68,14 @@ export function Sidebar() {
           </div>
         </div>
       </div>
+    </>
+  );
+}
+
+export function Sidebar() {
+  return (
+    <aside className="w-[260px] h-screen fixed left-0 top-0 bg-secondary border-r border-border hidden md:flex flex-col z-40 transition-all duration-250 ease-in-out">
+      <SidebarContent />
     </aside>
   );
 }

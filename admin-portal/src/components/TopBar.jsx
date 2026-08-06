@@ -1,7 +1,10 @@
-import { Bell, Search, Sun, Moon } from "lucide-react";
+import { Bell, Search, Sun, Moon, Menu } from "lucide-react";
+import { useState } from "react";
 import { useTheme } from "./theme-provider";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { SidebarContent } from "./Sidebar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,10 +17,23 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function TopBar() {
   const { theme, setTheme } = useTheme();
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <header className="h-16 w-full bg-background border-b border-border flex items-center justify-between px-6 sticky top-0 z-30 ml-[260px] md:w-[calc(100%-260px)] transition-all">
+    <header className="h-16 w-full bg-background border-b border-border flex items-center justify-between px-4 md:px-6 sticky top-0 z-30 md:ml-[260px] md:w-[calc(100%-260px)] transition-all">
       <div className="flex items-center gap-4 flex-1">
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="md:hidden">
+              <Menu className="size-5" />
+              <span className="sr-only">Toggle menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="p-0 w-[260px] flex flex-col bg-secondary border-r-0">
+            <SidebarContent onNavigate={() => setIsOpen(false)} />
+          </SheetContent>
+        </Sheet>
+
         <div className="relative w-full max-w-md hidden md:flex">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <Input

@@ -71,7 +71,7 @@ export function Dashboard() {
             <p className="text-xs text-muted-foreground mt-1">+12% จากสัปดาห์ที่แล้ว</p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">สแกนทั้งหมด</CardTitle>
@@ -84,7 +84,7 @@ export function Dashboard() {
             <p className="text-xs text-muted-foreground mt-1">+5.4% จากสัปดาห์ที่แล้ว</p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">สแกนวันนี้</CardTitle>
@@ -97,7 +97,7 @@ export function Dashboard() {
             <p className="text-xs text-[var(--risk-low)] font-medium mt-1">+2% จากเมื่อวาน</p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">รายงาน Pending</CardTitle>
@@ -107,7 +107,7 @@ export function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold font-heading">28</div>
-            <p className="text-xs text-[var(--risk-medium)] font-medium mt-1">ต้องการตรวจสอบด่วน 5 รายการ</p>
+            <p className="text-xs text-[var(--risk-high)] font-medium mt-1">ต้องการตรวจสอบด่วน 5 รายการ</p>
           </CardContent>
         </Card>
       </div>
@@ -123,8 +123,8 @@ export function Dashboard() {
               <AreaChart data={scanTrendData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="var(--chart-1)" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="var(--chart-1)" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="var(--chart-1)" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="var(--chart-1)" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <XAxis dataKey="name" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
@@ -188,8 +188,8 @@ export function Dashboard() {
                 <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--border)" />
                 <XAxis type="number" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
                 <YAxis dataKey="name" type="category" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} width={100} />
-                <ChartTooltip 
-                  cursor={{fill: 'var(--muted)'}}
+                <ChartTooltip
+                  cursor={{ fill: 'var(--muted)' }}
                   content={<ChartTooltipContent />}
                 />
                 <Bar dataKey="value" fill="var(--chart-1)" radius={[0, 4, 4, 0]} barSize={20}>
@@ -216,7 +216,7 @@ export function Dashboard() {
               </div>
               <Badge className="bg-[var(--risk-low)]/15 text-[var(--risk-low)] hover:bg-[var(--risk-low)]/15 border-none">ACTIVE</Badge>
             </div>
-            
+
             <div className="flex justify-between items-center p-3 rounded-md">
               <div className="flex flex-col">
                 <span className="text-sm font-medium">v2.0.0</span>
@@ -224,7 +224,7 @@ export function Dashboard() {
               </div>
               <Badge variant="outline" className="text-muted-foreground">INACTIVE</Badge>
             </div>
-            
+
             <Button variant="outline" className="w-full mt-2 text-primary border-primary/50 hover:bg-primary/10 hover:text-primary">
               Manage Models
             </Button>
