@@ -23,11 +23,11 @@ export function TopBar() {
     <header className="h-16 w-full bg-background border-b border-border flex items-center justify-between px-4 md:px-6 sticky top-0 z-30 md:ml-[260px] md:w-[calc(100%-260px)] transition-all">
       <div className="flex items-center gap-4 flex-1">
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="md:hidden">
-              <Menu className="size-5" />
-              <span className="sr-only">Toggle menu</span>
-            </Button>
+          <SheetTrigger
+            render={<Button variant="ghost" size="icon" className="md:hidden" />}
+          >
+            <Menu className="size-5" />
+            <span className="sr-only">Toggle menu</span>
           </SheetTrigger>
           <SheetContent side="left" className="p-0 w-[260px] flex flex-col bg-secondary border-r-0">
             <SidebarContent onNavigate={() => setIsOpen(false)} />
@@ -60,13 +60,15 @@ export function TopBar() {
         </Button>
 
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src="/avatars/admin.png" alt="@admin" />
-                <AvatarFallback className="bg-primary/20 text-primary">AD</AvatarFallback>
-              </Avatar>
-            </Button>
+          <DropdownMenuTrigger
+            render={
+              <Button variant="ghost" className="relative h-8 w-8 rounded-full" />
+            }
+          >
+            <Avatar className="h-8 w-8">
+              <AvatarImage src="/avatars/admin.png" alt="@admin" />
+              <AvatarFallback className="bg-primary/20 text-primary">AD</AvatarFallback>
+            </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56" align="end" forceMount>
             <DropdownMenuLabel className="font-normal">
