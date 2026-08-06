@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>โมเดล AI — Surya OCR 2 - ScamGuard</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../shared-theme.css">
+</head>
+
+<body>
+  <main class="document">
+    <h1>โมเดล AI — Surya OCR 2</h1>
+        <p class="lede"><strong>Surya-OCR 2</strong> คือโมเดล Modern OCR ที่ใช้ดึงข้อความและวิเคราะห์โครงสร้าง (Layout Detection) จากรูปภาพที่อัปโหลดเข้ามาระบบ โดยถูกจัดอยู่ใน <strong>Layer 1: Textual Analysis (ชั้นวิเคราะห์ข้อความ)</strong></p>
+    <div class="divider"></div>
+    <h2>ทำไมถึงเลือก Surya OCR 2?</h2>
+    <p>โมเดลนี้ทำงานบนสถาปัตยกรรม Vision-Language Model (VLM) ในรูปแบบ <strong>GGUF Format</strong> (<code>datalab-to/surya-ocr-2-gguf</code>) ซึ่งมีคุณสมบัติดังนี้:</p>
+    <ol>
+    <li><strong>Multi-lingual Support:</strong> รองรับการอ่านกว่า 90 ภาษา รวมทั้งภาษาไทยและภาษาอังกฤษ</li>
+    <li><strong>GGUF Optimized:</strong> แปลงน้ำหนักโมเดลให้มีขนาดเล็กลง (Quantization) กินทรัพยากรน้อย แต่ยังคงความแม่นยำ เหมาะกับการรันบน Local Server ผ่าน <code>llama.cpp</code></li>
+    <li><strong>Layout Detection:</strong> สามารถวิเคราะห์โครงสร้างเอกสาร แยกแยะบรรทัด และจัดกลุ่มฟิลด์บนสลิปโอนเงินได้ถูกต้อง</li>
+    <li><strong>Robust to Noise:</strong> ทนทานต่อภาพเบลอ ภาพที่ถูกบีบอัด หรือภาพจากสกรีนช็อตผ่านแอปแชต</li>
+    </ol>
+    <div class="divider"></div>
+    <h2>บทบาทในระบบ</h2>
+    <ol>
+    <li><strong>Text Recognition:</strong> รับรูปภาพเป็นอินพุตและสกัดออกมาเป็นตัวอักษร (String) พร้อมพิกัดโครงสร้างข้อความ</li>
+    <li><strong>Scam Keyword Matching:</strong> สตริงที่สกัดได้จะถูกส่งต่อให้ NLP ภายใน Backend API กรองหาคำหลอกลวงหรือ Scam Keywords (เช่น "กู้เงินด่วน", "โอนเงินรับปันผล") เพื่อคำนวณคะแนนความเสี่ยงด้านข้อความ (Textual Score) ต่อไป</li>
+    </ol>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.mermaid-container').forEach(container => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-expand-mermaid';
+        btn.innerHTML = '🔍 Fullscreen';
+
+        btn.onclick = () => {
+          const originalSvg = container.querySelector('svg');
+          if (!originalSvg) return;
+
+          const overlay = document.createElement('div');
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.backgroundColor = 'var(--paper, #F6F4EE)';
+          overlay.style.zIndex = '999999';
+          overlay.style.display = 'flex';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+
+          const closeBtn = document.createElement('button');
+          closeBtn.innerHTML = '✖ Close';
+          closeBtn.style.position = 'absolute';
+          closeBtn.style.top = '20px';
+          closeBtn.style.right = '20px';
+          closeBtn.style.padding = '8px 16px';
+          closeBtn.style.fontSize = '1rem';
+          closeBtn.style.fontWeight = 'bold';
+          closeBtn.style.cursor = 'pointer';
+          closeBtn.style.backgroundColor = '#ff4d4d';
+          closeBtn.style.color = '#fff';
+          closeBtn.style.border = 'none';
+          closeBtn.style.borderRadius = '8px';
+          closeBtn.style.zIndex = '1000000';
+          closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+
+          closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
+          closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
+
+          const clonedSvg = originalSvg.cloneNode(true);
+          clonedSvg.style.width = '100%';
+          clonedSvg.style.height = '100%';
+          clonedSvg.style.maxWidth = '100vw';
+          clonedSvg.style.maxHeight = '100vh';
+
+          overlay.appendChild(clonedSvg);
+          overlay.appendChild(closeBtn);
+          document.body.appendChild(overlay);
+
+          const oldOverflow = document.body.style.overflow;
+          document.body.style.overflow = 'hidden';
+
+          const panZoomInstance = svgPanZoom(clonedSvg, {
+            zoomEnabled: true,
+            controlIconsEnabled: true,
+            fit: true,
+            center: true,
+            minZoom: 0.5,
+            maxZoom: 10,
+            mouseWheelZoomEnabled: true
+          });
+
+          closeBtn.onclick = () => {
+            panZoomInstance.destroy();
+            document.body.removeChild(overlay);
+            document.body.style.overflow = oldOverflow;
+          };
+        };
+        container.appendChild(btn);
+      });
+    });
+  </script>
+</body>
+</html>

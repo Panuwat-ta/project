@@ -43,6 +43,7 @@
       └── สร้าง Probability Map ระดับพิกเซล
             |
       Pixel Prediction
+    
       ├── Class 0: พิกเซลดั้งเดิม
       └── Class 1: พิกเซลที่ถูกดัดแปลง
             |
@@ -51,6 +52,22 @@
       ├── Heatmap (ค่าความเชื่อมั่นต่อพิกเซล)
       └── Risk Score (รวมจาก mask coverage × confidence)
     </code></pre>
+    <h3>อัลกอริทึมและสมการคณิตศาสตร์ (Mathematical Formulation)</h3>
+    <ol>
+    <li>
+    <p><strong>Efficient Self-Attention:</strong>
+       $X \in \mathbb{R}^{H \times W \times C}$ จะถูกแปลงให้แบนราบ (Flatten) เป็น Sequence $N = H \times W$
+       โดยลดมิติของ Key และ Value ด้วยอัตราส่วน $R$ เพื่อลดภาระการคำนวณ:
+       $$K' = \text{Reshape}\left(\frac{N}{R}, C \cdot R\right)(K) \cdot W_K$$
+       $$V' = \text{Reshape}\left(\frac{N}{R}, C \cdot R\right)(V) \cdot W_V$$
+       $$ \text{Attention}(Q, K', V') = \text{Softmax}\left( \frac{Q (K')^T}{\sqrt{d_k}} \right) V' $$</p>
+    </li>
+    <li>
+    <p><strong>Mix-FFN (Mix Feed-Forward Network):</strong>
+       ใช้ 3x3 Convolution แทน Positional Encoding แบบตายตัว เพื่อพิจารณาตำแหน่งจากบริบทภาพ:
+       $$x_{out} = \text{MLP}(\text{GELU}(\text{Conv}<em>{3\times3}(\text{MLP}(x</em>{in})))) + x_{in}$$</p>
+    </li>
+    </ol>
     <div class="divider"></div>
     <h2>รูปแบบข้อมูล</h2>
     <table>

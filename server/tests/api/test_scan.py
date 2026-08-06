@@ -62,3 +62,29 @@ async def test_scan_invalid_file_type():
         
     assert response.status_code == 400
     assert "Invalid file type" in response.json()["detail"]
+
+@pytest.mark.asyncio
+async def test_scan_real_image():
+    # Read the real image file provided by the user
+    image_path = "/home/panuwat/project/test.png"
+    import os
+    if not os.path.exists(image_path):
+        pytest.skip(f"Test image not found at {image_path}")
+        
+    with open(image_path, "rb") as f:
+        img_bytes = f.read()
+        
+    files = {'file': ('test.png', img_bytes, 'image/png')}
+    
+    # Send the request to the scan API
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+        response = await ac.post("/api/v1/scan/", files=files)
+        
+    assert response.status_code == 200, f"Failed with {response.text}"
+    data = response.json()
+    assert "id" in data
+    assert "visual_score" in data
+    assert "total_risk_score" in data
+    assert "risk_grade" in data
+    assert "heatmap_image_url" in data
+    assert data["heatmap_image_url"] is not None
