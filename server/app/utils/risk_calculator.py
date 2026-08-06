@@ -10,7 +10,9 @@ def calculate_risk_score(text_score: int, visual_score: int, source_score: int) 
     total = round((text_score * 0.25) + (visual_score * 0.45) + (source_score * 0.30))
     total = max(0, min(100, total))
 
-    if total >= 70:
+    if visual_score >= 80:
+        grade = "high"
+    elif total >= 70:
         grade = "high"
     elif total >= 40:
         grade = "medium"

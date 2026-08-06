@@ -1,24 +1,24 @@
 ---
-title: "โมเดล AI — Surya OCR 2"
+title: "โมเดล AI — Surya OCR"
 category: concepts
-tags: [ocr, vlm, layout-detection, llama-cpp, text-extraction]
+tags: [ocr, layout-detection, native-pytorch, text-extraction]
 sources: [doc/model/model.md]
 updated: 2026-08-06
 ---
 
-# โมเดล AI — Surya OCR 2
+# โมเดล AI — Surya OCR
 
-**Surya-OCR 2** คือโมเดล Modern OCR ที่ใช้ดึงข้อความและวิเคราะห์โครงสร้าง (Layout Detection) จากรูปภาพที่อัปโหลดเข้ามาระบบ โดยถูกจัดอยู่ใน **Layer 1: Textual Analysis (ชั้นวิเคราะห์ข้อความ)**
+**Surya-OCR** คือโมเดล Modern OCR ที่ใช้ดึงข้อความและวิเคราะห์โครงสร้าง (Layout Detection) จากรูปภาพที่อัปโหลดเข้ามาระบบ โดยถูกจัดอยู่ใน **Layer 1: Textual Analysis (ชั้นวิเคราะห์ข้อความ)**
 
 ---
 
-## ทำไมถึงเลือก Surya OCR 2?
+## ทำไมถึงเลือก Surya OCR?
 
-โมเดลนี้ทำงานบนสถาปัตยกรรม Vision-Language Model (VLM) ในรูปแบบ **GGUF Format** (`datalab-to/surya-ocr-2-gguf`) ซึ่งมีคุณสมบัติดังนี้:
+โมเดลนี้ทำงานบนเวอร์ชัน **0.5.0 (Native PyTorch)** ซึ่งมีคุณสมบัติดังนี้:
 
 1. **Multi-lingual Support:** รองรับการอ่านกว่า 90 ภาษา รวมทั้งภาษาไทยและภาษาอังกฤษ
-2. **GGUF Optimized:** แปลงน้ำหนักโมเดลให้มีขนาดเล็กลง (Quantization) กินทรัพยากรน้อย แต่ยังคงความแม่นยำ เหมาะกับการรันบน Local Server ผ่าน `llama.cpp`
-3. **Layout Detection:** สามารถวิเคราะห์โครงสร้างเอกสาร แยกแยะบรรทัด และจัดกลุ่มฟิลด์บนสลิปโอนเงินได้ถูกต้อง
+2. **Native PyTorch Inference:** รันโมเดลผ่านสถาปัตยกรรม PyTorch และใช้งานทรัพยากร GPU (CUDA) ได้เต็มประสิทธิภาพโดยตรง
+3. **Layout Detection:** สามารถวิเคราะห์โครงสร้างเอกสาร แยกแยะบรรทัด และจัดกลุ่มฟิลด์บนสลิปโอนเงินได้แม่นยำสูง
 4. **Robust to Noise:** ทนทานต่อภาพเบลอ ภาพที่ถูกบีบอัด หรือภาพจากสกรีนช็อตผ่านแอปแชต
 
 ## อัลกอริทึมและสมการคณิตศาสตร์ (Mathematical Formulation)
