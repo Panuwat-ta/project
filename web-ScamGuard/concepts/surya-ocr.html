@@ -25,6 +25,32 @@
     <li><strong>Layout Detection:</strong> สามารถวิเคราะห์โครงสร้างเอกสาร แยกแยะบรรทัด และจัดกลุ่มฟิลด์บนสลิปโอนเงินได้ถูกต้อง</li>
     <li><strong>Robust to Noise:</strong> ทนทานต่อภาพเบลอ ภาพที่ถูกบีบอัด หรือภาพจากสกรีนช็อตผ่านแอปแชต</li>
     </ol>
+    <h2>อัลกอริทึมและสมการคณิตศาสตร์ (Mathematical Formulation)</h2>
+    <p>Surya-OCR อาศัยสถาปัตยกรรมระดับ Vision-Language Model โดยแบ่งการทำงานเป็นส่วนของการเข้ารหัสภาพ (Vision Encoder) และการถอดรหัสข้อความ (Text Decoder):</p>
+    <ol>
+    <li>
+    <p><strong>Vision Encoder (Feature Extraction):</strong>
+       ภาพอินพุต $I$ จะถูกแปลงเป็น Sequence ของ Vision Tokens $F_v$ ผ่านเครือข่าย Transformer/CNN:
+       <script type="math/tex; mode=display"> F_v = \text{Encoder}_{\text{vision}}(I) </script>
+    </p>
+    </li>
+    <li>
+    <p><strong>Text Decoder (Autoregressive Text Generation):</strong>
+       การทำนายข้อความ $Y = (y_1, y_2, \dots, y_T)$ อาศัยความน่าจะเป็นแบบมีเงื่อนไข (Conditional Probability) ในการทำนายตัวอักษรถัดไป:
+       <script type="math/tex; mode=display"> P(Y | I) = \prod_{t=1}^T P(y_t | y_{<t}, F_v) </script>
+       ฟังก์ชันเป้าหมาย (Objective Function) เพื่อลดค่าข้อผิดพลาดระหว่างการเทรนคือ Cross-Entropy Loss ($L_{CE}$):
+       <script type="math/tex; mode=display"> L_{CE} = - \sum_{t=1}^T \log P(y_t | y_{<t}, F_v) </script>
+    </p>
+    </li>
+    <li>
+    <p><strong>Layout Detection (Bounding Box Regression):</strong>
+       เพื่อกำหนดขอบเขต (Bounding Box) ของตัวอักษร โมเดลใช้ฟังก์ชัน Smooth L1 Loss ในการเทียบพิกัด $(x, y, w, h)$:
+       <script type="math/tex; mode=display"> L_{loc}(b, \hat{b}) = \sum_{i \in \{x,y,w,h\}} \text{smooth}_{L_1}(b_i - \hat{b}_i) </script>
+       เมื่อ $\text{smooth}_{L_1}(x)$ ถูกนิยามเป็น:
+       <script type="math/tex; mode=display"> \text{smooth}_{L_1}(x) = \begin{cases} 0.5 x^2 & \text{if } |x| < 1 \\ |x| - 0.5 & \text{otherwise} \end{cases} </script>
+    </p>
+    </li>
+    </ol>
     <div class="divider"></div>
     <h2>บทบาทในระบบ</h2>
     <ol>
@@ -41,15 +67,15 @@
   <script>
     mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
   </script>
-  <script>
-    MathJax = {
-      tex: {
-        inlineMath: [['$', '$'], ['\(', '\)']],
-        displayMath: [['$$', '$$'], ['\[', '\]']]
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        displayMath: [['$$','$$'], ['\\[','\\]']]
       }
-    };
+    });
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
   <script>
