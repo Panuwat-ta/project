@@ -16,9 +16,9 @@ const scanTrendData = [
 ];
 
 const riskData = [
-  { name: 'Low', value: 400, color: '#00E676' },
-  { name: 'Medium', value: 300, color: '#FFD700' },
-  { name: 'High', value: 156, color: '#FF1744' },
+  { name: 'Low', value: 400, color: 'var(--chart-2)' },
+  { name: 'Medium', value: 300, color: 'var(--chart-4)' },
+  { name: 'High', value: 156, color: 'var(--chart-1)' },
 ];
 
 const categoryData = [
@@ -117,17 +117,17 @@ export function Dashboard() {
               <AreaChart data={scanTrendData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#00E5FF" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#00E5FF" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="var(--chart-1)" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="var(--chart-1)" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="name" stroke="#94A3B8" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94A3B8" fontSize={12} tickLine={false} axisLine={false} />
+                <XAxis dataKey="name" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#1E293B', borderColor: '#334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#00E5FF' }}
+                  contentStyle={{ backgroundColor: 'var(--popover)', borderColor: 'var(--border)', borderRadius: '8px', color: 'var(--popover-foreground)' }}
+                  itemStyle={{ color: 'var(--chart-1)' }}
                 />
-                <Area type="monotone" dataKey="count" stroke="#00E5FF" strokeWidth={2} fillOpacity={1} fill="url(#colorCount)" />
+                <Area type="monotone" dataKey="count" stroke="var(--chart-1)" strokeWidth={2} fillOpacity={1} fill="url(#colorCount)" />
               </AreaChart>
             </ResponsiveContainer>
           </CardContent>
@@ -154,7 +154,7 @@ export function Dashboard() {
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip contentStyle={{ backgroundColor: '#1E293B', borderColor: '#334155', borderRadius: '8px' }} />
+                <Tooltip contentStyle={{ backgroundColor: 'var(--popover)', borderColor: 'var(--border)', borderRadius: '8px', color: 'var(--popover-foreground)' }} />
               </PieChart>
             </ResponsiveContainer>
             <div className="absolute flex flex-col items-center justify-center text-center pointer-events-none">
@@ -182,16 +182,16 @@ export function Dashboard() {
           <CardContent className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={categoryData} layout="vertical" margin={{ top: 0, right: 30, left: 30, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#334155" />
-                <XAxis type="number" stroke="#94A3B8" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis dataKey="name" type="category" stroke="#94A3B8" fontSize={12} tickLine={false} axisLine={false} width={100} />
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--border)" />
+                <XAxis type="number" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis dataKey="name" type="category" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} width={100} />
                 <Tooltip 
-                  cursor={{fill: '#263348'}}
-                  contentStyle={{ backgroundColor: '#1E293B', borderColor: '#334155', borderRadius: '8px' }}
+                  cursor={{fill: 'var(--muted)'}}
+                  contentStyle={{ backgroundColor: 'var(--popover)', borderColor: 'var(--border)', borderRadius: '8px', color: 'var(--popover-foreground)' }}
                 />
-                <Bar dataKey="value" fill="#00E5FF" radius={[0, 4, 4, 0]} barSize={20}>
+                <Bar dataKey="value" fill="var(--chart-1)" radius={[0, 4, 4, 0]} barSize={20}>
                   {categoryData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={index % 2 === 0 ? "#00E5FF" : "#818CF8"} />
+                    <Cell key={`cell-${index}`} fill={index % 2 === 0 ? "var(--chart-1)" : "var(--chart-2)"} />
                   ))}
                 </Bar>
               </BarChart>
