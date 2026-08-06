@@ -68,7 +68,7 @@ export function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold font-heading">1,250</div>
-            <p className="text-xs text-muted-foreground mt-1">+12% จากสัปดาห์ที่แล้ว</p>
+            <p className="text-xm text-muted-foreground mt-1">+12% จากสัปดาห์ที่แล้ว</p>
           </CardContent>
         </Card>
 
@@ -81,7 +81,7 @@ export function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold font-heading">8,432</div>
-            <p className="text-xs text-muted-foreground mt-1">+5.4% จากสัปดาห์ที่แล้ว</p>
+            <p className="text-xm text-muted-foreground mt-1">+5.4% จากสัปดาห์ที่แล้ว</p>
           </CardContent>
         </Card>
 
@@ -94,7 +94,7 @@ export function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold font-heading">156</div>
-            <p className="text-xs text-[var(--risk-low)] font-medium mt-1">+2% จากเมื่อวาน</p>
+            <p className="text-xm text-[var(--risk-low)] font-medium mt-1">+2% จากเมื่อวาน</p>
           </CardContent>
         </Card>
 
@@ -107,7 +107,7 @@ export function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold font-heading">28</div>
-            <p className="text-xs text-[var(--risk-high)] font-medium mt-1">ต้องการตรวจสอบด่วน 5 รายการ</p>
+            <p className="text-xm text-[var(--risk-high)] font-medium mt-1">ต้องการตรวจสอบด่วน 5 รายการ</p>
           </CardContent>
         </Card>
       </div>
@@ -162,11 +162,11 @@ export function Dashboard() {
             </ChartContainer>
             <div className="absolute flex flex-col items-center justify-center text-center pointer-events-none">
               <span className="text-3xl font-bold font-heading">856</span>
-              <span className="text-xs text-muted-foreground">Total Scans</span>
+              <span className="text-xm text-muted-foreground">Total Scans</span>
             </div>
             <div className="flex gap-4 justify-center mt-2">
               {riskData.map(entry => (
-                <div key={entry.name} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <div key={entry.name} className="flex items-center gap-1.5 text-xm text-muted-foreground">
                   <div className="size-3 rounded-full" style={{ backgroundColor: entry.color }} />
                   {entry.name}
                 </div>
@@ -212,7 +212,7 @@ export function Dashboard() {
             <div className="flex justify-between items-center p-3 bg-muted rounded-md border border-border">
               <div className="flex flex-col">
                 <span className="text-sm font-semibold text-primary">v2.1.0</span>
-                <span className="text-xs text-muted-foreground">Deployed: 2026-08-01</span>
+                <span className="text-xm text-muted-foreground">Deployed: 2026-08-01</span>
               </div>
               <Badge className="bg-[var(--risk-low)]/15 text-[var(--risk-low)] hover:bg-[var(--risk-low)]/15 border-none">ACTIVE</Badge>
             </div>
@@ -220,7 +220,7 @@ export function Dashboard() {
             <div className="flex justify-between items-center p-3 rounded-md">
               <div className="flex flex-col">
                 <span className="text-sm font-medium">v2.0.0</span>
-                <span className="text-xs text-muted-foreground">Deployed: 2026-07-15</span>
+                <span className="text-xm text-muted-foreground">Deployed: 2026-07-15</span>
               </div>
               <Badge variant="outline" className="text-muted-foreground">INACTIVE</Badge>
             </div>
