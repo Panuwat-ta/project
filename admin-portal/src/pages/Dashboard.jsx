@@ -5,6 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Users, Zap, Flag, Activity } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Pie, PieChart, Cell, Bar, BarChart, CartesianGrid } from "recharts";
 import { PageLoader } from "@/components/PageLoader";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+
+const chartConfig = {
+  count: { label: "Scans", color: "var(--chart-1)" },
+  value: { label: "จำนวน", color: "var(--chart-1)" },
+};
 
 const scanTrendData = [
   { name: '1 Aug', count: 120 },
@@ -16,9 +22,9 @@ const scanTrendData = [
 ];
 
 const riskData = [
-  { name: 'Low', value: 400, color: 'var(--chart-2)' },
-  { name: 'Medium', value: 300, color: 'var(--chart-4)' },
-  { name: 'High', value: 156, color: 'var(--chart-1)' },
+  { name: 'Low', value: 400, color: 'var(--risk-low)' },
+  { name: 'Medium', value: 300, color: 'var(--risk-medium)' },
+  { name: 'High', value: 156, color: 'var(--risk-high)' },
 ];
 
 const categoryData = [
@@ -88,7 +94,7 @@ export function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold font-heading">156</div>
-            <p className="text-xs text-emerald-500 font-medium mt-1">+2% จากเมื่อวาน</p>
+            <p className="text-xs text-[var(--risk-low)] font-medium mt-1">+2% จากเมื่อวาน</p>
           </CardContent>
         </Card>
         
@@ -101,7 +107,7 @@ export function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold font-heading">28</div>
-            <p className="text-xs text-amber-500 font-medium mt-1">ต้องการตรวจสอบด่วน 5 รายการ</p>
+            <p className="text-xs text-[var(--risk-medium)] font-medium mt-1">ต้องการตรวจสอบด่วน 5 รายการ</p>
           </CardContent>
         </Card>
       </div>
@@ -113,7 +119,7 @@ export function Dashboard() {
             <CardTitle>แนวโน้มการสแกน (7 วันย้อนหลัง)</CardTitle>
           </CardHeader>
           <CardContent className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
+            <ChartContainer config={chartConfig} className="h-full w-full">
               <AreaChart data={scanTrendData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
@@ -123,13 +129,10 @@ export function Dashboard() {
                 </defs>
                 <XAxis dataKey="name" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
                 <YAxis stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentClassName="bg-popover border-border rounded-lg text-popover-foreground"
-                  itemClassName="text-chart-1"
-                />
+                <ChartTooltip content={<ChartTooltipContent />} />
                 <Area type="monotone" dataKey="count" stroke="var(--chart-1)" strokeWidth={2} fillOpacity={1} fill="url(#colorCount)" />
               </AreaChart>
-            </ResponsiveContainer>
+            </ChartContainer>
           </CardContent>
         </Card>
 
@@ -139,7 +142,7 @@ export function Dashboard() {
             <CardTitle>สัดส่วนความเสี่ยง (Risk Distribution)</CardTitle>
           </CardHeader>
           <CardContent className="h-[300px] flex flex-col items-center justify-center relative">
-            <ResponsiveContainer width="100%" height="100%">
+            <ChartContainer config={chartConfig} className="h-full w-full">
               <PieChart>
                 <Pie
                   data={riskData}
@@ -154,9 +157,9 @@ export function Dashboard() {
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip contentClassName="bg-popover border-border rounded-lg text-popover-foreground" />
+                <ChartTooltip content={<ChartTooltipContent />} />
               </PieChart>
-            </ResponsiveContainer>
+            </ChartContainer>
             <div className="absolute flex flex-col items-center justify-center text-center pointer-events-none">
               <span className="text-3xl font-bold font-heading">856</span>
               <span className="text-xs text-muted-foreground">Total Scans</span>
@@ -180,14 +183,14 @@ export function Dashboard() {
             <CardTitle>หมวดหมู่รายงานสแกม (Report Categories)</CardTitle>
           </CardHeader>
           <CardContent className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
+            <ChartContainer config={chartConfig} className="h-full w-full">
               <BarChart data={categoryData} layout="vertical" margin={{ top: 0, right: 30, left: 30, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--border)" />
                 <XAxis type="number" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
                 <YAxis dataKey="name" type="category" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} width={100} />
-                <Tooltip 
+                <ChartTooltip 
                   cursor={{fill: 'var(--muted)'}}
-                  contentClassName="bg-popover border-border rounded-lg text-popover-foreground"
+                  content={<ChartTooltipContent />}
                 />
                 <Bar dataKey="value" fill="var(--chart-1)" radius={[0, 4, 4, 0]} barSize={20}>
                   {categoryData.map((entry, index) => (
@@ -195,7 +198,7 @@ export function Dashboard() {
                   ))}
                 </Bar>
               </BarChart>
-            </ResponsiveContainer>
+            </ChartContainer>
           </CardContent>
         </Card>
 
@@ -211,7 +214,7 @@ export function Dashboard() {
                 <span className="text-sm font-semibold text-primary">v2.1.0</span>
                 <span className="text-xs text-muted-foreground">Deployed: 2026-08-01</span>
               </div>
-              <Badge className="bg-emerald-500/15 text-emerald-500 hover:bg-emerald-500/15 border-none">ACTIVE</Badge>
+              <Badge className="bg-[var(--risk-low)]/15 text-[var(--risk-low)] hover:bg-[var(--risk-low)]/15 border-none">ACTIVE</Badge>
             </div>
             
             <div className="flex justify-between items-center p-3 rounded-md">
