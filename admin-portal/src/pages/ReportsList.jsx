@@ -34,10 +34,6 @@ export function ReportsList() {
     return () => clearTimeout(timer);
   }, [activeTab]);
 
-  if (isLoading) {
-    return <PageLoader text="Loading reports..." />;
-  }
-
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
@@ -79,7 +75,10 @@ export function ReportsList() {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="p-0">
+        {isLoading ? (
+          <PageLoader text="Loading reports..." />
+        ) : (
+          <CardContent className="p-0">
           <Table>
             <TableHeader className="bg-elevated">
               <TableRow className="border-border">
@@ -151,6 +150,7 @@ export function ReportsList() {
             </div>
           </div>
         </CardContent>
+        )}
       </Card>
     </div>
   );

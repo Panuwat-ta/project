@@ -46,10 +46,6 @@ export function Dashboard() {
     return () => clearTimeout(timer);
   }, []);
 
-  if (isLoading) {
-    return <PageLoader text="Loading dashboard data..." />;
-  }
-
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
@@ -57,7 +53,11 @@ export function Dashboard() {
         <p className="text-sm text-muted-foreground">{new Date().toLocaleDateString('th-TH', { dateStyle: 'full' })}</p>
       </div>
 
-      {/* KPI Cards */}
+      {isLoading ? (
+        <PageLoader text="Loading dashboard data..." />
+      ) : (
+        <>
+          {/* KPI Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -231,6 +231,8 @@ export function Dashboard() {
           </CardContent>
         </Card>
       </div>
+        </>
+      )}
     </div>
   );
 }
