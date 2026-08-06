@@ -6,45 +6,48 @@ import { Users, Zap, Flag, Activity } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Pie, PieChart, Cell, Bar, BarChart, CartesianGrid } from "recharts";
 import { PageLoader } from "@/components/PageLoader";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { fetchDashboard } from "@/lib/api";
 
 const chartConfig = {
   count: { label: "Scans", color: "var(--chart-1)" },
   value: { label: "จำนวน", color: "var(--chart-1)" },
 };
 
-const scanTrendData = [
-  { name: '1 Aug', count: 120 },
-  { name: '2 Aug', count: 135 },
-  { name: '3 Aug', count: 110 },
-  { name: '4 Aug', count: 180 },
-  { name: '5 Aug', count: 140 },
-  { name: '6 Aug', count: 156 },
-];
-
-const riskData = [
-  { name: 'Low', value: 400, color: 'var(--risk-low)' },
-  { name: 'Medium', value: 300, color: 'var(--risk-medium)' },
-  { name: 'High', value: 156, color: 'var(--risk-high)' },
-];
-
-const categoryData = [
-  { name: 'สลิปปลอม', value: 45 },
-  { name: 'ซื้อขายออนไลน์', value: 32 },
-  { name: 'หลอกลวงความรัก', value: 20 },
-  { name: 'ลงทุน', value: 15 },
-  { name: 'ปลอมแปลงตัวตน', value: 12 },
-  { name: 'AI/Deepfake', value: 8 },
-  { name: 'อื่นๆ', value: 24 },
-];
-
 export function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
+  const [data, setData] = useState(null);
 
   useEffect(() => {
-    // Simulate fetching data
-    const timer = setTimeout(() => setIsLoading(false), 800);
-    return () => clearTimeout(timer);
+    async function loadData() {
+      try {
+        const result = await fetchDashboard();
+        setData(result);
+      } catch (err) {
+        console.error("Failed to load dashboard data", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadData();
   }, []);
+
+  if (isLoading || !data) {
+    return <PageLoader text="Loading dashboard data..." />;
+  }
+
+  // Format Risk Data for Recharts
+  const riskData = [
+    { name: 'Low', value: data.risk_distribution.low, color: 'var(--risk-low)' },
+    { name: 'Medium', value: data.risk_distribution.medium, color: 'var(--risk-medium)' },
+    { name: 'High', value: data.risk_distribution.high, color: 'var(--risk-high)' },
+  ];
+
+  // Format Category Data for Recharts
+  const categoryData = Object.entries(data.category_breakdown).map(([key, val]) => ({
+    name: key, value: val
+  }));
+
+  const scanTrendData = data.scan_trend;
 
   return (
     <div className="flex flex-col gap-6">
@@ -67,8 +70,8 @@ export function Dashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold font-heading">1,250</div>
-            <p className="text-xm text-muted-foreground mt-1">+12% จากสัปดาห์ที่แล้ว</p>
+            <div className="text-2xl font-bold font-heading">{data.overview.total_users.toLocaleString()}</div>
+            <p className="text-xm text-muted-foreground mt-1">{data.overview.active_users_today} ใช้งานวันนี้</p>
           </CardContent>
         </Card>
 
@@ -80,8 +83,8 @@ export function Dashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold font-heading">8,432</div>
-            <p className="text-xm text-muted-foreground mt-1">+5.4% จากสัปดาห์ที่แล้ว</p>
+            <div className="text-2xl font-bold font-heading">{data.overview.total_scans.toLocaleString()}</div>
+            <p className="text-xm text-muted-foreground mt-1">จากทั้งหมด</p>
           </CardContent>
         </Card>
 
@@ -93,8 +96,8 @@ export function Dashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold font-heading">156</div>
-            <p className="text-xm text-[var(--risk-low)] font-medium mt-1">+2% จากเมื่อวาน</p>
+            <div className="text-2xl font-bold font-heading">{data.overview.scans_today.toLocaleString()}</div>
+            <p className="text-xm text-[var(--risk-low)] font-medium mt-1">ในวันนี้</p>
           </CardContent>
         </Card>
 
@@ -106,8 +109,8 @@ export function Dashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold font-heading">28</div>
-            <p className="text-xm text-[var(--risk-high)] font-medium mt-1">ต้องการตรวจสอบด่วน 5 รายการ</p>
+            <div className="text-2xl font-bold font-heading">{data.reports.pending.toLocaleString()}</div>
+            <p className="text-xm text-[var(--risk-high)] font-medium mt-1">รอการตรวจสอบ</p>
           </CardContent>
         </Card>
       </div>
@@ -206,23 +209,23 @@ export function Dashboard() {
         <Card className="lg:col-span-3 bg-gradient-to-br from-surface to-primary/5 border-primary/20 shadow-[0_0_20px_rgba(0,229,255,0.05)]">
           <CardHeader>
             <CardTitle>AI Model Status</CardTitle>
-            <CardDescription>SegFormer v2.1.0 is currently active</CardDescription>
+            <CardDescription>{data.model.active_version ? `Version ${data.model.active_version} is currently active` : 'No active model'}</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <div className="flex justify-between items-center p-3 bg-muted rounded-md border border-border">
               <div className="flex flex-col">
-                <span className="text-sm font-semibold text-primary">v2.1.0</span>
-                <span className="text-xm text-muted-foreground">Deployed: 2026-08-01</span>
+                <span className="text-sm font-semibold text-primary">{data.model.active_version || 'N/A'}</span>
+                <span className="text-xm text-muted-foreground">Deployed: {data.model.deployed_at ? new Date(data.model.deployed_at).toLocaleDateString('th-TH') : 'N/A'}</span>
               </div>
               <Badge className="bg-[var(--risk-low)]/15 text-[var(--risk-low)] hover:bg-[var(--risk-low)]/15 border-none">ACTIVE</Badge>
             </div>
 
             <div className="flex justify-between items-center p-3 rounded-md">
               <div className="flex flex-col">
-                <span className="text-sm font-medium">v2.0.0</span>
-                <span className="text-xm text-muted-foreground">Deployed: 2026-07-15</span>
+                <span className="text-sm font-medium">Total Versions</span>
+                <span className="text-xm text-muted-foreground">{data.model.total_versions} versions in system</span>
               </div>
-              <Badge variant="outline" className="text-muted-foreground">INACTIVE</Badge>
+              <Badge variant="outline" className="text-muted-foreground">INFO</Badge>
             </div>
 
             <Button variant="outline" className="w-full mt-2 text-primary border-primary/50 hover:bg-primary/10 hover:text-primary">

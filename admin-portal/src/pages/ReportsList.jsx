@@ -13,25 +13,28 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { PageLoader } from "@/components/PageLoader";
-
-// Mock Data
-const reportsData = [
-  { id: "42", category: "สลิปปลอม", reporter: "สมชาย", email: "somchai@test.com", risk: 82, status: "Pending", date: "06 ส.ค. 2026", img: "https://via.placeholder.com/48" },
-  { id: "41", category: "ซื้อขายออนไลน์", reporter: "สมหญิง", email: "somying@test.com", risk: 65, status: "Approved", date: "05 ส.ค. 2026", img: "https://via.placeholder.com/48" },
-  { id: "40", category: "ลงทุน", reporter: "วิชัย", email: "wichai@test.com", risk: 90, status: "Reviewing", date: "05 ส.ค. 2026", img: "https://via.placeholder.com/48" },
-  { id: "39", category: "หลอกลวงความรัก", reporter: "ก้อย", email: "koy@test.com", risk: 30, status: "Rejected", date: "04 ส.ค. 2026", img: "https://via.placeholder.com/48" },
-  { id: "38", category: "AI/Deepfake", reporter: "บอย", email: "boy@test.com", risk: 95, status: "Pending", date: "04 ส.ค. 2026", img: "https://via.placeholder.com/48" },
-];
+import { fetchReports } from "@/lib/api";
 
 export function ReportsList() {
   const [activeTab, setActiveTab] = useState("All");
   const [isLoading, setIsLoading] = useState(true);
+  const [reportsData, setReportsData] = useState([]);
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
-    // Simulate fetching data based on tab change
-    setIsLoading(true);
-    const timer = setTimeout(() => setIsLoading(false), 600);
-    return () => clearTimeout(timer);
+    async function loadReports() {
+      setIsLoading(true);
+      try {
+        const data = await fetchReports(1, 20, activeTab);
+        setReportsData(data.items);
+        setTotal(data.total);
+      } catch (err) {
+        console.error("Failed to load reports", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadReports();
   }, [activeTab]);
 
   return (
@@ -96,41 +99,41 @@ export function ReportsList() {
               {reportsData.map((report) => (
                 <TableRow 
                   key={report.id} 
-                  className={`border-border hover:bg-surface-hover ${report.status === 'Pending' ? 'border-l-4 border-l-sky-400' : ''}`}
+                  className={`border-border hover:bg-surface-hover ${report.status === 'pending' ? 'border-l-4 border-l-sky-400' : ''}`}
                 >
                   <TableCell className="font-mono text-muted-foreground text-center">{report.id}</TableCell>
                   <TableCell>
-                    <img src={report.img} alt="thumbnail" className="size-10 object-cover rounded-md border border-border" />
+                    <img src={report.scan?.thumbnail_url || "https://via.placeholder.com/48"} alt="thumbnail" className="size-10 object-cover rounded-md border border-border" />
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className="font-normal text-xs bg-muted">{report.category}</Badge>
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-col">
-                      <span className="font-medium text-sm">{report.reporter}</span>
-                      <span className="text-xs text-muted-foreground">{report.email}</span>
+                      <span className="font-medium text-sm">{report.user?.full_name || "Unknown"}</span>
+                      <span className="text-xs text-muted-foreground">{report.user?.email || "No Email"}</span>
                     </div>
                   </TableCell>
                   <TableCell>
                     <Badge className={
-                      report.risk >= 80 ? "bg-destructive/15 text-destructive hover:bg-destructive/15 border-none" :
-                      report.risk >= 50 ? "bg-amber-500/15 text-amber-500 hover:bg-amber-500/15 border-none" :
+                      (report.scan?.total_risk_score || 0) >= 80 ? "bg-destructive/15 text-destructive hover:bg-destructive/15 border-none" :
+                      (report.scan?.total_risk_score || 0) >= 50 ? "bg-amber-500/15 text-amber-500 hover:bg-amber-500/15 border-none" :
                       "bg-emerald-500/15 text-emerald-500 hover:bg-emerald-500/15 border-none"
                     }>
-                      {report.risk}
+                      {report.scan?.total_risk_score || 0}
                     </Badge>
                   </TableCell>
                   <TableCell>
                     <Badge className={
-                      report.status === 'Pending' ? "bg-sky-400/15 text-sky-400 border-none" :
-                      report.status === 'Reviewing' ? "bg-amber-500/15 text-amber-500 border-none" :
-                      report.status === 'Approved' ? "bg-emerald-500/15 text-emerald-500 border-none" :
-                      "bg-destructive/15 text-destructive border-none"
+                      report.status === 'pending' ? "bg-sky-400/15 text-sky-400 border-none capitalize" :
+                      report.status === 'reviewing' ? "bg-amber-500/15 text-amber-500 border-none capitalize" :
+                      report.status === 'approved' ? "bg-emerald-500/15 text-emerald-500 border-none capitalize" :
+                      "bg-destructive/15 text-destructive border-none capitalize"
                     }>
                       {report.status}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-xs text-muted-foreground">{report.date}</TableCell>
+                  <TableCell className="text-xs text-muted-foreground">{new Date(report.created_at).toLocaleDateString('th-TH')}</TableCell>
                   <TableCell className="text-right">
                     <Button variant="ghost" size="sm" className="text-primary hover:text-primary hover:bg-primary/10">
                       <Eye className="size-4 mr-1.5" />
@@ -143,7 +146,7 @@ export function ReportsList() {
           </Table>
           
           <div className="p-4 border-t border-border flex justify-between items-center text-sm text-muted-foreground">
-            <span>Showing 1-{reportsData.length} of 28</span>
+            <span>Showing 1-{reportsData.length} of {total}</span>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" disabled>Previous</Button>
               <Button variant="outline" size="sm">Next</Button>
