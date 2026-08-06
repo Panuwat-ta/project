@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { LayoutDashboard, Flag, Users, Cpu, Database, FileText, LogOut, Settings } from "lucide-react";
+import { LayoutDashboard, Flag, Users, Cpu, Database, FileText, LogOut, Settings, X } from "lucide-react";
 import { useState, useEffect } from "react";
 
 const navItems = [
@@ -11,7 +11,7 @@ const navItems = [
   { name: "Audit Log", path: "/admin/audit-log", icon: FileText },
 ];
 
-export function AppSidebar() {
+export function AppSidebar({ isOpen, setIsOpen }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState({ email: "admin@scamguard.com", full_name: "Super Admin" });
@@ -30,15 +30,27 @@ export function AppSidebar() {
     navigate("/login");
   };
 
+  const closeSidebar = () => {
+    if (setIsOpen) setIsOpen(false);
+  };
+
   return (
-    <aside className="w-64 shrink-0 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col h-full z-20">
-      <div className="h-14 flex items-center px-4 border-b border-slate-200 dark:border-slate-800">
+    <aside className={`fixed inset-y-0 left-0 w-64 shrink-0 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col h-full z-30 transform transition-transform duration-200 ease-in-out md:static md:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}>
+      <div className="h-14 flex items-center justify-between px-4 border-b border-slate-200 dark:border-slate-800">
         <div className="flex items-center gap-2">
           <div className="bg-indigo-600 text-white p-1 rounded text-xs font-bold leading-none shadow-sm">
             SG
           </div>
           <span className="font-semibold text-slate-900 dark:text-slate-100 tracking-tight">ScamGuard</span>
         </div>
+        
+        {/* Close Button on Mobile */}
+        <button 
+          onClick={closeSidebar}
+          className="p-1.5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors md:hidden focus:outline-none"
+        >
+          <X className="size-5" />
+        </button>
       </div>
 
       <nav className="flex-1 overflow-y-auto p-3 space-y-1">
@@ -49,6 +61,7 @@ export function AppSidebar() {
             <Link
               key={item.name}
               to={item.path}
+              onClick={closeSidebar}
               className={`flex items-center justify-between px-3 py-2 rounded-md text-sm transition-colors ${isActive ? "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 font-medium" : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100"
                 }`}
             >
