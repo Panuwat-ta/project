@@ -1,20 +1,17 @@
 import { Outlet } from "react-router-dom";
-import { Sidebar } from "@/components/Sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
 import { TopBar } from "@/components/TopBar";
-import { ThemeProvider } from "@/components/theme-provider";
 
 export function AdminLayout() {
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="scamguard-theme">
-      <div className="min-h-screen bg-background font-sans text-foreground flex flex-col md:flex-row">
-        <Sidebar />
-        <div className="flex flex-col flex-1">
-          <TopBar />
-          <main className="flex-1 p-6 md:ml-[260px] overflow-auto">
-            <Outlet />
-          </main>
-        </div>
+    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans">
+      <AppSidebar />
+      <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
+        <TopBar />
+        <main className="flex-1 overflow-y-auto p-6">
+          <Outlet />
+        </main>
       </div>
-    </ThemeProvider>
+    </div>
   );
 }

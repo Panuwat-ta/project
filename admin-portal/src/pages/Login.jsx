@@ -1,8 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShieldCheck, Loader2 } from "lucide-react";
 
 export function Login() {
@@ -47,46 +44,54 @@ export function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-zinc-950 px-4">
-      <Card className="w-full max-w-md bg-zinc-900 border-zinc-800 text-zinc-100">
-        <CardHeader className="space-y-1 items-center pb-8">
-          <div className="w-16 h-16 bg-blue-600/20 rounded-full flex items-center justify-center mb-4">
-            <ShieldCheck className="w-8 h-8 text-blue-500" />
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 px-4 font-sans text-slate-900 dark:text-slate-100">
+      <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 overflow-hidden">
+        <div className="px-8 pt-8 pb-6 flex flex-col items-center text-center">
+          <div className="w-16 h-16 bg-indigo-50 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-indigo-100 dark:border-indigo-800">
+            <ShieldCheck className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
           </div>
-          <CardTitle className="text-2xl font-bold tracking-tight">Admin Portal</CardTitle>
-          <CardDescription className="text-zinc-400">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Admin Portal</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
             เข้าสู่ระบบเพื่อจัดการเนื้อหา ScamGuard
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-zinc-300">Email</label>
-              <Input
+          </p>
+        </div>
+        
+        <div className="px-8 pb-8">
+          <form onSubmit={handleLogin} className="space-y-5">
+            <div className="space-y-1.5">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Email</label>
+              <input
                 type="email"
                 placeholder="admin@scamguard.local"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="bg-zinc-950 border-zinc-800 text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-blue-500"
+                className="w-full px-3 py-2 bg-white dark:bg-slate-800/50 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:border-indigo-500 transition-shadow"
               />
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-zinc-300">Password</label>
-              <Input
+            
+            <div className="space-y-1.5">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Password</label>
+              <input
                 type="password"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="bg-zinc-950 border-zinc-800 text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-blue-500"
+                className="w-full px-3 py-2 bg-white dark:bg-slate-800/50 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:border-indigo-500 transition-shadow"
               />
             </div>
-            {error && <p className="text-sm text-red-500 font-medium">{error}</p>}
-            <Button
+            
+            {error && (
+              <div className="p-3 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-sm font-medium rounded-lg border border-red-100 dark:border-red-800/50">
+                {error}
+              </div>
+            )}
+            
+            <button
               type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium"
               disabled={loading}
+              className="w-full mt-2 flex items-center justify-center py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900 disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <>
@@ -95,10 +100,10 @@ export function Login() {
               ) : (
                 "เข้าสู่ระบบ"
               )}
-            </Button>
+            </button>
           </form>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

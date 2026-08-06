@@ -1,18 +1,6 @@
 import { useState, useEffect } from "react";
 import { Search, Filter, Eye } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { PageLoader } from "@/components/PageLoader";
+
 import { fetchReports } from "@/lib/api";
 
 export function ReportsList() {
@@ -37,124 +25,142 @@ export function ReportsList() {
     loadReports();
   }, [activeTab]);
 
-  return (
-    <div className="flex flex-col gap-6">
+  if (isLoading) return (
+    <div className="flex flex-col gap-6 font-sans">
       <div className="flex justify-between items-center">
-        <h2 className="font-heading text-2xl font-bold tracking-tight">Scam Reports</h2>
+        <div className="h-8 bg-slate-200 dark:bg-slate-800 rounded-md w-48 animate-pulse mb-2"></div>
+      </div>
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col overflow-hidden">
+        <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex flex-col md:flex-row justify-between gap-4">
+          <div className="h-9 bg-slate-200 dark:bg-slate-800 rounded-lg w-96 animate-pulse"></div>
+          <div className="h-9 bg-slate-100 dark:bg-slate-800/50 rounded-md w-64 animate-pulse"></div>
+        </div>
+        <div className="p-4 space-y-4">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="h-12 bg-slate-50 dark:bg-slate-800/20 rounded-md w-full animate-pulse"></div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col gap-6 font-sans">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Scam Reports</h2>
       </div>
 
-      <Card>
-        <CardHeader className="pb-3 border-b border-border">
-          <div className="flex flex-col md:flex-row justify-between gap-4">
-            <div className="flex bg-muted p-1 rounded-md w-max">
-              {['All', 'Pending', 'Reviewing', 'Approved', 'Rejected'].map(tab => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`px-4 py-1.5 text-sm font-medium rounded-sm transition-colors ${
-                    activeTab === tab 
-                      ? "bg-primary text-primary-foreground shadow-sm" 
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" className="h-9 gap-2 text-muted-foreground">
-                <Filter className="size-4" />
-                <span>Filter</span>
-              </Button>
-              <div className="relative">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder="Search..."
-                  className="h-9 w-[200px] pl-9 bg-muted/50 border-border"
-                />
-              </div>
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col overflow-hidden">
+        <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex flex-col md:flex-row justify-between gap-4">
+          <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-lg w-max">
+            {['All', 'Pending', 'Reviewing', 'Approved', 'Rejected'].map(tab => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${
+                  activeTab === tab 
+                    ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm" 
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-700/50"
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <button className="flex items-center gap-2 h-9 px-3 text-sm font-medium text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:border-indigo-500">
+              <Filter className="size-4" />
+              <span>Filter</span>
+            </button>
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-slate-400 dark:text-slate-500" />
+              <input
+                type="search"
+                placeholder="Search..."
+                className="h-9 w-[200px] pl-9 pr-3 text-sm bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 rounded-md outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-indigo-500 dark:focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+              />
             </div>
           </div>
-        </CardHeader>
-        {isLoading ? (
-          <PageLoader text="Loading reports..." />
-        ) : (
-          <CardContent className="p-0">
-          <Table>
-            <TableHeader className="bg-elevated">
-              <TableRow className="border-border">
-                <TableHead className="w-[60px] text-center">#</TableHead>
-                <TableHead className="w-[80px]">ภาพ</TableHead>
-                <TableHead>หมวดหมู่</TableHead>
-                <TableHead>ผู้รายงาน</TableHead>
-                <TableHead>คะแนนเสี่ยง</TableHead>
-                <TableHead>สถานะ</TableHead>
-                <TableHead>วันที่</TableHead>
-                <TableHead className="text-right">แอคชัน</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+        </div>
+        
+        <div className="flex-1 overflow-x-auto">
+          <table className="w-full text-sm text-left whitespace-nowrap">
+            <thead className="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 uppercase tracking-wider">
+              <tr>
+                <th className="px-4 py-3 font-medium text-center w-[60px]">#</th>
+                <th className="px-4 py-3 font-medium w-[80px]">ภาพ</th>
+                <th className="px-4 py-3 font-medium">หมวดหมู่</th>
+                <th className="px-4 py-3 font-medium">ผู้รายงาน</th>
+                <th className="px-4 py-3 font-medium">คะแนนเสี่ยง</th>
+                <th className="px-4 py-3 font-medium">สถานะ</th>
+                <th className="px-4 py-3 font-medium">วันที่</th>
+                <th className="px-4 py-3 font-medium text-right">แอคชัน</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
               {reportsData.map((report) => (
-                <TableRow 
+                <tr 
                   key={report.id} 
-                  className={`border-border hover:bg-surface-hover ${report.status === 'pending' ? 'border-l-4 border-l-sky-400' : ''}`}
+                  className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${report.status === 'pending' ? 'border-l-2 border-l-blue-500' : 'border-l-2 border-l-transparent'}`}
                 >
-                  <TableCell className="font-mono text-muted-foreground text-center">{report.id}</TableCell>
-                  <TableCell>
-                    <img src={report.scan?.thumbnail_url || "https://via.placeholder.com/48"} alt="thumbnail" className="size-10 object-cover rounded-md border border-border" />
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="font-normal text-xs bg-muted">{report.category}</Badge>
-                  </TableCell>
-                  <TableCell>
+                  <td className="px-4 py-3 font-mono text-slate-500 dark:text-slate-400 text-center text-xs">{report.id}</td>
+                  <td className="px-4 py-3">
+                    <img src={report.scan?.thumbnail_url || "https://via.placeholder.com/48"} alt="thumbnail" className="size-10 object-cover rounded-md border border-slate-200 dark:border-slate-800" />
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                      {report.category}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
                     <div className="flex flex-col">
-                      <span className="font-medium text-sm">{report.user?.full_name || "Unknown"}</span>
-                      <span className="text-xs text-muted-foreground">{report.user?.email || "No Email"}</span>
+                      <span className="font-medium text-slate-900 dark:text-slate-100">{report.user?.full_name || "Unknown"}</span>
+                      <span className="text-xs text-slate-500 dark:text-slate-400">{report.user?.email || "No Email"}</span>
                     </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={
-                      (report.scan?.total_risk_score || 0) >= 80 ? "bg-destructive/15 text-destructive hover:bg-destructive/15 border-none" :
-                      (report.scan?.total_risk_score || 0) >= 50 ? "bg-amber-500/15 text-amber-500 hover:bg-amber-500/15 border-none" :
-                      "bg-emerald-500/15 text-emerald-500 hover:bg-emerald-500/15 border-none"
-                    }>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold ${
+                      (report.scan?.total_risk_score || 0) >= 80 ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400" :
+                      (report.scan?.total_risk_score || 0) >= 50 ? "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400" :
+                      "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400"
+                    }`}>
                       {report.scan?.total_risk_score || 0}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={
-                      report.status === 'pending' ? "bg-sky-400/15 text-sky-400 border-none capitalize" :
-                      report.status === 'reviewing' ? "bg-amber-500/15 text-amber-500 border-none capitalize" :
-                      report.status === 'approved' ? "bg-emerald-500/15 text-emerald-500 border-none capitalize" :
-                      "bg-destructive/15 text-destructive border-none capitalize"
-                    }>
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
+                      report.status === 'pending' ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400" :
+                      report.status === 'reviewing' ? "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400" :
+                      report.status === 'approved' ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400" :
+                      "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
+                    }`}>
                       {report.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-xs text-muted-foreground">{new Date(report.created_at).toLocaleDateString('th-TH')}</TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="sm" className="text-primary hover:text-primary hover:bg-primary/10">
-                      <Eye className="size-4 mr-1.5" />
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-slate-500 dark:text-slate-400 text-xs">
+                    {new Date(report.created_at).toLocaleDateString('th-TH')}
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <button className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-sm font-medium text-indigo-600 dark:text-indigo-400 bg-transparent rounded-md hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-colors">
+                      <Eye className="size-4" />
                       ดู
-                    </Button>
-                  </TableCell>
-                </TableRow>
+                    </button>
+                  </td>
+                </tr>
               ))}
-            </TableBody>
-          </Table>
+            </tbody>
+          </table>
           
-          <div className="p-4 border-t border-border flex justify-between items-center text-sm text-muted-foreground">
+          <div className="px-4 py-3 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center text-sm text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900">
             <span>Showing 1-{reportsData.length} of {total}</span>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" disabled>Previous</Button>
-              <Button variant="outline" size="sm">Next</Button>
+              <button disabled className="px-3 py-1.5 text-sm font-medium text-slate-400 dark:text-slate-500 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md cursor-not-allowed">Previous</button>
+              <button className="px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">Next</button>
             </div>
           </div>
-        </CardContent>
-        )}
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
