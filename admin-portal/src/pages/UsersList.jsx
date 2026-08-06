@@ -58,26 +58,6 @@ export function UsersList() {
     setModalState({ isOpen: false, user: null, action: null });
   };
 
-  if (loading) return (
-    <div className="flex flex-col gap-6 font-sans">
-      <div>
-        <div className="h-8 bg-slate-200 dark:bg-slate-800 rounded-md w-48 animate-pulse mb-2"></div>
-        <div className="h-4 bg-slate-100 dark:bg-slate-800/50 rounded-md w-64 animate-pulse"></div>
-      </div>
-      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col overflow-hidden">
-        <div className="p-5 border-b border-slate-200 dark:border-slate-800">
-          <div className="h-5 bg-slate-200 dark:bg-slate-800 rounded-md w-40 animate-pulse mb-2"></div>
-          <div className="h-4 bg-slate-100 dark:bg-slate-800/50 rounded-md w-64 animate-pulse"></div>
-        </div>
-        <div className="p-4 space-y-4">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="h-12 bg-slate-50 dark:bg-slate-800/20 rounded-md w-full animate-pulse"></div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-
   return (
     <div className="flex flex-col gap-6 font-sans relative">
       <div>
@@ -108,10 +88,18 @@ export function UsersList() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-              {users.length === 0 ? (
+              {loading ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <tr key={`skeleton-${i}`}>
+                    <td colSpan="6" className="px-4 py-3">
+                      <div className="h-12 bg-slate-100 dark:bg-slate-800/40 rounded-md w-full animate-pulse"></div>
+                    </td>
+                  </tr>
+                ))
+              ) : users.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
-                    ไม่พบข้อมูลผู้ใช้
+                  <td colSpan="6" className="px-4 py-12 text-center text-slate-500 dark:text-slate-400">
+                    ไม่พบข้อมูลผู้ใช้งาน
                   </td>
                 </tr>
               ) : (

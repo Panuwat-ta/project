@@ -1,5 +1,7 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from datetime import timezone, timedelta
 
+TH_TIMEZONE = timezone(timedelta(hours=7), name="Asia/Bangkok")
 class Settings(BaseSettings):
     # App
     APP_NAME: str = "ScamGuard API"

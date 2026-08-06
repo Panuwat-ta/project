@@ -1,8 +1,8 @@
 import os
 from fastapi import UploadFile, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime, timezone
-from app.core.config import settings
+from datetime import datetime
+from app.core.config import settings, TH_TIMEZONE
 from app.models.scan import Scan
 from app.utils.hashing import calculate_image_hash
 from app.utils.risk_calculator import calculate_risk_score
@@ -81,7 +81,7 @@ async def analyze_image(file: UploadFile, user_id: int, db: AsyncSession) -> Sca
         scam_keywords_found=found_keywords,
         ai_gen_probability=ai_gen_probability,
         status="completed",
-        completed_at=datetime.now(timezone.utc)
+        completed_at=datetime.now(TH_TIMEZONE)
     )
     
     db.add(new_scan)
