@@ -91,3 +91,4 @@ grep "^## \[" wiki/log.md | tail -5
 
 - ใช้สคริปต์ `mass_ingest.py` จัดการคัดลอกไฟล์ทั้งหมดและแทรก YAML Frontmatter ด้านบนของไฟล์โดยอัตโนมัติ เพื่อรักษาโครงสร้างเดิมของโปรเจคไว้
 - สั่ง Build HTML ใหม่ เพื่อให้เอกสารทั้งหมดเข้าไปอยู่ใน Web Portal (`wed-ScamGuard`) อย่างสมบูรณ์
+## [2026-08-06] ingest | /doc/model/model.md

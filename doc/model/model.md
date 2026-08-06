@@ -73,17 +73,52 @@ flowchart TD
 * **โครงสร้างและหลักการทำงาน (Mechanism):**
   * **MiT Encoder (Mix Transformer):** สกัดลักษณะเด่นของรูปภาพ (Feature Extraction) จากหลายสเกลความละเอียด ทำให้ AI สามารถพิจารณาบริบทภาพรวมและรายละเอียดระดับพิกเซลไปพร้อมกันได้โดยไม่ต้องใช้ Positional Encoding
   * **All-MLP Decoder:** ถอดรหัสโครงสร้างพิกเซลเพื่อสร้าง Segmentation Mask แบบ Binary (จริง/ปลอม) ว่าจุดไหนในภาพเป็นภาพดั้งเดิม และจุดไหนคือจุดที่ถูกดัดแปลง
+
+### อัลกอริทึมและสมการคณิตศาสตร์ของ SegFormer (Mathematical Formulation)
+การทำงานของ Mix Transformer (MiT) อาศัยกระบวนการลดรูปของ Self-Attention เพื่อประหยัดหน่วยความจำ (Efficient Self-Attention) โดยสามารถเขียนเป็นสมการได้ดังนี้:
+
+1. **Efficient Self-Attention:**
+   ในกรณีที่อินพุตคือ $X \in \mathbb{R}^{H \times W \times C}$ จะถูกแปลงให้แบนราบ (Flatten) เป็น Sequence $N = H \times W$
+   โดยกระบวนการ Sequence Reduction จะลดมิติของ Key และ Value ลงด้วยอัตราส่วน $R$ เพื่อลดภาระการคำนวณ:
+   $$K' = \text{Reshape}\left(\frac{N}{R}, C \cdot R\right)(K) \cdot W_K$$
+   $$V' = \text{Reshape}\left(\frac{N}{R}, C \cdot R\right)(V) \cdot W_V$$
+   $$ \text{Attention}(Q, K', V') = \text{Softmax}\left( \frac{Q (K')^T}{\sqrt{d_k}} \right) V' $$
+   เมื่อ $Q$ คือ Query, $K'$ และ $V'$ คือ Key และ Value ที่ลดมิติแล้ว, และ $d_k$ คือมิติของ Key
+
+2. **Mix-FFN (Mix Feed-Forward Network):**
+   เพื่อหลีกเลี่ยงการใช้ Positional Encoding แบบตายตัว SegFormer ใช้ 3x3 Convolution ใน Feed-Forward Network เพื่อพิจารณาตำแหน่งจากบริบท:
+   $$x_{out} = \text{MLP}(\text{GELU}(\text{Conv}_{3\times3}(\text{MLP}(x_{in})))) + x_{in}$$
+
 * **บทบาทในระบบ:**
   * ทำหน้าที่ทำนายความน่าจะเป็นระดับพิกเซลของร่องรอยการปลอมแปลง (Pixel-level Prediction)
   * คืนค่าผลลัพธ์เป็น Segmentation Mask ซึ่งจะถูกแปลง (Post-Processing) ให้อยู่ในรูปของ **แผนภูมิความร้อน (Grad-CAM Heatmap)** เพื่อใช้วางซ้อน (Overlay) บนรูปต้นฉบับ แจ้งให้ผู้ใช้งานเห็นพื้นที่ดัดแปลงอย่างชัดเจนผ่านแอปพลิเคชัน
 
 ---
 
-## 4. ประสิทธิภาพและเป้าหมายตัวชี้วัด (Target Metrics)
+## 4. อัลกอริทึมการประเมินความเสี่ยงรวม (Weighted Risk Score Algorithm)
+
+คะแนนความเสี่ยงโดยรวม (Total Risk Score) คำนวณจากการถ่วงน้ำหนักความสำคัญระหว่างผลลัพธ์การตรวจภาพ (Visual Score) และผลลัพธ์ข้อความ (Textual Score) โดยมีสมการดังนี้:
+
+$$ S_{total} = (\alpha \times S_{visual}) + (\beta \times S_{textual}) $$
+
+โดยที่:
+* $S_{total}$ คือคะแนนความเสี่ยงรวม มีค่าตั้งแต่ 0 ถึง 100
+* $S_{visual}$ คือคะแนนความเสี่ยงจากการถูกดัดแปลงภาพ (คำนวณจากค่าเฉลี่ยหรือพื้นที่พิกเซลความร้อนของ SegFormer)
+* $S_{textual}$ คือคะแนนความเสี่ยงด้านข้อความหลอกลวง (ประเมินจากระดับความรุนแรงของ Scam Keyword)
+* $\alpha$ และ $\beta$ คือค่าน้ำหนักถ่วง (Weight Factors) โดย $\alpha + \beta = 1.0$ (ในโปรเจกต์นี้กำหนดค่าเริ่มต้นคือ $\alpha = 0.6, \beta = 0.4$ เพื่อให้น้ำหนักกับการตัดต่อภาพมากกว่า)
+
+เกณฑ์การตัดสินระดับความเสี่ยง (Risk Grade):
+* $S_{total} < 30$ $\rightarrow$ **Safe (ปลอดภัย)**
+* $30 \le S_{total} \le 70$ $\rightarrow$ **Suspicious (น่าสงสัย)**
+* $S_{total} > 70$ $\rightarrow$ **Danger (อันตราย)**
+
+---
+
+## 5. ประสิทธิภาพและเป้าหมายตัวชี้วัด (Target Metrics)
 
 เพื่อให้แอปพลิเคชันทำงานได้อย่างมีประสิทธิภาพในการใช้งานจริง (Production):
-* **ความแม่นยำรวมของ AI (F1-Score / Accuracy):** ตั้งเป้าหมายที่ความแม่นยำ >= 85% สำหรับการตรวจจับจุดที่ถูกตัดต่อ
-* **เวลาเฉลี่ยในการประมวลผล (Inference Latency):** < 5 วินาทีต่อภาพ (โดยรวมการทำงานผ่าน ONNX Runtime บนฝั่ง AI Inference Service แล้ว)
+* **ความแม่นยำรวมของ AI (F1-Score / Accuracy):** ตั้งเป้าหมายที่ความแม่นยำ $\ge 85\%$ สำหรับการตรวจจับจุดที่ถูกตัดต่อ
+* **เวลาเฉลี่ยในการประมวลผล (Inference Latency):** $< 5$ วินาทีต่อภาพ (โดยรวมการทำงานผ่าน ONNX Runtime บนฝั่ง AI Inference Service แล้ว)
 
 ---
 

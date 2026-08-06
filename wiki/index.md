@@ -56,6 +56,7 @@ updated: 2026-08-02
 | [[concepts/risk-scoring]] | สูตรคำนวณ Weighted Risk Score, เกณฑ์ระดับความเสี่ยง และการรวมคะแนน |
 | [[concepts/explainable-ai]] | แนวทาง XAI: การสร้าง Grad-CAM Heatmap, overlay ลงรูปภาพ และการแสดงผล UI |
 | [[concepts/ai-model-segformer]] | สถาปัตยกรรม SegFormer, MiT encoder, All-MLP decoder และ output ระดับพิกเซล |
+| [[concepts/surya-ocr]] | สถาปัตยกรรม Surya OCR 2, VLM, GGUF Format และการสกัดข้อความ |
 | [[concepts/ela-technique]] | Error Level Analysis — หลักการทำงานและการตรวจจับบริเวณที่ถูกดัดแปลง |
 | [[concepts/model-training]] | AI Model Training Workflow ขั้นตอนการฝึกและเทรนโมเดล |
 
