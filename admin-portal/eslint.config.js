@@ -17,5 +17,11 @@ export default defineConfig([
       globals: globals.browser,
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
+    rules: {
+      // Async data fetching in useEffect is standard React pattern, not cascading renders
+      'react-hooks/set-state-in-effect': 'off',
+      // Allow non-component exports (e.g. useTheme hook) alongside components
+      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+    },
   },
 ])

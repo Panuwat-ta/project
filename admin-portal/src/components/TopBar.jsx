@@ -1,87 +1,55 @@
 import { Bell, Search, Sun, Moon, Menu } from "lucide-react";
-import { useState } from "react";
-import { useTheme } from "./theme-provider";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { SidebarContent } from "./Sidebar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useTheme } from "@/components/theme-provider";
 
-export function TopBar() {
+export function TopBar({ onMenuClick }) {
   const { theme, setTheme } = useTheme();
-  const [isOpen, setIsOpen] = useState(false);
+
+  const handleThemeToggle = () => {
+    const isSystemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const currentActualTheme = theme === 'system' ? (isSystemDark ? 'dark' : 'light') : theme;
+    
+    setTheme(currentActualTheme === 'light' ? 'dark' : 'light');
+  };
+
+  // Determine which icon to show based on the current resolved theme
+  const isSystemDark = typeof window !== 'undefined' && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const currentActualTheme = theme === 'system' ? (isSystemDark ? 'dark' : 'light') : theme;
+  const ThemeIcon = currentActualTheme === 'light' ? Sun : Moon;
 
   return (
-    <header className="h-16 w-full bg-background border-b border-border flex items-center justify-between px-4 md:px-6 sticky top-0 z-30 md:ml-[260px] md:w-[calc(100%-260px)] transition-all">
-      <div className="flex items-center gap-4 flex-1">
-        <Sheet open={isOpen} onOpenChange={setIsOpen}>
-          <SheetTrigger
-            render={<Button variant="ghost" size="icon" className="md:hidden" />}
-          >
-            <Menu className="size-5" />
-            <span className="sr-only">Toggle menu</span>
-          </SheetTrigger>
-          <SheetContent side="left" className="p-0 w-[260px] flex flex-col bg-secondary border-r-0">
-            <SidebarContent onNavigate={() => setIsOpen(false)} />
-          </SheetContent>
-        </Sheet>
+    <header className="flex h-14 shrink-0 items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 md:px-6 z-10">
+      <div className="flex-1 flex items-center gap-2 md:gap-4">
+        <button 
+          onClick={onMenuClick}
+          className="p-2 -ml-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors md:hidden focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          aria-label="Toggle Menu"
+        >
+          <Menu className="size-5" />
+        </button>
 
-        <div className="relative w-full max-w-md hidden md:flex">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-          <Input
+        <div className="relative w-full max-w-md hidden md:block">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-slate-400 dark:text-slate-500" />
+          <input
             type="search"
             placeholder="Search reports, users, scan IDs..."
-            className="w-full bg-muted border-border pl-9 focus-visible:ring-primary"
+            className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 text-sm rounded-md pl-9 pr-3 py-1.5 outline-none focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-900 focus:ring-1 focus:ring-indigo-500 transition-all"
           />
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="text-muted-foreground hover:text-foreground"
+      <div className="flex items-center gap-3">
+        <button 
+          onClick={handleThemeToggle}
+          title={`Theme: ${theme}`}
+          className="relative p-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors outline-none focus:ring-2 focus:ring-indigo-500"
         >
-          {theme === "dark" ? <Sun className="size-5" /> : <Moon className="size-5" />}
-        </Button>
+          <ThemeIcon className="size-4" />
+        </button>
 
-        <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-foreground">
-          <Bell className="size-5" />
-          <span className="absolute top-2 right-2.5 size-2 rounded-full bg-destructive border border-background"></span>
-        </Button>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <Button variant="ghost" className="relative h-8 w-8 rounded-full" />
-            }
-          >
-            <Avatar className="h-8 w-8">
-              <AvatarImage src="/avatars/admin.png" alt="@admin" />
-              <AvatarFallback className="bg-primary/20 text-primary">AD</AvatarFallback>
-            </Avatar>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56" align="end" forceMount>
-            <DropdownMenuLabel className="font-normal">
-              <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">Super Admin</p>
-                <p className="text-xs leading-none text-muted-foreground">admin@scamguard.com</p>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Profile Settings</DropdownMenuItem>
-            <DropdownMenuItem>Log out</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <button className="relative p-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors outline-none focus:ring-2 focus:ring-indigo-500">
+          <Bell className="size-4" />
+          <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-red-500 border-[1.5px] border-white dark:border-slate-900"></span>
+        </button>
       </div>
     </header>
   );

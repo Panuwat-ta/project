@@ -1,238 +1,293 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Users, Zap, Flag, Activity } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Pie, PieChart, Cell, Bar, BarChart, CartesianGrid } from "recharts";
-import { PageLoader } from "@/components/PageLoader";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 
-const chartConfig = {
-  count: { label: "Scans", color: "var(--chart-1)" },
-  value: { label: "จำนวน", color: "var(--chart-1)" },
+import { fetchDashboard } from "@/lib/api";
+
+const COLORS = {
+  primary: "#4f46e5", // indigo-600
+  secondary: "#c7d2fe", // indigo-200
+  low: "#22c55e", // green-500
+  medium: "#eab308", // yellow-500
+  high: "#ef4444", // red-500
 };
-
-const scanTrendData = [
-  { name: '1 Aug', count: 120 },
-  { name: '2 Aug', count: 135 },
-  { name: '3 Aug', count: 110 },
-  { name: '4 Aug', count: 180 },
-  { name: '5 Aug', count: 140 },
-  { name: '6 Aug', count: 156 },
-];
-
-const riskData = [
-  { name: 'Low', value: 400, color: 'var(--risk-low)' },
-  { name: 'Medium', value: 300, color: 'var(--risk-medium)' },
-  { name: 'High', value: 156, color: 'var(--risk-high)' },
-];
-
-const categoryData = [
-  { name: 'สลิปปลอม', value: 45 },
-  { name: 'ซื้อขายออนไลน์', value: 32 },
-  { name: 'หลอกลวงความรัก', value: 20 },
-  { name: 'ลงทุน', value: 15 },
-  { name: 'ปลอมแปลงตัวตน', value: 12 },
-  { name: 'AI/Deepfake', value: 8 },
-  { name: 'อื่นๆ', value: 24 },
-];
 
 export function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
+  const [data, setData] = useState(null);
 
   useEffect(() => {
-    // Simulate fetching data
-    const timer = setTimeout(() => setIsLoading(false), 800);
-    return () => clearTimeout(timer);
+    async function loadData() {
+      try {
+        const result = await fetchDashboard();
+        setData(result);
+      } catch (err) {
+        console.error("Failed to load dashboard data", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadData();
   }, []);
 
+  if (isLoading || !data) {
+    return (
+      <div className="flex flex-col gap-6 font-sans">
+        <div className="flex justify-between items-center">
+          <div className="h-8 bg-slate-200 dark:bg-slate-800 rounded-md w-48 animate-pulse"></div>
+          <div className="h-5 bg-slate-100 dark:bg-slate-800/50 rounded-md w-32 animate-pulse"></div>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 h-[116px] flex flex-col justify-between">
+              <div className="flex justify-between items-center">
+                <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded-md w-24 animate-pulse"></div>
+                <div className="size-8 rounded-md bg-slate-100 dark:bg-slate-800/50 animate-pulse"></div>
+              </div>
+              <div>
+                <div className="h-8 bg-slate-200 dark:bg-slate-800 rounded-md w-16 mb-2 animate-pulse"></div>
+                <div className="h-3 bg-slate-100 dark:bg-slate-800/50 rounded-md w-24 animate-pulse"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm lg:col-span-4 h-[385px] p-6 flex flex-col gap-4">
+            <div className="h-6 bg-slate-200 dark:bg-slate-800 rounded-md w-1/3 animate-pulse mb-2"></div>
+            <div className="flex-1 bg-slate-100 dark:bg-slate-800/50 rounded-lg animate-pulse"></div>
+          </div>
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm lg:col-span-3 h-[385px] p-6 flex flex-col gap-4">
+            <div className="h-6 bg-slate-200 dark:bg-slate-800 rounded-md w-1/3 animate-pulse mb-2"></div>
+            <div className="flex-1 bg-slate-100 dark:bg-slate-800/50 rounded-full mx-auto aspect-square max-h-48 animate-pulse"></div>
+            <div className="h-4 bg-slate-100 dark:bg-slate-800/50 rounded-md w-1/2 mx-auto animate-pulse mt-4"></div>
+          </div>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm lg:col-span-4 h-[385px] p-6 flex flex-col gap-4">
+            <div className="h-6 bg-slate-200 dark:bg-slate-800 rounded-md w-1/3 animate-pulse mb-2"></div>
+            <div className="flex-1 bg-slate-100 dark:bg-slate-800/50 rounded-lg animate-pulse"></div>
+          </div>
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm lg:col-span-3 h-[385px] p-6 flex flex-col gap-4">
+            <div className="h-6 bg-slate-200 dark:bg-slate-800 rounded-md w-1/2 animate-pulse mb-2"></div>
+            <div className="h-16 bg-slate-100 dark:bg-slate-800/50 rounded-lg animate-pulse"></div>
+            <div className="h-16 bg-slate-100 dark:bg-slate-800/50 rounded-lg animate-pulse"></div>
+            <div className="h-10 bg-slate-200 dark:bg-slate-800 rounded-md mt-auto animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Format Risk Data for Recharts
+  const riskData = [
+    { name: 'Low', value: data.risk_distribution.low, color: COLORS.low },
+    { name: 'Medium', value: data.risk_distribution.medium, color: COLORS.medium },
+    { name: 'High', value: data.risk_distribution.high, color: COLORS.high },
+  ];
+
+  // Format Category Data for Recharts
+  const categoryData = Object.entries(data.category_breakdown).map(([key, val]) => ({
+    name: key, value: val
+  }));
+
+  const scanTrendData = data.scan_trend;
+
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 font-sans">
       <div className="flex justify-between items-center">
-        <h2 className="font-heading text-2xl font-bold tracking-tight">Dashboard</h2>
-        <p className="text-sm text-muted-foreground">{new Date().toLocaleDateString('th-TH', { dateStyle: 'full' })}</p>
+        <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Dashboard</h2>
+        <p className="text-sm text-slate-500 dark:text-slate-400">{new Date().toLocaleDateString('th-TH', { dateStyle: 'full' })}</p>
       </div>
 
-      {isLoading ? (
-        <PageLoader text="Loading dashboard data..." />
-      ) : (
-        <>
-          {/* KPI Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">ผู้ใช้ทั้งหมด</CardTitle>
-            <div className="size-8 rounded-full bg-primary/10 flex items-center justify-center">
-              <Users className="size-4 text-primary" />
+        {/* KPI Card 1 */}
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-5">
+          <div className="flex justify-between items-center pb-2">
+            <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400">ผู้ใช้ทั้งหมด</h3>
+            <div className="size-8 rounded-md bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center">
+              <Users className="size-4 text-indigo-600 dark:text-indigo-400" />
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold font-heading">1,250</div>
-            <p className="text-xm text-muted-foreground mt-1">+12% จากสัปดาห์ที่แล้ว</p>
-          </CardContent>
-        </Card>
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{data.overview.total_users.toLocaleString()}</div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{data.overview.active_users_today} ใช้งานวันนี้</p>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">สแกนทั้งหมด</CardTitle>
-            <div className="size-8 rounded-full bg-primary/10 flex items-center justify-center">
-              <Activity className="size-4 text-primary" />
+        {/* KPI Card 2 */}
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-5">
+          <div className="flex justify-between items-center pb-2">
+            <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400">สแกนทั้งหมด</h3>
+            <div className="size-8 rounded-md bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center">
+              <Activity className="size-4 text-indigo-600 dark:text-indigo-400" />
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold font-heading">8,432</div>
-            <p className="text-xm text-muted-foreground mt-1">+5.4% จากสัปดาห์ที่แล้ว</p>
-          </CardContent>
-        </Card>
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{data.overview.total_scans.toLocaleString()}</div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">จากทั้งหมดในระบบ</p>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">สแกนวันนี้</CardTitle>
-            <div className="size-8 rounded-full bg-primary/10 flex items-center justify-center">
-              <Zap className="size-4 text-primary" />
+        {/* KPI Card 3 */}
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-5">
+          <div className="flex justify-between items-center pb-2">
+            <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400">สแกนวันนี้</h3>
+            <div className="size-8 rounded-md bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center">
+              <Zap className="size-4 text-indigo-600 dark:text-indigo-400" />
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold font-heading">156</div>
-            <p className="text-xm text-[var(--risk-low)] font-medium mt-1">+2% จากเมื่อวาน</p>
-          </CardContent>
-        </Card>
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{data.overview.scans_today.toLocaleString()}</div>
+            <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium mt-1">อัปเดตวันนี้</p>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">รายงาน Pending</CardTitle>
-            <div className="size-8 rounded-full bg-primary/10 flex items-center justify-center">
-              <Flag className="size-4 text-primary" />
+        {/* KPI Card 4 */}
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-5">
+          <div className="flex justify-between items-center pb-2">
+            <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400">รายงาน Pending</h3>
+            <div className="size-8 rounded-md bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center">
+              <Flag className="size-4 text-indigo-600 dark:text-indigo-400" />
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold font-heading">28</div>
-            <p className="text-xm text-[var(--risk-high)] font-medium mt-1">ต้องการตรวจสอบด่วน 5 รายการ</p>
-          </CardContent>
-        </Card>
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{data.reports.pending.toLocaleString()}</div>
+            <p className="text-xs text-red-600 dark:text-red-400 font-medium mt-1">รอการตรวจสอบ</p>
+          </div>
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         {/* Trend Chart */}
-        <Card className="lg:col-span-4">
-          <CardHeader>
-            <CardTitle>แนวโน้มการสแกน (7 วันย้อนหลัง)</CardTitle>
-          </CardHeader>
-          <CardContent className="h-[300px]">
-            <ChartContainer config={chartConfig} className="h-full w-full">
-              <AreaChart data={scanTrendData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm lg:col-span-4 flex flex-col">
+          <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800">
+            <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">แนวโน้มการสแกน (7 วันย้อนหลัง)</h3>
+          </div>
+          <div className="p-6 h-[320px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={scanTrendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="var(--chart-1)" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="var(--chart-1)" stopOpacity={0} />
+                    <stop offset="5%" stopColor={COLORS.primary} stopOpacity={0.2} />
+                    <stop offset="95%" stopColor={COLORS.primary} stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="name" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Area type="monotone" dataKey="count" stroke="var(--chart-1)" strokeWidth={2} fillOpacity={1} fill="url(#colorCount)" />
+                <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} dy={10} />
+                <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} dx={-10} />
+                <Tooltip 
+                  contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: 'var(--tw-colors-slate-800, #1e293b)', color: '#f8fafc' }}
+                  itemStyle={{ color: '#f8fafc' }}
+                  cursor={{ stroke: '#94a3b8', strokeWidth: 1, strokeDasharray: '3 3' }}
+                />
+                <Area type="monotone" dataKey="count" stroke={COLORS.primary} strokeWidth={2} fillOpacity={1} fill="url(#colorCount)" />
               </AreaChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
+            </ResponsiveContainer>
+          </div>
+        </div>
 
         {/* Risk Distribution */}
-        <Card className="lg:col-span-3">
-          <CardHeader>
-            <CardTitle>สัดส่วนความเสี่ยง (Risk Distribution)</CardTitle>
-          </CardHeader>
-          <CardContent className="h-[300px] flex flex-col items-center justify-center relative">
-            <ChartContainer config={chartConfig} className="h-full w-full">
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm lg:col-span-3 flex flex-col">
+          <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800">
+            <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">สัดส่วนความเสี่ยง</h3>
+          </div>
+          <div className="p-6 h-[320px] flex flex-col items-center justify-center relative">
+            <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={riskData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
-                  outerRadius={80}
-                  paddingAngle={5}
+                  innerRadius={70}
+                  outerRadius={90}
+                  paddingAngle={2}
                   dataKey="value"
+                  stroke="none"
                 >
                   {riskData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <ChartTooltip content={<ChartTooltipContent />} />
+                <Tooltip 
+                  contentStyle={{ borderRadius: '8px', border: 'none', backgroundColor: '#1e293b', color: '#f8fafc' }} 
+                  itemStyle={{ color: '#f8fafc' }}
+                />
               </PieChart>
-            </ChartContainer>
+            </ResponsiveContainer>
             <div className="absolute flex flex-col items-center justify-center text-center pointer-events-none">
-              <span className="text-3xl font-bold font-heading">856</span>
-              <span className="text-xm text-muted-foreground">Total Scans</span>
+              <span className="text-3xl font-bold text-slate-900 dark:text-slate-100">{data.overview.total_scans.toLocaleString()}</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400">Total</span>
             </div>
-            <div className="flex gap-4 justify-center mt-2">
+            <div className="flex gap-4 justify-center mt-4">
               {riskData.map(entry => (
-                <div key={entry.name} className="flex items-center gap-1.5 text-xm text-muted-foreground">
-                  <div className="size-3 rounded-full" style={{ backgroundColor: entry.color }} />
+                <div key={entry.name} className="flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-400">
+                  <div className="size-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
                   {entry.name}
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         {/* Category Breakdown */}
-        <Card className="lg:col-span-4">
-          <CardHeader>
-            <CardTitle>หมวดหมู่รายงานสแกม (Report Categories)</CardTitle>
-          </CardHeader>
-          <CardContent className="h-[300px]">
-            <ChartContainer config={chartConfig} className="h-full w-full">
-              <BarChart data={categoryData} layout="vertical" margin={{ top: 0, right: 30, left: 30, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--border)" />
-                <XAxis type="number" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis dataKey="name" type="category" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} width={100} />
-                <ChartTooltip
-                  cursor={{ fill: 'var(--muted)' }}
-                  content={<ChartTooltipContent />}
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm lg:col-span-4 flex flex-col">
+          <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800">
+            <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">หมวดหมู่รายงานสแกม</h3>
+          </div>
+          <div className="p-6 h-[320px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={categoryData} layout="vertical" margin={{ top: 0, right: 30, left: 20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#334155" />
+                <XAxis type="number" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis dataKey="name" type="category" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} width={120} />
+                <Tooltip 
+                  cursor={{ fill: '#334155', opacity: 0.2 }}
+                  contentStyle={{ borderRadius: '8px', border: 'none', backgroundColor: '#1e293b', color: '#f8fafc' }}
+                  itemStyle={{ color: '#f8fafc' }}
                 />
-                <Bar dataKey="value" fill="var(--chart-1)" radius={[0, 4, 4, 0]} barSize={20}>
+                <Bar dataKey="value" fill={COLORS.primary} radius={[0, 4, 4, 0]} barSize={24}>
                   {categoryData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={index % 2 === 0 ? "var(--chart-1)" : "var(--chart-2)"} />
+                    <Cell key={`cell-${index}`} fill={index % 2 === 0 ? COLORS.primary : COLORS.secondary} />
                   ))}
                 </Bar>
               </BarChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
+            </ResponsiveContainer>
+          </div>
+        </div>
 
         {/* AI Model Status */}
-        <Card className="lg:col-span-3 bg-gradient-to-br from-surface to-primary/5 border-primary/20 shadow-[0_0_20px_rgba(0,229,255,0.05)]">
-          <CardHeader>
-            <CardTitle>AI Model Status</CardTitle>
-            <CardDescription>SegFormer v2.1.0 is currently active</CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-            <div className="flex justify-between items-center p-3 bg-muted rounded-md border border-border">
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm lg:col-span-3 flex flex-col">
+          <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800">
+            <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">AI Model Status</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{data.model.active_version ? `Version ${data.model.active_version} is currently active` : 'No active model'}</p>
+          </div>
+          <div className="p-6 flex flex-col gap-4">
+            <div className="flex justify-between items-center p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-800">
               <div className="flex flex-col">
-                <span className="text-sm font-semibold text-primary">v2.1.0</span>
-                <span className="text-xm text-muted-foreground">Deployed: 2026-08-01</span>
+                <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">{data.model.active_version || 'N/A'}</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400 mt-1">Deployed: {data.model.deployed_at ? new Date(data.model.deployed_at).toLocaleDateString('th-TH') : 'N/A'}</span>
               </div>
-              <Badge className="bg-[var(--risk-low)]/15 text-[var(--risk-low)] hover:bg-[var(--risk-low)]/15 border-none">ACTIVE</Badge>
+              <span className="px-2.5 py-1 text-[10px] font-bold tracking-wide uppercase bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 rounded-full">Active</span>
             </div>
 
-            <div className="flex justify-between items-center p-3 rounded-md">
+            <div className="flex justify-between items-center p-4 rounded-lg border border-transparent">
               <div className="flex flex-col">
-                <span className="text-sm font-medium">v2.0.0</span>
-                <span className="text-xm text-muted-foreground">Deployed: 2026-07-15</span>
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Total Versions</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400 mt-1">{data.model.total_versions} versions in system</span>
               </div>
-              <Badge variant="outline" className="text-muted-foreground">INACTIVE</Badge>
+              <span className="px-2.5 py-1 text-[10px] font-bold tracking-wide uppercase bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-full">Info</span>
             </div>
 
-            <Button variant="outline" className="w-full mt-2 text-primary border-primary/50 hover:bg-primary/10 hover:text-primary">
+            <button className="w-full mt-4 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-md text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-slate-900 transition-colors">
               Manage Models
-            </Button>
-          </CardContent>
-        </Card>
+            </button>
+          </div>
+        </div>
       </div>
-        </>
-      )}
     </div>
   );
 }

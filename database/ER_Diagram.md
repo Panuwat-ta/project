@@ -9,11 +9,22 @@ erDiagram
         string email
         string hashed_password
         string full_name
-        string role "user, admin"
+        string role "user, researcher"
         boolean is_active
         boolean consent_analysis
         boolean consent_research
         datetime consent_revoked_at
+        datetime created_at
+        datetime updated_at
+    }
+
+    admins {
+        int id PK
+        string email
+        string hashed_password
+        string full_name
+        boolean is_active
+        boolean is_superadmin
         datetime created_at
         datetime updated_at
     }
@@ -88,8 +99,8 @@ erDiagram
     users ||--o{ scans : "performs"
     users ||--o{ scam_reports : "submits"
     users ||--o{ consent_logs : "records"
-    users ||--o{ scam_reports : "moderates (admin)"
-    users ||--o{ audit_log : "performs (admin)"
+    admins ||--o{ scam_reports : "moderates"
+    admins ||--o{ audit_log : "performs"
     
     scans ||--o| scan_results : "has details"
     scans ||--o{ scam_reports : "is reported in"
