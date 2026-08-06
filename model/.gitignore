@@ -28,3 +28,7 @@ venv/
 env/
 
 segformer/library/
+
+# Surya OCR Cache
+surya/hub/
+surya/xet/

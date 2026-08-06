@@ -24,7 +24,8 @@ python-multipart>=0.0.9
 # AI Inference
 onnxruntime-gpu>=1.18.0
 numpy>=1.26,<2
-llama-cpp-python>=0.3.0
+surya-ocr==0.5.0
+transformers==4.41.2
 
 # EXIF
 piexif>=1.1.3

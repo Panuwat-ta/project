@@ -45,16 +45,24 @@ def main():
     
     if len(outputs) > 0:
         logits = outputs[0]
-        prob_map = logits[0, 0, :, :]
-        prob_map = (prob_map - np.min(prob_map)) / (np.max(prob_map) - np.min(prob_map) + 1e-5)
-    else:
-        prob_map = np.zeros((512, 512), dtype=np.float32)
+        raw_map = logits[0, 0, :, :]
         
-    prob_map_resized = cv2.resize(prob_map, original_size)
+        # 1. True probabilities for scoring using Sigmoid
+        prob_map_true = 1 / (1 + np.exp(-raw_map))
+        
+        # 2. Visual heatmap using Min-Max scaling for clear display
+        prob_map_visual = (raw_map - np.min(raw_map)) / (np.max(raw_map) - np.min(raw_map) + 1e-5)
+    else:
+        prob_map_true = np.zeros((512, 512), dtype=np.float32)
+        prob_map_visual = prob_map_true
+        
+    prob_map_resized = cv2.resize(prob_map_visual, original_size)
     heatmap_bytes = generate_heatmap(prob_map_resized, np.array(image))
     
-    visual_risk_score = int(np.mean(prob_map) * 100)
-    ai_gen_probability = 0.5
+    # Calculate visual risk using the 99th percentile of true probabilities (captures peaks)
+    ai_gen_prob = float(np.percentile(prob_map_true, 99))
+    visual_risk_score = int(ai_gen_prob * 100)
+    ai_gen_probability = ai_gen_prob
     
     result = {
         "visual_risk_score": visual_risk_score,

@@ -9,26 +9,38 @@ class InferenceService:
     def __init__(self):
         # We run ONNX in a separate subprocess to avoid CUDA 12 vs 13.3 conflicts.
 
-        # Initialize Llama CPP for Surya OCR
-        self.llm = None
+        # Initialize Surya OCR using official library (v0.5.0)
+        self.det_processor = None
+        self.det_model = None
+        self.rec_model = None
+        self.rec_processor = None
+        
         try:
-            from llama_cpp import Llama
-            from llama_cpp.llama_chat_format import Qwen25VLChatHandler
+            import ctypes
+            import sys
+            try:
+                ctypes.CDLL(os.path.join(sys.prefix, "lib", "libbz2.so.1.0"), mode=ctypes.RTLD_GLOBAL)
+            except Exception:
+                pass
             
-            model_path = "/home/panuwat/project/model/surya/surya-2.gguf"
-            mmproj_path = "/home/panuwat/project/model/surya/surya-2-mmproj.gguf"
-            if os.path.exists(model_path) and os.path.exists(mmproj_path):
-                chat_handler = Qwen25VLChatHandler(clip_model_path=mmproj_path)
-                self.llm = Llama(
-                    model_path=model_path, 
-                    chat_handler=chat_handler, 
-                    n_ctx=8192, 
-                    n_gpu_layers=-1, 
-                    verbose=False
-                )
-                print(f"Loaded Surya OCR model from {model_path}")
+            # Set HF cache directory to the local model folder so models are saved there
+            os.environ["HF_HOME"] = "/home/panuwat/project/model/surya"
+            
+            import torch
+            # Disable cuDNN to prevent CUDNN_STATUS_SUBLIBRARY_VERSION_MISMATCH
+            torch.backends.cudnn.enabled = False
+            
+            from surya.ocr import run_ocr
+            from surya.model.detection.model import load_model as load_det_model, load_processor as load_det_processor
+            from surya.model.recognition.model import load_model as load_rec_model
+            from surya.model.recognition.processor import load_processor as load_rec_processor
+            
+            # Load models (will download from HF if not present)
+            self.det_processor, self.det_model = load_det_processor(), load_det_model()
+            self.rec_model, self.rec_processor = load_rec_model(), load_rec_processor()
+            print("Loaded official Surya OCR models successfully")
         except Exception as e:
-            print(f"Failed to load Surya OCR model: {e}")
+            print(f"Failed to load Surya OCR models: {e}")
 
     def predict(self, image_bytes: bytes) -> dict:
         """
@@ -47,6 +59,10 @@ class InferenceService:
             nvidia_lib_dirs = glob.glob(f"{venv_lib_path}/*/lib")
             env["LD_LIBRARY_PATH"] = ":".join(nvidia_lib_dirs)
             
+            # Re-enable CUDA for ONNX worker
+            if "CUDA_VISIBLE_DEVICES" in env and env["CUDA_VISIBLE_DEVICES"] == "":
+                del env["CUDA_VISIBLE_DEVICES"]
+            
             worker_path = os.path.join(os.path.dirname(__file__), "onnx_worker.py")
             process = subprocess.Popen(
                 [sys.executable, worker_path],
@@ -60,7 +76,9 @@ class InferenceService:
             stdout, stderr = process.communicate(input=b64_image.encode('utf-8'))
             
             if process.returncode == 0:
-                result = json.loads(stdout.decode('utf-8'))
+                # Parse only the last line as JSON to ignore any other print statements
+                lines = stdout.decode('utf-8').strip().split('\n')
+                result = json.loads(lines[-1])
                 visual_risk_score = result.get("visual_risk_score", visual_risk_score)
                 ai_gen_probability = result.get("ai_gen_probability", ai_gen_probability)
                 if result.get("heatmap_b64"):
@@ -70,23 +88,30 @@ class InferenceService:
         except Exception as e:
             print(f"Failed to run ONNX worker: {e}")
             
-        # 2. Run Surya OCR via LLaMA (in this process)
+        # 2. Run Surya OCR
         ocr_text = ""
-        if self.llm:
+        if self.det_model and self.rec_model:
             try:
-                image_b64 = base64.b64encode(image_bytes).decode('utf-8')
-                response = self.llm.create_chat_completion(
-                    messages=[
-                        {
-                            "role": "user",
-                            "content": [
-                                {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{image_b64}"}},
-                                {"type": "text", "text": "Extract all text from the image."}
-                            ]
-                        }
-                    ]
+                from surya.ocr import run_ocr
+                import io
+                from PIL import Image
+                
+                image = Image.open(io.BytesIO(image_bytes))
+                
+                # run_ocr expects list of images and list of language lists
+                predictions = run_ocr(
+                    [image], 
+                    [["th", "en"]], # Thai and English
+                    self.det_model, 
+                    self.det_processor, 
+                    self.rec_model, 
+                    self.rec_processor
                 )
-                ocr_text = response["choices"][0]["message"]["content"]
+                
+                # Extract text from prediction results
+                if predictions and len(predictions) > 0:
+                    text_lines = [line.text for line in predictions[0].text_lines]
+                    ocr_text = "\n".join(text_lines)
             except Exception as e:
                 print(f"Surya OCR error: {e}")
                 

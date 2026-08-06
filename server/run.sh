@@ -11,4 +11,5 @@ echo "[Info] LLaMA runs on system CUDA, ONNX worker uses local CUDA 12 env."
 
 # รันเซิร์ฟเวอร์
 source venv/bin/activate
+export LD_LIBRARY_PATH="$VIRTUAL_ENV/lib:$LD_LIBRARY_PATH"
 uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload

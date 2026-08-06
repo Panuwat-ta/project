@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>โมเดล AI — Surya OCR 2 - ScamGuard</title>
+  <title>โมเดล AI — Surya OCR - ScamGuard</title>
   <link
     href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
     rel="stylesheet">
@@ -14,15 +14,15 @@
 
 <body>
   <main class="document">
-    <h1>โมเดล AI — Surya OCR 2</h1>
-        <p class="lede"><strong>Surya-OCR 2</strong> คือโมเดล Modern OCR ที่ใช้ดึงข้อความและวิเคราะห์โครงสร้าง (Layout Detection) จากรูปภาพที่อัปโหลดเข้ามาระบบ โดยถูกจัดอยู่ใน <strong>Layer 1: Textual Analysis (ชั้นวิเคราะห์ข้อความ)</strong></p>
+    <h1>โมเดล AI — Surya OCR</h1>
+        <p class="lede"><strong>Surya-OCR</strong> คือโมเดล Modern OCR ที่ใช้ดึงข้อความและวิเคราะห์โครงสร้าง (Layout Detection) จากรูปภาพที่อัปโหลดเข้ามาระบบ โดยถูกจัดอยู่ใน <strong>Layer 1: Textual Analysis (ชั้นวิเคราะห์ข้อความ)</strong></p>
     <div class="divider"></div>
-    <h2>ทำไมถึงเลือก Surya OCR 2?</h2>
-    <p>โมเดลนี้ทำงานบนสถาปัตยกรรม Vision-Language Model (VLM) ในรูปแบบ <strong>GGUF Format</strong> (<code>datalab-to/surya-ocr-2-gguf</code>) ซึ่งมีคุณสมบัติดังนี้:</p>
+    <h2>ทำไมถึงเลือก Surya OCR?</h2>
+    <p>โมเดลนี้ทำงานบนเวอร์ชัน <strong>0.5.0 (Native PyTorch)</strong> ซึ่งมีคุณสมบัติดังนี้:</p>
     <ol>
     <li><strong>Multi-lingual Support:</strong> รองรับการอ่านกว่า 90 ภาษา รวมทั้งภาษาไทยและภาษาอังกฤษ</li>
-    <li><strong>GGUF Optimized:</strong> แปลงน้ำหนักโมเดลให้มีขนาดเล็กลง (Quantization) กินทรัพยากรน้อย แต่ยังคงความแม่นยำ เหมาะกับการรันบน Local Server ผ่าน <code>llama.cpp</code></li>
-    <li><strong>Layout Detection:</strong> สามารถวิเคราะห์โครงสร้างเอกสาร แยกแยะบรรทัด และจัดกลุ่มฟิลด์บนสลิปโอนเงินได้ถูกต้อง</li>
+    <li><strong>Native PyTorch Inference:</strong> รันโมเดลผ่านสถาปัตยกรรม PyTorch และใช้งานทรัพยากร GPU (CUDA) ได้เต็มประสิทธิภาพโดยตรง</li>
+    <li><strong>Layout Detection:</strong> สามารถวิเคราะห์โครงสร้างเอกสาร แยกแยะบรรทัด และจัดกลุ่มฟิลด์บนสลิปโอนเงินได้แม่นยำสูง</li>
     <li><strong>Robust to Noise:</strong> ทนทานต่อภาพเบลอ ภาพที่ถูกบีบอัด หรือภาพจากสกรีนช็อตผ่านแอปแชต</li>
     </ol>
     <h2>อัลกอริทึมและสมการคณิตศาสตร์ (Mathematical Formulation)</h2>
