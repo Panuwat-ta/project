@@ -124,8 +124,8 @@ export function Dashboard() {
                 <XAxis dataKey="name" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
                 <YAxis stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: 'var(--popover)', borderColor: 'var(--border)', borderRadius: '8px', color: 'var(--popover-foreground)' }}
-                  itemStyle={{ color: 'var(--chart-1)' }}
+                  contentClassName="bg-popover border-border rounded-lg text-popover-foreground"
+                  itemClassName="text-chart-1"
                 />
                 <Area type="monotone" dataKey="count" stroke="var(--chart-1)" strokeWidth={2} fillOpacity={1} fill="url(#colorCount)" />
               </AreaChart>
@@ -154,7 +154,7 @@ export function Dashboard() {
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip contentStyle={{ backgroundColor: 'var(--popover)', borderColor: 'var(--border)', borderRadius: '8px', color: 'var(--popover-foreground)' }} />
+                <Tooltip contentClassName="bg-popover border-border rounded-lg text-popover-foreground" />
               </PieChart>
             </ResponsiveContainer>
             <div className="absolute flex flex-col items-center justify-center text-center pointer-events-none">
@@ -187,7 +187,7 @@ export function Dashboard() {
                 <YAxis dataKey="name" type="category" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} width={100} />
                 <Tooltip 
                   cursor={{fill: 'var(--muted)'}}
-                  contentStyle={{ backgroundColor: 'var(--popover)', borderColor: 'var(--border)', borderRadius: '8px', color: 'var(--popover-foreground)' }}
+                  contentClassName="bg-popover border-border rounded-lg text-popover-foreground"
                 />
                 <Bar dataKey="value" fill="var(--chart-1)" radius={[0, 4, 4, 0]} barSize={20}>
                   {categoryData.map((entry, index) => (
