@@ -6,7 +6,7 @@ import markdown
 import shutil
 
 WIKI_DIR = "/home/panuwat/project/wiki"
-OUT_DIR = "/home/panuwat/project/wed-ScamGuard"
+OUT_DIR = "/home/panuwat/project/web-ScamGuard"
 INDEX_HTML = "/home/panuwat/project/index.html"
 
 CATEGORIES = [
@@ -46,6 +46,15 @@ HTML_TEMPLATE = """<!doctype html>
   <script>
     mermaid.initialize({{ startOnLoad: true, theme: 'base', themeVariables: {{ primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' }} }});
   </script>
+  <script>
+    MathJax = {{
+      tex: {{
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      }}
+    }};
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
   <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
   <script>
@@ -155,7 +164,7 @@ def convert_markdown_to_html(md_content):
     # Pre-process alerts
     md_content = re.sub(r'> \[!(\w+)\]\n', r'> **\1:**<br />\n', md_content)
     
-    html = markdown.markdown(md_content, extensions=['fenced_code', 'tables'])
+    html = markdown.markdown(md_content, extensions=['fenced_code', 'tables', 'mdx_math'])
     
     # Post-process html structure for the theme
     html = html.replace('<hr />', '<div class="divider"></div>')
@@ -244,8 +253,8 @@ def build():
             with open(out_file, 'w', encoding='utf-8') as f:
                 f.write(final_html)
                 
-            # Wed-ScamGuard relative path for index.html
-            portal_path = "wed-ScamGuard/" + html_rel.replace(os.sep, '/')
+            # Web-ScamGuard relative path for index.html
+            portal_path = "web-ScamGuard/" + html_rel.replace(os.sep, '/')
             doc_entry["sub_titles"].append({
                 "title": file_info['title'],
                 "path": portal_path

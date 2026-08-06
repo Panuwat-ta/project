@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>สถาปัตยกรรม Mobile App - ScamGuard</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../shared-theme.css">
+</head>
+
+<body>
+  <main class="document">
+    <h1>สถาปัตยกรรม Mobile App</h1>
+        <p class="lede">แอปพลิเคชัน Android ที่พัฒนาด้วย Flutter สำหรับผู้ใช้ทั่วไปในการส่งรูปภาพและรับรายงานความเสี่ยง</p>
+    <div class="divider"></div>
+    <h2>เทคโนโลยีที่ใช้</h2>
+    <ul>
+    <li><strong>Framework:</strong> Flutter (Dart)</li>
+    <li><strong>Platform:</strong> Android (หลัก) — iOS ไม่อยู่ในขอบเขต v1</li>
+    <li><strong>รูปแบบสถาปัตยกรรม:</strong> Clean Architecture + MVVM</li>
+    <li><strong>State Management:</strong> BLoC (Business Logic Component)</li>
+    <li><strong>HTTP Client:</strong> Dio (พร้อม Secure Storage สำหรับ JWT Token)</li>
+    </ul>
+    <div class="divider"></div>
+    <h2>ชั้นของ Clean Architecture</h2>
+    <table>
+    <thead>
+    <tr>
+    <th style="text-align: left;">ชั้น</th>
+    <th style="text-align: left;">หน้าที่</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td style="text-align: left;">Presentation Layer</td>
+    <td style="text-align: left;">Flutter Widgets, หน้าจอต่างๆ, สถานะ UI</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Domain Layer</td>
+    <td style="text-align: left;">Use Case, Business Rules, Entities</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Data Layer</td>
+    <td style="text-align: left;">API Client, Local Storage, Repository Implementation</td>
+    </tr>
+    </tbody>
+    </table>
+    <p>การแบ่งชั้นนี้ทำให้ UI ไม่ขึ้นตรงต่อ Networking หรือ Business Logic โดยตรง ทำให้ทดสอบและบำรุงรักษาได้ง่าย</p>
+    <div class="divider"></div>
+    <h2>หน้าจอหลัก / User Flow</h2>
+    <ol>
+    <li><strong>หน้าจอ Authentication</strong> — สมัครสมาชิก, Login (email/password + Google OAuth)</li>
+    <li><strong>หน้าจอรับรูปภาพ</strong> — เลือกจาก Gallery หรือถ่ายด้วยกล้อง พร้อม Image Cropper เพื่อโฟกัสบริเวณที่ต้องการตรวจก่อนส่ง</li>
+    <li><strong>หน้าจอรอประมวลผล</strong> — แสดงระหว่าง Pipeline ทำงาน (สูงสุด 15 วินาที หรือเกือบทันทีสำหรับ Cache Hit)</li>
+    <li><strong>หน้าจอรายงานความเสี่ยง</strong> — แสดง:</li>
+    <li>Weighted Risk Score แบบ color gauge (เขียว / เหลือง / แดง)</li>
+    <li>Grad-CAM Heatmap ซ้อนทับรูป — toggle เปิด/ปิดได้</li>
+    <li>คำหลอกลวงที่พบ (ถ้ามี)</li>
+    <li>ผลการ Reverse Image Search</li>
+    <li>คะแนนแยกตามชั้นการวิเคราะห์</li>
+    <li><strong>หน้าจอประวัติสแกน</strong> — รายการสแกนก่อนหน้าพร้อม timestamp และคะแนน พร้อมการควบคุม PDPA</li>
+    <li><strong>หน้าจอรายงาน Scam</strong> — ผู้ใช้แจ้งว่าภาพนี้เป็น Scam จริงเพื่อให้ Admin ตรวจสอบ</li>
+    </ol>
+    <div class="divider"></div>
+    <h2>ขั้นตอนการอัปโหลดรูปภาพ</h2>
+    <pre><code>ผู้ใช้เลือก/ถ่ายรูป
+            |
+      Image Cropper (ถ้าต้องการ)
+            |
+      Multipart HTTP POST → API Gateway
+            |
+      Polling หรือ WebSocket รอผลลัพธ์
+      (หรือรับ FCM Push Notification เมื่อ Async Job เสร็จ)
+            |
+      แสดงหน้าจอรายงานความเสี่ยง
+    </code></pre>
+    <div class="divider"></div>
+    <h2>ความปลอดภัยใน App</h2>
+    <ul>
+    <li>JWT Token เก็บใน <strong>Secure Storage</strong> (ไม่ใช่ SharedPreferences หรือไฟล์ธรรมดา)</li>
+    <li>ไม่เก็บข้อมูลรูปภาพบนอุปกรณ์หลังส่งประมวลผลแล้ว</li>
+    <li>แสดงหน้าจอยินยอม PDPA ตอน Launch ครั้งแรก สามารถถอนยินยอมได้ในหน้าตั้งค่า</li>
+    </ul>
+    <div class="divider"></div>
+    <h2>โครงสร้างโฟลเดอร์ Flutter</h2>
+    <pre><code>lib/
+      core/           # Config ส่วนกลาง, Theme, Routing, DI
+      features/
+        auth/         # Login, Register screens + BLoC
+        scan/         # อัปโหลดรูป, แสดงผล, ประวัติ
+        report/       # ส่งรายงาน Scam
+      main.dart
+    </code></pre>
+    <blockquote>
+    <p><strong>NOTE:</strong><br />
+    โครงสร้างโฟลเดอร์โดยละเอียดพร้อม Feature subdirectory ทั้งหมดอยู่ใน <code>design/mobile.md</code> ซึ่งยังไม่ได้ ingest ครบ</p>
+    </blockquote>
+    <div class="divider"></div>
+    <h2>Admin Portal (แยกต่างหาก)</h2>
+    <p>Admin Web Portal เป็น React.js + Tailwind CSS แยกต่างหากสำหรับใช้งานภายใน ไม่ใช่ Mobile App ดู  สำหรับ Endpoint ที่ใช้</p>
+    <p><strong>ความสามารถของ Admin Portal:</strong></p>
+    <ul>
+    <li>Dashboard สถิติระบบและ Accuracy Metrics</li>
+    <li>Report Management — ตรวจสอบและยืนยัน/ปฏิเสธรายงาน Scam จากผู้ใช้</li>
+    <li>Data Enrichment — รวบรวมรูปภาพ Scam ที่ยืนยันแล้วสำหรับ Training Dataset</li>
+    <li>Model Deployment — อัปโหลดและเปิดใช้งาน Model Weight ใหม่</li>
+    </ul>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
+  </script>
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\(', '\)']],
+        displayMath: [['$$', '$$'], ['\[', '\]']]
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.mermaid-container').forEach(container => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-expand-mermaid';
+        btn.innerHTML = '🔍 Fullscreen';
+
+        btn.onclick = () => {
+          const originalSvg = container.querySelector('svg');
+          if (!originalSvg) return;
+
+          const overlay = document.createElement('div');
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.backgroundColor = 'var(--paper, #F6F4EE)';
+          overlay.style.zIndex = '999999';
+          overlay.style.display = 'flex';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+
+          const closeBtn = document.createElement('button');
+          closeBtn.innerHTML = '✖ Close';
+          closeBtn.style.position = 'absolute';
+          closeBtn.style.top = '20px';
+          closeBtn.style.right = '20px';
+          closeBtn.style.padding = '8px 16px';
+          closeBtn.style.fontSize = '1rem';
+          closeBtn.style.fontWeight = 'bold';
+          closeBtn.style.cursor = 'pointer';
+          closeBtn.style.backgroundColor = '#ff4d4d';
+          closeBtn.style.color = '#fff';
+          closeBtn.style.border = 'none';
+          closeBtn.style.borderRadius = '8px';
+          closeBtn.style.zIndex = '1000000';
+          closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+
+          closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
+          closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
+
+          const clonedSvg = originalSvg.cloneNode(true);
+          clonedSvg.style.width = '100%';
+          clonedSvg.style.height = '100%';
+          clonedSvg.style.maxWidth = '100vw';
+          clonedSvg.style.maxHeight = '100vh';
+
+          overlay.appendChild(clonedSvg);
+          overlay.appendChild(closeBtn);
+          document.body.appendChild(overlay);
+
+          const oldOverflow = document.body.style.overflow;
+          document.body.style.overflow = 'hidden';
+
+          const panZoomInstance = svgPanZoom(clonedSvg, {
+            zoomEnabled: true,
+            controlIconsEnabled: true,
+            fit: true,
+            center: true,
+            minZoom: 0.5,
+            maxZoom: 10,
+            mouseWheelZoomEnabled: true
+          });
+
+          closeBtn.onclick = () => {
+            panZoomInstance.destroy();
+            document.body.removeChild(overlay);
+            document.body.style.overflow = oldOverflow;
+          };
+        };
+        container.appendChild(btn);
+      });
+    });
+  </script>
+</body>
+</html>

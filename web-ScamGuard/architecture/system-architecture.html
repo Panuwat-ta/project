@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>สถาปัตยกรรมระบบ (System Architecture) - ScamGuard</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../shared-theme.css">
+</head>
+
+<body>
+  <main class="document">
+    <h1>สถาปัตยกรรมระบบ</h1>
+        <p class="lede">สถาปัตยกรรมแบบ Cloud-Native และ Decoupled 3 ชั้น สำหรับระบบ Scam Image Detection</p>
+    <div class="divider"></div>
+    <h2>หลักการออกแบบ</h2>
+    <ul>
+    <li><strong>Cloud-Native Architecture</strong> — บริการรันบน Cloud Container; Storage อยู่บน Cloud</li>
+    <li><strong>Decoupled Architecture</strong> — Mobile Frontend แยกจาก Business Logic; AI Inference Node แยกจาก API Gateway ช่วยให้ Scale GPU Inference อย่างอิสระโดยไม่ต้อง Scale ทั้ง Backend</li>
+    <li><strong>Microservices</strong> — API Application และ AI Inference Service เป็นหน่วยที่ Deploy แยกกันได้</li>
+    </ul>
+    <div class="divider"></div>
+    <h2>3 ชั้นของระบบ</h2>
+    <pre><code>+---------------------------+
+    |   ชั้นการแสดงผล          |   Flutter Mobile App (Android)
+    |   (Presentation Layer)    |   React.js Admin Portal
+    +---------------------------+
+                |  HTTPS/REST
+    +---------------------------+
+    |   ชั้นธุรกิจและประมวลผล  |   FastAPI API Application (Orchestrator)
+    |   (Backend Layer)         |   AI Inference Service (PyTorch/ONNX)
+    +---------------------------+
+                |
+    +---------------------------+
+    |   ชั้นข้อมูลและจัดเก็บ   |   PostgreSQL (ข้อมูลเชิงสัมพันธ์)
+    |   (Data &amp; Storage Layer)  |   Redis (Image Hash Cache)
+    |                           |   Cloud Storage (ไฟล์รูปและ Heatmap)
+    +---------------------------+
+    </code></pre>
+    <div class="divider"></div>
+    <h2>C1: บริบทระบบ (System Context)</h2>
+    <table>
+    <thead>
+    <tr>
+    <th style="text-align: left;">ผู้ใช้/ระบบ</th>
+    <th style="text-align: left;">ประเภท</th>
+    <th style="text-align: left;">บทบาท</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td style="text-align: left;">ผู้ใช้ทั่วไป (General User)</td>
+    <td style="text-align: left;">บุคคล</td>
+    <td style="text-align: left;">อัปโหลดรูป, ดูรายงานความเสี่ยง</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Admin / นักวิจัย (Researcher)</td>
+    <td style="text-align: left;">บุคคล</td>
+    <td style="text-align: left;">ตรวจสอบเคสที่รายงาน, จัดการโมเดลและข้อมูล</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Scam Image Detection App</td>
+    <td style="text-align: left;">Software System</td>
+    <td style="text-align: left;">ขอบเขตระบบหลัก</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Google Vision API / Bing Visual Search</td>
+    <td style="text-align: left;">ระบบภายนอก</td>
+    <td style="text-align: left;">Reverse Image Search สำหรับ Source Verification</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Firebase Cloud Messaging (FCM)</td>
+    <td style="text-align: left;">ระบบภายนอก</td>
+    <td style="text-align: left;">Push Notification เมื่อประมวลผลแบบ Async เสร็จ</td>
+    </tr>
+    </tbody>
+    </table>
+    <div class="divider"></div>
+    <h2>C2: แผนที่ Container</h2>
+    <table>
+    <thead>
+    <tr>
+    <th style="text-align: left;">Container</th>
+    <th style="text-align: left;">เทคโนโลยี</th>
+    <th style="text-align: left;">ความรับผิดชอบ</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td style="text-align: left;">Mobile App</td>
+    <td style="text-align: left;">Flutter</td>
+    <td style="text-align: left;">แอปผู้ใช้: อัปโหลดรูป, แสดงผลลัพธ์</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Admin Portal</td>
+    <td style="text-align: left;">React.js + Tailwind</td>
+    <td style="text-align: left;">Dashboard, จัดการรายงาน, Deploy โมเดล</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">API Application</td>
+    <td style="text-align: left;">Python FastAPI</td>
+    <td style="text-align: left;">Orchestrator, Auth, OCR/NLP, ประสานงาน Job</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">AI Inference Service</td>
+    <td style="text-align: left;">PyTorch / ONNX Runtime</td>
+    <td style="text-align: left;">ELA, ตรวจจับ AI-Gen, สร้าง Grad-CAM</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Main DB</td>
+    <td style="text-align: left;">PostgreSQL</td>
+    <td style="text-align: left;">ผู้ใช้, ประวัติสแกน, รายงาน, Log</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Cache Store</td>
+    <td style="text-align: left;">Redis</td>
+    <td style="text-align: left;">ค้นหา Image Hash, Cache ผลลัพธ์</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Object Storage</td>
+    <td style="text-align: left;">Cloud Storage</td>
+    <td style="text-align: left;">รูปภาพดิบ, Heatmap Overlay</td>
+    </tr>
+    </tbody>
+    </table>
+    <div class="divider"></div>
+    <h2>โปรโตคอลการสื่อสาร</h2>
+    <table>
+    <thead>
+    <tr>
+    <th style="text-align: left;">การเชื่อมต่อ</th>
+    <th style="text-align: left;">โปรโตคอล</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td style="text-align: left;">Mobile/Admin → API Gateway</td>
+    <td style="text-align: left;">HTTPS / REST JSON</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">API Gateway → AI Inference Service</td>
+    <td style="text-align: left;">HTTP (ภายใน)</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">API Gateway → PostgreSQL</td>
+    <td style="text-align: left;">SQLAlchemy ORM ผ่าน TCP</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">API Gateway → Redis</td>
+    <td style="text-align: left;">Redis Protocol</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">API Gateway → Cloud Storage</td>
+    <td style="text-align: left;">Cloud SDK (Presigned URLs สำหรับ Client)</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">API Gateway → Google Vision API</td>
+    <td style="text-align: left;">HTTPS / REST</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">API Gateway → FCM</td>
+    <td style="text-align: left;">HTTPS / REST</td>
+    </tr>
+    </tbody>
+    </table>
+    <div class="divider"></div>
+    <h2>ความปลอดภัย</h2>
+    <ul>
+    <li>การสื่อสาร Client-Server ทั้งหมดผ่าน HTTPS/TLS</li>
+    <li>JWT Token สำหรับ Authentication เก็บใน Secure Storage บนอุปกรณ์</li>
+    <li>RBAC แยกสิทธิ์ User และ Admin อย่างเด็ดขาด</li>
+    <li>การจัดการยินยอม (Consent) ตาม PDPA สำหรับข้อกำหนดความปลอดภัยและ Compliance ทั้งหมด</li>
+    </ul>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
+  </script>
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\(', '\)']],
+        displayMath: [['$$', '$$'], ['\[', '\]']]
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.mermaid-container').forEach(container => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-expand-mermaid';
+        btn.innerHTML = '🔍 Fullscreen';
+
+        btn.onclick = () => {
+          const originalSvg = container.querySelector('svg');
+          if (!originalSvg) return;
+
+          const overlay = document.createElement('div');
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.backgroundColor = 'var(--paper, #F6F4EE)';
+          overlay.style.zIndex = '999999';
+          overlay.style.display = 'flex';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+
+          const closeBtn = document.createElement('button');
+          closeBtn.innerHTML = '✖ Close';
+          closeBtn.style.position = 'absolute';
+          closeBtn.style.top = '20px';
+          closeBtn.style.right = '20px';
+          closeBtn.style.padding = '8px 16px';
+          closeBtn.style.fontSize = '1rem';
+          closeBtn.style.fontWeight = 'bold';
+          closeBtn.style.cursor = 'pointer';
+          closeBtn.style.backgroundColor = '#ff4d4d';
+          closeBtn.style.color = '#fff';
+          closeBtn.style.border = 'none';
+          closeBtn.style.borderRadius = '8px';
+          closeBtn.style.zIndex = '1000000';
+          closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+
+          closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
+          closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
+
+          const clonedSvg = originalSvg.cloneNode(true);
+          clonedSvg.style.width = '100%';
+          clonedSvg.style.height = '100%';
+          clonedSvg.style.maxWidth = '100vw';
+          clonedSvg.style.maxHeight = '100vh';
+
+          overlay.appendChild(clonedSvg);
+          overlay.appendChild(closeBtn);
+          document.body.appendChild(overlay);
+
+          const oldOverflow = document.body.style.overflow;
+          document.body.style.overflow = 'hidden';
+
+          const panZoomInstance = svgPanZoom(clonedSvg, {
+            zoomEnabled: true,
+            controlIconsEnabled: true,
+            fit: true,
+            center: true,
+            minZoom: 0.5,
+            maxZoom: 10,
+            mouseWheelZoomEnabled: true
+          });
+
+          closeBtn.onclick = () => {
+            panZoomInstance.destroy();
+            document.body.removeChild(overlay);
+            document.body.style.overflow = oldOverflow;
+          };
+        };
+        container.appendChild(btn);
+      });
+    });
+  </script>
+</body>
+</html>
