@@ -61,7 +61,7 @@ updated: 2026-08-02
 | Mobile App | Flutter | แอปผู้ใช้: อัปโหลดรูป, แสดงผลลัพธ์ |
 | Admin Portal | React.js + Tailwind | Dashboard, จัดการรายงาน, Deploy โมเดล |
 | API Application | Python FastAPI | Orchestrator, Auth, OCR/NLP, ประสานงาน Job |
-| AI Inference Service | PyTorch / ONNX Runtime | ELA, ตรวจจับ AI-Gen, สร้าง Grad-CAM |
+| AI Inference Service | PyTorch / ONNX Runtime | Semantic Segmentation, ตรวจจับ AI-Gen, สร้าง Heatmap |
 | Main DB | PostgreSQL | ผู้ใช้, ประวัติสแกน, รายงาน, Log |
 | Cache Store | Redis | ค้นหา Image Hash, Cache ผลลัพธ์ |
 | Object Storage | Cloud Storage | รูปภาพดิบ, Heatmap Overlay |

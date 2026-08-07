@@ -60,7 +60,7 @@
     <ul>
     <li><strong>Image Forgery Detection:</strong> การตรวจสอบการปลอมแปลงรูปภาพ</li>
     <li><strong>Explainable AI (XAI):</strong> ปัญญาประดิษฐ์ที่อธิบายได้</li>
-    <li><strong>Grad-CAM (Heatmap):</strong> แผนที่ความร้อนระบุจุดผิดปกติ</li>
+    <li><strong>Heatmap (Heatmap):</strong> แผนที่ความร้อนระบุจุดผิดปกติ</li>
     <li><strong>Multi-layer Analysis:</strong> การวิเคราะห์ข้อมูลแบบหลายชั้น</li>
     <li><strong>Microservices Architecture:</strong> สถาปัตยกรรมไมโครเซอร์วิส</li>
     <li><strong>PDPA (Personal Data Protection Act):</strong> พระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล</li>
@@ -68,7 +68,7 @@
     <div class="divider"></div>
     <h2>2. คำอธิบายโดยรวม (Overall Description)</h2>
     <h3>2.1 มุมมองของผลิตภัณฑ์ (Product Perspective)</h3>
-    <p>ระบบตรวจสอบภาพหลอกลวงได้รับการพัฒนาให้อยู่ในรูปของแอปพลิเคชันบนสมาร์ทโฟน (Flutter) เพื่อให้เข้าถึงง่าย ทำงานร่วมกับ API Gateway ฝั่งระบบหลังบ้าน (FastAPI) และระบบบริการตรวจสอบวิเคราะห์ปัญญาประดิษฐ์ (AI Inference Service) เพื่อส่งผลลัพธ์ที่เป็นระดับความเสี่ยง (Risk Score) และคำอธิบายเชิงภาพ (Grad-CAM Heatmap) กลับไปยังผู้ใช้</p>
+    <p>ระบบตรวจสอบภาพหลอกลวงได้รับการพัฒนาให้อยู่ในรูปของแอปพลิเคชันบนสมาร์ทโฟน (Flutter) เพื่อให้เข้าถึงง่าย ทำงานร่วมกับ API Gateway ฝั่งระบบหลังบ้าน (FastAPI) และระบบบริการตรวจสอบวิเคราะห์ปัญญาประดิษฐ์ (AI Inference Service) เพื่อส่งผลลัพธ์ที่เป็นระดับความเสี่ยง (Risk Score) และคำอธิบายเชิงภาพ (Heatmap) กลับไปยังผู้ใช้</p>
     <h4>2.1.1 แผนภาพ Context Diagram (C1)</h4>
     <p>แสดงขอบเขตและการแลกเปลี่ยนข้อมูลระหว่างผู้ใช้ ระบบ และบริการภายนอก:</p>
     <div class="mermaid-container"><div class="mermaid">flowchart TD
@@ -122,9 +122,9 @@
     <li><strong>Push Notification Service:</strong> บริการส่งการแจ้งเตือน Firebase Cloud Messaging (FCM) ในการส่งข้อมูลแจ้งเตือน (Push Notification) ไปยังอุปกรณ์ของผู้ใช้เมื่อระบบวิเคราะห์ผลลัพธ์ในเบื้องหลังเสร็จสมบูรณ์</li>
     <li><strong>สรุปขั้นตอนการทำงาน (Workflow Scenario):</strong></li>
     <li><strong>User</strong> อัปโหลดรูปภาพที่ต้องการตรวจสอบเข้ามาในระบบผ่านแอปพลิเคชันมือถือ</li>
-    <li><strong>System</strong> ตรวจสอบความละเอียด ร่องรอยการตัดต่อ (ELA) และส่งข้อมูลสกัดภาพไปสืบค้นแหล่งที่มาผ่าน Google/Bing API</li>
+    <li><strong>System</strong> ตรวจสอบความละเอียด ร่องรอยการตัดต่อ (Semantic Segmentation) และส่งข้อมูลสกัดภาพไปสืบค้นแหล่งที่มาผ่าน Google/Bing API</li>
     <li>ระบบประมวลผลคำนวณความเสี่ยง และส่งคำสั่งแจ้งเตือนผ่านบริการ FCM ไปยังผู้ใช้งาน</li>
-    <li>ผู้ใช้เปิดตรวจสอบรายงานผลลัพธ์ดัชนีความเสี่ยงพร้อมแผนที่ความร้อน (Grad-CAM Heatmap)</li>
+    <li>ผู้ใช้เปิดตรวจสอบรายงานผลลัพธ์ดัชนีความเสี่ยงพร้อมแผนที่ความร้อน (Heatmap)</li>
     <li>หากภาพเป็นรูปแบบกลโกงใหม่ ผู้ใช้สามารถกดรายงานเพื่อส่งข้อมูลไปให้ Admin ทำการอัปเดตโมเดลในอนาคต</li>
     </ul>
     <h4>2.1.2 แผนภาพ Container Diagram (C2)</h4>
@@ -152,7 +152,7 @@
     
             subgraph Backends [Backend & API Layer]
                 APIGateway("API Application<br>[Container: Python FastAPI]<br>จัดการ Logic หลัก, ดึง Metadata,<br>ตรวจสอบ OCR")
-                AIInference("AI Inference Service<br>[Container: PyTorch / ONNX]<br>ตรวจการตัดต่อ (ELA),<br>เช็คว่าเป็นภาพ AI")
+                AIInference("AI Inference Service<br>[Container: PyTorch / ONNX]<br>ตรวจการตัดต่อ (Semantic Segmentation),<br>เช็คว่าเป็นภาพ AI")
             end
     
             subgraph Storages [Storage & Cache Layer]
@@ -194,11 +194,11 @@
     <p>สถาปัตยกรรมของระบบ Scam Image Detection ถูกออกแบบภายใต้แนวคิด <strong>Microservices</strong> และ <strong>Cloud-Native Architecture</strong> เพื่อให้ระบบสามารถรองรับการประมวลผลข้อมูลรูปภาพและโมเดลปัญญาประดิษฐ์ (ซึ่งใช้ทรัพยากรการคำนวณสูง) ได้อย่างมีประสิทธิภาพ โดยไม่ส่งผลกระทบต่อความเร็วในการตอบสนองของแอปพลิเคชัน ภายในขอบเขตของระบบ (System Boundary) ประกอบด้วยคอนเทนเนอร์หลัก 3 ส่วน ดังนี้:</p>
     <ul>
     <li><strong>1. ส่วนติดต่อผู้ใช้งาน (Frontend Containers):</strong></li>
-    <li><strong>Mobile App (Flutter):</strong> แอปพลิเคชันบนสมาร์ทโฟนสำหรับผู้ใช้งานทั่วไป (General User) ทำหน้าที่รับส่งไฟล์ภาพและแสดงผลคะแนนความเสี่ยง (Risk Score) พร้อมแผนที่ความร้อน (Grad-CAM Heatmap)</li>
+    <li><strong>Mobile App (Flutter):</strong> แอปพลิเคชันบนสมาร์ทโฟนสำหรับผู้ใช้งานทั่วไป (General User) ทำหน้าที่รับส่งไฟล์ภาพและแสดงผลคะแนนความเสี่ยง (Risk Score) พร้อมแผนที่ความร้อน (Heatmap)</li>
     <li><strong>Admin Web Portal (React + Admin UI):</strong> เว็บแอปสำหรับแอดมินใช้ตรวจสอบสถิติระบบ บริหารจัดการบัญชีผู้ใช้งาน (CRUD) ตรวจสอบรูปภาพสแกมที่รายงาน และอัปเดตโมเดล AI</li>
     <li><strong>2. ส่วนประมวลผลหลัก (Backend Containers):</strong></li>
     <li><strong>API Application (FastAPI):</strong> ทำหน้าที่เป็น API Gateway รับส่งข้อมูล และประมวลผลตรรกะทางธุรกิจ เช่น การยืนยันตัวตน ดึงข้อมูลแฝง (Metadata) และตรวจสอบ OCR เบื้องต้น</li>
-    <li><strong>AI Inference Service (PyTorch / ONNX):</strong> เซอร์วิสวิเคราะห์โมเดล AI โดยเฉพาะ ทำการตรวจสอบรูปภาพว่าถูกตัดต่อ (ELA) หรือสร้างจากปัญญาประดิษฐ์ (AI-Generated Image) หรือไม่</li>
+    <li><strong>AI Inference Service (PyTorch / ONNX):</strong> เซอร์วิสวิเคราะห์โมเดล AI โดยเฉพาะ ทำการตรวจสอบรูปภาพว่าถูกตัดต่อ (Semantic Segmentation) หรือสร้างจากปัญญาประดิษฐ์ (AI-Generated Image) หรือไม่</li>
     <li><strong>3. ส่วนจัดเก็บข้อมูล (Storage Containers):</strong></li>
     <li><strong>Cache (Redis):</strong> เก็บบันทึกข้อมูลผลการสแกนภาพล่าสุด เพื่อนำกลับมาแสดงผลทันทีโดยไม่ต้องประมวลผลใหม่ (Cache Hit) เมื่อส่งรูปเดิมเข้ามาซ้ำ</li>
     <li><strong>Object Storage (Cloud Storage):</strong> จัดเก็บข้อมูลรูปภาพดิบที่ผู้ใช้อัปโหลดเข้ามาและรูปภาพผลลัพธ์ของ Heatmap</li>
@@ -211,7 +211,7 @@
     <ul>
     <li><strong>Frontend:</strong> Flutter (แอปพลิเคชันมือถือ), React.js (หน้าเว็บแอดมิน)</li>
     <li><strong>Backend:</strong> Python FastAPI (API Gateway และ Core Service)</li>
-    <li><strong>AI Engine:</strong> PyTorch / ONNX (สำหรับ AI Inference), รันการดัดแปลงภาพด้วย PSCC-Net และ SegFormer</li>
+    <li><strong>AI Engine:</strong> PyTorch / ONNX (สำหรับ AI Inference), รันการดัดแปลงภาพด้วย SegFormer และ SegFormer</li>
     <li><strong>Database &amp; Caching:</strong> PostgreSQL (ฐานข้อมูลหลัก), Redis (สำหรับจัดเก็บข้อมูลแคช)</li>
     <li><strong>Object Storage:</strong> ระบบจัดเก็บไฟล์บนคลาวด์ (Cloud Storage) (สำหรับรูปภาพและ Heatmap)</li>
     <li><strong>Deployment:</strong> Docker &amp; Containerization</li>
@@ -222,7 +222,7 @@
     <li>เลือกและอัปโหลดรูปภาพเพื่อตรวจสอบ</li>
     <li>ถอดข้อความจากรูปภาพ วิเคราะห์ประเด็นหลอกลวง และค้นหาแหล่งที่มาของรูปภาพ</li>
     <li>ส่งรูปภาพตรวจสอบผ่านโมเดลปัญญาประดิษฐ์เพื่อหาจุดตัดต่อและระบุดัชนีความเสี่ยง</li>
-    <li>แสดงผลวิเคราะห์ภาพพร้อมแผนที่ความร้อน (Grad-CAM Heatmap)</li>
+    <li>แสดงผลวิเคราะห์ภาพพร้อมแผนที่ความร้อน (Heatmap)</li>
     <li>การแจ้งเตือนผู้ใช้งานเมื่อวิเคราะห์ภาพในเบื้องหลังเสร็จสิ้น (Push Notification)</li>
     <li>บันทึกประวัติและรายงานรูปภาพที่น่าสงสัย</li>
     <li>แดชบอร์ดตรวจสอบสถิติและเครื่องมืออัปเดตโมเดล AI สำหรับผู้ดูแลระบบ</li>
@@ -335,11 +335,11 @@
     </tr>
     <tr>
     <td style="text-align: left;"><strong>FR-04</strong></td>
-    <td style="text-align: left;"><strong>ระบบวิเคราะห์ด้วยปัญญาประดิษฐ์ (AI Inference):</strong> ระบบส่งภาพเข้าสู่โมเดล Deep Learning เพื่อตรวจสอบร่องรอยการตัดต่อ (Image Forgery/ELA) และตรวจสอบภาพที่สร้างด้วยปัญญาประดิษฐ์ (AI-Generated)</td>
+    <td style="text-align: left;"><strong>ระบบวิเคราะห์ด้วยปัญญาประดิษฐ์ (AI Inference):</strong> ระบบส่งภาพเข้าสู่โมเดล Deep Learning เพื่อตรวจสอบร่องรอยการตัดต่อ (Image Forgery/Semantic Segmentation) และตรวจสอบภาพที่สร้างด้วยปัญญาประดิษฐ์ (AI-Generated)</td>
     </tr>
     <tr>
     <td style="text-align: left;"><strong>FR-05</strong></td>
-    <td style="text-align: left;"><strong>ระบบแสดงผลลัพธ์ (Result &amp; Visualization):</strong> ระบบคำนวณคะแนนความเสี่ยงรวม (Weighted Risk Score) และสร้างแผนที่ความร้อน (Grad-CAM Heatmap) เพื่ออธิบายผลลัพธ์ให้ผู้ใช้เข้าใจ</td>
+    <td style="text-align: left;"><strong>ระบบแสดงผลลัพธ์ (Result &amp; Visualization):</strong> ระบบคำนวณคะแนนความเสี่ยงรวม (Weighted Risk Score) และสร้างแผนที่ความร้อน (Heatmap) เพื่ออธิบายผลลัพธ์ให้ผู้ใช้เข้าใจ</td>
     </tr>
     <tr>
     <td style="text-align: left;"><strong>FR-06</strong></td>
@@ -580,14 +580,14 @@
     <td style="text-align: left;"><strong>UC-04</strong></td>
     <td style="text-align: left;">วิเคราะห์ด้วยปัญญาประดิษฐ์ (AI Inference)</td>
     <td style="text-align: center;">System</td>
-    <td style="text-align: left;">ระบบประมวลผลผ่านโมเดล Deep Learning เพื่อตรวจหาการตัดต่อ (ELA) และการใช้ AI สร้างภาพ</td>
+    <td style="text-align: left;">ระบบประมวลผลผ่านโมเดล Deep Learning เพื่อตรวจหาการตัดต่อ (Semantic Segmentation) และการใช้ AI สร้างภาพ</td>
     <td style="text-align: center;">FR-04</td>
     </tr>
     <tr>
     <td style="text-align: left;"><strong>UC-05</strong></td>
     <td style="text-align: left;">ตรวจสอบผลลัพธ์และแผนที่ความร้อน (View Result &amp; Heatmap)</td>
     <td style="text-align: center;">User</td>
-    <td style="text-align: left;">ผู้ใช้ตรวจสอบคะแนนความเสี่ยงรวม (Risk Score) และดูแผนที่ความร้อน (Grad-CAM) ที่อธิบายจุดผิดปกติ</td>
+    <td style="text-align: left;">ผู้ใช้ตรวจสอบคะแนนความเสี่ยงรวม (Risk Score) และดูแผนที่ความร้อน (Heatmap) ที่อธิบายจุดผิดปกติ</td>
     <td style="text-align: center;">FR-05</td>
     </tr>
     <tr>
@@ -777,17 +777,17 @@
     <p><strong>UC-04: วิเคราะห์ด้วย AI (AI Inference):</strong></p>
     </li>
     <li><strong>ผู้เกี่ยวข้อง (Actors):</strong> System (Automated)</li>
-    <li><strong>รายละเอียด:</strong> ส่งรูปภาพเพื่อนำเข้าโมเดลปัญญาประดิษฐ์เชิงลึก (Deep Learning) ในการตรวจสอบการแก้ไขระดับพิกเซล (ELA) เพื่อหาร่องรอยการตัดต่อ (Image Forgery) และตรวจสอบลักษณะว่าภาพถูกสังเคราะห์ด้วย Generative AI หรือไม่</li>
+    <li><strong>รายละเอียด:</strong> ส่งรูปภาพเพื่อนำเข้าโมเดลปัญญาประดิษฐ์เชิงลึก (Deep Learning) ในการตรวจสอบการแก้ไขระดับพิกเซล (Semantic Segmentation) เพื่อหาร่องรอยการตัดต่อ (Image Forgery) และตรวจสอบลักษณะว่าภาพถูกสังเคราะห์ด้วย Generative AI หรือไม่</li>
     <li>
-    <p><strong>ความต้องการทางระบบ (FR):</strong> FR-04 - ระบบวิเคราะห์ด้วยปัญญาประดิษฐ์ (AI Inference): ระบบส่งภาพเข้าสู่โมเดล Deep Learning เพื่อตรวจสอบร่องรอยการตัดต่อ (Image Forgery/ELA) และตรวจสอบภาพที่สร้างด้วยปัญญาประดิษฐ์ (AI-Generated)</p>
+    <p><strong>ความต้องการทางระบบ (FR):</strong> FR-04 - ระบบวิเคราะห์ด้วยปัญญาประดิษฐ์ (AI Inference): ระบบส่งภาพเข้าสู่โมเดล Deep Learning เพื่อตรวจสอบร่องรอยการตัดต่อ (Image Forgery/Semantic Segmentation) และตรวจสอบภาพที่สร้างด้วยปัญญาประดิษฐ์ (AI-Generated)</p>
     </li>
     <li>
     <p><strong>UC-05: ตรวจสอบผลลัพธ์และแผนที่ความร้อน (View Result &amp; Heatmap):</strong></p>
     </li>
     <li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User</li>
-    <li><strong>รายละเอียด:</strong> หน้าจอแสดงค่าคะแนนความเสี่ยงรวม (Weighted Risk Score) พร้อมแสดงผลสรุปเหตุผลความผิดปกติ และแสดงแผนที่ความร้อน (Grad-CAM Heatmap) บนจุดที่น่าสงสัยของภาพ เพื่อตอบโจทย์ความโปร่งใสของปัญญาประดิษฐ์ (XAI)</li>
+    <li><strong>รายละเอียด:</strong> หน้าจอแสดงค่าคะแนนความเสี่ยงรวม (Weighted Risk Score) พร้อมแสดงผลสรุปเหตุผลความผิดปกติ และแสดงแผนที่ความร้อน (Heatmap) บนจุดที่น่าสงสัยของภาพ เพื่อตอบโจทย์ความโปร่งใสของปัญญาประดิษฐ์ (XAI)</li>
     <li>
-    <p><strong>ความต้องการทางระบบ (FR):</strong> FR-05 - ระบบแสดงผลลัพธ์ (Result &amp; Visualization): ระบบคำนวณคะแนนความเสี่ยงรวม (Weighted Risk Score) และสร้างแผนที่ความร้อน (Grad-CAM Heatmap) เพื่ออธิบายผลลัพธ์ให้ผู้ใช้เข้าใจ</p>
+    <p><strong>ความต้องการทางระบบ (FR):</strong> FR-05 - ระบบแสดงผลลัพธ์ (Result &amp; Visualization): ระบบคำนวณคะแนนความเสี่ยงรวม (Weighted Risk Score) และสร้างแผนที่ความร้อน (Heatmap) เพื่ออธิบายผลลัพธ์ให้ผู้ใช้เข้าใจ</p>
     </li>
     <li>
     <p><strong>UC-06: รับการแจ้งเตือน (Receive Push Notification):</strong></p>
@@ -895,7 +895,7 @@
     <li>ใช้ Google Vision API เพื่อทำธุรกรรม Reverse Image Search ค้นหาความถี่ของการปรากฏของภาพในสื่อออนไลน์</li>
     <li><strong>การตรวจจับภาพตัดต่อด้วย AI (AI Inference):</strong></li>
     <li>ประมวลผลบนเซิร์ฟเวอร์แยกต่างหาก (AI Inference Container)</li>
-    <li>ใช้โครงข่ายประสาทเทียมแบบ Deep Learning (PyTorch) ในการประเมินร่องรอยการแก้ไขพิกเซล (ELA) และตรวจเช็กการสังเคราะห์ภาพจาก Generative AI</li>
+    <li>ใช้โครงข่ายประสาทเทียมแบบ Deep Learning (PyTorch) ในการประเมินร่องรอยการแก้ไขพิกเซล (Semantic Segmentation) และตรวจเช็กการสังเคราะห์ภาพจาก Generative AI</li>
     <li><strong>สถาปัตยกรรมความปลอดภัยและการจัดเก็บข้อมูล:</strong></li>
     <li>จัดเก็บรายละเอียดบัญชีผู้ใช้งาน ประวัติรายการสแกน และรายงานความปลอดภัยลงในฐานข้อมูล PostgreSQL</li>
     <li>เก็บรูปภาพต้นฉบับและรูปภาพผลลัพธ์แผนที่ความร้อนลงในระบบจัดเก็บไฟล์บนคลาวด์ (Cloud Storage)</li>

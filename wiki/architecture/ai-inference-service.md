@@ -1,7 +1,7 @@
 ---
 title: "AI Inference Service"
 category: architecture
-tags: [AI, inference, PyTorch, ONNX, ELA, Grad-CAM, segmentation]
+tags: [AI, inference, PyTorch, ONNX, Semantic Segmentation, Heatmap, segmentation]
 sources: [design/architecture.md, design/model.md, design/server.md]
 updated: 2026-08-02
 ---
@@ -17,7 +17,7 @@ Container ประมวลผลเฉพาะสำหรับรัน Dee
 AI Inference Service คือ **หน่วย Deploy แยก** (Container) ที่รับ Task วิเคราะห์รูปภาพจาก [[architecture/backend-api|API Application]] และส่งคืน:
 
 - **Segmentation Mask** ระบุพิกเซลที่ถูกดัดแปลง
-- **Grad-CAM Heatmap** สำหรับ XAI overlay
+- **Heatmap** สำหรับ XAI overlay
 - **คะแนนตรวจจับภาพ AI-Generated**
 - **Visual Risk Score (S_visual)** — น้ำหนัก 45% ของ Risk Score รวม
 
@@ -25,9 +25,9 @@ AI Inference Service คือ **หน่วย Deploy แยก** (Container) 
 
 ## โมเดลที่ทำงานใน Service นี้
 
-### 1. ตรวจจับการตัดต่อภาพ (SegFormer + ELA)
+### 1. ตรวจจับการตัดต่อภาพ (SegFormer)
 
-- **เทคนิค:** ELA Preprocessing → [[concepts/ai-model-segformer|SegFormer]] Model Inference
+- **เทคนิค:** Semantic Segmentation Preprocessing → [[concepts/ai-model-segformer|SegFormer]] Model Inference
 - **ผลลัพธ์:** Binary Segmentation Mask + Confidence Heatmap
 - **หน้าที่:** ตรวจจับ Splicing, Copy-Move และการแก้ไขพิกเซล
 
@@ -37,7 +37,7 @@ AI Inference Service คือ **หน่วย Deploy แยก** (Container) 
 - **ผลลัพธ์:** ค่าความน่าจะเป็น (0–1) ว่าภาพสร้างจาก Generative AI
 - **หน้าที่:** จับภาพจาก GAN, Diffusion Model ที่ไม่มี Splice Artifact แบบดั้งเดิม
 
-### 3. สร้าง Grad-CAM Heatmap
+### 3. สร้าง Heatmap
 
 - **Input:** ผลลัพธ์ Segmentation จาก SegFormer
 - **ผลลัพธ์:** ไฟล์ PNG Heatmap ที่แต่งสีแล้ว พร้อม overlay บนรูปต้นฉบับ
@@ -54,7 +54,7 @@ API ส่ง POST { image_bytes, task_id }
     - Decode Image Bytes
     - Resize ตาม Input Size (เช่น 512×512)
     - Normalize ค่าพิกเซล
-    - (ถ้าต้องการ) คำนวณ ELA Difference Map
+    - (ถ้าต้องการ) คำนวณ Semantic Segmentation Difference Map
         |
   Forward Pass (SegFormer ONNX Model)
         |
@@ -70,7 +70,7 @@ API ส่ง POST { image_bytes, task_id }
     - รันโมเดล Qwen2.5-VL เพื่อดึงข้อความจากภาพ
     - ส่งมอบ ocr_text ให้ Scam Keyword Matching
         |
-  แต่งสี Grad-CAM และสร้างภาพ Overlay
+  แต่งสี Heatmap และสร้างภาพ Overlay
         |
   อัปโหลด Heatmap PNG ไปยัง Cloud Object Storage
         |
@@ -111,7 +111,7 @@ API ส่ง POST { image_bytes, task_id }
 ## หน้าที่เกี่ยวข้อง
 
 - [[concepts/ai-model-segformer]]
-- [[concepts/ela-technique]]
+- [[concepts/semantic-segmentation]]
 - [[concepts/explainable-ai]]
 - [[architecture/backend-api]]
 - [[architecture/database-schema]]

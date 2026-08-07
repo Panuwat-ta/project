@@ -21,15 +21,15 @@
     <p>AI Inference Service คือ <strong>หน่วย Deploy แยก</strong> (Container) ที่รับ Task วิเคราะห์รูปภาพจาก  และส่งคืน:</p>
     <ul>
     <li><strong>Segmentation Mask</strong> ระบุพิกเซลที่ถูกดัดแปลง</li>
-    <li><strong>Grad-CAM Heatmap</strong> สำหรับ XAI overlay</li>
+    <li><strong>Heatmap</strong> สำหรับ XAI overlay</li>
     <li><strong>คะแนนตรวจจับภาพ AI-Generated</strong></li>
     <li><strong>Visual Risk Score (S_visual)</strong> — น้ำหนัก 45% ของ Risk Score รวม</li>
     </ul>
     <div class="divider"></div>
     <h2>โมเดลที่ทำงานใน Service นี้</h2>
-    <h3>1. ตรวจจับการตัดต่อภาพ (SegFormer + ELA)</h3>
+    <h3>1. ตรวจจับการตัดต่อภาพ (SegFormer)</h3>
     <ul>
-    <li><strong>เทคนิค:</strong> ELA Preprocessing →  Model Inference</li>
+    <li><strong>เทคนิค:</strong> Semantic Segmentation Preprocessing →  Model Inference</li>
     <li><strong>ผลลัพธ์:</strong> Binary Segmentation Mask + Confidence Heatmap</li>
     <li><strong>หน้าที่:</strong> ตรวจจับ Splicing, Copy-Move และการแก้ไขพิกเซล</li>
     </ul>
@@ -39,7 +39,7 @@
     <li><strong>ผลลัพธ์:</strong> ค่าความน่าจะเป็น (0–1) ว่าภาพสร้างจาก Generative AI</li>
     <li><strong>หน้าที่:</strong> จับภาพจาก GAN, Diffusion Model ที่ไม่มี Splice Artifact แบบดั้งเดิม</li>
     </ul>
-    <h3>3. สร้าง Grad-CAM Heatmap</h3>
+    <h3>3. สร้าง Heatmap</h3>
     <ul>
     <li><strong>Input:</strong> ผลลัพธ์ Segmentation จาก SegFormer</li>
     <li><strong>ผลลัพธ์:</strong> ไฟล์ PNG Heatmap ที่แต่งสีแล้ว พร้อม overlay บนรูปต้นฉบับ</li>
@@ -53,7 +53,7 @@
         - Decode Image Bytes
         - Resize ตาม Input Size (เช่น 512×512)
         - Normalize ค่าพิกเซล
-        - (ถ้าต้องการ) คำนวณ ELA Difference Map
+        - (ถ้าต้องการ) คำนวณ Semantic Segmentation Difference Map
             |
       Forward Pass (SegFormer ONNX Model)
             |
@@ -69,7 +69,7 @@
         - รันโมเดล Qwen2.5-VL เพื่อดึงข้อความจากภาพ
         - ส่งมอบ ocr_text ให้ Scam Keyword Matching
             |
-      แต่งสี Grad-CAM และสร้างภาพ Overlay
+      แต่งสี Heatmap และสร้างภาพ Overlay
             |
       อัปโหลด Heatmap PNG ไปยัง Cloud Object Storage
             |

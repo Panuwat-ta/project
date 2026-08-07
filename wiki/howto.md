@@ -22,7 +22,7 @@ wiki/
   overview.md        <- ภาพรวมโปรเจคทั้งหมด
   howto.md           <- ไฟล์นี้: คู่มือการใช้งาน
 
-  concepts/          <- แนวคิดและเทคนิค (ELA, SegFormer, XAI, Risk Scoring)
+  concepts/          <- แนวคิดและเทคนิค (Semantic Segmentation, SegFormer, XAI, Risk Scoring)
   architecture/      <- การออกแบบระบบ (Mobile, Backend, AI, Database)
   entities/          <- สิ่งที่มีชื่อในระบบ (Actors, Tech Stack)
   decisions/         <- การตัดสินใจเลือกเทคโนโลยีและ tradeoff
@@ -73,7 +73,7 @@ LLM จะ:
 "เพราะอะไรถึงเลือก SegFormer แทน CNN?"
 "เปรียบเทียบข้อดีข้อเสียของ 3 analysis layer"
 "PDPA compliance ทำอะไรบ้างในระบบนี้?"
-"อธิบาย Grad-CAM ให้คนไม่มีพื้น AI เข้าใจ"
+"อธิบาย Heatmap ให้คนไม่มีพื้น AI เข้าใจ"
 ```
 
 LLM จะ:
@@ -141,8 +141,8 @@ Wiki ใช้ syntax ของ Obsidian ในการ link ระหว่า
 | Syntax | ผลลัพธ์ |
 | :--- | :--- |
 | `[[overview]]` | link ไปหน้า `overview.md` |
-| `[[concepts/ela-technique]]` | link ไปหน้าใน subfolder |
-| `[[concepts/ela-technique\|ELA]]` | link แต่แสดงข้อความว่า "ELA" |
+| `[[concepts/semantic-segmentation]]` | link ไปหน้าใน subfolder |
+| `[[concepts/semantic-segmentation\|Semantic Segmentation]]` | link แต่แสดงข้อความว่า "Semantic Segmentation" |
 
 ---
 

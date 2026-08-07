@@ -23,7 +23,7 @@ grep "^## \[" wiki/log.md | tail -5
 - `doc/objective.md` — วัตถุประสงค์ (OBJ-01 ถึง OBJ-04) และ KPI
 - `doc/scop.md` — ขอบเขตโปรเจคและ Work Package
 - `design/architecture.md` — สถาปัตยกรรมระบบ, Risk Scoring Pipeline, Tech Stack
-- `design/model.md` — การออกแบบโมเดล AI (SegFormer, ELA, Grad-CAM)
+- `design/model.md` — การออกแบบโมเดล AI (SegFormer, Semantic Segmentation, Heatmap)
 - `design/server.md` — โครงสร้าง Backend FastAPI และ Database
 
 **หน้าที่สร้าง:**
@@ -37,7 +37,7 @@ grep "^## \[" wiki/log.md | tail -5
 - `concepts/risk-scoring.md`
 - `concepts/explainable-ai.md`
 - `concepts/ai-model-segformer.md`
-- `concepts/ela-technique.md`
+- `concepts/semantic-segmentation.md`
 - `architecture/system-architecture.md`
 - `architecture/mobile-app.md`
 - `architecture/backend-api.md`
