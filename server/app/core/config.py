@@ -37,6 +37,6 @@ class Settings(BaseSettings):
     # Rate Limit
     RATE_LIMIT_PER_HOUR: int = 60
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
 settings = Settings()
