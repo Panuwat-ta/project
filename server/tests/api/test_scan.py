@@ -19,9 +19,20 @@ async def override_get_db():
         from datetime import datetime, timezone
         instance.id = uuid.uuid4()
         instance.created_at = datetime.now(timezone.utc)
+
+    async def mock_execute(statement):
+        result = MagicMock()
+        scalar = MagicMock()
+        scalar.first.return_value = None
+        scalar.all.return_value = []
+        scalar.scalar_one_or_none.return_value = None
+        result.scalars.return_value = scalar
+        return result
         
     mock_session.commit = AsyncMock(side_effect=mock_commit)
     mock_session.refresh = AsyncMock(side_effect=mock_refresh)
+    mock_session.execute = AsyncMock(side_effect=mock_execute)
+    mock_session.flush = AsyncMock(side_effect=mock_commit)
     yield mock_session
 
 # Mocking authenticated user
@@ -29,8 +40,12 @@ async def override_get_current_user():
     user = User(id=1, email="test@scamguard.com", role="user")
     return user
 
-app.dependency_overrides[get_db] = override_get_db
-app.dependency_overrides[get_current_user] = override_get_current_user
+
+@pytest.fixture(autouse=True)
+def apply_scan_overrides():
+    app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[get_current_user] = override_get_current_user
+    yield
 
 @pytest.mark.asyncio
 async def test_scan_upload():

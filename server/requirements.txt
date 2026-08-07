@@ -12,6 +12,8 @@ alembic>=1.14.0
 # Auth & Security
 python-jose[cryptography]>=3.3.0
 passlib[bcrypt]>=1.7.4
+# bcrypt pinned: passlib is incompatible with bcrypt >= 4.1 (version-parsing error).
+# Keep on 3.2.2 until passlib is replaced or fixed.
 bcrypt==3.2.2
 
 # Redis
