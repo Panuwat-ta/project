@@ -6,17 +6,14 @@ from starlette.concurrency import run_in_threadpool
 from app.core.config import settings, TH_TIMEZONE
 from app.models.scan import Scan
 from app.utils.hashing import calculate_image_hash
-from app.utils.exif import extract_exif
+from app.utils.image_utils import load_image_verified, encode_lossless_png
 from app.utils.risk_calculator import calculate_risk_score
 from app.services.inference_service import inference_service
 
 MAX_UPLOAD_BYTES = settings.MAX_UPLOAD_SIZE_MB * 1024 * 1024
 
 async def analyze_image(file: UploadFile, user_id: int, db: AsyncSession) -> Scan:
-    # 1. Validate file type
-    if file.content_type not in ["image/jpeg", "image/png"]:
-        raise HTTPException(status_code=400, detail="Invalid file type. Only JPEG and PNG are allowed.")
-
+    # 1. Read file
     file_bytes = await file.read()
     if not file_bytes:
         raise HTTPException(status_code=400, detail="File is empty. Please upload a valid image file.")
@@ -26,7 +23,13 @@ async def analyze_image(file: UploadFile, user_id: int, db: AsyncSession) -> Sca
             detail=f"File too large. Maximum allowed size is {settings.MAX_UPLOAD_SIZE_MB} MB.",
         )
 
-    # 2. Calculate Hash
+    # 2. Verify + decode-once -> RGB pixels (real image check, not trusting content_type)
+    image, exif_data = await run_in_threadpool(load_image_verified, file_bytes)
+
+    # 3. Normalize to lossless PNG for evidence + inference (same pixels everywhere)
+    png_bytes = await run_in_threadpool(encode_lossless_png, image)
+
+    # 4. Calculate Hash (จาก bytes ต้นฉบับ เพื่อ dedupe/หลักฐาน)
     image_hash = calculate_image_hash(file_bytes)
 
     # Ensure upload directories exist
@@ -34,16 +37,15 @@ async def analyze_image(file: UploadFile, user_id: int, db: AsyncSession) -> Sca
     heatmap_dir = os.path.join(settings.LOCAL_UPLOAD_DIR, "heatmaps")
     os.makedirs(heatmap_dir, exist_ok=True)
 
-    # 3. Save raw file locally
-    ext = "jpg" if file.content_type == "image/jpeg" else "png"
-    filename = f"{image_hash}.{ext}"
+    # 5. Save PNG evidence (lossless)
+    filename = f"{image_hash}.png"
     file_path = os.path.join(settings.LOCAL_UPLOAD_DIR, filename)
-
     with open(file_path, "wb") as buffer:
-        buffer.write(file_bytes)
+        buffer.write(png_bytes)
 
-    # 4. Run AI Inference off the event loop (CPU/GPU bound -> threadpool)
-    inference_result = await run_in_threadpool(inference_service.predict, file_bytes)
+    # 6. Run AI Inference off the event loop (CPU/GPU bound -> threadpool).
+    #    ส่งชุด pixels เดียวกัน (PNG lossless) ให้ทั้ง SegFormer และ Surya
+    inference_result = await run_in_threadpool(inference_service.predict, png_bytes)
 
     # Save heatmap image
     heatmap_filename = f"{image_hash}_heatmap.jpg"
@@ -52,7 +54,7 @@ async def analyze_image(file: UploadFile, user_id: int, db: AsyncSession) -> Sca
         with open(heatmap_path, "wb") as f:
             f.write(inference_result["heatmap_bytes"])
 
-    # 5. Calculate Other Analysis Data (OCR, EXIF)
+    # 7. Calculate Other Analysis Data (OCR)
     ocr_text = inference_result.get("ocr_text", "")
     scam_keywords = ["ด่วน", "โบนัส", "กู้เงิน", "รับเงิน", "ลงทุน", "อนุมัติไว", "ได้เงินจริง", "คลิก", "เครดิตฟรี", "แจกฟรี", "หลุด"]
     found_keywords = []
@@ -74,7 +76,7 @@ async def analyze_image(file: UploadFile, user_id: int, db: AsyncSession) -> Sca
 
     risk_result = calculate_risk_score(text_score, visual_score, source_score)
 
-    # 6. Create Scan record
+    # 8. Create Scan record
     new_scan = Scan(
         user_id=user_id,
         image_hash=image_hash,
@@ -84,7 +86,7 @@ async def analyze_image(file: UploadFile, user_id: int, db: AsyncSession) -> Sca
         visual_score=visual_score,
         source_score=source_score,
         total_risk_score=risk_result["total_risk_score"],
-        exif_data=extract_exif(file_bytes),
+        exif_data=exif_data,
         ocr_text=ocr_text,
         scam_keywords_found=found_keywords,
         ai_gen_probability=ai_gen_probability,

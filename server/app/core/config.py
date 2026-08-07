@@ -26,13 +26,17 @@ class Settings(BaseSettings):
     # Storage
     STORAGE_BACKEND: str = "local"  # "local" สำหรับ dev, "gcs" สำหรับ production
     LOCAL_UPLOAD_DIR: str = "./uploads"
-    MAX_UPLOAD_SIZE_MB: int = 10
+    MAX_UPLOAD_SIZE_MB: int = 20
+    # Decompression-bomb guard: สูงสุดที่อนุญาต decode (พิกเซล)
+    MAX_IMAGE_PIXELS: int = 100_000_000  # 100 MP
 
     # Risk scoring (ค่าเริ่มต้นของ source score)
     DEFAULT_SOURCE_SCORE: int = 20
 
     # AI Inference
-    ONNX_MODEL_PATH: str = "/home/panuwat/project/model/segformer/work_dirs/v1.0.0/segformer_v1.onnx"
+    ONNX_MODEL_PATH: str = "/home/panuwat/project/model/segformer/work_dirs/v1.0.0/segformer_v1_dynamic.onnx"
+    ONNX_TILE_SIZE: int = 512
+    ONNX_TILE_OVERLAP: int = 64
 
     # Rate Limit
     RATE_LIMIT_PER_HOUR: int = 60
