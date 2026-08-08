@@ -51,10 +51,10 @@
     <p>ชั้นที่มีน้ำหนักสูงสุด ใช้ Deep Learning ตรวจจับการดัดแปลงระดับพิกเซล</p>
     <p>การตรวจสอบย่อย 2 อย่าง:</p>
     <ul>
-    <li><strong>ตรวจจับการตัดต่อภาพ (ELA-based)</strong> — ตรวจจับ splicing, copy-move และการแก้ไขพิกเซล</li>
+    <li><strong>ตรวจจับการตัดต่อภาพ (Semantic Segmentation-based)</strong> — ตรวจจับ splicing, copy-move และการแก้ไขพิกเซล</li>
     <li><strong>ตรวจจับภาพสังเคราะห์จาก AI</strong> — จำแนกว่าภาพถูกสร้างโดยโมเดล Generative AI (เช่น GAN, Diffusion model) หรือไม่</li>
     </ul>
-    <p><strong>ผลลัพธ์:</strong> คะแนนความเสี่ยงทางภาพ (S_visual) 0–100 พร้อม <strong>Grad-CAM Heatmap</strong> สำหรับ XAI</p>
+    <p><strong>ผลลัพธ์:</strong> คะแนนความเสี่ยงทางภาพ (S_visual) 0–100 พร้อม <strong>Heatmap</strong> สำหรับ XAI</p>
     <div class="divider"></div>
     <h2>การไหลของ Pipeline</h2>
     <pre><code>ผู้ใช้อัปโหลดภาพ

@@ -31,14 +31,14 @@
     <div class="divider"></div>
     <h2>การตัดสินใจ 2: ใช้ SegFormer แทน CNN สำหรับตรวจภาพตัดต่อ</h2>
     <p><strong>สิ่งที่เลือก:</strong> SegFormer (Transformer-based semantic segmentation)
-    <strong>ทางเลือก:</strong> CNN-based Classifiers (ResNet, EfficientNet), Traditional ELA Standalone</p>
+    <strong>ทางเลือก:</strong> CNN-based Classifiers (ResNet, EfficientNet), Traditional Semantic Segmentation Standalone</p>
     <p><strong>เหตุผล:</strong></p>
     <ul>
     <li>งานนี้ต้องระบุการดัดแปลงใน <strong>ระดับพิกเซล</strong> ซึ่งเป็นปัญหา Segmentation ไม่ใช่ Classification แบบ CNN ที่บอกแค่ Label รวมๆ</li>
     <li>SegFormer จัดการเรื่อง Multi-scale Features (ทั้ง Global Context และ Local Pixel Detail) ได้ดีกว่า Transformer รุ่นแรกๆ</li>
     <li>ไม่มี Fixed Positional Encoding → Generalize กับรูปหลายขนาดได้ดีกว่า</li>
     <li>เร็วกว่า ViT-based Model ตัวเต็ม</li>
-    <li>นำไปใช้ร่วมกับ ELA Preprocessing ได้ดี</li>
+    <li>นำไปใช้ร่วมกับ Semantic Segmentation Preprocessing ได้ดี</li>
     </ul>
     <p><strong>ข้อแลกเปลี่ยน (Trade-off):</strong> กิน RAM/VRAM มากกว่า CNN Classifier แต่ยอมรับได้เมื่อรันบน Cloud</p>
     <div class="divider"></div>

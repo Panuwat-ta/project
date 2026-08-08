@@ -17,7 +17,7 @@
 * **เว็บเฟรมเวิร์ก (Web Framework):** FastAPI (มีความรวดเร็วสูงและรองรับ Asynchronous)
 * **ระบบฐานข้อมูล (Database):** PostgreSQL (ใช้ SQLAlchemy เป็น ORM ในการจัดการ Schema)
 * **ระบบแคช (Caching):** Redis (สำหรับเก็บผลลัพธ์รูปภาพที่มีคนสแกนซ้ำเพื่อลดเวลาประมวลผล)
-* **การจัดการไฟล์ (Storage):** Cloud Object Storage (สำหรับเก็บรูปต้นฉบับและภาพ Heatmap)
+* **การจัดการไฟล์ (Storage):** Local Storage (สำหรับเก็บรูปต้นฉบับและภาพ Heatmap ในโหมด Development) โดยสามารถตั้งค่าเป็น Cloud Object Storage ได้สำหรับ Production
 * **สถาปัตยกรรมการรัน AI:** ONNX Runtime (แยก Service ย่อยเพื่อรันโมเดล Deep Learning)
 
 ---
@@ -42,7 +42,7 @@
 * ทำการดึงข้อมูล EXIF จากภาพ เช่น รุ่นกล้อง, ซอฟต์แวร์ที่แต่งภาพ, พิกัด 
 * ส่งต่อภาพไปให้ **AI Inference Service** เพื่อ:
   - สกัดข้อความด้วย Surya-OCR และค้นหาคำหลอกลวง (Scam Keywords)
-  - วิเคราะห์จุดดัดแปลงพิกเซล (Visual Forgery) ด้วย PSCC-Net และ SegFormer
+  - วิเคราะห์จุดดัดแปลงพิกเซล (Visual Forgery) ด้วย SegFormer (ผ่าน ONNX Worker)
 * รวบรวมคะแนนความเสี่ยงทั้งหมด (Total Risk Score) แล้วส่งผลลัพธ์กลับไปยังโมบายแอป
 
 ---

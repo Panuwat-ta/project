@@ -9,9 +9,25 @@
 
 เพื่อให้ระบบสามารถรับมือกับรูปแบบการหลอกลวงหรือภาพสแกมประเภทใหม่ๆ ได้อย่างรวดเร็วและใช้ทรัพยากรอย่างมีประสิทธิภาพ ระบบได้กำหนดกลยุทธ์การเทรนโมเดลหลักดังนี้:
 
-* **Freeze Backbone (การแช่แข็งน้ำหนัก 100%):** ในกระบวนการเทรน (ทั้งโมเดลเริ่มต้นและโมเดลเพิ่มเติม) ส่วนของ Feature Extractor หรือ Backbone ของโมเดล (เช่น PSCC-Net และ SegFormer Encoder) จะถูกแช่แข็งค่าน้ำหนักไว้ทั้งหมด (Freeze 100%) เพื่อให้ระบบสกัดคุณลักษณะภาพได้อย่างรวดเร็วและป้องกันการลืมความรู้เดิม (Catastrophic Forgetting)
-* **Incremental Training (การเทรนเพิ่มเติม):** ระบบอนุญาตให้เทรนเฉพาะส่วน Classification Head (หรือ Decoder) ผ่านหน้า Admin Page แบบออนไลน์ เมื่อพบภาพหลอกลวงรูปแบบใหม่ ระบบสามารถประมวลผลการเทรนย่อยด้วยข้อมูลชุดใหม่
+* **Differential Learning Rates (การใช้อัตราการเรียนรู้ที่ต่างกัน):** ในกระบวนการเทรน (ทั้งโมเดลเริ่มต้นและโมเดลเพิ่มเติม) จะไม่มีการแช่แข็งค่าน้ำหนัก (Freeze) แบบ 100% แต่จะใช้วิธีปรับอัตราการเรียนรู้ให้ต่างกัน โดยให้ส่วน Feature Extractor หรือ Backbone เรียนรู้ช้ามากๆ เพื่อรักษาระดับความรู้เดิม (Catastrophic Forgetting) และให้ส่วน Classification Head หรือ Decoder เรียนรู้ได้อย่างรวดเร็ว
+* **Incremental Training (การเทรนเพิ่มเติม):** ระบบอนุญาตให้รับข้อมูลภาพหลอกลวงรูปแบบใหม่เข้ามาเทรนเพิ่มเติมผ่านหน้า Admin Page แบบออนไลน์ได้
 * **Hot Swap (การสลับใช้งานแบบทันที):** ระบบสามารถนำโมเดลตัวใหม่ที่ผ่านการเทรนเพิ่มเติมไปสลับใช้งานเข้าสู่ AI Inference Service ได้ทันทีโดยไม่ต้องหยุดการทำงานของเซิร์ฟเวอร์ (Zero-downtime)
+
+### 1.1 อัลกอริทึมและสมการคณิตศาสตร์ที่ใช้ในการเทรน (Training Algorithm)
+
+เนื่องจากระบบใช้แนวทางการ **Differential Learning Rates** ให้ $\theta_{backbone}$ แทนค่าน้ำหนักของเครือข่ายหลัก และ $\theta_{head}$ แทนค่าน้ำหนักของส่วนวิเคราะห์ผลลัพธ์ (Classification Head) 
+
+ฟังก์ชันสูญเสีย (Loss Function) สำหรับการแยกแยะรูปภาพตัดต่อ (Binary Classification) สำหรับทุกระดับพิกเซล จะใช้ **Binary Cross-Entropy Loss (BCE Loss)** ผสมกับ **Dice Loss** (อ้างอิงตามโค้ดตั้งค่า `loss_decode`):
+$$ L = L_{BCE} + L_{Dice} $$
+
+การอัปเดตน้ำหนัก (Weight Update) ของโมเดลจะใช้การคำนวณผ่านอัลกอริทึม **AdamW Optimization** โดยมีค่าตัวคูณอัตราการเรียนรู้ (Learning Rate Multiplier) ที่ต่างกัน:
+
+1. **สำหรับ Backbone (เรียนรู้ช้า `lr_mult=0.1`):**
+$$ \theta_{backbone}^{(t+1)} = \theta_{backbone}^{(t)} - (\eta \times 0.1) \frac{\partial L}{\partial \theta_{backbone}} $$
+
+2. **สำหรับ Classification Head / Decoder (เรียนรู้เร็ว `lr_mult=10.0`):**
+$$ \theta_{head}^{(t+1)} = \theta_{head}^{(t)} - (\eta \times 10.0) \frac{\partial L}{\partial \theta_{head}} $$
+*(โดย $\eta$ คือค่า Learning Rate มาตรฐาน)*
 
 ---
 
@@ -19,6 +35,45 @@
 
 * **ความแม่นยำรวมของ AI (F1-Score / Accuracy):** เป้าหมายอยู่ที่ความแม่นยำ >= 85% สำหรับการตรวจจับภาพตัดต่อและการแยกแยะจุดเสี่ยง
 * **Validation Checkpoint:** ในแต่ละรอบการเทรนจะมีการเซฟ Checkpoint เมื่อผลลัพธ์การเรียนรู้ (Loss) ต่ำสุด เพื่อนำไฟล์น้ำหนักเหล่านั้นไปใช้ต่อ หรือ Rollback หากเกิดความผิดพลาด
+
+### 2.1 สมการคณิตศาสตร์สำหรับการวัดประสิทธิภาพ (Evaluation Metrics)
+
+การวัดผลโมเดลจำแนกรูปภาพจะอ้างอิงจากค่า Confusion Matrix ประกอบด้วย:
+- **TP (True Positive):** ทายว่าเป็นภาพตัดต่อ และเป็นภาพตัดต่อจริง
+- **TN (True Negative):** ทายว่าเป็นภาพจริง และเป็นภาพจริงตามนั้น
+- **FP (False Positive):** ทายว่าเป็นภาพตัดต่อ แต่จริงๆ เป็นภาพแท้ (Type I Error)
+- **FN (False Negative):** ทายว่าเป็นภาพจริง แต่จริงๆ เป็นภาพตัดต่อ (Type II Error)
+
+สมการที่ใช้ในการวัดผล ได้แก่:
+
+**1. Accuracy (ความแม่นยำรวม):**
+$$ \text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN} $$
+
+**2. Precision (ความแม่นยำเชิงผลบวก):**
+เพื่อดูว่าเมื่อระบบเตือนว่าเป็นภาพสแกม เชื่อถือได้แค่ไหน:
+$$ \text{Precision} = \frac{TP}{TP + FP} $$
+
+**3. Recall (ความไว หรือ Sensitivity):**
+เพื่อดูว่าระบบสามารถตรวจจับภาพสแกมได้ครอบคลุมกี่เปอร์เซ็นต์ของภาพสแกมทั้งหมด:
+$$ \text{Recall} = \frac{TP}{TP + FN} $$
+
+**4. F1-Score (ค่าเฉลี่ยฮาร์มอนิก):**
+ใช้ประเมินโมเดลในกรณีที่ข้อมูลภาพแท้และภาพสแกมอาจมีจำนวนไม่สมดุลกัน (Imbalanced Dataset):
+$$ \text{F1-Score} = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}} $$
+
+### 2.2 สมการคณิตศาสตร์สำหรับการวัดประสิทธิภาพของ Pixel (Semantic Segmentation Metrics)
+
+เนื่องจากระบบใช้ SegFormer ในการวิเคราะห์และทำนายความผิดปกติในระดับพิกเซล (Pixel-level) การวัดผลจึงใช้เมทริกซ์เฉพาะทางสำหรับงาน Segmentation โดยอ้างอิงจากคลาสที่ระบบทำนาย ได้แก่ **mIoU (Mean Intersection over Union)** และ **mDice (Mean Dice Coefficient)**:
+
+**1. IoU (Intersection over Union / Jaccard Index):**
+ใช้วัดความทับซ้อนระหว่างพื้นที่พิกเซลที่โมเดลทำนายได้ ($A$) กับพื้นที่จริงที่เป็นรอยตัดต่อ ($B$):
+$$ \text{IoU} = \frac{|A \cap B|}{|A \cup B|} = \frac{TP}{TP + FP + FN} $$
+*mIoU คือการหาค่าเฉลี่ยของ IoU ในทุกๆ คลาส (ภาพจริง, ภาพตัดต่อ)*
+
+**2. Dice Coefficient (F1-Score ระดับพิกเซล):**
+ให้ความสำคัญกับการซ้อนทับกันของพิกเซลที่ตรวจจับได้คล้ายคลึงกับ F1-Score:
+$$ \text{Dice} = \frac{2 |A \cap B|}{|A| + |B|} = \frac{2TP}{2TP + FP + FN} $$
+*mDice คือการหาค่าเฉลี่ยของ Dice Coefficient ในทุกๆ คลาส*
 
 ---
 

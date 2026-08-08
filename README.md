@@ -19,7 +19,7 @@
 เพื่อแก้ไขปัญหาดังกล่าว ระบบถูกออกแบบโดยคำนึงถึงความง่ายในการใช้งาน (มีเมนูถ่ายภาพ, อัปโหลด, สามารถตัดขอบภาพ (Crop) ก่อนตรวจสอบ, และมีประวัติการสแกน) พร้อมแสดงผลลัพธ์เปอร์เซ็นต์ความเสี่ยง (Total Risk Score %) ที่เข้าใจง่าย โดยใช้แนวคิด Multi-layer Analysis วิเคราะห์ภาพถ่ายในหลายมิติ ผ่าน 3 เลเยอร์การสแกนหลัก:
 1. Textual Analysis: ดึงข้อมูลข้อความในภาพ (OCR) และวิเคราะห์ประเด็นคำค้นหาหลอกลวง (Scam Keywords) ด้วยระบบ NLP
 2. Source Verification: ตรวจสอบเทียบกับฐานข้อมูลภาพภายใน (Internal Image DB) เพื่อลดภาระระบบ และค้นหาประวัติการเผยแพร่ของภาพย้อนหลัง (Reverse Image Search) เพื่อระบุแหล่งที่มาและบริบทจริง
-3. Visual Anomaly Detection: ใช้โมเดล Deep Learning (PyTorch) และเทคโนโลยีระดับสูง (เช่น Gemini, SynthID) ตรวจสอบการแก้ไขตัดแต่งภาพระดับพิกเซล และภาพสังเคราะห์ปัญญาประดิษฐ์ พร้อมแสดงผลแผนที่ความร้อน (Grad-CAM Heatmap) ตามแนวคิด Explainable AI (XAI) และมีแผนรองรับการวิเคราะห์จากวิดีโอ (Keyframe Extraction) ในอนาคต
+3. Visual Anomaly Detection: ใช้โมเดล Deep Learning (PyTorch/SegFormer) และเทคโนโลยีระดับสูง (เช่น Gemini, SynthID) ตรวจสอบการแก้ไขตัดแต่งภาพระดับพิกเซล และภาพสังเคราะห์ปัญญาประดิษฐ์ พร้อมแสดงผลแผนที่ความร้อน (Heatmap) ตามแนวคิด Explainable AI (XAI) และมีแผนรองรับการวิเคราะห์จากวิดีโอ (Keyframe Extraction) ในอนาคต
 
 ---
 
@@ -39,10 +39,10 @@
 เอกสารการออกแบบรายละเอียดเชิงลึกสำหรับระบบโมบายแอปและระบบหลังบ้าน จัดเก็บไว้ในโฟลเดอร์ design/:
 
 * **[เอกสารสถาปัตยกรรมระบบฉบับรวม (System Architecture)](design/architecture.md)** - โครงสร้างสถาปัตยกรรมระบบทั้งหมด (Frontend, Backend, AI)
-* **[การออกแบบส่วนหน้าบ้าน (Mobile Application Design)](design/design.md)** - โครงสร้าง Components + Redux, สีสันธีม UI/UX และพฤติกรรมผู้ใช้
+* **[การออกแบบส่วนหน้าบ้าน (Mobile Application Design)](design/design.md)** - โครงสร้าง Components + BLoC, สีสันธีม UI/UX และพฤติกรรมผู้ใช้
 * **[การออกแบบโมบายแอปพลิเคชันโดยละเอียด (Detailed Mobile Design)](design/mobile.md)** - ขอบเขต เป้าหมาย หน้าจอ และโครงสร้างโฟลเดอร์ของ Flutter
 * **[การออกแบบสถาปัตยกรรมระบบหลังบ้าน (Backend & System Architecture)](design/server.md)** - โครงสร้าง Backend (FastAPI), Database Schema (PostgreSQL) และ API Specifications
-* **[การออกแบบการเทรนโมเดลและ AI Inference (Model Training & AI Design)](design/model.md)** - สถาปัตยกรรม Freeze Backbone, Incremental Training และ AI Inference Pipeline (PyTorch/ONNX)
+* **[การออกแบบการเทรนโมเดลและ AI Inference (Model Training & AI Design)](design/model.md)** - สถาปัตยกรรม Differential Learning Rates, Incremental Training และ AI Inference Pipeline (PyTorch/ONNX)
 
 ---
 

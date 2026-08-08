@@ -54,7 +54,7 @@
     </tr>
     <tr>
     <td style="text-align: left;">ตรวจจับความผิดปกติทางภาพ (Visual Anomaly)</td>
-    <td style="text-align: left;">Deep Learning (SegFormer + ELA) + Grad-CAM</td>
+    <td style="text-align: left;">Deep Learning (SegFormer) + Heatmap</td>
     <td style="text-align: left;">45%</td>
     </tr>
     </tbody>
@@ -120,7 +120,7 @@
     <h2>ผลลัพธ์ที่ผู้ใช้ได้รับ</h2>
     <ol>
     <li><strong>Weighted Risk Score</strong> (0–100) แสดงเป็น color gauge (เขียว/เหลือง/แดง)</li>
-    <li><strong>Grad-CAM Heatmap</strong> ซ้อนทับรูปภาพต้นฉบับแสดงจุดที่โมเดลตรวจพบความผิดปกติ</li>
+    <li><strong>Heatmap</strong> ซ้อนทับรูปภาพต้นฉบับแสดงจุดที่โมเดลตรวจพบความผิดปกติ</li>
     <li><strong>ผลการวิเคราะห์ข้อความ</strong> — คำหลอกลวงหรือรูปแบบน่าสงสัยที่พบในภาพ</li>
     <li><strong>ผลการตรวจสอบแหล่งที่มา</strong> — รูปนี้พบในเว็บไซต์ใดบ้างและกี่แหล่ง</li>
     </ol>
@@ -130,7 +130,7 @@
     <ul>
     <li><strong>PDPA</strong> — ผู้ใช้ต้องยินยอมก่อนที่รูปภาพจะถูกเก็บหรือใช้เพื่อ training โมเดล ยินยอมแบบแยกส่วนและถอนได้</li>
     <li><strong>เป้าหมายประสิทธิภาพ</strong> — Cache hit &lt; 3 วินาที; Full AI inference &lt; 15 วินาทีต่อรูป</li>
-    <li><strong>เป้าหมายความแม่นยำ</strong> — โมเดล AI ต้องได้ &gt;= 85% accuracy และ F1-score บน test set</li>
+    <li><strong>เป้าหมายความแม่นยำ</strong> — โมเดล AI ต้องได้ &gt;= 85% accuracy และ mDice บน test set</li>
     <li><strong>เป้าหมาย Availability</strong> — API และ AI Inference Service uptime &gt;= 99.5%</li>
     </ul>
     <div class="divider"></div>

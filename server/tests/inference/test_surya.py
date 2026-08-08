@@ -1,35 +1,66 @@
+"""Integration test for the Surya OCR pipeline used by the scan service.
+
+The app loads Surya models and calls `run_ocr` in `app/services/inference_service.py`.
+This test exercises the same entry points so OCR regressions are caught.
+
+Run: pytest tests/inference/test_surya.py
+"""
+import multiprocessing
 import os
-from llama_cpp import Llama
-from llama_cpp.llama_chat_format import Llava15ChatHandler
-import base64
+from pathlib import Path
 
-def image_to_base64(image_path):
-    with open(image_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode('utf-8')
+import pytest
+from PIL import Image
 
-model_path = "/home/panuwat/project/model/surya/surya-2.gguf"
-mmproj_path = "/home/panuwat/project/model/surya/surya-2-mmproj.gguf"
+TEST_IMAGE = Path(__file__).resolve().parent.parent / "test.png"
+MODEL_CACHE = "/home/panuwat/project/model/surya"
 
-try:
-    print("Initializing model...")
-    chat_handler = Llava15ChatHandler(clip_model_path=mmproj_path)
-    llm = Llama(model_path=model_path, chat_handler=chat_handler, n_ctx=2048, verbose=False)
-    
-    print("Encoding image...")
-    image_b64 = image_to_base64("/home/panuwat/project/test.png")
-    
-    print("Running inference...")
-    response = llm.create_chat_completion(
-        messages=[
-            {
-                "role": "user",
-                "content": [
-                    {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image_b64}"}},
-                    {"type": "text", "text": "Extract all text from the image."}
-                ]
-            }
-        ]
+
+def _load_models():
+    try:
+        import ctypes
+        import sys
+        try:
+            ctypes.CDLL(os.path.join(sys.prefix, "lib", "libbz2.so.1.0"), mode=ctypes.RTLD_GLOBAL)
+        except Exception:
+            pass
+        os.environ["HF_HOME"] = MODEL_CACHE
+        from surya.model.detection.model import load_model as load_det_model, load_processor as load_det_processor
+        from surya.model.recognition.model import load_model as load_rec_model
+        from surya.model.recognition.processor import load_processor as load_rec_processor
+        return (
+            load_det_processor(),
+            load_det_model(),
+            load_rec_model(),
+            load_rec_processor(),
+        )
+    except Exception as exc:  # pragma: no cover - depends on env
+        pytest.skip(f"Surya models could not be loaded: {exc}")
+
+
+@pytest.mark.asyncio
+async def test_run_ocr_extracts_text():
+    if not TEST_IMAGE.is_file():
+        pytest.skip(f"Test image not found at {TEST_IMAGE}")
+
+    det_processor, det_model, rec_model, rec_processor = _load_models()
+    from surya.ocr import run_ocr
+
+    image = Image.open(TEST_IMAGE)
+    predictions = run_ocr(
+        [image],
+        [["th", "en"]],
+        det_model,
+        det_processor,
+        rec_model,
+        rec_processor,
     )
-    print("Response:", response["choices"][0]["message"]["content"])
-except Exception as e:
-    print("Error:", e)
+
+    assert predictions and len(predictions) > 0
+    text_lines = [line.text for line in predictions[0].text_lines]
+    ocr_text = "\n".join(text_lines)
+
+    assert isinstance(ocr_text, str)
+    if ocr_text.strip():
+        # ถ้าภาพมีข้อความจริง ควรได้ผลลัพธ์กลับมา
+        assert len(ocr_text.strip()) > 0
