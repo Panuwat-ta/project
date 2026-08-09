@@ -2,34 +2,35 @@ import os
 import glob
 import cv2
 import numpy as np
-import shutil
 import random
 
 def main():
-    base_dir = '/home/panuwat/project/model/segformer/data/dataset_CASIA2.0'
-    casia_dir = os.path.join(base_dir, 'CASIA2.0_revised')
+    base_dir = '/home/panuwat/project/model/segformer/dataset'
     
-    au_dir = os.path.join(casia_dir, 'Au')
-    tp_dir = os.path.join(casia_dir, 'Tp')
-    gt_dir = os.path.join(casia_dir, 'CASIA2.0_Groundtruth')
+    # โฟลเดอร์รูปดัดแปลง (Inpainting) ของ DEFACTO
+    tp_dir = os.path.join(base_dir, 'DEFACTODataset/defacto-inpainting/inpainting_img/img')
     
-    out_img_train = os.path.join(base_dir, 'images', 'train')
-    out_img_val = os.path.join(base_dir, 'images', 'val')
-    out_ann_train = os.path.join(base_dir, 'annotations', 'train')
-    out_ann_val = os.path.join(base_dir, 'annotations', 'val')
+    # โฟลเดอร์ Mask
+    gt_dir = os.path.join(base_dir, 'DEFACTODataset/defacto-inpainting/inpainting_annotations/probe_mask')
+    
+    # โฟลเดอร์ภาพต้นฉบับ (Authentic) ที่ดาวน์โหลดมาจาก MS COCO
+    au_dir = os.path.join(base_dir, 'DEFACTODataset/defacto-inpainting/Authentic') 
+    
+    out_base_dir = os.path.join(base_dir, 'DEFACTODataset/defacto-inpainting')
+    out_img_train = os.path.join(out_base_dir, 'images', 'train')
+    out_img_val = os.path.join(out_base_dir, 'images', 'val')
+    out_ann_train = os.path.join(out_base_dir, 'annotations', 'train')
+    out_ann_val = os.path.join(out_base_dir, 'annotations', 'val')
     
     # Create directories
     for d in [out_img_train, out_img_val, out_ann_train, out_ann_val]:
         os.makedirs(d, exist_ok=True)
         
     # Get all file paths
-    au_files = glob.glob(os.path.join(au_dir, '*.*'))
+    au_files = glob.glob(os.path.join(au_dir, '*.*')) if au_dir else []
     tp_files = glob.glob(os.path.join(tp_dir, '*.*'))
     
     print(f"Found {len(au_files)} Authentic images and {len(tp_files)} Tampered images.")
-    
-    # Assign labels: 0 for Au, 1 for Tp
-    all_files = [(f, 0) for f in au_files] + [(f, 1) for f in tp_files]
     
     # Split train and val (80/20) using random
     random.seed(42)
@@ -70,11 +71,10 @@ def main():
             h, w = img.shape[:2]
             
             if label == 1: # Tp
-                # Find ground truth mask
-                mask_path = os.path.join(gt_dir, base_name + '_gt.png')
+                # หา ground truth mask (ของ DEFACTO ไฟล์ mask นามสกุล .tif และชื่อเดียวกับรูปเป๊ะ)
+                mask_path = os.path.join(gt_dir, base_name + '.tif')
+                
                 if not os.path.exists(mask_path):
-                    # Try finding it with .tif or other extensions if _gt.png doesn't exist
-                    # but usually it's _gt.png
                     print(f"Warning: Mask not found for {base_name}")
                     mask = np.zeros((h, w), dtype=np.uint8)
                 else:
