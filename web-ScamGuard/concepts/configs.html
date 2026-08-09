@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>พารามิเตอร์และสมการคณิตศาสตร์ (Configurations & Math) - ScamGuard</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../shared-theme.css">
+</head>
+
+<body>
+  <main class="document">
+    <h1>การตั้งค่าพารามิเตอร์ อัลกอริทึมและสมการคณิตศาสตร์ที่ใช้ (Configuration, Algorithms, and Mathematical Equations)</h1>
+        <p class="lede">เอกสารฉบับนี้รวบรวมสมการคณิตศาสตร์ อัลกอริทึม และค่าการตั้งค่า (Configurations) หลักที่ใช้ในกระบวนการประมวลผล ประเมินผลลัพธ์ และการฝึกสอนโมเดล AI ภายในระบบ Scam Image Detection พร้อมคำอธิบายเหตุผลและหลักการที่อยู่เบื้องหลังการออกแบบแต่ละส่วน</p>
+    <div class="divider"></div>
+    <h2>1. การคำนวณคะแนนความเสี่ยงรวม (Weighted Risk Score)</h2>
+    <p>ระบบประมวลผลคะแนนความเสี่ยงของรูปภาพโดยรวมผลลัพธ์จากการวิเคราะห์หลายชั้นเข้าด้วยกัน โดยใช้สมการแบบถ่วงน้ำหนัก (Weighted Average) ซึ่งอ้างอิงตามสถาปัตยกรรมล่าสุด (2 ปัจจัยหลัก):</p>
+    <p>
+    <script type="math/tex; mode=display"> S_{total} = (\alpha \times S_{visual}) + (\beta \times S_{textual}) </script>
+    </p>
+    <p>โดยที่:
+    * <strong>$S_{total}$</strong> คือ คะแนนความเสี่ยงรวม (Weighted Risk Score) มีค่าตั้งแต่ 0 ถึง 100
+    * <strong>$S_{visual}$</strong> คือ คะแนนความผิดปกติทางภาพ (Visual Anomaly Score) จากโมเดล SegFormer
+    * <strong>$S_{textual}$</strong> คือ คะแนนความเสี่ยงด้านข้อความ (Textual Analysis Score) จากโมเดล OCR + NLP
+    * <strong>$\alpha$</strong> คือ น้ำหนักของการวิเคราะห์ภาพ (ค่าปัจจุบันตั้งไว้ที่ <strong>0.6</strong> หรือ 60%)
+    * <strong>$\beta$</strong> คือ น้ำหนักของการวิเคราะห์ข้อความ (ค่าปัจจุบันตั้งไว้ที่ <strong>0.4</strong> หรือ 40%)</p>
+    <p><strong>คำอธิบายและเหตุผลที่ใช้:</strong>
+    * <strong>เหตุผลการถ่วงน้ำหนัก:</strong> ระบบให้น้ำหนักทางด้านภาพ ($S_{visual}$) สูงถึง 60% เนื่องจากเป็นสัญญาณนิติวิทยาศาสตร์ที่มีความแม่นยำที่สุด เป็นหลักฐานที่เกิดจากการประมวลผลระดับพิกเซล ในขณะที่ข้อความ ($S_{textual}$) อาจมีความคลุมเครือตามบริบทหรือภาพบางชนิดอาจไม่มีข้อความเลย จึงได้น้ำหนักเพียง 40%
+    * <strong>ประโยชน์:</strong> ผู้ใช้งานจะได้รับตัวเลขเดียวเพื่อใช้ในการตัดสินใจได้อย่างรวดเร็ว โดยคำนึงถึงความเสี่ยงทั้งจากร่องรอยการตัดต่อภาพ และจากข้อความหลอกลวงที่ปรากฏอยู่ในภาพไปพร้อมๆ กัน</p>
+    <div class="divider"></div>
+    <h2>2. เกณฑ์การตัดสินระดับความเสี่ยง (Risk Grading Thresholds)</h2>
+    <p>เมื่อคำนวณคะแนน $S_{total}$ ออกมาแล้ว ระบบจะนำไปจัดกลุ่มระดับความเสี่ยงตามเงื่อนไข (Threshold Configuration) ดังนี้:</p>
+    <p>
+    <script type="math/tex; mode=display">
+    \text{Risk Grade} = 
+    \begin{cases} 
+    \text{Safe (ปลอดภัย)} & \text{if } S_{total} < 30 \\
+    \text{Suspicious (น่าสงสัย)} & \text{if } 30 \le S_{total} \le 70 \\
+    \text{Danger (อันตราย)} & \text{if } S_{total} > 70 
+    \end{cases}
+    </script>
+    </p>
+    <p><strong>คำอธิบายและเหตุผลที่ใช้:</strong>
+    * <strong>ช่วงปลอดภัย (&lt; 30):</strong> คะแนนตกอยู่ในช่วงที่ทั้งภาพและข้อความไม่มีลักษณะเข้าข่ายการหลอกลวง ถือว่าเชื่อถือได้ในระดับสูง
+    * <strong>ช่วงน่าสงสัย (30 – 70):</strong> โมเดลตัวใดตัวหนึ่ง (ภาพ หรือ ข้อความ) ตรวจพบความผิดปกติบางอย่าง แต่อีกตัวหนึ่งไม่พบ หรือพบหลักฐานแบบอ่อนๆ ผู้ใช้งานควรพิจารณาประกอบกับวิจารณญาณส่วนตัว
+    * <strong>ช่วงอันตราย (&gt; 70):</strong> โมเดลทั้งคู่ชี้ไปในทิศทางเดียวกันว่าภาพถูกปรับแต่งหรือมีข้อความหลอกลวงที่ชัดเจน ให้ถือว่าภาพนี้มีความเสี่ยงสูงที่จะเป็นสแกม</p>
+    <div class="divider"></div>
+    <h2>3. การคำนวณคะแนนความเสี่ยงทางภาพ ($S_{visual}$)</h2>
+    <p>การได้มาซึ่งคะแนน $S_{visual}$ จากโมเดล SegFormer อาศัยความน่าจะเป็นของการเป็นรอยตัดต่อ (Confidence Score) และสัดส่วนพื้นที่ที่พบความผิดปกติ (Mask Coverage):</p>
+    <p>
+    <script type="math/tex; mode=display"> S_{visual} = \text{Normalize}(\text{Confidence} \times \text{Mask Coverage}) </script>
+    </p>
+    <p><strong>คำอธิบายและเหตุผลที่ใช้:</strong>
+    * <strong>Confidence Score:</strong> คือค่าความมั่นใจของ AI ว่าพิกเซลนั้นๆ ถูกดัดแปลงจริงหรือไม่ (มีค่าความน่าจะเป็น 0 - 1)
+    * <strong>Mask Coverage:</strong> คือขนาดของพื้นที่ (Bounding Box หรือ Segmentation Mask) ที่พบการตัดต่อ เทียบกับพื้นที่ทั้งหมดของภาพ
+    * <strong>หลักการคิด:</strong> หากมีการแก้ไขภาพด้วยความเนียนที่ต่ำ (Confidence สูง) และแก้พื้นที่เยอะ (Coverage สูง) คะแนนความเสี่ยงทางภาพ ($S_{visual}$) จะยิ่งมีค่าสูงขึ้น ในขณะที่รอยแก้เล็กๆ แม้ Confidence สูง ก็จะมีผลต่อคะแนนลดลงบ้างตามสัดส่วน
+    * <em>(ค่าที่ได้จะถูกปรับสเกล (Normalize) ให้อยู่ในช่วง 0-100 ก่อนนำไปคำนวณ)</em></p>
+    <div class="divider"></div>
+    <h2>4. สมการสำหรับการฝึกสอนโมเดลและการตั้งค่า Loss Function (Training Configurations)</h2>
+    <p>เพื่อเพิ่มความแม่นยำในการเทรนโมเดลจำแนกพิกเซล (Semantic Segmentation) ระบบใช้ <strong>Loss Function</strong> แบบผสมผสานระหว่าง Binary Cross-Entropy (BCE) และ Dice Loss:</p>
+    <p>
+    <script type="math/tex; mode=display"> L = L_{BCE} + L_{Dice} </script>
+    </p>
+    <p>การปรับน้ำหนักของโมเดล (Weight Update) ใช้เทคนิค <strong>Differential Learning Rates</strong> ผ่าน AdamW Optimizer โดยมีการตั้งค่าตัวคูณ (Multiplier) ที่แตกต่างกัน:</p>
+    <ol>
+    <li>
+    <p><strong>Backbone Configuration (เรียนรู้ช้า):</strong> <code>lr_mult = 0.1</code>
+    <script type="math/tex; mode=display"> \theta_{backbone}^{(t+1)} = \theta_{backbone}^{(t)} - (\eta \times 0.1) \frac{\partial L}{\partial \theta_{backbone}} </script>
+    </p>
+    </li>
+    <li>
+    <p><strong>Classification Head Configuration (เรียนรู้เร็ว):</strong> <code>lr_mult = 10.0</code>
+    <script type="math/tex; mode=display"> \theta_{head}^{(t+1)} = \theta_{head}^{(t)} - (\eta \times 10.0) \frac{\partial L}{\partial \theta_{head}} </script>
+    <em>(โดย $\eta$ คือค่า Base Learning Rate ของระบบ)</em></p>
+    </li>
+    </ol>
+    <p><strong>คำอธิบายและเหตุผลที่ใช้:</strong>
+    * <strong>การผสม BCE และ Dice Loss:</strong> 
+      * $L_{BCE}$ ช่วยบังคับให้โมเดลประเมินค่าความน่าจะเป็นของแต่ละพิกเซลได้อย่างแม่นยำ 
+      * $L_{Dice}$ ช่วยรักษารูปทรงและขอบเขต (Boundary) ของรอยตัดต่อให้คมชัด ลดปัญหาความไม่สมดุลของข้อมูลระหว่างบริเวณพิกเซลจริงที่มีมาก กับพิกเซลรอยแก้ที่มีน้อย
+    * <strong>Differential Learning Rates:</strong> ระบบต้องการเก็บความสามารถเดิมในการสกัดจุดเด่นของภาพ (Feature Extraction) จากโมเดลที่พรีเทรนมาแล้วเอาไว้ (ป้องกัน Catastrophic Forgetting) จึงสั่งให้แกนหลัก (Backbone) เรียนรู้ช้าสุดๆ (<code>0.1</code>) แต่ขณะเดียวกันเราต้องการให้ส่วนประมวลผลปลายทาง (Classification Head) ปรับตัวเข้าหาความรู้ใหม่และข้อมูลภาพสลิปใบเสร็จใหม่ๆ จึงให้เรียนรู้เร็วถึง (<code>10.0</code>) เท่า</p>
+    <div class="divider"></div>
+    <h2>5. สมการประเมินประสิทธิภาพโมเดล (Evaluation Metrics)</h2>
+    <p>ระบบอาศัยการวัดผลทั้งในระดับภาพรวมและระดับพิกเซล เพื่อนำมาตั้งค่า Validation Checkpoint</p>
+    <ul>
+    <li>
+    <p><strong>Accuracy:</strong>
+    <script type="math/tex; mode=display"> \text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN} </script>
+    </p>
+    </li>
+    <li>
+    <p><strong>F1-Score (ใช้จัดการ Imbalanced Data):</strong>
+    <script type="math/tex; mode=display"> \text{F1-Score} = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}} </script>
+    </p>
+    </li>
+    <li>
+    <p><strong>IoU (Intersection over Union) / Dice Coefficient (สำหรับระดับพิกเซล):</strong>
+    <script type="math/tex; mode=display"> \text{IoU} = \frac{TP}{TP + FP + FN} </script>
+    <script type="math/tex; mode=display"> \text{Dice} = \frac{2TP}{2TP + FP + FN} </script>
+    </p>
+    </li>
+    </ul>
+    <p><strong>คำอธิบายและเหตุผลที่ใช้:</strong>
+    * <strong>ค่า TP, TN, FP, FN:</strong> TP (ตรวจถูกว่าเป็นภาพปลอม), TN (ตรวจถูกว่าเป็นภาพจริง), FP (ตรวจผิดว่าเป็นภาพปลอม ทั้งที่จริง), FN (ตรวจหลุดว่าเป็นภาพจริง ทั้งที่ปลอม)
+    * <strong>ข้อจำกัดของ Accuracy:</strong> ความแม่นยำรวม (Accuracy) มักหลอกตาในกรณีที่ภาพสแกม (Scam) ในชุดข้อมูลมีน้อยมาก (Imbalanced Data) ตัวอย่างเช่น มีภาพแท้ 95 ภาพ ภาพสแกม 5 ภาพ โมเดลตอบภาพแท้เสมอ ก็จะได้ Accuracy 95% ทันที
+    * <strong>การใช้ F1-Score, IoU, mDice:</strong> จึงมีความจำเป็นในการใช้ F1-Score (ทั้งระดับภาพรวมและระดับพิกเซล) เพื่อบังคับให้โมเดลต้องหาความสมดุลระหว่างความไว (Recall) และความแม่นยำ (Precision) ทำให้การวัดผลภาพสแกมและการพ่นสี Heatmap ของรอยตัดต่อ มีความน่าเชื่อถือที่สุด</p>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
+  </script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        displayMath: [['$$','$$'], ['\\[','\\]']]
+      }
+    });
+  </script>
+  <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.mermaid-container').forEach(container => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-expand-mermaid';
+        btn.innerHTML = '🔍 Fullscreen';
+
+        btn.onclick = () => {
+          const originalSvg = container.querySelector('svg');
+          if (!originalSvg) return;
+
+          const overlay = document.createElement('div');
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.backgroundColor = 'var(--paper, #F6F4EE)';
+          overlay.style.zIndex = '999999';
+          overlay.style.display = 'flex';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+
+          const closeBtn = document.createElement('button');
+          closeBtn.innerHTML = '✖ Close';
+          closeBtn.style.position = 'absolute';
+          closeBtn.style.top = '20px';
+          closeBtn.style.right = '20px';
+          closeBtn.style.padding = '8px 16px';
+          closeBtn.style.fontSize = '1rem';
+          closeBtn.style.fontWeight = 'bold';
+          closeBtn.style.cursor = 'pointer';
+          closeBtn.style.backgroundColor = '#ff4d4d';
+          closeBtn.style.color = '#fff';
+          closeBtn.style.border = 'none';
+          closeBtn.style.borderRadius = '8px';
+          closeBtn.style.zIndex = '1000000';
+          closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+
+          closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
+          closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
+
+          const clonedSvg = originalSvg.cloneNode(true);
+          clonedSvg.style.width = '100%';
+          clonedSvg.style.height = '100%';
+          clonedSvg.style.maxWidth = '100vw';
+          clonedSvg.style.maxHeight = '100vh';
+
+          overlay.appendChild(clonedSvg);
+          overlay.appendChild(closeBtn);
+          document.body.appendChild(overlay);
+
+          const oldOverflow = document.body.style.overflow;
+          document.body.style.overflow = 'hidden';
+
+          const panZoomInstance = svgPanZoom(clonedSvg, {
+            zoomEnabled: true,
+            controlIconsEnabled: true,
+            fit: true,
+            center: true,
+            minZoom: 0.5,
+            maxZoom: 10,
+            mouseWheelZoomEnabled: true
+          });
+
+          closeBtn.onclick = () => {
+            panZoomInstance.destroy();
+            document.body.removeChild(overlay);
+            document.body.style.overflow = oldOverflow;
+          };
+        };
+        container.appendChild(btn);
+      });
+    });
+  </script>
+</body>
+</html>

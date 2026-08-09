@@ -134,7 +134,7 @@ sequenceDiagram
     API-->>App: ส่งรหัสติดตามงานสแกน (Scan Task ID)
     Note over App: แสดงหน้า Loading ประมวลผลเบื้องหลัง
     
-    API->>AI: ส่งรูปภาพไปตรวจสอบระดับพิกเซล (ELA & GenAI check)
+    API->>AI: ส่งรูปภาพไปตรวจสอบระดับพิกเซล (Semantic Segmentation)
     Note over AI: ประมวลผลรูปภาพสร้างแผนที่ความร้อน (Heatmap)
     AI-->>API: ส่งผลการคำนวณและรูปภาพ Grad-CAM
     

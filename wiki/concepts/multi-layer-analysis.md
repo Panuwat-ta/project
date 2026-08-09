@@ -56,10 +56,10 @@ updated: 2026-08-02
 
 การตรวจสอบย่อย 2 อย่าง:
 
-- **ตรวจจับการตัดต่อภาพ (ELA-based)** — ตรวจจับ splicing, copy-move และการแก้ไขพิกเซล ดูที่ [[concepts/ela-technique]] และ [[concepts/ai-model-segformer]]
+- **ตรวจจับการตัดต่อภาพ (Semantic Segmentation-based)** — ตรวจจับ splicing, copy-move และการแก้ไขพิกเซล ดูที่ [[concepts/semantic-segmentation]] และ [[concepts/ai-model-segformer]]
 - **ตรวจจับภาพสังเคราะห์จาก AI** — จำแนกว่าภาพถูกสร้างโดยโมเดล Generative AI (เช่น GAN, Diffusion model) หรือไม่
 
-**ผลลัพธ์:** คะแนนความเสี่ยงทางภาพ (S_visual) 0–100 พร้อม **Grad-CAM Heatmap** สำหรับ XAI ดูที่ [[concepts/explainable-ai]]
+**ผลลัพธ์:** คะแนนความเสี่ยงทางภาพ (S_visual) 0–100 พร้อม **Heatmap** สำหรับ XAI ดูที่ [[concepts/explainable-ai]]
 
 ---
 
@@ -112,7 +112,7 @@ updated: 2026-08-02
 ## หน้าที่เกี่ยวข้อง
 
 - [[concepts/risk-scoring]]
-- [[concepts/ela-technique]]
+- [[concepts/semantic-segmentation]]
 - [[concepts/ai-model-segformer]]
 - [[concepts/explainable-ai]]
 - [[architecture/backend-api]]

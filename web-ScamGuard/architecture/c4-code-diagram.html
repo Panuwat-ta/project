@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C4 Code Diagram - Image Scanning Flow - ScamGuard</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../shared-theme.css">
+</head>
+
+<body>
+  <main class="document">
+    <h1>C4: Code Diagram (Image Scanning Flow)</h1>
+        <p class="lede">แผนภาพ C4 (ระดับ Code) นี้แสดงลำดับขั้นตอน (Sequence Diagram) การทำงานเชิงลึกของกระบวนการวิเคราะห์รูปภาพ (Image Scanning) ภายใน Backend ของระบบ Scam Image Detection ซึ่งครอบคลุมตั้งแต่การรับ Request จากผู้ใช้ ไปจนถึงการจัดเก็บผลลัพธ์ลงฐานข้อมูล โดยอ้างอิงจากคลาสและฟังก์ชันจริงในซอร์สโค้ด</p>
+    <div class="mermaid-container"><div class="mermaid">sequenceDiagram
+        autonumber
+    
+        actor Client as Mobile App
+        participant Router as ScanRouter<br>(api/v1/scan.py)
+        participant Service as ScanService<br>(services/scan_service.py)
+        participant Utils as ImageUtils<br>(utils/image_utils.py)
+        participant FS as Local Storage<br>(File System)
+        participant Inference as InferenceService<br>(services/inference_service.py)
+        participant ONNX as ONNX Worker<br>(onnx_worker.py)
+        participant OCR as Surya OCR<br>(HuggingFace)
+        participant RiskCalc as RiskCalculator<br>(utils/risk_calculator.py)
+        participant DB as PostgreSQL<br>(SQLAlchemy)
+    
+        Client->>Router: POST /api/v1/scan<br>(Multipart: UploadFile)
+    
+        activate Router
+        Router->>Service: await analyze_image(file, user_id, db)
+    
+        activate Service
+        Note over Service: 1. อ่านไฟล์เป็น Bytes<br>และเช็คขนาดไฟล์ (Max MB)
+    
+        Service->>Utils: await run_in_threadpool(load_image_verified)
+        Utils-->>Service: PIL Image, EXIF Data
+    
+        Service->>Utils: await run_in_threadpool(encode_lossless_png)
+        Utils-->>Service: PNG Bytes
+    
+        Service->>FS: Save {hash}.png (เป็นหลักฐานรูปต้นฉบับ)
+        FS-->>Service: Success
+    
+        Note over Service: ส่งงานให้ AI แบบ Threadpool<br>เพื่อไม่บล็อก Event Loop
+        Service->>Inference: await run_in_threadpool(predict, png_bytes)
+    
+        activate Inference
+    
+        %% SegFormer Processing
+        Inference->>ONNX: subprocess.Popen()<br>ส่งภาพผ่าน STDIN (Base64)
+        activate ONNX
+        Note over ONNX: ประมวลผล Semantic Segmentation<br>ด้วยโมเดล ONNX
+        ONNX-->>Inference: STDOUT: JSON (visual_risk, heatmap_b64)
+        deactivate ONNX
+    
+        %% OCR Processing
+        Inference->>OCR: run_ocr([image], )
+        activate OCR
+        Note over OCR: สกัดข้อความภาษาไทย/อังกฤษ<br>ด้วย Surya OCR
+        OCR-->>Inference: ocr_text (ข้อความที่สกัดได้)
+        deactivate OCR
+    
+        Inference-->>Service: return {visual_risk_score, ai_gen_prob, heatmap_bytes, ocr_text}
+        deactivate Inference
+    
+        Service->>FS: Save {hash}_heatmap.jpg
+    
+        Note over Service: วิเคราะห์ข้อความแบบ Rule-based<br>ค้นหา Scam Keywords
+    
+        %% Risk Calculation
+        Service->>RiskCalc: calculate_risk_score(text_score, visual_score, source_score)
+        activate RiskCalc
+        Note over RiskCalc: ถ่วงน้ำหนัก<br>Visual (60%) + Text (40%)
+        RiskCalc-->>Service: return {total_risk_score, grade}
+        deactivate RiskCalc
+    
+        %% DB Persistence
+        Service->>DB: db.add(Scan Model)<br>db.commit()<br>db.refresh()
+        activate DB
+        DB-->>Service: new_scan_record
+        deactivate DB
+    
+        Service-->>Router: return new_scan (Scan Object)
+        deactivate Service
+    
+        Router-->>Client: 200 OK<br>ScanResponse (JSON)
+        deactivate Router
+    </div></div>
+    <div class="divider"></div>
+    <h2>คำอธิบายคลาสและฟังก์ชันที่เกี่ยวข้อง (Code-Level Details)</h2>
+    <p>แผนภาพนี้เจาะลึกการทำงานของฟังก์ชันหลัก <code>analyze_image()</code> ภายใน <code>ScanService</code> ซึ่งแสดงให้เห็นถึงการทำงานแบบ Non-blocking (Asynchronous) และวิธีการที่ Backend สื่อสารกับ AI</p>
+    <h3>1. API Layer (<code>ScanRouter</code>)</h3>
+    <ul>
+    <li><strong>ฟังก์ชัน:</strong> <code>create_scan(file: UploadFile, db: AsyncSession, current_user: User)</code></li>
+    <li><strong>หน้าที่:</strong> ตรวจสอบสิทธิ์ผู้ใช้งาน (<code>Depends(get_current_user)</code>) และรับไฟล์รูปแบบ Multipart Form Data จากนั้นส่งต่อให้ Service ประมวลผล</li>
+    </ul>
+    <h3>2. Business Logic Layer (<code>ScanService</code>)</h3>
+    <ul>
+    <li><strong>ฟังก์ชัน:</strong> <code>analyze_image(file: UploadFile, user_id: int, db: AsyncSession)</code></li>
+    <li><strong>หน้าที่:</strong> <ol>
+    <li>ตรวจสอบความปลอดภัยของไฟล์ (ขนาดไฟล์ และการแปลงเป็นภาพ Lossless PNG ป้องกันมัลแวร์แฝง)</li>
+    <li>สร้าง Hash จากไฟล์ต้นฉบับเพื่อใช้ตั้งชื่อไฟล์ (Deduplication)</li>
+    <li>ครอบการเรียกฟังก์ชันประมวลผลหนักๆ เช่น AI และ Image Processing ด้วย <code>run_in_threadpool()</code> เพื่อไม่ให้ Event Loop ของ FastAPI ถูกบล็อก (Block)</li>
+    <li>วิเคราะห์คำหลอกลวงเบื้องต้นจากผลลัพธ์ OCR ด้วย <code>scam_keywords</code></li>
+    <li>บันทึกออบเจกต์ (Model) สู่ฐานข้อมูลผ่าน <code>db.commit()</code></li>
+    </ol>
+    </li>
+    </ul>
+    <h3>3. AI Integration Layer (<code>InferenceService</code>)</h3>
+    <ul>
+    <li><strong>ฟังก์ชัน:</strong> <code>predict(image_bytes: bytes)</code></li>
+    <li><strong>หน้าที่:</strong> ทำงานประสาน AI โมเดลทั้ง 2 ตัว<ul>
+    <li><strong>ONNX Worker (SegFormer):</strong> ออกแบบให้รันสคริปต์ <code>onnx_worker.py</code> ใน <strong>Subprocess</strong> แยกต่างหาก (AI Workload Isolation) โดยส่งรูปผ่าน Pipe (STDIN) รูปแบบ Base64 และรับผลลัพธ์กลับมาทาง STDOUT เพื่อแยกการจัดการทรัพยากรและหน่วยความจำของฝั่ง AI ออกจาก Web Server หลักอย่างเด็ดขาด</li>
+    <li><strong>Surya OCR:</strong> โมเดลจะถูกเตรียมพร้อมไว้ในหน่วยความจำหลัก (RAM-resident) ตั้งแต่ระบบเริ่มทำงาน เพื่อให้สามารถประมวลผลข้อความจากรูปภาพได้ทันทีโดยไม่ต้องเสียเวลาโหลดโมเดลใหม่ ช่วยลดความหน่วง (Latency) ในการตอบสนอง </li>
+    </ul>
+    </li>
+    </ul>
+    <h3>4. Utility &amp; Calculation</h3>
+    <ul>
+    <li><strong>คลาส/โมดูล:</strong> <code>RiskCalculator</code></li>
+    <li><strong>ฟังก์ชัน:</strong> <code>calculate_risk_score(text, visual, source)</code></li>
+    <li><strong>หน้าที่:</strong> เป็นเพียวฟังก์ชัน (Pure Function) ที่รับค่าตัวเลขคะแนนดิบเข้าไปคำนวณตามสูตรน้ำหนักคณิตศาสตร์ และส่งค่าความเสี่ยงรวม (Total Risk) กลับมา</li>
+    </ul>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
+  </script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        displayMath: [['$$','$$'], ['\\[','\\]']]
+      }
+    });
+  </script>
+  <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.mermaid-container').forEach(container => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-expand-mermaid';
+        btn.innerHTML = '🔍 Fullscreen';
+
+        btn.onclick = () => {
+          const originalSvg = container.querySelector('svg');
+          if (!originalSvg) return;
+
+          const overlay = document.createElement('div');
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.backgroundColor = 'var(--paper, #F6F4EE)';
+          overlay.style.zIndex = '999999';
+          overlay.style.display = 'flex';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+
+          const closeBtn = document.createElement('button');
+          closeBtn.innerHTML = '✖ Close';
+          closeBtn.style.position = 'absolute';
+          closeBtn.style.top = '20px';
+          closeBtn.style.right = '20px';
+          closeBtn.style.padding = '8px 16px';
+          closeBtn.style.fontSize = '1rem';
+          closeBtn.style.fontWeight = 'bold';
+          closeBtn.style.cursor = 'pointer';
+          closeBtn.style.backgroundColor = '#ff4d4d';
+          closeBtn.style.color = '#fff';
+          closeBtn.style.border = 'none';
+          closeBtn.style.borderRadius = '8px';
+          closeBtn.style.zIndex = '1000000';
+          closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+
+          closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
+          closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
+
+          const clonedSvg = originalSvg.cloneNode(true);
+          clonedSvg.style.width = '100%';
+          clonedSvg.style.height = '100%';
+          clonedSvg.style.maxWidth = '100vw';
+          clonedSvg.style.maxHeight = '100vh';
+
+          overlay.appendChild(clonedSvg);
+          overlay.appendChild(closeBtn);
+          document.body.appendChild(overlay);
+
+          const oldOverflow = document.body.style.overflow;
+          document.body.style.overflow = 'hidden';
+
+          const panZoomInstance = svgPanZoom(clonedSvg, {
+            zoomEnabled: true,
+            controlIconsEnabled: true,
+            fit: true,
+            center: true,
+            minZoom: 0.5,
+            maxZoom: 10,
+            mouseWheelZoomEnabled: true
+          });
+
+          closeBtn.onclick = () => {
+            panZoomInstance.destroy();
+            document.body.removeChild(overlay);
+            document.body.style.overflow = oldOverflow;
+          };
+        };
+        container.appendChild(btn);
+      });
+    });
+  </script>
+</body>
+</html>

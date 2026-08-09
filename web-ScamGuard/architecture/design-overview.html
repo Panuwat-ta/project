@@ -105,7 +105,7 @@
     <li>แสดงผลคะแนนความเสี่ยงรวม (Weighted Risk Score) ในรูปของมาตรวัดวงกลมสี (Radial Risk Gauge)</li>
     <li>ตัวเลือกระหว่าง:</li>
     <li>หน้าแสดงข้อมูลภาพต้นฉบับ</li>
-    <li>หน้าภาพ Heatmap (แสดง Grad-CAM ที่ชี้พิกเซลผิดปกติจาก AI)</li>
+    <li>หน้าภาพ Heatmap (แสดง Heatmap ที่ชี้พิกเซลผิดปกติจาก AI)</li>
     <li>รายละเอียดผลวิเคราะห์ 3 ชั้น (Multi-layer Analysis Breakdown):</li>
     <li>ผลตรวจสอบ OCR &amp; คำอันตราย (Textual Detection)</li>
     <li>ผลตรวจสอบข้อมูลไฟล์และอุปกรณ์ที่ใช้บันทึกภาพ (Metadata Check)</li>
@@ -139,9 +139,9 @@
         API-->>App: ส่งรหัสติดตามงานสแกน (Scan Task ID)
         Note over App: แสดงหน้า Loading ประมวลผลเบื้องหลัง
     
-        API->>AI: ส่งรูปภาพไปตรวจสอบระดับพิกเซล (ELA & GenAI check)
+        API->>AI: ส่งรูปภาพไปตรวจสอบระดับพิกเซล (Semantic Segmentation & GenAI check)
         Note over AI: ประมวลผลรูปภาพสร้างแผนที่ความร้อน (Heatmap)
-        AI-->>API: ส่งผลการคำนวณและรูปภาพ Grad-CAM
+        AI-->>API: ส่งผลการคำนวณและรูปภาพ Heatmap
     
         Note over API: คำนวณ Weighted Risk Score สรุปผลภาพรวม
         API->>Push: ส่งคำสั่งแจ้งเตือนพร้อมสแกนเสร็จสิ้น (Push Payload)

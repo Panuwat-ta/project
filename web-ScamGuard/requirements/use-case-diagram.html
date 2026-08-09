@@ -103,17 +103,17 @@
     <p><strong>UC-04: วิเคราะห์ด้วย AI (AI Inference):</strong></p>
     </li>
     <li><strong>ผู้เกี่ยวข้อง (Actors):</strong> System (Automated)</li>
-    <li><strong>รายละเอียด:</strong> ส่งรูปภาพเพื่อนำเข้าโมเดลปัญญาประดิษฐ์เชิงลึก (Deep Learning) ในการตรวจสอบการแก้ไขระดับพิกเซล (ELA) เพื่อหาร่องรอยการตัดต่อ (Image Forgery) และตรวจสอบลักษณะว่าภาพถูกสังเคราะห์ด้วย Generative AI หรือไม่</li>
+    <li><strong>รายละเอียด:</strong> ส่งรูปภาพเพื่อนำเข้าโมเดลปัญญาประดิษฐ์เชิงลึก (Deep Learning) ในการตรวจสอบการแก้ไขระดับพิกเซล (Semantic Segmentation) เพื่อหาร่องรอยการตัดต่อ (Image Forgery) และตรวจสอบลักษณะว่าภาพถูกสังเคราะห์ด้วย Generative AI หรือไม่</li>
     <li>
-    <p><strong>ความต้องการทางระบบ (FR):</strong> FR-04 - ระบบวิเคราะห์ด้วยปัญญาประดิษฐ์ (AI Inference): ระบบส่งภาพเข้าสู่โมเดล Deep Learning เพื่อตรวจสอบร่องรอยการตัดต่อ (Image Forgery/ELA) และตรวจสอบภาพที่สร้างด้วยปัญญาประดิษฐ์ (AI-Generated)</p>
+    <p><strong>ความต้องการทางระบบ (FR):</strong> FR-04 - ระบบวิเคราะห์ด้วยปัญญาประดิษฐ์ (AI Inference): ระบบส่งภาพเข้าสู่โมเดล Deep Learning เพื่อตรวจสอบร่องรอยการตัดต่อ (Image Forgery/Semantic Segmentation) และตรวจสอบภาพที่สร้างด้วยปัญญาประดิษฐ์ (AI-Generated)</p>
     </li>
     <li>
     <p><strong>UC-05: ตรวจสอบผลลัพธ์และแผนที่ความร้อน (View Result &amp; Heatmap):</strong></p>
     </li>
     <li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User</li>
-    <li><strong>รายละเอียด:</strong> หน้าจอแสดงค่าคะแนนความเสี่ยงรวม (Weighted Risk Score) พร้อมแสดงผลสรุปเหตุผลความผิดปกติ และแสดงแผนที่ความร้อน (Grad-CAM Heatmap) บนจุดที่น่าสงสัยของภาพ เพื่อตอบโจทย์ความโปร่งใสของปัญญาประดิษฐ์ (XAI)</li>
+    <li><strong>รายละเอียด:</strong> หน้าจอแสดงค่าคะแนนความเสี่ยงรวม (Weighted Risk Score) พร้อมแสดงผลสรุปเหตุผลความผิดปกติ และแสดงแผนที่ความร้อน (Heatmap) บนจุดที่น่าสงสัยของภาพ เพื่อตอบโจทย์ความโปร่งใสของปัญญาประดิษฐ์ (XAI)</li>
     <li>
-    <p><strong>ความต้องการทางระบบ (FR):</strong> FR-05 - ระบบแสดงผลลัพธ์ (Result &amp; Visualization): ระบบคำนวณคะแนนความเสี่ยงรวม (Weighted Risk Score) และสร้างแผนที่ความร้อน (Grad-CAM Heatmap) เพื่ออธิบายผลลัพธ์ให้ผู้ใช้เข้าใจ</p>
+    <p><strong>ความต้องการทางระบบ (FR):</strong> FR-05 - ระบบแสดงผลลัพธ์ (Result &amp; Visualization): ระบบคำนวณคะแนนความเสี่ยงรวม (Weighted Risk Score) และสร้างแผนที่ความร้อน (Heatmap) เพื่ออธิบายผลลัพธ์ให้ผู้ใช้เข้าใจ</p>
     </li>
     <li>
     <p><strong>UC-06: รับการแจ้งเตือน (Receive Push Notification):</strong></p>

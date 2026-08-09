@@ -101,7 +101,7 @@ flowchart TB
 
         subgraph Backends [Backend & API Layer]
             APIGateway("API Application<br>[Container: Python FastAPI]<br>ผู้ประสานงาน (Orchestrator), สกัด EXIF Metadata,<br>รัน OCR หา Scam Keywords")
-            AIInference("AI Inference Service<br>[Container: PyTorch / ONNX]<br>ตรวจหาร่องรอยการตัดต่อ (ELA),<br>จำแนกภาพ AI-Generated, คำนวณ Grad-CAM")
+            AIInference("AI Inference Service<br>[Container: PyTorch / ONNX]<br>ตรวจหาร่องรอยการตัดต่อ (Semantic Segmentation),<br>จำแนกภาพ AI-Generated, สร้างภาพ Heatmap")
         end
 
         subgraph Storages [Storage & Cache Layer]
@@ -175,9 +175,9 @@ flowchart TB
 #### 4.2.2 AI Inference Service (PyTorch / ONNX Runtime)
 * **บทบาท:** เซอร์วิสวิเคราะห์รูปภาพเชิงลึก (Deep Learning Node) แยกต่างหากเพื่อลดการใช้ CPU/GPU ของเครื่อง API Gateway
 * **โมเดลการวิเคราะห์หลัก:**
-  * **Visual Forgery Detection (ELA):** ตรวจสอบระดับข้อผิดพลาดของภาพ (Error Level Analysis) ในส่วนที่มีการบันทึกภาพซ้ำหรือปรับแต่งระดับพิกเซล เช่น บริเวณตัวเลขสลิปโอนเงิน หรือการเปลี่ยนใบหน้าบุคคล
-  * **AI-Generated Image Detection:** ใช้โมเดลจำแนกภาพเชิงลึก (Classifier) เพื่อตรวจสอบลวดลายความถี่ของเม็ดสีพิกเซลที่เกิดจากการสร้างด้วยปัญญาประดิษฐ์ (Generative AI) เช่น ภาพเสมือนจริงของมิจฉาชีพ
-  * **Explainable AI (XAI):** คำนวณหาตำแหน่งพิกเซลที่โมเดลประมวลผลว่าผิดปกติสูงสุด และเปลี่ยนรูปแบบให้เป็นภาพแผนที่ความร้อน (**Grad-CAM Heatmap**) เพื่อใช้พล็อตทับลงบนรูปภาพจริง ส่งให้ผู้ใช้เห็นพื้นที่ที่มีความเสี่ยงสูง
+  * **Visual Forgery Detection (SegFormer):** ตรวจสอบระดับพิกเซลด้วย Semantic Segmentation เพื่อหาร่องรอยการบันทึกภาพซ้ำหรือปรับแต่งระดับพิกเซล เช่น บริเวณตัวเลขสลิปโอนเงิน หรือการเปลี่ยนใบหน้าบุคคล
+  * **AI-Generated Image Detection:** ใช้โมเดลจำแนกภาพเชิงลึกเพื่อตรวจสอบลวดลายความถี่ของเม็ดสีพิกเซลที่เกิดจากการสร้างด้วยปัญญาประดิษฐ์ (Generative AI)
+  * **Explainable AI (XAI):** แปลงข้อมูล Probability Map ให้เป็นภาพแผนที่ความร้อน (**Heatmap**) เพื่อใช้พล็อตทับลงบนรูปภาพจริง ส่งให้ผู้ใช้เห็นพื้นที่ที่มีความเสี่ยงสูง
 
 ---
 
@@ -265,7 +265,7 @@ graph TD
 ระบบจะทำการแปลงสัญญาณการตรวจจับออกมาเป็นตัวเลขตั้งแต่ **0 ถึง 100** และคำนวณน้ำหนักความเสี่ยงดังนี้:
 
 1. **Textual Risk Score ($S_{text}$ - ค่าน้ำหนัก 25%):** คะแนนจากการวิเคราะห์คำหลอกลวง (เช่น ชักจูงโอนเงิน, ชื่อบัญชีแบล็กลิสต์, ปันผลเร็ว)
-2. **Visual Anomaly Risk Score ($S_{visual}$ - ค่าน้ำหนัก 45%):** ความเสี่ยงจากโมเดล ELA ตรวจสอบการแก้ไขตัดแต่งพิกเซล ($S_{forgery}$) ร่วมกับความเสี่ยงจากการถูกสร้างด้วย AI ($S_{aigen}$)
+2. **Visual Anomaly Risk Score ($S_{visual}$ - ค่าน้ำหนัก 45%):** ความเสี่ยงจากโมเดล SegFormer ตรวจสอบการแก้ไขตัดแต่งพิกเซล ($S_{forgery}$) ร่วมกับความเสี่ยงจากการถูกสร้างด้วย AI ($S_{aigen}$)
 3. **Source Verification Risk Score ($S_{source}$ - ค่าน้ำหนัก 30%):** ผลวิเคราะห์ความน่าสงสัยของการใช้ภาพผิดบริบทหรือภาพที่ถูกก๊อปปี้มาใช้งานหลายเว็บไซต์
 
 $$Risk\ Score = (S_{text} \times 0.25) + (S_{visual} \times 0.45) + (S_{source} \times 0.30)$$

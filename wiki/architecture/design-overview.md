@@ -114,7 +114,7 @@ flowchart LR
 * แสดงผลคะแนนความเสี่ยงรวม (Weighted Risk Score) ในรูปของมาตรวัดวงกลมสี (Radial Risk Gauge)
 * ตัวเลือกระหว่าง:
   * หน้าแสดงข้อมูลภาพต้นฉบับ
-  * หน้าภาพ Heatmap (แสดง Grad-CAM ที่ชี้พิกเซลผิดปกติจาก AI)
+  * หน้าภาพ Heatmap (แสดง Heatmap ที่ชี้พิกเซลผิดปกติจาก AI)
 * รายละเอียดผลวิเคราะห์ 3 ชั้น (Multi-layer Analysis Breakdown):
   * ผลตรวจสอบ OCR & คำอันตราย (Textual Detection)
   * ผลตรวจสอบข้อมูลไฟล์และอุปกรณ์ที่ใช้บันทึกภาพ (Metadata Check)
@@ -152,9 +152,9 @@ sequenceDiagram
     API-->>App: ส่งรหัสติดตามงานสแกน (Scan Task ID)
     Note over App: แสดงหน้า Loading ประมวลผลเบื้องหลัง
     
-    API->>AI: ส่งรูปภาพไปตรวจสอบระดับพิกเซล (ELA & GenAI check)
+    API->>AI: ส่งรูปภาพไปตรวจสอบระดับพิกเซล (Semantic Segmentation & GenAI check)
     Note over AI: ประมวลผลรูปภาพสร้างแผนที่ความร้อน (Heatmap)
-    AI-->>API: ส่งผลการคำนวณและรูปภาพ Grad-CAM
+    AI-->>API: ส่งผลการคำนวณและรูปภาพ Heatmap
     
     Note over API: คำนวณ Weighted Risk Score สรุปผลภาพรวม
     API->>Push: ส่งคำสั่งแจ้งเตือนพร้อมสแกนเสร็จสิ้น (Push Payload)
