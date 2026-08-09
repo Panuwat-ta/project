@@ -1,18 +1,38 @@
+import io
 import os
-from typing import List, Tuple, Dict, Any
-from datetime import datetime, timedelta
+import json
+import zipfile
+from datetime import datetime, timedelta, date
+from typing import List, Tuple, Dict, Any, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy import desc, func, and_
+from sqlalchemy import desc, func, and_, or_, cast, String
 from fastapi import HTTPException
 from app.models.user import User
 from app.models.scan import Scan
 from app.models.report import ScamReport
 from app.models.model_version import ModelVersion
 from app.models.audit_log import AuditLog
-from app.schemas.admin import ReportDecisionRequest, UserUpdateRequest
-from sqlalchemy.orm import selectinload
-from app.core.config import TH_TIMEZONE
+from app.schemas.admin import ReportDecisionRequest, UserUpdateRequest, ExportRequest
+from app.core.config import TH_TIMEZONE, settings
+
+
+def _to_media_url(path: Optional[str]) -> Optional[str]:
+    """Convert a local storage path (e.g. ./uploads/abc.png) to a publicly served URL."""
+    if not path:
+        return None
+    name = os.path.basename(str(path))
+    if not name:
+        return None
+    return f"/uploads/{name}"
+
+
+def _risk_grade(score: int) -> str:
+    if score >= 70:
+        return "high"
+    if score >= 40:
+        return "medium"
+    return "low"
 
 async def get_dashboard_stats(db: AsyncSession) -> Dict[str, Any]:
     now = datetime.now(TH_TIMEZONE)
@@ -96,12 +116,21 @@ async def get_dashboard_stats(db: AsyncSession) -> Dict[str, Any]:
         "scan_trend": scan_trend
     }
 
-async def get_reports(db: AsyncSession, page: int = 1, limit: int = 20, status: str = None, category: str = None) -> Tuple[List[Dict], int]:
+async def get_reports(db: AsyncSession, page: int = 1, limit: int = 20, status: str = None, category: str = None, search: str = None) -> Tuple[List[Dict], int]:
     stmt = select(ScamReport).order_by(desc(ScamReport.created_at))
     if status:
         stmt = stmt.where(ScamReport.status == status)
     if category:
         stmt = stmt.where(ScamReport.category == category)
+    if search:
+        like = f"%{search.strip()}%"
+        stmt = stmt.where(or_(
+            ScamReport.reason.ilike(like),
+            ScamReport.category.ilike(like),
+            ScamReport.platform.ilike(like),
+            ScamReport.reference_url.ilike(like),
+            cast(ScamReport.id, String).ilike(like),
+        ))
         
     count_stmt = select(func.count()).select_from(stmt.subquery())
     total = await db.scalar(count_stmt)
@@ -118,22 +147,22 @@ async def get_reports(db: AsyncSession, page: int = 1, limit: int = 20, status: 
     if user_ids:
         user_result = await db.execute(select(User).where(User.id.in_(user_ids)))
         for u in user_result.scalars().all():
-            users_map[u.id] = {"id": u.id, "email": u.email, "full_name": u.full_name}
+            users_map[u.id] = {
+                "id": u.id,
+                "email": u.email,
+                "full_name": u.full_name,
+                "total_reports_submitted": None,
+            }
     
     scans_map = {}
     if scan_ids:
         scan_result = await db.execute(select(Scan).where(Scan.id.in_(scan_ids)))
         for s in scan_result.scalars().all():
-            risk_grade = "low"
-            if s.total_risk_score >= 70:
-                risk_grade = "high"
-            elif s.total_risk_score >= 40:
-                risk_grade = "medium"
             scans_map[s.id] = {
                 "id": s.id,
-                "thumbnail_url": s.raw_image_url,
+                "thumbnail_url": _to_media_url(s.raw_image_url),
                 "total_risk_score": s.total_risk_score,
-                "risk_grade": risk_grade
+                "risk_grade": _risk_grade(s.total_risk_score)
             }
     
     items = []
@@ -184,6 +213,179 @@ async def review_report(db: AsyncSession, report_id: int, admin_id: int, decisio
     db.add(audit)
     await db.commit()
     return report
+
+
+async def get_report_detail(db: AsyncSession, report_id: int) -> Dict[str, Any]:
+    stmt = select(ScamReport).where(ScamReport.id == report_id)
+    result = await db.execute(stmt)
+    report = result.scalar_one_or_none()
+    if not report:
+        raise HTTPException(status_code=404, detail="Report not found")
+
+    user_dict = None
+    if report.user_id:
+        user_result = await db.execute(select(User).where(User.id == report.user_id))
+        user = user_result.scalars().first()
+        total_reports = 0
+        if user:
+            total_reports = await db.scalar(
+                select(func.count(ScamReport.id)).where(ScamReport.user_id == report.user_id)
+            ) or 0
+            user_dict = {
+                "id": user.id,
+                "email": user.email,
+                "full_name": user.full_name,
+                "total_reports_submitted": total_reports,
+            }
+
+    scan_dict = None
+    if report.scan_id:
+        scan_result = await db.execute(select(Scan).where(Scan.id == report.scan_id))
+        scan = scan_result.scalars().first()
+        if scan:
+            scan_dict = {
+                "id": scan.id,
+                "image_hash": scan.image_hash,
+                "thumbnail_url": _to_media_url(scan.raw_image_url),
+                "raw_image_url": _to_media_url(scan.raw_image_url),
+                "heatmap_image_url": _to_media_url(scan.heatmap_image_url),
+                "total_risk_score": scan.total_risk_score,
+                "risk_grade": _risk_grade(scan.total_risk_score),
+                "text_score": scan.text_score,
+                "visual_score": scan.visual_score,
+                "source_score": scan.source_score,
+                "exif_data": scan.exif_data,
+                "ocr_text": scan.ocr_text,
+                "scam_keywords_found": scan.scam_keywords_found,
+                "ai_gen_probability": scan.ai_gen_probability,
+                "created_at": scan.created_at,
+                "status": scan.status,
+            }
+
+    return {
+        "id": report.id,
+        "user": user_dict,
+        "scan": scan_dict,
+        "category": report.category,
+        "description": report.reason,
+        "platform": report.platform,
+        "reference_url": report.reference_url,
+        "allow_research_use": report.allow_research_use,
+        "status": report.status,
+        "admin_note": report.admin_note,
+        "moderated_by": report.moderated_by,
+        "moderated_at": report.moderated_at,
+        "created_at": report.created_at,
+    }
+
+
+def _resolve_export_file(path: Optional[str]) -> Optional[str]:
+    """Resolve a stored local path to an absolute file path when possible."""
+    if not path:
+        return None
+    candidate = str(path)
+    # Nested stored paths are relative to the server working directory.
+    for p in (candidate, os.path.join(settings.LOCAL_UPLOAD_DIR, os.path.basename(candidate))):
+        if os.path.isfile(p):
+            return p
+    return None
+
+
+async def export_dataset(db: AsyncSession, admin_id: int, export_req: ExportRequest) -> Tuple[bytes, str, int]:
+    """Build an in-memory ZIP of approved reports (images + heatmaps + metadata)."""
+    stmt = select(ScamReport).where(ScamReport.status == "approved", ScamReport.scan_id.isnot(None))
+    if export_req.categories:
+        stmt = stmt.where(ScamReport.category.in_(export_req.categories))
+    if export_req.from_date:
+        try:
+            from_dt = datetime.combine(date.fromisoformat(export_req.from_date), datetime.min.time(), tzinfo=TH_TIMEZONE)
+            stmt = stmt.where(ScamReport.created_at >= from_dt)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid from_date format (expected YYYY-MM-DD)")
+    if export_req.to_date:
+        try:
+            to_dt = datetime.combine(date.fromisoformat(export_req.to_date), datetime.max.time(), tzinfo=TH_TIMEZONE)
+            stmt = stmt.where(ScamReport.created_at <= to_dt)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid to_date format (expected YYYY-MM-DD)")
+
+    result = await db.execute(stmt.order_by(desc(ScamReport.created_at)))
+    reports = result.scalars().all()
+
+    if not reports:
+        raise HTTPException(status_code=404, detail="ไม่พบข้อมูลสำหรับ Export (ไม่มีรายงานที่อนุมัติแล้วในเงื่อนไขนี้)")
+
+    scan_ids = {r.scan_id for r in reports if r.scan_id}
+    scans_map = {}
+    if scan_ids:
+        scan_result = await db.execute(select(Scan).where(Scan.id.in_(scan_ids)))
+        for s in scan_result.scalars().all():
+            scans_map[s.id] = s
+
+    buf = io.BytesIO()
+    manifest = []
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+        for r in reports:
+            scan = scans_map.get(r.scan_id)
+            if scan is None:
+                continue
+            entry_id = f"report_{r.id}"
+            img_path = _resolve_export_file(scan.raw_image_url)
+            mask_path = _resolve_export_file(scan.heatmap_image_url)
+
+            if img_path:
+                with open(img_path, "rb") as f:
+                    img_bytes = f.read()
+                ext = os.path.splitext(img_path)[1].lstrip(".") or "png"
+                zf.writestr(f"images/{entry_id}.{ext}", img_bytes)
+            if mask_path:
+                with open(mask_path, "rb") as f:
+                    mask_bytes = f.read()
+                zf.writestr(f"masks/{entry_id}.jpg", mask_bytes)
+
+            record = {
+                "id": r.id,
+                "image": f"images/{entry_id}.{ext}" if img_path else None,
+                "mask": f"masks/{entry_id}.jpg" if mask_path else None,
+                "category": r.category,
+                "platform": r.platform,
+                "risk_score": scan.total_risk_score,
+                "risk_grade": _risk_grade(scan.total_risk_score),
+                "created_at": r.created_at.isoformat() if r.created_at else None,
+            }
+            if export_req.include_metadata:
+                record["metadata"] = {
+                    "description": r.reason,
+                    "reference_url": r.reference_url,
+                    "allow_research_use": r.allow_research_use,
+                    "admin_note": r.admin_note,
+                    "moderated_at": r.moderated_at.isoformat() if r.moderated_at else None,
+                    "scan": {
+                        "text_score": scan.text_score,
+                        "visual_score": scan.visual_score,
+                        "source_score": scan.source_score,
+                        "total_risk_score": scan.total_risk_score,
+                        "ai_gen_probability": scan.ai_gen_probability,
+                        "ocr_text": scan.ocr_text,
+                        "scam_keywords_found": scan.scam_keywords_found or [],
+                    },
+                }
+            manifest.append(record)
+
+        zf.writestr("manifest.json", json.dumps(manifest, ensure_ascii=False, indent=2))
+
+    buf.seek(0)
+
+    audit = AuditLog(
+        admin_id=admin_id,
+        action="dataset_exported",
+        details=f"Dataset export: {len(manifest)} approved reports"
+    )
+    db.add(audit)
+    await db.commit()
+
+    timestamp = datetime.now(TH_TIMEZONE).strftime("%Y%m%d_%H%M%S")
+    return buf.getvalue(), f"scamguard_dataset_{timestamp}.zip", len(manifest)
 
 async def get_users(db: AsyncSession, page: int = 1, limit: int = 20) -> Tuple[List[User], int]:
     stmt = select(User).order_by(desc(User.created_at))

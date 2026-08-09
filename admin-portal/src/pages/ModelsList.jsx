@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 
 import { Cpu, Rocket } from "lucide-react";
 
+import { fetchModels, deployModel } from "@/lib/api";
+
 export function ModelsList() {
   const [models, setModels] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -9,16 +11,8 @@ export function ModelsList() {
 
   const loadModels = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch("/api/v1/admin/models", {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setModels(data.items || []);
-      }
+      const data = await fetchModels();
+      setModels(data.items || []);
     } catch (error) {
       console.error("Failed to fetch models", error);
     } finally {
@@ -30,19 +24,11 @@ export function ModelsList() {
     loadModels();
   }, []);
 
-  const deployModel = async (modelId) => {
+  const handleDeployModel = async (modelId) => {
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`/api/v1/admin/models/${modelId}/deploy`, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      });
-      if (res.ok) {
-        loadModels();
-        closeModal();
-      }
+      await deployModel(modelId);
+      loadModels();
+      closeModal();
     } catch (error) {
       console.error("Failed to deploy model", error);
     }
@@ -55,6 +41,30 @@ export function ModelsList() {
   const closeModal = () => {
     setModalState({ isOpen: false, model: null });
   };
+
+  const renderStatusBadge = (model) => (
+    model.is_active ? (
+      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/50">
+        Active
+      </span>
+    ) : (
+      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+        Inactive
+      </span>
+    )
+  );
+
+  const renderDeployButton = (model) => (
+    !model.is_active && (
+      <button
+        onClick={() => openModal(model)}
+        className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors outline-none focus:ring-2 focus:ring-indigo-500"
+      >
+        <Rocket className="size-4 text-indigo-600 dark:text-indigo-400" />
+        Deploy
+      </button>
+    )
+  );
 
   return (
     <div className="flex flex-col gap-6 font-sans relative">
@@ -73,8 +83,9 @@ export function ModelsList() {
           </div>
           <p className="text-sm text-slate-500 dark:text-slate-400">แสดงรายการโมเดล AI ทั้งหมดที่มีอยู่ในระบบ</p>
         </div>
-        
-        <div className="flex-1 overflow-x-auto">
+
+        {/* Desktop table */}
+        <div className="hidden md:block flex-1 overflow-x-auto">
           <table className="w-full text-sm text-left whitespace-nowrap">
             <thead className="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 uppercase tracking-wider">
               <tr>
@@ -110,33 +121,42 @@ export function ModelsList() {
                     <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
                       {model.deployed_at ? new Date(model.deployed_at).toLocaleString('th-TH') : '-'}
                     </td>
-                    <td className="px-4 py-3">
-                      {model.is_active ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/50">
-                          Active
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
-                          Inactive
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      {!model.is_active && (
-                        <button 
-                          onClick={() => openModal(model)}
-                          className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors outline-none focus:ring-2 focus:ring-indigo-500"
-                        >
-                          <Rocket className="size-4 text-indigo-600 dark:text-indigo-400" />
-                          Deploy
-                        </button>
-                      )}
-                    </td>
+                    <td className="px-4 py-3">{renderStatusBadge(model)}</td>
+                    <td className="px-4 py-3 text-right">{renderDeployButton(model)}</td>
                   </tr>
                 ))
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile card layout */}
+        <div className="md:hidden flex flex-col divide-y divide-slate-200 dark:divide-slate-800">
+          {loading ? (
+            Array.from({ length: 5 }).map((_, i) => (
+              <div key={`skeleton-m-${i}`} className="p-4">
+                <div className="h-12 bg-slate-100 dark:bg-slate-800/40 rounded-md w-full animate-pulse"></div>
+              </div>
+            ))
+          ) : models.length === 0 ? (
+            <div className="px-4 py-12 text-center text-slate-500 dark:text-slate-400">ไม่พบข้อมูลโมเดล</div>
+          ) : (
+            models.map((model) => (
+              <div key={model.id} className="p-4 flex flex-col gap-3">
+                <div className="flex items-start justify-between gap-3">
+                  <span className="font-medium text-slate-900 dark:text-slate-100">{model.version_tag}</span>
+                  {renderStatusBadge(model)}
+                </div>
+                <p className="font-mono text-xs text-slate-500 dark:text-slate-400 break-all">{model.file_path}</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-slate-500 dark:text-slate-400">
+                    {model.deployed_at ? new Date(model.deployed_at).toLocaleString('th-TH') : '-'}
+                  </span>
+                  {renderDeployButton(model)}
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
 
@@ -160,7 +180,7 @@ export function ModelsList() {
                 ยกเลิก
               </button>
               <button 
-                onClick={() => deployModel(modalState.model.id)}
+                onClick={() => handleDeployModel(modalState.model.id)}
                 className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900 flex items-center gap-2"
               >
                 <Rocket className="size-4" />

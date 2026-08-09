@@ -2,22 +2,16 @@ import { useState, useEffect } from "react";
 
 import { FileText, Clock } from "lucide-react";
 
+import { fetchAuditLogs } from "@/lib/api";
+
 export function AuditLogsList() {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const loadLogs = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch("/api/v1/admin/audit-logs", {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setLogs(data.items || []);
-      }
+      const data = await fetchAuditLogs(1, 50);
+      setLogs(data.items || []);
     } catch (error) {
       console.error("Failed to fetch audit logs", error);
     } finally {
@@ -35,8 +29,15 @@ export function AuditLogsList() {
     if (action.includes("user_banned")) return "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800/50";
     if (action.includes("user_unbanned")) return "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/50";
     if (action.includes("model_deployed")) return "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800/50";
+    if (action.includes("dataset_exported")) return "bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 border-violet-200 dark:border-violet-800/50";
     return "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700";
   };
+
+  const renderActionBadge = (log) => (
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getActionColor(log.action)}`}>
+      {log.action}
+    </span>
+  );
 
   return (
     <div className="flex flex-col gap-6 font-sans">
@@ -55,8 +56,9 @@ export function AuditLogsList() {
           </div>
           <p className="text-sm text-slate-500 dark:text-slate-400">แสดงรายการประวัติการดำเนินการ 50 รายการล่าสุด</p>
         </div>
-        
-        <div className="flex-1 overflow-x-auto">
+
+        {/* Desktop table */}
+        <div className="hidden md:block flex-1 overflow-x-auto">
           <table className="w-full text-sm text-left whitespace-nowrap">
             <thead className="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 uppercase tracking-wider">
               <tr>
@@ -87,11 +89,7 @@ export function AuditLogsList() {
                   <tr key={log.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                     <td className="px-4 py-3 font-mono text-slate-500 dark:text-slate-400 text-xs">#{log.id}</td>
                     <td className="px-4 py-3 text-slate-900 dark:text-slate-100">Admin #{log.admin_id}</td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getActionColor(log.action)}`}>
-                        {log.action}
-                      </span>
-                    </td>
+                    <td className="px-4 py-3">{renderActionBadge(log)}</td>
                     <td className="px-4 py-3 max-w-[300px] truncate text-slate-600 dark:text-slate-400">
                       {log.details}
                     </td>
@@ -106,6 +104,36 @@ export function AuditLogsList() {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile card layout */}
+        <div className="md:hidden flex flex-col divide-y divide-slate-200 dark:divide-slate-800">
+          {loading ? (
+            Array.from({ length: 5 }).map((_, i) => (
+              <div key={`skeleton-m-${i}`} className="p-4">
+                <div className="h-12 bg-slate-100 dark:bg-slate-800/40 rounded-md w-full animate-pulse"></div>
+              </div>
+            ))
+          ) : logs.length === 0 ? (
+            <div className="px-4 py-12 text-center text-slate-500 dark:text-slate-400">ไม่พบข้อมูล Audit Logs</div>
+          ) : (
+            logs.map((log) => (
+              <div key={log.id} className="p-4 flex flex-col gap-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="font-mono text-slate-500 dark:text-slate-400 text-xs shrink-0">#{log.id}</span>
+                    <span className="text-slate-900 dark:text-slate-100 text-sm">Admin #{log.admin_id}</span>
+                  </div>
+                  {renderActionBadge(log)}
+                </div>
+                <p className="text-sm text-slate-600 dark:text-slate-400 break-words">{log.details}</p>
+                <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                  <Clock className="size-3.5" />
+                  {new Date(log.created_at).toLocaleString('th-TH')}
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>

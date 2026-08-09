@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 
 import { Users as UsersIcon, ShieldAlert, ShieldCheck } from "lucide-react";
 
+import { fetchUsers, updateUserStatus } from "@/lib/api";
+
 export function UsersList() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -9,16 +11,8 @@ export function UsersList() {
 
   const loadUsers = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch("/api/v1/admin/users", {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setUsers(data.items || []);
-      }
+      const data = await fetchUsers(1, 100);
+      setUsers(data.items || []);
     } catch (error) {
       console.error("Failed to fetch users", error);
     } finally {
@@ -32,19 +26,9 @@ export function UsersList() {
 
   const toggleUserStatus = async (userId, currentStatus) => {
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`/api/v1/admin/users/${userId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({ is_active: !currentStatus })
-      });
-      if (res.ok) {
-        loadUsers();
-        closeModal();
-      }
+      await updateUserStatus(userId, !currentStatus);
+      loadUsers();
+      closeModal();
     } catch (error) {
       console.error("Failed to update user", error);
     }
@@ -57,6 +41,53 @@ export function UsersList() {
   const closeModal = () => {
     setModalState({ isOpen: false, user: null, action: null });
   };
+
+  const renderStatusBadge = (user) => (
+    user.is_active ? (
+      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50">
+        Active
+      </span>
+    ) : (
+      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800/50">
+        Banned
+      </span>
+    )
+  );
+
+  const renderRoleBadge = (user) => (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium border ${
+      user.role === 'admin' 
+        ? "bg-slate-900 dark:bg-slate-100 text-slate-50 dark:text-slate-900 border-slate-900 dark:border-slate-100" 
+        : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700"
+    }`}>
+      {user.role}
+    </span>
+  );
+
+  const renderActionButton = (user) => (
+    user.is_active ? (
+      <button 
+        onClick={() => openModal(user, 'ban')}
+        disabled={user.role === 'admin'}
+        className={`inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-colors outline-none focus:ring-2 focus:ring-red-500 ${
+          user.role === 'admin' 
+            ? "bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed" 
+            : "bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40"
+        }`}
+      >
+        <ShieldAlert className="size-4" />
+        แบนผู้ใช้
+      </button>
+    ) : (
+      <button 
+        onClick={() => openModal(user, 'unban')}
+        className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-md hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors outline-none focus:ring-2 focus:ring-emerald-500"
+      >
+        <ShieldCheck className="size-4" />
+        ปลดแบน
+      </button>
+    )
+  );
 
   return (
     <div className="flex flex-col gap-6 font-sans relative">
@@ -75,8 +106,9 @@ export function UsersList() {
           </div>
           <p className="text-sm text-slate-500 dark:text-slate-400">แสดงรายชื่อผู้ใช้งานทั้งหมดในระบบ เรียงตามวันที่สมัคร</p>
         </div>
-        
-        <div className="flex-1 overflow-x-auto">
+
+        {/* Desktop table */}
+        <div className="hidden md:block flex-1 overflow-x-auto">
           <table className="w-full text-sm text-left whitespace-nowrap">
             <thead className="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 uppercase tracking-wider">
               <tr>
@@ -114,55 +146,46 @@ export function UsersList() {
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium border ${
-                        user.role === 'admin' 
-                          ? "bg-slate-900 dark:bg-slate-100 text-slate-50 dark:text-slate-900 border-slate-900 dark:border-slate-100" 
-                          : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700"
-                      }`}>
-                        {user.role}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      {user.is_active ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50">
-                          Active
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800/50">
-                          Banned
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      {user.is_active ? (
-                        <button 
-                          onClick={() => openModal(user, 'ban')}
-                          disabled={user.role === 'admin'}
-                          className={`inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-colors outline-none focus:ring-2 focus:ring-red-500 ${
-                            user.role === 'admin' 
-                              ? "bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed" 
-                              : "bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40"
-                          }`}
-                        >
-                          <ShieldAlert className="size-4" />
-                          แบนผู้ใช้
-                        </button>
-                      ) : (
-                        <button 
-                          onClick={() => openModal(user, 'unban')}
-                          className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-md hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors outline-none focus:ring-2 focus:ring-emerald-500"
-                        >
-                          <ShieldCheck className="size-4" />
-                          ปลดแบน
-                        </button>
-                      )}
-                    </td>
+                    <td className="px-4 py-3">{renderRoleBadge(user)}</td>
+                    <td className="px-4 py-3">{renderStatusBadge(user)}</td>
+                    <td className="px-4 py-3 text-right">{renderActionButton(user)}</td>
                   </tr>
                 ))
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile card layout */}
+        <div className="md:hidden flex flex-col divide-y divide-slate-200 dark:divide-slate-800">
+          {loading ? (
+            Array.from({ length: 5 }).map((_, i) => (
+              <div key={`skeleton-m-${i}`} className="p-4">
+                <div className="h-12 bg-slate-100 dark:bg-slate-800/40 rounded-md w-full animate-pulse"></div>
+              </div>
+            ))
+          ) : users.length === 0 ? (
+            <div className="px-4 py-12 text-center text-slate-500 dark:text-slate-400">ไม่พบข้อมูลผู้ใช้งาน</div>
+          ) : (
+            users.map((user) => (
+              <div key={user.id} className="p-4 flex flex-col gap-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex flex-col min-w-0">
+                    <span className="font-medium text-slate-900 dark:text-slate-100 truncate">{user.email}</span>
+                    {user.full_name && (
+                      <span className="text-xs text-slate-500 dark:text-slate-400 truncate">{user.full_name}</span>
+                    )}
+                  </div>
+                  <span className="font-mono text-slate-500 dark:text-slate-400 text-xs shrink-0">#{user.id}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {renderRoleBadge(user)}
+                  {renderStatusBadge(user)}
+                </div>
+                <div className="flex justify-end">{renderActionButton(user)}</div>
+              </div>
+            ))
+          )}
         </div>
       </div>
 

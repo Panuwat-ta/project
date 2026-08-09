@@ -6,11 +6,12 @@ from app.models.admin import Admin as AdminModel
 from app.schemas.admin import (
     DashboardResponse, AdminReportListResponse, AdminReportDetailResponse, 
     ReportDecisionRequest, UserAdminListResponse, UserAdminDetailResponse, 
-    UserUpdateRequest, ModelVersionListResponse, AuditLogListResponse
+    UserUpdateRequest, ModelVersionListResponse, AuditLogListResponse, ExportRequest
 )
 from app.services import admin_service
 
 from fastapi import HTTPException, status
+from fastapi.responses import StreamingResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.future import select
 from app.core.security import verify_password, create_access_token, create_refresh_token
@@ -86,12 +87,22 @@ async def get_reports(
     limit: int = 20,
     status: str = None,
     category: str = None,
+    search: str = None,
     db: AsyncSession = Depends(get_db),
     current_admin: AdminModel = Depends(get_current_admin)
 ):
     """GET /api/v1/admin/reports"""
-    items, total = await admin_service.get_reports(db, page, limit, status, category)
+    items, total = await admin_service.get_reports(db, page, limit, status, category, search)
     return {"items": items, "total": total, "page": page, "limit": limit}
+
+@router.get("/reports/{report_id}", response_model=AdminReportDetailResponse)
+async def get_report_detail(
+    report_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_admin: AdminModel = Depends(get_current_admin)
+):
+    """GET /api/v1/admin/reports/{report_id}"""
+    return await admin_service.get_report_detail(db, report_id)
 
 @router.patch("/reports/{report_id}")
 async def review_report(
@@ -174,3 +185,18 @@ async def get_audit_logs(
     """GET /api/v1/admin/audit-logs"""
     items, total = await admin_service.get_audit_logs(db, page, limit)
     return {"items": items, "total": total, "page": page, "limit": limit}
+
+@router.post("/dataset/export")
+async def export_dataset(
+    body: ExportRequest,
+    db: AsyncSession = Depends(get_db),
+    current_admin: AdminModel = Depends(get_current_admin)
+):
+    """POST /api/v1/admin/dataset/export - Export ภาพ Scam ที่อนุมัติแล้วเป็นไฟล์ ZIP"""
+    content, filename, count = await admin_service.export_dataset(db, current_admin.id, body)
+    headers = {"Content-Disposition": f'attachment; filename="{filename}"'}
+    return StreamingResponse(
+        iter([content]),
+        media_type="application/zip",
+        headers=headers,
+    )

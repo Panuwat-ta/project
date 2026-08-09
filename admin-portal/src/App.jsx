@@ -2,14 +2,20 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AdminLayout } from "@/layouts/AdminLayout";
 import { Dashboard } from "@/pages/Dashboard";
 import { ReportsList } from "@/pages/ReportsList";
+import { ReportDetail } from "@/pages/ReportDetail";
+import { DatasetExport } from "@/pages/DatasetExport";
 import { Login } from "@/pages/Login";
 import { UsersList } from "@/pages/UsersList";
 import { ModelsList } from "@/pages/ModelsList";
 import { AuditLogsList } from "@/pages/AuditLogsList";
+import { getAccessToken, isTokenExpired, clearAuth } from "@/lib/api";
 
 const ProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem('token');
-  if (!token) {
+  const token = getAccessToken();
+
+  // เช็คว่า Token หมดอายุหรือยัง ถ้าหมดอายุให้กลับไปหน้า Login
+  if (!token || isTokenExpired(token)) {
+    clearAuth();
     return <Navigate to="/login" replace />;
   }
   return children;
@@ -30,9 +36,10 @@ function App() {
         }>
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="reports" element={<ReportsList />} />
+          <Route path="reports/:id" element={<ReportDetail />} />
           <Route path="users" element={<UsersList />} />
           <Route path="models" element={<ModelsList />} />
-          <Route path="dataset" element={<div className="p-4"><h2>Dataset Export Placeholder</h2></div>} />
+          <Route path="dataset" element={<DatasetExport />} />
           <Route path="audit-log" element={<AuditLogsList />} />
         </Route>
       </Routes>
