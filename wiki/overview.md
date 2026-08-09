@@ -36,7 +36,7 @@ updated: 2026-08-02
 | :--- | :--- | :--- |
 | วิเคราะห์ข้อความ (Textual Analysis) | OCR + NLP ตรวจจับคำหลอกลวง | 25% |
 | ตรวจสอบแหล่งที่มา (Source Verification) | Reverse Image Search ผ่าน Google Vision API | 30% |
-| ตรวจจับความผิดปกติทางภาพ (Visual Anomaly) | Deep Learning (SegFormer + ELA) + Grad-CAM | 45% |
+| ตรวจจับความผิดปกติทางภาพ (Visual Anomaly) | Deep Learning (SegFormer) + Heatmap | 45% |
 
 คะแนนรวมอยู่ระหว่าง 0–100 ดูเกณฑ์การตัดสินที่ [[concepts/risk-scoring]]
 
@@ -75,7 +75,7 @@ updated: 2026-08-02
 ## ผลลัพธ์ที่ผู้ใช้ได้รับ
 
 1. **Weighted Risk Score** (0–100) แสดงเป็น color gauge (เขียว/เหลือง/แดง)
-2. **Grad-CAM Heatmap** ซ้อนทับรูปภาพต้นฉบับแสดงจุดที่โมเดลตรวจพบความผิดปกติ
+2. **Heatmap** ซ้อนทับรูปภาพต้นฉบับแสดงจุดที่โมเดลตรวจพบความผิดปกติ
 3. **ผลการวิเคราะห์ข้อความ** — คำหลอกลวงหรือรูปแบบน่าสงสัยที่พบในภาพ
 4. **ผลการตรวจสอบแหล่งที่มา** — รูปนี้พบในเว็บไซต์ใดบ้างและกี่แหล่ง
 
@@ -87,7 +87,7 @@ Heatmap เป็นหัวใจของการออกแบบ **Explai
 
 - **PDPA** — ผู้ใช้ต้องยินยอมก่อนที่รูปภาพจะถูกเก็บหรือใช้เพื่อ training โมเดล ยินยอมแบบแยกส่วนและถอนได้ ดูที่ [[requirements/non-functional-requirements]]
 - **เป้าหมายประสิทธิภาพ** — Cache hit < 3 วินาที; Full AI inference < 15 วินาทีต่อรูป
-- **เป้าหมายความแม่นยำ** — โมเดล AI ต้องได้ >= 85% accuracy และ F1-score บน test set
+- **เป้าหมายความแม่นยำ** — โมเดล AI ต้องได้ >= 85% accuracy และ mDice บน test set
 - **เป้าหมาย Availability** — API และ AI Inference Service uptime >= 99.5%
 
 ---

@@ -32,7 +32,7 @@ flowchart TB
 
         subgraph Backends [Backend & API Layer]
             APIGateway("API Application<br>[Container: Python FastAPI]<br>จัดการ Logic หลัก, ดึง Metadata,<br>ตรวจสอบ OCR")
-            AIInference("AI Inference Service<br>[Container: PyTorch / ONNX]<br>ตรวจการตัดต่อ (ELA),<br>เช็คว่าเป็นภาพ AI")
+            AIInference("AI Inference Service<br>[Container: PyTorch / ONNX]<br>ตรวจการตัดต่อ (Semantic Segmentation),<br>เช็คว่าเป็นภาพ AI")
         end
 
         subgraph Storages [Storage & Cache Layer]
@@ -98,7 +98,7 @@ flowchart TB
 
 * **AI Inference Service (PyTorch / ONNX):**
   * **บทบาท:** เซอร์วิสวิเคราะห์รูปภาพผ่านระบบปัญญาประดิษฐ์เชิงลึก (Deep Learning)
-  * **หน้าที่:** ประมวลผลรูปภาพเพื่อตรวจหาร่องรอยการแก้ไขภาพในระดับพิกเซลด้วยเทคนิค ELA (Error Level Analysis) และตรวจสอบลักษณะทางกายภาพของภาพว่าถูกสร้างด้วยปัญญาประดิษฐ์ (AI-Generated Image) หรือไม่
+  * **หน้าที่:** ประมวลผลรูปภาพเพื่อตรวจหาร่องรอยการแก้ไขภาพในระดับพิกเซลด้วยเทคนิค Semantic Segmentation และตรวจสอบลักษณะทางกายภาพของภาพว่าถูกสร้างด้วยปัญญาประดิษฐ์ (AI-Generated Image) หรือไม่
   * **เทคโนโลยี:** PyTorch / ONNX Runtime (เพื่อเพิ่มประสิทธิภาพความเร็วในการ Inference โมเดล)
 
 ### 3. ส่วนจัดเก็บข้อมูล (Storage Containers)
@@ -110,7 +110,7 @@ flowchart TB
 
 * **Object Storage (Cloud Storage):**
   * **บทบาท:** แหล่งจัดเก็บไฟล์รูปภาพขนาดใหญ่
-  * **หน้าที่:** จัดเก็บไฟล์รูปภาพต้นฉบับที่ผู้ใช้อัปโหลดเข้ามา และรูปภาพแผนที่ความร้อน (Grad-CAM Heatmap) ที่ส่งกลับมาจากบริการ AI เพื่อแสดงจุดผิดปกติ
+  * **หน้าที่:** จัดเก็บไฟล์รูปภาพต้นฉบับที่ผู้ใช้อัปโหลดเข้ามา และรูปภาพแผนที่ความร้อน (Heatmap) ที่ส่งกลับมาจากบริการ AI เพื่อแสดงจุดผิดปกติ
   * **เทคโนโลยี:** ระบบจัดเก็บไฟล์บนคลาวด์ (Cloud Storage)
 
 * **Main Database (PostgreSQL):**

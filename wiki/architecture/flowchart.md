@@ -151,7 +151,7 @@ graph TD
 5. **Analysis Tasks**:
    - **Task 1 Metadata**: ดึงข้อมูล EXIF/GPS
    - **Task 2 OCR**: อ่านข้อความในภาพ
-   - **Task 3 Forgery**: ตรวจสอบการตัดต่อ (ELA)
+   - **Task 3 Forgery**: ตรวจสอบการตัดต่อ (Semantic Segmentation)
    - **Partial Failure**: ดักจับกรณี Timeout
    - **Keyword Check**: ตรวจสอบคำเสี่ยงสูง
    - **Task 4 Source**: ค้นหาที่มาของภาพ

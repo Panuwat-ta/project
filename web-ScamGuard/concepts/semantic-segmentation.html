@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Semantic Segmentation - ScamGuard</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../shared-theme.css">
+</head>
+
+<body>
+  <main class="document">
+    <h1>Semantic Segmentation</h1>
+        <p class="lede">เทคนิคทางคอมพิวเตอร์วิทัศน์ (Computer Vision) ที่ทำการจำแนกประเภทของแต่ละพิกเซลในรูปภาพ ว่าเป็นภาพพื้นหลัง (Background) หรือเป็นรอยที่ถูกดัดแปลงตัดต่อ (Forgery)</p>
+    <div class="divider"></div>
+    <h2>หลักการทำงาน</h2>
+    <p>ระบบประเมินความเสี่ยงและตรวจสอบร่องรอยการตัดต่อในระดับพิกเซลด้วยโมเดล Deep Learning (SegFormer) โดยวิเคราะห์บริบทของภาพทั้งในระดับโครงสร้างรวม (Global Context) และรายละเอียดระดับขอบเขตพิกเซล (Local Details)</p>
+    <p><strong>ขั้นตอน:</strong></p>
+    <ol>
+    <li>รูปภาพดิบจะถูกส่งเข้าโมเดล SegFormer</li>
+    <li>โมเดลสกัด Features ในหลายระดับความละเอียด (Hierarchical Features)</li>
+    <li>Decoder ของโมเดลจะรวม Features เข้าด้วยกัน และทำการทำนาย (Prediction) ว่าแต่ละพิกเซลในภาพมีความน่าจะเป็นที่จะเป็นรอยตัดต่อมากน้อยเพียงใด</li>
+    <li>ผลลัพธ์ที่ได้จะเป็น Probability Map ที่สามารถนำไปพล็อตเป็นภาพแผนที่ความร้อน (Heatmap) แสดงบริเวณที่น่าสงสัย</li>
+    </ol>
+    <div class="divider"></div>
+    <h2>ประเภทการปลอมแปลงที่ตรวจจับได้</h2>
+    <table>
+    <thead>
+    <tr>
+    <th style="text-align: left;">ประเภทการปลอมแปลง</th>
+    <th style="text-align: left;">คำอธิบาย</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td style="text-align: left;">Splicing</td>
+    <td style="text-align: left;">นำบริเวณจากรูปอื่นมาวาง (มักมีความผิดปกติของสัญญาณพิกเซลและขอบเขต)</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Copy-Move</td>
+    <td style="text-align: left;">คัดลอกบริเวณในรูปเดิมแล้วย้ายไปที่อื่น (โมเดลสามารถเรียนรู้ความซ้ำซ้อน)</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">Retouching</td>
+    <td style="text-align: left;">แก้ไขพิกเซลเฉพาะจุด (เช่น เปลี่ยนตัวเลขบนสลิปโอนเงิน)</td>
+    </tr>
+    </tbody>
+    </table>
+    <div class="divider"></div>
+    <h2>Semantic Segmentation ในระบบนี้</h2>
+    <p>เทคนิคนี้เป็นกลไกหลักที่ใช้โดย  ผ่านโมเดล  </p>
+    <p>กระบวนการ:</p>
+    <ol>
+    <li>API ส่งภาพไปยัง AI Inference Service</li>
+    <li>ภาพถูกป้อนเข้าสู่กระบวนการ Semantic Segmentation ด้วยโมเดล SegFormer</li>
+    <li>SegFormer สร้าง Segmentation Mask / Probability Map ออกมา</li>
+    <li>Mask ถูกแปลงเป็น  สำหรับแสดงผลให้ผู้ใช้เห็นจุดเสี่ยง</li>
+    </ol>
+    <div class="divider"></div>
+    <h2>ประเด็นสำคัญ</h2>
+    <ul>
+    <li>แตกต่างจาก Image Classification ที่บอกแค่ว่า "มี" หรือ "ไม่มี" การตัดต่อ แต่ Semantic Segmentation จะชี้ตำแหน่งพิกเซล (Localization) ให้เห็นชัดเจน</li>
+    <li>ใช้  ในการ Train โมเดลให้มีความแม่นยำสูง</li>
+    <li>ได้ผลดีกับประเภทภาพหลอกลวงที่พบบ่อยที่สุด: สลิปที่ถูกแก้ไขตัวเลข, ใบเสร็จปลอม, รูปโปรไฟล์ที่เปลี่ยนใบหน้า</li>
+    </ul>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
+  </script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        displayMath: [['$$','$$'], ['\\[','\\]']]
+      }
+    });
+  </script>
+  <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.mermaid-container').forEach(container => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-expand-mermaid';
+        btn.innerHTML = '🔍 Fullscreen';
+
+        btn.onclick = () => {
+          const originalSvg = container.querySelector('svg');
+          if (!originalSvg) return;
+
+          const overlay = document.createElement('div');
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.backgroundColor = 'var(--paper, #F6F4EE)';
+          overlay.style.zIndex = '999999';
+          overlay.style.display = 'flex';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+
+          const closeBtn = document.createElement('button');
+          closeBtn.innerHTML = '✖ Close';
+          closeBtn.style.position = 'absolute';
+          closeBtn.style.top = '20px';
+          closeBtn.style.right = '20px';
+          closeBtn.style.padding = '8px 16px';
+          closeBtn.style.fontSize = '1rem';
+          closeBtn.style.fontWeight = 'bold';
+          closeBtn.style.cursor = 'pointer';
+          closeBtn.style.backgroundColor = '#ff4d4d';
+          closeBtn.style.color = '#fff';
+          closeBtn.style.border = 'none';
+          closeBtn.style.borderRadius = '8px';
+          closeBtn.style.zIndex = '1000000';
+          closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+
+          closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
+          closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
+
+          const clonedSvg = originalSvg.cloneNode(true);
+          clonedSvg.style.width = '100%';
+          clonedSvg.style.height = '100%';
+          clonedSvg.style.maxWidth = '100vw';
+          clonedSvg.style.maxHeight = '100vh';
+
+          overlay.appendChild(clonedSvg);
+          overlay.appendChild(closeBtn);
+          document.body.appendChild(overlay);
+
+          const oldOverflow = document.body.style.overflow;
+          document.body.style.overflow = 'hidden';
+
+          const panZoomInstance = svgPanZoom(clonedSvg, {
+            zoomEnabled: true,
+            controlIconsEnabled: true,
+            fit: true,
+            center: true,
+            minZoom: 0.5,
+            maxZoom: 10,
+            mouseWheelZoomEnabled: true
+          });
+
+          closeBtn.onclick = () => {
+            panZoomInstance.destroy();
+            document.body.removeChild(overlay);
+            document.body.style.overflow = oldOverflow;
+          };
+        };
+        container.appendChild(btn);
+      });
+    });
+  </script>
+</body>
+</html>

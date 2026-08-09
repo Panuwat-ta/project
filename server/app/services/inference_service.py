@@ -58,6 +58,9 @@ class InferenceService:
             venv_lib_path = os.path.join(os.getcwd(), "venv/lib/python3.10/site-packages/nvidia")
             nvidia_lib_dirs = glob.glob(f"{venv_lib_path}/*/lib")
             env["LD_LIBRARY_PATH"] = ":".join(nvidia_lib_dirs)
+            env["ONNX_MODEL_PATH"] = settings.ONNX_MODEL_PATH
+            env["ONNX_TILE_SIZE"] = str(settings.ONNX_TILE_SIZE)
+            env["ONNX_TILE_OVERLAP"] = str(settings.ONNX_TILE_OVERLAP)
             
             # Re-enable CUDA for ONNX worker
             if "CUDA_VISIBLE_DEVICES" in env and env["CUDA_VISIBLE_DEVICES"] == "":

@@ -59,6 +59,7 @@ dataset_type = 'BaseSegDataset'
 
 # เปลี่ยนเป็น Dataset ใหม่ที่เพิ่งแปลงเสร็จ
 data_root = 'dataset/'
+#
 
 metainfo = dict(
     classes=('background', 'forgery'),
