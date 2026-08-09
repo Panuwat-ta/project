@@ -17,9 +17,7 @@ dataset/
 *.ckpt
 
 # Checkpoints / Logs
-work_dirs/
-logs/
-.cache/
+
 
 # Python / Environment
 __pycache__/
