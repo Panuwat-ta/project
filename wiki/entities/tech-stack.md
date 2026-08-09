@@ -49,7 +49,7 @@ updated: 2026-08-02
 | Training Framework | PyTorch | มาตรฐาน; Ecosystem ใหญ่ |
 | Serving Format | ONNX | แปลงจาก PyTorch หลัง Train เสร็จ |
 | Inference Runtime | ONNX Runtime | Engine สำหรับ Serving ที่ Optimized แล้ว |
-| XAI | Grad-CAM | คำนวณจาก Segmentation Mask หลัง Inference |
+| XAI | Heatmap | คำนวณจาก Segmentation Mask หลัง Inference |
 | OCR | Surya-OCR | ดึงข้อความภาษาไทย + อังกฤษ |
 | ฟีเจอร์ AI อนาคต | SynthID, Gemini | ตรวจจับ Watermark, วิเคราะห์ด้วย LLM (ยังไม่ได้ออกแบบ) |
 

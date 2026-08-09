@@ -9,6 +9,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-scamguard}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
       POSTGRES_DB: ${POSTGRES_DB:-scamguard_db}
+      TZ: Asia/Bangkok
     ports:
       - "5432:5432"
     volumes:

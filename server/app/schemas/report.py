@@ -18,8 +18,7 @@ class ReportResponse(BaseModel):
     status: str
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 class ReportSubmitResponse(BaseModel):
     id: int

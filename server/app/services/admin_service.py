@@ -1,6 +1,6 @@
 import os
 from typing import List, Tuple, Dict, Any
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import desc, func, and_
@@ -12,9 +12,10 @@ from app.models.model_version import ModelVersion
 from app.models.audit_log import AuditLog
 from app.schemas.admin import ReportDecisionRequest, UserUpdateRequest
 from sqlalchemy.orm import selectinload
+from app.core.config import TH_TIMEZONE
 
 async def get_dashboard_stats(db: AsyncSession) -> Dict[str, Any]:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(TH_TIMEZONE)
     today = now.replace(hour=0, minute=0, second=0, microsecond=0)
     week_ago = today - timedelta(days=7)
     month_ago = today - timedelta(days=30)
@@ -172,7 +173,7 @@ async def review_report(db: AsyncSession, report_id: int, admin_id: int, decisio
     if decision.admin_note:
         report.admin_note = decision.admin_note
     report.moderated_by = admin_id
-    report.moderated_at = datetime.now(timezone.utc)
+    report.moderated_at = datetime.now(TH_TIMEZONE)
     
     # Audit log
     audit = AuditLog(
@@ -255,7 +256,7 @@ async def deploy_model(db: AsyncSession, model_id: int, admin_id: int):
     
     # Activate target
     model.is_active = True
-    model.deployed_at = datetime.now(timezone.utc)
+    model.deployed_at = datetime.now(TH_TIMEZONE)
     
     audit = AuditLog(
         admin_id=admin_id,

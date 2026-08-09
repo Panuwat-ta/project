@@ -36,7 +36,7 @@ updated: 2026-08-02
 | [[architecture/system-architecture]] | ภาพรวมสถาปัตยกรรม Cloud-Native แบบ 3 ชั้น และ data flow |
 | [[architecture/mobile-app]] | Flutter Mobile App: Clean Architecture, BLoC, หน้าจอต่างๆ และขั้นตอนการอัปโหลดรูป |
 | [[architecture/backend-api]] | FastAPI Orchestrator: auth, OCR/NLP, ดึง metadata และประสานงาน job |
-| [[architecture/ai-inference-service]] | PyTorch/ONNX AI Node: ELA, ตรวจจับภาพ AI-Gen, สร้าง Grad-CAM |
+| [[architecture/ai-inference-service]] | PyTorch/ONNX AI Node: Semantic Segmentation, ตรวจจับภาพ AI-Gen, สร้าง Heatmap |
 | [[architecture/database-schema]] | PostgreSQL schema, Redis cache strategy, Cloud Object Storage layout |
 | [[architecture/external-integrations]] | Google Vision API (reverse search), Firebase FCM และ integration อื่นๆ ในอนาคต |
 | [[architecture/c1-system-context-diagram]] | C1 System Context Diagram ภาพรวมระบบระดับกว้าง |
@@ -54,10 +54,10 @@ updated: 2026-08-02
 | :--- | :--- |
 | [[concepts/multi-layer-analysis]] | การวิเคราะห์ 3 ชั้น: Textual, Source Verification, Visual Anomaly |
 | [[concepts/risk-scoring]] | สูตรคำนวณ Weighted Risk Score, เกณฑ์ระดับความเสี่ยง และการรวมคะแนน |
-| [[concepts/explainable-ai]] | แนวทาง XAI: การสร้าง Grad-CAM Heatmap, overlay ลงรูปภาพ และการแสดงผล UI |
+| [[concepts/explainable-ai]] | แนวทาง XAI: การสร้าง Heatmap, overlay ลงรูปภาพ และการแสดงผล UI |
 | [[concepts/ai-model-segformer]] | สถาปัตยกรรม SegFormer, MiT encoder, All-MLP decoder และ output ระดับพิกเซล |
 | [[concepts/surya-ocr]] | สถาปัตยกรรม Surya OCR 2, VLM, GGUF Format และการสกัดข้อความ |
-| [[concepts/ela-technique]] | Error Level Analysis — หลักการทำงานและการตรวจจับบริเวณที่ถูกดัดแปลง |
+| [[concepts/semantic-segmentation]] | Semantic Segmentation — หลักการทำงานและการตรวจจับบริเวณที่ถูกดัดแปลง |
 | [[concepts/model-training]] | AI Model Training Workflow ขั้นตอนการฝึกและเทรนโมเดล |
 
 ---

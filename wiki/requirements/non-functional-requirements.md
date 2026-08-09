@@ -33,9 +33,9 @@ updated: 2026-08-02
 | ตัวชี้วัด | เป้าหมาย |
 | :--- | :--- |
 | ความแม่นยำ (Accuracy) การตรวจจับภาพตัดต่อ | >= 85% บน Test Set |
-| ค่า F1-Score การตรวจจับภาพตัดต่อ | >= 85% บน Test Set |
+| ค่า mDice การตรวจจับภาพตัดต่อ | >= 85% บน Test Set |
 | ความแม่นยำ (Accuracy) การคัดกรอง AI-Generated | >= 85% บน Test Set |
-| ค่า F1-Score การคัดกรอง AI-Generated | >= 85% บน Test Set |
+| ค่า mDice การคัดกรอง AI-Generated | >= 85% บน Test Set |
 
 ---
 

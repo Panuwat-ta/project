@@ -532,7 +532,7 @@ State:
 - คะแนน Visual Anomaly
 - คะแนน AI-generated Probability
 - จุดที่ระบบให้ความสนใจบนภาพ
-- Heatmap จาก Grad-CAM หรือ XAI
+- Heatmap จาก Heatmap หรือ XAI
 - ข้อสรุปเชิงอธิบาย
 
 ตัวอย่างข้อความ:

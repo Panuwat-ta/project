@@ -93,7 +93,7 @@ updated: 2026-08-02
 
 ## ข้อจำกัดที่รู้จัก
 
-1. **การ Re-compress ซ้ำหลายครั้ง** — ความแม่นยำลดลงถ้าภาพถูก compress หลายรอบ (เช่น ส่งต่อผ่านแอปแชท) เพราะ artifact จาก compression บดบัง ELA signal
+1. **การ Re-compress ซ้ำหลายครั้ง** — ความแม่นยำลดลงถ้าภาพถูก compress หลายรอบ (เช่น ส่งต่อผ่านแอปแชท) เพราะ artifact จาก compression บดบัง Semantic Segmentation signal
 2. **ภาพ AI-Generated ทั้งหมด** — SegFormer ตรวจจับ *การตัดต่อ* ระดับพิกเซล ภาพ synthetic ทั้งหมดไม่มี splice artifact แบบดั้งเดิม ต้องใช้ AI-Gen classifier แยกต่างหาก
 
 ---
@@ -107,7 +107,7 @@ updated: 2026-08-02
 
 ## หน้าที่เกี่ยวข้อง
 
-- [[concepts/ela-technique]]
+- [[concepts/semantic-segmentation]]
 - [[concepts/explainable-ai]]
 - [[concepts/multi-layer-analysis]]
 - [[architecture/ai-inference-service]]

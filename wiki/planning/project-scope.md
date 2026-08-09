@@ -32,7 +32,7 @@ updated: 2026-08-02
 | :--- | :--- |
 | Authentication | สมัครและล็อกอินด้วยอีเมล/รหัสผ่าน, Google OAuth, และระบบ Secure Storage |
 | Image Input | ส่วนการเลือกรูปภาพ, การถ่ายภาพ, และโหมด Crop ตัดรูปภาพก่อนส่งให้ระบบ |
-| Risk Visualization | ส่วนแสดงผล Risk Score (เกจสี เขียว/เหลือง/แดง), ภาพ Grad-CAM ทับซ้อน, พร้อมรายละเอียดผลสแกน |
+| Risk Visualization | ส่วนแสดงผล Risk Score (เกจสี เขียว/เหลือง/แดง), ภาพ Heatmap ทับซ้อน, พร้อมรายละเอียดผลสแกน |
 | History & PDPA | แสดงหน้าต่างประวัติการตรวจสอบย้อนหลัง, หน้าต่างยอมรับข้อตกลง PDPA และการยกเลิกอนุญาตข้อมูล |
 | Scam Report | แบบฟอร์มกดแจ้งเตือนภาพ Scam ให้ตรวจสอบเพิ่มเติม พร้อมคุณสมบัติ Share ข้อมูล |
 
@@ -54,10 +54,10 @@ updated: 2026-08-02
 
 | กลุ่มงาน (Task Group) | รายละเอียด (Tasks) |
 | :--- | :--- |
-| ELA | พัฒนาระบบ Preprocessing ตัดภาพ ELA (Error Level Analysis) ออกมา |
+| Semantic Segmentation | พัฒนาระบบ Preprocessing ตัดภาพ Semantic Segmentation ออกมา |
 | GenAI Detection | พัฒนาและเชื่อมต่อระบบจำแนกและคัดกรองรูปภาพที่มาจากคำสั่ง AI อัตโนมัติ |
 | PyTorch to ONNX | ขั้นตอนส่งออกตัว Model ให้อยู่ในมาตรฐานเปิด ONNX สำหรับการโหลดเข้าระบบในตอนรันจริง (Inference) |
-| Grad-CAM | แปลงผลลัพธ์จาก Segmentation Mask เพื่อผลิตภาพ Heatmap คาดทับในขั้นสุดท้าย |
+| Heatmap | แปลงผลลัพธ์จาก Segmentation Mask เพื่อผลิตภาพ Heatmap คาดทับในขั้นสุดท้าย |
 
 ---
 

@@ -135,3 +135,11 @@
   --risk-medium: #ffd700;
   --risk-high: #ff1744;
 }
+
+/* Fix for Recharts focus outline */
+.recharts-wrapper:focus,
+.recharts-surface:focus,
+.recharts-wrapper *,
+.recharts-surface * {
+  outline: none !important;
+}

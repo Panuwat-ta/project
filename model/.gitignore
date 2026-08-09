@@ -1,9 +1,11 @@
 # Dataset / Data
-data/
+dataset/
 *.zip
 *.tar.gz
 *.csv
 *.jsonl
+
+
 
 # Model Weights
 *.pth
@@ -13,11 +15,10 @@ data/
 *.bin
 *.safetensors
 *.ckpt
+*.onnx.data
 
 # Checkpoints / Logs
-work_dirs/
-logs/
-.cache/
+
 
 # Python / Environment
 __pycache__/

@@ -13,9 +13,9 @@ from app.services import admin_service
 from fastapi import HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.future import select
-from app.core.security import verify_password, create_access_token
+from app.core.security import verify_password, create_access_token, create_refresh_token
 from app.models.admin import Admin
-from app.schemas.auth import TokenResponse
+from app.schemas.auth import TokenResponse, RefreshTokenRequest
 
 router = APIRouter()
 
@@ -30,11 +30,45 @@ async def admin_login(form_data: OAuth2PasswordRequestForm = Depends(), db: Asyn
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-        
-    access_token = create_access_token(data={"sub": str(admin.id), "role": "admin"})
-    
+
+    if not admin.is_active:
+        raise HTTPException(status_code=403, detail="Admin account is disabled")
+
+    claims = {"sub": str(admin.id), "role": "admin"}
     return TokenResponse(
-        access_token=access_token,
+        access_token=create_access_token(data=claims),
+        refresh_token=create_refresh_token(data=claims),
+        user={"id": admin.id, "email": admin.email, "full_name": admin.full_name, "role": "admin"}
+    )
+
+@router.post("/refresh", response_model=TokenResponse)
+async def admin_refresh_token(body: RefreshTokenRequest, db: AsyncSession = Depends(get_db)):
+    from app.core.security import decode_refresh_token
+    payload = decode_refresh_token(body.refresh_token)
+    if payload is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired refresh token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    admin_id = payload.get("sub")
+    if admin_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid refresh token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    result = await db.execute(select(Admin).where(Admin.id == int(admin_id)))
+    admin = result.scalars().first()
+    if admin is None:
+        raise HTTPException(status_code=403, detail="Admin not found")
+    if not admin.is_active:
+        raise HTTPException(status_code=403, detail="Admin account is disabled")
+
+    claims = {"sub": str(admin.id), "role": "admin"}
+    return TokenResponse(
+        access_token=create_access_token(data=claims),
+        refresh_token=create_refresh_token(data=claims),
         user={"id": admin.id, "email": admin.email, "full_name": admin.full_name, "role": "admin"}
     )
 

@@ -1,14 +1,14 @@
 ---
 title: "ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)"
 category: concepts
-tags: [XAI, Grad-CAM, heatmap, overlay, transparency]
+tags: [XAI, Heatmap, heatmap, overlay, transparency]
 sources: [design/model.md, design/architecture.md, doc/objective.md]
 updated: 2026-08-02
 ---
 
 # ปัญญาประดิษฐ์ที่อธิบายได้ (XAI)
 
-ผลลัพธ์ของ AI ถูกแปลให้ผู้ใช้ทั่วไปเข้าใจได้ผ่านชั้นคำอธิบายทางภาพ: **Grad-CAM Heatmap** ซ้อนทับลงบนรูปภาพต้นฉบับ
+ผลลัพธ์ของ AI ถูกแปลให้ผู้ใช้ทั่วไปเข้าใจได้ผ่านชั้นคำอธิบายทางภาพ: **Heatmap** ซ้อนทับลงบนรูปภาพต้นฉบับ
 
 ---
 
@@ -18,9 +18,9 @@ updated: 2026-08-02
 
 ---
 
-## Grad-CAM Heatmap
+## Heatmap
 
-**Grad-CAM (Gradient-weighted Class Activation Mapping)** คือเทคนิคที่สร้าง heatmap แสดงว่าบริเวณใดของภาพ input มีอิทธิพลต่อการตัดสินใจของโมเดลมากที่สุด
+**Heatmap (Gradient-weighted Class Activation Mapping)** คือเทคนิคที่สร้าง heatmap แสดงว่าบริเวณใดของภาพ input มีอิทธิพลต่อการตัดสินใจของโมเดลมากที่สุด
 
 **การทำงานในระบบนี้:**
 
@@ -61,7 +61,7 @@ updated: 2026-08-02
 
 ## ประเด็นสำคัญ
 
-- Grad-CAM คือเทคนิค XAI หลักที่ใช้ในระบบ
+- Heatmap คือเทคนิค XAI หลักที่ใช้ในระบบ
 - Heatmap overlay คือ UX element สำคัญที่แยกแอปนี้ออกจากเครื่องมือที่แสดงแค่คะแนนตัวเลข
 - ออกแบบให้ผู้ใช้ทั่วไปเข้าใจได้โดยไม่ต้องมีความรู้นิติวิทยาศาสตร์
 - ภาพ overlay ถูกสร้างล่วงหน้าและเก็บไว้ ไม่ต้องคำนวณซ้ำตอนแสดงผล
