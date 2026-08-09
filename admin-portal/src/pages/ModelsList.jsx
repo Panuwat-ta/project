@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Cpu, Rocket, Activity, CheckCircle2, XCircle, RotateCcw } from "lucide-react";
-import { fetchModels, deployModel, dryRunModel } from "@/lib/api";
+import { fetchModels, deployModel, dryRunModel, getAccessToken } from "@/lib/api";
 
 export function ModelsList() {
   const [models, setModels] = useState([]);
@@ -24,10 +24,39 @@ export function ModelsList() {
 
   useEffect(() => {
     loadModels();
-    const interval = setInterval(() => {
-      loadModels(true); // Assuming loadModels doesn't flash loading if we pass true or we just let it run silently
-    }, 5000);
-    return () => clearInterval(interval);
+    
+    // Establish WebSocket connection for real-time updates
+    const token = getAccessToken();
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${protocol}//${window.location.host}/api/v1/ws/admin/dashboard?token=${token}`;
+    
+    let ws;
+    try {
+      ws = new WebSocket(wsUrl);
+      
+      ws.onmessage = (event) => {
+        try {
+          const message = JSON.parse(event.data);
+          if (message.type === 'refresh_dashboard') {
+            loadModels();
+          }
+        } catch (e) {
+          console.error("Failed to parse websocket message", e);
+        }
+      };
+
+      ws.onerror = (error) => {
+        console.error("WebSocket error:", error);
+      };
+    } catch (e) {
+      console.error("Failed to connect to WebSocket", e);
+    }
+
+    return () => {
+      if (ws) {
+        ws.close();
+      }
+    };
   }, []);
 
   const handleDeployModel = async (e) => {

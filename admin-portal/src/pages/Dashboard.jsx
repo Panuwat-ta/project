@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Users, Zap, Flag, Activity, RefreshCw, AlertCircle, Database, Server, DatabaseBackup, Gauge } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Pie, PieChart, Cell, Bar, BarChart, CartesianGrid } from "recharts";
 
-import { fetchDashboard, fetchHealth } from "@/lib/api";
+import { fetchDashboard, fetchHealth, getAccessToken } from "@/lib/api";
 
 const COLORS = {
   primary: "#4f46e5", // indigo-600
@@ -47,11 +47,40 @@ export function Dashboard() {
 
   useEffect(() => {
     loadData();
-    // Real-time polling every 5 seconds
-    const interval = setInterval(() => {
-      loadData(true);
-    }, 5000);
-    return () => clearInterval(interval);
+
+    // Establish WebSocket connection for real-time updates
+    const token = getAccessToken();
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    // Use host from current window to support local and network IP access
+    const wsUrl = `${protocol}//${window.location.host}/api/v1/ws/admin/dashboard?token=${token}`;
+    
+    let ws;
+    try {
+      ws = new WebSocket(wsUrl);
+      
+      ws.onmessage = (event) => {
+        try {
+          const message = JSON.parse(event.data);
+          if (message.type === 'refresh_dashboard') {
+            loadData(true);
+          }
+        } catch (e) {
+          console.error("Failed to parse websocket message", e);
+        }
+      };
+
+      ws.onerror = (error) => {
+        console.error("WebSocket error:", error);
+      };
+    } catch (e) {
+      console.error("Failed to connect to WebSocket", e);
+    }
+
+    return () => {
+      if (ws) {
+        ws.close();
+      }
+    };
   }, []);
 
   if (error) {

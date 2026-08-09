@@ -13,6 +13,7 @@ from app.schemas.admin import (
     HealthStatus, GlobalSearchResponse, ModelDeployRequest, ModelDryRunResponse, ExportJobResponse, ExportJobListResponse,
 )
 from app.services import admin_service
+from app.core.websocket import manager
 
 from fastapi import HTTPException, status
 from fastapi.responses import FileResponse
@@ -530,6 +531,7 @@ async def deploy_model(
 ):
     """POST /api/v1/admin/models/{model_id}/deploy"""
     model = await admin_service.deploy_model(db, model_id, current_admin.id, req.reason)
+    await manager.broadcast({"type": "refresh_dashboard"})
     return {
         "id": model.id,
         "version_tag": model.version_tag,

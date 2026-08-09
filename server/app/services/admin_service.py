@@ -9,6 +9,8 @@ from typing import List, Tuple, Dict, Any, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import desc, func, and_, or_, cast, String, text
+from app.core.security import verify_password, hash_password
+from app.core.websocket import manager
 from fastapi import HTTPException
 from starlette.concurrency import run_in_threadpool
 from app.models.user import User
@@ -300,6 +302,7 @@ async def start_review_report(db: AsyncSession, report_id: int, admin_id: int, v
     )
     db.add(audit)
     await db.commit()
+    await manager.broadcast({"type": "refresh_dashboard"})
     return report
 
 async def review_report(db: AsyncSession, report_id: int, admin_id: int, decision: ReportDecisionRequest, ip: str = None, user_agent: str = None):
@@ -353,6 +356,7 @@ async def review_report(db: AsyncSession, report_id: int, admin_id: int, decisio
     )
     db.add(audit)
     await db.commit()
+    await manager.broadcast({"type": "refresh_dashboard"})
     return report
 
 
@@ -482,4 +486,96 @@ async def get_model_versions(db: AsyncSession) -> Tuple[List[Dict[str, Any]], in
             "deployment_history": m.deployment_history,
         })
     return items, total
+
+async def get_users(db: AsyncSession, page: int, limit: int, search: str = None) -> Tuple[List[Dict[str, Any]], int]:
+    stmt = select(User).order_by(desc(User.created_at))
+    if search:
+        stmt = stmt.where(
+            or_(
+                User.email.ilike(f"%{search}%"),
+                User.full_name.ilike(f"%{search}%")
+            )
+        )
+    
+    total = await db.scalar(select(func.count()).select_from(stmt.subquery()))
+    
+    stmt = stmt.offset((page - 1) * limit).limit(limit)
+    result = await db.execute(stmt)
+    users = result.scalars().all()
+    
+    items = []
+    for u in users:
+        scan_count = await db.scalar(select(func.count()).select_from(Scan).where(Scan.user_id == u.id))
+        report_count = await db.scalar(select(func.count()).select_from(ScamReport).where(ScamReport.user_id == u.id))
+        
+        items.append({
+            "id": u.id,
+            "email": u.email,
+            "full_name": u.full_name,
+            "role": u.role,
+            "is_active": u.is_active,
+            "created_at": u.created_at,
+            "updated_at": u.updated_at,
+            "total_scans": scan_count,
+            "total_reports": report_count,
+        })
+    
+    return items, total
+
+async def get_user_detail(db: AsyncSession, user_id: int) -> Dict[str, Any]:
+    stmt = select(User).where(User.id == user_id)
+    result = await db.execute(stmt)
+    user = result.scalars().first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    scan_count = await db.scalar(select(func.count()).select_from(Scan).where(Scan.user_id == user.id))
+    report_count = await db.scalar(select(func.count()).select_from(ScamReport).where(ScamReport.user_id == user.id))
+    
+    return {
+        "id": user.id,
+        "email": user.email,
+        "full_name": user.full_name,
+        "role": user.role,
+        "is_active": user.is_active,
+        "created_at": user.created_at,
+        "updated_at": user.updated_at,
+        "total_scans": scan_count,
+        "total_reports": report_count,
+    }
+
+async def update_user(db: AsyncSession, user_id: int, admin_id: int, req, ip: str = None, user_agent: str = None) -> Dict[str, Any]:
+    stmt = select(User).where(User.id == user_id)
+    result = await db.execute(stmt)
+    user = result.scalars().first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    user.is_active = req.is_active
+    
+    # Save role if exist
+    if hasattr(req, 'role') and req.role is not None:
+        user.role = req.role
+        
+    audit = AuditLog(
+        admin_id=admin_id,
+        action="update_user",
+        target_resource=f"user_{user_id}",
+        ip_address=ip,
+        user_agent=user_agent,
+        details=f"Updated user {user_id}: active={user.is_active}"
+    )
+    db.add(audit)
+    await db.commit()
+    await manager.broadcast({"type": "refresh_dashboard"})
+    
+    return {
+        "id": user.id,
+        "email": user.email,
+        "full_name": user.full_name,
+        "role": user.role,
+        "is_active": user.is_active,
+        "created_at": user.created_at,
+        "updated_at": user.updated_at
+    }
 
