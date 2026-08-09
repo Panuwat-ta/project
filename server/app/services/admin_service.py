@@ -579,3 +579,141 @@ async def update_user(db: AsyncSession, user_id: int, admin_id: int, req, ip: st
         "updated_at": user.updated_at
     }
 
+async def dry_run_model(db: AsyncSession, model_id: int) -> Dict[str, Any]:
+    import time
+    import base64
+    import subprocess
+    import sys
+    import os
+    import json
+    from PIL import Image
+    import io
+    
+    stmt = select(ModelVersion).where(ModelVersion.id == model_id)
+    result = await db.execute(stmt)
+    model = result.scalars().first()
+    if not model:
+        raise HTTPException(status_code=404, detail="Model version not found")
+        
+    if not os.path.exists(model.file_path):
+        return {
+            "success": False,
+            "message": f"Model file not found at {model.file_path}",
+            "details": {"model_version": model.version_tag, "error": "File missing"}
+        }
+
+    try:
+        # Create a black dummy image
+        img = Image.new("RGB", (512, 512), color="black")
+        img_byte_arr = io.BytesIO()
+        img.save(img_byte_arr, format='JPEG')
+        img_bytes = img_byte_arr.getvalue()
+        b64_image = base64.b64encode(img_bytes).decode('utf-8')
+        
+        env = os.environ.copy()
+        import glob
+        venv_lib_path = os.path.join(os.getcwd(), "venv/lib/python3.10/site-packages/nvidia")
+        nvidia_lib_dirs = glob.glob(f"{venv_lib_path}/*/lib")
+        if nvidia_lib_dirs:
+            env["LD_LIBRARY_PATH"] = ":".join(nvidia_lib_dirs)
+        
+        env["ONNX_MODEL_PATH"] = model.file_path
+        env["ONNX_TILE_SIZE"] = str(settings.ONNX_TILE_SIZE)
+        env["ONNX_TILE_OVERLAP"] = str(settings.ONNX_TILE_OVERLAP)
+
+        if "CUDA_VISIBLE_DEVICES" in env and env["CUDA_VISIBLE_DEVICES"] == "":
+            del env["CUDA_VISIBLE_DEVICES"]
+
+        worker_path = os.path.join(os.path.dirname(__file__), "onnx_worker.py")
+        
+        start_time = time.time()
+        process = subprocess.Popen(
+            [sys.executable, worker_path],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            env=env
+        )
+        
+        stdout, stderr = process.communicate(input=b64_image.encode('utf-8'))
+        latency_ms = int((time.time() - start_time) * 1000)
+        
+        if process.returncode == 0:
+            lines = stdout.decode('utf-8').strip().split('\n')
+            result_json = json.loads(lines[-1])
+            
+            # Approximate memory usage based on file size + 200MB overhead
+            file_size_mb = os.path.getsize(model.file_path) / (1024 * 1024)
+            memory_usage = int(file_size_mb + 200)
+            
+            return {
+                "success": True,
+                "message": f"Real dry run test successful. Model {model.version_tag} is ready for deployment.",
+                "details": {
+                    "model_version": model.version_tag,
+                    "latency_ms": latency_ms,
+                    "memory_usage_mb": memory_usage,
+                    "compatibility": "Passed",
+                    "test_prediction": f"Score: {result_json.get('visual_risk_score', 0)}%"
+                }
+            }
+        else:
+            return {
+                "success": False,
+                "message": "Model inference failed during dry run.",
+                "details": {
+                    "model_version": model.version_tag,
+                    "error": stderr.decode('utf-8').strip()[:500],
+                    "latency_ms": latency_ms
+                }
+            }
+    except Exception as e:
+        return {
+            "success": False,
+            "message": f"Error running dry run: {str(e)}",
+            "details": {"model_version": model.version_tag}
+        }
+
+async def deploy_model(db: AsyncSession, model_id: int, admin_id: int, reason: str) -> ModelVersion:
+    stmt = select(ModelVersion).where(ModelVersion.id == model_id)
+    result = await db.execute(stmt)
+    model = result.scalars().first()
+    if not model:
+        raise HTTPException(status_code=404, detail="Model version not found")
+        
+    stmt = select(ModelVersion).where(ModelVersion.is_active == True)
+    result = await db.execute(stmt)
+    active_models = result.scalars().all()
+    for m in active_models:
+        m.is_active = False
+        m.status = "inactive"
+        
+    model.is_active = True
+    model.status = "active"
+    model.deployed_at = datetime.now(TH_TIMEZONE)
+    
+    if not model.deployment_history:
+        model.deployment_history = []
+        
+    history = list(model.deployment_history)
+    history.append({
+        "deployed_at": model.deployed_at.isoformat(),
+        "admin_id": admin_id,
+        "reason": reason
+    })
+    model.deployment_history = history
+    
+    audit = AuditLog(
+        admin_id=admin_id,
+        action="deploy_model",
+        target_resource=f"model_{model_id}",
+        ip_address="127.0.0.1",
+        user_agent="System",
+        details=f"Deployed model version {model.version_tag}. Reason: {reason}"
+    )
+    db.add(audit)
+    
+    await db.commit()
+    await db.refresh(model)
+    return model
+
