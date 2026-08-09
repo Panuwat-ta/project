@@ -17,12 +17,7 @@ source env/bin/activate
 
 2. ติดตั้งแพ็กเกจ (สำหรับ RTX 5050 - สถาปัตยกรรม Blackwell แนะนำให้ใช้ `requirements-v1.txt` แทน):
 ```bash
-# สำหรับการ์ดจอทั่วไป
 pip install -r requirements.txt
-mim install "mmcv==2.1.0"
-
-# สำหรับ RTX 5050 (ใช้ PyTorch Nightly และ mmcv-lite แก้ปัญหาติดตั้งไม่ผ่าน)
-pip install -r requirements-v1.txt
 ```
 *หมายเหตุ: หากพบปัญหาในการติดตั้ง mmcv บนการ์ดจอรุ่นใหม่ๆ สามารถอ่านรายละเอียดการแก้ไขได้ในไฟล์ `error.md`*
 
@@ -60,10 +55,10 @@ python prepare_dataset.py
 
 ```bash
 # เทรนด้วยคอนฟิก v2 (รองรับการบวกเวอร์ชันอัตโนมัติ)
-python library/mmsegmentation/tools/train.py configs/segformer_mit-b2-v2.py
+python library/mmsegmentation/tools/train.py configs/segformer_mit-b2-v3.py
 
 # การหยุดและกลับมาทำต่อ
-python library/mmsegmentation/tools/train.py configs/segformer_mit-b2-v2.py --resume
+python library/mmsegmentation/tools/train.py configs/segformer_mit-b2-v3.py --resume
 ```
 **ผลลัพธ์ที่ได้:** เมื่อกระบวนการเสร็จสิ้น ระบบจะสร้างไฟล์ `.pth` ภายในโฟลเดอร์เวอร์ชันใหม่ (เช่น `work_dirs/v1.0.0/`) พร้อมผลการประเมิน
 

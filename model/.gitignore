@@ -1,9 +1,11 @@
 # Dataset / Data
-data/
+dataset/
 *.zip
 *.tar.gz
 *.csv
 *.jsonl
+
+
 
 # Model Weights
 *.pth
