@@ -15,6 +15,7 @@ dataset/
 *.bin
 *.safetensors
 *.ckpt
+*.onnx.data
 
 # Checkpoints / Logs
 
