@@ -122,6 +122,29 @@ dataset_defacto_train = dict(
     pipeline=train_pipeline
 )
 
+# Validation ใช้ pipeline ที่ไม่มี augmentation และรวมคะแนนจากทั้งสองชุด
+dataset_casia_val = dict(
+    type=dataset_type,
+    data_root=casia_root,
+    metainfo=metainfo,
+    data_prefix=dict(
+        img_path='images/val',
+        seg_map_path='annotations/val'
+    ),
+    pipeline=test_pipeline
+)
+
+dataset_defacto_val = dict(
+    type=dataset_type,
+    data_root=defacto_root,
+    metainfo=metainfo,
+    data_prefix=dict(
+        img_path='images/val',
+        seg_map_path='annotations/val'
+    ),
+    pipeline=test_pipeline
+)
+
 train_dataloader = dict(
     batch_size=8,
     num_workers=4,
@@ -141,17 +164,8 @@ val_dataloader = dict(
 
     dataset=dict(
         _delete_=True,
-        type=dataset_type,
-        # ใช้ DEFACTO ชุดเดิมเป็น validation เพื่อให้เทียบ mIoU ข้ามรอบได้
-        data_root=defacto_root,
-        metainfo=metainfo,
-
-        data_prefix=dict(
-            img_path='images/val',
-            seg_map_path='annotations/val'
-        ),
-
-        pipeline=test_pipeline
+        type='ConcatDataset',
+        datasets=[dataset_casia_val, dataset_defacto_val]
     )
 )
 
