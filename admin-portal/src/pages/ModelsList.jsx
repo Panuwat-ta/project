@@ -24,6 +24,10 @@ export function ModelsList() {
 
   useEffect(() => {
     loadModels();
+    const interval = setInterval(() => {
+      loadModels(true); // Assuming loadModels doesn't flash loading if we pass true or we just let it run silently
+    }, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleDeployModel = async (e) => {

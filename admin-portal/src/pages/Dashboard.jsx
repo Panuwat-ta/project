@@ -47,6 +47,11 @@ export function Dashboard() {
 
   useEffect(() => {
     loadData();
+    // Real-time polling every 5 seconds
+    const interval = setInterval(() => {
+      loadData(true);
+    }, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   if (error) {
@@ -227,7 +232,7 @@ export function Dashboard() {
                     <stop offset="95%" stopColor={COLORS.primary} stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} dy={10} />
+                <XAxis dataKey="date" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} dy={10} />
                 <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} dx={-10} />
                 <Tooltip 
                   contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: 'var(--tw-colors-slate-800, #1e293b)', color: '#f8fafc' }}
