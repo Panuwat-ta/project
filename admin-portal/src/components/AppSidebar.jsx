@@ -1,6 +1,7 @@
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { LayoutDashboard, Flag, Users, Cpu, Database, FileText, LogOut, Settings, X } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { logoutAdmin, getStoredUser } from "@/lib/api";
 
 const navItems = [
   { name: "Dashboard", path: "/admin/dashboard", icon: LayoutDashboard },
@@ -12,22 +13,32 @@ const navItems = [
 ];
 
 export function AppSidebar({ isOpen, setIsOpen }) {
-  const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState({ email: "admin@scamguard.com", full_name: "Super Admin" });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isDropdownOpen]);
+
+  useEffect(() => {
+    const storedUser = getStoredUser();
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      setUser(storedUser);
     }
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/login");
+    logoutAdmin();
   };
 
   const closeSidebar = () => {
@@ -80,7 +91,7 @@ export function AppSidebar({ isOpen, setIsOpen }) {
         })}
       </nav>
 
-      <div className="p-3 border-t border-slate-200 dark:border-slate-800 relative">
+      <div className="p-3 border-t border-slate-200 dark:border-slate-800 relative" ref={dropdownRef}>
         <button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           className="flex items-center gap-3 w-full p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-left outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
@@ -96,13 +107,17 @@ export function AppSidebar({ isOpen, setIsOpen }) {
 
         {isDropdownOpen && (
           <div className="absolute bottom-full left-3 w-56 mb-2 bg-white dark:bg-slate-900 rounded-md shadow-lg border border-slate-200 dark:border-slate-800 py-1 overflow-hidden">
-            <button
-              onClick={() => alert("Profile Settings is coming soon.")}
+            <Link
+              to="/admin/profile"
+              onClick={() => {
+                setIsDropdownOpen(false);
+                closeSidebar();
+              }}
               className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 flex items-center gap-2 transition-colors outline-none focus:bg-slate-50 dark:focus:bg-slate-800"
             >
               <Settings className="size-4 text-slate-400 dark:text-slate-500" />
               Profile Settings
-            </button>
+            </Link>
             <div className="h-px bg-slate-100 dark:bg-slate-800 my-1"></div>
             <button
               onClick={handleLogout}

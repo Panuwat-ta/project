@@ -5,7 +5,7 @@ import {
   Image as ImageIcon, Map as MapIcon, FileText, KeyRound, Camera, User, ShieldAlert,
 } from "lucide-react";
 
-import { fetchReportDetail, updateReportStatus } from "@/lib/api";
+import { fetchReportDetail, updateReportStatus, startReviewReport } from "@/lib/api";
 
 const statusStyles = {
   pending: "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400",
@@ -100,15 +100,37 @@ export function ReportDetail() {
     setModalState({ isOpen: true, action });
   };
 
+  const handleStartReview = async () => {
+    setSubmitting(true);
+    setActionError("");
+    try {
+      const res = await startReviewReport(report.id, report.version);
+      setReport(prev => ({ ...prev, status: res.status, version: res.version }));
+    } catch (err) {
+      if (err.status === 409) {
+        setActionError("ข้อมูลถูกอัปเดตโดยแอดมินท่านอื่นแล้ว กรุณาโหลดหน้าใหม่");
+      } else {
+        setActionError(err.message);
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const handleSubmit = async () => {
     setSubmitting(true);
     setActionError("");
     try {
-      await updateReportStatus(report.id, { status: modalState.action, admin_note: adminNote.trim() || null });
+      await updateReportStatus(report.id, report.version, modalState.action, adminNote.trim() || null);
       setModalState({ isOpen: false, action: null });
       navigate("/admin/reports", { replace: true });
     } catch (err) {
-      setActionError(err.message);
+      if (err.status === 409) {
+        setActionError("ข้อมูลถูกอัปเดตโดยแอดมินท่านอื่นแล้ว กรุณาโหลดหน้าใหม่");
+      } else {
+        setActionError(err.message);
+      }
+      setModalState({ isOpen: false, action: null });
     } finally {
       setSubmitting(false);
     }
@@ -160,9 +182,14 @@ export function ReportDetail() {
               <ArrowLeft className="size-4" />
             </button>
             <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Report #{report.id}</h2>
-            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${statusStyles[report.status] || statusStyles.pending}`}>
-              {report.status}
-            </span>
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2">
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${statusStyles[report.status] || statusStyles.pending}`}>
+                  {report.status}
+                </span>
+                <span className="text-xs text-slate-400">v{report.version}</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -229,13 +256,50 @@ export function ReportDetail() {
             </div>
             <div className="p-6">
               {report.status === "approved" || report.status === "rejected" ? (
-                <div className={`p-4 rounded-lg border text-sm ${
-                  report.status === "approved"
-                    ? "bg-emerald-50 dark:bg-emerald-900/10 border-emerald-200 dark:border-emerald-800/50 text-emerald-700 dark:text-emerald-400"
-                    : "bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-800/50 text-red-700 dark:text-red-400"
-                }`}>
-                  <p className="font-medium">{report.status === "approved" ? "รายงานนี้ได้รับการอนุมัติแล้ว" : "รายงานนี้ถูกปัดตกแล้ว"}</p>
-                  {report.admin_note && <p className="mt-1 text-xs opacity-80">หมายเหตุ: {report.admin_note}</p>}
+                <div className="space-y-4">
+                  <div className={`p-4 rounded-lg border text-sm ${
+                    report.status === "approved"
+                      ? "bg-emerald-50 dark:bg-emerald-900/10 border-emerald-200 dark:border-emerald-800/50 text-emerald-700 dark:text-emerald-400"
+                      : "bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-800/50 text-red-700 dark:text-red-400"
+                  }`}>
+                    <p className="font-medium">{report.status === "approved" ? "รายงานนี้ได้รับการอนุมัติแล้ว" : "รายงานนี้ถูกปัดตกแล้ว"}</p>
+                    {report.admin_note && <p className="mt-1 text-xs opacity-80">หมายเหตุ: {report.admin_note}</p>}
+                  </div>
+                  
+                  {actionError && <p className="text-xs text-red-600 dark:text-red-400">{actionError}</p>}
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">เหตุผลในการรื้อฟื้น (Reopen)</label>
+                    <textarea
+                      value={adminNote}
+                      onChange={(e) => { setAdminNote(e.target.value); setNoteError(""); }}
+                      rows={2}
+                      placeholder="กรอกเหตุผลที่ต้องการนำรายงานกลับมาพิจารณาใหม่..."
+                      className="mt-2 w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-slate-100 rounded-lg outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all resize-y"
+                    />
+                    {noteError && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{noteError}</p>}
+                    <button
+                      onClick={() => openModal("pending")}
+                      className="mt-3 inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                    >
+                      นำกลับมาตรวจสอบใหม่ (Reopen)
+                    </button>
+                  </div>
+                </div>
+              ) : report.status === "pending" ? (
+                <div className="flex flex-col items-start gap-3">
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    รายงานนี้ยังไม่ได้ถูกตรวจสอบ กดปุ่มด้านล่างเพื่อล็อครายงานและเริ่มพิจารณา
+                  </p>
+                  {actionError && <p className="text-xs text-red-600 dark:text-red-400">{actionError}</p>}
+                  <button
+                    onClick={handleStartReview}
+                    disabled={submitting}
+                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-70"
+                  >
+                    {submitting ? <Loader2 className="size-4 animate-spin" /> : <FileText className="size-4" />}
+                    เริ่มตรวจสอบรายงานนี้
+                  </button>
                 </div>
               ) : (
                 <>
@@ -405,12 +469,14 @@ export function ReportDetail() {
           <div className="bg-white dark:bg-slate-900 rounded-xl shadow-xl max-w-md w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-slate-200 dark:border-slate-800">
             <div className="p-6">
               <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">
-                ยืนยันการ{modalState.action === "approved" ? "อนุมัติ" : "ปัดตก"}รายงาน #{report.id}
+                ยืนยันการ{modalState.action === "approved" ? "อนุมัติ" : modalState.action === "rejected" ? "ปัดตก" : "รื้อฟื้น (Reopen)"}รายงาน #{report.id}
               </h3>
               <p className="text-sm text-slate-500 dark:text-slate-400">
                 {modalState.action === "approved"
                   ? "รายงานนี้จะถูกยืนยันว่าเป็นภาพหลอกลวง และนำไปรวมในชุดข้อมูล (Dataset) ได้"
-                  : "รายงานนี้จะถูกปัดตก และจะไม่ถูกนำไปใช้ใน Dataset"}
+                  : modalState.action === "rejected"
+                  ? "รายงานนี้จะถูกปัดตก และจะไม่ถูกนำไปใช้ใน Dataset"
+                  : "รายงานนี้จะถูกนำกลับไปอยู่ในสถานะรอดำเนินการใหม่ เพื่อรอการพิจารณาอีกครั้ง"}
               </p>
             </div>
             <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
@@ -426,11 +492,13 @@ export function ReportDetail() {
                 className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white rounded-md transition-colors disabled:opacity-70 disabled:cursor-not-allowed ${
                   modalState.action === "approved"
                     ? "bg-emerald-600 hover:bg-emerald-700"
-                    : "bg-red-600 hover:bg-red-700"
+                    : modalState.action === "rejected"
+                    ? "bg-red-600 hover:bg-red-700"
+                    : "bg-indigo-600 hover:bg-indigo-700"
                 }`}
               >
                 {submitting && <Loader2 className="size-4 animate-spin" />}
-                ยืนยัน{modalState.action === "approved" ? "อนุมัติ" : "ปัดตก"}
+                ยืนยัน{modalState.action === "approved" ? "อนุมัติ" : modalState.action === "rejected" ? "ปัดตก" : "รื้อฟื้น"}
               </button>
             </div>
           </div>

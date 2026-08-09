@@ -7,9 +7,14 @@ class Settings(BaseSettings):
     # App
     APP_NAME: str = "ScamGuard API"
     APP_VERSION: str = "0.1.0"
+    ENVIRONMENT: str = "development"
     # DEBUG: SQL echo = DEBUG (dev). รองการ echo SQL ใน production
     DEBUG: bool = False
     SQL_ECHO: bool = False
+    
+    # Security
+    SECURE_COOKIES: bool = False
+    ALLOWED_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173"
 
     # Database
     DATABASE_URL: str = "postgresql+asyncpg://scamguard:password@localhost:5432/scamguard_db"

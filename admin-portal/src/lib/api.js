@@ -2,18 +2,14 @@
 
 const API_BASE = "/api/v1";
 
-const TOKEN_KEY = "token";
-const REFRESH_KEY = "refresh_token";
 const USER_KEY = "user";
+
+let memoryAccessToken = null;
 
 // --- Token helpers ---
 
 export function getAccessToken() {
-  return localStorage.getItem(TOKEN_KEY);
-}
-
-export function getRefreshToken() {
-  return localStorage.getItem(REFRESH_KEY);
+  return memoryAccessToken;
 }
 
 export function getStoredUser() {
@@ -26,19 +22,15 @@ export function getStoredUser() {
   }
 }
 
-export function setAuth(accessToken, refreshToken, user) {
-  localStorage.setItem(TOKEN_KEY, accessToken);
-  if (refreshToken) {
-    localStorage.setItem(REFRESH_KEY, refreshToken);
-  }
+export function setAuth(accessToken, user) {
+  memoryAccessToken = accessToken;
   if (user) {
     localStorage.setItem(USER_KEY, JSON.stringify(user));
   }
 }
 
 export function clearAuth() {
-  localStorage.removeItem(TOKEN_KEY);
-  localStorage.removeItem(REFRESH_KEY);
+  memoryAccessToken = null;
   localStorage.removeItem(USER_KEY);
 }
 
@@ -71,21 +63,17 @@ export function isTokenExpired(token, leewaySeconds = 10) {
 
 let refreshPromise = null;
 
-async function refreshAccessToken() {
+export async function refreshAccessToken() {
   if (refreshPromise) return refreshPromise;
   refreshPromise = (async () => {
-    const refreshToken = getRefreshToken();
-    if (!refreshToken) throw new Error("No refresh token available");
-
     const res = await fetch(`${API_BASE}/admin/refresh`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ refresh_token: refreshToken }),
+      credentials: "include",
     });
     if (!res.ok) throw new Error("Refresh token failed");
 
     const data = await res.json();
-    setAuth(data.access_token, data.refresh_token || refreshToken, data.user || getStoredUser());
+    setAuth(data.access_token, data.user || getStoredUser());
     return data.access_token;
   })();
   try {
@@ -116,6 +104,7 @@ export async function apiRequest(path, { method = "GET", body, needsAuth = true,
     return fetch(`${API_BASE}${path}`, {
       method,
       headers,
+      credentials: "include",
       body: body !== undefined ? JSON.stringify(body) : undefined,
     });
   };
@@ -123,7 +112,7 @@ export async function apiRequest(path, { method = "GET", body, needsAuth = true,
   let res = await finalize(getAccessToken());
 
   // 401 -> try to refresh token once, then retry
-  if (res.status === 401 && needsAuth && getRefreshToken()) {
+  if (res.status === 401 && needsAuth) {
     try {
       const newToken = await refreshAccessToken();
       res = await finalize(newToken);
@@ -181,12 +170,20 @@ export async function adminLogin(username, password) {
     error.status = res.status;
     throw error;
   }
-  setAuth(data.access_token, data.refresh_token, data.user);
+  setAuth(data.access_token, data.user);
   return data;
 }
 
 export function fetchDashboard() {
   return apiRequest("/admin/dashboard");
+}
+
+export function fetchHealth() {
+  return apiRequest("/admin/health");
+}
+
+export function searchGlobal(query) {
+  return apiRequest(`/admin/search?q=${encodeURIComponent(query)}`);
 }
 
 export function fetchReports({ page = 1, limit = 20, status, category, search } = {}) {
@@ -201,21 +198,34 @@ export function fetchReportDetail(reportId) {
   return apiRequest(`/admin/reports/${reportId}`);
 }
 
-export function updateReportStatus(reportId, decision) {
-  return apiRequest(`/admin/reports/${reportId}`, {
-    method: "PATCH",
-    body: decision,
+export function startReviewReport(reportId, version) {
+  return apiRequest(`/admin/reports/${reportId}/review`, {
+    method: "POST",
+    body: { version },
   });
 }
 
-export function fetchUsers(page = 1, limit = 20) {
-  return apiRequest(`/admin/users?${new URLSearchParams({ page, limit })}`);
+export function updateReportStatus(reportId, version, status, adminNote) {
+  return apiRequest(`/admin/reports/${reportId}`, {
+    method: "PATCH",
+    body: { version, status, admin_note: adminNote },
+  });
 }
 
-export function updateUserStatus(userId, isActive) {
+export function fetchUsers(page = 1, limit = 20, search = "") {
+  const params = new URLSearchParams({ page, limit });
+  if (search) params.append("search", search);
+  return apiRequest(`/admin/users?${params.toString()}`);
+}
+
+export function getUser(userId) {
+  return apiRequest(`/admin/users/${userId}`);
+}
+
+export function updateUserStatus(userId, isActive, reason) {
   return apiRequest(`/admin/users/${userId}`, {
     method: "PATCH",
-    body: { is_active: isActive },
+    body: { is_active: isActive, reason },
   });
 }
 
@@ -223,18 +233,69 @@ export function fetchModels() {
   return apiRequest("/admin/models");
 }
 
-export function deployModel(modelId) {
-  return apiRequest(`/admin/models/${modelId}/deploy`, { method: "POST" });
+export function deployModel(modelId, reason) {
+  return apiRequest(`/admin/models/${modelId}/deploy`, { 
+    method: "POST",
+    body: { reason }
+  });
 }
 
-export function fetchAuditLogs(page = 1, limit = 50) {
-  return apiRequest(`/admin/audit-logs?${new URLSearchParams({ page, limit })}`);
+export function dryRunModel(modelId) {
+  return apiRequest(`/admin/models/${modelId}/dry-run`, { method: "POST" });
 }
 
-export function exportDataset(payload) {
-  return apiRequest("/admin/dataset/export", {
+export function fetchAuditLogs({ page = 1, limit = 50, search, action, entity_type } = {}) {
+  const params = new URLSearchParams({ page, limit });
+  if (search) params.append("search", search);
+  if (action && action !== "All") params.append("action", action);
+  if (entity_type && entity_type !== "All") params.append("entity_type", entity_type);
+  
+  return apiRequest(`/admin/audit-logs?${params.toString()}`);
+}
+
+export function createExportJob(payload) {
+  return apiRequest("/admin/dataset/export-jobs", {
     method: "POST",
     body: payload,
-    parse: "blob",
   });
+}
+
+export function fetchExportJobs({ page = 1, limit = 20 } = {}) {
+  return apiRequest(`/admin/dataset/export-jobs?page=${page}&limit=${limit}`);
+}
+
+export function getExportJob(jobId) {
+  return apiRequest(`/admin/dataset/export-jobs/${jobId}`);
+}
+
+export function cancelExportJob(jobId) {
+  return apiRequest(`/admin/dataset/export-jobs/${jobId}/cancel`, { method: "POST" });
+}
+
+export function getExportDownloadUrl(jobId) {
+  return `/api/v1/admin/dataset/export-jobs/${jobId}/download`;
+}
+
+// Add these for profile logic
+export function logoutAdmin() {
+  return apiRequest("/admin/logout", { method: "POST", parse: "raw" }).finally(() => {
+    clearAuth();
+    window.location.replace("/login");
+  });
+}
+
+export function fetchAdminProfile() {
+  return apiRequest("/admin/me");
+}
+
+export function updateAdminProfile(data) {
+  return apiRequest("/admin/me", { method: "PATCH", body: data });
+}
+
+export function fetchAdminSessions() {
+  return apiRequest("/admin/sessions");
+}
+
+export function revokeAdminSession(sessionId) {
+  return apiRequest(`/admin/sessions/${sessionId}/revoke`, { method: "POST" });
 }

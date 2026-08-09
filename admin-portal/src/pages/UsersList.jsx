@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 
-import { Users as UsersIcon, ShieldAlert, ShieldCheck } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Users as UsersIcon, ShieldAlert, ShieldCheck, Search, ChevronLeft, ChevronRight } from "lucide-react";
 
 import { fetchUsers, updateUserStatus } from "@/lib/api";
 
@@ -8,11 +9,20 @@ export function UsersList() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalState, setModalState] = useState({ isOpen: false, user: null, action: null });
+  const [reason, setReason] = useState("");
+  const [reasonError, setReasonError] = useState("");
+
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
 
   const loadUsers = async () => {
+    setLoading(true);
     try {
-      const data = await fetchUsers(1, 100);
+      const data = await fetchUsers(page, 15, search);
       setUsers(data.items || []);
+      setTotalPages(data.total_pages || 1);
     } catch (error) {
       console.error("Failed to fetch users", error);
     } finally {
@@ -22,20 +32,34 @@ export function UsersList() {
 
   useEffect(() => {
     loadUsers();
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, search]);
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    setPage(1);
+    setSearch(searchInput);
+  };
 
   const toggleUserStatus = async (userId, currentStatus) => {
+    if (!reason.trim()) {
+      setReasonError("กรุณากรอกเหตุผล");
+      return;
+    }
     try {
-      await updateUserStatus(userId, !currentStatus);
+      await updateUserStatus(userId, !currentStatus, reason.trim());
       loadUsers();
       closeModal();
     } catch (error) {
+      setReasonError(error.message || "Failed to update user");
       console.error("Failed to update user", error);
     }
   };
 
   const openModal = (user, action) => {
     setModalState({ isOpen: true, user, action });
+    setReason("");
+    setReasonError("");
   };
 
   const closeModal = () => {
@@ -99,12 +123,25 @@ export function UsersList() {
       </div>
 
       <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col overflow-hidden">
-        <div className="p-5 border-b border-slate-200 dark:border-slate-800">
-          <div className="flex items-center gap-2 mb-1">
-            <UsersIcon className="size-5 text-indigo-600 dark:text-indigo-400" />
-            <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">ผู้ใช้งานทั้งหมด</h3>
+        <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <UsersIcon className="size-5 text-indigo-600 dark:text-indigo-400" />
+              <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">ผู้ใช้งานทั้งหมด</h3>
+            </div>
+            <p className="text-sm text-slate-500 dark:text-slate-400">แสดงรายชื่อผู้ใช้งานทั้งหมดในระบบ เรียงตามวันที่สมัคร</p>
           </div>
-          <p className="text-sm text-slate-500 dark:text-slate-400">แสดงรายชื่อผู้ใช้งานทั้งหมดในระบบ เรียงตามวันที่สมัคร</p>
+          
+          <form onSubmit={handleSearchSubmit} className="relative w-full md:max-w-xs">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
+            <input
+              type="text"
+              placeholder="ค้นหาชื่อหรืออีเมล..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-slate-100 rounded-lg outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+            />
+          </form>
         </div>
 
         {/* Desktop table */}
@@ -115,6 +152,8 @@ export function UsersList() {
                 <th className="px-4 py-3 font-medium">ID</th>
                 <th className="px-4 py-3 font-medium">Email / ชื่อ</th>
                 <th className="px-4 py-3 font-medium">สิทธิ์ (Role)</th>
+                <th className="px-4 py-3 font-medium text-center">สแกน (ครั้ง)</th>
+                <th className="px-4 py-3 font-medium text-center">ส่งรายงาน</th>
                 <th className="px-4 py-3 font-medium">สถานะ</th>
                 <th className="px-4 py-3 font-medium text-right">จัดการ</th>
               </tr>
@@ -130,7 +169,7 @@ export function UsersList() {
                 ))
               ) : users.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="px-4 py-12 text-center text-slate-500 dark:text-slate-400">
+                  <td colSpan="7" className="px-4 py-12 text-center text-slate-500 dark:text-slate-400">
                     ไม่พบข้อมูลผู้ใช้งาน
                   </td>
                 </tr>
@@ -140,13 +179,17 @@ export function UsersList() {
                     <td className="px-4 py-3 font-mono text-slate-500 dark:text-slate-400 text-xs">#{user.id}</td>
                     <td className="px-4 py-3">
                       <div className="flex flex-col">
-                        <span className="font-medium text-slate-900 dark:text-slate-100">{user.email}</span>
+                        <Link to={`/admin/users/${user.id}`} className="font-medium text-indigo-600 dark:text-indigo-400 hover:underline">
+                          {user.email}
+                        </Link>
                         {user.full_name && (
                           <span className="text-xs text-slate-500 dark:text-slate-400">{user.full_name}</span>
                         )}
                       </div>
                     </td>
                     <td className="px-4 py-3">{renderRoleBadge(user)}</td>
+                    <td className="px-4 py-3 text-center text-slate-900 dark:text-slate-100 font-medium">{user.total_scans}</td>
+                    <td className="px-4 py-3 text-center text-slate-900 dark:text-slate-100 font-medium">{user.total_reports}</td>
                     <td className="px-4 py-3">{renderStatusBadge(user)}</td>
                     <td className="px-4 py-3 text-right">{renderActionButton(user)}</td>
                   </tr>
@@ -171,12 +214,20 @@ export function UsersList() {
               <div key={user.id} className="p-4 flex flex-col gap-3">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex flex-col min-w-0">
-                    <span className="font-medium text-slate-900 dark:text-slate-100 truncate">{user.email}</span>
+                    <Link to={`/admin/users/${user.id}`} className="font-medium text-indigo-600 dark:text-indigo-400 hover:underline truncate">
+                      {user.email}
+                    </Link>
                     {user.full_name && (
                       <span className="text-xs text-slate-500 dark:text-slate-400 truncate">{user.full_name}</span>
                     )}
                   </div>
                   <span className="font-mono text-slate-500 dark:text-slate-400 text-xs shrink-0">#{user.id}</span>
+                </div>
+                <div className="flex justify-between text-sm mt-1 border-t border-slate-100 dark:border-slate-800/50 pt-2">
+                  <div className="flex gap-4">
+                    <span><span className="text-slate-500">Scans:</span> {user.total_scans}</span>
+                    <span><span className="text-slate-500">Reports:</span> {user.total_reports}</span>
+                  </div>
                 </div>
                 <div className="flex items-center gap-2">
                   {renderRoleBadge(user)}
@@ -187,6 +238,31 @@ export function UsersList() {
             ))
           )}
         </div>
+        
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="px-5 py-3 flex items-center justify-between border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
+            <span className="text-sm text-slate-500 dark:text-slate-400">
+              หน้า {page} จาก {totalPages}
+            </span>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="p-1 rounded-md text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-50 transition-colors"
+              >
+                <ChevronLeft className="size-5" />
+              </button>
+              <button
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                className="p-1 rounded-md text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-50 transition-colors"
+              >
+                <ChevronRight className="size-5" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Custom Modal */}
@@ -202,6 +278,18 @@ export function UsersList() {
                   ? 'คุณแน่ใจหรือไม่ที่จะแบนผู้ใช้นี้? บัญชีนี้จะไม่สามารถเข้าสู่ระบบและใช้งานฟีเจอร์ต่างๆ ได้อีกจนกว่าจะได้รับการปลดแบน' 
                   : 'คุณกำลังจะคืนสิทธิ์การใช้งานให้กับบัญชีนี้ คุณแน่ใจหรือไม่?'}
               </p>
+              
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">เหตุผลที่ต้องระบุ</label>
+                <textarea
+                  value={reason}
+                  onChange={(e) => { setReason(e.target.value); setReasonError(""); }}
+                  placeholder="กรุณาระบุเหตุผลการดำเนินการ..."
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-slate-100 rounded-lg outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all resize-none"
+                  rows="3"
+                ></textarea>
+                {reasonError && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{reasonError}</p>}
+              </div>
             </div>
             <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
               <button 

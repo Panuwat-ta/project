@@ -7,7 +7,7 @@ from httpx import AsyncClient, ASGITransport
 
 from app.main import app
 from app.core.database import get_db
-from app.api.deps import get_current_admin
+from app.api.deps import require_super_admin
 from app.models.admin import Admin
 from app.models.user import User
 from app.models.scan import Scan
@@ -25,6 +25,7 @@ def _make_report(report_id=7):
         reference_url="https://example.com/post/1",
         allow_research_use=True,
         status="pending",
+        version=1,
         created_at=datetime.now(timezone.utc),
     )
 
@@ -78,13 +79,13 @@ async def _build_db_override(report_obj):
     return override_get_db
 
 
-async def override_get_current_admin():
-    return Admin(id=1, email="admin@scamguard.com", full_name="Admin", is_active=True)
+async def override_require_super_admin():
+    return Admin(id=1, email="admin@scamguard.com", full_name="Admin", is_active=True, is_superadmin=True)
 
 
 @pytest.fixture(autouse=True)
 def apply_admin_overrides():
-    app.dependency_overrides[get_current_admin] = override_get_current_admin
+    app.dependency_overrides[require_super_admin] = override_require_super_admin
     yield
     app.dependency_overrides.clear()
 

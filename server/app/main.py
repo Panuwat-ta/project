@@ -7,9 +7,9 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from app.core.config import settings
+from app.core.rate_limit import limiter
+from app.core.middleware import RequestIDMiddleware
 from app.api.router import api_router
-
-limiter = Limiter(key_func=get_remote_address, default_limits=[f"{settings.RATE_LIMIT_PER_HOUR}/hour"])
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -28,10 +28,23 @@ app = FastAPI(
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+# Security Headers Middleware
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    if settings.ENVIRONMENT == "production":
+        response.headers["Content-Security-Policy"] = "default-src 'self'; img-src 'self' data: blob:;"
+    return response
+
+app.add_middleware(RequestIDMiddleware)
+
 # CORS - อนุญาตให้ frontend เชื่อมต่อได้ (ปรับ origins สำหรับ production)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=[origin.strip() for origin in settings.ALLOWED_ORIGINS.split(",") if origin.strip()],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -43,6 +56,20 @@ app.include_router(api_router, prefix="/api/v1")
 uploads_dir = settings.LOCAL_UPLOAD_DIR
 app.mount("/uploads", StaticFiles(directory=uploads_dir, check_dir=False), name="uploads")
 
+from sqlalchemy import text
+from app.core.database import async_session
+
 @app.get("/health")
 async def health_check():
-    return {"status": "ok", "version": settings.APP_VERSION}
+    db_status = "ok"
+    try:
+        async with async_session() as session:
+            await session.execute(text("SELECT 1"))
+    except Exception:
+        db_status = "error"
+        
+    return {
+        "status": "ok" if db_status == "ok" else "degraded", 
+        "version": settings.APP_VERSION,
+        "database": db_status
+    }

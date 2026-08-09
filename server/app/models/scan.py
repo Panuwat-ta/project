@@ -8,7 +8,7 @@ class Scan(Base):
     __tablename__ = "scans"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
     image_hash = Column(String(64), nullable=False, index=True)  # SHA-256
     raw_image_url = Column(String(512), nullable=False)
     heatmap_image_url = Column(String(512))
@@ -27,5 +27,5 @@ class Scan(Base):
     ai_gen_probability = Column(Float, default=0.0)
 
     status = Column(String(20), nullable=False, default="pending")
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)
     completed_at = Column(DateTime(timezone=True))
