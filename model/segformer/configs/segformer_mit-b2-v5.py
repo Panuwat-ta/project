@@ -187,7 +187,7 @@ test_evaluator = val_evaluator
 # ============================================================
 
 # ใช้เมื่อ train ต่อจากโมเดลเดิม (เอาคอมเมนต์ออกแล้วแก้ไข path เมื่อต้องการใช้)
-load_from = '/home/panuwat/project/model/segformer/work_dirs/v1.0.1/best_mIoU_iter_152000.pth'
+load_from = './work_dirs/v1.0.0/best_mIoU_iter_112000.pth'
 
 # ============================================================
 # Optimizer
