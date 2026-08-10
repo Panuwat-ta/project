@@ -10,7 +10,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CONFIG="${SCRIPT_DIR}/configs/segformer_mit-b2-v6.py"
+CONFIG="${SCRIPT_DIR}/configs/segformer_mit-b2-v5.py"
 WORK_DIR_BASE="${SCRIPT_DIR}/work_dirs"
 
 # ============================================================
@@ -27,7 +27,7 @@ get_next_version() {
 
         if [ -n "${latest}" ]; then
             local ver
-            ver=$(basename "${latest}")  # e.g. v1.0.3
+            ver=$(basename "${latest}") 
             major=$(echo "${ver}" | cut -d. -f1 | tr -d 'v')
             minor=$(echo "${ver}" | cut -d. -f2)
             patch=$(echo "${ver}" | cut -d. -f3)
@@ -99,7 +99,7 @@ if [ -n "${LOAD_FROM}" ]; then
         echo "แก้ LOAD_FROM ใน train.sh หรือใช้ --no-load เพื่อ train ใหม่"
         exit 1
     fi
-    EXTRA_ARGS+=(--load-from "${LOAD_FROM}")
+    EXTRA_ARGS+=(--cfg-options "load_from=${LOAD_FROM}")
     echo "  Load From: ${LOAD_FROM}"
 else
     echo "  Load From: (none - training from scratch)"
