@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import ctypes
+import re
 from pathlib import Path
 
 import onnx
@@ -42,9 +43,10 @@ class ONNXWrapper(torch.nn.Module):
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Export SegFormer to dynamic-size ONNX")
-    parser.add_argument("--config", type=Path, required=True, help="Path to config file")
-    parser.add_argument("--checkpoint", type=Path, required=True, help="Path to .pth checkpoint")
-    parser.add_argument("--output", type=Path, required=True, help="Output .onnx path")
+    parser.add_argument("--run-dir", type=Path, help="Directory containing the model run to auto-detect config/checkpoint (e.g., work_dirs/v1.0.0)")
+    parser.add_argument("--config", type=Path, help="Path to config file")
+    parser.add_argument("--checkpoint", type=Path, help="Path to .pth checkpoint")
+    parser.add_argument("--output", type=Path, help="Output .onnx path")
     parser.add_argument("--height", type=int, default=1024)
     parser.add_argument("--width", type=int, default=1024)
     parser.add_argument("--opset", type=int, default=17)
@@ -53,6 +55,31 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
+
+    if args.run_dir:
+        latest_dir = args.run_dir
+        # ดึงไฟล์ config (.py)
+        config_files = list(latest_dir.glob("*.py"))
+        default_config = config_files[0] if config_files else None
+        
+        # ดึง checkpoint ที่ดีที่สุด (best_mIoU_iter_*.pth) ล่าสุด
+        checkpoints = list(latest_dir.glob("best_mIoU_iter_*.pth"))
+        if checkpoints:
+            # เรียงตามเลข iter ของ best_mIoU
+            default_checkpoint = sorted(checkpoints, key=lambda p: int(re.search(r'iter_(\d+)', p.name).group(1)))[-1]
+        else:
+            default_checkpoint = None
+            
+        # กำหนดชื่อไฟล์ output ตามชื่อโฟลเดอร์เวอร์ชัน
+        version_name_clean = latest_dir.name.replace('.', '_')
+        default_output = latest_dir / f"segformer_{version_name_clean}_dynamic.onnx"
+        
+        args.config = args.config or default_config
+        args.checkpoint = args.checkpoint or default_checkpoint
+        args.output = args.output or default_output
+
+    if not args.config or not args.checkpoint or not args.output:
+        raise ValueError("ต้องระบุ --config, --checkpoint, และ --output หรือระบุ --run-dir")
 
     for path, label in ((args.config, "config"), (args.checkpoint, "checkpoint")):
         if not path.is_file():
