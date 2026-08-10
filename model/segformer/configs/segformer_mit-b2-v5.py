@@ -88,11 +88,10 @@ train_pipeline = [
     dict(type='PackSegInputs')
 ]
 
-# LoadAnnotations ต้องอยู่ก่อน Resize เพื่อให้ mask ถูก resize พร้อมกับรูป
 test_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(type='LoadAnnotations', reduce_zero_label=False),
     dict(type='Resize', scale=(512, 512), keep_ratio=False),
+    dict(type='LoadAnnotations', reduce_zero_label=False),
     dict(type='PackSegInputs')
 ]
 
