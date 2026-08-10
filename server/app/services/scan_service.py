@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime
 from starlette.concurrency import run_in_threadpool
 from app.core.config import settings, TH_TIMEZONE
+from app.core.websocket import manager
 from app.models.scan import Scan
 from app.utils.hashing import calculate_image_hash
 from app.utils.image_utils import load_image_verified, encode_lossless_png
@@ -97,6 +98,9 @@ async def analyze_image(file: UploadFile, user_id: int, db: AsyncSession) -> Sca
     db.add(new_scan)
     await db.commit()
     await db.refresh(new_scan)
+    
+    # Broadcast to admin dashboard
+    await manager.broadcast({"type": "refresh_dashboard"})
 
     # Set risk_grade manually for Pydantic schema
     new_scan.risk_grade = risk_result["grade"]

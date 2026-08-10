@@ -143,3 +143,43 @@
 .recharts-surface * {
   outline: none !important;
 }
+
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #94a3b8; /* Tailwind slate-400 */
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #64748b; /* Tailwind slate-500 */
+}
+
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar-thumb {
+  background-color: #475569; /* Tailwind slate-600 */
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background-color: #64748b; /* Tailwind slate-500 */
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 transparent;
+}
+
+.dark * {
+  scrollbar-color: #475569 transparent;
+}

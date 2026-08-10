@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import hashlib
 from passlib.context import CryptContext
 from jose import jwt, JWTError
 from app.core.config import settings, TH_TIMEZONE
@@ -11,16 +12,24 @@ def hash_password(password: str) -> str:
 def verify_password(plain: str, hashed: str) -> bool:
     return pwd_context.verify(plain, hashed)
 
-def create_access_token(data: dict) -> str:
+def hash_token(raw_token: str) -> str:
+    """Hash ของ refresh token ที่ใช้เก็บ/ค้นหาในตาราง session (ไม่เก็บค่า token ดิบ)"""
+    return hashlib.sha256(raw_token.encode("utf-8")).hexdigest()
+
+def create_access_token(data: dict, sid: str = None) -> str:
     to_encode = data.copy()
     expire = datetime.now(TH_TIMEZONE) + timedelta(minutes=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire, "type": "access"})
+    if sid:
+        to_encode["sid"] = sid
     return jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
 
-def create_refresh_token(data: dict) -> str:
+def create_refresh_token(data: dict, sid: str = None) -> str:
     to_encode = data.copy()
     expire = datetime.now(TH_TIMEZONE) + timedelta(minutes=settings.JWT_REFRESH_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire, "type": "refresh"})
+    if sid:
+        to_encode["sid"] = sid
     return jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
 
 def decode_access_token(token: str) -> dict | None:

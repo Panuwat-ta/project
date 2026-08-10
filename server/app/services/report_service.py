@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import desc, func
 from fastapi import HTTPException
+from app.core.websocket import manager
 from app.models.report import ScamReport
 from app.models.scan import Scan
 from app.schemas.report import ReportCreateRequest
@@ -38,6 +39,8 @@ async def create_report(db: AsyncSession, user_id: int, request: ReportCreateReq
     db.add(report)
     await db.commit()
     await db.refresh(report)
+
+    await manager.broadcast({"type": "refresh_dashboard"})
     
     # We set a description attribute so Pydantic schema can read it
     report.description = report.reason
