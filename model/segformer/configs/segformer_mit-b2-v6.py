@@ -59,7 +59,8 @@ dataset_type = 'BaseSegDataset'
 
 # เก็บชุดข้อมูลแยกโฟลเดอร์ไว้ แล้วรวมเฉพาะตอน train
 casia_root = 'dataset/dataset_CASIA2.0/'
-defacto_root = 'dataset/defacto-inpainting/'
+defacto_inpaint_root = 'dataset/defacto-inpainting/'
+defacto_copymove_root = 'dataset/defacto-copymove/'
 
 metainfo = dict(
     classes=('background', 'forgery'),
@@ -100,7 +101,7 @@ test_pipeline = [
 # Dataloader
 # ============================================================
 
-# ทั้งสองชุดต้องใช้ค่า mask เดียวกัน: background=0, forgery=1
+# ทุกชุดต้องใช้ค่า mask เดียวกัน: background=0, forgery=1
 dataset_casia_train = dict(
     type=dataset_type,
     data_root=casia_root,
@@ -112,9 +113,9 @@ dataset_casia_train = dict(
     pipeline=train_pipeline
 )
 
-dataset_defacto_train = dict(
+dataset_defacto_inpaint_train = dict(
     type=dataset_type,
-    data_root=defacto_root,
+    data_root=defacto_inpaint_root,
     metainfo=metainfo,
     data_prefix=dict(
         img_path='images/train',
@@ -123,7 +124,18 @@ dataset_defacto_train = dict(
     pipeline=train_pipeline
 )
 
-# Validation ใช้ pipeline ที่ไม่มี augmentation และรวมคะแนนจากทั้งสองชุด
+dataset_defacto_copymove_train = dict(
+    type=dataset_type,
+    data_root=defacto_copymove_root,
+    metainfo=metainfo,
+    data_prefix=dict(
+        img_path='images/train',
+        seg_map_path='annotations/train'
+    ),
+    pipeline=train_pipeline
+)
+
+# Validation ใช้ pipeline ที่ไม่มี augmentation และรวมคะแนนจากทั้งสามชุด
 dataset_casia_val = dict(
     type=dataset_type,
     data_root=casia_root,
@@ -135,9 +147,20 @@ dataset_casia_val = dict(
     pipeline=test_pipeline
 )
 
-dataset_defacto_val = dict(
+dataset_defacto_inpaint_val = dict(
     type=dataset_type,
-    data_root=defacto_root,
+    data_root=defacto_inpaint_root,
+    metainfo=metainfo,
+    data_prefix=dict(
+        img_path='images/val',
+        seg_map_path='annotations/val'
+    ),
+    pipeline=test_pipeline
+)
+
+dataset_defacto_copymove_val = dict(
+    type=dataset_type,
+    data_root=defacto_copymove_root,
     metainfo=metainfo,
     data_prefix=dict(
         img_path='images/val',
@@ -154,7 +177,7 @@ train_dataloader = dict(
     dataset=dict(
         _delete_=True,
         type='ConcatDataset',
-        datasets=[dataset_casia_train, dataset_defacto_train]
+        datasets=[dataset_casia_train, dataset_defacto_inpaint_train, dataset_defacto_copymove_train]
     )
 )
 
@@ -166,7 +189,7 @@ val_dataloader = dict(
     dataset=dict(
         _delete_=True,
         type='ConcatDataset',
-        datasets=[dataset_casia_val, dataset_defacto_val]
+        datasets=[dataset_casia_val, dataset_defacto_inpaint_val, dataset_defacto_copymove_val]
     )
 )
 
@@ -184,22 +207,16 @@ val_evaluator = dict(
 test_evaluator = val_evaluator
 
 # ============================================================
-# Fine-tuning / Incremental Learning
-# load_from และ work_dir ถูกส่งผ่าน train.sh --load-from และ --work-dir
-# เพื่อให้ config ไม่ผูกกับ path ใด path หนึ่ง
-# ============================================================
-
-# ============================================================
 # Optimizer
 # ============================================================
 
 optim_wrapper = dict(
     type='AmpOptimWrapper',
-    
-    # หากรันแล้วเจอ Error CUDA Out of Memory ให้ปรับ train_dataloader batch_size=4 
+
+    # หากรันแล้วเจอ Error CUDA Out of Memory ให้ปรับ train_dataloader batch_size=4
     # และเปิดใช้งาน accumulative_counts=2 ด้านล่างนี้แทน
-    # accumulative_counts=2, 
-    
+    # accumulative_counts=2,
+
     optimizer=dict(
         type='AdamW',
         lr=1e-5,
@@ -251,7 +268,8 @@ train_cfg = dict(
 
 # ============================================================
 # Checkpoint
-# work_dir ถูกส่งผ่าน train.sh --work-dir (auto-versioning จัดการใน shell)
+# work_dir และ load_from ถูกส่งผ่าน train.sh --work-dir และ --load-from
+# เพื่อให้ config ไม่ผูกกับ path ใด path หนึ่ง
 # ============================================================
 
 default_hooks = dict(
