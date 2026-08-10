@@ -12,7 +12,7 @@
 1. สร้างและเปิดใช้งาน Virtual Environment:
 ```bash
 python -m venv env
-source env/bin/activate
+source venv/bin/activate
 ```
 
 2. ติดตั้งแพ็กเกจ (สำหรับ RTX 5050 - สถาปัตยกรรม Blackwell แนะนำให้ใช้ `requirements-v1.txt` แทน):
@@ -32,48 +32,66 @@ AI จะไม่รู้ว่า "รอยตัดต่อ" คืออ�
 
 Google Drive: [dataset](https://drive.google.com/file/d/1jxQS3HwH0DHHHaCtf_prKPj6fMUpZ5jp/view?usp=sharing)
 
-3. **รันสคริปต์เตรียมข้อมูล**: เพื่อจัดแบ่งชุดข้อมูลเข้าสู่โฟลเดอร์สำหรับเทรนโดยอัตโนมัติ ให้รันคำสั่ง:
+3. **รันสคริปต์เตรียมข้อมูล**: เปิด `prepare_dataset.sh` แก้ path ให้ตรงกับ dataset ที่ต้องการ แล้วรัน:
 ```bash
-python prepare_dataset.py
+# แก้ path ใน prepare_dataset.sh ก่อนรัน (ส่วน Path Configuration)
+./prepare_dataset.sh
+```
+
+สคริปต์จะ:
+- Activate virtual environment ให้อัตโนมัติ
+- Undersample ภาพ Authentic ให้สมดุลกับ Tampered (1:1)
+- แบ่ง Train/Val (80/20) พร้อมบันทึก `split.json` สำหรับ reproduce
+- เพิ่ม prefix `au_`/`tp_` ป้องกันชื่อไฟล์ชนกัน
+- Resize mask ให้ตรงกับรูปอัตโนมัติ
+
+เมื่อต้องการใช้ dataset ตัวอื่น (เช่น copymove) ให้แก้ path ใน `prepare_dataset.sh`:
+```bash
+TP_DIR="${BASE_DIR}/defacto-copymove/copymove_img/img"
+MASK1_DIR="${BASE_DIR}/defacto-copymove/copymove_annotations/donor_mask"
+MASK2_DIR="${BASE_DIR}/defacto-copymove/copymove_annotations/probe_mask"
+OUT_DIR="${BASE_DIR}/defacto-copymove"
 ```
 
 ---
 
 ## 2: การตั้งค่าคอนฟิก (Configuration)
-เราจะใช้ไฟล์คอนฟิกเป็นตัวคุมพฤติกรรมของ AI (เช่น `configs/segformer_mit-b2-v2.py`) 
-มันถูกเขียนทับ (Override) ค่าพื้นฐานเพื่อ:
-1. เปลี่ยนคลาสให้รู้จักแค่ 2 ชนิด (ปกติ กับ ตัดต่อ) 
-2. ชี้ Path ของ Dataloader ไปที่โฟลเดอร์ชุดข้อมูลที่เราเตรียมไว้ (เช่น `data/dataset_CASIA2.0/`)
-3. ในบางเวอร์ชันมีการปรับค่า Learning Rate แยกส่วน (Parameter-wise Fine-tuning) เพื่อให้ปรับตัวเข้ากับโดเมนใหม่ได้ดีขึ้น
-4. **Automated Version Increment**: ในเวอร์ชัน v2 มีสคริปต์ตรวจจับโฟลเดอร์เวอร์ชันใน `work_dirs/` และบวกเลขเวอร์ชันใหม่โดยอัตโนมัติ ทำให้การรันแต่ละรอบไม่เกิดการเขียนทับผลลัพธ์เก่า
+ไฟล์คอนฟิก (เช่น `configs/segformer_mit-b2-v6.py`) กำหนดพฤติกรรมของ AI:
+1. เปลี่ยนคลาสให้รู้จักแค่ 2 ชนิด (background กับ forgery)
+2. ชี้ Path ของ Dataloader ไปที่โฟลเดอร์ชุดข้อมูลที่เตรียมไว้
+3. ปรับค่า Learning Rate แยกส่วน (Backbone เรียนช้า, Decoder เรียนเร็ว)
+4. ใช้ CrossEntropyLoss + DiceLoss รวมกันเพื่อให้ตรวจจับพื้นที่ตัดต่อได้ดีขึ้น
+
+*หมายเหตุ: `work_dir` และ `load_from` ไม่ได้กำหนดในไฟล์ config แต่ถูกส่งผ่าน `train.sh` แทน*
 
 ---
 
 ## 3: การเทรนโมเดล (Transfer Learning)
-เราจะเอา "สมองเดิม" ของ AI มาสอน "ความรู้ใหม่"
-เปิด Terminal ตรวจสอบว่าอยู่ในโฟลเดอร์ `model/segformer/` แล้วรันคำสั่ง:
+ใช้ `train.sh` เพื่อเทรนโมเดล ระบบจะจัดการ auto-versioning, activate venv, และส่ง arguments ให้อัตโนมัติ:
 
 ```bash
-# เทรนด้วยคอนฟิก v2 (รองรับการบวกเวอร์ชันอัตโนมัติ)
-python library/mmsegmentation/tools/train.py configs/segformer_mit-b2-v3.py
+# fine-tune จาก checkpoint ที่กำหนดไว้ใน LOAD_FROM (แก้ path ใน train.sh)
+./train.sh
 
-# การหยุดและกลับมาทำต่อ
-python library/mmsegmentation/tools/train.py configs/segformer_mit-b2-v3.py --resume
+# override checkpoint ผ่าน CLI
+./train.sh --load-from ./work_dirs/v1.0.0/best_mIoU_iter_112000.pth
+
+# train ใหม่ตั้งแต่ต้น (ไม่โหลด checkpoint)
+./train.sh --no-load
 ```
-**ผลลัพธ์ที่ได้:** เมื่อกระบวนการเสร็จสิ้น ระบบจะสร้างไฟล์ `.pth` ภายในโฟลเดอร์เวอร์ชันใหม่ (เช่น `work_dirs/v1.0.0/`) พร้อมผลการประเมิน
+**ผลลัพธ์ที่ได้:** ระบบจะสร้างโฟลเดอร์เวอร์ชันใหม่อัตโนมัติ (เช่น `work_dirs/v1.0.1/`) พร้อมไฟล์ `.pth` และผลการประเมิน
 
 ---
 
 ## 4: การนำไปใช้จริงบน Backend API (Inference)
-ตอนนี้คุณได้ AI ที่ฉลาดและพร้อมทำงานแล้ว ให้นำไฟล์ `.pth` ตัวใหม่ มาใช้งานในเซิร์ฟเวอร์
+นำไฟล์ `.pth` ตัวใหม่มาใช้งานในเซิร์ฟเวอร์ ทดสอบรันโมเดลได้ผ่านไฟล์ `predict.py`:
 
-สามารถทดสอบรันโมเดลได้ผ่านไฟล์ `predict.py` ซึ่งรองรับการส่งพารามิเตอร์ผ่าน Command Line เพื่อให้ใช้งานได้ยืดหยุ่น:
 ```bash
-# รันด้วยค่าเริ่มต้น (รูป test_scam.jpg, โมเดล v2.0.0)
+# รันด้วยค่าเริ่มต้น
 python predict.py
 
 # หรือระบุไฟล์รูปภาพ, คอนฟิก, และโมเดลที่ต้องการ
-python predict.py --image "test_scam.jpg" --config "configs/segformer_mit-b2-v1.py" --checkpoint "work_dirs/segformer_v1.0.0/best_mIoU_iter_128000.pth" --output "result_heatmap.jpg"
+python predict.py --image "test_scam.jpg" --config "configs/segformer_mit-b2-v6.py" --checkpoint "work_dirs/v1.0.1/best_mIoU_iter_112000.pth" --output "result_heatmap.jpg"
 ```
 *หมายเหตุ: สคริปต์จะตรวจสอบ GPU ให้อัตโนมัติ หากไม่มีจะใช้ CPU แทน (สามารถบังคับใช้ CPU ได้โดยเติม `--device cpu`)*
 

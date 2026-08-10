@@ -27,9 +27,6 @@ except Exception as e:
     print(f"[warn] could not preload libbz2: {e}")
 
 ROOT_DIR = Path(__file__).resolve().parent
-DEFAULT_CONFIG = ROOT_DIR / "work_dirs/v1.0.0/segformer_mit-b2-v2.py"
-DEFAULT_CHECKPOINT = ROOT_DIR / "work_dirs/v1.0.0/best_mIoU_iter_112000.pth"
-DEFAULT_OUTPUT = ROOT_DIR / "work_dirs/v1.0.0/segformer_v1_dynamic.onnx"
 
 
 class ONNXWrapper(torch.nn.Module):
@@ -45,9 +42,9 @@ class ONNXWrapper(torch.nn.Module):
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Export SegFormer to dynamic-size ONNX")
-    parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
-    parser.add_argument("--checkpoint", type=Path, default=DEFAULT_CHECKPOINT)
-    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument("--config", type=Path, required=True, help="Path to config file")
+    parser.add_argument("--checkpoint", type=Path, required=True, help="Path to .pth checkpoint")
+    parser.add_argument("--output", type=Path, required=True, help="Output .onnx path")
     parser.add_argument("--height", type=int, default=1024)
     parser.add_argument("--width", type=int, default=1024)
     parser.add_argument("--opset", type=int, default=17)
@@ -66,19 +63,20 @@ def main() -> None:
     dummy_input = torch.randn(1, 3, args.height, args.width, dtype=torch.float32)
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    torch.onnx.export(
-        wrapped_model,
-        dummy_input,
-        str(args.output),
-        input_names=["input"],
-        output_names=["logits"],
-        dynamic_axes={
-            "input": {2: "height", 3: "width"},
-            "logits": {2: "height_out", 3: "width_out"},
-        },
-        opset_version=args.opset,
-        do_constant_folding=True,
-    )
+    with torch.no_grad():
+        torch.onnx.export(
+            wrapped_model,
+            dummy_input,
+            str(args.output),
+            input_names=["input"],
+            output_names=["logits"],
+            dynamic_axes={
+                "input": {2: "height", 3: "width"},
+                "logits": {2: "height_out", 3: "width_out"},
+            },
+            opset_version=args.opset,
+            do_constant_folding=True,
+        )
 
     onnx_model = onnx.load(str(args.output))
     onnx.checker.check_model(onnx_model)
