@@ -10,7 +10,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CONFIG="${SCRIPT_DIR}/configs/segformer_mit-b2-v5.py"
+CONFIG="${SCRIPT_DIR}/configs/segformer_mit-b2-v6.py"
 WORK_DIR_BASE="${SCRIPT_DIR}/work_dirs"
 
 # ============================================================
@@ -62,7 +62,7 @@ mkdir -p "${WORK_DIR}"
 # Load From - แก้ path ด้านล่างนี้ก่อนรัน หรือส่ง --load-from ผ่าน CLI
 # ตั้งค่าเป็น "" เพื่อ train ใหม่ตั้งแต่ต้น
 # ============================================================
-LOAD_FROM="./work_dirs/v1.0.0/best_mIoU_iter_112000.pth"
+LOAD_FROM=""
 
 # ============================================================
 # Build extra args
