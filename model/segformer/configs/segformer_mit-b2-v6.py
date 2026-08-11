@@ -216,7 +216,7 @@ dataset_defacto_face_val = dict(
 
 train_dataloader = dict(
     batch_size=8,
-    num_workers=4,
+    num_workers=8,
     persistent_workers=True,
 
     dataset=dict(
@@ -234,7 +234,7 @@ train_dataloader = dict(
 
 val_dataloader = dict(
     batch_size=8,
-    num_workers=4,
+    num_workers=8,
     persistent_workers=True,
 
     dataset=dict(
