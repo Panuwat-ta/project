@@ -16,30 +16,23 @@ source venv/bin/activate
 # Path Configuration
 # ============================================================
 
-BASE_DIR="/home/panuwat/project/model/segformer/dataset"
+BASE_DIR="/run/media/panuwat/USB/dataset"
 AU_DIR="${BASE_DIR}/Authentic"
 
-TP_DIR="${BASE_DIR}/defacto-inpainting/inpainting_img/img"
-MASK1_DIR="${BASE_DIR}/defacto-inpainting/inpainting_annotations/inpaint_mask"
-MASK2_DIR="${BASE_DIR}/defacto-inpainting/inpainting_annotations/probe_mask"
-OUT_DIR="${BASE_DIR}/defacto-inpainting"
+SPLICING_DIR="${BASE_DIR}/defacto-splicing"
+OUT_DIR="${BASE_DIR}/defacto-splicing-prepared"
 
 # ============================================================
 
 echo "============================================"
-echo "  Dataset Preparation"
-echo "  TP Dir  : ${TP_DIR}"
-echo "  Mask1   : ${MASK1_DIR}"
-echo "  Mask2   : ${MASK2_DIR}"
-echo "  AU Dir  : ${AU_DIR}"
-echo "  Out Dir : ${OUT_DIR}"
+echo "  Dataset Preparation for Defacto Splicing"
+echo "  Splicing Dir : ${SPLICING_DIR}"
+echo "  AU Dir       : ${AU_DIR}"
+echo "  Out Dir      : ${OUT_DIR}"
 echo "============================================"
 
-python prepare_dataset1.py \
-    --base-dir "${BASE_DIR}" \
-    --tp-dir "${TP_DIR}" \
-    --mask1-dir "${MASK1_DIR}" \
-    --mask2-dir "${MASK2_DIR}" \
+python prepare_dataset_splicing.py \
+    --splicing-dir "${SPLICING_DIR}" \
     --au-dir "${AU_DIR}" \
     --out-dir "${OUT_DIR}"
 
