@@ -61,7 +61,7 @@ dataset_type = 'BaseSegDataset'
 casia_root = 'dataset/dataset_CASIA2.0/'
 defacto_inpaint_root = 'dataset/defacto-inpainting/'
 defacto_copymove_root = 'dataset/defacto-copymove/'
-defacto_splicing_root = 'dataset/defacto-splicing/'
+defacto_splicing_root = 'dataset/defacto-splicing-prepared/'
 defacto_face_root = 'dataset/defacto-face/'
 
 metainfo = dict(

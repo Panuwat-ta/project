@@ -19,20 +19,20 @@ source venv/bin/activate
 BASE_DIR="/run/media/panuwat/USB/dataset"
 AU_DIR="${BASE_DIR}/Authentic"
 
-SPLICING_DIR="${BASE_DIR}/defacto-splicing"
-OUT_DIR="${BASE_DIR}/defacto-splicing-prepared"
+FACE_DIR="${BASE_DIR}/defacto-face"
+OUT_DIR="${BASE_DIR}/defacto-face-prepared"
 
 # ============================================================
 
 echo "============================================"
-echo "  Dataset Preparation for Defacto Splicing"
-echo "  Splicing Dir : ${SPLICING_DIR}"
+echo "  Dataset Preparation for Defacto Face"
+echo "  Face Dir     : ${FACE_DIR}"
 echo "  AU Dir       : ${AU_DIR}"
 echo "  Out Dir      : ${OUT_DIR}"
 echo "============================================"
 
-python prepare_dataset_splicing.py \
-    --splicing-dir "${SPLICING_DIR}" \
+python prepare_dataset_face.py \
+    --face-dir "${FACE_DIR}" \
     --au-dir "${AU_DIR}" \
     --out-dir "${OUT_DIR}"
 

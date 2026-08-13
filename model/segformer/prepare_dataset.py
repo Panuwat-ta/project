@@ -14,7 +14,7 @@ except ImportError:
 
 
 def process_and_save(file_list, img_out_dir, ann_out_dir,
-                     donor_mask_dir, probe_mask_dir):
+                     inpaint_mask_dir, probe_mask_dir):
     total = len(file_list)
     seen_names = {}  # ตรวจสอบชื่อไฟล์ชนกัน
 
@@ -46,22 +46,22 @@ def process_and_save(file_list, img_out_dir, ann_out_dir,
 
         h, w = img.shape[:2]
 
-        if label == 1:  # Tampered (Copy-move)
-            donor_path = os.path.join(donor_mask_dir, raw_name + '.tif')
+        if label == 1:  # Tampered
+            inpaint_path = os.path.join(inpaint_mask_dir, raw_name + '.tif')
             probe_path = os.path.join(probe_mask_dir, raw_name + '.tif')
 
             mask = np.zeros((h, w), dtype=np.uint8)
             found = False
 
-            if os.path.exists(donor_path):
-                donor_mask = cv2.imread(donor_path, cv2.IMREAD_GRAYSCALE)
-                if donor_mask is not None:
+            if os.path.exists(inpaint_path):
+                inpaint_mask = cv2.imread(inpaint_path, cv2.IMREAD_GRAYSCALE)
+                if inpaint_mask is not None:
                     # Resize mask ให้ตรงกับรูปก่อน OR
-                    if donor_mask.shape != (h, w):
-                        donor_mask = cv2.resize(
-                            donor_mask, (w, h), interpolation=cv2.INTER_NEAREST
+                    if inpaint_mask.shape != (h, w):
+                        inpaint_mask = cv2.resize(
+                            inpaint_mask, (w, h), interpolation=cv2.INTER_NEAREST
                         )
-                    mask = np.bitwise_or(mask, donor_mask)
+                    mask = np.bitwise_or(mask, inpaint_mask)
                     found = True
 
             if os.path.exists(probe_path):
@@ -89,42 +89,36 @@ def process_and_save(file_list, img_out_dir, ann_out_dir,
 
 
 def main():
-    base_dir = '/run/media/panuwat/USB/dataset'
+    import argparse
 
-    # โฟลเดอร์รูปดัดแปลง
-    tp_dir = os.path.join(base_dir, 'defacto-copymove', 'copymove_img', 'img')
+    parser = argparse.ArgumentParser(description='Prepare inpainting dataset for SegFormer')
+    parser.add_argument('--base-dir', required=True, help='Base dataset directory')
+    parser.add_argument('--tp-dir', required=True, help='Tampered image directory')
+    parser.add_argument('--mask1-dir', required=True, help='First mask directory (inpaint_mask)')
+    parser.add_argument('--mask2-dir', required=True, help='Second mask directory (probe_mask)')
+    parser.add_argument('--au-dir', required=True, help='Authentic image directory')
+    parser.add_argument('--out-dir', required=True, help='Output base directory')
+    args = parser.parse_args()
 
-    # โฟลเดอร์ Mask
-    donor_mask_dir = os.path.join(
-        base_dir, 'defacto-copymove', 'copymove_annotations', 'donor_mask'
-    )
-    probe_mask_dir = os.path.join(
-        base_dir, 'defacto-copymove', 'copymove_annotations', 'probe_mask'
-    )
-
-    # โฟลเดอร์ภาพต้นฉบับ (Authentic)
-    au_dir = os.path.join(base_dir, 'Authentic')
-
-    out_base_dir = os.path.join(base_dir, 'defacto-copymove')
-    out_img_train = os.path.join(out_base_dir, 'images', 'train')
-    out_img_val = os.path.join(out_base_dir, 'images', 'val')
-    out_ann_train = os.path.join(out_base_dir, 'annotations', 'train')
-    out_ann_val = os.path.join(out_base_dir, 'annotations', 'val')
+    out_img_train = os.path.join(args.out_dir, 'images', 'train')
+    out_img_val = os.path.join(args.out_dir, 'images', 'val')
+    out_ann_train = os.path.join(args.out_dir, 'annotations', 'train')
+    out_ann_val = os.path.join(args.out_dir, 'annotations', 'val')
 
     for d in [out_img_train, out_img_val, out_ann_train, out_ann_val]:
         os.makedirs(d, exist_ok=True)
 
     # Guard: ตรวจสอบโฟลเดอร์ก่อน glob
-    if not os.path.isdir(tp_dir):
-        raise FileNotFoundError(f"Tampered image directory not found: {tp_dir}")
-    if not os.path.isdir(au_dir):
-        raise FileNotFoundError(f"Authentic image directory not found: {au_dir}")
+    if not os.path.isdir(args.tp_dir):
+        raise FileNotFoundError(f"Tampered image directory not found: {args.tp_dir}")
+    if not os.path.isdir(args.au_dir):
+        raise FileNotFoundError(f"Authentic image directory not found: {args.au_dir}")
 
-    au_files = sorted(glob.glob(os.path.join(au_dir, '*.*')))
-    tp_files = sorted(glob.glob(os.path.join(tp_dir, '*.*')))
+    au_files = sorted(glob.glob(os.path.join(args.au_dir, '*.*')))
+    tp_files = sorted(glob.glob(os.path.join(args.tp_dir, '*.*')))
 
     if len(tp_files) == 0:
-        raise ValueError(f"No tampered images found in: {tp_dir}")
+        raise ValueError(f"No tampered images found in: {args.tp_dir}")
 
     print(f"Found {len(au_files)} Authentic and {len(tp_files)} Tampered images.")
 
@@ -157,7 +151,7 @@ def main():
         'train': [{'path': p, 'label': l} for p, l in train_files],
         'val':   [{'path': p, 'label': l} for p, l in val_files],
     }
-    split_path = os.path.join(out_base_dir, 'split.json')
+    split_path = os.path.join(args.out_dir, 'split.json')
     with open(split_path, 'w') as f:
         json.dump(split_record, f, indent=2)
     print(f"Saved split list to {split_path}")
@@ -165,13 +159,13 @@ def main():
     print("Processing Train set...")
     process_and_save(
         train_files, out_img_train, out_ann_train,
-        donor_mask_dir, probe_mask_dir
+        args.mask1_dir, args.mask2_dir
     )
 
     print("Processing Val set...")
     process_and_save(
         val_files, out_img_val, out_ann_val,
-        donor_mask_dir, probe_mask_dir
+        args.mask1_dir, args.mask2_dir
     )
 
     print("Done! Dataset is ready for SegFormer training.")

@@ -13,12 +13,15 @@ cd "${SCRIPT_DIR}"
 # Activate virtual environment
 source venv/bin/activate
 
+# Fix for missing libbz2.so.1.0 in Fedora
+export LD_LIBRARY_PATH="${SCRIPT_DIR}/venv/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+
 # ============================================================
 # Path Configuration - แก้ path ตรงนี้ได้เลย
 # ============================================================
 
 # ระบุโฟลเดอร์เวอร์ชันที่ต้องการ export ระบบจะค้นหา config และ checkpoint ล่าสุดให้อัตโนมัติ
-RUN_DIR="./work_dirs/v1.0.0"
+RUN_DIR="./work_dirs/v1.0.2"
 
 # Export resolution (dummy input สำหรับ tracing, runtime รับ size อะไรก็ได้)
 HEIGHT=1024
@@ -38,5 +41,5 @@ python export_onnx_dynamic.py \
     --width "${WIDTH}"
 
 echo "============================================"
-echo "  Export complete: ${OUTPUT}"
+echo "  Export complete!"
 echo "============================================"
