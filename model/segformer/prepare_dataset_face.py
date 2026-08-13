@@ -25,7 +25,12 @@ def process_and_save(file_list, img_out_dir, ann_out_dir):
 
         raw_name = os.path.splitext(os.path.basename(img_path))[0]
         # เพิ่ม prefix เพื่อป้องกันชื่อไฟล์ชนกันระหว่าง Authentic และ Tampered
-        prefix = 'tp_' if label == 1 else 'au_'
+        if label == 1:
+            # ใช้ชื่อโฟลเดอร์ต้นทาง (morphing หรือ swapping) เป็น prefix เพื่อกันชื่อซ้ำข้ามประเภท
+            sub_type = os.path.basename(os.path.dirname(os.path.dirname(img_path))).split('_')[0]
+            prefix = f'tp_{sub_type}_'
+        else:
+            prefix = 'au_'
         base_name = prefix + raw_name
 
         # ตรวจสอบชื่อซ้ำภายใน split เดียวกัน
@@ -53,8 +58,9 @@ def process_and_save(file_list, img_out_dir, ann_out_dir):
             sub_ann = sub_img.replace('_img', '_annotations')
             base_dir = os.path.dirname(img_dir) # .../defacto-face
             
-            donor_path = os.path.join(base_dir, sub_ann, 'donor_mask', raw_name + '.tif')
-            probe_path = os.path.join(base_dir, sub_ann, 'probe_mask', raw_name + '.tif')
+            # ไฟล์หน้ากากใน defacto-face ไม่มีนามสกุล .tif ต่อท้าย (ชื่อไฟล์เป็น .jpg ตรงๆ เลย)
+            donor_path = os.path.join(base_dir, sub_ann, 'donor_mask', raw_name)
+            probe_path = os.path.join(base_dir, sub_ann, 'probe_mask', raw_name)
 
             mask = np.zeros((h, w), dtype=np.uint8)
             found = False
