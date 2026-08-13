@@ -19,21 +19,22 @@ source venv/bin/activate
 BASE_DIR="/run/media/panuwat/USB/dataset"
 AU_DIR="${BASE_DIR}/Authentic"
 
-FACE_DIR="${BASE_DIR}/defacto-face"
-OUT_DIR="${BASE_DIR}/defacto-face-prepared"
+IMD_DIR="${BASE_DIR}/IMD2020"
+IMD_AU_DIR="${BASE_DIR}/IMD"
+OUT_DIR="${BASE_DIR}/IMD2020-prepared"
 
 # ============================================================
 
 echo "============================================"
-echo "  Dataset Preparation for Defacto Face"
-echo "  Face Dir     : ${FACE_DIR}"
-echo "  AU Dir       : ${AU_DIR}"
+echo "  Dataset Preparation for IMD2020"
+echo "  IMD Dir      : ${IMD_DIR}"
+echo "  AU Dir       : ${IMD_AU_DIR}"
 echo "  Out Dir      : ${OUT_DIR}"
 echo "============================================"
 
-python prepare_dataset_face.py \
-    --face-dir "${FACE_DIR}" \
-    --au-dir "${AU_DIR}" \
+python prepare_dataset_imd2020.py \
+    --imd-dir "${IMD_DIR}" \
+    --au-dir "${IMD_AU_DIR}" \
     --out-dir "${OUT_DIR}"
 
 echo "============================================"

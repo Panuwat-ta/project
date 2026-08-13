@@ -10,7 +10,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CONFIG="${SCRIPT_DIR}/configs/segformer_mit-b2-v6.py"
+CONFIG="${SCRIPT_DIR}/configs/segformer_mit-b2-v7.py"
 WORK_DIR_BASE="${SCRIPT_DIR}/work_dirs"
 
 # ============================================================

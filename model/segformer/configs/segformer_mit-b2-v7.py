@@ -325,15 +325,15 @@ param_scheduler = [
         type='LinearLR',
         start_factor=1e-6,
         begin=0,
-        end=2000,
+        end=5000,
         by_epoch=False
     ),
     dict(
         type='PolyLR',
         eta_min=1e-6,  # ไม่ให้ lr ตกเป็น 0 สนิท
         power=1.0,
-        begin=2000,
-        end=300000,
+        begin=5000,
+        end=500000,
         by_epoch=False
     )
 ]
@@ -344,7 +344,7 @@ param_scheduler = [
 
 train_cfg = dict(
     type='IterBasedTrainLoop',
-    max_iters=300000,
+    max_iters=500000,
     val_interval=5000
 )
 
@@ -357,6 +357,7 @@ train_cfg = dict(
 default_hooks = dict(
     checkpoint=dict(
         type='CheckpointHook',
+        by_epoch=False,
         interval=5000,
         save_best='mIoU',
         rule='greater',
