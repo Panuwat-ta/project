@@ -2,7 +2,7 @@
 title: "สถาปัตยกรรมระบบ (System Architecture)"
 category: architecture
 tags: [architecture, cloud-native, decoupled, C1, C2, layers]
-sources: [design/architecture.md, doc/C1-System-Context-Diagram.md, doc/C2-Container-Diagram.md]
+sources: [design/architecture.md, Document/C1-System-Context-Diagram.md, Document/C2-Container-Diagram.md]
 updated: 2026-08-02
 ---
 

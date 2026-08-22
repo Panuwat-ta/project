@@ -2,7 +2,7 @@
 title: "C1 System Context Diagram"
 category: architecture
 tags: [architecture, c4, system-context, diagram]
-sources: [doc/C1-System-Context-Diagram.md]
+sources: [Document/C1-System-Context-Diagram.md]
 updated: 2026-08-04
 ---
 

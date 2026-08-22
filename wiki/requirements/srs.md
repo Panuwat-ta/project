@@ -2,7 +2,7 @@
 title: "Software Requirements Specification (SRS)"
 category: requirements
 tags: [requirements, srs, spec]
-sources: [doc/srs.md]
+sources: [Document/srs.md]
 updated: 2026-08-04
 ---
 

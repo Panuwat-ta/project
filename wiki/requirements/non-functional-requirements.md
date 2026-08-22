@@ -2,7 +2,7 @@
 title: "ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements)"
 category: requirements
 tags: [NFR, performance, security, PDPA, availability, privacy, HTTPS, JWT]
-sources: [doc/srs.md, design/architecture.md, doc/objective.md]
+sources: [Document/srs.md, design/architecture.md, Document/objective.md]
 updated: 2026-08-02
 ---
 

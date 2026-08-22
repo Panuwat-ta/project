@@ -2,7 +2,7 @@
 title: "Semantic Segmentation"
 category: concepts
 tags: [Semantic Segmentation, SegFormer, forgery, pixel-analysis]
-sources: [design/architecture.md, design/model.md, doc/srs.md]
+sources: [design/architecture.md, design/model.md, Document/srs.md]
 updated: 2026-08-07
 ---
 

@@ -2,7 +2,7 @@
 title: "C2 Container Diagram"
 category: architecture
 tags: [architecture, c4, container, diagram]
-sources: [doc/C2-Container-Diagram.md]
+sources: [Document/C2-Container-Diagram.md]
 updated: 2026-08-04
 ---
 

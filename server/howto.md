@@ -8,7 +8,7 @@
 - [design/architecture.md](../design/architecture.md) - สถาปัตยกรรมระบบรวม, Risk Scoring Pipeline
 - [design/model.md](../design/model.md) - AI Model Design (SegFormer)
 - [design/training.md](../design/training.md) - Training Workflow, ONNX Export
-- [doc/server/server.md](../doc/server/server.md) - เอกสารสรุปภาพรวม Server
+- [Document/server/server.md](../Document/server/server.md) - เอกสารสรุปภาพรวม Server
 
 ---
 
@@ -734,7 +734,7 @@ pip install -r requirements.txt
 
 ## 10. API Endpoints สรุปรวม
 
-อ้างอิงจาก `design/server.md` Section 5 และ `doc/server/server.md` Section 5:
+อ้างอิงจาก `design/server.md` Section 5 และ `Document/server/server.md` Section 5:
 
 | Method | Endpoint | หน้าที่ | Auth |
 |:---:|---|---|:---:|

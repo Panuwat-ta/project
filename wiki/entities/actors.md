@@ -2,7 +2,7 @@
 title: "ผู้ใช้ระบบ (Actors)"
 category: entities
 tags: [users, admin, researcher, roles, RBAC]
-sources: [design/architecture.md, doc/srs.md, doc/Use-Case-Diagram.md]
+sources: [design/architecture.md, Document/srs.md, Document/Use-Case-Diagram.md]
 updated: 2026-08-02
 ---
 

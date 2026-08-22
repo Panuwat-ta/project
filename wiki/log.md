@@ -20,8 +20,8 @@ grep "^## \[" wiki/log.md | tail -5
 **เอกสารที่ประมวลผล:**
 
 - `README.md` — ภาพรวมโปรเจค, ทีม, ลิงก์ workspace
-- `doc/objective.md` — วัตถุประสงค์ (OBJ-01 ถึง OBJ-04) และ KPI
-- `doc/scop.md` — ขอบเขตโปรเจคและ Work Package
+- `Document/objective.md` — วัตถุประสงค์ (OBJ-01 ถึง OBJ-04) และ KPI
+- `Document/scop.md` — ขอบเขตโปรเจคและ Work Package
 - `design/architecture.md` — สถาปัตยกรรมระบบ, Risk Scoring Pipeline, Tech Stack
 - `design/model.md` — การออกแบบโมเดล AI (SegFormer, Semantic Segmentation, Heatmap)
 - `design/server.md` — โครงสร้าง Backend FastAPI และ Database
@@ -53,7 +53,7 @@ grep "^## \[" wiki/log.md | tail -5
 - `planning/project-scope.md`
 - `planning/team.md`
 
-**หมายเหตุ:** เอกสารที่ยังไม่ได้ ingest ครบ: `doc/srs.md` (ฉบับเต็ม), `doc/Use-Case-Diagram.md`, `doc/flowchart.md`, `doc/C1-System-Context-Diagram.md`, `doc/C2-Container-Diagram.md`, `design/design.md`, `design/mobile.md`, `design/training.md`
+**หมายเหตุ:** เอกสารที่ยังไม่ได้ ingest ครบ: `Document/srs.md` (ฉบับเต็ม), `Document/Use-Case-Diagram.md`, `Document/flowchart.md`, `Document/C1-System-Context-Diagram.md`, `Document/C2-Container-Diagram.md`, `design/design.md`, `design/mobile.md`, `design/training.md`
 
 ---
 
@@ -78,7 +78,7 @@ grep "^## \[" wiki/log.md | tail -5
 
 ## [2026-08-04] mass_ingest | ย้ายเอกสารต้นฉบับเข้า Wiki
 
-**ประเภทงาน:** รวบรวมเอกสารจากโฟลเดอร์ `doc/`, `design/`, `database/`, และ `server/` เข้าสู่สารบบ Wiki แบบอัตโนมัติ
+**ประเภทงาน:** รวบรวมเอกสารจากโฟลเดอร์ `Document/`, `design/`, `database/`, และ `server/` เข้าสู่สารบบ Wiki แบบอัตโนมัติ
 
 **รายการไฟล์ที่นำเข้า (พร้อมเพิ่ม Frontmatter):**
 
@@ -91,4 +91,4 @@ grep "^## \[" wiki/log.md | tail -5
 
 - ใช้สคริปต์ `mass_ingest.py` จัดการคัดลอกไฟล์ทั้งหมดและแทรก YAML Frontmatter ด้านบนของไฟล์โดยอัตโนมัติ เพื่อรักษาโครงสร้างเดิมของโปรเจคไว้
 - สั่ง Build HTML ใหม่ เพื่อให้เอกสารทั้งหมดเข้าไปอยู่ใน Web Portal (`web-ScamGuard`) อย่างสมบูรณ์
-## [2026-08-06] ingest | /doc/model/model.md
+## [2026-08-06] ingest | /Document/model/model.md

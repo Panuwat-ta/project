@@ -8,15 +8,15 @@
 
 ## 🔗 เอกสารที่เกี่ยวข้อง (Related Documents)
 
-* เอกสารข้อกำหนดความต้องการระบบหลัก (SRS) (doc/srs.md)
+* เอกสารข้อกำหนดความต้องการระบบหลัก (SRS) (Document/srs.md)
 * การออกแบบส่วนหน้าบ้าน (Mobile Application Design) (design/design.md)
 * การออกแบบโมบายแอปพลิเคชันโดยละเอียด (Detailed Mobile Design) (design/mobile.md)
 * การออกแบบระบบหลังบ้านและเซิร์ฟเวอร์ (Backend & Server Architecture) (design/server.md)
 * การออกแบบโมเดลปัญญาประดิษฐ์ (AI Model Design) (design/model.md)
 * การออกแบบระบบฝึกสอนโมเดล (Model Training Design) (design/training.md)
-* แผนภาพระดับ C1 (System Context Diagram) (doc/C1-System-Context-Diagram.md)
-* แผนภาพระดับ C2 (Container Diagram) (doc/C2-Container-Diagram.md)
-* แผนภาพและรายละเอียดโฟลว์การทำงาน (Flowchart & System Logic) (doc/flowchart.md)
+* แผนภาพระดับ C1 (System Context Diagram) (Document/C1-System-Context-Diagram.md)
+* แผนภาพระดับ C2 (Container Diagram) (Document/C2-Container-Diagram.md)
+* แผนภาพและรายละเอียดโฟลว์การทำงาน (Flowchart & System Logic) (Document/flowchart.md)
 
 ---
 

@@ -1,7 +1,7 @@
 # การออกแบบ UX/UI หน้าผู้ดูแลระบบ (Admin Portal UX/UI Design)
 ## โครงงาน: แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง (Scam Image Detection)
 
-เอกสารฉบับนี้อธิบายรายละเอียดการออกแบบส่วนติดต่อผู้ใช้ (UX/UI) ของ Admin Web Portal สำหรับผู้ดูแลระบบ Scam Image Detection โดยอ้างอิงจากเอกสารออกแบบ API/Backend ใน `doc/admin/admin.md` และใช้ระบบสี (Design System) ที่สอดคล้องกับ Mobile App เดิม
+เอกสารฉบับนี้อธิบายรายละเอียดการออกแบบส่วนติดต่อผู้ใช้ (UX/UI) ของ Admin Web Portal สำหรับผู้ดูแลระบบ Scam Image Detection โดยอ้างอิงจากเอกสารออกแบบ API/Backend ใน `Document/admin/admin.md` และใช้ระบบสี (Design System) ที่สอดคล้องกับ Mobile App เดิม
 
 ---
 

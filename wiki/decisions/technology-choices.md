@@ -24,7 +24,7 @@ updated: 2026-08-02
 - รองรับ Dark Mode ทันที
 - BLoC State Management มี Document ครบถ้วนและเขียน Test ง่าย
 
-**ความคลาดเคลื่อน:** OBJ-01 ใน `doc/objective.md` ระบุ "React Native" แต่เอกสาร Architecture/Design ระบุ Flutter ทั้งหมด เรายึด Design Document เป็นหลัก — ดังนั้น Flutter คือเทคโนโลยีที่ถูกสร้างจริง ดูที่ [[entities/tech-stack]]
+**ความคลาดเคลื่อน:** OBJ-01 ใน `Document/objective.md` ระบุ "React Native" แต่เอกสาร Architecture/Design ระบุ Flutter ทั้งหมด เรายึด Design Document เป็นหลัก — ดังนั้น Flutter คือเทคโนโลยีที่ถูกสร้างจริง ดูที่ [[entities/tech-stack]]
 
 ---
 

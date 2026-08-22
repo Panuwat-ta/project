@@ -58,7 +58,7 @@ updated: 2026-08-02
 ## ทำไมไม่ใช้ React Native สำหรับ Mobile?
 
 > [!NOTE]
-> ใน SRS (`doc/objective.md`) ขัอ OBJ-01 ระบุว่า "Cross-Platform (React Native)" แต่ในเอกสารการออกแบบ (`design/architecture.md`, `design/mobile.md`) ระบุ **Flutter** อย่างสม่ำเสมอ เอกสารการออกแบบเป็นเวอร์ชันที่ใหม่กว่าและใช้อ้างอิงเป็นหลัก — Flutter คือเทคโนโลยีที่ถูกนำมาใช้จริง ดูบันทึกฉบับเต็มได้ที่ [[decisions/technology-choices]]
+> ใน SRS (`Document/objective.md`) ขัอ OBJ-01 ระบุว่า "Cross-Platform (React Native)" แต่ในเอกสารการออกแบบ (`design/architecture.md`, `design/mobile.md`) ระบุ **Flutter** อย่างสม่ำเสมอ เอกสารการออกแบบเป็นเวอร์ชันที่ใหม่กว่าและใช้อ้างอิงเป็นหลัก — Flutter คือเทคโนโลยีที่ถูกนำมาใช้จริง ดูบันทึกฉบับเต็มได้ที่ [[decisions/technology-choices]]
 
 ---
 

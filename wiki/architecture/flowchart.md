@@ -2,7 +2,7 @@
 title: "System Flowchart"
 category: architecture
 tags: [architecture, flowchart, workflow]
-sources: [doc/flowchart.md]
+sources: [Document/flowchart.md]
 updated: 2026-08-04
 ---
 

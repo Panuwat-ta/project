@@ -2,7 +2,7 @@
 title: "ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)"
 category: concepts
 tags: [XAI, Heatmap, heatmap, overlay, transparency]
-sources: [design/model.md, design/architecture.md, doc/objective.md]
+sources: [design/model.md, design/architecture.md, Document/objective.md]
 updated: 2026-08-02
 ---
 
