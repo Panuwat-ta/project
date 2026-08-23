@@ -2,7 +2,7 @@
 title: "ภาพรวมโปรเจค — Scam Image Detection"
 category: overview
 tags: [ภาพรวม, synthesis, scam-detection, mobile-app, AI]
-sources: [README.md, doc/objective.md, design/architecture.md]
+sources: [README.md, Document/objective.md, design/architecture.md]
 updated: 2026-08-02
 ---
 

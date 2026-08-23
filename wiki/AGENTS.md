@@ -87,7 +87,7 @@ updated: YYYY-MM-DD
 
 ### 1. Ingesting New Documents
 
-When instructed to ingest a document from `doc/`, `design/`, or elsewhere:
+When instructed to ingest a document from `Document/`, `design/`, or elsewhere:
 
 1. Read the entire raw source document.
 2. Identify core concepts, entities, decisions, and key information.
@@ -119,13 +119,13 @@ When instructed to lint the wiki, scan for:
 | File | Description |
 | :--- | :--- |
 | `README.md` | Project overview |
-| `doc/srs.md` | Complete Software Requirements Specification |
-| `doc/objective.md` | Objectives and KPIs |
-| `doc/scop.md` | Project scope and work packages |
-| `doc/C1-System-Context-Diagram.md` | C1 Context Diagram |
-| `doc/C2-Container-Diagram.md` | C2 Container Diagram |
-| `doc/Use-Case-Diagram.md` | Use Case Diagram and FR list |
-| `doc/flowchart.md` | User Flow and System Flowchart |
+| `Document/srs.md` | Complete Software Requirements Specification |
+| `Document/objective.md` | Objectives and KPIs |
+| `Document/scop.md` | Project scope and work packages |
+| `Document/C1-System-Context-Diagram.md` | C1 Context Diagram |
+| `Document/C2-Container-Diagram.md` | C2 Container Diagram |
+| `Document/Use-Case-Diagram.md` | Use Case Diagram and FR list |
+| `Document/flowchart.md` | User Flow and System Flowchart |
 | `design/architecture.md` | Overall system architecture |
 | `design/design.md` | Mobile UI/UX design specs |
 | `design/mobile.md` | Detailed Mobile App design |

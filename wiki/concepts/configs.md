@@ -2,7 +2,7 @@
 title: "พารามิเตอร์และสมการคณิตศาสตร์ (Configurations & Math)"
 category: concepts
 tags: [risk-score, equations, loss-function, SegFormer, parameters]
-sources: [doc/model/configs.md, doc/model/training.md]
+sources: [Document/model/configs.md, Document/model/training.md]
 updated: 2026-08-08
 ---
 

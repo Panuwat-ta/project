@@ -2,7 +2,7 @@
 title: "การวิเคราะห์หลายชั้น (Multi-layer Analysis)"
 category: concepts
 tags: [การวิเคราะห์, OCR, NLP, reverse-image-search, visual-anomaly, pipeline]
-sources: [doc/srs.md, design/architecture.md, README.md]
+sources: [Document/srs.md, design/architecture.md, README.md]
 updated: 2026-08-02
 ---
 

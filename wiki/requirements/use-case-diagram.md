@@ -2,7 +2,7 @@
 title: "Use Case Diagram"
 category: requirements
 tags: [requirements, use-case, diagram, uml]
-sources: [doc/Use-Case-Diagram.md]
+sources: [Document/Use-Case-Diagram.md]
 updated: 2026-08-04
 ---
 

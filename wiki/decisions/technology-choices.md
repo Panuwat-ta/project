@@ -12,7 +12,7 @@ updated: 2026-08-02
 
 ---
 
-## การตัดสินใจ 1: ใช้ Flutter แทน React Native สำหรับ Mobile
+## การตัดสินใจ 1: ใช้ Flutter สำหรับ Mobile
 
 **สิ่งที่เลือก:** Flutter (Dart)
 **ทางเลือก:** React Native (JavaScript)
@@ -24,7 +24,7 @@ updated: 2026-08-02
 - รองรับ Dark Mode ทันที
 - BLoC State Management มี Document ครบถ้วนและเขียน Test ง่าย
 
-**ความคลาดเคลื่อน:** OBJ-01 ใน `doc/objective.md` ระบุ "React Native" แต่เอกสาร Architecture/Design ระบุ Flutter ทั้งหมด เรายึด Design Document เป็นหลัก — ดังนั้น Flutter คือเทคโนโลยีที่ถูกสร้างจริง ดูที่ [[entities/tech-stack]]
+**สรุป:** โครงการนี้ใช้ **Flutter** เป็นเทคโนโลยีหลักสำหรับการพัฒนาแอปพลิเคชันมือถือ ดูข้อมูลเพิ่มเติมที่ [[entities/tech-stack]]
 
 ---
 

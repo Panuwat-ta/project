@@ -2,7 +2,7 @@
 title: "โมเดล AI — Surya OCR"
 category: concepts
 tags: [ocr, layout-detection, native-pytorch, text-extraction]
-sources: [doc/model/model.md]
+sources: [Document/model/model.md]
 updated: 2026-08-06
 ---
 

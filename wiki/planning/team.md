@@ -2,7 +2,7 @@
 title: "ทีมงานและผู้รับผิดชอบ (Team)"
 category: planning
 tags: [team, members, advisor, responsibilities, contact]
-sources: [README.md, doc/srs.md]
+sources: [README.md, Document/srs.md]
 updated: 2026-08-02
 ---
 

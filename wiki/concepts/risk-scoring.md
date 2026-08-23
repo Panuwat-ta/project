@@ -2,7 +2,7 @@
 title: "การคำนวณคะแนนความเสี่ยง (Risk Scoring)"
 category: concepts
 tags: [risk-score, weighted-average, grading, output]
-sources: [design/architecture.md, doc/srs.md]
+sources: [design/architecture.md, Document/srs.md]
 updated: 2026-08-02
 ---
 
@@ -16,8 +16,8 @@ updated: 2026-08-02
 
 > [!WARNING]
 > **ข้อขัดแย้งด้านสถาปัตยกรรม (Architectural Conflict):** 
-> เอกสารฉบับเก่า (`design/architecture.md`) ระบุการคำนวณโดยใช้ 3 ปัจจัย (Text 25%, Visual 45%, Source 30%) แต่เอกสารล่าสุด (`doc/model/model.md`) ได้ปรับลดความซับซ้อนลงเหลือเพียง **2 ปัจจัยหลัก** 
-> *โดยยึดตาม `doc/model/model.md` เป็น Authoritative Source ล่าสุด*
+> เอกสารฉบับเก่า (`design/architecture.md`) ระบุการคำนวณโดยใช้ 3 ปัจจัย (Text 25%, Visual 45%, Source 30%) แต่เอกสารล่าสุด (`Document/model/model.md`) ได้ปรับลดความซับซ้อนลงเหลือเพียง **2 ปัจจัยหลัก** 
+> *โดยยึดตาม `Document/model/model.md` เป็น Authoritative Source ล่าสุด*
 
 สูตรคำนวณที่อัปเดตล่าสุดคือ:
 $$ S_{total} = (\alpha \times S_{visual}) + (\beta \times S_{textual}) $$

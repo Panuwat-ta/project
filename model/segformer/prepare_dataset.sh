@@ -16,31 +16,25 @@ source venv/bin/activate
 # Path Configuration
 # ============================================================
 
-BASE_DIR="/home/panuwat/project/model/segformer/dataset"
+BASE_DIR="/run/media/panuwat/USB/dataset"
 AU_DIR="${BASE_DIR}/Authentic"
 
-TP_DIR="${BASE_DIR}/defacto-inpainting/inpainting_img/img"
-MASK1_DIR="${BASE_DIR}/defacto-inpainting/inpainting_annotations/inpaint_mask"
-MASK2_DIR="${BASE_DIR}/defacto-inpainting/inpainting_annotations/probe_mask"
-OUT_DIR="${BASE_DIR}/defacto-inpainting"
+IMD_DIR="${BASE_DIR}/IMD2020"
+IMD_AU_DIR="${BASE_DIR}/IMD"
+OUT_DIR="${BASE_DIR}/IMD2020-prepared"
 
 # ============================================================
 
 echo "============================================"
-echo "  Dataset Preparation"
-echo "  TP Dir  : ${TP_DIR}"
-echo "  Mask1   : ${MASK1_DIR}"
-echo "  Mask2   : ${MASK2_DIR}"
-echo "  AU Dir  : ${AU_DIR}"
-echo "  Out Dir : ${OUT_DIR}"
+echo "  Dataset Preparation for IMD2020"
+echo "  IMD Dir      : ${IMD_DIR}"
+echo "  AU Dir       : ${IMD_AU_DIR}"
+echo "  Out Dir      : ${OUT_DIR}"
 echo "============================================"
 
-python prepare_dataset1.py \
-    --base-dir "${BASE_DIR}" \
-    --tp-dir "${TP_DIR}" \
-    --mask1-dir "${MASK1_DIR}" \
-    --mask2-dir "${MASK2_DIR}" \
-    --au-dir "${AU_DIR}" \
+python prepare_dataset_imd2020.py \
+    --imd-dir "${IMD_DIR}" \
+    --au-dir "${IMD_AU_DIR}" \
     --out-dir "${OUT_DIR}"
 
 echo "============================================"

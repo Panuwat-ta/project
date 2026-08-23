@@ -55,10 +55,10 @@ updated: 2026-08-02
 
 ---
 
-## ทำไมไม่ใช้ React Native สำหรับ Mobile?
+## ทำไมถึงเลือก Flutter สำหรับ Mobile?
 
 > [!NOTE]
-> ใน SRS (`doc/objective.md`) ขัอ OBJ-01 ระบุว่า "Cross-Platform (React Native)" แต่ในเอกสารการออกแบบ (`design/architecture.md`, `design/mobile.md`) ระบุ **Flutter** อย่างสม่ำเสมอ เอกสารการออกแบบเป็นเวอร์ชันที่ใหม่กว่าและใช้อ้างอิงเป็นหลัก — Flutter คือเทคโนโลยีที่ถูกนำมาใช้จริง ดูบันทึกฉบับเต็มได้ที่ [[decisions/technology-choices]]
+> โครงการนี้เลือกใช้ **Flutter** สำหรับการพัฒนาแอปพลิเคชันมือถือแบบ Cross-Platform (Android) เนื่องจากประสิทธิภาพสูง, มี Hot Reload, UI สวยงามด้วย Material Design และ Cupertino, และมี BLoC State Management ที่เขียน Test ได้ง่าย — ดูรายละเอียดการตัดสินใจเทคโนโลยีได้ที่ [[decisions/technology-choices]]
 
 ---
 

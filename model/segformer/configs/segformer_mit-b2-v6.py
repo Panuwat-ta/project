@@ -58,9 +58,12 @@ model = dict(
 dataset_type = 'BaseSegDataset'
 
 # เก็บชุดข้อมูลแยกโฟลเดอร์ไว้ แล้วรวมเฉพาะตอน train
-casia_root = 'dataset/dataset_CASIA2.0/'
-defacto_inpaint_root = 'dataset/defacto-inpainting/'
-defacto_copymove_root = 'dataset/defacto-copymove/'
+casia_root = '/run/media/panuwat/USB/dataset/dataset_CASIA2.0/'
+defacto_inpaint_root = '/run/media/panuwat/USB/dataset/defacto-inpainting/'
+defacto_copymove_root = '/run/media/panuwat/USB/dataset/defacto-copymove/'
+defacto_splicing_root = '/run/media/panuwat/USB/dataset/defacto-splicing/'
+defacto_face_root = '/run/media/panuwat/USB/dataset/defacto-face/'
+imd2020_root = '/run/media/panuwat/USB/dataset/IMD2020/'
 
 metainfo = dict(
     classes=('background', 'forgery'),
@@ -134,7 +137,40 @@ dataset_defacto_copymove_train = dict(
     pipeline=train_pipeline
 )
 
-# Validation ใช้ pipeline ที่ไม่มี augmentation และรวมคะแนนจากทั้งสามชุด
+dataset_defacto_splicing_train = dict(
+    type=dataset_type,
+    data_root=defacto_splicing_root,
+    metainfo=metainfo,
+    data_prefix=dict(
+        img_path='images/train',
+        seg_map_path='annotations/train'
+    ),
+    pipeline=train_pipeline
+)
+
+dataset_defacto_face_train = dict(
+    type=dataset_type,
+    data_root=defacto_face_root,
+    metainfo=metainfo,
+    data_prefix=dict(
+        img_path='images/train',
+        seg_map_path='annotations/train'
+    ),
+    pipeline=train_pipeline
+)
+
+dataset_imd2020_train = dict(
+    type=dataset_type,
+    data_root=imd2020_root,
+    metainfo=metainfo,
+    data_prefix=dict(
+        img_path='images/train',
+        seg_map_path='annotations/train'
+    ),
+    pipeline=train_pipeline
+)
+
+# Validation ใช้ pipeline ที่ไม่มี augmentation
 dataset_casia_val = dict(
     type=dataset_type,
     data_root=casia_root,
@@ -168,27 +204,74 @@ dataset_defacto_copymove_val = dict(
     pipeline=test_pipeline
 )
 
+dataset_defacto_splicing_val = dict(
+    type=dataset_type,
+    data_root=defacto_splicing_root,
+    metainfo=metainfo,
+    data_prefix=dict(
+        img_path='images/val',
+        seg_map_path='annotations/val'
+    ),
+    pipeline=test_pipeline
+)
+
+dataset_defacto_face_val = dict(
+    type=dataset_type,
+    data_root=defacto_face_root,
+    metainfo=metainfo,
+    data_prefix=dict(
+        img_path='images/val',
+        seg_map_path='annotations/val'
+    ),
+    pipeline=test_pipeline
+)
+
+dataset_imd2020_val = dict(
+    type=dataset_type,
+    data_root=imd2020_root,
+    metainfo=metainfo,
+    data_prefix=dict(
+        img_path='images/val',
+        seg_map_path='annotations/val'
+    ),
+    pipeline=test_pipeline
+)
+
 train_dataloader = dict(
     batch_size=8,
-    num_workers=4,
+    num_workers=8,
     persistent_workers=True,
 
     dataset=dict(
         _delete_=True,
         type='ConcatDataset',
-        datasets=[dataset_casia_train, dataset_defacto_inpaint_train, dataset_defacto_copymove_train]
+        datasets=[
+            dataset_casia_train,
+            dataset_defacto_inpaint_train,
+            dataset_defacto_copymove_train,
+            dataset_defacto_splicing_train,
+            dataset_defacto_face_train,
+            dataset_imd2020_train
+        ]
     )
 )
 
 val_dataloader = dict(
     batch_size=8,
-    num_workers=4,
+    num_workers=8,
     persistent_workers=True,
 
     dataset=dict(
         _delete_=True,
         type='ConcatDataset',
-        datasets=[dataset_casia_val, dataset_defacto_inpaint_val, dataset_defacto_copymove_val]
+        datasets=[
+            dataset_casia_val,
+            dataset_defacto_inpaint_val,
+            dataset_defacto_copymove_val,
+            dataset_defacto_splicing_val,
+            dataset_defacto_face_val,
+            dataset_imd2020_val
+        ]
     )
 )
 
@@ -242,15 +325,15 @@ param_scheduler = [
         type='LinearLR',
         start_factor=1e-6,
         begin=0,
-        end=1500,
+        end=2000,
         by_epoch=False
     ),
     dict(
         type='PolyLR',
         eta_min=1e-6,  # ไม่ให้ lr ตกเป็น 0 สนิท
         power=1.0,
-        begin=1500,
-        end=160000,
+        begin=2000,
+        end=300000,
         by_epoch=False
     )
 ]
@@ -261,8 +344,8 @@ param_scheduler = [
 
 train_cfg = dict(
     type='IterBasedTrainLoop',
-    max_iters=160000,
-    val_interval=4000
+    max_iters=300000,
+    val_interval=5000
 )
 
 # ============================================================
@@ -274,7 +357,7 @@ train_cfg = dict(
 default_hooks = dict(
     checkpoint=dict(
         type='CheckpointHook',
-        interval=4000,
+        interval=5000,
         save_best='mIoU',
         rule='greater',
         max_keep_ckpts=5

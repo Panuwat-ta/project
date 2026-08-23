@@ -18,7 +18,7 @@ flowchart TD
     Root("Scam Image Detection<br>[ภาพรวมขอบเขตงาน]")
     
     %% Level 1 Modules
-    MobileApp("Mobile App<br>(React Native)")
+    MobileApp("Mobile App<br>(Flutter)")
     Backend("API Backend<br>(FastAPI)")
     AIEngine("AI Inference Engine<br>(PyTorch / ONNX)")
     AdminPortal("Admin Portal<br>(React)")
@@ -145,7 +145,7 @@ flowchart TD
 
 | ส่วนประกอบที่ต้องพัฒนา (Modules / Components) | ภานุวัฒน์ ต๋าคำ (70%) | เอกพันธ์ ทศทิศรังสรรค์ (30%) |
 | :--- | :---: | :---: |
-| **1. Mobile App (React Native)**<br>- UI/UX Design, Camera & Gallery Integration<br>- Risk Score, History & Report System | **รับผิดชอบหลัก (Lead)** | ร่วมพัฒนาส่วนหน้าจอและทดสอบการใช้งาน |
+| **1. Mobile App (Flutter)**<br>- UI/UX Design, Camera & Gallery Integration<br>- Risk Score, History & Report System | **รับผิดชอบหลัก (Lead)** | ร่วมพัฒนาส่วนหน้าจอและทดสอบการใช้งาน |
 | **2. API Backend (FastAPI & Integrations)**<br>- API Gateway, User Auth (JWT)<br>- OCR Text Extraction, EXIF Extraction<br>- Cloud Storage, Redis Cache, PostgreSQL | **รับผิดชอบหลัก (Lead)** | สนับสนุนการออกแบบ Database & Schema |
 | **3. AI Inference Service (PyTorch / ONNX)**<br>- Dataset Prep, ELA & GenAI Detection Model<br>- ONNX conversion, Grad-CAM Generation | **รับผิดชอบหลัก (Lead)** | - |
 | **4. Admin Web Portal (React)**<br>- User Controls & statistical dashboard<br>- Scam Reports approval queue, Model Weight Upload | ร่วมพัฒนาและเชื่อมต่อ Backend API | **รับผิดชอบหลัก (Lead)** |

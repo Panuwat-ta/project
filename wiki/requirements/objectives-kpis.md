@@ -2,7 +2,7 @@
 title: "วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives & KPIs)"
 category: requirements
 tags: [objectives, KPIs, accuracy, latency, satisfaction, PDPA]
-sources: [doc/objective.md]
+sources: [Document/objective.md]
 updated: 2026-08-02
 ---
 

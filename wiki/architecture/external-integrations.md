@@ -2,7 +2,7 @@
 title: "การเชื่อมต่อบริการภายนอก (External Integrations)"
 category: architecture
 tags: [Google-Vision-API, FCM, Firebase, reverse-image-search, push-notification]
-sources: [design/architecture.md, doc/C1-System-Context-Diagram.md]
+sources: [design/architecture.md, Document/C1-System-Context-Diagram.md]
 updated: 2026-08-02
 ---
 

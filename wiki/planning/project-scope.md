@@ -2,7 +2,7 @@
 title: "ขอบเขตโครงการ (Project Scope)"
 category: planning
 tags: [scope, work-packages, tasks, roadmap, containers]
-sources: [doc/scop.md, README.md]
+sources: [Document/scop.md, README.md]
 updated: 2026-08-02
 ---
 

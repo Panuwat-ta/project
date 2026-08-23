@@ -2,7 +2,7 @@
 title: "ความต้องการเชิงฟังก์ชัน (Functional Requirements)"
 category: requirements
 tags: [functional, FR, use-case, features]
-sources: [doc/srs.md, doc/Use-Case-Diagram.md, doc/scop.md]
+sources: [Document/srs.md, Document/Use-Case-Diagram.md, Document/scop.md]
 updated: 2026-08-02
 ---
 
@@ -81,7 +81,7 @@ updated: 2026-08-02
 ---
 
 > [!NOTE]
-> หน้านี้มาจากการนำเข้า (Ingest) ข้อมูลเบื้องต้นจาก `doc/srs.md` และ `doc/Use-Case-Diagram.md` แหล่งข้อมูล SRS ฉบับเต็มมีความยาวถึง 571 บรรทัด มีข้อมูล FR และ Priority ที่ละเอียดกว่า การนำเข้าให้ครบทุกส่วนจะทำให้หน้านี้สมบูรณ์มากขึ้น
+> หน้านี้มาจากการนำเข้า (Ingest) ข้อมูลเบื้องต้นจาก `Document/srs.md` และ `Document/Use-Case-Diagram.md` แหล่งข้อมูล SRS ฉบับเต็มมีความยาวถึง 571 บรรทัด มีข้อมูล FR และ Priority ที่ละเอียดกว่า การนำเข้าให้ครบทุกส่วนจะทำให้หน้านี้สมบูรณ์มากขึ้น
 
 ---
 

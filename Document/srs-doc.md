@@ -84,7 +84,7 @@ ScamGuard เป็นระบบสำหรับช่วยผู้ใช�
 |---|---|
 | `planning/scam_image_mobile/requirements.md` | ข้อกำหนดหน้าจอและประสบการณ์ Mobile App |
 | `wiki/planning/project-scope.md` | ขอบเขตโครงการและส่วนประกอบระบบ |
-| `doc/C1-System-Context-Diagram.md` และ `doc/C2-Container-Diagram.md` | บริบทและสถาปัตยกรรมระดับสูง |
+| `Document/C1-System-Context-Diagram.md` และ `Document/C2-Container-Diagram.md` | บริบทและสถาปัตยกรรมระดับสูง |
 | `server/app/api/v1/` และ `server/app/schemas/` | สัญญา API ที่พัฒนาอยู่ในปัจจุบัน |
 
 ---

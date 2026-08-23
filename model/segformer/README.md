@@ -11,7 +11,7 @@
 
 1. สร้างและเปิดใช้งาน Virtual Environment:
 ```bash
-python -m venv env
+python -m venv venv
 source venv/bin/activate
 ```
 
@@ -22,6 +22,11 @@ pip install -r requirements.txt
 *หมายเหตุ: หากพบปัญหาในการติดตั้ง mmcv บนการ์ดจอรุ่นใหม่ๆ สามารถอ่านรายละเอียดการแก้ไขได้ในไฟล์ `error.md`*
 
 ---
+
+ปิดการใช้งาน 
+```bash
+deactivate
+```
 
 ## 1: การเตรียมข้อมูลสอน AI (Dataset Preparation)
 AI จะไม่รู้ว่า "รอยตัดต่อ" คืออะไรจนกว่าเราจะสอนมัน คุณต้องสร้างชุดข้อมูล (Dataset) ตัวอย่าง โดยต้องมีภาพ 2 ประเภทคู่กันเสมอ:
