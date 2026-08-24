@@ -33,7 +33,7 @@ ScamGuard Mobile App เป็นแอปพลิเคชัน Flutter ส�
 ### REQ-003: Authentication — Login
 - ระบบต้องมีช่อง Email และ Password พร้อม Validation
 - ต้องมีปุ่มแสดง/ซ่อนรหัสผ่าน
-- ต้องมีปุ่ม Login ด้วย Google
+- ต้องมีปุ่ม Login ด้วย Google (เลื่อนไป Phase 2 - RC-AUTH-06)
 - ต้องมี Link ไปหน้า Register และ Forgot Password
 - เมื่อ Login สำเร็จ → บันทึก Token และนำทางไป Main Shell
 - ต้องแสดง Error State: ข้อมูลไม่ถูกต้อง, บัญชีถูกระงับ, ไม่มีอินเทอร์เน็ต
@@ -47,7 +47,7 @@ ScamGuard Mobile App เป็นแอปพลิเคชัน Flutter ส�
 ### REQ-005: Home / Scan Screen
 - ระบบต้องแสดงหน้าหลักพร้อม Header ทักทายผู้ใช้
 - ต้องมีปุ่มอัปโหลดรูปภาพ (Card หลัก) เปิด File Picker
-- รองรับไฟล์ jpg, jpeg, png, webp ขนาดสูงสุด 10 MB
+- รองรับไฟล์ jpg, jpeg, png, webp ขนาดไม่เกิน 10 MB (Hard Limit)
 - ต้องแสดงแถบ Safety Tips (Bento Grid)
 - ต้องแสดงรายการประวัติการสแกนล่าสุด 3-5 รายการ
 - เมื่อเลือกไฟล์สำเร็จ → นำทางไป Image Crop Screen
@@ -59,6 +59,7 @@ ScamGuard Mobile App เป็นแอปพลิเคชัน Flutter ส�
 - ต้องมีปุ่ม "เริ่มวิเคราะห์" ที่ชัดเจน
 - เมื่อกด Back หลังแก้ไขแล้ว ต้องถามยืนยันก่อนยกเลิก
 - เมื่อยืนยัน → ส่งรูปไป Analysis Loading Screen
+- การส่งรูปเพื่อวิเคราะห์ต้องแนบ clientRequestId (UUID) เพื่อป้องกันการส่งซ้ำ
 
 ### REQ-007: Analysis Loading Screen
 - ระบบต้องแสดง Circular Progress Indicator พร้อม % ที่อัปเดตได้

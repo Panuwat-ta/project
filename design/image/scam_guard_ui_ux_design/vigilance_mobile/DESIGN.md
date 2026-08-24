@@ -1,5 +1,5 @@
 ---
-name: Vigilance Mobile
+name: ScamGuard
 colors:
   surface: '#f7f9ff'
   surface-dim: '#d1dbe9'
@@ -55,6 +55,8 @@ colors:
   surface-dark: '#162230'
   text-secondary: '#5E6B78'
   border: '#D8E0EA'
+  success: '#006E2D'
+  warning: '#D68900'
 typography:
   display-hero:
     fontFamily: Sarabun
@@ -136,13 +138,13 @@ Key principles:
 The color system is strictly semantic, mapped to risk assessment levels. **Trust Blue** serves as the primary interactive color, while the "traffic light" system provides instant cognitive shortcuts for safety.
 
 ### Functional Mapping
-- **Primary (#00A6D6):** Action-oriented elements, active states, and brand identification.
-- **Success (#16A34A):** Low risk (0-39 score).
-- **Warning (#F59E0B):** Medium risk (40-69 score).
+- **Primary (#006685):** Action-oriented elements, active states, and brand identification.
+- **Success (#006E2D):** Low risk (0-39 score).
+- **Warning (#D68900):** Medium risk (40-69 score).
 - **Danger (#DC2626):** High risk (70-100 score).
 
-### Dark Mode
-This design system supports a native dark mode. In dark mode, surfaces shift to `#162230` to maintain depth against the `#0F1720` background, and text scales to high-contrast whites and light greys to ensure Thai glyphs remain legible.
+### Theme Mode (Dark-First)
+This design system is **dark-first**: dark mode is the default theme. Dark surfaces use `#0F1720` as the base background with `#162230` for elevated surfaces and cards to maintain depth, and text scales to high-contrast whites and light greys to ensure Thai glyphs remain legible. A light mode remains available, using `#F7F9FF` as the light-mode background.
 
 ## Typography
 
@@ -193,7 +195,7 @@ The shape language is **Rounded**, striking a balance between approachable techn
 
 ### Risk Indicators
 - **RiskBadge:** Pill-shaped, small text, using semantic colors (Success, Warning, Danger). Background should be a 10% opacity tint of the text color for a modern, "soft" look.
-- **RiskGauge:** A semi-circular progress bar at the top of the results screen. The stroke color shifts dynamically based on the score.
+- **RiskGauge:** A radial (full-circle) progress gauge at the top of the results screen. The stroke color shifts dynamically based on the score.
 
 ### Inputs & Cards
 - **Upload Card:** Dotted border (`border` color), large center icon, and clear instructions.
@@ -203,4 +205,4 @@ The shape language is **Rounded**, striking a balance between approachable techn
 - **Bottom Navigation:** Clean line icons with labels. Active state uses Trust Blue; inactive state uses `text-secondary`. No shadows on the bar itself—use a top border of 1px `#D8E0EA` for separation.
 
 ### Interactive Heatmap
-- **Heatmap Viewer:** An overlay component with an adjustable Alpha slider at the bottom. The slider track should be neutral, with a Trust Blue thumb.
+- **Heatmap Viewer:** An overlay component requiring **both** a Toggle Button (to show/hide the Heatmap layer — FR-XAI-01 AC-3) and an adjustable Opacity/Alpha slider (0–100% — FR-XAI-01 AC-2); both controls are **Must**. The slider track should be neutral, with a Trust Blue thumb.

@@ -718,7 +718,7 @@ Export ภาพจากรายงานที่ได้รับการ�
 ```json
 {
   "export_id": "exp_20260806_001",
-  "status": "processing",
+  "status": "running",
   "total_images": 267,
   "estimated_size_mb": 1340,
   "message": "กำลังเตรียมไฟล์ Dataset จะแจ้งเตือนเมื่อพร้อมดาวน์โหลด"
@@ -766,7 +766,7 @@ dataset_20260806.zip
 ```json
 {
   "export_id": "exp_20260806_001",
-  "status": "completed",
+  "status": "succeeded",
   "download_url": "https://storage.local/exports/dataset_20260806.zip?token=...",
   "expires_at": "2026-08-07T15:00:00+07:00",
   "total_images": 267,

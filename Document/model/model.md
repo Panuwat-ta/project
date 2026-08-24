@@ -71,20 +71,22 @@ flowchart TD
 
 ## 4. อัลกอริทึมการประเมินความเสี่ยงรวม (Weighted Risk Score Algorithm)
 
-คะแนนความเสี่ยงโดยรวม (Total Risk Score) คำนวณจากการถ่วงน้ำหนักความสำคัญระหว่างผลลัพธ์การตรวจภาพ (Visual Score) และผลลัพธ์ข้อความ (Textual Score) โดยมีสมการดังนี้:
+คะแนนความเสี่ยงโดยรวม (Total Risk Score) คำนวณจากการถ่วงน้ำหนักความสำคัญของผลลัพธ์ทั้ง 3 ชั้น ได้แก่ ข้อความ (Textual), ภาพ (Visual) และแหล่งที่มา (Source) ตามสูตรเดียวกับ `server/app/utils/risk_calculator.py`:
 
-$$ S_{total} = (\alpha \times S_{visual}) + (\beta \times S_{textual}) $$
+$$ S_{total} = (S_{textual} \times 0.25) + (S_{visual} \times 0.45) + (S_{source} \times 0.30) $$
 
 โดยที่:
 * $S_{total}$ คือคะแนนความเสี่ยงรวม มีค่าตั้งแต่ 0 ถึง 100
-* $S_{visual}$ คือคะแนนความเสี่ยงจากการถูกดัดแปลงภาพ (คำนวณจากค่าเฉลี่ยหรือพื้นที่พิกเซลความร้อนของ SegFormer)
-* $S_{textual}$ คือคะแนนความเสี่ยงด้านข้อความหลอกลวง (ประเมินจากระดับความรุนแรงของ Scam Keyword)
-* $\alpha$ และ $\beta$ คือค่าน้ำหนักถ่วง (Weight Factors) โดย $\alpha + \beta = 1.0$ (ในโปรเจกต์นี้กำหนดค่าเริ่มต้นคือ $\alpha = 0.6, \beta = 0.4$ เพื่อให้น้ำหนักกับการตัดต่อภาพมากกว่า)
+* $S_{textual}$ คือคะแนนความเสี่ยงด้านข้อความหลอกลวง (ประเมินจากระดับความรุนแรงของ Scam Keyword) — น้ำหนัก 25%
+* $S_{visual}$ คือคะแนนความเสี่ยงจากการถูกดัดแปลงภาพ (คำนวณจากค่าเฉลี่ยหรือพื้นที่พิกเซลความร้อนของ SegFormer) — น้ำหนัก 45%
+* $S_{source}$ คือคะแนนความเสี่ยงจากแหล่งที่มาของภาพ (Reverse Image Search) — น้ำหนัก 30%
 
 เกณฑ์การตัดสินระดับความเสี่ยง (Risk Grade):
-* $S_{total} < 30$ $\rightarrow$ **Safe (ปลอดภัย)**
-* $30 \le S_{total} \le 70$ $\rightarrow$ **Suspicious (น่าสงสัย)**
-* $S_{total} > 70$ $\rightarrow$ **Danger (อันตราย)**
+* $S_{total} \le 39$ $\rightarrow$ **Low / Safe (ปลอดภัย)**
+* $40 \le S_{total} \le 69$ $\rightarrow$ **Medium / Suspicious (น่าสงสัย)**
+* $S_{total} \ge 70$ $\rightarrow$ **High / Danger (อันตราย)**
+
+หมายเหตุ: หาก $S_{visual} \ge 80$ ระบบจะจัดระดับเป็น **High** ทันที (ตาม logic ใน `risk_calculator.py`)
 
 ---
 

@@ -60,7 +60,7 @@
 
 - สมัครสมาชิกและเข้าสู่ระบบ
 - เข้าสู่ระบบด้วย Email/Password
-- เข้าสู่ระบบด้วย Google หรือ Apple ID ในระยะต่อยอด
+- เข้าสู่ระบบด้วย Google (เลื่อนไป Phase 2 - RC-AUTH-06)
 - อัปโหลดไฟล์รูปภาพจากอุปกรณ์
 - Crop หรือปรับขอบเขตรูปก่อนส่งวิเคราะห์
 - อัปโหลดรูปภาพไปยัง Backend API
@@ -127,12 +127,11 @@ flowchart TD
 
 - `AuthBloc`
 - `ScanBloc`
-- `ImageUploadCubit`
-- `AnalysisResultBloc`
+- `ResultBloc`
 - `HistoryBloc`
 - `ReportBloc`
 - `ConsentCubit`
-- `SettingsBloc`
+- `SettingsCubit`
 
 ### 4.3 Domain Layer
 
@@ -184,7 +183,9 @@ flowchart TD
 lib/
   core/
     constants/
+    di/
     errors/
+    localization/
     network/
     router/
     storage/
@@ -209,6 +210,10 @@ lib/
       domain/
       presentation/
     report/
+      data/
+      domain/
+      presentation/
+    notifications/
       data/
       domain/
       presentation/
@@ -257,6 +262,7 @@ flowchart TD
     Login --> Main
     Main --> Home
     Main --> History
+    Main --> Report
     Main --> Settings
     Home --> Crop
     Crop --> Loading
@@ -270,14 +276,14 @@ flowchart TD
 
 รายการเมนูหลัก:
 
-1. หน้าสแกน
+1. หน้าหลัก
 2. ประวัติ
-3. การแจ้งเตือน
+3. แจ้งรายงาน
 4. ตั้งค่า
 
 หลักการใช้งาน:
 
-- หน้าสแกนเป็นหน้าเริ่มต้นหลังเข้าสู่ระบบ
+- หน้าหลักเป็นหน้าเริ่มต้นหลังเข้าสู่ระบบ
 - ผู้ใช้สามารถกลับมาสแกนใหม่ได้ภายใน 1 Tap
 - หน้าประวัติแยกจากผลลัพธ์ล่าสุดเพื่อลดความสับสน
 - หน้าตั้งค่าเก็บเฉพาะเรื่องบัญชี ความเป็นส่วนตัว และระบบ
@@ -401,8 +407,7 @@ Validation:
 ข้อจำกัดไฟล์:
 
 - รองรับ `jpg`, `jpeg`, `png`, `webp`
-- ขนาดไฟล์สูงสุดที่แนะนำ 10 MB
-- ความละเอียดขั้นต่ำ 300 x 300 px
+- ขนาดไฟล์ไม่เกิน 10 MB (Hard Limit)
 - หากไฟล์ใหญ่เกิน ให้บีบอัดก่อนอัปโหลดโดยยังรักษาความชัดพอสำหรับ OCR
 
 ### 7.6 Image Preview และ Crop Screen
@@ -438,7 +443,7 @@ Validation:
 Logic:
 
 - หลังอัปโหลดสำเร็จ Backend ส่ง `taskId`
-- แอป Polling สถานะงานทุก 2 ถึง 5 วินาที หรือใช้ Push Notification เมื่อพร้อม
+- แอป Polling สถานะงานทุก 3 วินาที (คงที่)
 - หากใช้ Polling ต้องมี Timeout
 - หากผู้ใช้ออกจากหน้า ให้บันทึก Task ที่ยังประมวลผลไว้และแจ้งเตือนเมื่อเสร็จ
 
@@ -678,13 +683,14 @@ Validation:
 
 | Token | สี | การใช้งาน |
 |---|---|---|
-| `primary` | `#00A6D6` | ปุ่มหลัก ลิงก์ จุดเน้น |
+| `primary` | `#006685` | ปุ่มหลัก ลิงก์ จุดเน้น |
+| `primaryContainer` | `#00A6D6` | Container สีเน้น |
 | `background` | `#F6F8FB` | พื้นหลังโหมดสว่าง |
 | `surface` | `#FFFFFF` | Card และ Container |
 | `textPrimary` | `#17212B` | ข้อความหลัก |
 | `textSecondary` | `#5E6B78` | ข้อความรอง |
-| `success` | `#16A34A` | ความเสี่ยงต่ำ สำเร็จ |
-| `warning` | `#F59E0B` | ความเสี่ยงปานกลาง |
+| `success` | `#006E2D` | ความเสี่ยงต่ำ สำเร็จ |
+| `warning` | `#D68900` | ความเสี่ยงปานกลาง |
 | `danger` | `#DC2626` | ความเสี่ยงสูง ข้อผิดพลาด |
 | `border` | `#D8E0EA` | เส้นแบ่งและขอบ |
 
@@ -708,7 +714,7 @@ Dark Mode:
 
 | Style | Size | Weight | ใช้งาน |
 |---|---:|---:|---|
-| Display | 28 | 700 | คะแนนความเสี่ยงหรือหัวข้อสำคัญ |
+| headlineLgMobile | 24 | 700 | คะแนนความเสี่ยงหรือหัวข้อสำคัญ |
 | Title | 22 | 700 | ชื่อหน้าจอ |
 | Section | 18 | 600 | หัวข้อย่อย |
 | Body | 16 | 400 | เนื้อหาทั่วไป |
@@ -721,7 +727,9 @@ Dark Mode:
 
 - `xs`: 4 px
 - `sm`: 8 px
+- `gutter`: 12 px
 - `md`: 16 px
+- `safeMargin`: 20 px
 - `lg`: 24 px
 - `xl`: 32 px
 - `xxl`: 48 px
@@ -734,8 +742,10 @@ Component ที่ควรสร้างเป็น Reusable Widget:
 - `SecondaryButton`
 - `RiskBadge`
 - `RiskGauge`
+- `RiskProgressBar`
+- `AppTopBar`
+- `GlassCard`
 - `AnalysisStepTile`
-- `ImagePreviewCard`
 - `HistoryListItem`
 - `PermissionRequestView`
 - `EmptyStateView`
@@ -805,7 +815,7 @@ GET /auth/me
 
 ข้อมูลที่แอปต้องจัดเก็บ:
 
-- Access Token ใน Memory หรือ Secure Storage ตามนโยบายความปลอดภัย
+- Access Token ใน Secure Storage เท่านั้น
 - Refresh Token ใน Secure Storage
 - User Profile ที่จำเป็น
 
@@ -833,7 +843,6 @@ Field ที่แนะนำ:
 GET /history
 GET /history/{scanId}
 DELETE /history/{scanId}
-DELETE /history
 ```
 
 Query ที่แนะนำ:
@@ -915,6 +924,7 @@ DELETE /privacy/account
 ```json
 {
   "scanId": "scan_001",
+  "title": "สลิปโอนเงิน",
   "thumbnailUrl": "https://example.com/thumb.jpg",
   "riskScore": 82,
   "riskLevel": "high",

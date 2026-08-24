@@ -47,11 +47,11 @@
 ## 11. Hyperparameters & Hardware Optimization
 * **VRAM Optimization**: ใช้ `AmpOptimWrapper` (Mixed Precision) เพื่อลดการใช้หน่วยความจำ ทำให้เทรนบนอุปกรณ์ที่มี VRAM จำกัดได้อย่างเต็มประสิทธิภาพ
 * **Optimizer & Scheduler**: ใช้ AdamW ร่วมกับ LinearLR (Warmup) และ PolyLR
-* **Loss Function**: ใช้ `CrossEntropyLoss` ควบคู่กับ `DiceLoss` เพื่อแก้ปัญหา Class Imbalance (พื้นที่รอยปลอมแปลงเล็กมากเมื่อเทียบกับพื้นหลัง)
+* **Loss Function**: ใช้ `Binary Cross-Entropy Loss (BCE)` ควบคู่กับ `DiceLoss` (`use_sigmoid=True`) เพื่อแก้ปัญหา Class Imbalance (พื้นที่รอยปลอมแปลงเล็กมากเมื่อเทียบกับพื้นหลัง)
 
 ## 12. Checkpoint & Version Management
-* การจัดเก็บสถานะน้ำหนักโมเดล (Model State Dict) ทุกครั้งที่มีผลลัพธ์ที่ดีขึ้นบน Validation Set เป็นไฟล์นามสกุล `.pth` หรือ `.pt`
-* **Automated Version Increment**: ระบบมีการจัดการเวอร์ชันของโมเดลอัตโนมัติ (เช่น `v1.0.1`, `v1.1.0`) โดยจะเข้าไปอ่านประวัติการเทรนใน `work_dirs` เพื่อหาเวอร์ชันที่สูงที่สุด แล้วบวกเพิ่ม 1 ให้เสมอ ช่วยป้องกันการเขียนทับผลรันรอบก่อนหน้า และรับประกันว่าจะไม่มีการย้อนกลับไปใช้เลขเวอร์ชันเดิมที่น้อยกว่า
+* การจัดเก็บสถานะน้ำหนักโมเดล (Model State Dict) เป็นไฟล์นามสกุล `.pth` หรือ `.pt` โดยจะบันทึก Checkpoint เมื่อค่า Loss บน Validation Set ต่ำที่สุด (Save Best Checkpoint) เพื่อนำไฟล์น้ำหนักเหล่านั้นไปใช้ต่อ หรือ Rollback หากเกิดความผิดพลาด
+* **Automated Version Increment**: ระบบมีการจัดการเวอร์ชันของโมเดลอัตโนมัติในรูปแบบ Semantic Versioning แบบ Tag-based (เช่น `segformer_v1.0.1`, `segformer_v1.1.0` ตามรูปแบบ `segformer_v{major}.{minor}.{patch}`) โดยจะเข้าไปอ่านประวัติการเทรนใน `work_dirs` เพื่อหาเวอร์ชันที่สูงที่สุด แล้วบวกเพิ่ม 1 ให้เสมอ ช่วยป้องกันการเขียนทับผลรันรอบก่อนหน้า และรับประกันว่าจะไม่มีการย้อนกลับไปใช้เลขเวอร์ชันเดิมที่น้อยกว่า
 
 ## 13. Export ONNX
 * ขั้นตอนการนำไฟล์ Checkpoint (.pth) ที่ดีที่สุด มาแปลงร่าง (Export) ให้อยู่ในฟอร์แมต ONNX 

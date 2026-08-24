@@ -46,8 +46,8 @@
 
 1. **ระบบลงทะเบียนและยืนยันตัวตน (Authentication)**
    - สมัครสมาชิกด้วย Email และ Password พร้อมการยืนยันความถูกต้องของข้อมูล
-   - เข้าสู่ระบบด้วย Email/Password หรือ Social OAuth (Google Login / Apple ID)
-   - ระบบกู้คืนรหัสผ่าน (Forgot Password)
+   - เข้าสู่ระบบด้วย Email/Password หรือ Social OAuth (Google Login — Phase 2, RC-AUTH-06)
+   - ระบบกู้คืนรหัสผ่าน (Forgot Password — Phase 2, RC-AUTH-05)
    - จัดเก็บ Token ใน Secure Storage และรักษาสถานะการเข้าสู่ระบบ
 
 2. **ระบบนำเข้ารูปภาพ (Image Input Module)**
