@@ -58,5 +58,5 @@
 * **[Discord Channel](https://discord.gg/WSEXfzrb)** - ช่องทางการสื่อสารของทีมงาน
 * **[Miro Board](https://miro.com/welcomeonboard/WUdKOXhEY2V6QlV1ZDVMTFlHTEJBQlhxSnUxVW5NMkFCTFIyc1dIVUR6cTFzSEdFQmVaelQwa2V4bnNqWVFtRkRFeERidTlrVGx3S2pVWGE0aG1iVVVHeEhvMWNmVHNWUUlMZGx1VU41WGlkMmpmYktKbE0wSzN1c3ArWmtURDVnbHpza3F6REdEcmNpNEFOMmJXWXBBPT0hdjE=?share_link_id=787643582535)** - พื้นที่ระดมสมองและวิเคราะห์ความต้องการเชิงระบบ
 * **[Figma Design](https://www.figma.com/design/gFrjAWWl0ZmT7h7vzu9011/project-Mobile-App--Scam-Image-Detection?node-id=0-1&t=seKA8vjnzcKV9HMq-1)** - หน้าจอ UI/UX Design และ Prototype ของโมบายแอป
-* **[Trello Board](https://trello.com/b/7QuuGSAL)** - กระดานติดตามสถานะการดำเนินงาน (Task Tracking)
+* **[Jira Board](https://panuwattakham2002.atlassian.net/jira/software/projects/SCM/boards/35)** - กระดานติดตามสถานะการดำเนินงาน (Task Tracking)
 * **[System Architecture Diagram (Google Drive)](https://drive.google.com/file/d/1I2ksLvZp0x3iNYt57_46cqnTDfPgWvzR/view?usp=sharing)** - ไฟล์สำรองไดอะแกรมภาพรวมระบบ
