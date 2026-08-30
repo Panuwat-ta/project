@@ -9,12 +9,14 @@
 lib/
 ├── core/
 │   ├── constants/           # app_colors.dart, app_typography.dart, app_spacing.dart
+│   ├── di/                  # injection_container.dart (ServiceLocator)
 │   ├── errors/              # failures.dart, exceptions.dart
+│   ├── localization/        # app_translations.dart
 │   ├── network/             # dio_client.dart, api_endpoints.dart, interceptors/
 │   ├── router/              # app_router.dart (go_router)
 │   ├── storage/             # secure_storage.dart
 │   ├── theme/               # app_theme.dart (light + dark ThemeData)
-│   ├── utils/               # validators.dart, date_formatter.dart, image_compressor.dart
+│   ├── utils/               # validators.dart, date_formatter.dart, image_compressor.dart, risk_level_helper.dart
 │   └── widgets/             # shared reusable widgets
 ├── features/
 │   ├── auth/
@@ -160,16 +162,16 @@ class AppRadius {
 /main                → MainShell (Bottom Nav Shell)
   /home              → HomeScreen
   /history           → HistoryScreen
-    /history/:id     → HistoryDetailScreen
   /report            → ReportScamScreen (from nav or result)
   /settings          → SettingsScreen
     /settings/profile    → UserProfileScreen
     /settings/privacy    → PrivacyConsentScreen
-/crop                → ImageCropScreen (modal route)
+/crop                → ImageCropScreen (standalone route)
 /loading             → AnalysisLoadingScreen
 /result/:scanId      → AnalysisResultScreen
 /heatmap/:scanId     → HeatmapViewerScreen
 /notifications       → NotificationsScreen
+/detail/:scanId      → HistoryDetailScreen (standalone)
 ```
 
 ### Navigation Guards
@@ -198,10 +200,16 @@ States: ScanInitial, ImagePicked(File), ImageCropped(File), Uploading, Polling(p
         AnalysisDone(AnalysisResult), ScanError(message)
 ```
 
+### ResultBloc
+```
+Events: ResultRequested(taskId)
+States: ResultInitial, ResultLoading, ResultLoaded(AnalysisResult), ResultError
+```
+
 ### HistoryBloc
 ```
 Events: HistoryLoaded, HistoryRefreshed, HistorySearched, HistoryItemDeleted
-States: HistoryInitial, HistoryLoading, HistoryLoaded(items), HistoryError
+States: HistoryInitial, HistoryLoading, HistoryDataLoaded(items), HistoryEmpty, HistoryError
 ```
 
 ### ReportBloc
@@ -216,9 +224,9 @@ States: ConsentState(terms, research)
 Methods: toggleTerms(), toggleResearch(), submit()
 ```
 
-### SettingsBloc
+### SettingsCubit
 ```
-Events: ThemeToggled, LanguageChanged, CacheCleared, LogoutRequested
+Methods: toggleTheme(), clearCache(), logout()
 States: SettingsState(themeMode, language)
 ```
 
@@ -254,7 +262,7 @@ States: NotificationsState(items, unreadCount)
 - "จดจำการใช้งาน" checkbox  
 - PrimaryButton "เข้าสู่ระบบ"
 - Divider "หรือ"
-- Google Login button (outlined)
+- Google Login button (outlined) — deferred Phase 2 (RC-AUTH-06)
 - Link "สมัครสมาชิก"
 
 ### 6.4 RegisterScreen
@@ -266,7 +274,7 @@ States: NotificationsState(items, unreadCount)
 
 ### 6.5 HomeScreen
 **Layout:** Sticky top bar + scrollable content + Bottom Nav
-- **AppTopBar:** ScamGuard logo, search icon, notifications icon (with dot badge)
+- **AppTopBar:** ScamGuard logo, notifications icon (with dot badge)
 - **Greeting section:** "สวัสดี, [name]" + subtitle
 - **Upload Card** (gradient: `#162230` → `#0F1720`):
   - Upload icon (80×80 primary/10 circle)
@@ -274,13 +282,13 @@ States: NotificationsState(items, unreadCount)
   - PrimaryButton "อัปโหลดรูปภาพ" with pulse animation
 - **Safety Tips Bento** (2-col grid + 1 full-width):
   - verified_user, link_off, report_gmailerrorred
-- **Recent History** (3 items):
+- **Recent History** (3-5 items):
   - Thumbnail + title + date + RiskBadge
 
 ### 6.6 ImageCropScreen
 **Layout:** Full screen, dark bg
 - Back button (AppBar)
-- Image preview with crop overlay (`crop_your_image` or `image_cropper`)
+- Image preview with crop overlay (`image_cropper`)
 - Bottom controls: rotate, change image
 - PrimaryButton "เริ่มวิเคราะห์"
 - Confirm dialog on back if image was cropped
@@ -331,7 +339,7 @@ States: NotificationsState(items, unreadCount)
   - RiskProgressBar (full width) + score %
   - RiskBadge (top right)
   - Swipe left to delete
-- Empty state: history_off icon + text
+- Empty state: `EmptyStateView` "ยังไม่มีประวัติการตรวจสอบ"
 
 ### 6.11 HistoryDetailScreen
 - Same layout as AnalysisResultScreen
@@ -409,6 +417,7 @@ class ScanHistoryItem {
   final String riskLevel;
   final String status;
   final DateTime createdAt;
+  final String? title;
 }
 ```
 
@@ -438,7 +447,7 @@ class ConsentSetting {
 ### Base Config (`dio_client.dart`)
 - Base URL: configurable via env
 - Headers: `Authorization: Bearer {token}`
-- Interceptors: `AuthInterceptor` (auto-attach token), `LoggingInterceptor`
+- Interceptors: `AuthInterceptor` (auto-attach token), `LogInterceptor`
 
 ### Endpoints
 ```
@@ -456,7 +465,6 @@ DELETE /scans/{taskId}
 GET    /history?page&limit&riskLevel&fromDate&toDate&keyword
 GET    /history/{scanId}
 DELETE /history/{scanId}
-DELETE /history
 
 POST   /reports
 GET    /reports/categories
@@ -487,26 +495,27 @@ dependencies:
   equatable: ^2.0.7
   
   # Navigation
-  go_router: ^15.1.2
+  go_router: ^17.3.0
   
   # Network
   dio: ^5.8.0+1
   
   # Storage
-  flutter_secure_storage: ^9.2.4
+  flutter_secure_storage: ^10.3.1
   
   # Image
   image_picker: ^1.1.2
-  image_cropper: ^9.0.0
+  image_cropper: ^12.2.1
   cached_network_image: ^3.4.1
   
   # Fonts
-  google_fonts: ^6.2.1
+  google_fonts: ^8.1.0
   
   # Utils
-  equatable: ^2.0.7
   uuid: ^4.5.1
   intl: ^0.20.2
+  share_plus: ^13.2.0
+  flutter_svg: ^2.3.0
   
   # Icons (Material Symbols)
   cupertino_icons: ^1.0.8
@@ -533,7 +542,7 @@ dev_dependencies:
 - AuthInterceptor: จัดการ 401 response → ลอง refresh → ถ้าล้มเหลว → logout
 
 ### Dark/Light Theme
-- ใช้ `ThemeMode.system` เป็น default
+- ใช้ `ThemeMode.dark` เป็น default
 - User override เก็บใน SharedPreferences
 - AppTheme ใช้ Color Tokens จาก design HTML ทุกอัน
 

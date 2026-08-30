@@ -8,15 +8,18 @@
 
 ## 🔗 เอกสารที่เกี่ยวข้อง (Related Documents)
 
-* เอกสารข้อกำหนดความต้องการระบบหลัก (SRS) (Document/srs.md)
+* เอกสารข้อกำหนดความต้องการระบบหลัก (SRS) (Document/srs-doc.md)
+* เอกสารข้อกำหนดความต้องการระบบฉบับรายวิชา (SRS SE02) (Document/srs-se02.md)
 * การออกแบบส่วนหน้าบ้าน (Mobile Application Design) (design/design.md)
-* การออกแบบโมบายแอปพลิเคชันโดยละเอียด (Detailed Mobile Design) (design/mobile.md)
+* การออกแบบโมบายแอปพลิเคชันโดยละเอียด (Detailed Mobile Design) (design/mobile/mobile.md)
 * การออกแบบระบบหลังบ้านและเซิร์ฟเวอร์ (Backend & Server Architecture) (design/server.md)
 * การออกแบบโมเดลปัญญาประดิษฐ์ (AI Model Design) (design/model.md)
 * การออกแบบระบบฝึกสอนโมเดล (Model Training Design) (design/training.md)
-* แผนภาพระดับ C1 (System Context Diagram) (Document/C1-System-Context-Diagram.md)
-* แผนภาพระดับ C2 (Container Diagram) (Document/C2-Container-Diagram.md)
-* แผนภาพและรายละเอียดโฟลว์การทำงาน (Flowchart & System Logic) (Document/flowchart.md)
+* แผนภาพระดับ C1 (System Context Diagram) (Document/Software Architecture/C1-System-Context-Diagram.md)
+* แผนภาพระดับ C2 (Container Diagram) (Document/Software Architecture/C2-Container-Diagram.md)
+* แผนภาพระดับ C3 (Component Diagram) (Document/Software Architecture/C3-Component-Diagram.md)
+* แผนภาพระดับ C4 (Code Diagram) (Document/Software Architecture/C4-code-Diagram.md)
+* แผนภาพและรายละเอียดโฟลว์การทำงาน (Flowchart & System Logic) (Document/Software Architecture/flowchart.md)
 
 ---
 
@@ -26,7 +29,7 @@
 
 ระบบถูกแบ่งออกเป็น 3 เลเยอร์หลัก:
 1. **Presentation Layer (Frontend):** แอปพลิเคชันสมาร์ทโฟนที่พัฒนาด้วย **Flutter** สำหรับผู้ใช้งานทั่วไป และระบบเว็บพอร์ทัลที่พัฒนาด้วย **React.js** สำหรับผู้ดูแลระบบ
-2. **Business & Processing Layer (Backend Services):** ใช้ระบบย่อยประเภท Microservices โดยมี **API Application (FastAPI)** ทำหน้าที่คอยประสานงาน และสั่งงานการคำนวณเฉพาะด้านแยกไปที่ **AI Inference Service (PyTorch/ONNX)**
+2. **Business & Processing Layer (Backend Services):** ใช้ระบบย่อยประเภท Microservices โดยมี **API Application (FastAPI)** ทำหน้าที่คอยประสานงาน และสั่งงานการคำนวณเฉพาะด้านแยกไปที่ **AI Inference Service (PyTorch/ONNX)** *หมายเหตุ:* ตาม C3/C4 ONNX Worker เป็น Subprocess แยกโดดภายใน API Service (ไม่ใช่คอนเทนเนอร์ Deploy แยก)
 3. **Data & Storage Layer (Storages):** ระบบจัดเก็บข้อมูลเชิงสัมพันธ์ **PostgreSQL**, หน่วยความจำแคชความเร็วสูง **Redis Cache** และพื้นที่จัดเก็บไฟล์ (Cloud Storage)
 
 ---
@@ -124,13 +127,14 @@ flowchart TB
     MobileApp -- "API Requests<br>[HTTPS / REST JSON]" --> APIGateway
     AdminPortal -- "API Requests<br>[HTTPS / REST JSON]" --> APIGateway
 
-    APIGateway -- "1. ค้นหา Image Hash" --> Cache
-    APIGateway -- "3. ส่งคิวงานสแกนพิกเซล" --> AIInference
+    APIGateway -- "1. ค้นหา Image Hash (Cache Lookup)" --> Cache
+    APIGateway -- "4. ส่งตรวจร่องรอยการตัดต่อ<br>(SegFormer + PSCC-Net / ELA)" --> AIInference
+    APIGateway -- "6. ค้นหารูปภาพใกล้เคียงบนเว็บ<br>[HTTPS]" --> ReverseSearch
+    APIGateway -- "7. ส่งตรวจจับภาพ AI-Generated" --> AIInference
     APIGateway -- "บันทึก / เรียกดึงไฟล์รูปภาพ" --> ObjectStore
     APIGateway -- "บันทึกสถานะการสแกนและผลคะแนนความเสี่ยง" --> MainDB
     
-    APIGateway -- "แจ้งเตือนประมวลผลเสร็จสิ้น" --> PushService
-    APIGateway -- "2. ค้นหารูปภาพใกล้เคียงบนเว็บ" --> ReverseSearch
+    APIGateway -- "แจ้งเตือนประมวลผลเสร็จสิ้น<br>[HTTPS]" --> PushService
 
     %% Apply Styles
     class User,Admin userFill
@@ -169,15 +173,15 @@ flowchart TB
 * **หน้าที่การทำงานหลัก:**
   1. **User Authentication:** ควบคุมการเข้าสู่ระบบผ่านการลงทะเบียนแบบธรรมดาและ OAuth โดยมีรูปแบบสิทธิ์ผู้ใช้จำแนกตามตำแหน่ง (Role-Based Access Control)
   2. **Metadata Extraction:** สกัดข้อมูลที่แฝงมากับไฟล์ภาพ เช่น EXIF Data, GPS Location, รุ่นของกล้อง เพื่อตรวจหาความไม่สอดคล้องเบื้องต้น
-  3. **Textual OCR Analysis:** แปลงรูปภาพเป็นข้อความด้วย OCR จากนั้นส่งให้ระบบวิเคราะห์ NLP (เช่น RegEx หรือโมเดล NLP ขนาดเล็ก) เพื่อค้นหาคำศัพท์อันตราย (Scam Keywords) เช่น "ด่วน", "โอนเงินด่วน", "รับปันผลสูง"
+  3. **Textual OCR Analysis:** แปลงรูปภาพเป็นข้อความด้วย OCR Engine **Surya-OCR** จากนั้นส่งให้ระบบวิเคราะห์ NLP (เช่น RegEx หรือโมเดล NLP ขนาดเล็ก) เพื่อค้นหาคำศัพท์อันตราย (Scam Keywords) เช่น "ด่วน", "โอนเงินด่วน", "รับปันผลสูง"
   4. **Job Coordinator:** ดำเนินการกระจายภารกิจสแกนภาพที่เหลือไปยังคอนเทนเนอร์ AI Inference และฐานข้อมูลตามลำดับ
 
 #### 4.2.2 AI Inference Service (PyTorch / ONNX Runtime)
-* **บทบาท:** เซอร์วิสวิเคราะห์รูปภาพเชิงลึก (Deep Learning Node) แยกต่างหากเพื่อลดการใช้ CPU/GPU ของเครื่อง API Gateway
+* **บทบาท:** เซอร์วิสวิเคราะห์รูปภาพเชิงลึก (Deep Learning Node) แยกต่างหากเพื่อลดการใช้ CPU/GPU ของเครื่อง API Gateway *หมายเหตุ:* ตามแผนภาพ C3/C4 ส่วนนี้ไม่ได้ถูก Deploy เป็น Microservice แยกอิสระ แต่ ONNX Worker (`services/onnx_worker.py`) ทำงานเป็น **Subprocess** ที่ถูกแยกโดดภายใน API Service โดยสื่อสารผ่าน STDIN/STDOUT JSON IPC
 * **โมเดลการวิเคราะห์หลัก:**
-  * **Visual Forgery Detection (SegFormer):** ตรวจสอบระดับพิกเซลด้วย Semantic Segmentation เพื่อหาร่องรอยการบันทึกภาพซ้ำหรือปรับแต่งระดับพิกเซล เช่น บริเวณตัวเลขสลิปโอนเงิน หรือการเปลี่ยนใบหน้าบุคคล
+  * **Visual Forgery Detection (SegFormer + PSCC-Net):** ตรวจสอบระดับพิกเซลด้วย Semantic Segmentation โดยใช้ ELA (Error Level Analysis) เป็นวิธีวิเคราะห์พื้นฐานแบบดั้งเดิมประกอบการพิจารณา เพื่อหาร่องรอยการบันทึกภาพซ้ำหรือปรับแต่งระดับพิกเซล เช่น บริเวณตัวเลขสลิปโอนเงิน หรือการเปลี่ยนใบหน้าบุคคล
   * **AI-Generated Image Detection:** ใช้โมเดลจำแนกภาพเชิงลึกเพื่อตรวจสอบลวดลายความถี่ของเม็ดสีพิกเซลที่เกิดจากการสร้างด้วยปัญญาประดิษฐ์ (Generative AI)
-  * **Explainable AI (XAI):** แปลงข้อมูล Probability Map ให้เป็นภาพแผนที่ความร้อน (**Heatmap**) เพื่อใช้พล็อตทับลงบนรูปภาพจริง ส่งให้ผู้ใช้เห็นพื้นที่ที่มีความเสี่ยงสูง
+  * **Explainable AI (XAI):** สร้างภาพแผนที่ความร้อน (**Heatmap**) ด้วยเทคนิค **Grad-CAM** เพื่อใช้พล็อตทับลงบนรูปภาพจริง ส่งให้ผู้ใช้เห็นพื้นที่ที่มีความเสี่ยงสูง
 
 ---
 
@@ -306,3 +310,71 @@ $$Risk\ Score = (S_{text} \times 0.25) + (S_{visual} \times 0.45) + (S_{source} 
 | **File Storage** | Cloud Storage | รองรับการจัดเก็บไฟล์อิมเมจและรูป Heatmap ได้ในปริมาณมหาศาลบนระบบคลาวด์สตอเรจ พร้อมระบบกำหนดอายุลิงก์ชั่วคราว (Presigned URLs) |
 | **External Search API** | Google Vision API | ใช้กลไก Reverse Image Search เพื่อสืบค้นข้อมูลภาพแอบอ้างในโลกออนไลน์ได้อย่างแม่นยำและครอบคลุมที่สุด |
 | **Push Notification** | Firebase Cloud Messaging (FCM) | เป็นระบบส่ง Push Alert ที่เป็นมาตรฐาน เสถียรสูง และรองรับอุปกรณ์ Android โดยไม่มีค่าใช้จ่ายพื้นฐาน |
+
+---
+
+## ภาคผนวก: สรุปข้อกำหนดที่อ้างอิงจากเอกสารฐาน
+
+### A.1 API Inventory
+
+| Endpoint | Method | คำอธิบาย |
+| :--- | :--- | :--- |
+| `/auth/register` | POST | สมัครสมาชิก |
+| `/auth/login` | POST | เข้าสู่ระบบ (รับ JWT Token) |
+| `/scans/upload` | POST | อัปโหลดรูปภาพเพื่อตรวจสอบ |
+| `/scans/{id}` | GET | ดึงผลการตรวจสอบ |
+| `/scans/history` | GET | ดูประวัติการสแกน |
+| `/reports` | POST | รายงานภาพหลอกลวง |
+| `/admin/dashboard` | GET | สถิติระบบ (Admin only) |
+
+> หมายเหตุ: Endpoint ตระกูล `/admin/models*` (จัดการโมเดล) และ `/admin/users*` (จัดการผู้ใช้) ให้บริการภายใน Admin Portal เท่านั้น
+
+### A.2 ข้อกำหนดความปลอดภัย (Security)
+
+* Access Token TTL **15 นาที** / Refresh Token TTL **7 วัน**; เข้ารหัสรหัสผ่านด้วย bcrypt cost factor **12**
+* TLS **1.3** + Certificate Pinning บนแอปมือถือ
+* Rate Limiting **60 req/hour** (Implement ด้วย slowapi; Tier Guest/Admin อยู่ในแผนพัฒนา)
+* จำกัดไฟล์ภาพ **≤ 10 MB**, ขนาด **≤ 4096×4096 px**, รองรับเฉพาะ **JPG/PNG**
+* Data Retention: Auto-delete ข้อมูลเมื่อครบอายุ **1 ปี**
+
+### A.3 เป้าหมายประสิทธิภาพ (Performance Targets)
+
+* Cache Hit **≤ 3 วินาที** / วิเคราะห์ใหม่ **≤ 15 วินาที**
+* AI Inference **≤ 10 วินาที (GPU)**, CPU Fallback **≤ 60 วินาที**
+* Uptime **≥ 99.5%** รองรับผู้ใช้พร้อมกัน **≥ 100 คน**
+* Async Queue ตามรูปแบบ Celery + RabbitMQ; Redis Cache TTL **30 วัน** Eviction Policy LRU
+
+### A.4 Deployment & CI/CD
+
+* Cloud Option: ECS / Cloud Run + RDS PostgreSQL + ElastiCache Redis
+* On-Premise Option: Docker / Kubernetes + MinIO Object Storage
+* CI/CD ผ่าน GitHub Actions
+* Monitoring ด้วย Prometheus + Grafana
+
+### A.5 ตารางฐานข้อมูลเพิ่มเติม (PostgreSQL)
+
+* `models` — Model Registry: เก็บเวอร์ชันโมเดล AI (id, version, file_path, status, accuracy)
+* `audit_logs` — บันทึกการดำเนินการของ Admin แบบ Immutable (id, admin_id, action, details)
+
+### A.6 Use-Case Index (UC-01 – UC-10)
+
+Actors: General User, Admin และ **System (Automated)** (Actor ที่สาม ทำงานอัตโนมัติ UC-03/UC-04)
+
+| ID | Use Case | | ID | Use Case |
+| :--- | :--- | :--- | :--- | :--- |
+| UC-01 | Login & Authentication | | UC-06 | Receive Push Notification |
+| UC-02 | Upload Image | | UC-07 | History Management |
+| UC-03 | Primary Analysis | | UC-08 | Report & Share |
+| UC-04 | AI Inference | | UC-09 | Admin Dashboard & RBAC |
+| UC-05 | View Result & Heatmap | | UC-10 | Dataset & Model Management |
+
+### A.7 สรุปโครงสร้าง C3/C4 (Component & Code Level)
+
+* Backend แบ่ง Layering เป็น Routers → Services → Repositories แยกความรับผิดชอบชัดเจน
+* Inference Coordinator (`inference_service.py`) ประสานงานกับ ONNX Worker ซึ่งรันเป็น Subprocess แยกโดดภายใน API Service ผ่าน STDIN/STDOUT JSON IPC
+* Key Sequence: `POST /api/v1/scan` → `analyze_image()` รันผ่าน Threadpool Isolation → ส่งภาพ STDIN (Base64) → รับผล STDOUT JSON → `RiskCalculator` ถ่วงน้ำหนักคะแนนรวม
+
+### A.8 ไฮไลต์ Risk Register
+
+* Google Vision API Downtime → Fallback ไป Bing Visual Search พร้อมกำหนด Source Score = 50 (Neutral)
+* False Positive (ภาพจริงถูกตั้งธงว่าปลอม) → Human-in-the-loop ให้ Admin ตรวจสอบทบทวนผลลัพธ์

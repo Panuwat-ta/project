@@ -419,7 +419,7 @@ Layout: full screen gradient เข้มจาก `#0F1720` ไปยัง `#1
 - ด้านล่าง: วงแหวน กำลังโหลด (loading) หมุน + ข้อความสถานะ cycling 4 ข้อความ
 - `SplashCubit` ทำงานเบื้องหลัง เปลี่ยนหน้า (navigate) ไปหน้าที่เหมาะสมหลัง check เสร็จ
 
-Requirement: REQ-001
+Requirement: NFR-06 (Usability)
 
 ### 10.2 OnboardingScreen (`/onboarding`)
 
@@ -433,7 +433,7 @@ Requirement: REQ-001
   2. ยินยอมให้ใช้ข้อมูลปรับปรุงโมเดล (ไม่บังคับ)
 - ปุ่ม "ดำเนินการต่อ" ถูกปิดใช้งาน (disabled) จนกว่าจะยอมรับข้อ 1
 
-Requirement: REQ-002
+Requirement: FR-PDPA-01 (Consent Management)
 
 ### 10.3 LoginScreen (`/login`)
 
@@ -450,7 +450,7 @@ Requirement: REQ-002
 - Link "สมัครสมาชิก" ไปยัง `/register`
 - `BlocListener` เปลี่ยนหน้า (navigate) ไป `/main/home` เมื่อ `AuthAuthenticated`
 
-Requirement: REQ-003
+Requirement: FR-AUTH-02 (การเข้าสู่ระบบ)
 
 ### 10.4 RegisterScreen (`/register`)
 
@@ -460,7 +460,7 @@ Requirement: REQ-003
 - ปุ่ม "สมัครสมาชิก"
 - Link กลับไป login
 
-Requirement: REQ-004
+Requirement: FR-AUTH-01 (การสมัครสมาชิก)
 
 ### 10.5 HomeScreen (`/main/home`)
 
@@ -481,7 +481,7 @@ Requirement: REQ-004
 - เมื่อเลือกไฟล์สำเร็จ เปลี่ยนหน้า (navigate) ไป `/crop`
 - `PermissionRequestView` เมื่อ permission ถูกปฏิเสธ
 
-Requirement: REQ-005
+Requirement: FR-SCAN-01 (การเลือกและครอบตัดรูปภาพ)
 
 ---
 
@@ -496,7 +496,7 @@ Requirement: REQ-005
 - เมื่อกด back หลัง crop แล้ว — แสดง `AlertDialog` ยืนยันก่อนยกเลิก
 - เมื่อยืนยัน เปลี่ยนหน้า (navigate) ไป `/กำลังโหลด (loading)` พร้อม filePath
 
-Requirement: REQ-006
+Requirement: FR-SCAN-02 (การตรวจสอบและอัปโหลดรูปภาพ)
 
 ### 10.7 AnalysisLoadingScreen (`/กำลังโหลด (loading)`)
 
@@ -518,7 +518,7 @@ Requirement: REQ-006
 - หมดเวลา (timeout) 120 วินาที แสดง `ErrorStateView` พร้อมปุ่ม ลองใหม่ (retry)
 - เมื่อสำเร็จ เปลี่ยนหน้า (navigate) ไป `/result/:scanId`
 
-Requirement: REQ-007
+Requirement: FR-SCAN-03 (การตรวจสอบ Cache และประมวลผล)
 
 ### 10.8 AnalysisResultScreen (`/result/:scanId`)
 
@@ -539,7 +539,7 @@ Requirement: REQ-007
   - แถว 2: "รายงานภาพต้องสงสัย" (outlined danger), "แชร์ผลลัพธ์" (outlined cyan)
 - Multi-layer detail sections (expandable): Textual, Source, Visual
 
-Requirement: REQ-008
+Requirement: FR-ANALYSIS-01 ถึง FR-ANALYSIS-04
 
 ### 10.9 HeatmapViewerScreen (`/heatmap/:scanId`)
 
@@ -553,7 +553,7 @@ Requirement: REQ-008
 - ปุ่ม download/save รูป
 - คำอธิบาย: สีร้อน (แดง) = ส่วนที่มีความเสี่ยงสูงที่สุด
 
-Requirement: REQ-009
+Requirement: FR-XAI-01 (Grad-CAM Heatmap)
 
 ### 10.10 HistoryScreen (`/main/history`)
 
@@ -572,7 +572,7 @@ Requirement: REQ-009
 - `HistoryEmpty` สถานะ (state): `EmptyStateView` "ยังไม่มีประวัติการตรวจสอบ"
 - การแบ่งหน้า (pagination): load more เมื่อ scroll ถึงท้าย list
 
-Requirement: REQ-010
+Requirement: FR-HISTORY-01 (จัดการประวัติการสแกน)
 
 ### 10.11 HistoryDetailScreen (`/detail/:scanId`)
 
@@ -583,7 +583,7 @@ Requirement: REQ-010
 - แสดงหมายเหตุเมื่อรูปต้นฉบับถูกลบแล้ว
 - ปุ่ม "สแกนภาพใหม่" เปลี่ยนหน้า (navigate) กลับไป home
 
-Requirement: REQ-011
+Requirement: FR-HISTORY-01 (จัดการประวัติการสแกน)
 
 ---
 
@@ -607,7 +607,7 @@ Requirement: REQ-011
 - `ConsentCheckboxTile` ยินยอมใช้ข้อมูลเพื่อวิจัย
 - ปุ่ม "ส่งรายงาน" พร้อม กำลังโหลด (loading) สถานะ (state) + สำเร็จ (success) feedback
 
-Requirement: REQ-012
+Requirement: FR-HISTORY-02 (รายงานภาพหลอกลวง)
 
 ### 10.13 NotificationsScreen (`/notifications`)
 
@@ -621,7 +621,7 @@ Requirement: REQ-012
 - `Dismissible` swipe เพื่อลบรายการ
 - `EmptyStateView` เมื่อไม่มีแจ้งเตือน (notifications_off ไอคอน (icon))
 
-Requirement: REQ-013
+Requirement: NFR-06 (Usability)
 
 ### 10.14 SettingsScreen (`/main/settings`)
 
@@ -636,7 +636,7 @@ Requirement: REQ-013
   - ล้าง แคช (cache) — confirmation snackbar
   - ออกจากระบบ (สีแดง danger) — `AlertDialog` ยืนยัน -> ลบ โทเคน (token) + แคช (cache) -> เปลี่ยนหน้า (navigate) ไป `/login`
 
-Requirement: REQ-014
+Requirement: FR-AUTH-04 (การออกจากระบบ)
 
 ### 10.15 UserProfileScreen (`/main/settings/profile`)
 
@@ -645,7 +645,7 @@ Requirement: REQ-014
 - Email TextField (read-only)
 - ปุ่ม "บันทึก" (PrimaryButton)
 
-Requirement: REQ-015
+Requirement: NFR-06 (Usability)
 
 ### 10.16 PrivacyConsentScreen (`/main/settings/privacy`)
 
@@ -658,7 +658,7 @@ Requirement: REQ-015
 - ปุ่ม "ลบบัญชี" (สีแดง danger) — 2-step confirmation dialog ก่อนเรียก `DELETE /privacy/account`
 - ถอน research ความยินยอม (consent) ได้โดยไม่กระทบการใช้งานพื้นฐาน
 
-Requirement: REQ-016
+Requirement: FR-PDPA-01 (Consent Management)
 
 ---
 

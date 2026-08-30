@@ -81,7 +81,7 @@ updated: 2026-08-02
 | เซิร์ฟเวอร์ Discord | <https://discord.gg/WSEXfzrb> |
 | กระดานภาพ Miro | (อยู่ในไฟล์ README.md) |
 | ดีไซน์ต้นฉบับ Figma | (อยู่ในไฟล์ README.md) |
-| แผนงานบน Trello | <https://trello.com/b/7QuuGSAL> |
+| แผนงานบน Jira | <https://panuwattakham2002.atlassian.net/jira/software/projects/SCM/boards/35> |
 | แผนผัง Diagram รวม (Google Drive) | (อยู่ในไฟล์ README.md) |
 
 ---

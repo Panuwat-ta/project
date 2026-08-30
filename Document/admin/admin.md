@@ -718,7 +718,7 @@ Export ภาพจากรายงานที่ได้รับการ�
 ```json
 {
   "export_id": "exp_20260806_001",
-  "status": "processing",
+  "status": "running",
   "total_images": 267,
   "estimated_size_mb": 1340,
   "message": "กำลังเตรียมไฟล์ Dataset จะแจ้งเตือนเมื่อพร้อมดาวน์โหลด"
@@ -766,7 +766,7 @@ dataset_20260806.zip
 ```json
 {
   "export_id": "exp_20260806_001",
-  "status": "completed",
+  "status": "succeeded",
   "download_url": "https://storage.local/exports/dataset_20260806.zip?token=...",
   "expires_at": "2026-08-07T15:00:00+07:00",
   "total_images": 267,
@@ -1218,15 +1218,14 @@ async def deploy_model(db: AsyncSession, model_id: int, admin_id: int):
 
 | Requirement | คำอธิบาย | Endpoint ที่ตอบสนอง |
 |:---|:---|:---|
-| FR-RPT-01 | ผู้ใช้แจ้งยืนยันว่าผลสแกนคือการหลอกลวงจริง | `POST /api/v1/reports` |
-| FR-ADM-01 | Admin ดูสถิติภาพรวมระบบ | `GET /api/v1/admin/dashboard` |
-| FR-ADM-02 | Admin ตรวจสอบ Scam Report และอนุมัติ/ปัดตก | `GET/PATCH /api/v1/admin/reports/{id}` |
-| FR-ADM-03 | Admin Export ภาพ Scam ที่ยืนยันแล้วเป็น Dataset | `POST /api/v1/admin/dataset/export` |
-| FR-ADM-04 | Admin อัปโหลดและ Deploy โมเดล AI | `POST /api/v1/admin/models`, `POST .../deploy` |
-| FR-ADM-05 | Admin จัดการบัญชีผู้ใช้ (ดูข้อมูล, Ban) | `GET/PATCH /api/v1/admin/users/{id}` |
+| FR-HISTORY-02 | ผู้ใช้แจ้งยืนยันว่าผลสแกนคือการหลอกลวงจริง | `POST /api/v1/reports` |
+| FR-ADMIN-01 | Admin ดูสถิติภาพรวมระบบ และจัดการบัญชีผู้ใช้ (ดูข้อมูล, Ban) | `GET /api/v1/admin/dashboard`, `GET/PATCH /api/v1/admin/users/{id}` |
+| FR-ADMIN-02 | Admin ตรวจสอบ Scam Report และอนุมัติ/ปัดตก (รวมถึง Export Dataset) | `GET/PATCH /api/v1/admin/reports/{id}`, `POST /api/v1/admin/dataset/export` |
+| FR-ADMIN-03 | Admin อัปโหลดและ Deploy โมเดล AI | `POST /api/v1/admin/models`, `POST .../deploy` |
+| FR-ADMIN-04 | Admin ดู Audit Logs (ประวัติการกระทำของผู้ดูแลระบบ) | `GET /api/v1/admin/audit_logs` |
 
 ---
 
 ## 13. สรุป
 
-ระบบ Report & Admin ถูกออกแบบให้ครอบคลุมทุกความต้องการเชิงฟังก์ชัน (FR-RPT-01, FR-ADM-01 ถึง FR-ADM-05) โดยมีโครงสร้าง API ที่ชัดเจน ระบบ RBAC ที่แข็งแกร่ง และ Audit Trail ที่ตรวจสอบย้อนกลับได้ทุกการกระทำของ Admin สอดคล้องกับฐานข้อมูลที่มีอยู่แล้ว (ตาราง `scam_reports`, `audit_log`, `model_versions`) พร้อมเพิ่มฟิลด์ใหม่ที่จำเป็นสำหรับรองรับ Workflow เต็มรูปแบบ
+ระบบ Report & Admin ถูกออกแบบให้ครอบคลุมทุกความต้องการเชิงฟังก์ชัน (FR-HISTORY-02, FR-ADMIN-01 ถึง FR-ADMIN-04) โดยมีโครงสร้าง API ที่ชัดเจน ระบบ RBAC ที่แข็งแกร่ง และ Audit Trail ที่ตรวจสอบย้อนกลับได้ทุกการกระทำของ Admin สอดคล้องกับฐานข้อมูลที่มีอยู่แล้ว (ตาราง `scam_reports`, `audit_log`, `model_versions`) พร้อมเพิ่มฟิลด์ใหม่ที่จำเป็นสำหรับรองรับ Workflow เต็มรูปแบบ

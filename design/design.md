@@ -46,36 +46,38 @@ flowchart TD
 แอปพลิเคชันออกแบบภายใต้ธีม Dark Mode เพื่อเน้นความล้ำสมัย ปลอดภัย และลดอาการเมื่อยล้าสายตา โดยใช้สีและแบบอักษรที่คัดสรรเป็นพิเศษดังนี้:
 
 ### โทนสีของระบบ (Color Palette):
-* **สีพื้นหลังหลัก (Primary Background):** Slate Gray (#121824) ให้ความรู้สึกมั่นคง สบายตา
-* **สีพื้นหลังรอง (Secondary Background):** Navy Blue Gray (#1A2333) สำหรับการสร้างกล่องข้อความและส่วนประกอบย่อย
-* **สีเน้นการทำงาน (Accent/Primary Color):** Neon Cyan (#00E5FF) สีฟ้าสว่าง ใช้สำหรับปุ่มกดหลักและองค์ประกอบที่ต้องการเน้นสายตา
+* **สีพื้นหลังหลัก (Primary Background / bg-dark):** Deep Slate (#0F1720) ให้ความรู้สึกมั่นคง สบายตา
+* **สีพื้นหลังรอง (Secondary Background / surface-dark):** Navy Blue Gray (#162230) สำหรับการ์ด Bottom Navigation และ AppBar
+* **สีเน้นการทำงาน (Accent/Primary Color):** Trust Blue (#006685) สีหลักสำหรับปุ่มกดหลัก และ Cyan (#00A6D6) (Primary Container) สำหรับองค์ประกอบที่ต้องการเน้นสายตา
 * **สีสถานะความเสี่ยง (Risk Indicators):**
-  * ความเสี่ยงต่ำ (Low Risk): Emerald Green (#00E676)
-  * ความเสี่ยงปานกลาง (Medium Risk): Amber Yellow (#FFD700)
-  * ความเสี่ยงสูง (High Risk): Crimson Red (#FF1744)
+  * ความเสี่ยงต่ำ (Low Risk / Success): Green (#006E2D)
+  * ความเสี่ยงปานกลาง (Medium Risk / Warning): Amber (#D68900)
+  * ความเสี่ยงสูง (High Risk / Danger): Red (#DC2626)
 
 ### ตัวอักษร (Typography):
-* เลือกใช้แบบอักษร **Outfit** (จาก Google Fonts) สำหรับข้อความภาษาอังกฤษและตัวเลขเพื่อให้ความลื่นไหล ทันสมัย
 * ใช้แบบอักษร **Sarabun** สำหรับการแสดงผลข้อความภาษาไทยเพื่อให้อ่านง่ายและมีความเป็นทางการ
+* เลือกใช้แบบอักษร **Inter** (จาก Google Fonts) สำหรับข้อความภาษาอังกฤษ ตัวเลข และข้อมูลเชิงเทคนิค (Technical Data)
 
 ---
 
 ## 3. โครงสร้างหน้าจอและทางเดินของผู้ใช้ (App Screen Structure & Navigation)
 
-หน้าจอหลักของแอปพลิเคชันประกอบไปด้วย 5 หน้าจอหลักที่เชื่อมต่อผ่านระบบ Bottom Navigation Bar:
+โครงสร้างหน้าจอของแอปพลิเคชันแบ่งเป็น 4 หน้าจอหลักใน Main Shell ที่เชื่อมต่อผ่านระบบ Bottom Navigation Bar (Home / History / Report / Settings) ส่วนหน้าจออื่น ๆ เช่น Splash, Login, Onboarding Consent และ Analysis Result เป็น Standalone Route:
 
 ```mermaid
 flowchart LR
     Splash[Splash Screen] --> Login[Login / OAuth]
-    Login --> Home[Home Screen]
+    Login --> Consent[Onboarding Consent Screen<br>(PDPA Consent – 2 ระดับ)]
+    Consent --> Home[Home Screen]
     
     Home --> Nav[Navigation Bar]
     Nav --> NavHome[Home / Scan Screen]
     Nav --> NavHistory[History Screen]
+    Nav --> NavReport[Report Scam Screen]
     Nav --> NavSettings[Settings & PDPA Screen]
 
-    NavHome --> Result[Analysis Result Screen]
-    Result --> Report[Report Scam Screen]
+    NavHome --> Result[Analysis Result Screen<br>(Standalone Route)]
+    NavHistory --> Detail[History Detail Screen<br>(Standalone Route)]
 ```
 
 ### รายละเอียดหน้าที่ของแต่ละหน้าจอ:
@@ -85,32 +87,37 @@ flowchart LR
 * หากผู้ใช้เคยล็อกอินค้างไว้ ระบบจะข้ามไปหน้า Home ทันที หากไม่มีจะพาไปหน้า Login
 
 #### 2. Login & Authentication Screen
-* หน้าจอกรอก Email/Password และช่องทางล็อกอินแบบรวดเร็ว (Google Login / Apple ID)
-* มีลิงก์สำหรับสมัครสมาชิกใหม่ และระบบขอเปลี่ยนรหัสผ่านใหม่ (Forgot Password)
+* หน้าจอกรอก Email/Password และช่องทางล็อกอินแบบรวดเร็วด้วย Google (Phase 2 – RC-AUTH-06)
+* มีลิงก์สำหรับสมัครสมาชิกใหม่ และระบบขอเปลี่ยนรหัสผ่านใหม่ (Forgot Password – Phase 2, RC-AUTH-05)
 
-#### 3. Home / Scan Screen (หน้าแรกและนำเข้ารูปภาพ)
+#### 3. Onboarding / Consent Screen (หน้ายินยอม PDPA)
+* แสดงเป็นหน้าจอแบบ Standalone หลังผู้ใช้ล็อกอินสำเร็จครั้งแรก ก่อนเข้าสู่หน้าหลักของแอป
+* แสดงข้อตกลงการเข้าถึงข้อมูลและการเก็บรวบรวมไฟล์ภาพ (Consent Screen) แบบ 2 ระดับ (Two-level Consent)
+* ผู้ใช้ต้องยอมรับข้อตกลงหลักจึงจะเข้าใช้งานได้ และสามารถยกเลิกความยินยอมย้อนหลังได้จากหน้า Settings & PDPA
+
+#### 4. Home / Scan Screen (หน้าแรกและนำเข้ารูปภาพ)
 * เป็นหน้าหลักเมื่อเปิดแอป ประกอบด้วย:
   * ปุ่มกดสำหรับ นำเข้ารูปภาพจากคลังภาพ (Gallery) เพื่ออัปโหลดเข้าสู่ระบบ
-  * เมนูแนะนำภัยออนไลน์ (Scam Alerts Feed) สำหรับอัปเดตกลโกงใหม่ ๆ จากผู้ดูแลระบบ
   * เมื่อเลือกรูปภาพเสร็จ แอปจะส่งไปยังหน้าครอปตัดรูป (Image Cropper Widget) ก่อนจะเริ่มส่งขึ้น API และแสดงสถานะกำลังวิเคราะห์ (Loading Shimmer Effect)
 
-#### 4. Analysis Result Screen (หน้าแสดงผลลัพธ์)
-* แสดงผลคะแนนความเสี่ยงรวม (Weighted Risk Score) ในรูปของมาตรวัดวงกลมสี (Radial Risk Gauge)
+#### 5. Analysis Result Screen (หน้าแสดงผลลัพธ์)
+* แสดงผลคะแนนความเสี่ยงรวม (Weighted Risk Score) ในรูปของมาตรวัดวงกลมเต็ม (Full-circle Radial Risk Gauge)
 * ตัวเลือกระหว่าง:
   * หน้าแสดงข้อมูลภาพต้นฉบับ
   * หน้าภาพ Heatmap (แสดง Grad-CAM ที่ชี้พิกเซลผิดปกติจาก AI)
 * รายละเอียดผลวิเคราะห์ 3 ชั้น (Multi-layer Analysis Breakdown):
   * ผลตรวจสอบ OCR & คำอันตราย (Textual Detection)
-  * ผลตรวจสอบข้อมูลไฟล์และอุปกรณ์ที่ใช้บันทึกภาพ (Metadata Check)
-  * ผลตรวจสอบแหล่งที่มาดั้งเดิม (Reverse Image Search Results)
+  * ผลตรวจจับพิกเซลภาพตัดต่อ/ภาพสังเคราะห์ AI (Visual Detection – SegFormer + Grad-CAM)
+  * ผลตรวจสอบความน่าเชื่อถือของแหล่งที่มา (Source Reliability – Reverse Image Search Results)
+* หมายเหตุ: ข้อมูลไฟล์และอุปกรณ์ที่ใช้บันทึกภาพ (Metadata/EXIF) แสดงเป็นกล่องข้อมูลประกอบ (Display-only Info Block) เท่านั้น ไม่ได้ถูกนำมาใช้คำนวณคะแนนความเสี่ยง
 * ปุ่มกดรายงานเบาะแสเข้าระบบกลาง (Report to Scam DB) และปุ่มแชร์รูปภาพแจ้งเตือน (Share Scam Alert)
 
-#### 5. History Screen (หน้าประวัติการสแกน)
+#### 6. History Screen (หน้าประวัติการสแกน)
 * หน้าแสดงรายการการสแกนที่ผ่านมา จัดเรียงตามวัน-เวลา
 * แสดงข้อมูลสรุปย่อ เช่น รูปตัวอย่าง, วันที่สแกน, และระดับความเสี่ยง
 * ฟังก์ชันการลบประวัติทีละรายการ (Slide to delete) หรือลบทั้งหมดในครั้งเดียว
 
-#### 6. Settings & PDPA Screen (หน้าการตั้งค่าและสิทธิ์)
+#### 7. Settings & PDPA Screen (หน้าการตั้งค่าและสิทธิ์)
 * จัดการข้อมูลส่วนตัว และเปลี่ยนรหัสผ่าน
 * ส่วนจัดการข้อตกลงความเป็นส่วนตัว (PDPA / Consent Management) ให้ผู้ใช้สามารถกดยกเลิกความยินยอมการส่งไฟล์ภาพเข้าคลังวิจัยย้อนหลังได้ตลอดเวลา
 

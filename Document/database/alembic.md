@@ -8,7 +8,7 @@ Alembic เป็นเครื่องมือสำหรับจัดก
 
 ## โครงสร้างที่เกี่ยวข้อง
 - **`server/migrations/versions/`** : โฟลเดอร์ที่เก็บไฟล์ประวัติการเปลี่ยนแปลงทั้งหมด แต่ละไฟล์จะมีคำสั่ง `upgrade()` และ `downgrade()`
-- **`server/app/db/models.py`** : ไฟล์ที่เก็บโครงสร้างตาราง (Table Schema) ของระบบ
+- **`server/app/models/`** : โฟลเดอร์ที่เก็บโครงสร้างตาราง (Table Schema) ของระบบ เช่น `user.py`, `scan.py`, `report.py`, `admin.py`, `model_version.py`, `export_job.py`, `audit_log.py`, `consent.py`
 - **`server/alembic.ini`** : ไฟล์ตั้งค่าการทำงานของ Alembic
 
 ---

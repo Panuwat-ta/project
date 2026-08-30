@@ -467,7 +467,7 @@ S_visual = (forgery_confidence × 0.6) + (ai_gen_confidence × 0.4)
 1. ส่งรูปภาพไป Google Vision API (Web Detection)
 2. รับรายการแหล่งที่มาที่คล้ายกัน (Similar URLs)
 3. วิเคราะห์บริบทของแหล่งที่มา:
-   - จำนวนแหล่งที่พบ (มากกว่า 10 แหล่ง = เสี่ยง)
+   - จำนวนแหล่งที่พบ (พบ ≥ 3 แหล่ง = เสี่ยงสูง, พบ ≤ 1 แหล่ง = เสี่ยงต่ำ)
    - ประเภทเว็บไซต์ (สื่อสังคมออนไลน์, เว็บข่าว, เว็บหลอกลวง)
    - ความเก่าของภาพ (ภาพเก่า > 1 ปี = เสี่ยง)
 4. คำนวณ Source Risk Score (0-100)
@@ -866,9 +866,8 @@ sequenceDiagram
 ### 9.3 API Security
 
 **Rate Limiting:**
-- Guest: 10 requests/minute
-- Authenticated User: 60 requests/minute
-- Admin: 300 requests/minute
+- Default: 60 requests/hour ต่อ IP/ผู้ใช้ (config ผ่าน `RATE_LIMIT_PER_HOUR`, ตาม implementation ด้วย slowapi)
+- การแบ่ง tier (Guest/Admin) เป็นแผนพัฒนาเพิ่มเติมในอนาคต
 
 **Input Validation:**
 - File Type Check (MIME type validation)

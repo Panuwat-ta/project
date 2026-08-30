@@ -73,17 +73,17 @@ Admin Portal ใช้ Dark Theme เป็นหลัก สอดคล้อ
 
 | Style | Font | Size | Weight | Line Height | ใช้งาน |
 |:---|:---|---:|---:|---:|:---|
-| `display` | Outfit | 32px | 700 | 1.2 | ตัวเลขหลัก Dashboard (KPI) |
-| `heading-1` | Outfit | 24px | 700 | 1.3 | ชื่อหน้า |
-| `heading-2` | Outfit | 20px | 600 | 1.3 | หัวข้อ Section |
-| `heading-3` | Outfit | 16px | 600 | 1.4 | หัวข้อย่อย, Label สำคัญ |
+| `display` | Inter | 32px | 700 | 1.2 | ตัวเลขหลัก Dashboard (KPI) |
+| `heading-1` | Inter | 24px | 700 | 1.3 | ชื่อหน้า |
+| `heading-2` | Inter | 20px | 600 | 1.3 | หัวข้อ Section |
+| `heading-3` | Inter | 16px | 600 | 1.4 | หัวข้อย่อย, Label สำคัญ |
 | `body` | Sarabun | 14px | 400 | 1.5 | เนื้อหาทั่วไป, Table Data |
 | `body-sm` | Sarabun | 13px | 400 | 1.5 | ข้อความรอง, Caption |
 | `caption` | Sarabun | 12px | 400 | 1.4 | Timestamp, Metadata |
-| `button` | Outfit | 14px | 600 | 1.0 | ปุ่ม |
+| `button` | Inter | 14px | 600 | 1.0 | ปุ่ม |
 | `code` | JetBrains Mono | 13px | 400 | 1.4 | UUID, Hash, Version Tag |
 
-**หมายเหตุ:** ใช้ `Outfit` สำหรับข้อความภาษาอังกฤษ ตัวเลข และ UI Label / `Sarabun` สำหรับข้อความภาษาไทย เพื่อความสอดคล้องกับ Mobile App
+**หมายเหตุ:** ใช้ `Inter` สำหรับข้อความภาษาอังกฤษ ตัวเลข และ UI Label / `Sarabun` สำหรับข้อความภาษาไทย เพื่อความสอดคล้องกับ Mobile App
 
 ### 2.3 Spacing System
 
@@ -124,7 +124,7 @@ Admin Portal ใช้ Dark Theme เป็นหลัก สอดคล้อ
 
 ```
 +----------------------------------------------------------+
-|  Top Bar (Logo + Search + User Avatar)                    |
+|  Top Bar (Logo + User Avatar)                             |
 +----------+-----------------------------------------------+
 |          |                                                |
 | Sidebar  |              Main Content Area                 |
@@ -169,8 +169,9 @@ Admin Portal ใช้ Dark Theme เป็นหลัก สอดคล้อ
 
 **องค์ประกอบ:**
 - ซ้าย: โลโก้ ScamGuard + ข้อความ "Admin Portal"
-- กลาง: Search Bar (ค้นหา Report, User, Scan ID) -- พื้นหลัง `bg-surface`, ขอบ `border-default`, Focus Ring `border-focus`
-- ขวา: Notification Bell + Avatar + ชื่อ Admin + Dropdown (Profile, Logout)
+- ขวา: Avatar + ชื่อ Admin + Dropdown (Profile, Logout)
+
+**หมายเหตุ:** ไม่มีช่องค้นหารวมแบบ Global Search และไม่มีระฆังแจ้งเตือน เนื่องจากไม่มี Endpoint/Feature รองรับ — การค้นหากระทำภายในหน้า Reports / Users เท่านั้น
 
 ---
 
@@ -190,8 +191,11 @@ Admin Portal ใช้ Dark Theme เป็นหลัก สอดคล้อ
 | Page Title: "Dashboard"                       วันที่วันนี้ |
 +----------------------------------------------------------+
 | [KPI Card 1]  [KPI Card 2]  [KPI Card 3]  [KPI Card 4]  |
-| ผู้ใช้ทั้งหมด   สแกนทั้งหมด   สแกนวันนี้     รายงาน Pending |
-| 1,250          8,432          156             28          |
+| ผู้ใช้ทั้งหมด   Active วันนี้   สแกนทั้งหมด    สแกนวันนี้    |
+| 1,250          87             8,432          156         |
+| [KPI Card 5]  [KPI Card 6]  [KPI Card 7]                |
+| สแกนสัปดาห์นี้  สแกนเดือนนี้   รายงาน Pending              |
+| 892            3,210          28                          |
 +----------------------------------------------------------+
 | [Scan Trend Chart]                 | [Risk Distribution]  |
 | Line Chart 7 วัน                    | Donut Chart          |
@@ -201,12 +205,15 @@ Admin Portal ใช้ Dark Theme เป็นหลัก สอดคล้อ
 | Bar Chart แนวนอน                    | Card: v2.1.0 Active  |
 | แยกตาม 7 หมวดหมู่                   | Deployed: 2026-08-01 |
 +------------------------------------+----------------------+
-| [Recent Reports]                                          |
-| ตาราง 5 รายงานล่าสุด + ปุ่ม "ดูทั้งหมด"                      |
+| [Reports Summary Card]                                    |
+| "รายงานรอตรวจสอบ" (reports.pending) + ลิงก์                 |
+| "ดูรายงานล่าสุด →" → ไปหน้า Reports (GET /admin/reports)    |
 +----------------------------------------------------------+
 ```
 
-#### KPI Cards (4 ใบ แถวบน)
+**หมายเหตุ:** Response ของ `GET /api/v1/admin/dashboard` ไม่มี Payload รายการรายงานล่าสุด (recent reports) จึงใช้ Summary Card ที่ลิงก์ไปหน้า Reports แทนตาราง Recent Reports
+
+#### KPI Cards (7 ใบ, แถวบน 2 แถว)
 
 แต่ละ Card มี:
 - พื้นหลัง: `bg-surface` (`#1E293B`)
@@ -221,9 +228,12 @@ Admin Portal ใช้ Dark Theme เป็นหลัก สอดคล้อ
 | Card | ไอคอน | Label | ข้อมูล | สี Trend |
 |:---|:---|:---|:---|:---|
 | 1 | Users | ผู้ใช้ทั้งหมด | `overview.total_users` | - |
-| 2 | Scan | สแกนทั้งหมด | `overview.total_scans` | - |
-| 3 | Zap | สแกนวันนี้ | `overview.scans_today` | เปรียบเทียบเมื่อวาน |
-| 4 | Flag | รายงาน Pending | `reports.pending` | `status-warning` |
+| 2 | Activity | Active วันนี้ | `overview.active_users_today` | เปรียบเทียบเมื่อวาน |
+| 3 | Scan | สแกนทั้งหมด | `overview.total_scans` | - |
+| 4 | Zap | สแกนวันนี้ | `overview.scans_today` | เปรียบเทียบเมื่อวาน |
+| 5 | CalendarWeek | สแกนสัปดาห์นี้ | `overview.scans_this_week` | - |
+| 6 | CalendarDays | สแกนเดือนนี้ | `overview.scans_this_month` | - |
+| 7 | Flag | รายงาน Pending | `reports.pending` | `status-warning` |
 
 #### Scan Trend Chart (ซ้ายล่าง)
 
@@ -277,7 +287,8 @@ Admin Portal ใช้ Dark Theme เป็นหลัก สอดคล้อ
 +----------------------------------------------------------+
 | [Filter Bar]                                              |
 | Status: [All|Pending|Reviewing|Approved|Rejected]         |
-| Category: [Dropdown]  Date: [From] - [To]  [Search]      |
+| Category: [Dropdown]  Date: [From] - [To]                 |
+| Sort: [Created At|Status] [Desc|Asc]                      |
 +----------------------------------------------------------+
 | [Reports Table]                                           |
 | # | Thumbnail | Category | Reporter | Risk | Status | Date|
@@ -296,7 +307,9 @@ Admin Portal ใช้ Dark Theme เป็นหลัก สอดคล้อ
   - แต่ละ Tab แสดงจำนวนต่อท้าย เช่น "Pending (28)"
 - **Category Dropdown:** พื้นหลัง `bg-surface`, ขอบ `border-subtle`
 - **Date Range Picker:** 2 ช่อง Input วันที่ พร้อมไอคอน Calendar
-- **Search:** ค้นหาตาม Description หรือ Platform
+- **Sort Controls:** Dropdown `sort_by` (`created_at` | `status`) + Toggle `sort_order` (`asc` | `desc`)
+
+**หมายเหตุ:** `GET /api/v1/admin/reports` รองรับเฉพาะ `page`, `limit`, `status`, `category`, `from_date`, `to_date`, `sort_by`, `sort_order` — ไม่มีพารามิเตอร์สำหรับค้นหาข้อความ
 
 #### Reports Table
 
@@ -321,6 +334,13 @@ Admin Portal ใช้ Dark Theme เป็นหลัก สอดคล้อ
 | Reviewing | `rgba(255,215,0,0.15)` | `#FFD700` (Amber) |
 | Approved | `rgba(0,230,118,0.15)` | `#00E676` (Emerald) |
 | Rejected | `rgba(255,23,68,0.15)` | `#FF1744` (Crimson) |
+
+**Action "เริ่มตรวจสอบ" (แถว Pending):**
+
+- แถวที่สถานะเป็น Pending จะมีปุ่ม "เริ่มตรวจสอบ" (Ghost Button สี `accent-primary`, แสดงเมื่อ Hover แถว) เมื่อกดจะเปิดหน้า Report Detail เพื่อเริ่มกระบวนการตรวจสอบ
+- Tab "Reviewing" ใน Filter Bar และ Badge "Reviewing" (สี Amber) ยังคงแสดงตามสถานะจาก Server
+
+**ข้อจำกัด (Flagged Gap):** Backend `PATCH /api/v1/admin/reports/{report_id}` ปัจจุบันรับเฉพาะ Transition `approved` / `rejected` เท่านั้น — การ Persist สถานะ `reviewing` ยังต้องรอ Backend เพิ่มความสามารถนี้ (UI แสดง Badge ตามค่าที่ Server ส่งกลับเท่านั้น)
 
 **สี Badge หมวดหมู่:**
 
@@ -495,6 +515,8 @@ Admin Portal ใช้ Dark Theme เป็นหลัก สอดคล้อ
 | Researcher | `rgba(129,140,248,0.15)` | `#818CF8` |
 | Admin | `rgba(0,229,255,0.15)` | `#00E5FF` |
 
+**หมายเหตุ:** Role ข้างต้นคือบทบาทของ End-user accounts (`users.role`: `user`, `researcher`, `admin`) ซึ่งแยกจากบัญชี Staff ของ Admin Portal โดยสิ้นเชิง — บัญชีผู้ดูแลพอร์ทัลอยู่ในตาราง `admins` แยกต่างหาก (มี flag `is_superadmin`) และ Sessions ของ Staff เก็บในตาราง `admin_sessions` ทั้งสองระบบมีอยู่ร่วมกัน (co-exist)
+
 **สี Status Badge:**
 
 | Status | สีพื้นหลัง | สีข้อความ |
@@ -506,9 +528,14 @@ Admin Portal ใช้ Dark Theme เป็นหลัก สอดคล้อ
 
 เมื่อคลิก "ดู" จะเปิดหน้ารายละเอียดผู้ใช้ แสดง:
 - ข้อมูลพื้นฐาน (Email, Name, Role, สถานะ, วันที่สมัคร)
-- สถิติ (จำนวนสแกน, สแกนเดือนนี้, รายงานที่ส่ง, รายงานที่อนุมัติ)
-- รายการสแกนล่าสุด 5 รายการ
+- สถิติ (จำนวนสแกน, สแกนเดือนนี้, รายงานที่ส่ง, รายงานที่อนุมัติ, รายงานที่ปัดตก `stats.reports_rejected`, รายงานที่รอตรวจสอบ `stats.reports_pending`)
+- รายการสแกนล่าสุด (จำนวนแถว Configurable, ค่าเริ่มต้น 5)
 - ปุ่ม "เปลี่ยน Role" (Dropdown) + ปุ่ม "Ban/Unban"
+
+**RBAC Guardrails (Disabled / Error States):**
+
+- ปุ่ม "Ban" เมื่อเปิดรายละเอียดของบัญชี Admin เอง: Disabled (Server ปฏิเสธการ Ban ตัวเอง — ไม่ต้องให้กระทำได้เลย)
+- การลดระดับ (Demote) Admin คนสุดท้ายในระบบ: Server Reject — ให้แสดง Inline Error ใต้ปุ่ม Action: "ไม่สามารถลดระดับ Admin คนสุดท้ายได้" (ข้อความ `status-danger`)
 
 ---
 
@@ -562,11 +589,24 @@ Admin Portal ใช้ Dark Theme เป็นหลัก สอดคล้อ
 #### Deploy Confirmation
 
 เมื่อกดปุ่ม "Deploy" ข้างเวอร์ชันที่ไม่ Active:
+- Endpoint: `POST /api/v1/admin/models/{model_id}/deploy`
 - Modal ยืนยัน:
   - หัวข้อ: "ยืนยันการ Deploy โมเดล v2.2.0"
   - ข้อความเตือน: "การ Deploy จะล้าง Cache ทั้งหมดและทำให้ผลสแกนใหม่ใช้โมเดลเวอร์ชันนี้" (สี `status-warning`)
   - ปุ่ม "ยืนยัน Deploy" สี `accent-primary`
   - ปุ่ม "ยกเลิก" สี Ghost
+- ผลลัพธ์ในตาราง: เวอร์ชันเป้าหมายเปลี่ยนสถานะเป็น "Active", เวอร์ชันเดิมเปลี่ยนเป็น "Inactive" (Active/Inactive Swap)
+
+#### Rollback Control
+
+เมื่อโมเดลใหม่มีปัญหา ใช้ปุ่ม "Rollback" เพื่อย้อนกลับไปเวอร์ชันก่อนหน้า (ตรงกับ Recovery Path ใน `Document/admin/runbook.md`):
+- ปุ่ม "Rollback" (Ghost Button สี `accent-secondary`) แสดงบนแถวของเวอร์ชันที่ไม่ Active เพื่อ Deploy เวอร์ชันนั้นกลับคืนมา
+- กดแล้วเปิด Confirmation Dialog:
+  - หัวข้อ: "ยืนยันการ Rollback ไปโมเดล v2.0.0"
+  - ข้อความ: "การ Rollback จะ Deploy เวอร์ชันก่อนหน้าแทนเวอร์ชันปัจจุบัน (Endpoint: `POST /api/v1/admin/models/{model_id}/deploy`)"
+  - ปุ่ม "ยืนยัน Rollback" สี `accent-primary`
+  - ปุ่ม "ยกเลิก" สี Ghost
+- ผลลัพธ์ในตาราง: เวอร์ชันเป้าหมาย (ก่อนหน้า) เปลี่ยนสถานะเป็น "Active", เวอร์ชันปัจจุบันเปลี่ยนเป็น "Inactive"
 
 ---
 
@@ -587,9 +627,11 @@ Admin Portal ใช้ Dark Theme เป็นหลัก สอดคล้อ
 | รวม Metadata: [Toggle]                                    |
 | [ปุ่ม: สร้าง Export]                                      |
 +----------------------------------------------------------+
-| [Export History Table]                                     |
-| # | Export ID        | Images | Size   | Status  | Date  |
-| 1 | exp_20260806_001 | 267    | 1.3 GB | Done    | 08-06 |
+| [Export Status Panel]                                       |
+| Export ID: exp_20260806_001                                 |
+| Status: [Succeeded]  Images: 267  Size: 1.3 GB              |
+| Download: dataset_20260806.zip (Expires: 2026-08-07)       |
+| API: GET /api/v1/admin/dataset/export/{export_id}           |
 +----------------------------------------------------------+
 ```
 
@@ -603,15 +645,22 @@ Admin Portal ใช้ Dark Theme เป็นหลัก สอดคล้อ
 - Toggle Include Metadata: Switch สี `accent-primary` เมื่อ Active
 - ปุ่ม "สร้าง Export": พื้นหลัง `accent-primary`, ขนาดใหญ่
 
-#### Export History Table
+#### Export Status Panel (Single Export)
+
+Panel ผูกกับ `export_id` เดียว ดึงสถานะจาก `GET /api/v1/admin/dataset/export/{export_id}` (แทนตารางประวัติหลายแถว เนื่องจาก Workflow รองรับ 1 Job ต่อครั้ง):
+
+**Badge สถานะ Export Job:**
 
 | สถานะ | สีพื้นหลัง | สีข้อความ |
 |:---|:---|:---|
-| Processing | `rgba(255,215,0,0.15)` | `#FFD700` |
-| Completed | `rgba(0,230,118,0.15)` | `#00E676` |
+| Queued | `rgba(56,189,248,0.15)` | `#38BDF8` |
+| Running | `rgba(255,215,0,0.15)` | `#FFD700` |
+| Succeeded | `rgba(0,230,118,0.15)` | `#00E676` |
 | Failed | `rgba(255,23,68,0.15)` | `#FF1744` |
+| Canceled / Expired | `rgba(148,163,184,0.15)` | `#94A3B8` (Muted) |
 
-- คอลัมน์ "Download" จะแสดงปุ่มดาวน์โหลดเมื่อสถานะเป็น Completed
+- Panel แสดง Progress Bar (สี `accent-primary`) เมื่อสถานะเป็น Running
+- ปุ่ม "Download" จะแสดงเมื่อสถานะเป็น Succeeded
 - ปุ่มดาวน์โหลด: Ghost Button สี `accent-primary` ไอคอน Download
 
 ---
@@ -659,6 +708,22 @@ Admin Portal ใช้ Dark Theme เป็นหลัก สอดคล้อ
   - บรรทัด 2: Details (สี `text-secondary`)
   - มุมขวา: Timestamp (สี `text-tertiary`)
 - พื้นหลังแต่ละ Item: `bg-surface`, Hover: `bg-surface-hover`
+
+---
+
+### 4.8 หน้า Admin Login
+
+**Path:** `/admin/login`
+**API:** `POST /api/v1/auth/login`
+
+หน้าแรกก่อนเข้าสู่ระบบ (อ้างอิง Navigation Flow ข้อ 9) แยกจาก Layout Structure หลัก — ไม่มี Sidebar / Top Bar:
+
+- Logo กลางจอ + หัวข้อ "Admin Portal"
+- Form:
+  - Email Input + Password Input (Input Component §5.5, Password มี Toggle Show/Hide)
+  - ปุ่ม "เข้าสู่ระบบ": Primary Button เต็มความกว้าง พร้อม Loading State เมื่อรอ Response
+- Error State: ข้อมูลไม่ถูกต้อง → Inline Error ใต้ Form: "Email หรือ Password ไม่ถูกต้อง" (ข้อความ `status-danger`)
+- Login สำเร็จ: Redirect ไป `/admin/dashboard`
 
 ---
 
