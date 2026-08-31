@@ -25,16 +25,23 @@ class ScanHistoryItemModel extends ScanHistoryItem {
                 ? RiskLevel.medium
                 : RiskLevel.low)
         : RiskLevelHelper.fromScore(riskScore);
+        
+    String? parseUrl(String? url) {
+      if (url == null || url.isEmpty) return null;
+      if (url.startsWith('http')) return url;
+      return '/uploads/${url.split(RegExp(r'[\\/]')).last}';
+    }
+        
     return ScanHistoryItemModel(
       scanId: json['scanId'] as String? ?? json['scan_id'] as String? ?? '',
-      thumbnailUrl:
-          json['thumbnailUrl'] as String? ?? json['thumbnail_url'] as String?,
+      thumbnailUrl: parseUrl(
+          json['thumbnailUrl'] as String? ?? json['thumbnail_url'] as String?),
       riskScore: riskScore,
       riskLevel: riskLevel,
       status: json['status'] as String? ?? 'completed',
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'] as String)
-          : DateTime.now(),
+          : (json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : DateTime.now()),
       title: json['title'] as String?,
     );
   }

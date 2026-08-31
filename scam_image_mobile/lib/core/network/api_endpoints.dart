@@ -13,13 +13,13 @@ class ApiEndpoints {
   static const String me = '/auth/me';
 
   // ── Scans ─────────────────────────────────────────────────────────────────
-  static const String scans = '/scans';
+  static const String scans = '/scan/';
 
-  /// GET/DELETE /scans/{taskId}
-  static String scanById(String taskId) => '/scans/$taskId';
+  /// GET/DELETE /scan/{taskId}
+  static String scanById(String taskId) => '/scan/$taskId';
 
-  /// GET /scans/{taskId}/result
-  static String scanResult(String taskId) => '/scans/$taskId/result';
+  /// GET /scan/{taskId} (The server returns the result directly on the scan endpoint)
+  static String scanResult(String taskId) => '/scan/$taskId';
 
   // ── History ───────────────────────────────────────────────────────────────
   static const String history = '/history';

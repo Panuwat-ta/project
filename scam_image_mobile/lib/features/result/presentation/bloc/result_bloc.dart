@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../domain/entities/analysis_result.dart';
-import '../../domain/entities/risk_factor.dart';
+
 import '../../domain/repositories/result_repository.dart';
 
 // ── Events ─────────────────────────────────────────────────────────────────
@@ -81,44 +81,4 @@ class ResultBloc extends Bloc<ResultEvent, ResultState> {
   }
 }
 
-// ── Mock Repository (dev / demo) ───────────────────────────────────────────
 
-/// Stub that returns a fake high-risk [AnalysisResult] after a short delay.
-/// Used by [AnalysisResultScreen] during development until a real backend is
-/// wired up.
-class MockResultRepository implements ResultRepository {
-  @override
-  Future<AnalysisResult> getAnalysisResult(String taskId) async {
-    await Future.delayed(const Duration(seconds: 1));
-    return AnalysisResult(
-      scanId: taskId,
-      taskId: taskId,
-      status: 'completed',
-      riskScore: 82,
-      riskLevel: RiskLevel.high,
-      summary:
-          'พบสัญญาณหลายอย่างที่เกี่ยวข้องกับการหลอกลวง ระบบตรวจพบองค์ประกอบที่น่าสงสัยภายในรูปภาพนี้',
-      createdAt: DateTime.now(),
-      factors: const [
-        RiskFactor(
-          type: 'textual',
-          score: 75,
-          title: 'พบข้อความชักชวนให้โอนเงิน',
-          details: ['พบคำว่า โอนทันที', 'พบเลขบัญชีในภาพ'],
-        ),
-        RiskFactor(
-          type: 'source',
-          score: 60,
-          title: 'พบภาพใกล้เคียงจากหลายแหล่ง',
-          details: ['พบภาพคล้ายกันบนเว็บไซต์อื่น'],
-        ),
-        RiskFactor(
-          type: 'visual',
-          score: 90,
-          title: 'พบความผิดปกติของภาพ',
-          details: ['พบสัญญาณการตัดต่อบริเวณใบหน้า'],
-        ),
-      ],
-    );
-  }
-}

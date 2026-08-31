@@ -10,4 +10,4 @@ echo "[Info] Surya OCR runs in main process, ONNX worker uses isolated env."
 source venv/bin/activate
 export LD_LIBRARY_PATH="$VIRTUAL_ENV/lib:$LD_LIBRARY_PATH"
 export HF_HOME="/home/panuwat/project/model/surya"
-uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload

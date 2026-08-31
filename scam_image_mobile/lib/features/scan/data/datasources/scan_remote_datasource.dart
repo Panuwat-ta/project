@@ -47,8 +47,7 @@ class ScanRemoteDataSourceImpl implements ScanRemoteDataSource {
       // code before reaching this method, so we upload as-is here.
       final fileName = filePath.split(RegExp(r'[\\/]')).last;
       final formData = FormData.fromMap({
-        'image': await MultipartFile.fromFile(filePath, filename: fileName),
-        'source': 'upload',
+        'file': await MultipartFile.fromFile(filePath, filename: fileName),
         'consentForResearch': consentForResearch.toString(),
         'clientRequestId': clientRequestId,
       });
@@ -59,9 +58,8 @@ class ScanRemoteDataSourceImpl implements ScanRemoteDataSource {
       );
 
       final body = _requireBody(response);
-      // Accept both camelCase and snake_case keys from the server.
-      final taskId =
-          body['taskId'] as String? ?? body['task_id'] as String? ?? '';
+      // Backend returns the full ScanResponse immediately. We just need its ID.
+      final taskId = body['id'] as String? ?? '';
       return taskId;
     } on DioException catch (e) {
       throw _mapDioException(e);

@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     
     # Security
     SECURE_COOKIES: bool = False
-    ALLOWED_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173"
+    ALLOWED_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173,http://localhost:59913,*"
 
     # Database
     DATABASE_URL: str = "postgresql+asyncpg://scamguard:password@localhost:5432/scamguard_db"

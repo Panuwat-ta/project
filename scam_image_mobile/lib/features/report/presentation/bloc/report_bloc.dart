@@ -88,25 +88,3 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
   }
 }
 
-// ── Mock Repository stub (dev / demo) ────────────────────────────────────────
-
-/// Stub that simulates a successful submission with a short delay.
-/// Used by [ReportScamScreen] during development until a real backend is wired up.
-class MockReportRepository implements ReportRepository {
-  @override
-  Future<void> submitReport(ScamReport report) async {
-    await Future.delayed(const Duration(seconds: 1));
-    // No exception thrown — simulates a successful POST /reports
-  }
-
-  @override
-  Future<List<String>> getCategories() async => [
-        'Romance Scam',
-        'ซื้อขายออนไลน์',
-        'สลิปปลอม',
-        'ลงทุนหรือผลตอบแทนสูง',
-        'ปลอมแปลงตัวตน',
-        'ภาพ AI หรือ Deepfake',
-        'อื่นๆ',
-      ];
-}

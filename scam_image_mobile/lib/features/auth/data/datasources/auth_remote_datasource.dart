@@ -12,7 +12,7 @@ abstract class AuthRemoteDataSource {
   /// Throws [AuthException] on invalid credentials (401/403).
   /// Throws [ServerException] on other non-2xx responses.
   /// Throws [NetworkException] on connectivity errors.
-  Future<UserModel> login({
+  Future<(UserModel, AuthTokenModel)> login({
     required String email,
     required String password,
   });
@@ -21,7 +21,7 @@ abstract class AuthRemoteDataSource {
   ///
   /// Throws [ServerException] if the email is already taken (409/422).
   /// Throws [NetworkException] on connectivity errors.
-  Future<UserModel> register({
+  Future<(UserModel, AuthTokenModel)> register({
     required String email,
     required String password,
     required String displayName,
@@ -52,27 +52,28 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final Dio dio;
 
   @override
-  Future<UserModel> login({
+  Future<(UserModel, AuthTokenModel)> login({
     required String email,
     required String password,
   }) async {
     try {
       final response = await dio.post<Map<String, dynamic>>(
         ApiEndpoints.login,
-        data: {'email': email, 'password': password},
+        data: FormData.fromMap({
+          'username': email,
+          'password': password,
+        }),
       );
       final body = _requireBody(response);
-      // The server may wrap the user in a 'user' key alongside tokens.
       final userJson = body['user'] as Map<String, dynamic>? ?? body;
-      _saveTokensFromBody(body);
-      return UserModel.fromJson(userJson);
+      return (UserModel.fromJson(userJson), AuthTokenModel.fromJson(body));
     } on DioException catch (e) {
       throw _mapDioException(e);
     }
   }
 
   @override
-  Future<UserModel> register({
+  Future<(UserModel, AuthTokenModel)> register({
     required String email,
     required String password,
     required String displayName,
@@ -83,12 +84,14 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         data: {
           'email': email,
           'password': password,
-          'displayName': displayName,
+          'full_name': displayName,
+          'system_consent': true,
+          'research_consent': false,
         },
       );
       final body = _requireBody(response);
       final userJson = body['user'] as Map<String, dynamic>? ?? body;
-      return UserModel.fromJson(userJson);
+      return (UserModel.fromJson(userJson), AuthTokenModel.fromJson(body));
     } on DioException catch (e) {
       throw _mapDioException(e);
     }
@@ -141,13 +144,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     return body;
   }
 
-  /// If the login/register response already contains token fields, save them
-  /// directly here so the interceptor has them for subsequent requests.
-  void _saveTokensFromBody(Map<String, dynamic> body) {
-    // Intentionally left empty — token persistence is handled by
-    // [AuthRepositoryImpl] after this method returns, keeping concerns
-    // separated.  The stub is here so the flow is self-documenting.
-  }
+
 
   Exception _mapDioException(DioException e) {
     switch (e.type) {

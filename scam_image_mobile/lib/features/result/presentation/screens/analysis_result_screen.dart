@@ -10,6 +10,7 @@ import '../../../../core/localization/app_translations.dart';
 import '../../../../core/widgets/app_bottom_navigation.dart';
 import '../../../../core/widgets/app_top_bar.dart';
 import '../../domain/entities/analysis_result.dart' as domain;
+import '../../domain/entities/risk_factor.dart' as domain;
 import '../bloc/result_bloc.dart';
 
 class AnalysisResultScreen extends StatefulWidget {
@@ -436,6 +437,9 @@ class _ResultBody extends StatelessWidget {
   }
 
   Widget _buildVisualAnomalyCard(BuildContext context) {
+    final visuals = result.factors.where((f) => f.type == 'visual');
+    final visualFactor = visuals.isNotEmpty ? visuals.first : const domain.RiskFactor(type: 'visual', score: 0, title: '', details: []);
+    
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
@@ -477,7 +481,7 @@ class _ResultBody extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  '88%',
+                  '${visualFactor.score}%',
                   style: AppTypography.caption(color: const Color(0xFFE11D48)).copyWith(fontWeight: FontWeight.bold),
                 ),
               ),
@@ -505,8 +509,8 @@ class _ResultBody extends StatelessWidget {
                     height: 200,
                     width: double.infinity,
                     color: const Color(0xFF0F172A),
-                    child: result.imageUrl != null 
-                        ? Image.network(result.imageUrl!, fit: BoxFit.cover)
+                    child: (result.heatmapUrl != null || result.imageUrl != null) 
+                        ? Image.network((result.heatmapUrl ?? result.imageUrl)!, fit: BoxFit.cover)
                         : const Center(child: Icon(Icons.image, color: Colors.white24, size: 48)),
                   ),
                   // Slider overlay at bottom
@@ -517,7 +521,7 @@ class _ResultBody extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.85),
+                        color: Colors.white.withValues(alpha: 0.85),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(

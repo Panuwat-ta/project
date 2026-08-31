@@ -346,7 +346,7 @@ class _HistoryCard extends StatelessWidget {
     );
   }
 
-  List<String> _getMockTags(BuildContext context, domain.RiskLevel level) {
+  List<String> _getTags(BuildContext context, domain.RiskLevel level) {
     if (level == domain.RiskLevel.high) {
       return ['pixel_edge'.tr(context), 'metadata_conflict'.tr(context)];
     } else if (level == domain.RiskLevel.medium) {
@@ -360,7 +360,7 @@ class _HistoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
     final dateStr = _formatThaiDate(item.createdAt, context);
-    final tags = _getMockTags(context, item.riskLevel);
+    final tags = _getTags(context, item.riskLevel);
 
     return Container(
       decoration: BoxDecoration(
