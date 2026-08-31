@@ -113,7 +113,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       final response = await dio.post<Map<String, dynamic>>(
         ApiEndpoints.refresh,
-        data: {'refreshToken': refreshToken},
+        data: {'refresh_token': refreshToken},
       );
       final body = _requireBody(response);
       return AuthTokenModel.fromJson(body);

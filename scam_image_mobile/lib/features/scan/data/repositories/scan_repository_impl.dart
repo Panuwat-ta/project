@@ -25,6 +25,7 @@ class ScanRepositoryImpl implements ScanRepository {
     required String filePath,
     required bool consentForResearch,
     required String clientRequestId,
+    String? scanName,
   }) async {
     // Log a debug warning when the file exceeds the recommended size.
     // Real compression is applied by the ImagePicker quality setting in the
@@ -47,6 +48,7 @@ class ScanRepositoryImpl implements ScanRepository {
       filePath: filePath,
       consentForResearch: consentForResearch,
       clientRequestId: clientRequestId,
+      scanName: scanName,
     );
   }
 

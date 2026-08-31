@@ -12,6 +12,7 @@ class Scan(Base):
     image_hash = Column(String(64), nullable=False, index=True)  # SHA-256
     raw_image_url = Column(String(512), nullable=False)
     heatmap_image_url = Column(String(512))
+    title = Column(String(255), nullable=True)
 
     # Risk Scores (0-100)
     text_score = Column(Integer, nullable=False, default=0)

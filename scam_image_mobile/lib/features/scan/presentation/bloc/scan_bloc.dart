@@ -11,9 +11,10 @@ abstract class ScanEvent extends Equatable {}
 
 class CropConfirmed extends ScanEvent {
   final String filePath;
-  CropConfirmed(this.filePath);
+  final String? scanName;
+  CropConfirmed(this.filePath, {this.scanName});
   @override
-  List<Object?> get props => [filePath];
+  List<Object?> get props => [filePath, scanName];
 }
 
 class AnalysisPollTick extends ScanEvent {
@@ -100,11 +101,11 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
       CropConfirmed event, Emitter<ScanState> emit) async {
     emit(ScanUploading());
     try {
-      final clientRequestId = const Uuid().v4();
-      final taskId = await repository.submitImage(
+      final String taskId = await repository.submitImage(
         filePath: event.filePath,
         consentForResearch: consentForResearch,
-        clientRequestId: clientRequestId,
+        clientRequestId: const Uuid().v4(),
+        scanName: event.scanName,
       );
       _currentTaskId = taskId;
       // Backend is synchronous, so when submitImage returns, it's already completed.
@@ -146,11 +147,6 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
   Future<void> _onCancelled(
       AnalysisCancelled event, Emitter<ScanState> emit) async {
     _pollingTimer?.cancel();
-    if (_currentTaskId != null) {
-      try {
-        await repository.cancelScan(_currentTaskId!);
-      } catch (_) {}
-    }
     emit(ScanInitial());
   }
 

@@ -167,7 +167,7 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
 
                 // ── Action Buttons ────────────────────────────────────────
                 OutlinedButton.icon(
-                  onPressed: _exportData,
+                  onPressed: null,
                   icon: const Icon(Icons.download_outlined),
                   label: Text('privacy_export_data'.tr(context), style: const TextStyle(fontSize: 16)),
                   style: OutlinedButton.styleFrom(
@@ -177,7 +177,7 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
                 ),
                 const SizedBox(height: AppSpacing.md),
                 OutlinedButton.icon(
-                  onPressed: _deleteAllData,
+                  onPressed: null,
                   icon: const Icon(Icons.cancel_presentation, color: AppColors.danger),
                   label: Text('privacy_delete_all_data'.tr(context), style: const TextStyle(color: AppColors.danger, fontSize: 16)),
                   style: OutlinedButton.styleFrom(

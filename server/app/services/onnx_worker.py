@@ -21,9 +21,35 @@ MEAN = np.array([0.485, 0.456, 0.406], dtype=np.float32)
 STD = np.array([0.229, 0.224, 0.225], dtype=np.float32)
 
 
+def get_custom_colormap():
+    cmap = np.zeros((256, 1, 3), dtype=np.uint8)
+    for i in range(256):
+        if i < 85:
+            # Green (0) to Blue (85)
+            t = i / 85.0
+            b = int(255 * t)
+            g = int(255 * (1 - t))
+            r = 0
+        elif i < 170:
+            # Blue (85) to Yellow (170)
+            t = (i - 85) / 85.0
+            b = int(255 * (1 - t))
+            g = int(255 * t)
+            r = int(255 * t)
+        else:
+            # Yellow (170) to Red (255)
+            t = (i - 170) / 85.0
+            b = 0
+            g = int(255 * (1 - t))
+            r = 255
+        cmap[i, 0, :] = [b, g, r]
+    return cmap
+
+CUSTOM_COLORMAP = get_custom_colormap()
+
 def generate_heatmap(prob_map, original_image_np):
     heatmap_uint8 = np.uint8(255 * prob_map)
-    heatmap_color = cv2.applyColorMap(heatmap_uint8, cv2.COLORMAP_JET)
+    heatmap_color = cv2.applyColorMap(heatmap_uint8, CUSTOM_COLORMAP)
     original_bgr = cv2.cvtColor(original_image_np, cv2.COLOR_RGB2BGR)
     overlay = cv2.addWeighted(original_bgr, 0.6, heatmap_color, 0.4, 0)
     is_success, buffer = cv2.imencode(".jpg", overlay)
@@ -102,13 +128,18 @@ def main():
     # Full-res probability map (tiling preserves high-res detail)
     prob_map_true = tile_inference(session, input_name, image)
 
+    # The model outputs ~1.0 for authentic and ~0.0 for tampered. 
+    # Invert it so 1.0 means tampered (high risk) and 0.0 means authentic (base).
+    prob_map_true = 1.0 - prob_map_true
+
     # Visual heatmap using Min-Max scaling for clear display
     pmin, pmax = prob_map_true.min(), prob_map_true.max()
     prob_map_visual = (prob_map_true - pmin) / (pmax - pmin + 1e-5)
     heatmap_bytes = generate_heatmap(prob_map_visual, np.array(image))
 
-    # Visual risk using 99th percentile of true probabilities (captures peaks)
-    ai_gen_prob = float(np.percentile(prob_map_true, 99))
+    # Visual risk using the maximum probability found in the image
+    # (Using 99th percentile ignores small tampered objects < 1% area)
+    ai_gen_prob = float(prob_map_true.max())
     visual_risk_score = int(ai_gen_prob * 100)
 
     result = {

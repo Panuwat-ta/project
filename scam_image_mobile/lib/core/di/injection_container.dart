@@ -47,16 +47,16 @@ class ServiceLocator {
   ServiceLocator._();
 
   // ── Infrastructure ──────────────────────────────────────────────────────────
-  static late final SecureStorage secureStorage;
-  static late final Dio dio;
+  static late SecureStorage secureStorage;
+  static late Dio dio;
 
   // ── Repositories ────────────────────────────────────────────────────────────
-  static late final AuthRepository authRepository;
-  static late final ScanRepository scanRepository;
-  static late final ResultRepository resultRepository;
-  static late final HistoryRepository historyRepository;
-  static late final ReportRepository reportRepository;
-  static late final SettingsRepository settingsRepository;
+  static late AuthRepository authRepository;
+  static late ScanRepository scanRepository;
+  static late ResultRepository resultRepository;
+  static late HistoryRepository historyRepository;
+  static late ReportRepository reportRepository;
+  static late SettingsRepository settingsRepository;
 
   /// Initialises all dependencies in dependency order.
   static Future<void> init() async {
@@ -67,7 +67,7 @@ class ServiceLocator {
     // Base URL is configurable via environment; defaults to localhost for dev.
     dio = DioClient.createDio(
       secureStorage: secureStorage,
-      baseUrl: dotenv.env['API_BASE_URL'] ?? 'http://localhost:8000',
+      baseUrl: dotenv.env['API_BASE_URL'] ?? 'http://localhost:8000/api/v1',
     );
 
     // ── Auth ──────────────────────────────────────────────────────────────────

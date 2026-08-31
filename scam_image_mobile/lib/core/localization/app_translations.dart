@@ -541,7 +541,11 @@ class AppTranslations {
 
 extension StringTranslateExtension on String {
   String tr(BuildContext context) {
-    final lang = context.watch<SettingsCubit>().state.language;
-    return AppTranslations.localizedValues[lang]?[this] ?? AppTranslations.localizedValues['th']?[this] ?? this;
+    try {
+      final lang = context.read<SettingsCubit>().state.language;
+      return AppTranslations.localizedValues[lang]?[this] ?? AppTranslations.localizedValues['th']?[this] ?? this;
+    } catch (_) {
+      return AppTranslations.localizedValues['th']?[this] ?? this;
+    }
   }
 }

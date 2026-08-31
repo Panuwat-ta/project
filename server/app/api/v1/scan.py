@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
+from fastapi import APIRouter, UploadFile, File, Form, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from uuid import UUID
@@ -15,13 +15,14 @@ router = APIRouter()
 @router.post("/", response_model=ScanResponse)
 async def create_scan(
     file: UploadFile = File(...),
+    title: str | None = Form(None),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     """
     อัปโหลดรูปภาพเพื่อวิเคราะห์หา Scam Image
     """
-    scan_result = await analyze_image(file, current_user.id, db)
+    scan_result = await analyze_image(file, current_user.id, db, title)
     return scan_result
 
 @router.get("/{scan_id}", response_model=ScanResponse)

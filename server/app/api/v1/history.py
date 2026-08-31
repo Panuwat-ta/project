@@ -43,7 +43,7 @@ async def get_history(
         # Calculate risk grade
         risk = calculate_risk_score(s.text_score, s.visual_score, s.source_score)
         
-        title = f"Scan Result: {risk['grade'].upper()}" if risk['grade'] else "Scan Result"
+        title = s.title if s.title else "ผลการสแกน"
         
         history_items.append(HistoryItemResponse(
             scan_id=s.id,
@@ -75,7 +75,7 @@ async def get_history_item(
         raise HTTPException(status_code=404, detail="Scan not found")
         
     risk = calculate_risk_score(scan.text_score, scan.visual_score, scan.source_score)
-    title = f"Scan Result: {risk['grade'].upper()}" if risk['grade'] else "Scan Result"
+    title = scan.title if scan.title else "ผลการสแกน"
     
     return HistoryItemResponse(
         scan_id=scan.id,

@@ -3,9 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../domain/entities/auth_token.dart';
-import '../../domain/entities/user.dart';
-import '../../domain/repositories/auth_repository.dart';
 import '../bloc/auth_bloc.dart';
 import '../../../../core/localization/app_translations.dart';
 import '../../../../core/di/injection_container.dart';
@@ -74,15 +71,14 @@ class _LoginViewState extends State<_LoginView> {
   }
 
   void _submit() {
-    final email = _emailController.text.trim().isEmpty ? 'test@example.com' : _emailController.text.trim();
-    final password = _passwordController.text.isEmpty ? 'password' : _passwordController.text;
-    
-    context.read<AuthBloc>().add(
-      LoginRequested(
-        email: email,
-        password: password,
-      ),
-    );
+    if (_formKey.currentState?.validate() ?? false) {
+      context.read<AuthBloc>().add(
+        LoginRequested(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        ),
+      );
+    }
   }
 
   void _showOtherLogins(BuildContext context) {
@@ -270,7 +266,11 @@ class _LoginViewState extends State<_LoginView> {
                               enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: inputBorderColor)),
                               focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: primaryColor)),
                             ),
-                            validator: (v) => (v == null || v.isEmpty) ? 'auth_email_hint'.tr(context) : null,
+                            validator: (v) {
+                              if (v == null || v.isEmpty) return 'auth_email_hint'.tr(context);
+                              if (!v.contains('@')) return 'รูปแบบอีเมลไม่ถูกต้อง';
+                              return null;
+                            },
                           ),
                           const SizedBox(height: 16),
 
@@ -290,7 +290,7 @@ class _LoginViewState extends State<_LoginView> {
                                 ),
                                 child: Text(
                                   'auth_password_forgot'.tr(context),
-                                  style: TextStyle(fontSize: 12, color: primaryColor, fontWeight: FontWeight.w500),
+                                  style: TextStyle(fontSize: 12, color: primaryColor, fontWeight: FontWeight.bold),
                                 ),
                               ),
                             ],
@@ -318,7 +318,11 @@ class _LoginViewState extends State<_LoginView> {
                               enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: inputBorderColor)),
                               focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: primaryColor)),
                             ),
-                            validator: (v) => (v == null || v.isEmpty) ? 'auth_password_hint'.tr(context) : null,
+                            validator: (v) {
+                              if (v == null || v.isEmpty) return 'auth_password_hint'.tr(context);
+                              if (v.length < 6) return 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร';
+                              return null;
+                            },
                           ),
                           const SizedBox(height: 16),
 
@@ -399,7 +403,7 @@ class _LoginViewState extends State<_LoginView> {
                                     height: 24,
                                   ),
                                   const SizedBox(width: 12),
-                                  Text('auth_login_google'.tr(context), style: TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.w500)),
+                                  Flexible(child: Text('auth_login_google'.tr(context), style: TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.w500), overflow: TextOverflow.ellipsis)),
                                 ],
                               ),
                             ),
@@ -420,7 +424,7 @@ class _LoginViewState extends State<_LoginView> {
                                 children: [
                                   Icon(Icons.more_horiz, color: isDark ? Colors.white : Colors.black, size: 28),
                                   const SizedBox(width: 12),
-                                  Text('auth_login_other'.tr(context), style: TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.w500)),
+                                  Flexible(child: Text('auth_login_other'.tr(context), style: TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.w500), overflow: TextOverflow.ellipsis)),
                                 ],
                               ),
                             ),
@@ -432,8 +436,9 @@ class _LoginViewState extends State<_LoginView> {
                   const SizedBox(height: 32),
 
                   // Register Link
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       Text(
                         'auth_no_account'.tr(context),

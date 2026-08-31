@@ -13,7 +13,7 @@ from app.services.inference_service import inference_service
 
 MAX_UPLOAD_BYTES = settings.MAX_UPLOAD_SIZE_MB * 1024 * 1024
 
-async def analyze_image(file: UploadFile, user_id: int, db: AsyncSession) -> Scan:
+async def analyze_image(file: UploadFile, user_id: int, db: AsyncSession, title: str | None = None) -> Scan:
     # 1. Read file
     file_bytes = await file.read()
     if not file_bytes:
@@ -82,6 +82,7 @@ async def analyze_image(file: UploadFile, user_id: int, db: AsyncSession) -> Sca
         user_id=user_id,
         image_hash=image_hash,
         raw_image_url=file_path,
+        title=title,
         heatmap_image_url=heatmap_path if os.path.exists(heatmap_path) else None,
         text_score=text_score,
         visual_score=visual_score,

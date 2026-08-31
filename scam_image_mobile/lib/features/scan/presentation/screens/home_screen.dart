@@ -9,7 +9,6 @@ import '../../../../core/localization/app_translations.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../bloc/home_cubit.dart';
 import '../../../history/presentation/bloc/history_bloc.dart';
-import '../../../history/domain/entities/scan_history_item.dart';
 import 'package:intl/intl.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 

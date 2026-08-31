@@ -81,6 +81,9 @@ class AnalysisResultModel extends AnalysisResult {
       final hostUrl = '${uri.scheme}://${uri.host}:${uri.port}';
       
       String cleanUrl = url.replaceAll(r'\', '/');
+      if (cleanUrl.startsWith('./')) {
+        cleanUrl = cleanUrl.substring(2);
+      }
       if (!cleanUrl.startsWith('/')) {
         cleanUrl = '/$cleanUrl';
       }

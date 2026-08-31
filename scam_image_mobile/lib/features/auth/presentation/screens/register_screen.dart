@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../domain/entities/auth_token.dart';
-import '../../domain/entities/user.dart';
-import '../../domain/repositories/auth_repository.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/consent_cubit.dart';
 import '../../../../core/localization/app_translations.dart';

@@ -14,6 +14,7 @@ abstract class ScanRemoteDataSource {
     required String filePath,
     required bool consentForResearch,
     required String clientRequestId,
+    String? scanName,
   });
 
   /// Polls the current status of a scan task.
@@ -40,17 +41,25 @@ class ScanRemoteDataSourceImpl implements ScanRemoteDataSource {
     required String filePath,
     required bool consentForResearch,
     required String clientRequestId,
+    String? scanName,
   }) async {
     try {
       // Build multipart form data.
       // Compression for files > 10 MB is handled by the repository / calling
       // code before reaching this method, so we upload as-is here.
       final fileName = filePath.split(RegExp(r'[\\/]')).last;
-      final formData = FormData.fromMap({
+      
+      final Map<String, dynamic> formMap = {
         'file': await MultipartFile.fromFile(filePath, filename: fileName),
         'consentForResearch': consentForResearch.toString(),
         'clientRequestId': clientRequestId,
-      });
+      };
+      
+      if (scanName != null && scanName.trim().isNotEmpty) {
+        formMap['title'] = scanName.trim();
+      }
+      
+      final formData = FormData.fromMap(formMap);
 
       final response = await dio.post<Map<String, dynamic>>(
         ApiEndpoints.scans,

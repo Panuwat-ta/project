@@ -34,12 +34,24 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
       final response =
           await dio.get<dynamic>(ApiEndpoints.reportCategories);
       final body = response.data;
-      if (body is List) {
-        return body.map((e) => e.toString()).toList();
-      }
       if (body is Map<String, dynamic>) {
-        final items = body['data'] as List<dynamic>? ?? [];
-        return items.map((e) => e.toString()).toList();
+        final categories = body['categories'] as List<dynamic>? ??
+            body['data'] as List<dynamic>? ??
+            [];
+        return categories.map((e) {
+          if (e is Map<String, dynamic>) {
+            return e['label_th'] as String? ?? e['key'] as String? ?? e.toString();
+          }
+          return e.toString();
+        }).toList();
+      }
+      if (body is List) {
+        return body.map((e) {
+          if (e is Map<String, dynamic>) {
+            return e['label_th'] as String? ?? e['key'] as String? ?? e.toString();
+          }
+          return e.toString();
+        }).toList();
       }
       return [];
     } on DioException catch (e) {

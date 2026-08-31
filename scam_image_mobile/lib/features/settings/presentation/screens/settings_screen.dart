@@ -174,9 +174,13 @@ class _SettingsView extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     
     final authState = context.watch<AuthBloc>().state;
-    String userName = 'panuwat takham';
+    String userName = 'ผู้ใช้งาน';
+    String? avatarUrl;
     if (authState is AuthAuthenticated) {
-      userName = authState.user.displayName;
+      if (authState.user.displayName.isNotEmpty) {
+        userName = authState.user.displayName;
+      }
+      avatarUrl = authState.user.avatarUrl;
     }
 
     return Scaffold(
@@ -232,7 +236,8 @@ class _SettingsView extends StatelessWidget {
                         child: CircleAvatar(
                           radius: 28,
                           backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
-                          backgroundImage: const AssetImage('assets/images/profile.jpg'),
+                          backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
+                          child: avatarUrl == null ? Icon(Icons.person, color: isDark ? Colors.white54 : Colors.grey[400]) : null,
                         ),
                       ),
                       Positioned(

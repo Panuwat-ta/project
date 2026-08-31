@@ -356,11 +356,25 @@ class _HistoryCard extends StatelessWidget {
     }
   }
 
+  String _getRiskLabel(BuildContext context, domain.RiskLevel level) {
+    switch (level) {
+      case domain.RiskLevel.high:
+        return 'high_risk'.tr(context);
+      case domain.RiskLevel.medium:
+        return 'suspicious'.tr(context);
+      case domain.RiskLevel.low:
+        return 'safe'.tr(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
     final dateStr = _formatThaiDate(item.createdAt, context);
     final tags = _getTags(context, item.riskLevel);
+    
+    final riskLabel = _getRiskLabel(context, item.riskLevel);
+    final displayTitle = '${item.title ?? item.scanId} : $riskLabel';
 
     return Container(
       decoration: BoxDecoration(
@@ -424,7 +438,7 @@ class _HistoryCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        item.title ?? item.scanId,
+                        displayTitle,
                         style: AppTypography.titleMd(color: isDark ? Colors.white : AppColors.textPrimary)
                             .copyWith(fontWeight: FontWeight.bold),
                         maxLines: 1,

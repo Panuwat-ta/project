@@ -1,6 +1,7 @@
 import '../../domain/entities/scan_history_item.dart';
 import '../../../../core/utils/risk_level_helper.dart';
 import '../../../result/domain/entities/analysis_result.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ScanHistoryItemModel extends ScanHistoryItem {
   const ScanHistoryItemModel({
@@ -29,7 +30,23 @@ class ScanHistoryItemModel extends ScanHistoryItem {
     String? parseUrl(String? url) {
       if (url == null || url.isEmpty) return null;
       if (url.startsWith('http')) return url;
-      return '/uploads/${url.split(RegExp(r'[\\/]')).last}';
+      
+      final baseUrl = dotenv.env['API_BASE_URL'] ?? 'http://127.0.0.1:8000/api/v1';
+      final uri = Uri.parse(baseUrl);
+      final hostUrl = '${uri.scheme}://${uri.host}:${uri.port}';
+
+      String cleanUrl = url.replaceAll(r'\', '/');
+      if (cleanUrl.startsWith('./')) {
+        cleanUrl = cleanUrl.substring(2);
+      }
+      if (!cleanUrl.startsWith('/')) {
+        cleanUrl = '/$cleanUrl';
+      }
+      if (!cleanUrl.toLowerCase().startsWith('/uploads')) {
+        cleanUrl = '/uploads$cleanUrl';
+      }
+      
+      return '$hostUrl$cleanUrl';
     }
         
     return ScanHistoryItemModel(

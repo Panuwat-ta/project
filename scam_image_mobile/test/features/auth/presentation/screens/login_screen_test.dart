@@ -2,12 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mocktail/mocktail.dart';
 
 import 'package:scam_image_mobile/features/auth/presentation/screens/login_screen.dart';
 
+import 'package:scam_image_mobile/core/di/injection_container.dart';
+import 'package:scam_image_mobile/features/auth/domain/repositories/auth_repository.dart';
+import 'package:scam_image_mobile/features/settings/presentation/bloc/settings_bloc.dart';
+import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+class MockAuthRepository extends Mock implements AuthRepository {}
+class MockSettingsCubit extends MockCubit<SettingsState> implements SettingsCubit {}
+
 void main() {
+  late MockAuthRepository mockAuthRepo;
+
   setUpAll(() {
     GoogleFonts.config.allowRuntimeFetching = false;
+    mockAuthRepo = MockAuthRepository();
+    ServiceLocator.authRepository = mockAuthRepo;
+  });
+
+  setUp(() {
+    // Reset mock if needed
   });
 
   /// Build the app with a GoRouter that has both /login and /main/home routes.
@@ -32,9 +50,15 @@ void main() {
       ],
     );
 
-    return MaterialApp.router(
-      routerConfig: router,
-      theme: ThemeData.dark(),
+    final settingsCubit = MockSettingsCubit();
+    when(() => settingsCubit.state).thenReturn(const SettingsState());
+
+    return BlocProvider<SettingsCubit>.value(
+      value: settingsCubit,
+      child: MaterialApp.router(
+        routerConfig: router,
+        theme: ThemeData.dark(),
+      ),
     );
   }
 
