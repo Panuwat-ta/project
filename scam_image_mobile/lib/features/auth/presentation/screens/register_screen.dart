@@ -5,35 +5,16 @@ import 'package:go_router/go_router.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/consent_cubit.dart';
 import '../../../../core/localization/app_translations.dart';
-import '../../../../core/di/injection_container.dart';
 
-class RegisterScreen extends StatefulWidget {
+class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
-}
-
-class _RegisterScreenState extends State<RegisterScreen> {
-  late final AuthBloc _bloc;
-
-  @override
-  void initState() {
-    super.initState();
-    _bloc = AuthBloc(ServiceLocator.authRepository);
-  }
-
-  @override
-  void dispose() {
-    _bloc.close();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    // Uses the app-scoped AuthBloc so the registered user is visible to
+    // every screen that watches it (settings, profile, etc.).
     return MultiBlocProvider(
       providers: [
-        BlocProvider<AuthBloc>.value(value: _bloc),
         BlocProvider<ConsentCubit>(create: (_) => ConsentCubit()),
       ],
       child: BlocListener<AuthBloc, AuthState>(
@@ -226,7 +207,13 @@ class _RegisterViewState extends State<_RegisterView> {
                               enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: inputBorderColor)),
                               focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: primaryColor)),
                             ),
-                            validator: (v) => (v == null || v.isEmpty) ? 'auth_email_hint'.tr(context) : null,
+                            validator: (v) {
+                              if (v == null || v.isEmpty) return 'auth_email_hint'.tr(context);
+                              if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(v)) {
+                                return 'รูปแบบอีเมลไม่ถูกต้อง';
+                              }
+                              return null;
+                            },
                           ),
                           const SizedBox(height: 16),
 

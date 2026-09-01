@@ -574,6 +574,8 @@ class _RecentHistorySection extends StatelessWidget {
                       title: 'สแกนเมื่อ ${DateFormat('HH:mm').format(item.createdAt)}',
                       date: DateFormat('dd MMM yyyy • HH:mm').format(item.createdAt),
                       riskLevel: RiskBadge.levelFromString(item.riskLevel.name),
+                      thumbnailUrl: item.thumbnailUrl,
+                      onTap: () => context.push('/result/${item.scanId}'),
                     ),
                   );
                 }).toList(),

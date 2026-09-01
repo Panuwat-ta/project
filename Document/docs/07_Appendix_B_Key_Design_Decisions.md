@@ -125,7 +125,8 @@
 
 | Decision Area | Specification | Rationale | Evidence Source |
 |---------------|---------------|-----------|-----------------|
-| **Low (Green)** | 0-39 | ความเสี่ยงต่ำ แต่ยังคงให้ผู้ใช้ระมัดระวัง | Project Decision |
+| **Safe (Green)** | 0-19 | ปลอดภัย ทุกชั้นไม่มีสัญญาณหลอกลวง | Project Decision |
+| **Low (Green)** | 20-39 | ความเสี่ยงต่ำ มีสัญญาณอ่อนบางจุดแต่ยังไม่น่ากังวล | Project Decision |
 | **Medium (Yellow)** | 40-69 | ความเสี่ยงปานกลาง ควรตรวจสอบเพิ่มเติม | Project Decision |
 | **High (Red)** | 70-100 | ความเสี่ยงสูง ไม่ควรเชื่อถือ | Project Decision |
 | **Special Rule** | หาก `visual_score ≥ 80` → High แม้ `risk_score < 70` | การตัดต่อชัดเจนควรได้ High เสมอ | Project Decision |

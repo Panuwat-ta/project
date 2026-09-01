@@ -389,22 +389,27 @@ Acceptance Criteria:
 - **Processing:** `Risk Score = round((100×0.25) + (100×0.45) + (100×0.30)) = 100`
 - **Expected Output:** `risk_score: 100`
 
-**AC-3: แปลงเป็น Risk Grade (Low)**
+**AC-3: แปลงเป็น Risk Grade (Safe)**
+- **Input:** risk_score = 10
+- **Processing:** 0-19 = Safe
+- **Expected Output:** `risk_grade: "Safe"`, สีเขียว
+
+**AC-4: แปลงเป็น Risk Grade (Low)**
 - **Input:** risk_score = 30
-- **Processing:** 0-39 = Low
+- **Processing:** 20-39 = Low
 - **Expected Output:** `risk_grade: "Low"`, สีเขียว
 
-**AC-4: แปลงเป็น Risk Grade (Medium)**
+**AC-5: แปลงเป็น Risk Grade (Medium)**
 - **Input:** risk_score = 55
 - **Processing:** 40-69 = Medium
 - **Expected Output:** `risk_grade: "Medium"`, สีเหลือง
 
-**AC-5: แปลงเป็น Risk Grade (High)**
+**AC-6: แปลงเป็น Risk Grade (High)**
 - **Input:** risk_score = 80
 - **Processing:** 70-100 = High
 - **Expected Output:** `risk_grade: "High"`, สีแดง
 
-**AC-6: Special Rule — Visual Score ≥ 80**
+**AC-7: Special Rule — Visual Score ≥ 80**
 - **Input:** risk_score = 65, visual_score = 85
 - **Processing:** แม้ risk_score < 70 แต่ visual_score ≥ 80 → High
 - **Expected Output:** `risk_grade: "High"`, สีแดง

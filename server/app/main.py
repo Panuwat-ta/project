@@ -10,14 +10,18 @@ from app.core.config import settings
 from app.core.rate_limit import limiter
 from app.core.middleware import RequestIDMiddleware
 from app.api.router import api_router
+from app.core.redis import init_redis, close_redis
+import app.core.redis as redis_core
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup: สร้างตาราง DB, โหลด Model, etc.
     print(f"[Startup] {settings.APP_NAME} v{settings.APP_VERSION}")
+    await init_redis()
     yield
     # Shutdown: ปิด connections
     print("[Shutdown] Cleaning up...")
+    await close_redis()
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -68,8 +72,18 @@ async def health_check():
     except Exception:
         db_status = "error"
         
+    redis_status = "ok"
+    try:
+        if redis_core.redis_client:
+            await redis_core.redis_client.ping()
+        else:
+            redis_status = "error"
+    except Exception:
+        redis_status = "error"
+        
     return {
-        "status": "ok" if db_status == "ok" else "degraded", 
+        "status": "ok" if db_status == "ok" and redis_status == "ok" else "degraded", 
         "version": settings.APP_VERSION,
-        "database": db_status
+        "database": db_status,
+        "redis": redis_status
     }

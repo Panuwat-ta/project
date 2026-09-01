@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 
 import '../network/dio_client.dart';
 import '../storage/secure_storage.dart';
+import '../storage/database_helper.dart';
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 import '../../features/auth/data/datasources/auth_local_datasource.dart';
@@ -21,7 +22,9 @@ import '../../features/result/domain/repositories/result_repository.dart';
 
 
 // ── History ───────────────────────────────────────────────────────────────────
+// ── History ───────────────────────────────────────────────────────────────────
 import '../../features/history/data/datasources/history_remote_datasource.dart';
+import '../../features/history/data/datasources/history_local_datasource.dart';
 import '../../features/history/data/repositories/history_repository_impl.dart';
 import '../../features/history/domain/repositories/history_repository.dart';
 
@@ -88,7 +91,11 @@ class ServiceLocator {
 
     // ── History ───────────────────────────────────────────────────────────────
     final historyRemote = HistoryRemoteDataSourceImpl(dio: dio);
-    historyRepository = HistoryRepositoryImpl(remoteDataSource: historyRemote);
+    final historyLocal = HistoryLocalDataSourceImpl(databaseHelper: DatabaseHelper.instance);
+    historyRepository = HistoryRepositoryImpl(
+      remoteDataSource: historyRemote,
+      localDataSource: historyLocal,
+    );
 
     // ── Report ────────────────────────────────────────────────────────────────
     final reportRemote = ReportRemoteDataSourceImpl(dio: dio);

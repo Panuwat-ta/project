@@ -68,9 +68,36 @@ class ScanHistoryItemModel extends ScanHistoryItem {
       riskLevel: riskLevel,
       status: json['status'] as String? ?? 'completed',
       createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'] as String)
-          : (json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : DateTime.now()),
+          ? DateTime.parse(json['createdAt'] as String).toLocal()
+          : (json['created_at'] != null ? DateTime.parse(json['created_at'] as String).toLocal() : DateTime.now().toLocal()),
       title: json['title'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'scanId': scanId,
+      'thumbnailUrl': thumbnailUrl,
+      'riskScore': riskScore,
+      'riskLevel': riskLevel.name,
+      'status': status,
+      'createdAt': createdAt.toIso8601String(),
+      'title': title,
+    };
+  }
+
+  factory ScanHistoryItemModel.fromMap(Map<String, dynamic> map) {
+    return ScanHistoryItemModel(
+      scanId: map['scanId'] as String,
+      thumbnailUrl: map['thumbnailUrl'] as String?,
+      riskScore: map['riskScore'] as int,
+      riskLevel: RiskLevel.values.firstWhere(
+        (e) => e.name == map['riskLevel'] as String,
+        orElse: () => RiskLevel.safe,
+      ),
+      status: map['status'] as String,
+      createdAt: DateTime.parse(map['createdAt'] as String).toLocal(),
+      title: map['title'] as String?,
     );
   }
 }

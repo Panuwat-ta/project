@@ -6,25 +6,71 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/localization/app_translations.dart';
 import '../../../../core/widgets/primary_button.dart';
+import '../../../../core/di/injection_container.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 
-class UserProfileScreen extends StatelessWidget {
+class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({super.key});
 
   @override
+  State<UserProfileScreen> createState() => _UserProfileScreenState();
+}
+
+class _UserProfileScreenState extends State<UserProfileScreen> {
+  String? _fetchedName;
+  String? _fetchedEmail;
+  String? _fetchedAvatar;
+  bool _fetchingUser = false;
+  bool _didFetch = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _ensureRealUser());
+  }
+
+  Future<void> _ensureRealUser() async {
+    final authState = context.read<AuthBloc>().state;
+    if (authState is AuthAuthenticated) return;
+    if (_fetchingUser || _didFetch) return;
+    setState(() => _fetchingUser = true);
+    try {
+      final user = await ServiceLocator.authRepository.getCurrentUser();
+      if (!mounted || user == null) return;
+      context.read<AuthBloc>().add(AuthSessionRestored(user));
+      setState(() {
+        _fetchedName = user.displayName.isNotEmpty ? user.displayName : user.email.split('@').first;
+        _fetchedEmail = user.email;
+        _fetchedAvatar = user.avatarUrl;
+      });
+    } catch (_) {}
+    finally {
+      if (mounted) setState(() { _fetchingUser = false; _didFetch = true; });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    
     final authState = context.watch<AuthBloc>().state;
-    String userName = 'ผู้ใช้งาน';
-    String userEmail = 'ไม่มีอีเมล';
-    String? avatarUrl;
+    if (authState is! AuthAuthenticated && !_didFetch && !_fetchingUser) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _ensureRealUser());
+    }
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    String userName = _fetchedName ?? 'ผู้ใช้งาน';
+    String userEmail = _fetchedEmail ?? 'ไม่มีอีเมล';
+    String? avatarUrl = _fetchedAvatar;
     if (authState is AuthAuthenticated) {
       if (authState.user.displayName.isNotEmpty) {
         userName = authState.user.displayName;
+      } else if (authState.user.email.isNotEmpty) {
+        userName = authState.user.email.split('@').first;
       }
       userEmail = authState.user.email;
-      avatarUrl = authState.user.avatarUrl;
+      avatarUrl = authState.user.avatarUrl ?? _fetchedAvatar;
+    } else if (_fetchingUser) {
+      userName = 'กำลังโหลด...';
+      userEmail = 'กำลังโหลด...';
     }
 
     return Scaffold(
@@ -171,7 +217,7 @@ class UserProfileScreen extends StatelessWidget {
                   Icon(Icons.verified_user_outlined, size: 48, color: isDark ? Colors.white : Colors.black),
                   const SizedBox(height: 8),
                   Text(
-                    'ScamGuard v2.4.0',
+                    'ScamGuard v1.0.0',
                     style: TextStyle(color: isDark ? Colors.white : Colors.black),
                   ),
                 ],

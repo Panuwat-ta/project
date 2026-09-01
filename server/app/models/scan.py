@@ -28,5 +28,7 @@ class Scan(Base):
     ai_gen_probability = Column(Float, default=0.0)
 
     status = Column(String(20), nullable=False, default="pending")
+    progress = Column(Integer, nullable=False, default=0)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)
     completed_at = Column(DateTime(timezone=True))
+

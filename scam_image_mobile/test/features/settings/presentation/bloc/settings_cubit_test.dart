@@ -218,6 +218,72 @@ void main() {
     );
   });
 
+  group('loadCacheSize', () {
+    blocTest<SettingsCubit, SettingsState>(
+      'emits state with real cache size on success',
+      build: () {
+        when(() => mockRepo.getCacheSizeBytes())
+            .thenAnswer((_) async => 13002341);
+        return SettingsCubit(repository: mockRepo);
+      },
+      act: (cubit) => cubit.loadCacheSize(),
+      expect: () => [
+        isA<SettingsState>()
+            .having((s) => s.cacheSizeBytes, 'cacheSizeBytes', 13002341),
+      ],
+    );
+
+    blocTest<SettingsCubit, SettingsState>(
+      'keeps previous size and emits nothing on failure',
+      build: () {
+        when(() => mockRepo.getCacheSizeBytes())
+            .thenThrow(Exception('Failed'));
+        return SettingsCubit(repository: mockRepo);
+      },
+      act: (cubit) => cubit.loadCacheSize(),
+      expect: () => <SettingsState>[],
+    );
+  });
+
+  group('clearCache', () {
+    blocTest<SettingsCubit, SettingsState>(
+      'emits [clearing, cleared with refreshed size] on success',
+      build: () {
+        when(() => mockRepo.clearCache()).thenAnswer((_) async {});
+        when(() => mockRepo.getCacheSizeBytes()).thenAnswer((_) async => 0);
+        return SettingsCubit(repository: mockRepo);
+      },
+      act: (cubit) => cubit.clearCache(),
+      expect: () => [
+        isA<SettingsState>()
+            .having((s) => s.isClearingCache, 'isClearingCache', true),
+        isA<SettingsState>()
+            .having((s) => s.isClearingCache, 'isClearingCache', false)
+            .having((s) => s.cacheSizeBytes, 'cacheSizeBytes', 0),
+      ],
+      verify: (_) {
+        verify(() => mockRepo.clearCache()).called(1);
+      },
+    );
+
+    blocTest<SettingsCubit, SettingsState>(
+      'emits error on failure',
+      build: () {
+        when(() => mockRepo.clearCache())
+            .thenThrow(Exception('Clear failed'));
+        return SettingsCubit(repository: mockRepo);
+      },
+      act: (cubit) => cubit.clearCache(),
+      expect: () => [
+        isA<SettingsState>()
+            .having((s) => s.isClearingCache, 'isClearingCache', true),
+        isA<SettingsState>()
+            .having((s) => s.isClearingCache, 'isClearingCache', false)
+            .having((s) => s.error, 'error', isNotNull),
+      ],
+    );
+  });
+
   group('SettingsState', () {
     test('default values are correct', () {
       const state = SettingsState();
@@ -225,6 +291,8 @@ void main() {
       expect(state.language, 'th');
       expect(state.consent, const ConsentSetting());
       expect(state.isLoading, false);
+      expect(state.cacheSizeBytes, 0);
+      expect(state.isClearingCache, false);
       expect(state.error, isNull);
     });
 

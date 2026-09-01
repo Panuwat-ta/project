@@ -107,8 +107,8 @@ class AnalysisResultModel extends AnalysisResult {
       imageUrl: parseUrl(json['imageUrl'] as String? ?? json['raw_image_url'] as String?),
       heatmapUrl: parseUrl(json['heatmapUrl'] as String? ?? json['heatmap_image_url'] as String?),
       createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'] as String)
-          : (json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : DateTime.now()),
+          ? DateTime.parse(json['createdAt'] as String).toLocal()
+          : (json['created_at'] != null ? DateTime.parse(json['created_at'] as String).toLocal() : DateTime.now().toLocal()),
       factors: factors,
     );
   }

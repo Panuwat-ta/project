@@ -108,8 +108,23 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
         scanName: event.scanName,
       );
       _currentTaskId = taskId;
-      // Backend is synchronous, so when submitImage returns, it's already completed.
-      emit(ScanCompleted(taskId));
+      
+      _elapsedSeconds = 0;
+      _pollingTimer?.cancel();
+      _pollingTimer = Timer.periodic(
+        const Duration(seconds: _pollIntervalSeconds),
+        (_) {
+          if (!isClosed) {
+            add(AnalysisPollTick(taskId));
+          }
+        },
+      );
+      
+      emit(ScanPolling(
+        taskId: taskId,
+        progress: 0,
+        step: AnalysisTaskStatus.queued,
+      ));
     } catch (e) {
       emit(ScanError(_friendlyError(e)));
     }

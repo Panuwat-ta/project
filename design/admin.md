@@ -418,9 +418,10 @@ Admin Portal ใช้ Dark Theme เป็นหลัก สอดคล้อ
 
 - แสดงคะแนนรวมด้วย Circular Gauge ขนาดเล็ก (80px)
 - สี Gauge ตามระดับ:
-  - 0-39: `status-success`
+  - 0-19: `status-success` (Safe)
+  - 20-39: `status-success` (Low)
   - 40-69: `status-warning`
-  - 70-100: `status-danger`
+  - 70-100: `status-danger` (กรณี `visual_score >= 80` → High ทันที)
 - คะแนนย่อยแต่ละชั้น: แสดงเป็น Progress Bar แนวนอน
   - Textual: Label + Score + Bar สี `#818CF8` (Violet)
   - Visual: Label + Score + Bar สี `#F472B6` (Pink)

@@ -33,6 +33,7 @@ erDiagram
         uuid id PK
         int user_id FK
         string image_hash
+        string title
         string raw_image_url
         string heatmap_image_url
         int text_score
@@ -45,6 +46,7 @@ erDiagram
         jsonb reverse_search_results
         float ai_gen_probability
         string status
+        int progress
         datetime created_at
         datetime completed_at
     }

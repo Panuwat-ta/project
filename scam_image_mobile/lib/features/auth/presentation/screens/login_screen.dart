@@ -5,46 +5,25 @@ import 'package:go_router/go_router.dart';
 
 import '../bloc/auth_bloc.dart';
 import '../../../../core/localization/app_translations.dart';
-import '../../../../core/di/injection_container.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
-  late final AuthBloc _bloc;
-
-  @override
-  void initState() {
-    super.initState();
-    _bloc = AuthBloc(ServiceLocator.authRepository);
-  }
-
-  @override
-  void dispose() {
-    _bloc.close();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return BlocProvider<AuthBloc>.value(
-      value: _bloc,
-      child: BlocListener<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if (state is AuthAuthenticated) {
-            context.go('/main/home');
-          } else if (state is AuthError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message), backgroundColor: Colors.red),
-            );
-          }
-        },
-        child: const _LoginView(),
-      ),
+    // Uses the app-scoped AuthBloc so the real user is visible to
+    // every screen that watches it (settings, profile, etc.).
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthAuthenticated) {
+          context.go('/main/home');
+        } else if (state is AuthError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+          );
+        }
+      },
+      child: const _LoginView(),
     );
   }
 }
@@ -268,7 +247,9 @@ class _LoginViewState extends State<_LoginView> {
                             ),
                             validator: (v) {
                               if (v == null || v.isEmpty) return 'auth_email_hint'.tr(context);
-                              if (!v.contains('@')) return 'รูปแบบอีเมลไม่ถูกต้อง';
+                              if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(v)) {
+                                return 'รูปแบบอีเมลไม่ถูกต้อง';
+                              }
                               return null;
                             },
                           ),

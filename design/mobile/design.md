@@ -392,7 +392,7 @@ class AnalysisResult {
   final String taskId;
   final String status;
   final int riskScore;
-  final String riskLevel;   // "low" | "medium" | "high"
+  final String riskLevel;   // "safe" | "low" | "medium" | "high"
   final String summary;
   final String? imageUrl;
   final String? heatmapUrl;
@@ -546,11 +546,14 @@ dev_dependencies:
 - User override เก็บใน SharedPreferences
 - AppTheme ใช้ Color Tokens จาก design HTML ทุกอัน
 
-### Risk Level Calculation (Client-side display only)
+### Risk Level Calculation (Client-side display only — ต้องตรงกับ `server/app/utils/risk_calculator.py`)
 ```dart
-RiskLevel fromScore(int score) {
-  if (score < 40) return RiskLevel.low;
-  if (score < 70) return RiskLevel.medium;
-  return RiskLevel.high;
+RiskLevel fromScore(int score, int visualScore) {
+  if (score >= 70 || visualScore >= 80) return RiskLevel.high;
+  if (score >= 40) return RiskLevel.medium;
+  if (score >= 20) return RiskLevel.low;
+  return RiskLevel.safe;
 }
+// เกณฑ์: 0-19 Safe, 20-39 Low, 40-69 Medium, 70-100 High (visual >=80 บังคับ High)
+// สูตรรวม: S_total = (S_textual * 0.25) + (S_visual * 0.45) + (S_source * 0.30)
 ```

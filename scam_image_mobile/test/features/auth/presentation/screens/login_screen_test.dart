@@ -8,6 +8,7 @@ import 'package:scam_image_mobile/features/auth/presentation/screens/login_scree
 
 import 'package:scam_image_mobile/core/di/injection_container.dart';
 import 'package:scam_image_mobile/features/auth/domain/repositories/auth_repository.dart';
+import 'package:scam_image_mobile/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:scam_image_mobile/features/settings/presentation/bloc/settings_bloc.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -53,8 +54,16 @@ void main() {
     final settingsCubit = MockSettingsCubit();
     when(() => settingsCubit.state).thenReturn(const SettingsState());
 
-    return BlocProvider<SettingsCubit>.value(
-      value: settingsCubit,
+    return MultiBlocProvider(
+      providers: [
+        // The app-scoped AuthBloc the screens now consume.
+        BlocProvider<AuthBloc>(
+          create: (_) => AuthBloc(mockAuthRepo),
+        ),
+        BlocProvider<SettingsCubit>.value(
+          value: settingsCubit,
+        ),
+      ],
       child: MaterialApp.router(
         routerConfig: router,
         theme: ThemeData.dark(),

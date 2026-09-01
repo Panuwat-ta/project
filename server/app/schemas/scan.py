@@ -32,6 +32,7 @@ class ScanResponse(BaseModel):
     ai_gen_probability: float
     
     status: str
+    progress: int = 0
     created_at: datetime
     completed_at: Optional[datetime] = None
 
