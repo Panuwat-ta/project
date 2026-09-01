@@ -531,6 +531,8 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
       case RiskLevel.medium:
         return AppColors.warning;
       case RiskLevel.low:
+        return AppColors.primary;
+      case RiskLevel.safe:
         return AppColors.success;
     }
   }
@@ -552,6 +554,11 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
         textColor = isDark ? const Color(0xFFFFD494) : AppColors.warning;
         break;
       case RiskLevel.low:
+        text = 'result_low'.tr(context);
+        bgColor = isDark ? const Color(0xFF16324A) : const Color(0xFFE5F6FB);
+        textColor = isDark ? const Color(0xFF94DFFF) : AppColors.primary;
+        break;
+      case RiskLevel.safe:
         text = 'result_safe'.tr(context);
         bgColor = isDark ? const Color(0xFF184A2A) : const Color(0xFFE5FBF0);
         textColor = isDark ? const Color(0xFF94FFC8) : AppColors.success;
@@ -562,16 +569,19 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
   }
   
   Widget _buildScorePill(int score, bool isDark) {
-    final String text = score > 80 ? 'result_high'.tr(context) : (score > 40 ? 'result_medium'.tr(context) : 'result_low'.tr(context));
+    final String text = score >= 80 ? 'result_high_risk'.tr(context) : (score >= 60 ? 'result_medium'.tr(context) : (score >= 40 ? 'result_low'.tr(context) : 'result_safe'.tr(context)));
     final Color bgColor;
     final Color textColor;
     
-    if (score > 80) {
+    if (score >= 80) {
       bgColor = isDark ? const Color(0xFF4A1818) : const Color(0xFFFFEBEB);
       textColor = isDark ? const Color(0xFFFFB4B4) : AppColors.danger;
-    } else if (score > 40) {
+    } else if (score >= 60) {
       bgColor = isDark ? const Color(0xFF4A3818) : const Color(0xFFFFF4E5);
       textColor = isDark ? const Color(0xFFFFD494) : AppColors.warning;
+    } else if (score >= 40) {
+      bgColor = isDark ? const Color(0xFF16324A) : const Color(0xFFE5F6FB);
+      textColor = isDark ? const Color(0xFF94DFFF) : AppColors.primary;
     } else {
       bgColor = isDark ? const Color(0xFF184A2A) : const Color(0xFFE5FBF0);
       textColor = isDark ? const Color(0xFF94FFC8) : AppColors.success;
@@ -583,28 +593,80 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
   Widget _buildActionButtons(BuildContext context, bool isDark) {
     return Column(
       children: [
-        ElevatedButton.icon(
-          onPressed: () {},
-          icon: const Icon(Icons.info_outline, size: 18),
-          label: Text('result_report_official'.tr(context)),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: Colors.white,
-            textStyle: AppTypography.buttonLabel(),
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: ElevatedButton.icon(
+                onPressed: () {},
+                icon: const Icon(Icons.visibility_outlined, size: 20),
+                label: Text('result_details'.tr(context)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  textStyle: AppTypography.buttonLabel(),
+                ),
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: () {},
+                icon: const Icon(Icons.flag_outlined, size: 20),
+                label: Text('result_report_scam'.tr(context)),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.danger,
+                  side: BorderSide(color: isDark ? AppColors.danger.withValues(alpha: 0.5) : AppColors.danger),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  textStyle: AppTypography.buttonLabel(),
+                ),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: AppSpacing.sm),
-        OutlinedButton.icon(
-          onPressed: () => context.go('/main/history'),
-          icon: const Icon(Icons.refresh, size: 18),
-          label: Text('result_check_another'.tr(context)),
-          style: OutlinedButton.styleFrom(
-            foregroundColor: isDark ? AppColors.primaryFixedDim : AppColors.primary,
-            side: BorderSide(color: isDark ? AppColors.primaryFixedDim : AppColors.primary),
-            textStyle: AppTypography.buttonLabel(),
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  // ignore: deprecated_member_use
+                  Share.share('result_share_text'.tr(context));
+                },
+                icon: const Icon(Icons.share_outlined, size: 20),
+                label: Text('result_share'.tr(context)),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: isDark ? AppColors.primaryFixedDim : AppColors.primary,
+                  side: BorderSide(color: isDark ? AppColors.primaryFixedDim.withValues(alpha: 0.5) : AppColors.primary),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  textStyle: AppTypography.buttonLabel(),
+                ),
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: ElevatedButton.icon(
+                onPressed: () {},
+                icon: const Icon(Icons.delete_outline, size: 20),
+                label: Text('delete'.tr(context)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isDark ? const Color(0xFF3F191D) : const Color(0xFFFFEBEB),
+                  foregroundColor: isDark ? const Color(0xFFFFB4B4) : AppColors.danger,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  textStyle: AppTypography.buttonLabel(),
+                ),
+              ),
+            ),
+          ],
         ),
       ],
     );
   }
+
 }

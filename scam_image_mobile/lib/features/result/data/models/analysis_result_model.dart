@@ -33,8 +33,11 @@ class AnalysisResultModel extends AnalysisResult {
         case 'medium':
           riskLevel = RiskLevel.medium;
           break;
-        default:
+        case 'low':
           riskLevel = RiskLevel.low;
+          break;
+        default:
+          riskLevel = RiskLevel.safe;
       }
     } else {
       riskLevel = RiskLevelHelper.fromScore(riskScore);

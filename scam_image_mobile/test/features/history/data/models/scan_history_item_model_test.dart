@@ -64,7 +64,7 @@ void main() {
     test('falls back to RiskLevelHelper when no risk_level', () {
       final json = {
         'scan_id': 'scan-1',
-        'risk_score': 75,
+        'risk_score': 85,
         'status': 'completed',
         'created_at': '2026-01-01T00:00:00',
       };

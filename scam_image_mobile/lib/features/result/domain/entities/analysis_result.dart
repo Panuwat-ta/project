@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'risk_factor.dart';
 
-enum RiskLevel { low, medium, high }
+enum RiskLevel { safe, low, medium, high }
 
 class AnalysisResult extends Equatable {
   final String scanId;

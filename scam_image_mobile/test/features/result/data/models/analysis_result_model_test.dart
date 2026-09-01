@@ -83,7 +83,7 @@ void main() {
     test('falls back to RiskLevelHelper for medium range', () {
       final json = {
         'id': 'scan-1',
-        'total_risk_score': 50,
+        'total_risk_score': 70,
         'created_at': '2026-01-01T00:00:00',
       };
 
@@ -94,12 +94,23 @@ void main() {
     test('falls back to RiskLevelHelper for low range', () {
       final json = {
         'id': 'scan-1',
-        'total_risk_score': 10,
+        'total_risk_score': 50,
         'created_at': '2026-01-01T00:00:00',
       };
 
       final model = AnalysisResultModel.fromJson(json);
       expect(model.riskLevel, RiskLevel.low);
+    });
+
+    test('falls back to RiskLevelHelper for safe range', () {
+      final json = {
+        'id': 'scan-1',
+        'total_risk_score': 10,
+        'created_at': '2026-01-01T00:00:00',
+      };
+
+      final model = AnalysisResultModel.fromJson(json);
+      expect(model.riskLevel, RiskLevel.safe);
     });
   });
 

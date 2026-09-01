@@ -151,7 +151,7 @@ void main() {
       await tester.pumpWidget(buildHistoryScreen(bloc));
       await tester.pumpAndSettle();
 
-      expect(find.text('สลิปโอนเงิน'), findsOneWidget);
+      expect(find.textContaining('สลิปโอนเงิน'), findsOneWidget);
 
       bloc.close();
     });
@@ -177,8 +177,8 @@ void main() {
       await tester.pumpWidget(buildHistoryScreen(bloc));
       await tester.pumpAndSettle();
 
-      expect(find.text('รายการที่ 1'), findsOneWidget);
-      expect(find.text('รายการที่ 2'), findsOneWidget);
+      expect(find.textContaining('รายการที่ 1'), findsOneWidget);
+      expect(find.textContaining('รายการที่ 2'), findsOneWidget);
 
       bloc.close();
     });

@@ -11,6 +11,7 @@ import '../../../../core/widgets/app_bottom_navigation.dart';
 import '../../../../core/widgets/app_top_bar.dart';
 import '../../domain/entities/analysis_result.dart' as domain;
 import '../../domain/entities/risk_factor.dart' as domain;
+import '../../history/presentation/bloc/history_bloc.dart';
 import '../bloc/result_bloc.dart';
 
 class AnalysisResultScreen extends StatefulWidget {
@@ -316,44 +317,32 @@ class _ResultBody extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: ElevatedButton(
+              child: ElevatedButton.icon(
                 onPressed: () => context.push('/detail/${result.taskId}'),
+                icon: const Icon(Icons.visibility_outlined, size: 20),
+                label: Text('result_details'.tr(context)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                   elevation: 0,
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.visibility_outlined, size: 18),
-                    const SizedBox(width: 6),
-                    Flexible(child: Text('result_details'.tr(context), overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: AppTypography.buttonLabel())),
-                  ],
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  textStyle: AppTypography.buttonLabel(),
                 ),
               ),
             ),
             const SizedBox(width: AppSpacing.sm),
             Expanded(
-              child: ElevatedButton(
-                onPressed: () => context.push('/heatmap/${result.taskId}'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryContainer,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.local_fire_department_outlined, size: 18),
-                    const SizedBox(width: 6),
-                    Flexible(child: Text('result_view_heatmap'.tr(context), overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: AppTypography.buttonLabel())),
-                  ],
+              child: OutlinedButton.icon(
+                onPressed: () => context.go('/main/report'),
+                icon: const Icon(Icons.flag_outlined, size: 20),
+                label: Text('result_report_scam'.tr(context)),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.danger,
+                  side: BorderSide(color: isDark ? AppColors.danger.withValues(alpha: 0.5) : AppColors.danger),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  textStyle: AppTypography.buttonLabel(),
                 ),
               ),
             ),
@@ -363,44 +352,57 @@ class _ResultBody extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: OutlinedButton(
-                onPressed: () => context.go('/main/report'),
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  // ignore: deprecated_member_use
+                  Share.share('result_share_text'.tr(context));
+                },
+                icon: const Icon(Icons.share_outlined, size: 20),
+                label: Text('result_share'.tr(context)),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFFE53935),
-                  side: const BorderSide(color: Color(0xFFEF5350)),
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.flag_outlined, size: 18),
-                    const SizedBox(width: 6),
-                    Flexible(child: Text('result_report_scam'.tr(context), overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: AppTypography.buttonLabel())),
-                  ],
+                  foregroundColor: isDark ? AppColors.primaryFixedDim : AppColors.primary,
+                  side: BorderSide(color: isDark ? AppColors.primaryFixedDim.withValues(alpha: 0.5) : AppColors.primary),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  textStyle: AppTypography.buttonLabel(),
                 ),
               ),
             ),
             const SizedBox(width: AppSpacing.sm),
             Expanded(
-              child: OutlinedButton(
-                onPressed: () {
-                  // ignore: deprecated_member_use
-                  Share.share('result_share_text'.tr(context));
+              child: ElevatedButton.icon(
+                onPressed: () async {
+                  final confirm = await showDialog<bool>(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: Text('delete_confirm'.tr(context)),
+                      content: Text('delete_desc'.tr(context)),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx, false),
+                          child: Text('cancel'.tr(context)),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx, true),
+                          child: Text('delete'.tr(context), style: const TextStyle(color: Colors.red)),
+                        ),
+                      ],
+                    ),
+                  );
+                  if (confirm == true && context.mounted) {
+                    context.read<HistoryBloc>().add(HistoryItemDeleted(result.taskId));
+                    context.go('/main/home');
+                  }
                 },
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: isDark ? AppColors.primaryFixedDim : AppColors.primary,
-                  side: BorderSide(color: isDark ? AppColors.primaryFixedDim : AppColors.primary),
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.share_outlined, size: 18),
-                    const SizedBox(width: 6),
-                    Flexible(child: Text('result_share'.tr(context), overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: AppTypography.buttonLabel())),
-                  ],
+                icon: const Icon(Icons.delete_outline, size: 20),
+                label: Text('delete'.tr(context)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isDark ? const Color(0xFF3F191D) : const Color(0xFFFFEBEB),
+                  foregroundColor: isDark ? const Color(0xFFFFB4B4) : AppColors.danger,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  textStyle: AppTypography.buttonLabel(),
                 ),
               ),
             ),
@@ -411,24 +413,18 @@ class _ResultBody extends StatelessWidget {
         const SizedBox(height: AppSpacing.md),
         SizedBox(
           width: double.infinity,
-          child: ElevatedButton(
-            onPressed: () => context.go('/main/history'),
+          child: ElevatedButton.icon(
+            onPressed: () => context.go('/main/history'), // Should be /main/home? Current app uses history, let's keep it.
+            icon: const Icon(Icons.photo_camera_outlined, size: 20),
+            label: Text('result_check_another'.tr(context)),
             style: ElevatedButton.styleFrom(
               backgroundColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFF8F9FA),
               foregroundColor: isDark ? Colors.white : AppColors.textPrimary,
               side: isDark ? BorderSide.none : const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
               elevation: 0,
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Icon(Icons.photo_camera_outlined, size: 18),
-                const SizedBox(width: 8),
-                Text('result_check_another'.tr(context), style: AppTypography.buttonLabel()),
-              ],
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              textStyle: AppTypography.buttonLabel(),
             ),
           ),
         ),

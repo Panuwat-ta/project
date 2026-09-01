@@ -4,42 +4,56 @@ import 'package:scam_image_mobile/features/result/domain/entities/analysis_resul
 
 void main() {
   group('RiskLevelHelper.fromScore', () {
-    // ── Low boundary (0-39) ───────────────────────────────────────────────
+    // ── Safe boundary (0-39) ───────────────────────────────────────────────
 
-    test('score 0 → RiskLevel.low', () {
-      expect(RiskLevelHelper.fromScore(0), RiskLevel.low);
+    test('score 0 → RiskLevel.safe', () {
+      expect(RiskLevelHelper.fromScore(0), RiskLevel.safe);
     });
 
-    test('score 1 → RiskLevel.low', () {
-      expect(RiskLevelHelper.fromScore(1), RiskLevel.low);
+    test('score 1 → RiskLevel.safe', () {
+      expect(RiskLevelHelper.fromScore(1), RiskLevel.safe);
     });
 
-    test('score 39 → RiskLevel.low (upper boundary of low)', () {
-      expect(RiskLevelHelper.fromScore(39), RiskLevel.low);
+    test('score 39 → RiskLevel.safe (upper boundary of safe)', () {
+      expect(RiskLevelHelper.fromScore(39), RiskLevel.safe);
     });
 
-    // ── Medium boundary (40-69) ───────────────────────────────────────────
+    // ── Low boundary (40-59) ───────────────────────────────────────────
 
-    test('score 40 → RiskLevel.medium (lower boundary of medium)', () {
-      expect(RiskLevelHelper.fromScore(40), RiskLevel.medium);
+    test('score 40 → RiskLevel.low (lower boundary of low)', () {
+      expect(RiskLevelHelper.fromScore(40), RiskLevel.low);
     });
 
-    test('score 55 → RiskLevel.medium (mid-range)', () {
-      expect(RiskLevelHelper.fromScore(55), RiskLevel.medium);
+    test('score 50 → RiskLevel.low (mid-range)', () {
+      expect(RiskLevelHelper.fromScore(50), RiskLevel.low);
     });
 
-    test('score 69 → RiskLevel.medium (upper boundary of medium)', () {
-      expect(RiskLevelHelper.fromScore(69), RiskLevel.medium);
+    test('score 59 → RiskLevel.low (upper boundary of low)', () {
+      expect(RiskLevelHelper.fromScore(59), RiskLevel.low);
     });
 
-    // ── High boundary (70-100) ────────────────────────────────────────────
+    // ── Medium boundary (60-79) ────────────────────────────────────────────
 
-    test('score 70 → RiskLevel.high (lower boundary of high)', () {
-      expect(RiskLevelHelper.fromScore(70), RiskLevel.high);
+    test('score 60 → RiskLevel.medium (lower boundary of medium)', () {
+      expect(RiskLevelHelper.fromScore(60), RiskLevel.medium);
     });
 
-    test('score 85 → RiskLevel.high (mid-range)', () {
-      expect(RiskLevelHelper.fromScore(85), RiskLevel.high);
+    test('score 70 → RiskLevel.medium (mid-range)', () {
+      expect(RiskLevelHelper.fromScore(70), RiskLevel.medium);
+    });
+
+    test('score 79 → RiskLevel.medium (upper boundary of medium)', () {
+      expect(RiskLevelHelper.fromScore(79), RiskLevel.medium);
+    });
+
+    // ── High boundary (80-100) ────────────────────────────────────────────
+
+    test('score 80 → RiskLevel.high (lower boundary of high)', () {
+      expect(RiskLevelHelper.fromScore(80), RiskLevel.high);
+    });
+
+    test('score 90 → RiskLevel.high (mid-range)', () {
+      expect(RiskLevelHelper.fromScore(90), RiskLevel.high);
     });
 
     test('score 100 → RiskLevel.high (max)', () {
@@ -48,16 +62,20 @@ void main() {
   });
 
   group('RiskLevelHelper.toThaiLabel', () {
-    test('RiskLevel.low → "ต่ำ"', () {
-      expect(RiskLevelHelper.toThaiLabel(RiskLevel.low), 'ต่ำ');
+    test('RiskLevel.safe → "ปลอดภัย"', () {
+      expect(RiskLevelHelper.toThaiLabel(RiskLevel.safe), 'ปลอดภัย');
     });
 
-    test('RiskLevel.medium → "ปานกลาง"', () {
-      expect(RiskLevelHelper.toThaiLabel(RiskLevel.medium), 'ปานกลาง');
+    test('RiskLevel.low → "เสี่ยงต่ำ"', () {
+      expect(RiskLevelHelper.toThaiLabel(RiskLevel.low), 'เสี่ยงต่ำ');
     });
 
-    test('RiskLevel.high → "สูง"', () {
-      expect(RiskLevelHelper.toThaiLabel(RiskLevel.high), 'สูง');
+    test('RiskLevel.medium → "เสี่ยง"', () {
+      expect(RiskLevelHelper.toThaiLabel(RiskLevel.medium), 'เสี่ยง');
+    });
+
+    test('RiskLevel.high → "เสี่ยงสูง"', () {
+      expect(RiskLevelHelper.toThaiLabel(RiskLevel.high), 'เสี่ยงสูง');
     });
   });
 }

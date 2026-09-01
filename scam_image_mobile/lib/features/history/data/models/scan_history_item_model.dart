@@ -19,13 +19,24 @@ class ScanHistoryItemModel extends ScanHistoryItem {
         json['riskScore'] as int? ?? json['risk_score'] as int? ?? 0;
     final riskLevelStr =
         json['riskLevel'] as String? ?? json['risk_level'] as String?;
-    final riskLevel = riskLevelStr != null
-        ? (riskLevelStr == 'high'
-            ? RiskLevel.high
-            : riskLevelStr == 'medium'
-                ? RiskLevel.medium
-                : RiskLevel.low)
-        : RiskLevelHelper.fromScore(riskScore);
+    RiskLevel riskLevel;
+    if (riskLevelStr != null) {
+      switch (riskLevelStr.toLowerCase()) {
+        case 'high':
+          riskLevel = RiskLevel.high;
+          break;
+        case 'medium':
+          riskLevel = RiskLevel.medium;
+          break;
+        case 'low':
+          riskLevel = RiskLevel.low;
+          break;
+        default:
+          riskLevel = RiskLevel.safe;
+      }
+    } else {
+      riskLevel = RiskLevelHelper.fromScore(riskScore);
+    }
         
     String? parseUrl(String? url) {
       if (url == null || url.isEmpty) return null;

@@ -312,14 +312,19 @@ class _HistoryCard extends StatelessWidget {
       case domain.RiskLevel.high:
         bgColor = const Color(0xFFDC2626); // red-600
         icon = Icons.warning_amber_rounded;
-        label = 'high_risk'.tr(context);
+        label = 'result_high'.tr(context);
         break;
       case domain.RiskLevel.medium:
         bgColor = const Color(0xFFD97706); // amber-600
         icon = Icons.info_outline;
-        label = 'suspicious'.tr(context);
+        label = 'result_medium'.tr(context);
         break;
       case domain.RiskLevel.low:
+        bgColor = const Color(0xFF00A6D6); // blue
+        icon = Icons.info_outline;
+        label = 'result_low'.tr(context);
+        break;
+      case domain.RiskLevel.safe:
         bgColor = const Color(0xFF16A34A); // green-600
         icon = Icons.check_circle_outline;
         label = 'safe'.tr(context);
@@ -359,10 +364,12 @@ class _HistoryCard extends StatelessWidget {
   String _getRiskLabel(BuildContext context, domain.RiskLevel level) {
     switch (level) {
       case domain.RiskLevel.high:
-        return 'high_risk'.tr(context);
+        return 'result_high'.tr(context);
       case domain.RiskLevel.medium:
-        return 'suspicious'.tr(context);
+        return 'result_medium'.tr(context);
       case domain.RiskLevel.low:
+        return 'result_low'.tr(context);
+      case domain.RiskLevel.safe:
         return 'safe'.tr(context);
     }
   }

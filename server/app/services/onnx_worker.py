@@ -138,9 +138,12 @@ def main():
     heatmap_bytes = generate_heatmap(prob_map_visual, np.array(image))
 
     # Visual risk using the maximum probability found in the image
-    # (Using 99th percentile ignores small tampered objects < 1% area)
     ai_gen_prob = float(prob_map_true.max())
     visual_risk_score = int(ai_gen_prob * 100)
+    
+    # If the AI detects tampering (>= 30%), boost the score so the UI reflects a high severity
+    if visual_risk_score >= 30:
+        visual_risk_score = max(75, min(100, visual_risk_score * 2))
 
     result = {
         "visual_risk_score": visual_risk_score,
