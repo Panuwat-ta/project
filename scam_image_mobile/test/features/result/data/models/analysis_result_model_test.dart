@@ -83,7 +83,7 @@ void main() {
     test('falls back to RiskLevelHelper for medium range', () {
       final json = {
         'id': 'scan-1',
-        'total_risk_score': 70,
+        'total_risk_score': 50,
         'created_at': '2026-01-01T00:00:00',
       };
 
@@ -94,7 +94,7 @@ void main() {
     test('falls back to RiskLevelHelper for low range', () {
       final json = {
         'id': 'scan-1',
-        'total_risk_score': 50,
+        'total_risk_score': 30,
         'created_at': '2026-01-01T00:00:00',
       };
 

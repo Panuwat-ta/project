@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../../../core/utils/risk_level_helper.dart';
+
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -11,7 +13,7 @@ import '../../../../core/widgets/app_bottom_navigation.dart';
 import '../../../../core/widgets/app_top_bar.dart';
 import '../../domain/entities/analysis_result.dart' as domain;
 import '../../domain/entities/risk_factor.dart' as domain;
-import '../../history/presentation/bloc/history_bloc.dart';
+import '../../../history/presentation/bloc/history_bloc.dart';
 import '../bloc/result_bloc.dart';
 
 class AnalysisResultScreen extends StatefulWidget {
@@ -126,7 +128,7 @@ class _ResultBody extends StatelessWidget {
           const SizedBox(height: AppSpacing.xl),
           _buildSummaryCard(context),
           const SizedBox(height: AppSpacing.md),
-          _buildBentoGrid(context),
+          _buildVisualAnomalyCard(context),
           const SizedBox(height: AppSpacing.xl),
           _buildActionButtons(context),
           const SizedBox(height: AppSpacing.xl),
@@ -136,13 +138,19 @@ class _ResultBody extends StatelessWidget {
   }
 
   Widget _buildRiskGauge(BuildContext context) {
+    final riskColor = RiskLevelHelper.toColor(result.riskLevel);
+    final badgeBg = RiskLevelHelper.toBgColor(result.riskLevel, isDark: isDark);
+    final badgeTextColor = RiskLevelHelper.toTextColor(result.riskLevel, isDark: isDark);
+    final badgeIcon = RiskLevelHelper.toIcon(result.riskLevel);
+    final badgeLabelKey = RiskLevelHelper.toLabelKey(result.riskLevel);
+
     return Column(
       children: [
         SizedBox(
           width: 200,
           height: 120, // Half circle height approx
           child: CustomPaint(
-            painter: _ArcPainter(score: result.riskScore),
+            painter: _ArcPainter(score: result.riskScore, arcColor: riskColor),
             child: Align(
               alignment: Alignment.bottomCenter,
               child: Column(
@@ -150,7 +158,7 @@ class _ResultBody extends StatelessWidget {
                 children: [
                   Text(
                     '${result.riskScore}',
-                    style: AppTypography.displayHero(color: AppColors.danger)
+                    style: AppTypography.displayHero(color: riskColor)
                         .copyWith(fontSize: 40, height: 1.0),
                   ),
                   Text(
@@ -166,17 +174,17 @@ class _ResultBody extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF4A1818) : const Color(0xFFFFEBEB),
+            color: badgeBg,
             borderRadius: BorderRadius.circular(9999),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.warning_amber_rounded, color: isDark ? const Color(0xFFFFB4B4) : AppColors.danger, size: 16),
+              Icon(badgeIcon, color: badgeTextColor, size: 16),
               const SizedBox(width: 4),
               Text(
-                'result_high_risk'.tr(context),
-                style: AppTypography.caption(color: isDark ? const Color(0xFFFFB4B4) : AppColors.danger).copyWith(fontWeight: FontWeight.w600),
+                badgeLabelKey.tr(context),
+                style: AppTypography.caption(color: badgeTextColor).copyWith(fontWeight: FontWeight.w600),
               ),
             ],
           ),
@@ -223,86 +231,13 @@ class _ResultBody extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
-                  'result_summary_desc'.tr(context),
+                  result.summary.isNotEmpty ? result.summary : 'result_summary_desc'.tr(context),
                   style: AppTypography.bodyBase(
                     color: isDark ? Colors.white70 : AppColors.textSecondary,
                   ),
                 ),
               ],
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBentoGrid(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: _buildBentoCard(
-                icon: Icons.badge_outlined,
-                caption: 'result_contact_info'.tr(context),
-                valueText: 'result_suspicious'.tr(context),
-                valueColor: AppColors.danger,
-              ),
-            ),
-            const SizedBox(width: AppSpacing.sm),
-            Expanded(
-              child: _buildBentoCard(
-                icon: Icons.account_balance_wallet_outlined,
-                caption: 'result_transaction'.tr(context),
-                valueText: 'result_high_risk'.tr(context),
-                valueColor: AppColors.danger,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: AppSpacing.md),
-        _buildVisualAnomalyCard(context),
-      ],
-    );
-  }
-
-  Widget _buildBentoCard({
-    required IconData icon,
-    required String caption,
-    required String valueText,
-    required Color valueColor,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF162230) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isDark ? const Color(0xFF27313C) : AppColors.border,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(icon, color: AppColors.outlineVariant, size: 28),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  caption,
-                  style: AppTypography.caption(color: isDark ? Colors.white70 : AppColors.textSecondary).copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            valueText,
-            style: AppTypography.sectionHeader(color: valueColor),
           ),
         ],
       ),
@@ -470,16 +405,23 @@ class _ResultBody extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: AppSpacing.sm),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFE4E6),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  '${visualFactor.score}%',
-                  style: AppTypography.caption(color: const Color(0xFFE11D48)).copyWith(fontWeight: FontWeight.bold),
-                ),
+              Builder(
+                builder: (_) {
+                  final vLevel = RiskLevelHelper.fromScore(visualFactor.score);
+                  final vBg = RiskLevelHelper.toBgColor(vLevel, isDark: isDark);
+                  final vFg = RiskLevelHelper.toTextColor(vLevel, isDark: isDark);
+                  return Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: vBg,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      '${visualFactor.score}%',
+                      style: AppTypography.caption(color: vFg).copyWith(fontWeight: FontWeight.bold),
+                    ),
+                  );
+                },
               ),
             ],
           ),
@@ -533,7 +475,7 @@ class _ResultBody extends StatelessWidget {
                               ),
                               child: FractionallySizedBox(
                                 alignment: Alignment.centerLeft,
-                                widthFactor: 0.7, // Simulated value
+                                widthFactor: visualFactor.score / 100,
                                 child: Container(
                                   decoration: BoxDecoration(
                                     color: const Color(0xFF0284C7),
@@ -555,22 +497,26 @@ class _ResultBody extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           
-          // Alerts
-          _buildAlertItem(
-            icon: Icons.error,
-            iconColor: const Color(0xFFE11D48),
-            title: 'anomaly_edit_title'.tr(context),
-            subtitle: 'anomaly_edit_desc'.tr(context),
-            isDark: isDark,
-          ),
-          const SizedBox(height: 12),
-          _buildAlertItem(
-            icon: Icons.warning,
-            iconColor: const Color(0xFFF59E0B),
-            title: 'anomaly_pixel_title'.tr(context),
-            subtitle: 'anomaly_pixel_desc'.tr(context),
-            isDark: isDark,
-          ),
+          // Alerts from visual factor details
+          if (visualFactor.details.isNotEmpty)
+            ...visualFactor.details.map((detail) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: _buildAlertItem(
+                icon: Icons.error,
+                iconColor: RiskLevelHelper.toColor(RiskLevelHelper.fromScore(visualFactor.score)),
+                title: detail,
+                subtitle: '',
+                isDark: isDark,
+              ),
+            ))
+          else
+            _buildAlertItem(
+              icon: Icons.check_circle,
+              iconColor: AppColors.success,
+              title: 'result_safe'.tr(context),
+              subtitle: '',
+              isDark: isDark,
+            ),
         ],
       ),
     );
@@ -614,8 +560,9 @@ class _ResultBody extends StatelessWidget {
 
 class _ArcPainter extends CustomPainter {
   final int score;
+  final Color arcColor;
 
-  _ArcPainter({required this.score});
+  _ArcPainter({required this.score, required this.arcColor});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -626,7 +573,7 @@ class _ArcPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     final paintFg = Paint()
-      ..color = AppColors.danger
+      ..color = arcColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = 24
       ..strokeCap = StrokeCap.round;

@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import func, desc
 from uuid import UUID
+import os
 
 from app.core.database import get_db
 from app.api.deps import get_current_user
@@ -99,6 +100,25 @@ async def delete_history_item(
     if not scan:
         raise HTTPException(status_code=404, detail="Scan not found")
         
+    # Check if other scans share the same image_hash
+    other_scans_query = select(func.count()).select_from(Scan).where(Scan.image_hash == scan.image_hash, Scan.id != scan.id)
+    other_scans_result = await db.execute(other_scans_query)
+    other_count = other_scans_result.scalar() or 0
+    
+    # Only delete physical files if no other scan is using them
+    if other_count == 0:
+        if scan.raw_image_url and os.path.exists(scan.raw_image_url):
+            try:
+                os.remove(scan.raw_image_url)
+            except OSError:
+                pass
+                
+        if scan.heatmap_image_url and os.path.exists(scan.heatmap_image_url):
+            try:
+                os.remove(scan.heatmap_image_url)
+            except OSError:
+                pass
+            
     await db.delete(scan)
     await db.commit()
     

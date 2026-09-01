@@ -141,10 +141,6 @@ def main():
     ai_gen_prob = float(prob_map_true.max())
     visual_risk_score = int(ai_gen_prob * 100)
     
-    # If the AI detects tampering (>= 30%), boost the score so the UI reflects a high severity
-    if visual_risk_score >= 30:
-        visual_risk_score = max(75, min(100, visual_risk_score * 2))
-
     result = {
         "visual_risk_score": visual_risk_score,
         "ai_gen_probability": ai_gen_prob,

@@ -139,7 +139,8 @@ The color system is strictly semantic, mapped to risk assessment levels. **Trust
 
 ### Functional Mapping
 - **Primary (#006685):** Action-oriented elements, active states, and brand identification.
-- **Success (#006E2D):** Low risk (0-39 score).
+- **Success (#006E2D):** Safe (0-19 score).
+- **Tertiary (#EAB308):** Low risk (20-39 score).
 - **Warning (#D68900):** Medium risk (40-69 score).
 - **Danger (#DC2626):** High risk (70-100 score).
 
