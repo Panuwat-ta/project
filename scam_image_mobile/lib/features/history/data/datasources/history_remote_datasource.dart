@@ -34,7 +34,7 @@ class HistoryRemoteDataSourceImpl implements HistoryRemoteDataSource {
       final queryParams = <String, dynamic>{
         'page': page,
         'limit': limit,
-        'riskLevel': ?riskLevel,
+        'risk_level': ?riskLevel,
         'fromDate': ?fromDate?.toIso8601String(),
         'toDate': ?toDate?.toIso8601String(),
         if (keyword != null && keyword.isNotEmpty) 'keyword': keyword,

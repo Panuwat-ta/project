@@ -442,14 +442,31 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                 ),
                 child: Stack(
                   children: [
-                    if (result.heatmapUrl != null)
+                    if (result.heatmapUrl != null || result.imageUrl != null)
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: Image.network(
-                          '${ServiceLocator.dio.options.baseUrl}${result.heatmapUrl}',
+                          (result.heatmapUrl ?? result.imageUrl)!,
                           fit: BoxFit.cover,
                           width: 120,
                           height: 120,
+                          errorBuilder: (context, error, stackTrace) => Container(
+                            width: 120,
+                            height: 120,
+                            color: const Color(0xFF1E293B),
+                            child: const Icon(Icons.broken_image_outlined, color: Colors.white24, size: 32),
+                          ),
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Container(
+                              width: 120,
+                              height: 120,
+                              color: const Color(0xFF1E293B),
+                              child: const Center(
+                                child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white54)),
+                              ),
+                            );
+                          },
                         ),
                       )
                     else

@@ -139,10 +139,22 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
   }) async {
     try {
       final items = await repository.getScanHistory(keyword: keyword);
-      if (items.isEmpty) {
+      // Client-side fallback filtering: server may ignore keyword, so filter locally too
+      List<ScanHistoryItem> filtered = items;
+      if (keyword != null && keyword.trim().isNotEmpty) {
+        final kw = keyword.trim().toLowerCase();
+        filtered = items.where((it) {
+          return (it.title?.toLowerCase().contains(kw) ?? false) ||
+              it.scanId.toLowerCase().contains(kw) ||
+              it.status.toLowerCase().contains(kw) ||
+              it.riskLevel.name.toLowerCase().contains(kw) ||
+              it.riskScore.toString().contains(kw);
+        }).toList();
+      }
+      if (filtered.isEmpty) {
         emit(const HistoryEmpty());
       } else {
-        emit(HistoryDataLoaded(items));
+        emit(HistoryDataLoaded(filtered));
       }
     } catch (e) {
       emit(HistoryError(e.toString()));

@@ -58,9 +58,27 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
     );
     
     if (confirmed == true && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('privacy_deleted'.tr(context))),
-      );
+      try {
+        await context.read<SettingsCubit>().deleteAccount();
+        if (mounted) {
+          final error = context.read<SettingsCubit>().state.error;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(error ?? 'privacy_deleted'.tr(context))),
+          );
+          if (error == null) {
+            // Clear local scan history as part of local data deletion
+            try {
+              await context.read<SettingsCubit>().clearCache();
+            } catch (_) {}
+          }
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(e.toString())),
+          );
+        }
+      }
     }
   }
 
@@ -138,7 +156,26 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
                         title: 'privacy_consent_process_title'.tr(context),
                         subtitle: 'privacy_consent_process_desc'.tr(context),
                         value: state.consent.processingConsent,
-                        onChanged: null, 
+                        onChanged: (val) async {
+                          if (!val) {
+                            final isDark2 = Theme.of(context).brightness == Brightness.dark;
+                            final confirm = await showDialog<bool>(
+                              context: context,
+                              builder: (ctx) => AlertDialog(
+                                backgroundColor: Theme.of(ctx).colorScheme.surface,
+                                title: Text('privacy_consent_process_title'.tr(ctx), style: AppTypography.titleMd(color: isDark2 ? Colors.white : AppColors.textPrimary)),
+                                content: Text('privacy_disable_process_warning'.tr(ctx), style: AppTypography.bodyBase(color: isDark2 ? Colors.white70 : AppColors.textSecondary)),
+                                actions: [
+                                  TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('cancel'.tr(ctx))),
+                                  TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text('confirm'.tr(ctx), style: const TextStyle(color: AppColors.danger))),
+                                ],
+                              ),
+                            );
+                            if (confirm != true) return;
+                          }
+                          final updated = state.consent.copyWith(processingConsent: val);
+                          context.read<SettingsCubit>().updateConsents(updated);
+                        },
                       ),
                       Divider(height: 1, thickness: 1, color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
                       _ConsentTile(
@@ -167,7 +204,7 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
 
                 // ── Action Buttons ────────────────────────────────────────
                 OutlinedButton.icon(
-                  onPressed: null,
+                  onPressed: _exportData,
                   icon: const Icon(Icons.download_outlined),
                   label: Text('privacy_export_data'.tr(context), style: const TextStyle(fontSize: 16)),
                   style: OutlinedButton.styleFrom(
@@ -177,7 +214,7 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
                 ),
                 const SizedBox(height: AppSpacing.md),
                 OutlinedButton.icon(
-                  onPressed: null,
+                  onPressed: _deleteAllData,
                   icon: const Icon(Icons.cancel_presentation, color: AppColors.danger),
                   label: Text('privacy_delete_all_data'.tr(context), style: const TextStyle(color: AppColors.danger, fontSize: 16)),
                   style: OutlinedButton.styleFrom(

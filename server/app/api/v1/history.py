@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy import func, desc
+from sqlalchemy import func, desc, or_
 from uuid import UUID
 import os
 
@@ -18,20 +18,45 @@ router = APIRouter()
 async def get_history(
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
+    keyword: str = Query(None),
+    risk_level: str = Query(None),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     offset = (page - 1) * limit
+
+    # Base filter for user's scans
+    base_filters = [Scan.user_id == current_user.id]
+
+    # Keyword search: title, status, scan id
+    if keyword and keyword.strip():
+        kw = f"%{keyword.strip()}%"
+        try:
+            from sqlalchemy import cast, String as SAString
+            base_filters.append(
+                or_(
+                    Scan.title.ilike(kw),
+                    Scan.status.ilike(kw),
+                    cast(Scan.id, SAString).ilike(kw),
+                )
+            )
+        except Exception:
+            base_filters.append(
+                or_(
+                    Scan.title.ilike(kw),
+                    Scan.status.ilike(kw),
+                )
+            )
     
     # Query total
-    total_query = select(func.count()).select_from(Scan).where(Scan.user_id == current_user.id)
+    total_query = select(func.count()).select_from(Scan).where(*base_filters)
     total_result = await db.execute(total_query)
     total = total_result.scalar() or 0
     
     # Query items
     items_query = (
         select(Scan)
-        .where(Scan.user_id == current_user.id)
+        .where(*base_filters)
         .order_by(desc(Scan.created_at))
         .offset(offset)
         .limit(limit)

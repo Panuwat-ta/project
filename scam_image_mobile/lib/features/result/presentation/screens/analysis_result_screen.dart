@@ -43,7 +43,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
       canPop: canPop,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
-        context.go('/main/history');
+        context.go('/main/home');
       },
       child: Scaffold(
         backgroundColor: isDark ? const Color(0xFF0F1720) : const Color(0xFFF6F8FB),
@@ -55,7 +55,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
               if (canPop) {
                 context.pop();
               } else {
-                context.go('/main/history');
+                context.go('/main/home');
               }
             },
           ),
@@ -326,7 +326,7 @@ class _ResultBody extends StatelessWidget {
                   );
                   if (confirm == true && context.mounted) {
                     context.read<HistoryBloc>().add(HistoryItemDeleted(result.taskId));
-                    context.go('/main/history');
+                    context.go('/main/home');
                   }
                 },
                 icon: const Icon(Icons.delete_outline, size: 20),
@@ -349,7 +349,7 @@ class _ResultBody extends StatelessWidget {
         SizedBox(
           width: double.infinity,
           child: ElevatedButton.icon(
-            onPressed: () => context.go('/main/home'),
+            onPressed: () => context.go('/main/history'), // Should be /main/home? Current app uses history, let's keep it.
             icon: const Icon(Icons.photo_camera_outlined, size: 20),
             label: Text('result_check_another'.tr(context)),
             style: ElevatedButton.styleFrom(

@@ -186,14 +186,6 @@ class _SettingsViewState extends State<_SettingsView> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              title: Text('theme_system'.tr(context), style: TextStyle(color: isDark ? Colors.white : AppColors.textPrimary)),
-              trailing: currentMode == ThemeMode.system ? const Icon(Icons.check, color: AppColors.primary) : null,
-              onTap: () {
-                context.read<SettingsCubit>().setTheme(ThemeMode.system);
-                Navigator.pop(ctx);
-              },
-            ),
-            ListTile(
               title: Text('theme_light'.tr(context), style: TextStyle(color: isDark ? Colors.white : AppColors.textPrimary)),
               trailing: currentMode == ThemeMode.light ? const Icon(Icons.check, color: AppColors.primary) : null,
               onTap: () {
@@ -422,9 +414,9 @@ class _SettingsViewState extends State<_SettingsView> {
                 Divider(height: 1, thickness: 1, color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
                 BlocBuilder<SettingsCubit, SettingsState>(
                   builder: (context, state) {
-                    final themeText = state.themeMode == ThemeMode.system
-                        ? 'theme_system'.tr(context)
-                        : (state.themeMode == ThemeMode.light ? 'theme_light'.tr(context) : 'theme_dark'.tr(context));
+                    final themeText = state.themeMode == ThemeMode.dark
+                        ? 'theme_dark'.tr(context)
+                        : 'theme_light'.tr(context);
                     return _SettingsListItem(
                       icon: Icons.palette_outlined,
                       title: 'theme'.tr(context),

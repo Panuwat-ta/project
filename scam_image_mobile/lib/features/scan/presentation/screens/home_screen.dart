@@ -91,18 +91,6 @@ class _HomeViewState extends State<_HomeView>
           appBar: AppTopBar(
             automaticallyImplyLeading: false,
             actions: [
-              // Search button
-              IconButton(
-                tooltip: 'search'.tr(context),
-                onPressed: () {},
-                icon: Icon(
-                  Icons.search_outlined,
-                  color: isDark
-                      ? AppColors.outlineVariant
-                      : AppColors.onSurfaceVariant,
-                  semanticLabel: 'search'.tr(context),
-                ),
-              ),
               // Notifications button with red dot badge
               Padding(
                 padding: const EdgeInsets.only(right: AppSpacing.sm),

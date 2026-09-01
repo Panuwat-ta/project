@@ -38,8 +38,7 @@ class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
   Future<ThemeMode> getThemeMode() async {
     final mode = await secureStorage.getToken(kThemeMode);
     if (mode == 'ThemeMode.dark') return ThemeMode.dark;
-    if (mode == 'ThemeMode.light') return ThemeMode.light;
-    return ThemeMode.system;
+    return ThemeMode.light;
   }
 
   @override

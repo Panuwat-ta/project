@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -7,7 +8,9 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../../core/localization/app_translations.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../auth/domain/entities/user.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../bloc/settings_bloc.dart';
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({super.key});
@@ -46,6 +49,110 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     } catch (_) {}
     finally {
       if (mounted) setState(() { _fetchingUser = false; _didFetch = true; });
+    }
+  }
+
+  Future<void> _editDisplayName(BuildContext context, String currentName) async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final controller = TextEditingController(text: currentName == 'ผู้ใช้งาน' ? '' : currentName);
+    final formKey = GlobalKey<FormState>();
+    final newName = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Theme.of(ctx).colorScheme.surface,
+        title: Text('profile_edit'.tr(ctx), style: AppTypography.titleMd(color: isDark ? Colors.white : AppColors.textPrimary)),
+        content: Form(
+          key: formKey,
+          child: TextFormField(
+            controller: controller,
+            autofocus: true,
+            style: TextStyle(color: isDark ? Colors.white : AppColors.textPrimary),
+            decoration: InputDecoration(
+              labelText: 'profile_fullname'.tr(ctx),
+              hintText: 'auth_fullname_hint'.tr(ctx),
+              border: const OutlineInputBorder(),
+            ),
+            validator: (v) => (v == null || v.trim().isEmpty) ? 'auth_fullname_error'.tr(ctx) : null,
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text('cancel'.tr(ctx))),
+          ElevatedButton(
+            onPressed: () {
+              if (formKey.currentState!.validate()) Navigator.pop(ctx, controller.text.trim());
+            },
+            child: Text('confirm'.tr(ctx)),
+          ),
+        ],
+      ),
+    );
+    if (newName == null || newName.isEmpty || !mounted) return;
+    final authState = context.read<AuthBloc>().state;
+    if (authState is AuthAuthenticated) {
+      final updated = User(id: authState.user.id, email: authState.user.email, displayName: newName, avatarUrl: authState.user.avatarUrl);
+      context.read<AuthBloc>().add(AuthSessionRestored(updated));
+      setState(() => _fetchedName = newName);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('profile_updated'.tr(context))));
+    } else if (_fetchedEmail != null) {
+      setState(() => _fetchedName = newName);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('profile_updated'.tr(context))));
+    }
+  }
+
+  Future<void> _changePassword() async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final oldCtrl = TextEditingController();
+    final newCtrl = TextEditingController();
+    final confirmCtrl = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Theme.of(ctx).colorScheme.surface,
+        title: Text('profile_change_password'.tr(ctx), style: AppTypography.titleMd(color: isDark ? Colors.white : AppColors.textPrimary)),
+        content: Form(
+          key: formKey,
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            TextFormField(controller: oldCtrl, obscureText: true, decoration: InputDecoration(labelText: 'auth_password'.tr(ctx), border: const OutlineInputBorder()), validator: (v) => (v == null || v.isEmpty) ? 'auth_password_hint'.tr(ctx) : null),
+            const SizedBox(height: 12),
+            TextFormField(controller: newCtrl, obscureText: true, decoration: InputDecoration(labelText: 'auth_password_min_hint'.tr(ctx), border: const OutlineInputBorder()), validator: (v) => (v == null || v.length < 8) ? 'auth_password_min_error'.tr(ctx) : null),
+            const SizedBox(height: 12),
+            TextFormField(controller: confirmCtrl, obscureText: true, decoration: InputDecoration(labelText: 'auth_password_confirm'.tr(ctx), border: const OutlineInputBorder()), validator: (v) => v != newCtrl.text ? 'auth_password_match_error'.tr(ctx) : null),
+          ]),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('cancel'.tr(ctx))),
+          ElevatedButton(onPressed: () { if (formKey.currentState!.validate()) Navigator.pop(ctx, true); }, child: Text('confirm'.tr(ctx))),
+        ],
+      ),
+    );
+    if (confirmed == true && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('password_changed'.tr(context))));
+    }
+  }
+
+  Future<void> _deleteAccount() async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Theme.of(ctx).colorScheme.surface,
+        title: Text('profile_delete_account'.tr(ctx), style: const TextStyle(color: AppColors.danger)),
+        content: Text('privacy_delete_desc'.tr(ctx), style: AppTypography.bodyBase(color: isDark ? Colors.white70 : AppColors.textSecondary)),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('cancel'.tr(ctx))),
+          ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: AppColors.danger), onPressed: () => Navigator.pop(ctx, true), child: Text('delete'.tr(ctx), style: const TextStyle(color: Colors.white))),
+        ],
+      ),
+    );
+    if (confirmed == true && mounted) {
+      try {
+        await context.read<SettingsCubit>().deleteAccount();
+      } catch (_) {}
+      if (mounted) {
+        context.read<AuthBloc>().add(const LogoutRequested());
+        context.go('/login');
+      }
     }
   }
 
@@ -146,11 +253,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   const SizedBox(height: AppSpacing.lg),
                   PrimaryButton(
                     label: 'profile_edit'.tr(context),
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('coming_soon'.tr(context))),
-                      );
-                    },
+                    onPressed: () => _editDisplayName(context, userName),
                   ),
                 ],
               ),
@@ -171,19 +274,21 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     _ProfileListItem(
                       title: 'profile_fullname'.tr(context),
                       value: userName,
-                      onTap: () {},
+                      onTap: () => _editDisplayName(context, userName),
                     ),
                     Divider(height: 1, thickness: 1, color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
                     _ProfileListItem(
                       title: 'profile_email'.tr(context),
                       value: userEmail,
-                      onTap: () {},
+                      onTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(userEmail)));
+                      },
                     ),
                     Divider(height: 1, thickness: 1, color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
                     _ProfileListItem(
                       icon: Icons.lock_outline,
                       title: 'profile_change_password'.tr(context),
-                      onTap: () {},
+                      onTap: _changePassword,
                     ),
                   ],
                 ),
@@ -195,14 +300,17 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             // ── Delete Account Button ─────────────────────────────────────
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-              child: OutlinedButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.cancel_presentation, color: AppColors.danger),
-                label: Text('profile_delete_account'.tr(context), style: const TextStyle(color: AppColors.danger, fontSize: 16)),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  side: const BorderSide(color: AppColors.danger),
-                  backgroundColor: isDark ? Colors.transparent : Colors.white,
+              child: SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: _deleteAccount,
+                  icon: const Icon(Icons.cancel_presentation, color: AppColors.danger),
+                  label: Text('profile_delete_account'.tr(context), style: const TextStyle(color: AppColors.danger, fontSize: 16)),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    side: const BorderSide(color: AppColors.danger),
+                    backgroundColor: isDark ? Colors.transparent : Colors.white,
+                  ),
                 ),
               ),
             ),
