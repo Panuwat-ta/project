@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_spacing.dart';
+import '../bloc/auth_bloc.dart';
 import '../bloc/splash_cubit.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -42,6 +43,9 @@ class _SplashScreenState extends State<SplashScreen>
 
   void _handleState(BuildContext context, SplashState state) {
     if (state is SplashAuthenticated) {
+      // Push the real user from the restored session into AuthBloc so
+      // screens that watch it (settings, profile) show actual data.
+      context.read<AuthBloc>().add(AuthSessionRestored(state.user));
       context.go('/main/home');
     } else if (state is SplashUnauthenticated) {
       context.go('/login');

@@ -8,6 +8,9 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../../core/localization/app_translations.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../bloc/home_cubit.dart';
+import '../../../history/presentation/bloc/history_bloc.dart';
+import 'package:intl/intl.dart';
+import '../../../auth/presentation/bloc/auth_bloc.dart';
 
 /// Main home / scan screen — REQ-005.
 ///
@@ -55,6 +58,11 @@ class _HomeViewState extends State<_HomeView>
     _pulseAnimation = Tween<double>(begin: 1.0, end: 0.98).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
+
+    // Fetch history if not loaded yet
+    if (context.read<HistoryBloc>().state is HistoryInitial) {
+      context.read<HistoryBloc>().add(const HistoryLoaded());
+    }
   }
 
   @override
@@ -83,18 +91,6 @@ class _HomeViewState extends State<_HomeView>
           appBar: AppTopBar(
             automaticallyImplyLeading: false,
             actions: [
-              // Search button
-              IconButton(
-                tooltip: 'search'.tr(context),
-                onPressed: () {},
-                icon: Icon(
-                  Icons.search_outlined,
-                  color: isDark
-                      ? AppColors.outlineVariant
-                      : AppColors.onSurfaceVariant,
-                  semanticLabel: 'search'.tr(context),
-                ),
-              ),
               // Notifications button with red dot badge
               Padding(
                 padding: const EdgeInsets.only(right: AppSpacing.sm),
@@ -148,13 +144,21 @@ class _HomeViewState extends State<_HomeView>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'greeting'.tr(context),
-                        style: AppTypography.headlineLgMobile(
-                          color: isDark
-                              ? AppColors.inverseOnSurface
-                              : AppColors.onBackground,
-                        ),
+                      BlocBuilder<AuthBloc, AuthState>(
+                        builder: (context, state) {
+                          String name = 'ผู้ใช้งาน';
+                          if (state is AuthAuthenticated) {
+                            name = state.user.displayName;
+                          }
+                          return Text(
+                            'สวัสดี, $name',
+                            style: AppTypography.headlineLgMobile(
+                              color: isDark
+                                  ? AppColors.inverseOnSurface
+                                  : AppColors.onBackground,
+                            ),
+                          );
+                        },
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -530,24 +534,43 @@ class _RecentHistorySection extends StatelessWidget {
         ),
 
         const SizedBox(height: AppSpacing.md),
-
-        // Mock history items (will be replaced with real data in Task 17)
-        HistoryListItem(
-          title: 'สลิปโอนเงินต้องสงสัย',
-          date: '10 ต.ค. 2566 • 14:20',
-          riskLevel: RiskLevel.high,
-        ),
-        const SizedBox(height: AppSpacing.md),
-        HistoryListItem(
-          title: 'ใบแจ้งหนี้ปลอม',
-          date: '09 ต.ค. 2566 • 09:15',
-          riskLevel: RiskLevel.safe,
-        ),
-        const SizedBox(height: AppSpacing.md),
-        HistoryListItem(
-          title: 'ข้อความจาก SMS',
-          date: '08 ต.ค. 2566 • 18:45',
-          riskLevel: RiskLevel.medium,
+        
+        BlocBuilder<HistoryBloc, HistoryState>(
+          builder: (context, state) {
+            if (state is HistoryLoading || state is HistoryInitial) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is HistoryEmpty) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  child: Text(
+                    'ไม่มีประวัติการตรวจสอบ',
+                    style: AppTypography.bodyBase(color: isDark ? Colors.white54 : Colors.black54),
+                  ),
+                ),
+              );
+            } else if (state is HistoryDataLoaded) {
+              final recentItems = state.items.take(3).toList();
+              if (recentItems.isEmpty) {
+                return const SizedBox.shrink();
+              }
+              return Column(
+                children: recentItems.map((item) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                    child: HistoryListItem(
+                      title: 'สแกนเมื่อ ${DateFormat('HH:mm').format(item.createdAt)}',
+                      date: DateFormat('dd MMM yyyy • HH:mm').format(item.createdAt),
+                      riskLevel: RiskBadge.levelFromString(item.riskLevel.name),
+                      thumbnailUrl: item.thumbnailUrl,
+                      onTap: () => context.push('/result/${item.scanId}'),
+                    ),
+                  );
+                }).toList(),
+              );
+            }
+            return const SizedBox.shrink();
+          },
         ),
       ],
     );

@@ -31,7 +31,7 @@ void main() {
       // Background color is AppColors.success
       final container = tester.widget<Container>(find.byType(Container).first);
       final decoration = container.decoration as BoxDecoration;
-      expect(decoration.color, equals(AppColors.success));
+      expect(decoration.color, equals(AppColors.success.withValues(alpha: 0.15)));
     });
 
     testWidgets('medium — shows "ปานกลาง" with warning amber background',
@@ -43,7 +43,7 @@ void main() {
 
       final container = tester.widget<Container>(find.byType(Container).first);
       final decoration = container.decoration as BoxDecoration;
-      expect(decoration.color, equals(AppColors.warning));
+      expect(decoration.color, equals(AppColors.warning.withValues(alpha: 0.15)));
     });
 
     testWidgets('high — shows "สูง" with danger red background',
@@ -51,23 +51,11 @@ void main() {
       await tester.pumpWidget(buildBadge(RiskLevel.high));
       await tester.pump();
 
-      expect(find.text('สูง'), findsOneWidget);
+      expect(find.text('ความเสี่ยงสูง'), findsOneWidget);
 
       final container = tester.widget<Container>(find.byType(Container).first);
       final decoration = container.decoration as BoxDecoration;
-      expect(decoration.color, equals(AppColors.danger));
-    });
-
-    testWidgets('safe — shows "ปลอดภัย" with success green background',
-        (tester) async {
-      await tester.pumpWidget(buildBadge(RiskLevel.safe));
-      await tester.pump();
-
-      expect(find.text('ปลอดภัย'), findsOneWidget);
-
-      final container = tester.widget<Container>(find.byType(Container).first);
-      final decoration = container.decoration as BoxDecoration;
-      expect(decoration.color, equals(AppColors.success));
+      expect(decoration.color, equals(AppColors.danger.withValues(alpha: 0.15)));
     });
 
     group('levelFromString', () {
@@ -83,8 +71,8 @@ void main() {
         expect(RiskBadge.levelFromString('high'), RiskLevel.high);
       });
 
-      test('maps "safe" to RiskLevel.safe', () {
-        expect(RiskBadge.levelFromString('safe'), RiskLevel.safe);
+      test('maps "safe" to RiskLevel.low (legacy)', () {
+        expect(RiskBadge.levelFromString('safe'), RiskLevel.low);
       });
 
       test('maps unknown string to RiskLevel.low (default)', () {

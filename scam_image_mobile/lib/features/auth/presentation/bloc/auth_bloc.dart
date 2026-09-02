@@ -16,6 +16,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LoginRequested>(_onLogin);
     on<RegisterRequested>(_onRegister);
     on<LogoutRequested>(_onLogout);
+    on<AuthSessionRestored>((event, emit) => emit(AuthAuthenticated(event.user)));
   }
 
   final AuthRepository _repository;

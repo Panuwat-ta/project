@@ -71,7 +71,7 @@ class AppTranslations {
       'result_overall_risk': 'ความเสี่ยงโดยรวม',
       'result_details': 'รายละเอียด',
       'result_xai_explain': 'คำอธิบายจาก AI (XAI)',
-      'result_xai_desc': 'AI ตรวจพบความผิดปกติบริเวณมุมขวาบนของภาพ ซึ่งมีลักษณะของการตัดต่อที่ไม่เป็นธรรมชาติ นอกจากนี้ยังพบความไม่สม่ำเสมอของคุณภาพพิกเซลที่เกิดจากการบีบอัดภาพซ้อนทับกันหลายชั้น ซึ่งเป็นสัญญาณบ่งชี้ถึงการดัดแปลงภาพ',
+      'result_xai_desc': 'ภาพนี้มีความสม่ำเสมอของพิกเซล ไม่พบร่องรอยการตัดต่อที่ผิดปกติ หรือยังไม่มีคำอธิบายเพิ่มเติมจากโมเดล AI',
       'result_ocr': 'การวิเคราะห์ข้อความ',
       'result_ocr_detected': 'ข้อความที่ตรวจพบ:',
       'result_ocr_suspicious': 'คำที่น่าสงสัย',
@@ -207,12 +207,12 @@ class AppTranslations {
       'heatmap_pinch_to_zoom': 'จีบเพื่อซูม',
       // History Details Extras
       'result_analyzed_recently': 'วิเคราะห์ล่าสุดเมื่อ 2 นาทีที่แล้ว',
-      'result_high_risk': 'ความเสี่ยงสูง',
-      'result_high': 'เสี่ยงสูง',
+      'result_high_risk': 'High',
+      'result_high': 'High',
       'result_summary_title': 'สรุปผลการวิเคราะห์',
       'result_summary_desc': 'พบสัญญาณหลายอย่างที่เกี่ยวข้องกับการหลอกลวง ระบบตรวจพบองค์ประกอบที่น่าสงสัยภายในรูปภาพนี้',
       'result_contact_info': 'ข้อมูลติดต่อ',
-      'result_suspicious': 'น่าสงสัย',
+      'result_suspicious': 'Medium',
       'result_transaction': 'ธุรกรรม',
       'result_heatmap_desc': 'ดูพื้นที่ที่ระบบ AI ตรวจพบความผิดปกติในเชิงลึก',
       'result_risk_score': 'RISK SCORE',
@@ -235,10 +235,11 @@ class AppTranslations {
       'result_xai': 'คำอธิบายจาก AI (XAI)',
       'result_report_official': 'ส่งข้อมูลรายงานเจ้าหน้าที่',
       'result_check_another': 'ตรวจสอบรูปภาพอื่น',
-      'result_medium_risk': 'ความเสี่ยงปานกลาง',
-      'result_low_risk': 'ความเสี่ยงต่ำ',
-      'result_medium': 'ปานกลาง',
-      'result_low': 'เสี่ยงต่ำ',
+      'result_medium_risk': 'Medium',
+      'result_low_risk': 'Low',
+      'result_medium': 'Medium',
+      'result_low': 'Low',
+      'result_safe': 'Safe',
       // Privacy Settings
       'privacy_title': 'ความเป็นส่วนตัว',
       'privacy_manage_consent': 'จัดการความยินยอม',
@@ -252,6 +253,8 @@ class AppTranslations {
       'privacy_export_data': 'ขอสำเนาข้อมูลส่วนตัว',
       'privacy_delete_all_data': 'ลบข้อมูลการใช้งานทั้งหมด',
       'privacy_info_desc': 'ScamGuard ให้ความสำคัญกับความเป็นส่วนตัวของคุณ ข้อมูลของคุณจะถูกประมวลผลตามพระราชบัญญัติคุ้มครองข้อมูลส่วนตัว (PDPA) เราจะเก็บรักษาข้อมูลอย่างปลอดภัยและไม่ส่งต่อให้บุคคลที่สามโดยไม่ได้รับความยินยอม',
+      'privacy_disable_process_warning': 'หากปิดการยินยอมนี้ แอปจะไม่สามารถวิเคราะห์รูปภาพได้ คุณต้องการปิดจริงหรือ?',
+      'confirm': 'ยืนยัน',
       'privacy_exporting': 'กำลังดำเนินการส่งสำเนาข้อมูลของคุณ',
       'privacy_delete_title': 'ลบข้อมูลการใช้งาน',
       'privacy_delete_desc': 'คุณต้องการลบข้อมูลการใช้งานทั้งหมดใช่หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้',
@@ -262,6 +265,8 @@ class AppTranslations {
       'profile_edit': 'แก้ไขโปรไฟล์',
       'profile_fullname': 'ชื่อ-นามสกุล',
       'profile_email': 'อีเมล',
+      'profile_updated': 'อัปเดตโปรไฟล์สำเร็จ',
+      'password_changed': 'เปลี่ยนรหัสผ่านสำเร็จ',
       'profile_change_password': 'เปลี่ยนรหัสผ่าน',
       'profile_delete_account': 'ลบบัญชีผู้ใช้งาน',
       'visual_anomaly_title': 'ตรวจจับความผิดปกติ',
@@ -331,7 +336,7 @@ class AppTranslations {
       'result_overall_risk': 'Overall Risk',
       'result_details': 'Scan Details',
       'result_xai_explain': 'AI Explanation (XAI)',
-      'result_xai_desc': 'AI detected anomalies in the upper right corner of the image, showing unnatural editing traces. Additionally, inconsistent pixel quality was found due to multiple layers of image compression, indicating image manipulation.',
+      'result_xai_desc': 'Pixel structure appears consistent with no abnormal manipulation detected, or no further explanation was provided by the AI model.',
       'result_ocr': 'Text Analysis',
       'result_ocr_detected': 'Detected Text:',
       'result_ocr_suspicious': 'Suspicious Words',
@@ -497,8 +502,9 @@ class AppTranslations {
       'result_check_another': 'Check Another Image',
       'result_medium_risk': 'Medium Risk',
       'result_low_risk': 'Low Risk',
-      'result_medium': 'Medium',
-      'result_low': 'Low',
+      'result_medium': 'Medium Risk',
+      'result_low': 'Low Risk',
+      'result_safe': 'Safe',
       'settings_category_account': 'Account',
       'settings_category_preferences': 'App Preferences',
       'settings_category_data_privacy': 'Data & Privacy',
@@ -518,6 +524,8 @@ class AppTranslations {
       'privacy_export_data': 'Request Personal Data Copy',
       'privacy_delete_all_data': 'Delete All Usage Data',
       'privacy_info_desc': 'ScamGuard values your privacy. Your data is processed in accordance with PDPA. We will keep your data secure and not share it with third parties without consent.',
+      'privacy_disable_process_warning': 'If you disable this, the app cannot analyze images. Are you sure?',
+      'confirm': 'Confirm',
       'privacy_exporting': 'Processing your data export request',
       'privacy_delete_title': 'Delete Usage Data',
       'privacy_delete_desc': 'Are you sure you want to delete all usage data? This action cannot be undone.',
@@ -528,6 +536,8 @@ class AppTranslations {
       'profile_edit': 'Edit Profile',
       'profile_fullname': 'Full Name',
       'profile_email': 'Email',
+      'profile_updated': 'Profile updated successfully',
+      'password_changed': 'Password changed successfully',
       'profile_change_password': 'Change Password',
       'profile_delete_account': 'Delete Account',
       'visual_anomaly_title': 'Visual Anomaly',
@@ -541,7 +551,11 @@ class AppTranslations {
 
 extension StringTranslateExtension on String {
   String tr(BuildContext context) {
-    final lang = context.watch<SettingsCubit>().state.language;
-    return AppTranslations.localizedValues[lang]?[this] ?? AppTranslations.localizedValues['th']?[this] ?? this;
+    try {
+      final lang = context.read<SettingsCubit>().state.language;
+      return AppTranslations.localizedValues[lang]?[this] ?? AppTranslations.localizedValues['th']?[this] ?? this;
+    } catch (_) {
+      return AppTranslations.localizedValues['th']?[this] ?? this;
+    }
   }
 }

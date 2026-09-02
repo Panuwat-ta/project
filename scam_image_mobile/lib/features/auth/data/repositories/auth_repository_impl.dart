@@ -28,10 +28,11 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
   }) async {
     try {
-      final user = await remoteDataSource.login(
+      final (user, token) = await remoteDataSource.login(
         email: email,
         password: password,
       );
+      await saveTokens(token);
       return user;
     } on DioException catch (e) {
       throw _mapDioException(e);
@@ -46,11 +47,12 @@ class AuthRepositoryImpl implements AuthRepository {
     required String displayName,
   }) async {
     try {
-      final user = await remoteDataSource.register(
+      final (user, token) = await remoteDataSource.register(
         email: email,
         password: password,
         displayName: displayName,
       );
+      await saveTokens(token);
       return user;
     } on DioException catch (e) {
       throw _mapDioException(e);

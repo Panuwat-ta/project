@@ -12,6 +12,8 @@ import 'package:scam_image_mobile/features/history/presentation/bloc/history_blo
 import 'package:scam_image_mobile/features/history/presentation/screens/history_screen.dart';
 import 'package:scam_image_mobile/features/result/domain/entities/analysis_result.dart';
 
+import 'package:scam_image_mobile/features/settings/presentation/bloc/settings_bloc.dart';
+
 // ── Mocks ─────────────────────────────────────────────────────────────────────
 
 class _MockHistoryRepository extends Mock implements HistoryRepository {}
@@ -20,18 +22,27 @@ class _MockHistoryRepository extends Mock implements HistoryRepository {}
 class _MockHistoryBloc extends MockBloc<HistoryEvent, HistoryState>
     implements HistoryBloc {}
 
+class _MockSettingsCubit extends MockCubit<SettingsState>
+    implements SettingsCubit {}
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 /// Build the HistoryScreen inside a GoRouter so go_router navigation calls
 /// don't throw. The HistoryBloc is provided externally via [bloc].
 Widget buildHistoryScreen(HistoryBloc bloc) {
+  final settingsCubit = _MockSettingsCubit();
+  when(() => settingsCubit.state).thenReturn(const SettingsState());
+
   final router = GoRouter(
     initialLocation: '/main/history',
     routes: [
       GoRoute(
         path: '/main/history',
-        builder: (_, _) => BlocProvider.value(
-          value: bloc,
+        builder: (_, _) => MultiBlocProvider(
+          providers: [
+            BlocProvider<HistoryBloc>.value(value: bloc),
+            BlocProvider<SettingsCubit>.value(value: settingsCubit),
+          ],
           child: const HistoryScreen(),
         ),
       ),
@@ -140,7 +151,7 @@ void main() {
       await tester.pumpWidget(buildHistoryScreen(bloc));
       await tester.pumpAndSettle();
 
-      expect(find.text('สลิปโอนเงิน'), findsOneWidget);
+      expect(find.textContaining('สลิปโอนเงิน'), findsOneWidget);
 
       bloc.close();
     });
@@ -166,8 +177,8 @@ void main() {
       await tester.pumpWidget(buildHistoryScreen(bloc));
       await tester.pumpAndSettle();
 
-      expect(find.text('รายการที่ 1'), findsOneWidget);
-      expect(find.text('รายการที่ 2'), findsOneWidget);
+      expect(find.textContaining('รายการที่ 1'), findsOneWidget);
+      expect(find.textContaining('รายการที่ 2'), findsOneWidget);
 
       bloc.close();
     });

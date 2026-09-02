@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entities/scan_history_item.dart';
 import '../../domain/repositories/history_repository.dart';
-import '../../../../features/result/domain/entities/analysis_result.dart';
+
 
 // ── Events ──────────────────────────────────────────────────────────────────
 
@@ -139,10 +139,22 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
   }) async {
     try {
       final items = await repository.getScanHistory(keyword: keyword);
-      if (items.isEmpty) {
+      // Client-side fallback filtering: server may ignore keyword, so filter locally too
+      List<ScanHistoryItem> filtered = items;
+      if (keyword != null && keyword.trim().isNotEmpty) {
+        final kw = keyword.trim().toLowerCase();
+        filtered = items.where((it) {
+          return (it.title?.toLowerCase().contains(kw) ?? false) ||
+              it.scanId.toLowerCase().contains(kw) ||
+              it.status.toLowerCase().contains(kw) ||
+              it.riskLevel.name.toLowerCase().contains(kw) ||
+              it.riskScore.toString().contains(kw);
+        }).toList();
+      }
+      if (filtered.isEmpty) {
         emit(const HistoryEmpty());
       } else {
-        emit(HistoryDataLoaded(items));
+        emit(HistoryDataLoaded(filtered));
       }
     } catch (e) {
       emit(HistoryError(e.toString()));
@@ -150,71 +162,4 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
   }
 }
 
-// ── Mock Repository stub (dev / demo) ────────────────────────────────────────
 
-/// Stub that returns fake [ScanHistoryItem] entries after a short delay.
-/// Used by [HistoryScreen] during development until a real backend is wired up.
-class MockHistoryRepository implements HistoryRepository {
-  @override
-  Future<List<ScanHistoryItem>> getScanHistory({
-    int page = 1,
-    int limit = 20,
-    String? riskLevel,
-    DateTime? fromDate,
-    DateTime? toDate,
-    String? keyword,
-  }) async {
-    await Future.delayed(const Duration(milliseconds: 600));
-    final items = [
-      ScanHistoryItem(
-        scanId: 'scan_001',
-        riskScore: 92,
-        riskLevel: RiskLevel.high,
-        status: 'completed',
-        createdAt: DateTime(2023, 10, 24, 14, 20),
-        title: 'สลิปโอนเงินธนาคาร',
-        thumbnailUrl: 'https://picsum.photos/seed/slip/200', // Mock image
-      ),
-      ScanHistoryItem(
-        scanId: 'scan_002',
-        riskScore: 45,
-        riskLevel: RiskLevel.medium,
-        status: 'completed',
-        createdAt: DateTime(2023, 10, 23, 10, 45),
-        title: 'คิวอาร์โค้ดชำระเงิน',
-        thumbnailUrl: 'https://picsum.photos/seed/qr/200',
-      ),
-      ScanHistoryItem(
-        scanId: 'scan_003',
-        riskScore: 12,
-        riskLevel: RiskLevel.low,
-        status: 'completed',
-        createdAt: DateTime(2023, 10, 22, 9, 12),
-        title: 'เอกสารยืนยันตัวตน',
-        thumbnailUrl: 'https://picsum.photos/seed/doc/200',
-      ),
-      ScanHistoryItem(
-        scanId: 'scan_004',
-        riskScore: 88,
-        riskLevel: RiskLevel.high,
-        status: 'completed',
-        createdAt: DateTime(2023, 10, 21, 18, 30),
-        title: 'ลิงก์ข้อความ SMS',
-        thumbnailUrl: 'https://picsum.photos/seed/sms/200',
-      ),
-    ];
-    if (keyword != null && keyword.isNotEmpty) {
-      return items
-          .where((i) =>
-              (i.title ?? '').toLowerCase().contains(keyword.toLowerCase()))
-          .toList();
-    }
-    return items;
-  }
-
-  @override
-  Future<void> deleteScanHistoryItem(String scanId) async {}
-
-  @override
-  Future<void> clearAllHistory() async {}
-}

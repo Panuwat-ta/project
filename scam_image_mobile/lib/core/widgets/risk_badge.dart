@@ -3,14 +3,13 @@ import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 
 /// Risk level values accepted by [RiskBadge].
-enum RiskLevel { low, medium, high, safe }
+enum RiskLevel { low, medium, high }
 
 /// Small pill-shaped badge that communicates a risk level with color + Thai text.
 ///
-/// * low    → success green  / ต่ำ
-/// * medium → warning amber  / ปานกลาง
-/// * high   → danger red     / สูง
-/// * safe   → success green  / ปลอดภัย
+/// * low    → success green  / ต่ำ (0-39%)
+/// * medium → warning amber  / ปานกลาง (40-69%)
+/// * high   → danger red     / สูง (70-100%)
 class RiskBadge extends StatelessWidget {
   const RiskBadge({super.key, required this.riskLevel});
 
@@ -36,12 +35,6 @@ class RiskBadge extends StatelessWidget {
           fg: AppColors.danger,
           label: 'ความเสี่ยงสูง',
         );
-      case RiskLevel.safe:
-        return _BadgeStyle(
-          bg: AppColors.success.withValues(alpha: 0.15),
-          fg: AppColors.success,
-          label: 'ปลอดภัย',
-        );
     }
   }
 
@@ -52,10 +45,9 @@ class RiskBadge extends StatelessWidget {
         return RiskLevel.medium;
       case 'high':
         return RiskLevel.high;
-      case 'safe':
-        return RiskLevel.safe;
       case 'low':
       default:
+        // legacy 'safe' -> low
         return RiskLevel.low;
     }
   }

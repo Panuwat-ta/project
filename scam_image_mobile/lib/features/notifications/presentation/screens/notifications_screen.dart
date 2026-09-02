@@ -8,6 +8,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/localization/app_translations.dart';
 import '../../../../core/widgets/widgets.dart';
+import '../../../history/presentation/bloc/history_bloc.dart';
 import '../../../settings/presentation/bloc/settings_bloc.dart';
 import '../../domain/entities/app_notification.dart';
 import '../cubit/notifications_cubit.dart';
@@ -18,19 +19,21 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
-  late final NotificationsCubit _cubit;
-
   @override
   void initState() {
     super.initState();
-    _cubit = NotificationsCubit();
-    _cubit.loadNotifications();
-  }
-
-  @override
-  void dispose() {
-    _cubit.close();
-    super.dispose();
+    // Sync with real history data if already loaded
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final historyState = context.read<HistoryBloc>().state;
+      if (historyState is HistoryDataLoaded) {
+        context.read<NotificationsCubit>().syncFromHistory(historyState.items);
+      } else if (historyState is HistoryEmpty) {
+        context.read<NotificationsCubit>().loadNotifications();
+      } else {
+        // Trigger history load and listen for result
+        context.read<HistoryBloc>().add(const HistoryLoaded());
+      }
+    });
   }
 
   IconData _iconForType(NotificationType type) {
@@ -55,9 +58,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     
-    return BlocProvider.value(
-      value: _cubit,
-      child: Scaffold(
+    return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.surface,
           title: Text('notif_title'.tr(context), style: AppTypography.sectionHeader(color: Theme.of(context).colorScheme.onSurface)),
@@ -67,19 +68,31 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               if (context.canPop()) {
                 context.pop();
               } else {
-                context.go('/main/scan');
+                context.go('/main/home');
               }
             },
           ),
           actions: [
             TextButton(
-              onPressed: () => _cubit.clearAll(),
+              onPressed: () => context.read<NotificationsCubit>().clearAll(),
               child: Text('notif_clear_all'.tr(context),
                 style: AppTypography.caption(color: AppColors.primaryFixedDim).copyWith(fontWeight: FontWeight.w600)),
             ),
           ],
         ),
-        body: BlocBuilder<NotificationsCubit, NotificationsState>(
+        body: MultiBlocListener(
+          listeners: [
+            BlocListener<HistoryBloc, HistoryState>(
+              listener: (context, state) {
+                if (state is HistoryDataLoaded) {
+                  context.read<NotificationsCubit>().syncFromHistory(state.items);
+                } else if (state is HistoryEmpty) {
+                  context.read<NotificationsCubit>().loadNotifications();
+                }
+              },
+            ),
+          ],
+          child: BlocBuilder<NotificationsCubit, NotificationsState>(
           builder: (context, state) {
             if (state.items.isEmpty) {
               return EmptyStateView(
@@ -133,10 +146,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       ),
                       child: const Icon(Icons.delete_outline, color: Colors.white, size: 24),
                     ),
-                    onDismissed: (_) => _cubit.dismissNotification(notification.id),
+                    onDismissed: (_) => context.read<NotificationsCubit>().dismissNotification(notification.id),
                     child: GestureDetector(
                       onTap: () {
-                        _cubit.markAsRead(notification.id);
+                        context.read<NotificationsCubit>().markAsRead(notification.id);
                         if (notification.scanId != null) {
                           context.push('/result/${notification.scanId}');
                         }
@@ -238,7 +251,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     ),
                   ),
                 );
-                    }).toList(),
+                    }),
                   ],
                 );
               },

@@ -6,6 +6,7 @@ abstract class ScanRepository {
     required String filePath,
     required bool consentForResearch,
     required String clientRequestId,
+    String? scanName,
   });
 
   /// Polls the current status of an analysis task.

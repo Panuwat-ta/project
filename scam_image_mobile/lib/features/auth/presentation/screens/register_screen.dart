@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../domain/entities/auth_token.dart';
-import '../../domain/entities/user.dart';
-import '../../domain/repositories/auth_repository.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/consent_cubit.dart';
 import '../../../../core/localization/app_translations.dart';
+import '../../../../core/di/injection_container.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -22,7 +20,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   void initState() {
     super.initState();
-    _bloc = AuthBloc(_MockAuthRepository());
+    _bloc = AuthBloc(ServiceLocator.authRepository);
   }
 
   @override
@@ -436,28 +434,3 @@ class _RegisterViewState extends State<_RegisterView> {
   }
 }
 
-class _MockAuthRepository implements AuthRepository {
-  @override
-  Future<bool> hasValidToken() async => false;
-  @override
-  Future<User?> getCurrentUser() async => null;
-  @override
-  Future<User> login({required String email, required String password}) => throw UnimplementedError();
-  @override
-  Future<User> register({required String email, required String password, required String displayName}) async {
-    await Future.delayed(const Duration(seconds: 2));
-    return User(id: '1', email: email, displayName: displayName);
-  }
-  @override
-  Future<void> logout() async {}
-  @override
-  Future<AuthToken?> refreshToken() async => null;
-  @override
-  Future<void> saveTokens(AuthToken token) => throw UnimplementedError();
-  @override
-  Future<void> clearTokens() => throw UnimplementedError();
-  @override
-  Future<bool> hasSeenOnboarding() async => false;
-  @override
-  Future<void> markOnboardingSeen() async {}
-}

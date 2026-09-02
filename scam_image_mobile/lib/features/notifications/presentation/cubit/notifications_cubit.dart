@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entities/app_notification.dart';
+import '../../../history/domain/entities/scan_history_item.dart';
+import '../../../result/domain/entities/analysis_result.dart' show RiskLevel;
 
 class NotificationsState extends Equatable {
   final List<AppNotification> items;
@@ -15,31 +17,43 @@ class NotificationsCubit extends Cubit<NotificationsState> {
   NotificationsCubit() : super(const NotificationsState());
 
   void loadNotifications() {
-    emit(NotificationsState(items: [
-      AppNotification(
-        id: 'n1',
-        type: NotificationType.scanCompleted,
-        title: 'วิเคราะห์เสร็จสิ้น',
-        body: 'รูปภาพสลิปโอนเงินของคุณวิเคราะห์เสร็จแล้ว',
-        createdAt: DateTime.now().subtract(const Duration(minutes: 2)),
-        scanId: 'mock_scan_001',
-      ),
-      AppNotification(
-        id: 'n2',
-        type: NotificationType.scamAlert,
-        title: 'พบความเสี่ยงใหม่',
-        body: 'Scam Alert: ระวังลิงก์ปลอมจาก SMS กู้เงินด่วน',
-        createdAt: DateTime.now().subtract(const Duration(hours: 1)),
-      ),
-      AppNotification(
-        id: 'n3',
-        type: NotificationType.scanFailed,
-        title: 'งานวิเคราะห์ล้มเหลว',
-        body: 'ไม่สามารถประมวลผลรูปภาพได้ เนื่องจากขนาดไฟล์ใหญ่เกินไป',
-        createdAt: DateTime.now().subtract(const Duration(hours: 5)),
-        isRead: true,
-      ),
-    ]));
+    if (state.items.isNotEmpty) return;
+    emit(const NotificationsState(items: []));
+  }
+
+  /// Build notifications from real scan history — called by the screen
+  /// when history data is available. No backend notification API needed.
+  void syncFromHistory(List<ScanHistoryItem> history) {
+    if (history.isEmpty) {
+      emit(const NotificationsState(items: []));
+      return;
+    }
+    final now = DateTime.now();
+    final notifs = <AppNotification>[];
+    for (final item in history.take(20)) {
+      final isHigh = item.riskLevel == RiskLevel.high;
+      final isFailed = item.status != 'completed';
+      notifs.add(AppNotification(
+        id: 'notif_${item.scanId}',
+        type: isFailed
+            ? NotificationType.scanFailed
+            : isHigh
+                ? NotificationType.scamAlert
+                : NotificationType.scanCompleted,
+        title: isFailed
+            ? 'การสแกนล้มเหลว'
+            : isHigh
+                ? 'ตรวจพบความเสี่ยงสูง'
+                : 'สแกนเสร็จสิ้น',
+        body: isFailed
+            ? 'รูป ${item.scanId.substring(0, 8)} ประมวลผลไม่สำเร็จ'
+            : '${item.title ?? 'รูปภาพ'} — คะแนนความเสี่ยง ${item.riskScore}%',
+        createdAt: item.createdAt.isAfter(now) ? now : item.createdAt,
+        scanId: item.scanId,
+      ));
+    }
+    notifs.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    emit(NotificationsState(items: notifs));
   }
 
   void markAsRead(String id) {

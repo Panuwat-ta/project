@@ -18,46 +18,36 @@
         <p class="lede">ระบบรวมผลลัพธ์จาก 3 ชั้นการวิเคราะห์เป็น <strong>Weighted Risk Score</strong> (0–100) และแสดงผลเป็นระดับความเสี่ยงแบบ color-coded ให้ผู้ใช้</p>
     <div class="divider"></div>
     <h2>สูตรคำนวณ</h2>
-    <blockquote>
-    <p><strong>WARNING:</strong><br />
-    <strong>ข้อขัดแย้งด้านสถาปัตยกรรม (Architectural Conflict):</strong> 
-    เอกสารฉบับเก่า (<code>design/architecture.md</code>) ระบุการคำนวณโดยใช้ 3 ปัจจัย (Text 25%, Visual 45%, Source 30%) แต่เอกสารล่าสุด (<code>Document/model/model.md</code>) ได้ปรับลดความซับซ้อนลงเหลือเพียง <strong>2 ปัจจัยหลัก</strong> 
-    <em>โดยยึดตาม <code>Document/model/model.md</code> เป็น Authoritative Source ล่าสุด</em></p>
-    </blockquote>
-    <p>สูตรคำนวณที่อัปเดตล่าสุดคือ:
-    <script type="math/tex; mode=display"> S_{total} = (\alpha \times S_{visual}) + (\beta \times S_{textual}) </script>
-    </p>
+    <p>ระบบประมวลผลคะแนนความเสี่ยงของรูปภาพโดยรวมผลลัพธ์จากการวิเคราะห์หลายชั้นเข้าด้วยกัน โดยใช้สมการแบบถ่วงน้ำหนัก (Weighted Average) จาก 3 ปัจจัยหลัก ตามสูตรเดียวกับ <code>server/app/utils/risk_calculator.py</code>:</p>
+    <p><script type="math/tex; mode=display"> S_{total} = (S_{textual} \times 0.25) + (S_{visual} \times 0.45) + (S_{source} \times 0.30) </script></p>
     <table>
     <thead>
     <tr>
     <th style="text-align: left;">ส่วนประกอบ</th>
     <th style="text-align: left;">ตัวแปร</th>
-    <th style="text-align: left;">น้ำหนักปัจจุบัน</th>
-    <th style="text-align: left;">น้ำหนักเดิม (Legacy)</th>
+    <th style="text-align: left;">น้ำหนัก</th>
     </tr>
     </thead>
     <tbody>
     <tr>
     <td style="text-align: left;">ตรวจจับความผิดปกติทางภาพ (SegFormer)</td>
-    <td style="text-align: left;">$S_{visual}$ / $\alpha$</td>
-    <td style="text-align: left;"><strong>60%</strong> ($\alpha=0.6$)</td>
-    <td style="text-align: left;">45%</td>
+    <td style="text-align: left;">$S_{visual}$</td>
+    <td style="text-align: left;"><strong>45%</strong> (0.45)</td>
     </tr>
     <tr>
-    <td style="text-align: left;">วิเคราะห์ข้อความหลอกลวง (NLP)</td>
-    <td style="text-align: left;">$S_{textual}$ / $\beta$</td>
-    <td style="text-align: left;"><strong>40%</strong> ($\beta=0.4$)</td>
-    <td style="text-align: left;">25%</td>
+    <td style="text-align: left;">วิเคราะห์ข้อความหลอกลวง (OCR+NLP)</td>
+    <td style="text-align: left;">$S_{textual}$</td>
+    <td style="text-align: left;"><strong>25%</strong> (0.25)</td>
     </tr>
     <tr>
     <td style="text-align: left;">ตรวจสอบแหล่งที่มา (Reverse Search)</td>
     <td style="text-align: left;">$S_{source}$</td>
-    <td style="text-align: left;">- (นำออกชั่วคราว)</td>
-    <td style="text-align: left;">30%</td>
+    <td style="text-align: left;"><strong>30%</strong> (0.30)</td>
     </tr>
     </tbody>
     </table>
     <p>คะแนนแต่ละส่วนถูก normalize เป็น 0–100 ก่อนคูณน้ำหนัก</p>
+    <p><strong>เหตุผลการถ่วงน้ำหนัก:</strong> ระบบให้น้ำหนักทางด้านภาพ ($S_{visual}$) สูงสุดที่ 45% เนื่องจากเป็นสัญญาณนิติวิทยาศาสตร์ที่มีความแม่นยำที่สุด เป็นหลักฐานที่เกิดจากการประมวลผลระดับพิกเซล; แหล่งที่มา ($S_{source}$) ได้น้ำหนัก 30% เพื่อสะท้อนบริบทการถูกเผยแพร่บนอินเทอร์เน็ต; ขณะที่ข้อความ ($S_{textual}$) อาจมีความคลุมเครือตามบริบทหรือภาพบางชนิดอาจไม่มีข้อความเลย จึงได้น้ำหนัก 25%</p>
     <div class="divider"></div>
     <h2>ระดับความเสี่ยง (Risk Grade)</h2>
     <table>
@@ -71,20 +61,26 @@
     </thead>
     <tbody>
     <tr>
-    <td style="text-align: left;">&lt; 30</td>
+    <td style="text-align: left;">&lt; 20</td>
     <td style="text-align: left;"><strong>Safe</strong> (ปลอดภัย)</td>
     <td style="text-align: left;">เขียว</td>
     <td style="text-align: left;">ไม่พบสัญญาณการดัดแปลงหรือหลอกลวงที่ชัดเจน</td>
     </tr>
     <tr>
-    <td style="text-align: left;">30 – 70</td>
-    <td style="text-align: left;"><strong>Suspicious</strong> (น่าสงสัย)</td>
-    <td style="text-align: left;">เหลือง</td>
+    <td style="text-align: left;">20 – 39</td>
+    <td style="text-align: left;"><strong>Low</strong> (เสี่ยงต่ำ)</td>
+    <td style="text-align: left;">เหลืองอ่อน</td>
+    <td style="text-align: left;">พบสัญญาณน่าสงสัยเล็กน้อย หรือความน่าจะเป็นต่ำมาก</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">40 – 69</td>
+    <td style="text-align: left;"><strong>Medium</strong> (น่าสงสัย)</td>
+    <td style="text-align: left;">ส้ม</td>
     <td style="text-align: left;">พบสัญญาณน่าสงสัยบางจุด ควรใช้วิจารณญาณประกอบ</td>
     </tr>
     <tr>
-    <td style="text-align: left;">&gt; 70</td>
-    <td style="text-align: left;"><strong>Danger</strong> (อันตราย)</td>
+    <td style="text-align: left;">&gt;= 70</td>
+    <td style="text-align: left;"><strong>High</strong> (อันตราย)</td>
     <td style="text-align: left;">แดง</td>
     <td style="text-align: left;">พบหลักฐานการตัดต่อ คำหลอกลวง หรือภาพที่ถูกนำไปใช้ซ้ำชัดเจน</td>
     </tr>
@@ -92,7 +88,7 @@
     </table>
     <div class="divider"></div>
     <h2>เหตุผลของการกำหนดน้ำหนัก</h2>
-    <p>ชั้น Visual Anomaly มีน้ำหนักสูงสุด (45%) เพราะเป็นสัญญาณที่แม่นยำที่สุดในระดับนิติวิทยาศาสตร์ — ตรวจจับการดัดแปลงพิกเซลโดยตรง ชั้น Source Verification (30%) เป็นสัญญาณแรงเมื่อ fired แต่ให้ false negative สำหรับภาพหลอกลวงที่เพิ่งสร้างใหม่ ชั้น Textual (25%) รวดเร็วและประหยัดทรัพยากร แต่อาจไม่ทำงานเลยหากภาพไม่มีข้อความ</p>
+    <p>ชั้น Visual Anomaly มีน้ำหนักสูงสุด (45%) เพราะเป็นสัญญาณนิติวิทยาศาสตร์ที่แม่นยำที่สุด — ตรวจจับการดัดแปลงพิกเซลโดยตรง แหล่งที่มา ($S_{source}$) ได้น้ำหนัก 30% เพื่อสะท้อนบริบทการถูกเผยแพร่บนอินเทอร์เน็ต ชั้น Textual (25%) รวดเร็วและประหยัดทรัพยากร แต่อาจมีความคลุมเครือหรือภาพบางชนิดไม่มีข้อความเลย จึงได้น้ำหนักน้อยสุด</p>
     <div class="divider"></div>
     <h2>พฤติกรรมการ Cache</h2>
     <p>เมื่อคำนวณ Risk Score สำหรับภาพใดแล้ว จะ hash รูปภาพและเก็บไว้ใน <strong>Redis</strong> ถ้ามีการส่งรูปเดิมซ้ำ จะดึงผลลัพธ์จาก <strong>PostgreSQL</strong> ทันทีโดยไม่รัน AI Pipeline ซ้ำ ทำให้ latency ลดจาก 15 วินาทีเหลือต่ำกว่า 3 วินาทีสำหรับภาพที่เคยวิเคราะห์แล้ว</p>

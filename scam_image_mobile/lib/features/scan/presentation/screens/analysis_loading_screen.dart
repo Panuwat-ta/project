@@ -62,7 +62,7 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
 
     // Start the scan on first frame using the context-provided ScanBloc
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ScanBloc>().add(CropConfirmed(widget.filePath));
+      context.read<ScanBloc>().add(CropConfirmed(widget.filePath, scanName: widget.scanName));
     });
   }
 

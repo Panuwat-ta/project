@@ -1,0 +1,14 @@
+--- auth_event.dart
++++ auth_event.dart
+@@ -40,3 +40,11 @@
+   @override
+   List<Object?> get props => [];
+ }
++
++class AuthSessionRestored extends AuthEvent {
++  const AuthSessionRestored(this.user);
++  final User user;
++
++  @override
++  List<Object?> get props => [user];
++}

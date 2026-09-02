@@ -26,4 +26,10 @@ abstract class SettingsRepository {
 
   /// Saves the language.
   Future<void> saveLanguage(String language);
+
+  /// Total size in bytes of on-device cache files.
+  Future<int> getCacheSizeBytes();
+
+  /// Deletes all on-device cache files.
+  Future<void> clearCache();
 }

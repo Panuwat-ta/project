@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     
     # Security
     SECURE_COOKIES: bool = False
-    ALLOWED_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173"
+    ALLOWED_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173,http://localhost:59913,*"
 
     # Database
     DATABASE_URL: str = "postgresql+asyncpg://scamguard:password@localhost:5432/scamguard_db"
@@ -42,6 +42,11 @@ class Settings(BaseSettings):
     ONNX_MODEL_PATH: str = "/home/panuwat/project/model/segformer/work_dirs/v1.0.0/segformer_v1_dynamic.onnx"
     ONNX_TILE_SIZE: int = 512
     ONNX_TILE_OVERLAP: int = 64
+
+    # Explainable AI (XAI) - Qwen2.5-1.5B (GGUF)
+    XAI_MODEL_PATH: str = "/home/panuwat/project/model/Qwen2.5-1.5B/qwen2.5-1.5b-instruct-q4_k_m.gguf"
+    XAI_GPU_LAYERS: int = -1  # -1 = offload all layers to GPU
+    XAI_CONTEXT_SIZE: int = 1024
 
     # Rate Limit
     RATE_LIMIT_PER_HOUR: int = 60

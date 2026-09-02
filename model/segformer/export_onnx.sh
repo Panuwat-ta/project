@@ -21,7 +21,7 @@ export LD_LIBRARY_PATH="${SCRIPT_DIR}/venv/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PA
 # ============================================================
 
 # ระบุโฟลเดอร์เวอร์ชันที่ต้องการ export ระบบจะค้นหา config และ checkpoint ล่าสุดให้อัตโนมัติ
-RUN_DIR="./work_dirs/v1.0.2"
+RUN_DIR="./work_dirs/v1.0.4"
 
 # Export resolution (dummy input สำหรับ tracing, runtime รับ size อะไรก็ได้)
 HEIGHT=1024

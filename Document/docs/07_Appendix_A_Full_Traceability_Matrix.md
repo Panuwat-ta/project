@@ -72,70 +72,71 @@
 | 37 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-05 | FR-ANALYSIS-03 | 4 | Fallback เมื่อ API Down | Must | ✅ | srs-doc.md |
 | 38 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-07 | FR-ANALYSIS-04 | 1 | คำนวณคะแนนรวมสำเร็จ | Must | ✅ | srs-doc.md |
 | 39 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-07 | FR-ANALYSIS-04 | 2 | จำกัดคะแนนในช่วง 0-100 | Must | ✅ | srs-doc.md |
-| 40 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-08 | FR-ANALYSIS-04 | 3 | แปลงเป็น Risk Grade (Low) | Must | ✅ | srs-doc.md |
-| 41 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-08 | FR-ANALYSIS-04 | 4 | แปลงเป็น Risk Grade (Medium) | Must | ✅ | srs-doc.md |
-| 42 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-08 | FR-ANALYSIS-04 | 5 | แปลงเป็น Risk Grade (High) | Must | ✅ | srs-doc.md |
-| 43 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-08 | FR-ANALYSIS-04 | 6 | Special Rule — Visual Score ≥ 80 | Must | ✅ | srs-doc.md |
-| 44 | ST01, ST03 | OBJ-02, OBJ-04 | SC01, SC03 | RC-XAI-01 | FR-XAI-01 | 1 | สร้าง Heatmap สำเร็จ | Must | ✅ | srs-doc.md |
-| 45 | ST01, ST03 | OBJ-02, OBJ-04 | SC01, SC03 | RC-XAI-02 | FR-XAI-01 | 2 | แสดง Heatmap แบบ Overlay | Must | ✅ | srs-doc.md |
-| 46 | ST01, ST03 | OBJ-02, OBJ-04 | SC01, SC03 | RC-XAI-02 | FR-XAI-01 | 3 | Toggle Heatmap On/Off | Must | ✅ | srs-doc.md |
-| 47 | ST01, ST03 | OBJ-02, OBJ-04 | SC01, SC03 | RC-XAI-02 | FR-XAI-01 | 4 | ปรับความโปร่งใส Heatmap | Must | ✅ | srs-doc.md |
-| 48 | ST01, ST03 | OBJ-02, OBJ-04 | SC01, SC03 | RC-XAI-03 | FR-XAI-01 | 5 | แสดง Risk Breakdown | Must | ✅ | srs-doc.md |
-| 49 | ST01 | OBJ-01 | SC01 | RC-HISTORY-01 | FR-HISTORY-01 | 1 | แสดงประวัติการสแกน | Must | ✅ | srs-doc.md |
-| 50 | ST01 | OBJ-01 | SC01 | RC-HISTORY-01 | FR-HISTORY-01 | 2 | ค้นหาตามช่วงวันที่ | Must | ✅ | srs-doc.md |
-| 51 | ST01 | OBJ-01 | SC01 | RC-HISTORY-01 | FR-HISTORY-01 | 3 | กรองตามระดับความเสี่ยง | Must | ✅ | srs-doc.md |
-| 52 | ST01 | OBJ-01 | SC01 | RC-HISTORY-04 | FR-HISTORY-01 | 4 | ลบประวัติทีละรายการ | Must | ✅ | srs-doc.md |
-| 53 | ST01 | OBJ-01 | SC01 | RC-HISTORY-04 | FR-HISTORY-01 | 5 | ลบประวัติทั้งหมด | Must | ✅ | srs-doc.md |
-| 54 | ST01, ST02 | OBJ-01 | SC01 | RC-HISTORY-05 | FR-HISTORY-02 | 1 | รายงานสำเร็จ | Must | ✅ | srs-doc.md |
-| 55 | ST01, ST02 | OBJ-01 | SC01 | RC-HISTORY-05 | FR-HISTORY-02 | 2 | ปฏิเสธการรายงานซ้ำ | Must | ✅ | srs-doc.md |
-| 56 | ST01, ST02 | OBJ-01 | SC01 | RC-HISTORY-05 | FR-HISTORY-02 | 3 | ปฏิเสธคำอธิบายสั้นเกินไป | Must | ✅ | srs-doc.md |
-| 57 | ST01, ST02 | OBJ-01 | SC01 | RC-HISTORY-05 | FR-HISTORY-02 | 4 | หมวดหมู่รายงาน | Must | ✅ | srs-doc.md |
-| 58 | ST01 | OBJ-01 | SC01 | RC-PDPA-01 | FR-PDPA-01 | 1 | แสดงหน้า Consent Screen | Must | ✅ | srs-doc.md |
-| 59 | ST01 | OBJ-01 | SC01 | RC-PDPA-01 | FR-PDPA-01 | 2 | บันทึก Consent Logs | Must | ✅ | srs-doc.md |
-| 60 | ST01 | OBJ-01 | SC01 | RC-PDPA-02 | FR-PDPA-01 | 3 | ถอน Research Consent | Must | ✅ | srs-doc.md |
-| 61 | ST01 | OBJ-01 | SC01 | RC-PDPA-03 | FR-PDPA-01 | 4 | Right to Access — ดูข้อมูลส่วนตัว | Must | ✅ | srs-doc.md |
-| 62 | ST01 | OBJ-01 | SC01 | RC-PDPA-03 | FR-PDPA-01 | 5 | Right to Access — ดู Consent Logs | Must | ✅ | srs-doc.md |
-| 63 | ST02, ST03 | OBJ-04 | SC04 | RC-ADMIN-01 | FR-ADMIN-01 | 1 | แสดง Dashboard Statistics | Must | ✅ | srs-doc.md |
-| 64 | ST02, ST03 | OBJ-04 | SC04 | RC-ADMIN-01 | FR-ADMIN-01 | 2 | แสดงรายการผู้ใช้ | Must | ✅ | srs-doc.md |
-| 65 | ST02, ST03 | OBJ-04 | SC04 | RC-ADMIN-01 | FR-ADMIN-01 | 3 | ค้นหาผู้ใช้ | Must | ✅ | srs-doc.md |
-| 66 | ST02, ST03 | OBJ-04 | SC04 | RC-ADMIN-06 | FR-ADMIN-01 | 4 | เปลี่ยนบทบาทผู้ใช้ | Must | ✅ | srs-doc.md |
-| 67 | ST02, ST03 | OBJ-04 | SC04 | RC-ADMIN-02 | FR-ADMIN-01 | 5 | เปลี่ยนสถานะผู้ใช้ | Must | ✅ | srs-doc.md |
-| 68 | ST02, ST03 | OBJ-04 | SC04 | RC-ADMIN-06 | FR-ADMIN-01 | 6 | RBAC — ปฏิเสธ Non-Admin | Must | ✅ | srs-doc.md |
-| 69 | ST02 | OBJ-04 | SC04 | RC-ADMIN-03 | FR-ADMIN-02 | 1 | แสดง Report Queue | Must | ✅ | srs-doc.md |
-| 70 | ST02 | OBJ-04 | SC04 | RC-ADMIN-03 | FR-ADMIN-02 | 2 | เปลี่ยนสถานะเป็น Reviewing | Must | ✅ | srs-doc.md |
-| 71 | ST02 | OBJ-04 | SC04 | RC-ADMIN-03 | FR-ADMIN-02 | 3 | อนุมัติรายงาน | Must | ✅ | srs-doc.md |
-| 72 | ST02 | OBJ-04 | SC04 | RC-ADMIN-03 | FR-ADMIN-02 | 4 | ปฏิเสธรายงาน | Must | ✅ | srs-doc.md |
-| 73 | ST02 | OBJ-04 | SC04 | RC-ADMIN-03 | FR-ADMIN-02 | 5 | ปฏิเสธการ Reject โดยไม่มีเหตุผล | Must | ✅ | srs-doc.md |
-| 74 | ST02 | OBJ-04 | SC04 | RC-ADMIN-04 | FR-ADMIN-03 | 1 | แสดงรายการโมเดล | Must | ✅ | srs-doc.md |
-| 75 | ST02 | OBJ-04 | SC04 | RC-ADMIN-04 | FR-ADMIN-03 | 2 | อัปโหลดโมเดลใหม่ | Must | ✅ | srs-doc.md |
-| 76 | ST02 | OBJ-04 | SC04 | RC-ADMIN-04 | FR-ADMIN-03 | 3 | เปิดใช้งานโมเดล | Must | ✅ | srs-doc.md |
-| 77 | ST02 | OBJ-04 | SC04 | RC-ADMIN-04 | FR-ADMIN-03 | 4 | ปฏิเสธเมื่อมีโมเดล Active >1 | Must | ✅ | srs-doc.md |
-| 78 | ST02, ST03 | OBJ-04 | SC04 | RC-ADMIN-05 | FR-ADMIN-04 | 1 | แสดง Audit Logs | Must | ✅ | srs-doc.md |
-| 79 | ST02, ST03 | OBJ-04 | SC04 | RC-ADMIN-05 | FR-ADMIN-04 | 2 | ค้นหาตาม Admin | Must | ✅ | srs-doc.md |
-| 80 | ST02, ST03 | OBJ-04 | SC04 | RC-ADMIN-05 | FR-ADMIN-04 | 3 | ค้นหาตาม Action | Must | ✅ | srs-doc.md |
-| 81 | ST02, ST03 | OBJ-04 | SC04 | RC-ADMIN-05 | FR-ADMIN-04 | 4 | ค้นหาตามช่วงวันที่ | Must | ✅ | srs-doc.md |
-| 82 | ST02, ST03 | OBJ-04 | SC04 | RC-ADMIN-05 | FR-ADMIN-04 | 5 | Audit Logs เป็น Immutable | Must | ✅ | srs-doc.md |
-| 83 | ST01 | OBJ-04 | SC02, SC03 | RC-NFR-01 | NFR-01 | 1 | Cache Hit Response Time ≤ 3 วินาที | Must | ✅ | srs-doc.md |
-| 84 | ST01 | OBJ-04 | SC02, SC03 | RC-NFR-02 | NFR-01 | 2 | New Analysis Response Time Percentiles | Must | ✅ | srs-doc.md |
-| 85 | ST01 | OBJ-04 | SC02, SC03 | RC-NFR-01 | NFR-01 | 3 | AI Inference Time ≤ 10 วินาที (GPU) | Must | ✅ | srs-doc.md |
-| 86 | ST01 | OBJ-04 | SC02, SC03 | RC-NFR-03 | NFR-01 | 4 | AI Inference Time ≤ 60 วินาที (CPU Fallback) | Must | ✅ | srs-doc.md |
-| 87 | ST01 | OBJ-04 | SC02 | RC-NFR-05 | NFR-02 | 1 | รองรับ 100 Concurrent Users | Must | ✅ | srs-doc.md |
-| 88 | ST01, ST02 | OBJ-04 | SC02 | RC-NFR-04 | NFR-03 | 1 | Uptime ≥ 99.5% | Must | ✅ | srs-doc.md |
-| 89 | ST01, ST02 | OBJ-04 | SC02 | RC-NFR-04 | NFR-03 | 2 | Monitoring Tools Implementation | Must | ✅ | srs-doc.md |
-| 90 | ST01, ST02 | OBJ-04 | SC02 | RC-NFR-04 | NFR-03 | 3 | Alerting Strategy Implementation | Must | ✅ | srs-doc.md |
-| 91 | ST01, ST02 | OBJ-04 | SC02 | RC-NFR-08 | NFR-04 | 1 | HTTPS/TLS 1.3 บังคับทุก Endpoint | Must | ✅ | srs-doc.md |
-| 92 | ST01, ST02 | OBJ-04 | SC02 | RC-NFR-08 | NFR-04 | 2 | JWT Token มี TTL ที่ถูกต้อง | Must | ✅ | srs-doc.md |
-| 93 | ST01, ST02 | OBJ-04 | SC02 | RC-NFR-08 | NFR-04 | 3 | Password Hashing ด้วย bcrypt | Must | ✅ | srs-doc.md |
-| 94 | ST01, ST02 | OBJ-04 | SC02 | RC-NFR-08 | NFR-04 | 4 | Rate Limiting ทำงาน | Must | ✅ | srs-doc.md |
-| 95 | ST01, ST02 | OBJ-04 | SC02 | RC-NFR-08 | NFR-04 | 5 | Input Validation | Must | ✅ | srs-doc.md |
-| 96 | ST01, ST02, ST03 | OBJ-02 | SC03 | RC-NFR-06 | NFR-05 | 1 | Accuracy ≥ 85% | Must | ✅ | srs-doc.md |
-| 97 | ST01, ST02, ST03 | OBJ-02 | SC03 | RC-NFR-06 | NFR-05 | 2 | F1-Score ≥ 85% | Must | ✅ | srs-doc.md |
-| 98 | ST01, ST02, ST03 | OBJ-02 | SC03 | RC-NFR-06 | NFR-05 | 3 | Precision ≥ 85% | Must | ✅ | srs-doc.md |
-| 99 | ST01, ST02, ST03 | OBJ-02 | SC03 | RC-NFR-06 | NFR-05 | 4 | Recall ≥ 85% | Must | ✅ | srs-doc.md |
-| 100 | ST01, ST03 | OBJ-04 | SC01, SC03 | RC-NFR-09 | NFR-06 | 1 | คะแนนความพึงพอใจ ≥ 4.00 | Must | ✅ | srs-doc.md |
-| 101 | ST01, ST03 | OBJ-04 | SC01, SC03 | RC-NFR-10 | NFR-06 | 2 | ผู้ใช้เข้าใจ Heatmap ≥ 80% | Must | ✅ | srs-doc.md |
-| 102 | ST01 | OBJ-04 | SC02 | RC-NFR-07 | NFR-07 | 1 | Cache Hit Rate ≥ 40% | Should | ✅ | srs-doc.md |
-| 103 | ST01 | OBJ-04 | SC02 | RC-NFR-07 | NFR-07 | 2 | Performance Tuning Strategy | Should | ✅ | srs-doc.md |
+| 40 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-08 | FR-ANALYSIS-04 | 3 | แปลงเป็น Risk Grade (Safe) | Must | ✅ | srs-doc.md |
+| 41 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-08 | FR-ANALYSIS-04 | 4 | แปลงเป็น Risk Grade (Low) | Must | ✅ | srs-doc.md |
+| 42 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-08 | FR-ANALYSIS-04 | 5 | แปลงเป็น Risk Grade (Medium) | Must | ✅ | srs-doc.md |
+| 43 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-08 | FR-ANALYSIS-04 | 6 | แปลงเป็น Risk Grade (High) | Must | ✅ | srs-doc.md |
+| 44 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-08 | FR-ANALYSIS-04 | 7 | Special Rule — Visual Score ≥ 80 | Must | ✅ | srs-doc.md |
+| 45 | ST01, ST03 | OBJ-02, OBJ-04 | SC01, SC03 | RC-XAI-01 | FR-XAI-01 | 1 | สร้าง Heatmap สำเร็จ | Must | ✅ | srs-doc.md |
+| 46 | ST01, ST03 | OBJ-02, OBJ-04 | SC01, SC03 | RC-XAI-02 | FR-XAI-01 | 2 | แสดง Heatmap แบบ Overlay | Must | ✅ | srs-doc.md |
+| 47 | ST01, ST03 | OBJ-02, OBJ-04 | SC01, SC03 | RC-XAI-02 | FR-XAI-01 | 3 | Toggle Heatmap On/Off | Must | ✅ | srs-doc.md |
+| 48 | ST01, ST03 | OBJ-02, OBJ-04 | SC01, SC03 | RC-XAI-02 | FR-XAI-01 | 4 | ปรับความโปร่งใส Heatmap | Must | ✅ | srs-doc.md |
+| 49 | ST01, ST03 | OBJ-02, OBJ-04 | SC01, SC03 | RC-XAI-03 | FR-XAI-01 | 5 | แสดง Risk Breakdown | Must | ✅ | srs-doc.md |
+| 50 | ST01 | OBJ-01 | SC01 | RC-HISTORY-01 | FR-HISTORY-01 | 1 | แสดงประวัติการสแกน | Must | ✅ | srs-doc.md |
+| 51 | ST01 | OBJ-01 | SC01 | RC-HISTORY-01 | FR-HISTORY-01 | 2 | ค้นหาตามช่วงวันที่ | Must | ✅ | srs-doc.md |
+| 52 | ST01 | OBJ-01 | SC01 | RC-HISTORY-01 | FR-HISTORY-01 | 3 | กรองตามระดับความเสี่ยง | Must | ✅ | srs-doc.md |
+| 53 | ST01 | OBJ-01 | SC01 | RC-HISTORY-04 | FR-HISTORY-01 | 4 | ลบประวัติทีละรายการ | Must | ✅ | srs-doc.md |
+| 54 | ST01 | OBJ-01 | SC01 | RC-HISTORY-04 | FR-HISTORY-01 | 5 | ลบประวัติทั้งหมด | Must | ✅ | srs-doc.md |
+| 55 | ST01, ST02 | OBJ-01 | SC01 | RC-HISTORY-05 | FR-HISTORY-02 | 1 | รายงานสำเร็จ | Must | ✅ | srs-doc.md |
+| 56 | ST01, ST02 | OBJ-01 | SC01 | RC-HISTORY-05 | FR-HISTORY-02 | 2 | ปฏิเสธการรายงานซ้ำ | Must | ✅ | srs-doc.md |
+| 57 | ST01, ST02 | OBJ-01 | SC01 | RC-HISTORY-05 | FR-HISTORY-02 | 3 | ปฏิเสธคำอธิบายสั้นเกินไป | Must | ✅ | srs-doc.md |
+| 58 | ST01, ST02 | OBJ-01 | SC01 | RC-HISTORY-05 | FR-HISTORY-02 | 4 | หมวดหมู่รายงาน | Must | ✅ | srs-doc.md |
+| 59 | ST01 | OBJ-01 | SC01 | RC-PDPA-01 | FR-PDPA-01 | 1 | แสดงหน้า Consent Screen | Must | ✅ | srs-doc.md |
+| 60 | ST01 | OBJ-01 | SC01 | RC-PDPA-01 | FR-PDPA-01 | 2 | บันทึก Consent Logs | Must | ✅ | srs-doc.md |
+| 61 | ST01 | OBJ-01 | SC01 | RC-PDPA-02 | FR-PDPA-01 | 3 | ถอน Research Consent | Must | ✅ | srs-doc.md |
+| 62 | ST01 | OBJ-01 | SC01 | RC-PDPA-03 | FR-PDPA-01 | 4 | Right to Access — ดูข้อมูลส่วนตัว | Must | ✅ | srs-doc.md |
+| 63 | ST01 | OBJ-01 | SC01 | RC-PDPA-03 | FR-PDPA-01 | 5 | Right to Access — ดู Consent Logs | Must | ✅ | srs-doc.md |
+| 64 | ST02, ST03 | OBJ-04 | SC04 | RC-ADMIN-01 | FR-ADMIN-01 | 1 | แสดง Dashboard Statistics | Must | ✅ | srs-doc.md |
+| 65 | ST02, ST03 | OBJ-04 | SC04 | RC-ADMIN-01 | FR-ADMIN-01 | 2 | แสดงรายการผู้ใช้ | Must | ✅ | srs-doc.md |
+| 66 | ST02, ST03 | OBJ-04 | SC04 | RC-ADMIN-01 | FR-ADMIN-01 | 3 | ค้นหาผู้ใช้ | Must | ✅ | srs-doc.md |
+| 67 | ST02, ST03 | OBJ-04 | SC04 | RC-ADMIN-06 | FR-ADMIN-01 | 4 | เปลี่ยนบทบาทผู้ใช้ | Must | ✅ | srs-doc.md |
+| 68 | ST02, ST03 | OBJ-04 | SC04 | RC-ADMIN-02 | FR-ADMIN-01 | 5 | เปลี่ยนสถานะผู้ใช้ | Must | ✅ | srs-doc.md |
+| 69 | ST02, ST03 | OBJ-04 | SC04 | RC-ADMIN-06 | FR-ADMIN-01 | 6 | RBAC — ปฏิเสธ Non-Admin | Must | ✅ | srs-doc.md |
+| 70 | ST02 | OBJ-04 | SC04 | RC-ADMIN-03 | FR-ADMIN-02 | 1 | แสดง Report Queue | Must | ✅ | srs-doc.md |
+| 71 | ST02 | OBJ-04 | SC04 | RC-ADMIN-03 | FR-ADMIN-02 | 2 | เปลี่ยนสถานะเป็น Reviewing | Must | ✅ | srs-doc.md |
+| 72 | ST02 | OBJ-04 | SC04 | RC-ADMIN-03 | FR-ADMIN-02 | 3 | อนุมัติรายงาน | Must | ✅ | srs-doc.md |
+| 73 | ST02 | OBJ-04 | SC04 | RC-ADMIN-03 | FR-ADMIN-02 | 4 | ปฏิเสธรายงาน | Must | ✅ | srs-doc.md |
+| 74 | ST02 | OBJ-04 | SC04 | RC-ADMIN-03 | FR-ADMIN-02 | 5 | ปฏิเสธการ Reject โดยไม่มีเหตุผล | Must | ✅ | srs-doc.md |
+| 75 | ST02 | OBJ-04 | SC04 | RC-ADMIN-04 | FR-ADMIN-03 | 1 | แสดงรายการโมเดล | Must | ✅ | srs-doc.md |
+| 76 | ST02 | OBJ-04 | SC04 | RC-ADMIN-04 | FR-ADMIN-03 | 2 | อัปโหลดโมเดลใหม่ | Must | ✅ | srs-doc.md |
+| 77 | ST02 | OBJ-04 | SC04 | RC-ADMIN-04 | FR-ADMIN-03 | 3 | เปิดใช้งานโมเดล | Must | ✅ | srs-doc.md |
+| 78 | ST02 | OBJ-04 | SC04 | RC-ADMIN-04 | FR-ADMIN-03 | 4 | ปฏิเสธเมื่อมีโมเดล Active >1 | Must | ✅ | srs-doc.md |
+| 79 | ST02, ST03 | OBJ-04 | SC04 | RC-ADMIN-05 | FR-ADMIN-04 | 1 | แสดง Audit Logs | Must | ✅ | srs-doc.md |
+| 80 | ST02, ST03 | OBJ-04 | SC04 | RC-ADMIN-05 | FR-ADMIN-04 | 2 | ค้นหาตาม Admin | Must | ✅ | srs-doc.md |
+| 81 | ST02, ST03 | OBJ-04 | SC04 | RC-ADMIN-05 | FR-ADMIN-04 | 3 | ค้นหาตาม Action | Must | ✅ | srs-doc.md |
+| 82 | ST02, ST03 | OBJ-04 | SC04 | RC-ADMIN-05 | FR-ADMIN-04 | 4 | ค้นหาตามช่วงวันที่ | Must | ✅ | srs-doc.md |
+| 83 | ST02, ST03 | OBJ-04 | SC04 | RC-ADMIN-05 | FR-ADMIN-04 | 5 | Audit Logs เป็น Immutable | Must | ✅ | srs-doc.md |
+| 84 | ST01 | OBJ-04 | SC02, SC03 | RC-NFR-01 | NFR-01 | 1 | Cache Hit Response Time ≤ 3 วินาที | Must | ✅ | srs-doc.md |
+| 85 | ST01 | OBJ-04 | SC02, SC03 | RC-NFR-02 | NFR-01 | 2 | New Analysis Response Time Percentiles | Must | ✅ | srs-doc.md |
+| 86 | ST01 | OBJ-04 | SC02, SC03 | RC-NFR-01 | NFR-01 | 3 | AI Inference Time ≤ 10 วินาที (GPU) | Must | ✅ | srs-doc.md |
+| 87 | ST01 | OBJ-04 | SC02, SC03 | RC-NFR-03 | NFR-01 | 4 | AI Inference Time ≤ 60 วินาที (CPU Fallback) | Must | ✅ | srs-doc.md |
+| 88 | ST01 | OBJ-04 | SC02 | RC-NFR-05 | NFR-02 | 1 | รองรับ 100 Concurrent Users | Must | ✅ | srs-doc.md |
+| 89 | ST01, ST02 | OBJ-04 | SC02 | RC-NFR-04 | NFR-03 | 1 | Uptime ≥ 99.5% | Must | ✅ | srs-doc.md |
+| 90 | ST01, ST02 | OBJ-04 | SC02 | RC-NFR-04 | NFR-03 | 2 | Monitoring Tools Implementation | Must | ✅ | srs-doc.md |
+| 91 | ST01, ST02 | OBJ-04 | SC02 | RC-NFR-04 | NFR-03 | 3 | Alerting Strategy Implementation | Must | ✅ | srs-doc.md |
+| 92 | ST01, ST02 | OBJ-04 | SC02 | RC-NFR-08 | NFR-04 | 1 | HTTPS/TLS 1.3 บังคับทุก Endpoint | Must | ✅ | srs-doc.md |
+| 93 | ST01, ST02 | OBJ-04 | SC02 | RC-NFR-08 | NFR-04 | 2 | JWT Token มี TTL ที่ถูกต้อง | Must | ✅ | srs-doc.md |
+| 94 | ST01, ST02 | OBJ-04 | SC02 | RC-NFR-08 | NFR-04 | 3 | Password Hashing ด้วย bcrypt | Must | ✅ | srs-doc.md |
+| 95 | ST01, ST02 | OBJ-04 | SC02 | RC-NFR-08 | NFR-04 | 4 | Rate Limiting ทำงาน | Must | ✅ | srs-doc.md |
+| 96 | ST01, ST02 | OBJ-04 | SC02 | RC-NFR-08 | NFR-04 | 5 | Input Validation | Must | ✅ | srs-doc.md |
+| 97 | ST01, ST02, ST03 | OBJ-02 | SC03 | RC-NFR-06 | NFR-05 | 1 | Accuracy ≥ 85% | Must | ✅ | srs-doc.md |
+| 98 | ST01, ST02, ST03 | OBJ-02 | SC03 | RC-NFR-06 | NFR-05 | 2 | F1-Score ≥ 85% | Must | ✅ | srs-doc.md |
+| 99 | ST01, ST02, ST03 | OBJ-02 | SC03 | RC-NFR-06 | NFR-05 | 3 | Precision ≥ 85% | Must | ✅ | srs-doc.md |
+| 100 | ST01, ST02, ST03 | OBJ-02 | SC03 | RC-NFR-06 | NFR-05 | 4 | Recall ≥ 85% | Must | ✅ | srs-doc.md |
+| 101 | ST01, ST03 | OBJ-04 | SC01, SC03 | RC-NFR-09 | NFR-06 | 1 | คะแนนความพึงพอใจ ≥ 4.00 | Must | ✅ | srs-doc.md |
+| 102 | ST01, ST03 | OBJ-04 | SC01, SC03 | RC-NFR-10 | NFR-06 | 2 | ผู้ใช้เข้าใจ Heatmap ≥ 80% | Must | ✅ | srs-doc.md |
+| 103 | ST01 | OBJ-04 | SC02 | RC-NFR-07 | NFR-07 | 1 | Cache Hit Rate ≥ 40% | Should | ✅ | srs-doc.md |
+| 104 | ST01 | OBJ-04 | SC02 | RC-NFR-07 | NFR-07 | 2 | Performance Tuning Strategy | Should | ✅ | srs-doc.md |
 
 ---
 

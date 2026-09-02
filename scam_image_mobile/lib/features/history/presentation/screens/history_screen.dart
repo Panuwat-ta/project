@@ -27,6 +27,7 @@ class HistoryScreen extends StatefulWidget {
 class _HistoryScreenState extends State<HistoryScreen> {
   final _searchController = TextEditingController();
   Timer? _debounce;
+  String? _selectedRiskLevel;
 
   @override
   void initState() {
@@ -37,10 +38,49 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   void _onSearchChanged() {
+    if (mounted) setState(() {});
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 400), () {
-      context.read<HistoryBloc>().add(HistorySearched(_searchController.text));
+      if (mounted) context.read<HistoryBloc>().add(HistorySearched(_searchController.text));
     });
+  }
+
+  void _showFilterDialog() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 12),
+            Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[400], borderRadius: BorderRadius.circular(2))),
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text('filter'.tr(context), style: AppTypography.sectionHeader(color: isDark ? Colors.white : AppColors.onSurface)),
+            ),
+            const SizedBox(height: 12),
+            ...[
+              (null, 'ทั้งหมด'),
+              ('high', 'เสี่ยงสูง'),
+              ('medium', 'เสี่ยงปานกลาง'),
+              ('low', 'เสี่ยงต่ำ'),
+            ].map((e) => ListTile(
+                  title: Text(e.$2, style: TextStyle(color: isDark ? Colors.white : AppColors.onSurface)),
+                  trailing: _selectedRiskLevel == e.$1 ? const Icon(Icons.check, color: AppColors.primary) : null,
+                  onTap: () {
+                    setState(() => _selectedRiskLevel = e.$1);
+                    Navigator.pop(ctx);
+                  },
+                )),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -79,8 +119,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   // Title row with count badge
                   BlocBuilder<HistoryBloc, HistoryState>(
                     builder: (context, state) {
-                      final count =
-                          state is HistoryDataLoaded ? state.items.length : 0;
+                      int count = 0;
+                      if (state is HistoryDataLoaded) {
+                        count = _selectedRiskLevel == null
+                            ? state.items.length
+                            : state.items.where((it) => it.riskLevel.name == _selectedRiskLevel).length;
+                      }
                       return Row(
                         children: [
                           Flexible(
@@ -130,6 +174,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               Icons.search_outlined,
                               color: AppColors.outlineVariant,
                             ),
+                            suffixIcon: _searchController.text.isNotEmpty
+                                ? IconButton(
+                                    icon: const Icon(Icons.clear, size: 20, color: AppColors.outlineVariant),
+                                    onPressed: () {
+                                      _searchController.clear();
+                                    },
+                                  )
+                                : null,
                             filled: true,
                             fillColor: isDark ? const Color(0xFF141921) : Colors.white,
                             border: OutlineInputBorder(
@@ -139,6 +191,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16),
                               borderSide: BorderSide(color: isDark ? Colors.white24 : Colors.black12),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: BorderSide(color: AppColors.primary.withValues(alpha: 0.5)),
                             ),
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: AppSpacing.md,
@@ -159,13 +215,29 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               color: isDark ? Colors.white24 : Colors.black12,
                             ),
                           ),
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.tune,
-                              color: isDark ? AppColors.primaryFixedDim : AppColors.primary,
-                            ),
-                            onPressed: () {}, // Filter dialog — future feature
-                            tooltip: 'filter'.tr(context),
+                          child: Stack(
+                            children: [
+                              IconButton(
+                                icon: Icon(
+                                  Icons.tune,
+                                  color: _selectedRiskLevel != null
+                                      ? AppColors.primary
+                                      : (isDark ? AppColors.primaryFixedDim : AppColors.primary),
+                                ),
+                                onPressed: _showFilterDialog,
+                                tooltip: 'filter'.tr(context),
+                              ),
+                              if (_selectedRiskLevel != null)
+                                Positioned(
+                                  top: 8,
+                                  right: 8,
+                                  child: Container(
+                                    width: 8,
+                                    height: 8,
+                                    decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
                       ),
@@ -203,6 +275,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   }
 
                   if (state is HistoryDataLoaded) {
+                    // Apply client-side risk filter if selected
+                    final filtered = _selectedRiskLevel == null
+                        ? state.items
+                        : state.items.where((it) => it.riskLevel.name == _selectedRiskLevel).toList();
+                    if (filtered.isEmpty) {
+                      return core_widgets.EmptyStateView(
+                        icon: Icons.search_off_outlined,
+                        title: 'ไม่พบผลลัพธ์',
+                        subtitle: _selectedRiskLevel != null
+                            ? 'ไม่พบประวัติระดับ ${_selectedRiskLevel == 'high' ? 'เสี่ยงสูง' : _selectedRiskLevel == 'medium' ? 'เสี่ยงปานกลาง' : _selectedRiskLevel == 'low' ? 'เสี่ยงต่ำ' : 'ปลอดภัย'}'
+                            : 'ไม่พบประวัติที่ตรงกับคำค้นหา',
+                      );
+                    }
                     return RefreshIndicator(
                       color: AppColors.primaryFixedDim,
                       onRefresh: () async {
@@ -218,11 +303,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           AppSpacing.safeMargin,
                           AppSpacing.xxl,
                         ),
-                        itemCount: state.items.length,
+                        itemCount: filtered.length,
                         separatorBuilder: (context2, i) =>
                             const SizedBox(height: AppSpacing.md),
                         itemBuilder: (context, index) {
-                          final item = state.items[index];
+                          final item = filtered[index];
                           return Dismissible(
                             key: Key(item.scanId),
                             direction: DismissDirection.endToStart,
@@ -306,23 +391,19 @@ class _HistoryCard extends StatelessWidget {
   Widget _buildRiskBadge(BuildContext context, domain.RiskLevel level, int score) {
     Color bgColor;
     IconData icon;
-    String label;
     
     switch (level) {
       case domain.RiskLevel.high:
-        bgColor = const Color(0xFFDC2626); // red-600
+        bgColor = const Color(0xFFDC2626);
         icon = Icons.warning_amber_rounded;
-        label = 'high_risk'.tr(context);
         break;
       case domain.RiskLevel.medium:
-        bgColor = const Color(0xFFD97706); // amber-600
+        bgColor = const Color(0xFFD97706);
         icon = Icons.info_outline;
-        label = 'suspicious'.tr(context);
         break;
       case domain.RiskLevel.low:
-        bgColor = const Color(0xFF16A34A); // green-600
-        icon = Icons.check_circle_outline;
-        label = 'safe'.tr(context);
+        bgColor = const Color(0xFF00A6D6);
+        icon = Icons.info_outline;
         break;
     }
     
@@ -338,7 +419,7 @@ class _HistoryCard extends StatelessWidget {
           Icon(icon, color: Colors.white, size: 16),
           const SizedBox(width: 4),
           Text(
-            '$label ($score%)',
+            '$score%',
             style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
           ),
         ],
@@ -346,7 +427,7 @@ class _HistoryCard extends StatelessWidget {
     );
   }
 
-  List<String> _getMockTags(BuildContext context, domain.RiskLevel level) {
+  List<String> _getTags(BuildContext context, domain.RiskLevel level) {
     if (level == domain.RiskLevel.high) {
       return ['pixel_edge'.tr(context), 'metadata_conflict'.tr(context)];
     } else if (level == domain.RiskLevel.medium) {
@@ -360,7 +441,9 @@ class _HistoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
     final dateStr = _formatThaiDate(item.createdAt, context);
-    final tags = _getMockTags(context, item.riskLevel);
+    final tags = _getTags(context, item.riskLevel);
+    
+    final displayTitle = '${item.title ?? item.scanId} • ${item.riskScore}%';
 
     return Container(
       decoration: BoxDecoration(
@@ -424,7 +507,7 @@ class _HistoryCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        item.title ?? item.scanId,
+                        displayTitle,
                         style: AppTypography.titleMd(color: isDark ? Colors.white : AppColors.textPrimary)
                             .copyWith(fontWeight: FontWeight.bold),
                         maxLines: 1,

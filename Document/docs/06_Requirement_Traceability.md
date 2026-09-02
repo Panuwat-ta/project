@@ -391,7 +391,7 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 | SC01 to SC04 Consistency | ✅ Pass | Scope Areas consistent |
 | Technology Stack Consistency | ✅ Pass | Flutter (not React Native) everywhere |
 | Risk Score Formula Consistency | ✅ Pass | `(S_text×0.25) + (S_visual×0.45) + (S_source×0.30)` |
-| Risk Grade Mapping Consistency | ✅ Pass | Low: 0-39, Medium: 40-69, High: 70-100 |
+| Risk Grade Mapping Consistency | ✅ Pass | Safe: 0-19, Low: 20-39, Medium: 40-69, High: 70-100 (visual ≥80 → High) |
 
 ---
 

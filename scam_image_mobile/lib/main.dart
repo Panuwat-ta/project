@@ -15,8 +15,11 @@ import 'features/result/presentation/bloc/result_bloc.dart';
 import 'features/scan/presentation/bloc/scan_bloc.dart';
 import 'features/settings/presentation/bloc/settings_bloc.dart';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   await ServiceLocator.init();
   runApp(const ScamGuardApp());
 }
@@ -64,7 +67,8 @@ class ScamGuardApp extends StatelessWidget {
           create: (_) =>
               SettingsCubit(repository: ServiceLocator.settingsRepository)
                 ..loadSettings()
-                ..loadConsents(),
+                ..loadConsents()
+                ..loadCacheSize(),
         ),
 
         // Notifications (no external repository — loads mock/push data)

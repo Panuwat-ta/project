@@ -39,3 +39,12 @@ class LogoutRequested extends AuthEvent {
   @override
   List<Object?> get props => [];
 }
+
+/// Triggered when the app restores a previously authenticated session on startup.
+class AuthSessionRestored extends AuthEvent {
+  const AuthSessionRestored(this.user);
+  final User user;
+
+  @override
+  List<Object?> get props => [user];
+}

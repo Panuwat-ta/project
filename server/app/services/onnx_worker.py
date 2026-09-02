@@ -21,9 +21,35 @@ MEAN = np.array([0.485, 0.456, 0.406], dtype=np.float32)
 STD = np.array([0.229, 0.224, 0.225], dtype=np.float32)
 
 
+def get_custom_colormap():
+    cmap = np.zeros((256, 1, 3), dtype=np.uint8)
+    for i in range(256):
+        if i < 85:
+            # Green (0) to Blue (85)
+            t = i / 85.0
+            b = int(255 * t)
+            g = int(255 * (1 - t))
+            r = 0
+        elif i < 170:
+            # Blue (85) to Yellow (170)
+            t = (i - 85) / 85.0
+            b = int(255 * (1 - t))
+            g = int(255 * t)
+            r = int(255 * t)
+        else:
+            # Yellow (170) to Red (255)
+            t = (i - 170) / 85.0
+            b = 0
+            g = int(255 * (1 - t))
+            r = 255
+        cmap[i, 0, :] = [b, g, r]
+    return cmap
+
+CUSTOM_COLORMAP = get_custom_colormap()
+
 def generate_heatmap(prob_map, original_image_np):
     heatmap_uint8 = np.uint8(255 * prob_map)
-    heatmap_color = cv2.applyColorMap(heatmap_uint8, cv2.COLORMAP_JET)
+    heatmap_color = cv2.applyColorMap(heatmap_uint8, CUSTOM_COLORMAP)
     original_bgr = cv2.cvtColor(original_image_np, cv2.COLOR_RGB2BGR)
     overlay = cv2.addWeighted(original_bgr, 0.6, heatmap_color, 0.4, 0)
     is_success, buffer = cv2.imencode(".jpg", overlay)
@@ -46,9 +72,11 @@ def run_patch(session, input_name, patch: np.ndarray) -> np.ndarray:
         return np.zeros((h, w), dtype=np.float32)
 
     logits = outputs[0]
-    raw_map = logits[0, 0, :, :]
-    prob_map = 1 / (1 + np.exp(-raw_map))  # true probability
-    return cv2.resize(prob_map, (w, h), interpolation=cv2.INTER_LINEAR)
+    # Softmax across 2 classes: Class 0 = Authentic, Class 1 = Tampered/Forgery
+    exp_logits = np.exp(logits - np.max(logits, axis=1, keepdims=True))
+    probs = exp_logits / np.sum(exp_logits, axis=1, keepdims=True)
+    forgery_prob = probs[0, 1, :, :]  # Class 1 probability (0.0 = authentic, 1.0 = tampered)
+    return cv2.resize(forgery_prob, (w, h), interpolation=cv2.INTER_LINEAR)
 
 
 def tile_inference(session, input_name, image: Image.Image) -> np.ndarray:
@@ -99,7 +127,7 @@ def main():
     image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
     original_size = image.size
 
-    # Full-res probability map (tiling preserves high-res detail)
+    # Full-res probability map of forgery (tiling preserves high-res detail)
     prob_map_true = tile_inference(session, input_name, image)
 
     # Visual heatmap using Min-Max scaling for clear display
@@ -107,13 +135,33 @@ def main():
     prob_map_visual = (prob_map_true - pmin) / (pmax - pmin + 1e-5)
     heatmap_bytes = generate_heatmap(prob_map_visual, np.array(image))
 
-    # Visual risk using 99th percentile of true probabilities (captures peaks)
-    ai_gen_prob = float(np.percentile(prob_map_true, 99))
-    visual_risk_score = int(ai_gen_prob * 100)
+    # Real visual risk score based on maximum forgery probability in the image
+    ai_gen_prob = float(prob_map_true.max())
+    visual_risk_score = int(round(ai_gen_prob * 100))
 
+    h, w = prob_map_true.shape[:2]
+    threshold = max(0.35, float(prob_map_true.mean() + 0.10))
+    tampered_pixels = np.argwhere(prob_map_true >= threshold)
+    if len(tampered_pixels) > 0 and ai_gen_prob >= 0.35:
+        mean_y, mean_x = tampered_pixels.mean(axis=0)
+        v = "บน" if mean_y < h * 0.38 else ("ล่าง" if mean_y > h * 0.62 else "กลาง")
+        h_pos = "ซ้าย" if mean_x < w * 0.38 else ("ขวา" if mean_x > w * 0.62 else "กลาง")
+        
+        if v == "กลาง" and h_pos == "กลาง":
+            region = "บริเวณกึ่งกลางของภาพ"
+        elif v == "กลาง":
+            region = f"บริเวณด้าน{h_pos}ของภาพ"
+        elif h_pos == "กลาง":
+            region = f"บริเวณส่วน{v}ของภาพ"
+        else:
+            region = f"บริเวณมุม{h_pos}{v}ของภาพ"
+    else:
+        region = "ทั่วทั้งภาพอยู่ในเกณฑ์ปกติ"
+    
     result = {
         "visual_risk_score": visual_risk_score,
         "ai_gen_probability": ai_gen_prob,
+        "anomaly_region": region,
         "heatmap_b64": base64.b64encode(heatmap_bytes).decode('utf-8') if heatmap_bytes else ""
     }
 

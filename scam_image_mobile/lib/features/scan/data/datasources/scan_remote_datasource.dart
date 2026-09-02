@@ -14,6 +14,7 @@ abstract class ScanRemoteDataSource {
     required String filePath,
     required bool consentForResearch,
     required String clientRequestId,
+    String? scanName,
   });
 
   /// Polls the current status of a scan task.
@@ -40,18 +41,25 @@ class ScanRemoteDataSourceImpl implements ScanRemoteDataSource {
     required String filePath,
     required bool consentForResearch,
     required String clientRequestId,
+    String? scanName,
   }) async {
     try {
       // Build multipart form data.
       // Compression for files > 10 MB is handled by the repository / calling
       // code before reaching this method, so we upload as-is here.
       final fileName = filePath.split(RegExp(r'[\\/]')).last;
-      final formData = FormData.fromMap({
-        'image': await MultipartFile.fromFile(filePath, filename: fileName),
-        'source': 'upload',
+      
+      final Map<String, dynamic> formMap = {
+        'file': await MultipartFile.fromFile(filePath, filename: fileName),
         'consentForResearch': consentForResearch.toString(),
         'clientRequestId': clientRequestId,
-      });
+      };
+      
+      if (scanName != null && scanName.trim().isNotEmpty) {
+        formMap['title'] = scanName.trim();
+      }
+      
+      final formData = FormData.fromMap(formMap);
 
       final response = await dio.post<Map<String, dynamic>>(
         ApiEndpoints.scans,
@@ -59,9 +67,8 @@ class ScanRemoteDataSourceImpl implements ScanRemoteDataSource {
       );
 
       final body = _requireBody(response);
-      // Accept both camelCase and snake_case keys from the server.
-      final taskId =
-          body['taskId'] as String? ?? body['task_id'] as String? ?? '';
+      // Backend returns the full ScanResponse immediately. We just need its ID.
+      final taskId = body['id'] as String? ?? '';
       return taskId;
     } on DioException catch (e) {
       throw _mapDioException(e);
@@ -109,15 +116,19 @@ class ScanRemoteDataSourceImpl implements ScanRemoteDataSource {
         return NetworkException(e.message ?? 'Connection error');
       case DioExceptionType.badResponse:
         final statusCode = e.response?.statusCode;
-        if (statusCode == 401 || statusCode == 403) {
-          return AuthException(
-            e.response?.data?['message'] as String? ?? 'Unauthorised',
-          );
+        final data = e.response?.data;
+        String message = 'Server error';
+        
+        if (data is Map<String, dynamic>) {
+          message = data['message'] as String? ?? data['detail'] as String? ?? message;
+        } else if (data is String) {
+          message = data;
         }
-        return ServerException(
-          e.response?.data?['message'] as String? ?? 'Server error',
-          statusCode: statusCode,
-        );
+
+        if (statusCode == 401 || statusCode == 403) {
+          return AuthException(message == 'Server error' ? 'Unauthorised' : message);
+        }
+        return ServerException(message, statusCode: statusCode);
       default:
         return NetworkException(e.message ?? 'Network error');
     }

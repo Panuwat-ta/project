@@ -22,7 +22,7 @@ class HeatmapViewerScreen extends StatefulWidget {
 }
 
 class _HeatmapViewerScreenState extends State<HeatmapViewerScreen> {
-  double _heatmapOpacity = 0.7;
+  double _heatmapOpacity = 1.0;
   final TransformationController _transformationController = TransformationController();
 
   void _zoomIn() {

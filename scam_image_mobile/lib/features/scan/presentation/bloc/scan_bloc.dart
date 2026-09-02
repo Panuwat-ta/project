@@ -11,9 +11,10 @@ abstract class ScanEvent extends Equatable {}
 
 class CropConfirmed extends ScanEvent {
   final String filePath;
-  CropConfirmed(this.filePath);
+  final String? scanName;
+  CropConfirmed(this.filePath, {this.scanName});
   @override
-  List<Object?> get props => [filePath];
+  List<Object?> get props => [filePath, scanName];
 }
 
 class AnalysisPollTick extends ScanEvent {
@@ -100,31 +101,36 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
       CropConfirmed event, Emitter<ScanState> emit) async {
     emit(ScanUploading());
     try {
-      final clientRequestId = const Uuid().v4();
-      final taskId = await repository.submitImage(
+      final String taskId = await repository.submitImage(
         filePath: event.filePath,
         consentForResearch: consentForResearch,
-        clientRequestId: clientRequestId,
+        clientRequestId: const Uuid().v4(),
+        scanName: event.scanName,
       );
       _currentTaskId = taskId;
+      
       _elapsedSeconds = 0;
+      _pollingTimer?.cancel();
+      _pollingTimer = Timer.periodic(
+        const Duration(seconds: _pollIntervalSeconds),
+        (_) {
+          if (!isClosed) {
+            add(AnalysisPollTick(taskId));
+          }
+        },
+      );
+      
       emit(ScanPolling(
-          taskId: taskId,
-          progress: 5,
-          step: AnalysisTaskStatus.queued));
-      _startPolling(taskId);
+        taskId: taskId,
+        progress: 0,
+        step: AnalysisTaskStatus.queued,
+      ));
     } catch (e) {
       emit(ScanError(_friendlyError(e)));
     }
   }
 
-  void _startPolling(String taskId) {
-    _pollingTimer?.cancel();
-    _pollingTimer = Timer.periodic(
-      const Duration(seconds: _pollIntervalSeconds),
-      (_) => add(AnalysisPollTick(taskId)),
-    );
-  }
+
 
   Future<void> _onPollTick(
       AnalysisPollTick event, Emitter<ScanState> emit) async {
@@ -156,11 +162,6 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
   Future<void> _onCancelled(
       AnalysisCancelled event, Emitter<ScanState> emit) async {
     _pollingTimer?.cancel();
-    if (_currentTaskId != null) {
-      try {
-        await repository.cancelScan(_currentTaskId!);
-      } catch (_) {}
-    }
     emit(ScanInitial());
   }
 
@@ -179,45 +180,4 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
   }
 }
 
-// ── Mock repository stub (replaced by real DI in Task 23) ────────────────────
 
-class MockScanRepository implements ScanRepository {
-  final Map<String, DateTime> _startTimes = {};
-
-  @override
-  Future<String> submitImage({
-    required String filePath,
-    required bool consentForResearch,
-    required String clientRequestId,
-  }) async {
-    await Future.delayed(const Duration(seconds: 2));
-    final taskId = 'mock_task_${DateTime.now().millisecondsSinceEpoch}';
-    _startTimes[taskId] = DateTime.now();
-    return taskId;
-  }
-
-  @override
-  Future<AnalysisTask> getAnalysisStatus(String taskId) async {
-    await Future.delayed(const Duration(seconds: 1));
-    final startTime = _startTimes[taskId] ?? DateTime.now();
-    final elapsed = DateTime.now().difference(startTime);
-
-    if (elapsed.inMinutes >= 5) {
-      return AnalysisTask(
-        taskId: taskId,
-        status: AnalysisTaskStatus.completed,
-        progress: 100,
-      );
-    } else {
-      final progress = (elapsed.inSeconds / 300 * 100).toInt();
-      return AnalysisTask(
-        taskId: taskId,
-        status: AnalysisTaskStatus.processingText,
-        progress: progress.clamp(0, 99),
-      );
-    }
-  }
-
-  @override
-  Future<void> cancelScan(String taskId) async {}
-}

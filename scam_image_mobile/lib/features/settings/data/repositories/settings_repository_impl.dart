@@ -47,4 +47,10 @@ class SettingsRepositoryImpl implements SettingsRepository {
 
   @override
   Future<void> saveLanguage(String language) => localDataSource.saveLanguage(language);
+
+  @override
+  Future<int> getCacheSizeBytes() => localDataSource.getCacheSizeBytes();
+
+  @override
+  Future<void> clearCache() => localDataSource.clearCache();
 }

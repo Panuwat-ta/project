@@ -493,9 +493,11 @@ Risk Score = (S_text × 0.25) + (S_visual × 0.45) + (S_source × 0.30)
 ```
 
 **Risk Grade Mapping:**
-- **Low Risk (สีเขียว):** 0-39
+- **Safe (สีเขียว):** 0-19
+- **Low Risk (สีเขียว):** 20-39
 - **Medium Risk (สีเหลือง):** 40-69
 - **High Risk (สีแดง):** 70-100
+- **Special Rule:** หาก `visual_score ≥ 80` → High ทันทีแม้ `Risk Score < 70`
 
 **Rationale:**
 - Visual Analysis มีน้ำหนักสูงสุด (45%) เพราะเป็นการตรวจสอบระดับพิกเซล

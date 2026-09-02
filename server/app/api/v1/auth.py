@@ -11,6 +11,7 @@ from app.models.consent import ConsentLog
 from app.core.security import (
     hash_password, verify_password, create_access_token, create_refresh_token, decode_refresh_token
 )
+from app.api.deps import get_current_user
 
 router = APIRouter()
 
@@ -111,3 +112,22 @@ async def refresh_token(body: RefreshTokenRequest, db: AsyncSession = Depends(ge
         raise HTTPException(status_code=403, detail="User account is disabled")
 
     return _build_token_response(user)
+
+
+@router.get("/me", response_model=UserResponse)
+async def get_me(current_user: User = Depends(get_current_user)):
+    return UserResponse(
+        id=current_user.id,
+        email=current_user.email,
+        full_name=current_user.full_name,
+        role=current_user.role,
+        message="Current user profile"
+    )
+
+
+@router.post("/logout")
+async def logout(current_user: User = Depends(get_current_user)):
+    # With stateless JWTs, logout is primarily handled client-side.
+    # To implement server-side logout, we would need to maintain a token blocklist
+    # or use stateful sessions like we do for the Admin portal.
+    return {"message": "Successfully logged out"}

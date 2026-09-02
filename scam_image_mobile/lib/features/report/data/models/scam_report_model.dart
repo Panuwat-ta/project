@@ -22,11 +22,11 @@ class ScamReportModel extends ScamReport {
       );
 
   Map<String, dynamic> toJson() => {
-        if (scanId != null) 'scanId': scanId,
+        if (scanId != null) 'scan_id': scanId,
         'category': category,
         'description': description,
         if (platform != null) 'platform': platform,
-        if (referenceUrl != null) 'referenceUrl': referenceUrl,
-        'allowResearchUse': allowResearchUse,
+        if (referenceUrl != null) 'reference_url': referenceUrl,
+        'allow_research_use': allowResearchUse,
       };
 }

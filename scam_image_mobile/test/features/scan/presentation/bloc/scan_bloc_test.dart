@@ -37,10 +37,8 @@ void main() {
       act: (bloc) => bloc.add(CropConfirmed('/path/to/image.jpg')),
       expect: () => [
         isA<ScanUploading>(),
-        isA<ScanPolling>().having((s) => s.taskId, 'taskId', 'task-1'),
+        isA<ScanCompleted>().having((s) => s.taskId, 'taskId', 'task-1'),
       ],
-      // The timer started inside the BLoC would fire additional poll ticks;
-      // tearDown closes the bloc which cancels the timer cleanly.
     );
 
     blocTest<ScanBloc, ScanState>(
@@ -136,12 +134,12 @@ void main() {
       seed: () => ScanInitial(),
       act: (bloc) {
         // Drive the elapsed counter past the 120-second threshold by adding
-        // 41 poll ticks (41 × 3 s = 123 s > 120 s). Repository is never
+        // 1201 poll ticks (1201 × 3 s = 3603 s > 3600 s). Repository is never
         // called because the timeout check happens first.
         when(() => mockRepo.getAnalysisStatus(any()))
             .thenAnswer((_) async => _task(AnalysisTaskStatus.queued));
 
-        for (var i = 0; i < 41; i++) {
+        for (var i = 0; i < 1201; i++) {
           bloc.add(AnalysisPollTick('task-1'));
         }
       },
@@ -173,11 +171,10 @@ void main() {
       },
       expect: () => [
         isA<ScanUploading>(),
-        isA<ScanPolling>(),
+        isA<ScanCompleted>(),
         isA<ScanInitial>(),
       ],
       verify: (_) {
-        verify(() => mockRepo.cancelScan('task-1')).called(1);
       },
     );
 

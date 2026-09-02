@@ -1,6 +1,7 @@
 import '../../domain/entities/scan_history_item.dart';
 import '../../../../core/utils/risk_level_helper.dart';
 import '../../../result/domain/entities/analysis_result.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ScanHistoryItemModel extends ScanHistoryItem {
   const ScanHistoryItemModel({
@@ -18,24 +19,85 @@ class ScanHistoryItemModel extends ScanHistoryItem {
         json['riskScore'] as int? ?? json['risk_score'] as int? ?? 0;
     final riskLevelStr =
         json['riskLevel'] as String? ?? json['risk_level'] as String?;
-    final riskLevel = riskLevelStr != null
-        ? (riskLevelStr == 'high'
-            ? RiskLevel.high
-            : riskLevelStr == 'medium'
-                ? RiskLevel.medium
-                : RiskLevel.low)
-        : RiskLevelHelper.fromScore(riskScore);
+    RiskLevel riskLevel;
+    if (riskLevelStr != null) {
+      switch (riskLevelStr.toLowerCase()) {
+        case 'high':
+          riskLevel = RiskLevel.high;
+          break;
+        case 'medium':
+          riskLevel = RiskLevel.medium;
+          break;
+        case 'low':
+          riskLevel = RiskLevel.low;
+          break;
+        default:
+          riskLevel = RiskLevel.low;
+      }
+    } else {
+      riskLevel = RiskLevelHelper.fromScore(riskScore);
+    }
+        
+    String? parseUrl(String? url) {
+      if (url == null || url.isEmpty) return null;
+      if (url.startsWith('http')) return url;
+      
+      final baseUrl = dotenv.env['API_BASE_URL'] ?? 'http://127.0.0.1:8000/api/v1';
+      final uri = Uri.parse(baseUrl);
+      final hostUrl = '${uri.scheme}://${uri.host}:${uri.port}';
+
+      String cleanUrl = url.replaceAll(r'\', '/');
+      if (cleanUrl.startsWith('./')) {
+        cleanUrl = cleanUrl.substring(2);
+      }
+      if (!cleanUrl.startsWith('/')) {
+        cleanUrl = '/$cleanUrl';
+      }
+      if (!cleanUrl.toLowerCase().startsWith('/uploads')) {
+        cleanUrl = '/uploads$cleanUrl';
+      }
+      
+      return '$hostUrl$cleanUrl';
+    }
+        
     return ScanHistoryItemModel(
       scanId: json['scanId'] as String? ?? json['scan_id'] as String? ?? '',
-      thumbnailUrl:
-          json['thumbnailUrl'] as String? ?? json['thumbnail_url'] as String?,
+      thumbnailUrl: parseUrl(
+          json['thumbnailUrl'] as String? ?? json['thumbnail_url'] as String?),
       riskScore: riskScore,
       riskLevel: riskLevel,
       status: json['status'] as String? ?? 'completed',
       createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'] as String)
-          : DateTime.now(),
+          ? DateTime.parse(json['createdAt'] as String).toLocal()
+          : (json['created_at'] != null ? DateTime.parse(json['created_at'] as String).toLocal() : DateTime.now().toLocal()),
       title: json['title'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'scanId': scanId,
+      'thumbnailUrl': thumbnailUrl,
+      'riskScore': riskScore,
+      'riskLevel': riskLevel.name,
+      'status': status,
+      'createdAt': createdAt.toIso8601String(),
+      'title': title,
+    };
+  }
+
+  factory ScanHistoryItemModel.fromMap(Map<String, dynamic> map) {
+    return ScanHistoryItemModel(
+      scanId: map['scanId'] as String,
+      thumbnailUrl: map['thumbnailUrl'] as String?,
+      riskScore: map['riskScore'] as int,
+      riskLevel: RiskLevel.values.firstWhere(
+        (e) => e.name == map['riskLevel'] as String,
+        orElse: () => RiskLevel.low,
+      ),
+      status: map['status'] as String,
+      createdAt: DateTime.parse(map['createdAt'] as String).toLocal(),
+      title: map['title'] as String?,
     );
   }
 }

@@ -348,12 +348,13 @@ researchConsent    bool
 ```
 
 ### RiskLevelHelper
-Utility class แปลง numeric score เป็น enum:
-- 0-39: `RiskLevel.low`
+Utility class แปลง numeric score เป็น enum ตาม `server/app/utils/risk_calculator.py`:
+- 0-19: `RiskLevel.safe`
+- 20-39: `RiskLevel.low`
 - 40-69: `RiskLevel.medium`
-- 70-100: `RiskLevel.high`
+- 70-100: `RiskLevel.high` (และกรณี `visual_score >= 80` → `high` ทันทีแม้ total < 70)
 
-และ `toThaiLabel()` แปลง enum เป็นข้อความภาษาไทย (ต่ำ / ปานกลาง / สูง)
+และ `toThaiLabel()` แปลง enum เป็นข้อความภาษาไทย (ปลอดภัย / ต่ำ / ปานกลาง / สูง)
 
 ---
 

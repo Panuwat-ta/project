@@ -8,6 +8,7 @@ import '../../../../core/localization/app_translations.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../domain/entities/scam_report.dart';
 import '../bloc/report_bloc.dart';
+import '../../../../core/di/injection_container.dart';
 
 class ReportScamScreen extends StatefulWidget {
   const ReportScamScreen({super.key, this.scanId});
@@ -57,7 +58,7 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
   @override
   void initState() {
     super.initState();
-    _bloc = ReportBloc(repository: MockReportRepository());
+    _bloc = ReportBloc(repository: ServiceLocator.reportRepository);
   }
 
   @override

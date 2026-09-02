@@ -34,12 +34,24 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
       final response =
           await dio.get<dynamic>(ApiEndpoints.reportCategories);
       final body = response.data;
-      if (body is List) {
-        return body.map((e) => e.toString()).toList();
-      }
       if (body is Map<String, dynamic>) {
-        final items = body['data'] as List<dynamic>? ?? [];
-        return items.map((e) => e.toString()).toList();
+        final categories = body['categories'] as List<dynamic>? ??
+            body['data'] as List<dynamic>? ??
+            [];
+        return categories.map((e) {
+          if (e is Map<String, dynamic>) {
+            return e['label_th'] as String? ?? e['key'] as String? ?? e.toString();
+          }
+          return e.toString();
+        }).toList();
+      }
+      if (body is List) {
+        return body.map((e) {
+          if (e is Map<String, dynamic>) {
+            return e['label_th'] as String? ?? e['key'] as String? ?? e.toString();
+          }
+          return e.toString();
+        }).toList();
       }
       return [];
     } on DioException catch (e) {
@@ -56,15 +68,19 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
         return NetworkException(e.message ?? 'Connection error');
       case DioExceptionType.badResponse:
         final statusCode = e.response?.statusCode;
-        if (statusCode == 401 || statusCode == 403) {
-          return AuthException(
-            e.response?.data?['message'] as String? ?? 'Unauthorised',
-          );
+        final data = e.response?.data;
+        String message = 'Server error';
+        
+        if (data is Map<String, dynamic>) {
+          message = data['message'] as String? ?? data['detail'] as String? ?? message;
+        } else if (data is String) {
+          message = data;
         }
-        return ServerException(
-          e.response?.data?['message'] as String? ?? 'Server error',
-          statusCode: statusCode,
-        );
+
+        if (statusCode == 401 || statusCode == 403) {
+          return AuthException(message == 'Server error' ? 'Unauthorised' : message);
+        }
+        return ServerException(message, statusCode: statusCode);
       default:
         return NetworkException(e.message ?? 'Network error');
     }

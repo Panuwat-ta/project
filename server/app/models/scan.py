@@ -12,6 +12,7 @@ class Scan(Base):
     image_hash = Column(String(64), nullable=False, index=True)  # SHA-256
     raw_image_url = Column(String(512), nullable=False)
     heatmap_image_url = Column(String(512))
+    title = Column(String(255), nullable=True)
 
     # Risk Scores (0-100)
     text_score = Column(Integer, nullable=False, default=0)
@@ -25,7 +26,10 @@ class Scan(Base):
     scam_keywords_found = Column(JSONB)
     reverse_search_results = Column(JSONB)
     ai_gen_probability = Column(Float, default=0.0)
+    xai_explanation = Column(Text, nullable=True)
 
     status = Column(String(20), nullable=False, default="pending")
+    progress = Column(Integer, nullable=False, default=0)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)
     completed_at = Column(DateTime(timezone=True))
+

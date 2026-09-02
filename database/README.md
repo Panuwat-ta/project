@@ -34,7 +34,15 @@
 podman compose up -d
 ```
 
-### 2. ตรวจสอบสถานะ (Check Status)
+### 2. สร้างโครงสร้างฐานข้อมูล (Run Migrations)
+หากเป็นการรันระบบครั้งแรก (หรือมีการอัปเดต Schema) จำเป็นต้องสร้างตารางต่างๆ ในฐานข้อมูลด้วย Alembic โดยรันคำสั่งเหล่านี้:
+```bash
+cd ../server
+source venv/bin/activate
+alembic upgrade head
+```
+
+### 3. ตรวจสอบสถานะ (Check Status)
 ดูรายการคอนเทนเนอร์ที่กำลังทำงานอยู่:
 ```bash
 podman ps
@@ -44,14 +52,14 @@ podman ps
 podman compose ps
 ```
 
-### 3. ดู Log การทำงาน (View Logs)
+### 4. ดู Log การทำงาน (View Logs)
 หากต้องการดู Log ของคอนเทนเนอร์ทั้งหมด:
 ```bash
 podman compose logs -f
 ```
 (กด `Ctrl + C` เพื่อออกจากหน้า Log)
 
-### 4. ปิดระบบ (Stop Services)
+### 5. ปิดระบบ (Stop Services)
 หากต้องการปิดคอนเทนเนอร์ทั้งหมด (ข้อมูลจะไม่หายเพราะถูก mount ไว้ใน volume):
 ```bash
 podman compose down

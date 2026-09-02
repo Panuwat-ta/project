@@ -344,7 +344,8 @@ Requirement Candidates ถูกสกัดจาก:
 **Priority:** Must
 
 **Details:**
-- Low Risk (สีเขียว): 0-39
+- Safe (สีเขียว): 0-19
+- Low Risk (สีเขียว): 20-39
 - Medium Risk (สีเหลือง): 40-69
 - High Risk (สีแดง): 70-100
 - **Special Rule:** หาก `visual_score ≥ 80` ให้ระดับเป็น High แม้คะแนนรวมต่ำกว่า 70

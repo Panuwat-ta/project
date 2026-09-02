@@ -13,6 +13,8 @@ class SettingsState extends Equatable {
     this.language = 'th',
     this.consent = const ConsentSetting(),
     this.isLoading = false,
+    this.cacheSizeBytes = 0,
+    this.isClearingCache = false,
     this.error,
   });
 
@@ -20,6 +22,8 @@ class SettingsState extends Equatable {
   final String language;
   final ConsentSetting consent;
   final bool isLoading;
+  final int cacheSizeBytes;
+  final bool isClearingCache;
   final String? error;
 
   SettingsState copyWith({
@@ -27,6 +31,8 @@ class SettingsState extends Equatable {
     String? language,
     ConsentSetting? consent,
     bool? isLoading,
+    int? cacheSizeBytes,
+    bool? isClearingCache,
     String? error,
   }) =>
       SettingsState(
@@ -34,11 +40,21 @@ class SettingsState extends Equatable {
         language: language ?? this.language,
         consent: consent ?? this.consent,
         isLoading: isLoading ?? this.isLoading,
+        cacheSizeBytes: cacheSizeBytes ?? this.cacheSizeBytes,
+        isClearingCache: isClearingCache ?? this.isClearingCache,
         error: error,
       );
 
   @override
-  List<Object?> get props => [themeMode, language, consent, isLoading, error];
+  List<Object?> get props => [
+        themeMode,
+        language,
+        consent,
+        isLoading,
+        cacheSizeBytes,
+        isClearingCache,
+        error,
+      ];
 }
 
 // ── Settings Cubit ────────────────────────────────────────────────────────────
@@ -105,45 +121,27 @@ class SettingsCubit extends Cubit<SettingsState> {
       emit(state.copyWith(error: e.toString()));
     }
   }
-}
 
-// ── Mock repository stub (for local UI development) ──────────────────────────
-
-class MockSettingsRepository implements SettingsRepository {
-  ConsentSetting _consent = const ConsentSetting(
-    processingConsent: true,
-    historyConsent: true,
-    researchConsent: false,
-  );
-  ThemeMode _themeMode = ThemeMode.system;
-  String _language = 'th';
-
-  @override
-  Future<ConsentSetting> getConsents() async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    return _consent;
+  /// Computes the real on-device cache size for display.
+  Future<void> loadCacheSize() async {
+    try {
+      final size = await repository.getCacheSizeBytes();
+      emit(state.copyWith(cacheSizeBytes: size));
+    } catch (_) {
+      // Keep the last known size; cache info is non-critical.
+    }
   }
 
-  @override
-  Future<void> updateConsents(ConsentSetting setting) async {
-    _consent = setting;
+  /// Clears the on-device cache and refreshes the displayed size.
+  Future<void> clearCache() async {
+    emit(state.copyWith(isClearingCache: true));
+    try {
+      await repository.clearCache();
+      final size = await repository.getCacheSizeBytes();
+      emit(state.copyWith(isClearingCache: false, cacheSizeBytes: size));
+    } catch (e) {
+      emit(state.copyWith(isClearingCache: false, error: e.toString()));
+    }
   }
-
-  @override
-  Future<void> exportPrivacyData() async {}
-
-  @override
-  Future<void> deleteAccount() async {}
-
-  @override
-  Future<ThemeMode> getThemeMode() async => _themeMode;
-
-  @override
-  Future<void> saveThemeMode(ThemeMode mode) async => _themeMode = mode;
-
-  @override
-  Future<String> getLanguage() async => _language;
-
-  @override
-  Future<void> saveLanguage(String language) async => _language = language;
 }
+
