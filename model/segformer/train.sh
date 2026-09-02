@@ -9,8 +9,7 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CONFIG="${SCRIPT_DIR}/configs/segformer_mit-b2-v7.py"
+CONFIG="${SCRIPT_DIR}/configs/segformer_mit-b2-v9.py"
 WORK_DIR_BASE="${SCRIPT_DIR}/work_dirs"
 
 # ============================================================
@@ -72,6 +71,14 @@ EXTRA_ARGS=()
 # รับ argument จาก CLI (override ค่า LOAD_FROM ด้านบน)
 while [[ $# -gt 0 ]]; do
     case "$1" in
+        --config)
+            if [ -z "${2:-}" ]; then
+                echo "Error: --config requires a path argument."
+                exit 1
+            fi
+            CONFIG="$2"
+            shift 2
+            ;;
         --load-from)
             if [ -z "${2:-}" ]; then
                 echo "Error: --load-from requires a path argument."
@@ -86,7 +93,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         *)
             echo "Unknown argument: $1"
-            echo "Usage: ./train.sh [--load-from <path>] [--no-load]"
+            echo "Usage: ./train.sh [--config <path>] [--load-from <path>] [--no-load]"
             exit 1
             ;;
     esac
