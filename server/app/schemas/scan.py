@@ -30,6 +30,7 @@ class ScanResponse(BaseModel):
     scam_keywords_found: Optional[List[str]] = None
     reverse_search_results: Optional[Dict[str, Any]] = None
     ai_gen_probability: float
+    xai_explanation: Optional[str] = None
     
     status: str
     progress: int = 0

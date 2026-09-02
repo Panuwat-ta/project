@@ -26,6 +26,7 @@ class Scan(Base):
     scam_keywords_found = Column(JSONB)
     reverse_search_results = Column(JSONB)
     ai_gen_probability = Column(Float, default=0.0)
+    xai_explanation = Column(Text, nullable=True)
 
     status = Column(String(20), nullable=False, default="pending")
     progress = Column(Integer, nullable=False, default=0)

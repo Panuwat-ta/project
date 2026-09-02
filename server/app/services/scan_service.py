@@ -151,8 +151,18 @@ async def process_image_background(scan_id, file_bytes: bytes, image_hash: str):
             source_score = settings.DEFAULT_SOURCE_SCORE
             visual_score = inference_result.get("visual_risk_score", 0)
             ai_gen_probability = inference_result.get("ai_gen_probability", 0.0)
+            anomaly_region = inference_result.get("anomaly_region", "บริเวณที่น่าสงสัยในภาพ")
 
             risk_result = calculate_risk_score(text_score, visual_score, source_score)
+
+            # Generate Explainable AI (XAI) explanation using Qwen2.5-1.5B
+            xai_explanation = await run_in_threadpool(
+                inference_service.generate_xai_explanation,
+                region=anomaly_region,
+                visual_score=visual_score,
+                ai_gen_probability=ai_gen_probability,
+                scam_keywords=found_keywords
+            )
 
             scan.text_score = text_score
             scan.visual_score = visual_score
@@ -161,6 +171,7 @@ async def process_image_background(scan_id, file_bytes: bytes, image_hash: str):
             scan.ocr_text = ocr_text
             scan.scam_keywords_found = found_keywords
             scan.ai_gen_probability = ai_gen_probability
+            scan.xai_explanation = xai_explanation
             scan.status = "completed"
             scan.progress = 100
             scan.completed_at = datetime.now(TH_TIMEZONE)

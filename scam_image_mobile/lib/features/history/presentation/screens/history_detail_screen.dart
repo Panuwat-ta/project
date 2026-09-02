@@ -451,13 +451,12 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                           fit: BoxFit.cover,
                           width: 120,
                           height: 120,
+                          fadeInDuration: const Duration(milliseconds: 200),
+                          fadeOutDuration: const Duration(milliseconds: 200),
                           placeholder: (context, url) => Container(
                             width: 120,
                             height: 120,
                             color: const Color(0xFF1E293B),
-                            child: const Center(
-                              child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white54)),
-                            ),
                           ),
                           errorWidget: (context, url, error) => Container(
                             width: 120,

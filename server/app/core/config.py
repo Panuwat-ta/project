@@ -43,6 +43,11 @@ class Settings(BaseSettings):
     ONNX_TILE_SIZE: int = 512
     ONNX_TILE_OVERLAP: int = 64
 
+    # Explainable AI (XAI) - Qwen2.5-1.5B (GGUF)
+    XAI_MODEL_PATH: str = "/home/panuwat/project/model/Qwen2.5-1.5B/qwen2.5-1.5b-instruct-q4_k_m.gguf"
+    XAI_GPU_LAYERS: int = -1  # -1 = offload all layers to GPU
+    XAI_CONTEXT_SIZE: int = 1024
+
     # Rate Limit
     RATE_LIMIT_PER_HOUR: int = 60
 

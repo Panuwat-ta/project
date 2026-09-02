@@ -140,10 +140,26 @@ def main():
     # Visual risk using the maximum probability found in the image
     ai_gen_prob = float(prob_map_true.max())
     visual_risk_score = int(ai_gen_prob * 100)
+
+    # Detect region of anomaly
+    h, w = prob_map_true.shape[:2]
+    threshold = max(0.4, float(prob_map_true.mean() + 0.15))
+    tampered_pixels = np.argwhere(prob_map_true >= threshold)
+    if len(tampered_pixels) > 0 and ai_gen_prob >= 0.4:
+        mean_y, mean_x = tampered_pixels.mean(axis=0)
+        v = "บน" if mean_y < h * 0.4 else ("ล่าง" if mean_y > h * 0.6 else "กลาง")
+        h_pos = "ซ้าย" if mean_x < w * 0.4 else ("ขวา" if mean_x > w * 0.6 else "กลาง")
+        if v == "กลาง" and h_pos == "กลาง":
+            region = "บริเวณกึ่งกลางของภาพ"
+        else:
+            region = f"บริเวณมุม{h_pos}{v}ของภาพ"
+    else:
+        region = "ทั่วทั้งภาพอยู่ในเกณฑ์ปกติ"
     
     result = {
         "visual_risk_score": visual_risk_score,
         "ai_gen_probability": ai_gen_prob,
+        "anomaly_region": region,
         "heatmap_b64": base64.b64encode(heatmap_bytes).decode('utf-8') if heatmap_bytes else ""
     }
 
