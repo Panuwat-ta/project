@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -445,28 +446,25 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                     if (result.heatmapUrl != null || result.imageUrl != null)
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: Image.network(
-                          (result.heatmapUrl ?? result.imageUrl)!,
+                        child: CachedNetworkImage(
+                          imageUrl: (result.heatmapUrl ?? result.imageUrl)!,
                           fit: BoxFit.cover,
                           width: 120,
                           height: 120,
-                          errorBuilder: (context, error, stackTrace) => Container(
+                          placeholder: (context, url) => Container(
+                            width: 120,
+                            height: 120,
+                            color: const Color(0xFF1E293B),
+                            child: const Center(
+                              child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white54)),
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => Container(
                             width: 120,
                             height: 120,
                             color: const Color(0xFF1E293B),
                             child: const Icon(Icons.broken_image_outlined, color: Colors.white24, size: 32),
                           ),
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Container(
-                              width: 120,
-                              height: 120,
-                              color: const Color(0xFF1E293B),
-                              child: const Center(
-                                child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white54)),
-                              ),
-                            );
-                          },
                         ),
                       )
                     else

@@ -5,8 +5,9 @@ import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
   static const _databaseName = "scamguard.db";
-  static const _databaseVersion = 1;
+  static const _databaseVersion = 2;
   static const tableHistory = 'scan_history';
+  static const tableDetails = 'scan_details';
 
   // Make this a singleton class
   DatabaseHelper._privateConstructor();
@@ -23,7 +24,7 @@ class DatabaseHelper {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, _databaseName);
     return await openDatabase(path,
-        version: _databaseVersion, onCreate: _onCreate);
+        version: _databaseVersion, onCreate: _onCreate, onUpgrade: _onUpgrade);
   }
 
   Future _onCreate(Database db, int version) async {
@@ -36,6 +37,30 @@ class DatabaseHelper {
         status TEXT NOT NULL,
         createdAt TEXT NOT NULL,
         title TEXT
+      )
+      ''');
+    await _createDetailsTable(db);
+  }
+
+  Future _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await _createDetailsTable(db);
+    }
+  }
+
+  Future _createDetailsTable(Database db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS $tableDetails (
+        scanId TEXT PRIMARY KEY,
+        taskId TEXT NOT NULL,
+        status TEXT NOT NULL,
+        riskScore INTEGER NOT NULL,
+        riskLevel TEXT NOT NULL,
+        summary TEXT,
+        imageUrl TEXT,
+        heatmapUrl TEXT,
+        createdAt TEXT NOT NULL,
+        factorsJson TEXT
       )
       ''');
   }

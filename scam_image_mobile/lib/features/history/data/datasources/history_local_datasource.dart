@@ -55,6 +55,10 @@ class HistoryLocalDataSourceImpl implements HistoryLocalDataSource {
   Future<void> clearHistory() async {
     final db = await databaseHelper.database;
     await db.delete(DatabaseHelper.tableHistory);
+    // Also clear cached details
+    try {
+      await db.delete(DatabaseHelper.tableDetails);
+    } catch (_) {}
   }
 
   @override
@@ -65,5 +69,12 @@ class HistoryLocalDataSourceImpl implements HistoryLocalDataSource {
       where: 'scanId = ?',
       whereArgs: [scanId],
     );
+    try {
+      await db.delete(
+        DatabaseHelper.tableDetails,
+        where: 'scanId = ?',
+        whereArgs: [scanId],
+      );
+    } catch (_) {}
   }
 }

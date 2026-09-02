@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -442,13 +443,31 @@ class _ResultBody extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               child: Stack(
                 children: [
-                  // Image Placeholder or Network image
+                  // Image with offline cache support
                   Container(
                     height: 200,
                     width: double.infinity,
                     color: const Color(0xFF0F172A),
-                    child: (result.heatmapUrl != null || result.imageUrl != null) 
-                        ? Image.network((result.heatmapUrl ?? result.imageUrl)!, fit: BoxFit.cover)
+                    child: (result.heatmapUrl != null || result.imageUrl != null)
+                        ? CachedNetworkImage(
+                            imageUrl: (result.heatmapUrl ?? result.imageUrl)!,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: 200,
+                            placeholder: (context, url) => const Center(
+                              child: SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white24)),
+                            ),
+                            errorWidget: (context, url, error) => const Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.broken_image_outlined, color: Colors.white24, size: 32),
+                                  SizedBox(height: 8),
+                                  Text('โหลดรูปไม่สำเร็จ', style: TextStyle(color: Colors.white38, fontSize: 12)),
+                                ],
+                              ),
+                            ),
+                          )
                         : const Center(child: Icon(Icons.image, color: Colors.white24, size: 48)),
                   ),
                   // Slider overlay at bottom

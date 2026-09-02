@@ -16,6 +16,7 @@ import '../../features/scan/data/repositories/scan_repository_impl.dart';
 import '../../features/scan/domain/repositories/scan_repository.dart';
 
 // ── Result ────────────────────────────────────────────────────────────────────
+import '../../features/result/data/datasources/result_local_datasource.dart';
 import '../../features/result/data/datasources/result_remote_datasource.dart';
 import '../../features/result/data/repositories/result_repository_impl.dart';
 import '../../features/result/domain/repositories/result_repository.dart';
@@ -87,7 +88,8 @@ class ServiceLocator {
 
     // ── Result ────────────────────────────────────────────────────────────────
     final resultRemote = ResultRemoteDataSourceImpl(dio: dio);
-    resultRepository = ResultRepositoryImpl(remoteDataSource: resultRemote);
+    final resultLocal = ResultLocalDataSourceImpl(databaseHelper: DatabaseHelper.instance);
+    resultRepository = ResultRepositoryImpl(remoteDataSource: resultRemote, localDataSource: resultLocal);
 
     // ── History ───────────────────────────────────────────────────────────────
     final historyRemote = HistoryRemoteDataSourceImpl(dio: dio);
