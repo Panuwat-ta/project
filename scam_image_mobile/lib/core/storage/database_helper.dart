@@ -5,7 +5,7 @@ import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
   static const _databaseName = "scamguard.db";
-  static const _databaseVersion = 2;
+  static const _databaseVersion = 4;
   static const tableHistory = 'scan_history';
   static const tableDetails = 'scan_details';
 
@@ -46,6 +46,18 @@ class DatabaseHelper {
     if (oldVersion < 2) {
       await _createDetailsTable(db);
     }
+    if (oldVersion < 3) {
+      try {
+        await db.execute('ALTER TABLE $tableDetails ADD COLUMN xaiExplanation TEXT');
+      } catch (_) {}
+    }
+    if (oldVersion < 4) {
+      try {
+        await db.execute('ALTER TABLE $tableDetails ADD COLUMN aiGenProbability REAL');
+        await db.execute('ALTER TABLE $tableDetails ADD COLUMN ocrText TEXT');
+        await db.execute('ALTER TABLE $tableDetails ADD COLUMN scamKeywordsJson TEXT');
+      } catch (_) {}
+    }
   }
 
   Future _createDetailsTable(Database db) async {
@@ -60,7 +72,11 @@ class DatabaseHelper {
         imageUrl TEXT,
         heatmapUrl TEXT,
         createdAt TEXT NOT NULL,
-        factorsJson TEXT
+        factorsJson TEXT,
+        xaiExplanation TEXT,
+        aiGenProbability REAL,
+        ocrText TEXT,
+        scamKeywordsJson TEXT
       )
       ''');
   }

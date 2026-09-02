@@ -204,7 +204,9 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
   Widget _buildOcrCard(bool isDark, AnalysisResult result) {
     final texts = result.factors.where((f) => f.type == 'textual');
     final textFactor = texts.isNotEmpty ? texts.first : const RiskFactor(type: 'textual', score: 0, title: '', details: []);
-    final ocrText = textFactor.details.isNotEmpty ? textFactor.details.join(', ') : 'ไม่พบข้อความอันตราย';
+    final ocrText = (result.ocrText != null && result.ocrText!.trim().isNotEmpty)
+        ? result.ocrText!
+        : (textFactor.details.isNotEmpty ? textFactor.details.join(', ') : 'ไม่พบข้อความในภาพ');
     
     return _buildCard(
       isDark: isDark,
@@ -294,7 +296,11 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
           Divider(color: AppColors.border.withValues(alpha: isDark ? 0.2 : 1)),
           const SizedBox(height: AppSpacing.sm),
           Text(
-            'result_ocr_analysis_desc'.tr(context),
+            textFactor.details.isNotEmpty
+                ? 'ระบบตรวจพบคำสำคัญที่มีความเสี่ยงจำนวน ${textFactor.details.length} คำ ได้แก่ ${textFactor.details.join(", ")} ซึ่งมักพบในบริบทของการหลอกลวง'
+                : (textFactor.score > 0
+                    ? 'ตรวจพบข้อความที่มีความเสี่ยงจากการวิเคราะห์ทางภาษา'
+                    : 'ผลการตรวจสอบข้อความไม่พบคำสำคัญหรือประโยคที่บ่งชี้ถึงความเสี่ยงการหลอกลวง'),
             style: AppTypography.bodyBase(color: AppColors.textSecondary),
           ),
         ],
@@ -382,7 +388,9 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                       style: AppTypography.caption(color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
                     Text(
-                      sourceFactor.details.isNotEmpty ? sourceFactor.details.join(', ') : '1 ครั้ง',
+                      sourceFactor.details.isNotEmpty
+                          ? sourceFactor.details.join(', ')
+                          : (sourceFactor.score > 40 ? 'พบการเผยแพร่ซ้ำ' : 'ไม่พบประวัติการใช้งานซ้ำ'),
                       style: AppTypography.bodyBase(
                           color: isDark ? Colors.white : AppColors.onSurface).copyWith(fontWeight: FontWeight.w600),
                     ),
@@ -492,8 +500,16 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                       style: AppTypography.caption(color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
                     Text(
-                      '${visualFactor.score}%',
-                      style: AppTypography.titleMd(color: AppColors.danger),
+                      result.aiGenProbability != null
+                          ? '${(result.aiGenProbability! * 100).toStringAsFixed(0)}%'
+                          : (visualFactor.score > 0 ? '${visualFactor.score}%' : '0%'),
+                      style: AppTypography.titleMd(
+                        color: (result.aiGenProbability != null && result.aiGenProbability! >= 0.7) || visualFactor.score >= 70
+                            ? AppColors.danger
+                            : (result.aiGenProbability != null && result.aiGenProbability! >= 0.4) || visualFactor.score >= 40
+                                ? AppColors.warning
+                                : (isDark ? Colors.white : AppColors.onSurface),
+                      ),
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     Text(
@@ -501,7 +517,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                       style: AppTypography.caption(color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
                     Text(
-                      '${visualFactor.score / 100}',
+                      (visualFactor.score / 100.0).toStringAsFixed(2),
                       style: AppTypography.titleMd(
                           color: isDark ? Colors.white : AppColors.onSurface),
                     ),
@@ -527,8 +543,12 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
-                  'result_xai_desc'.tr(context),
-                  style: AppTypography.caption(color: AppColors.textSecondary),
+                  (result.xaiExplanation != null && result.xaiExplanation!.trim().isNotEmpty)
+                      ? result.xaiExplanation!
+                      : (result.riskScore < 40
+                          ? 'ภาพมีความสม่ำเสมอของพิกเซลเป็นปกติ ไม่พบร่องรอยความผิดปกติหรือการตัดต่อที่ส่งผลต่อความเสี่ยง'
+                          : 'ไม่พบคำอธิบายเพิ่มเติมจากระบบ AI สำหรับรายการนี้'),
+                  style: AppTypography.caption(color: isDark ? Colors.white70 : AppColors.textSecondary),
                 ),
               ],
             ),

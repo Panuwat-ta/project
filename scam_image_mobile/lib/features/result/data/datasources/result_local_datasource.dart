@@ -36,6 +36,10 @@ class ResultLocalDataSourceImpl implements ResultLocalDataSource {
         'summary': result.summary,
         'imageUrl': result.imageUrl,
         'heatmapUrl': result.heatmapUrl,
+        'xaiExplanation': result.xaiExplanation,
+        'aiGenProbability': result.aiGenProbability,
+        'ocrText': result.ocrText,
+        'scamKeywordsJson': result.scamKeywords != null ? jsonEncode(result.scamKeywords) : null,
         'createdAt': result.createdAt.toIso8601String(),
         'factorsJson': factorsJson,
       },
@@ -106,6 +110,14 @@ class ResultLocalDataSourceImpl implements ResultLocalDataSource {
         }).toList();
       }
     } catch (_) {}
+    List<String>? scamKeywords;
+    try {
+      final rawKeywords = m['scamKeywordsJson'] as String?;
+      if (rawKeywords != null && rawKeywords.isNotEmpty) {
+        scamKeywords = List<String>.from(jsonDecode(rawKeywords) as List);
+      }
+    } catch (_) {}
+
     return AnalysisResult(
       scanId: m['scanId'] as String,
       taskId: m['taskId'] as String,
@@ -115,6 +127,10 @@ class ResultLocalDataSourceImpl implements ResultLocalDataSource {
       summary: m['summary'] as String? ?? '',
       imageUrl: m['imageUrl'] as String?,
       heatmapUrl: m['heatmapUrl'] as String?,
+      xaiExplanation: m['xaiExplanation'] as String?,
+      aiGenProbability: (m['aiGenProbability'] as num?)?.toDouble(),
+      ocrText: m['ocrText'] as String?,
+      scamKeywords: scamKeywords,
       createdAt: DateTime.parse(m['createdAt'] as String).toLocal(),
       factors: factors,
     );

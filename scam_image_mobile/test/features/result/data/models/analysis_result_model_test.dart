@@ -23,6 +23,8 @@ void main() {
         'ai_gen_probability': 0.85,
         'raw_image_url': 'uploads/image.jpg',
         'heatmap_image_url': 'uploads/heatmap.jpg',
+        'xai_explanation': 'AI ตรวจพบความผิดปกติบริเวณตราประทับ',
+        'ocr_text': 'โอนเงินสำเร็จ 5,000 บาท',
         'created_at': '2026-01-01T00:00:00',
       };
 
@@ -31,6 +33,10 @@ void main() {
       expect(model.scanId, 'scan-abc');
       expect(model.riskScore, 75);
       expect(model.riskLevel, RiskLevel.high);
+      expect(model.xaiExplanation, 'AI ตรวจพบความผิดปกติบริเวณตราประทับ');
+      expect(model.aiGenProbability, 0.85);
+      expect(model.ocrText, 'โอนเงินสำเร็จ 5,000 บาท');
+      expect(model.scamKeywords, contains('transfer'));
       expect(model.factors.length, 3);
 
       final textFactor = model.factors.firstWhere((f) => f.type == 'textual');

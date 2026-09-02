@@ -12,6 +12,10 @@ class AnalysisResult extends Equatable {
   final String summary;
   final String? imageUrl;
   final String? heatmapUrl;
+  final String? xaiExplanation;
+  final double? aiGenProbability;
+  final String? ocrText;
+  final List<String>? scamKeywords;
   final DateTime createdAt;
   final List<RiskFactor> factors;
 
@@ -24,6 +28,10 @@ class AnalysisResult extends Equatable {
     required this.summary,
     this.imageUrl,
     this.heatmapUrl,
+    this.xaiExplanation,
+    this.aiGenProbability,
+    this.ocrText,
+    this.scamKeywords,
     required this.createdAt,
     required this.factors,
   });
@@ -38,6 +46,10 @@ class AnalysisResult extends Equatable {
         summary,
         imageUrl,
         heatmapUrl,
+        xaiExplanation,
+        aiGenProbability,
+        ocrText,
+        scamKeywords,
         createdAt,
         factors,
       ];

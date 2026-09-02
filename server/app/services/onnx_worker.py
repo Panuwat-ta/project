@@ -72,9 +72,11 @@ def run_patch(session, input_name, patch: np.ndarray) -> np.ndarray:
         return np.zeros((h, w), dtype=np.float32)
 
     logits = outputs[0]
-    raw_map = logits[0, 0, :, :]
-    prob_map = 1 / (1 + np.exp(-raw_map))  # true probability
-    return cv2.resize(prob_map, (w, h), interpolation=cv2.INTER_LINEAR)
+    # Softmax across 2 classes: Class 0 = Authentic, Class 1 = Tampered/Forgery
+    exp_logits = np.exp(logits - np.max(logits, axis=1, keepdims=True))
+    probs = exp_logits / np.sum(exp_logits, axis=1, keepdims=True)
+    forgery_prob = probs[0, 1, :, :]  # Class 1 probability (0.0 = authentic, 1.0 = tampered)
+    return cv2.resize(forgery_prob, (w, h), interpolation=cv2.INTER_LINEAR)
 
 
 def tile_inference(session, input_name, image: Image.Image) -> np.ndarray:
@@ -125,32 +127,32 @@ def main():
     image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
     original_size = image.size
 
-    # Full-res probability map (tiling preserves high-res detail)
+    # Full-res probability map of forgery (tiling preserves high-res detail)
     prob_map_true = tile_inference(session, input_name, image)
-
-    # The model outputs ~1.0 for authentic and ~0.0 for tampered. 
-    # Invert it so 1.0 means tampered (high risk) and 0.0 means authentic (base).
-    prob_map_true = 1.0 - prob_map_true
 
     # Visual heatmap using Min-Max scaling for clear display
     pmin, pmax = prob_map_true.min(), prob_map_true.max()
     prob_map_visual = (prob_map_true - pmin) / (pmax - pmin + 1e-5)
     heatmap_bytes = generate_heatmap(prob_map_visual, np.array(image))
 
-    # Visual risk using the maximum probability found in the image
+    # Real visual risk score based on maximum forgery probability in the image
     ai_gen_prob = float(prob_map_true.max())
-    visual_risk_score = int(ai_gen_prob * 100)
+    visual_risk_score = int(round(ai_gen_prob * 100))
 
-    # Detect region of anomaly
     h, w = prob_map_true.shape[:2]
-    threshold = max(0.4, float(prob_map_true.mean() + 0.15))
+    threshold = max(0.35, float(prob_map_true.mean() + 0.10))
     tampered_pixels = np.argwhere(prob_map_true >= threshold)
-    if len(tampered_pixels) > 0 and ai_gen_prob >= 0.4:
+    if len(tampered_pixels) > 0 and ai_gen_prob >= 0.35:
         mean_y, mean_x = tampered_pixels.mean(axis=0)
-        v = "บน" if mean_y < h * 0.4 else ("ล่าง" if mean_y > h * 0.6 else "กลาง")
-        h_pos = "ซ้าย" if mean_x < w * 0.4 else ("ขวา" if mean_x > w * 0.6 else "กลาง")
+        v = "บน" if mean_y < h * 0.38 else ("ล่าง" if mean_y > h * 0.62 else "กลาง")
+        h_pos = "ซ้าย" if mean_x < w * 0.38 else ("ขวา" if mean_x > w * 0.62 else "กลาง")
+        
         if v == "กลาง" and h_pos == "กลาง":
             region = "บริเวณกึ่งกลางของภาพ"
+        elif v == "กลาง":
+            region = f"บริเวณด้าน{h_pos}ของภาพ"
+        elif h_pos == "กลาง":
+            region = f"บริเวณส่วน{v}ของภาพ"
         else:
             region = f"บริเวณมุม{h_pos}{v}ของภาพ"
     else:

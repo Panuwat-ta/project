@@ -14,6 +14,10 @@ class AnalysisResultModel extends AnalysisResult {
     required super.summary,
     super.imageUrl,
     super.heatmapUrl,
+    super.xaiExplanation,
+    super.aiGenProbability,
+    super.ocrText,
+    super.scamKeywords,
     required super.createdAt,
     required super.factors,
   });
@@ -97,15 +101,27 @@ class AnalysisResultModel extends AnalysisResult {
       return '$hostUrl$cleanUrl';
     }
 
+    final xaiExplanation = json['xai_explanation'] as String? ?? json['xaiExplanation'] as String?;
+    final aiGenProb = (json['ai_gen_probability'] as num?)?.toDouble() ??
+        (json['aiGenProbability'] as num?)?.toDouble();
+    final ocrText = json['ocr_text'] as String? ?? json['ocrText'] as String?;
+    final scamKeywords = json['scam_keywords_found'] != null
+        ? List<String>.from(json['scam_keywords_found'] as List)
+        : (json['scamKeywords'] != null ? List<String>.from(json['scamKeywords'] as List) : null);
+
     return AnalysisResultModel(
       scanId: json['scanId'] as String? ?? json['scan_id'] as String? ?? json['id'] as String? ?? '',
       taskId: json['taskId'] as String? ?? json['id'] as String? ?? '',
       status: json['status'] as String? ?? 'completed',
       riskScore: riskScore,
       riskLevel: riskLevel,
-      summary: json['summary'] as String? ?? 'ตรวจพบความเสี่ยงระดับ ${riskLevelStr ?? 'ปกติ'}',
+      summary: json['summary'] as String? ?? xaiExplanation ?? 'ตรวจพบความเสี่ยงระดับ ${riskLevelStr ?? 'ปกติ'}',
       imageUrl: parseUrl(json['imageUrl'] as String? ?? json['raw_image_url'] as String?),
       heatmapUrl: parseUrl(json['heatmapUrl'] as String? ?? json['heatmap_image_url'] as String?),
+      xaiExplanation: xaiExplanation,
+      aiGenProbability: aiGenProb,
+      ocrText: ocrText,
+      scamKeywords: scamKeywords,
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'] as String).toLocal()
           : (json['created_at'] != null ? DateTime.parse(json['created_at'] as String).toLocal() : DateTime.now().toLocal()),
