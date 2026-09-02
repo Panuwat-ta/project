@@ -143,7 +143,6 @@ class _ResultBody extends StatelessWidget {
     final badgeBg = RiskLevelHelper.toBgColor(result.riskLevel, isDark: isDark);
     final badgeTextColor = RiskLevelHelper.toTextColor(result.riskLevel, isDark: isDark);
     final badgeIcon = RiskLevelHelper.toIcon(result.riskLevel);
-    final badgeLabelKey = RiskLevelHelper.toLabelKey(result.riskLevel);
 
     return Column(
       children: [
@@ -184,7 +183,7 @@ class _ResultBody extends StatelessWidget {
               Icon(badgeIcon, color: badgeTextColor, size: 16),
               const SizedBox(width: 4),
               Text(
-                badgeLabelKey.tr(context),
+                '${result.riskScore}%',
                 style: AppTypography.caption(color: badgeTextColor).copyWith(fontWeight: FontWeight.w600),
               ),
             ],

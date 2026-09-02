@@ -162,7 +162,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                 ),
               ),
               const SizedBox(width: AppSpacing.sm),
-              _buildRiskLevelPill(result.riskLevel, isDark),
+              _buildScorePill(result.riskScore, isDark),
             ],
           ),
           const SizedBox(height: AppSpacing.xl),
@@ -547,44 +547,10 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
         return AppColors.warning;
       case RiskLevel.low:
         return AppColors.primary;
-      case RiskLevel.safe:
-        return AppColors.success;
     }
   }
 
-  Widget _buildRiskLevelPill(RiskLevel level, bool isDark) {
-    final String text;
-    final Color bgColor;
-    final Color textColor;
-    
-    switch (level) {
-      case RiskLevel.high:
-        text = 'result_high_risk'.tr(context);
-        bgColor = isDark ? const Color(0xFF4A1818) : const Color(0xFFFFEBEB);
-        textColor = isDark ? const Color(0xFFFFB4B4) : AppColors.danger;
-        break;
-      case RiskLevel.medium:
-        text = 'result_medium'.tr(context);
-        bgColor = isDark ? const Color(0xFF4A3818) : const Color(0xFFFFF4E5);
-        textColor = isDark ? const Color(0xFFFFD494) : AppColors.warning;
-        break;
-      case RiskLevel.low:
-        text = 'result_low'.tr(context);
-        bgColor = isDark ? const Color(0xFF16324A) : const Color(0xFFE5F6FB);
-        textColor = isDark ? const Color(0xFF94DFFF) : AppColors.primary;
-        break;
-      case RiskLevel.safe:
-        text = 'result_safe'.tr(context);
-        bgColor = isDark ? const Color(0xFF184A2A) : const Color(0xFFE5FBF0);
-        textColor = isDark ? const Color(0xFF94FFC8) : AppColors.success;
-        break;
-    }
-    
-    return _buildPill(text, bgColor, textColor);
-  }
-  
   Widget _buildScorePill(int score, bool isDark) {
-    final String text = score >= 80 ? 'result_high_risk'.tr(context) : (score >= 60 ? 'result_medium'.tr(context) : (score >= 40 ? 'result_low'.tr(context) : 'result_safe'.tr(context)));
     final Color bgColor;
     final Color textColor;
     
@@ -602,7 +568,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
       textColor = isDark ? const Color(0xFF94FFC8) : AppColors.success;
     }
     
-    return _buildPill(text, bgColor, textColor);
+    return _buildPill('$score%', bgColor, textColor);
   }
 
   Widget _buildActionButtons(BuildContext context, bool isDark) {

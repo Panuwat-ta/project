@@ -6,18 +6,18 @@ import 'package:scam_image_mobile/features/result/domain/entities/analysis_resul
 
 void main() {
   group('RiskLevelHelper.fromScore', () {
-    // -- Safe boundary (0-19) -------------------------------------------
+    // -- Low boundary (0-39) -------------------------------------------
 
-    test('score 0 -> RiskLevel.safe', () {
-      expect(RiskLevelHelper.fromScore(0), RiskLevel.safe);
+    test('score 0 -> RiskLevel.low', () {
+      expect(RiskLevelHelper.fromScore(0), RiskLevel.low);
     });
 
-    test('score 1 -> RiskLevel.safe', () {
-      expect(RiskLevelHelper.fromScore(1), RiskLevel.safe);
+    test('score 1 -> RiskLevel.low', () {
+      expect(RiskLevelHelper.fromScore(1), RiskLevel.low);
     });
 
-    test('score 19 -> RiskLevel.safe (upper boundary of safe)', () {
-      expect(RiskLevelHelper.fromScore(19), RiskLevel.safe);
+    test('score 19 -> RiskLevel.low (upper boundary of low low-range)', () {
+      expect(RiskLevelHelper.fromScore(19), RiskLevel.low);
     });
     // -- Low boundary (20-39) -----------------------------------------
 
@@ -63,10 +63,6 @@ void main() {
   });
 
   group('RiskLevelHelper.toThaiLabel', () {
-    test('RiskLevel.safe -> "Safe"', () {
-      expect(RiskLevelHelper.toThaiLabel(RiskLevel.safe), 'Safe');
-    });
-
     test('RiskLevel.low -> "Low"', () {
       expect(RiskLevelHelper.toThaiLabel(RiskLevel.low), 'Low');
     });
@@ -81,10 +77,6 @@ void main() {
   });
 
   group('RiskLevelHelper.toColor', () {
-    test('safe returns success green', () {
-      expect(RiskLevelHelper.toColor(RiskLevel.safe), AppColors.success);
-    });
-
     test('low returns tertiary yellow', () {
       expect(RiskLevelHelper.toColor(RiskLevel.low), AppColors.tertiary);
     });
@@ -128,10 +120,6 @@ void main() {
   });
 
   group('RiskLevelHelper.toLabelKey', () {
-    test('safe returns result_safe', () {
-      expect(RiskLevelHelper.toLabelKey(RiskLevel.safe), 'result_safe');
-    });
-
     test('low returns result_low_risk', () {
       expect(RiskLevelHelper.toLabelKey(RiskLevel.low), 'result_low_risk');
     });
@@ -146,10 +134,6 @@ void main() {
   });
 
   group('RiskLevelHelper.toIcon', () {
-    test('safe returns check_circle_rounded', () {
-      expect(RiskLevelHelper.toIcon(RiskLevel.safe), Icons.check_circle_rounded);
-    });
-
     test('low returns info_rounded', () {
       expect(RiskLevelHelper.toIcon(RiskLevel.low), Icons.info_rounded);
     });

@@ -440,8 +440,7 @@ def calculate_risk_score(text_score: int, visual_score: int, source_score: int) 
     สูตร: Risk Score = (S_text * 0.25) + (S_visual * 0.45) + (S_source * 0.30)
 
     Risk Grades:
-      0-19  = safe   (สีเขียว)
-      20-39 = low    (สีเขียว)
+      0-39  = low    (สีเขียว)
       40-69 = medium (สีเหลือง)
       70-100 = high  (สีแดง)
       Special: visual_score >= 80 → high ทันที
@@ -454,10 +453,8 @@ def calculate_risk_score(text_score: int, visual_score: int, source_score: int) 
         total = max(70, total)
     elif total >= 40:
         grade = "medium"
-    elif total >= 20:
-        grade = "low"
     else:
-        grade = "safe"
+        grade = "low"
 
     return {
         "total_risk_score": total,

@@ -3,27 +3,22 @@ import 'package:flutter/material.dart';
 import '../../features/result/domain/entities/analysis_result.dart';
 import '../theme/app_colors.dart';
 
-/// Converts a numeric risk score (0-100) to a [RiskLevel].
+/// Converts a numeric risk score (0-100) to a [RiskLevel] (3 ระดับ: Low/Medium/High).
 ///
-///
-/// 0-19  → safe
-/// 20-39 → low
+/// 0-39  → low
 /// 40-69 → medium
 /// 70-100 → high
 class RiskLevelHelper {
   RiskLevelHelper._();
 
   static RiskLevel fromScore(int score) {
-    if (score < 20) return RiskLevel.safe;
-    if (score < 40) return RiskLevel.low;
-    if (score < 70) return RiskLevel.medium;
-    return RiskLevel.high;
+    if (score >= 70) return RiskLevel.high;
+    if (score >= 40) return RiskLevel.medium;
+    return RiskLevel.low;
   }
 
   static String toThaiLabel(RiskLevel level) {
     switch (level) {
-      case RiskLevel.safe:
-        return 'Safe';
       case RiskLevel.low:
         return 'Low';
       case RiskLevel.medium:
@@ -36,8 +31,6 @@ class RiskLevelHelper {
   /// Primary color for the given risk level.
   static Color toColor(RiskLevel level) {
     switch (level) {
-      case RiskLevel.safe:
-        return AppColors.success;
       case RiskLevel.low:
         return AppColors.tertiary;
       case RiskLevel.medium:
@@ -50,8 +43,6 @@ class RiskLevelHelper {
   /// Background tint for the risk badge pill.
   static Color toBgColor(RiskLevel level, {required bool isDark}) {
     switch (level) {
-      case RiskLevel.safe:
-        return isDark ? const Color(0xFF14332A) : const Color(0xFFDCFCE7);
       case RiskLevel.low:
         return isDark ? const Color(0xFF332B14) : const Color(0xFFFEF9C3);
       case RiskLevel.medium:
@@ -64,8 +55,6 @@ class RiskLevelHelper {
   /// Text / icon color on top of the badge background.
   static Color toTextColor(RiskLevel level, {required bool isDark}) {
     switch (level) {
-      case RiskLevel.safe:
-        return isDark ? const Color(0xFF86EFAC) : AppColors.success;
       case RiskLevel.low:
         return isDark ? const Color(0xFFFDE68A) : AppColors.tertiary;
       case RiskLevel.medium:
@@ -78,8 +67,6 @@ class RiskLevelHelper {
   /// Localization key for the risk level label.
   static String toLabelKey(RiskLevel level) {
     switch (level) {
-      case RiskLevel.safe:
-        return 'result_safe';
       case RiskLevel.low:
         return 'result_low_risk';
       case RiskLevel.medium:
@@ -92,8 +79,6 @@ class RiskLevelHelper {
   /// Icon for the risk level.
   static IconData toIcon(RiskLevel level) {
     switch (level) {
-      case RiskLevel.safe:
-        return Icons.check_circle_rounded;
       case RiskLevel.low:
         return Icons.info_rounded;
       case RiskLevel.medium:

@@ -67,7 +67,7 @@ class ResultLocalDataSourceImpl implements ResultLocalDataSource {
     final h = histMaps.first;
     final riskLevel = RiskLevel.values.firstWhere(
       (e) => e.name == h['riskLevel'] as String,
-      orElse: () => RiskLevel.safe,
+      orElse: () => RiskLevel.low,
     );
     return AnalysisResult(
       scanId: h['scanId'] as String,
@@ -88,7 +88,7 @@ class ResultLocalDataSourceImpl implements ResultLocalDataSource {
   AnalysisResult _mapToResult(Map<String, dynamic> m) {
     final riskLevel = RiskLevel.values.firstWhere(
       (e) => e.name == m['riskLevel'] as String,
-      orElse: () => RiskLevel.safe,
+      orElse: () => RiskLevel.low,
     );
     List<RiskFactor> factors = [];
     try {

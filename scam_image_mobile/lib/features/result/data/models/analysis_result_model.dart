@@ -37,7 +37,7 @@ class AnalysisResultModel extends AnalysisResult {
           riskLevel = RiskLevel.low;
           break;
         default:
-          riskLevel = RiskLevel.safe;
+          riskLevel = RiskLevel.low;
       }
     } else {
       riskLevel = RiskLevelHelper.fromScore(riskScore);

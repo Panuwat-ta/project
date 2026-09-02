@@ -68,7 +68,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ('high', 'เสี่ยงสูง'),
               ('medium', 'เสี่ยงปานกลาง'),
               ('low', 'เสี่ยงต่ำ'),
-              ('safe', 'ปลอดภัย'),
             ].map((e) => ListTile(
                   title: Text(e.$2, style: TextStyle(color: isDark ? Colors.white : AppColors.onSurface)),
                   trailing: _selectedRiskLevel == e.$1 ? const Icon(Icons.check, color: AppColors.primary) : null,
@@ -392,28 +391,19 @@ class _HistoryCard extends StatelessWidget {
   Widget _buildRiskBadge(BuildContext context, domain.RiskLevel level, int score) {
     Color bgColor;
     IconData icon;
-    String label;
     
     switch (level) {
       case domain.RiskLevel.high:
-        bgColor = const Color(0xFFDC2626); // red-600
+        bgColor = const Color(0xFFDC2626);
         icon = Icons.warning_amber_rounded;
-        label = 'result_high'.tr(context);
         break;
       case domain.RiskLevel.medium:
-        bgColor = const Color(0xFFD97706); // amber-600
+        bgColor = const Color(0xFFD97706);
         icon = Icons.info_outline;
-        label = 'result_medium'.tr(context);
         break;
       case domain.RiskLevel.low:
-        bgColor = const Color(0xFF00A6D6); // blue
+        bgColor = const Color(0xFF00A6D6);
         icon = Icons.info_outline;
-        label = 'result_low'.tr(context);
-        break;
-      case domain.RiskLevel.safe:
-        bgColor = const Color(0xFF16A34A); // green-600
-        icon = Icons.check_circle_outline;
-        label = 'safe'.tr(context);
         break;
     }
     
@@ -429,7 +419,7 @@ class _HistoryCard extends StatelessWidget {
           Icon(icon, color: Colors.white, size: 16),
           const SizedBox(width: 4),
           Text(
-            '$label ($score%)',
+            '$score%',
             style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
           ),
         ],
@@ -447,27 +437,13 @@ class _HistoryCard extends StatelessWidget {
     }
   }
 
-  String _getRiskLabel(BuildContext context, domain.RiskLevel level) {
-    switch (level) {
-      case domain.RiskLevel.high:
-        return 'result_high'.tr(context);
-      case domain.RiskLevel.medium:
-        return 'result_medium'.tr(context);
-      case domain.RiskLevel.low:
-        return 'result_low'.tr(context);
-      case domain.RiskLevel.safe:
-        return 'safe'.tr(context);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
     final dateStr = _formatThaiDate(item.createdAt, context);
     final tags = _getTags(context, item.riskLevel);
     
-    final riskLabel = _getRiskLabel(context, item.riskLevel);
-    final displayTitle = '${item.title ?? item.scanId} : $riskLabel';
+    final displayTitle = '${item.title ?? item.scanId} • ${item.riskScore}%';
 
     return Container(
       decoration: BoxDecoration(

@@ -102,7 +102,7 @@ void main() {
       expect(model.riskLevel, RiskLevel.low);
     });
 
-    test('falls back to RiskLevelHelper for safe range', () {
+    test('falls back to RiskLevelHelper for low range (safe -> low)', () {
       final json = {
         'id': 'scan-1',
         'total_risk_score': 10,
@@ -110,7 +110,7 @@ void main() {
       };
 
       final model = AnalysisResultModel.fromJson(json);
-      expect(model.riskLevel, RiskLevel.safe);
+      expect(model.riskLevel, RiskLevel.low);
     });
   });
 

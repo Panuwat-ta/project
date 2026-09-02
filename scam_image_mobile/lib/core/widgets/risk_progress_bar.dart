@@ -28,7 +28,6 @@ class RiskProgressBar extends StatelessWidget {
     final level = _levelForScore(score);
     switch (level) {
       case RiskLevel.low:
-      case RiskLevel.safe:
         return AppColors.success;
       case RiskLevel.medium:
         return AppColors.warning;

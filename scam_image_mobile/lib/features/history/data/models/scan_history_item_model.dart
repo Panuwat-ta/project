@@ -32,7 +32,7 @@ class ScanHistoryItemModel extends ScanHistoryItem {
           riskLevel = RiskLevel.low;
           break;
         default:
-          riskLevel = RiskLevel.safe;
+          riskLevel = RiskLevel.low;
       }
     } else {
       riskLevel = RiskLevelHelper.fromScore(riskScore);
@@ -93,7 +93,7 @@ class ScanHistoryItemModel extends ScanHistoryItem {
       riskScore: map['riskScore'] as int,
       riskLevel: RiskLevel.values.firstWhere(
         (e) => e.name == map['riskLevel'] as String,
-        orElse: () => RiskLevel.safe,
+        orElse: () => RiskLevel.low,
       ),
       status: map['status'] as String,
       createdAt: DateTime.parse(map['createdAt'] as String).toLocal(),
