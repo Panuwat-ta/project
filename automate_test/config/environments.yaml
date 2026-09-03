@@ -1,0 +1,22 @@
+base_url: "http://localhost:8000"
+api_prefix: "/api/v1"
+
+environments:
+  local:
+    base_url: "http://localhost:8000"
+    db_url: "postgresql+asyncpg://postgres:postgres@localhost:5432/scamguard"
+    redis_url: "redis://localhost:6379/0"
+  dev:
+    base_url: "http://localhost:8000"
+  staging:
+    base_url: "https://staging-api.scamguard.example.com"
+  prod:
+    base_url: "https://api.scamguard.example.com"
+
+# ค่า default สำหรับ test data
+defaults:
+  timeout: 30
+  retries: 2
+  scan:
+    max_file_mb: 10
+    allowed_types: ["image/jpeg", "image/png", "image/webp", "image/heic"]

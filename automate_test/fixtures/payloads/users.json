@@ -1,0 +1,9 @@
+{
+  "users": [
+    {"email": "automate_test_user@example.com", "password": "Test1234!@#"},
+    {"email": "e2e_user@example.com", "password": "Test1234!@#"}
+  ],
+  "scan_samples": [
+    {"file": "fixtures/images/test1.jpg", "expect": "ok"}
+  ]
+}
