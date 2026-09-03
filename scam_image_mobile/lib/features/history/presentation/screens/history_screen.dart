@@ -290,10 +290,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     }
                     return RefreshIndicator(
                       color: AppColors.primaryFixedDim,
-                      onRefresh: () async {
-                        context.read<HistoryBloc>().add(const HistoryRefreshed());
-                        await context.read<HistoryBloc>().stream.firstWhere(
-                          (s) => s is! HistoryLoading,
+                      onRefresh: () {
+                        final completer = Completer<void>();
+                        context.read<HistoryBloc>().add(HistoryRefreshed(completer));
+                        return completer.future.timeout(
+                          const Duration(seconds: 5),
+                          onTimeout: () {
+                            if (!completer.isCompleted) {
+                              completer.complete();
+                            }
+                          },
                         );
                       },
                       child: ListView.separated(
