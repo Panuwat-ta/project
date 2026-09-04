@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 set -e
-ROOT="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
 # สร้าง venv ถ้ายังไม่มี
 if [ ! -d venv ]; then
   echo "[setup] creating venv..."
-  python3 -m venv venv
+  (which python3.10 >/dev/null 2>&1 && python3.10 -m venv venv) || python3 -m venv venv
 fi
 source venv/bin/activate
 pip install -q -r requirements.txt 2>&1 | tail -n 5
@@ -17,7 +17,8 @@ if [ -f ../server/requirements.txt ]; then
 fi
 # link รูปทดสอบ
 if [ ! -e fixtures/images/test1.jpg ] && [ -d ../server/tests/test_img ]; then
-  ln -sfn ../../server/tests/test_img/* fixtures/images/ 2>/dev/null || cp -r ../server/tests/test_img/* fixtures/images/ 2>/dev/null || true
+  mkdir -p fixtures/images
+  cp -r ../server/tests/test_img/* fixtures/images/ 2>/dev/null || true
 fi
 mkdir -p reports/html reports/coverage
 cp -n .env.example .env 2>/dev/null || true

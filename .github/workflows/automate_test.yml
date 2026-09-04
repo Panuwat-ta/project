@@ -1,0 +1,78 @@
+name: automate_test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  automate_test:
+    name: automate_test
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: scamguard
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: scamguard_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: "pip"
+          cache-dependency-path: automate_test/requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r automate_test/requirements.txt
+
+      - name: Run database migrations
+        env:
+          DATABASE_URL: postgresql+asyncpg://scamguard:password@localhost:5432/scamguard_db
+          REDIS_URL: redis://localhost:6379/0
+        run: |
+          cd server
+          alembic upgrade head
+
+      - name: Run automated tests (API & E2E)
+        env:
+          DATABASE_URL: postgresql+asyncpg://scamguard:password@localhost:5432/scamguard_db
+          REDIS_URL: redis://localhost:6379/0
+          BASE_URL: ""
+        run: |
+          cd automate_test
+          pytest tests/api tests/e2e -v
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: automate-test-reports
+          path: automate_test/reports/

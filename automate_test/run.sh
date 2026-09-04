@@ -6,11 +6,15 @@ cd "$ROOT"
 MODE="${1:-all}"
 shift || true
 
-# auto setup venv ถ้ายังไม่มี pytest
-if [ ! -x venv/bin/pytest ]; then
+# auto setup venv หรือใช้ server/venv ถ้ามี
+if [ -x venv/bin/pytest ]; then
+  source venv/bin/activate
+elif [ -x ../server/venv/bin/pytest ]; then
+  source ../server/venv/bin/activate
+else
   bash scripts/setup.sh
+  source venv/bin/activate
 fi
-source venv/bin/activate
 
 mkdir -p reports/html reports/coverage
 

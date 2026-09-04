@@ -74,15 +74,13 @@ pytest tests/e2e -v
 
 ---
 
-## CI
+## CI (GitHub Actions)
 
-เติมใน GitHub Actions ได้ทันที:
+ระบบได้ตั้งค่า GitHub Actions Workflow ไว้ที่ `.github/workflows/automate_test.yml` เพื่อรันอัตโนมัติเมื่อมีการ Push หรือสร้าง Pull Request ไปยัง branch `main` หรือ `develop`:
 
-```yaml
-- run: cd automate_test && pip install -r requirements.txt && ./run.sh api --junit
-```
-
-รายงาน JUnit อยู่ที่ `reports/junit.xml` และ HTML ที่ `reports/html/`
+- **Job Name / Check Name**: `automate_test` (ตรงกับที่ตั้งไว้ใน GitHub Ruleset)
+- **Services**: มี PostgreSQL 15 และ Redis 7 รันเป็น CI Services พร้อม Auto Migration
+- **Artifacts**: อัปโหลดรายงานการทดสอบ HTML และ JUnit XML อัตโนมัติ (`reports/html/`, `reports/junit.xml`)
 
 ---
 
