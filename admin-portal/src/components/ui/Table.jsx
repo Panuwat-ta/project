@@ -21,7 +21,7 @@ export function TableHeader({ className, children, ...props }) {
   return (
     <thead
       className={cn(
-        "bg-slate-50 dark:bg-slate-950/60 border-b border-slate-200 dark:border-slate-800 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400",
+        "bg-slate-50 dark:bg-slate-950/60 border-b border-slate-200 dark:border-slate-800 text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-400",
         className
       )}
       {...props}
@@ -78,10 +78,10 @@ export function TableEmpty({ message = "ไม่พบรายการข้�
     <TableRow isHoverable={false}>
       <TableCell colSpan={colSpan} className="py-12 text-center">
         <div className="flex flex-col items-center justify-center gap-2">
-          <div className="size-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
+          <div className="size-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400">
             <Inbox className="size-5" />
           </div>
-          <p className="text-sm font-medium text-slate-600 dark:text-slate-400">{message}</p>
+          <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{message}</p>
           {children}
         </div>
       </TableCell>
@@ -96,11 +96,11 @@ export function Pagination({ page, totalPages, totalItems, onPageChange, limit =
   const endItem = Math.min(page * limit, totalItems);
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 border-t border-slate-200 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/30 text-xs text-slate-500 dark:text-slate-400">
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 border-t border-slate-200 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/30 text-xs text-slate-600 dark:text-slate-400">
       <div>
-        แสดง <span className="font-semibold text-slate-700 dark:text-slate-300">{startItem}</span> -{" "}
-        <span className="font-semibold text-slate-700 dark:text-slate-300">{endItem}</span> จากทั้งหมด{" "}
-        <span className="font-semibold text-slate-700 dark:text-slate-300">{totalItems?.toLocaleString() || 0}</span> รายการ
+        แสดง <span className="font-bold text-slate-900 dark:text-slate-200">{startItem}</span> -{" "}
+        <span className="font-bold text-slate-900 dark:text-slate-200">{endItem}</span> จากทั้งหมด{" "}
+        <span className="font-bold text-slate-900 dark:text-slate-200">{totalItems?.toLocaleString() || 0}</span> รายการ
       </div>
 
       <div className="flex items-center gap-1.5">
@@ -108,13 +108,13 @@ export function Pagination({ page, totalPages, totalItems, onPageChange, limit =
           type="button"
           onClick={() => onPageChange(page - 1)}
           disabled={page <= 1}
-          className="p-1.5 rounded-md border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="p-1.5 rounded-md border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           aria-label="Previous page"
         >
           <ChevronLeft className="size-4" />
         </button>
 
-        <span className="px-3 py-1 font-mono text-xs text-slate-700 dark:text-slate-300">
+        <span className="px-3 py-1 font-mono text-xs font-semibold text-slate-900 dark:text-slate-200">
           หน้า {page} / {totalPages || 1}
         </span>
 
@@ -122,7 +122,7 @@ export function Pagination({ page, totalPages, totalItems, onPageChange, limit =
           type="button"
           onClick={() => onPageChange(page + 1)}
           disabled={page >= totalPages}
-          className="p-1.5 rounded-md border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="p-1.5 rounded-md border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           aria-label="Next page"
         >
           <ChevronRight className="size-4" />

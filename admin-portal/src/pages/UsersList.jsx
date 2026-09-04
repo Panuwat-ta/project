@@ -120,7 +120,7 @@ export function UsersList() {
           <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
             การจัดการผู้ใช้งาน (User Management)
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
             ตรวจสอบประวัติการใช้งาน บัญชีผู้ส่งรายงาน และมาตรการระงับบัญชี (Ban/Unban)
           </p>
         </div>
@@ -142,18 +142,18 @@ export function UsersList() {
       <Card>
         <div className="p-4 flex items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800/80">
           <div className="relative w-full sm:w-80">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-slate-500 dark:text-slate-400" />
             <input
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="ค้นหาชื่อ, อีเมล, หรือ User ID..."
-              className="w-full pl-8 pr-3 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700/80 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 rounded-lg outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all font-mono"
+              className="w-full pl-8 pr-3 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700/80 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 rounded-lg outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all font-mono"
             />
           </div>
 
-          <div className="text-xs font-mono text-slate-500 dark:text-slate-400 hidden sm:block">
-            ผู้ใช้ทั้งหมด: <span className="font-semibold text-slate-700 dark:text-slate-300">{formatNumber(total)}</span> บัญชี
+          <div className="text-xs font-mono text-slate-600 dark:text-slate-400 hidden sm:block">
+            ผู้ใช้ทั้งหมด: <span className="font-bold text-slate-900 dark:text-slate-200">{formatNumber(total)}</span> บัญชี
           </div>
         </div>
 
@@ -195,7 +195,7 @@ export function UsersList() {
                           <div className="text-xs font-medium text-slate-900 dark:text-slate-100">
                             {user.full_name || "ไม่มีชื่อระบุ"}
                           </div>
-                          <div className="text-[10px] font-mono text-slate-400">{user.email}</div>
+                          <div className="text-[10px] font-mono text-slate-600 dark:text-slate-400 font-medium">{user.email}</div>
                         </TableCell>
 
                         {/* Role */}
@@ -211,12 +211,12 @@ export function UsersList() {
                         </TableCell>
 
                         {/* Total Scans */}
-                        <TableCell className="font-mono text-xs">
+                        <TableCell className="font-mono text-xs text-slate-800 dark:text-slate-200">
                           {formatNumber(user.total_scans ?? user.scans_count ?? 0)} ครั้ง
                         </TableCell>
 
                         {/* Created At */}
-                        <TableCell className="text-xs text-slate-500 font-mono whitespace-nowrap">
+                        <TableCell className="text-xs text-slate-700 dark:text-slate-400 font-mono whitespace-nowrap">
                           {formatDate(user.created_at)}
                         </TableCell>
 

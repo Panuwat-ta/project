@@ -105,10 +105,10 @@ export function AuditLogsList() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2">
-            <Shield className="size-5 text-cyan-400" />
+            <Shield className="size-5 text-cyan-600 dark:text-cyan-400" />
             <span>บันทึกความมั่นคงปลอดภัย (Security Audit Trail)</span>
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
             เก็บบันทึกประวัติการตัดสินใจและการเข้าถึงของ Super Admin แบบ Immutable ย้อนหลัง
           </p>
         </div>
@@ -146,19 +146,19 @@ export function AuditLogsList() {
             </select>
 
             <div className="relative w-full sm:w-72">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-slate-500 dark:text-slate-400" />
               <input
                 type="search"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="ค้นหากิจกรรม, แอดมิน, IP, รายละเอียด..."
-                className="w-full pl-8 pr-3 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700/80 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 rounded-lg outline-none focus:border-cyan-500 font-mono"
+                className="w-full pl-8 pr-3 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700/80 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 rounded-lg outline-none focus:border-cyan-500 font-mono"
               />
             </div>
           </div>
 
-          <div className="text-xs font-mono text-slate-500 dark:text-slate-400 hidden sm:block">
-            รายการทั้งหมด: <span className="font-semibold text-slate-700 dark:text-slate-300">{formatNumber(total)}</span> รายการ
+          <div className="text-xs font-mono text-slate-600 dark:text-slate-400 hidden sm:block">
+            รายการทั้งหมด: <span className="font-bold text-slate-900 dark:text-slate-200">{formatNumber(total)}</span> รายการ
           </div>
         </div>
 
@@ -196,7 +196,7 @@ export function AuditLogsList() {
                           <TableCell>
                             <button
                               type="button"
-                              className="p-1 rounded text-slate-400 hover:text-slate-200"
+                              className="p-1 rounded text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200"
                             >
                               {isExpanded ? (
                                 <ChevronUp className="size-3.5" />
@@ -206,7 +206,7 @@ export function AuditLogsList() {
                             </button>
                           </TableCell>
 
-                          <TableCell className="font-mono text-xs font-semibold text-slate-400">
+                          <TableCell className="font-mono text-xs font-semibold text-slate-800 dark:text-slate-300">
                             #{log.id}
                           </TableCell>
 
@@ -217,7 +217,7 @@ export function AuditLogsList() {
                           </TableCell>
 
                           <TableCell className="font-mono text-xs">
-                            <span className="text-slate-600 dark:text-slate-400 font-medium">{log.entity_type}</span>{" "}
+                            <span className="text-slate-700 dark:text-slate-400 font-medium">{log.entity_type}</span>{" "}
                             <span className="font-semibold text-slate-900 dark:text-slate-100">
                               #{log.entity_id || "-"}
                             </span>
@@ -229,16 +229,16 @@ export function AuditLogsList() {
                             </div>
                           </TableCell>
 
-                          <TableCell className="font-mono text-xs text-slate-700 dark:text-slate-300">
+                          <TableCell className="font-mono text-xs text-slate-800 dark:text-slate-200">
                             <div>{log.ip_address || log.ip || "127.0.0.1"}</div>
                             {log.user_agent && (
-                              <div className="text-[10px] text-slate-500 truncate max-w-[140px]">
+                              <div className="text-[10px] text-slate-600 dark:text-slate-400 truncate max-w-[140px]">
                                 {log.user_agent}
                               </div>
                             )}
                           </TableCell>
 
-                          <TableCell className="font-mono text-xs text-slate-500 whitespace-nowrap">
+                          <TableCell className="font-mono text-xs text-slate-700 dark:text-slate-400 whitespace-nowrap">
                             {formatDate(log.created_at)}
                           </TableCell>
                         </TableRow>

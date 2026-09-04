@@ -71,16 +71,16 @@
   --secondary: #f1f5f9;
   --secondary-foreground: #020617;
   --muted: #f1f5f9;
-  --muted-foreground: #334155;
+  --muted-foreground: #1e293b;
   --accent: #e2e8f0;
   --accent-foreground: #020617;
   --border: #cbd5e1;
   --input: #cbd5e1;
   --ring: #0891b2;
 
-  --risk-low: #059669;
-  --risk-medium: #d97706;
-  --risk-high: #e11d48;
+  --risk-low: #047857;
+  --risk-medium: #b45309;
+  --risk-high: #be123c;
 }
 
 .dark {

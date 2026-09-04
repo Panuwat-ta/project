@@ -81,8 +81,8 @@ async def seed():
                 "m_iou": m_iou,
                 "m_acc": m_acc,
                 "m_dice": m_dice,
-                "status": "inactive" if item != "v1.0.1" else "active", # Simple logic for active
-                "is_active": True if item == "v1.0.1" else False,
+                "status": "active" if item == "v1.0.0" else "inactive",
+                "is_active": True if item == "v1.0.0" else False,
             })
             
     async with async_session() as db:

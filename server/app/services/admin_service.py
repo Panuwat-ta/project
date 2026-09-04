@@ -529,9 +529,54 @@ async def get_user_detail(db: AsyncSession, user_id: int) -> Dict[str, Any]:
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
         
-    scan_count = await db.scalar(select(func.count()).select_from(Scan).where(Scan.user_id == user.id))
-    report_count = await db.scalar(select(func.count()).select_from(ScamReport).where(ScamReport.user_id == user.id))
+    scan_count = await db.scalar(select(func.count()).select_from(Scan).where(Scan.user_id == user.id)) or 0
+    report_count = await db.scalar(select(func.count()).select_from(ScamReport).where(ScamReport.user_id == user.id)) or 0
     
+    # Recent scans
+    scans_res = await db.execute(
+        select(Scan).where(Scan.user_id == user.id).order_by(desc(Scan.created_at)).limit(10)
+    )
+    recent_scans = scans_res.scalars().all()
+    scans_list = []
+    for s in recent_scans:
+        score = s.total_risk_score or 0
+        grade = "high" if score >= 70 else "medium" if score >= 40 else "low"
+        scans_list.append({
+            "id": str(s.id),
+            "image_url": s.raw_image_url or "",
+            "total_risk_score": score,
+            "risk_grade": grade,
+            "created_at": s.created_at.isoformat() if s.created_at else None,
+        })
+    
+    # Recent reports
+    reports_res = await db.execute(
+        select(ScamReport).where(ScamReport.user_id == user.id).order_by(desc(ScamReport.created_at)).limit(10)
+    )
+    recent_reports = reports_res.scalars().all()
+    reports_list = [
+        {
+            "id": r.id,
+            "category": r.category,
+            "status": r.status,
+            "created_at": r.created_at.isoformat() if r.created_at else None,
+        }
+        for r in recent_reports
+    ]
+
+    approved_count = await db.scalar(select(func.count()).select_from(ScamReport).where(ScamReport.user_id == user.id, ScamReport.status == "approved")) or 0
+    rejected_count = await db.scalar(select(func.count()).select_from(ScamReport).where(ScamReport.user_id == user.id, ScamReport.status == "rejected")) or 0
+    pending_count = await db.scalar(select(func.count()).select_from(ScamReport).where(ScamReport.user_id == user.id, ScamReport.status == "pending")) or 0
+
+    stats = {
+        "total_scans": scan_count,
+        "scans_this_month": scan_count,
+        "total_reports_submitted": report_count,
+        "reports_approved": approved_count,
+        "reports_rejected": rejected_count,
+        "reports_pending": pending_count,
+    }
+
     return {
         "id": user.id,
         "email": user.email,
@@ -542,6 +587,10 @@ async def get_user_detail(db: AsyncSession, user_id: int) -> Dict[str, Any]:
         "updated_at": user.updated_at,
         "total_scans": scan_count,
         "total_reports": report_count,
+        "stats": stats,
+        "recent_scans": scans_list,
+        "recent_reports": reports_list,
+        "ban_reason": None,
     }
 
 async def update_user(db: AsyncSession, user_id: int, admin_id: int, req, ip: str = None, user_agent: str = None) -> Dict[str, Any]:
@@ -560,7 +609,8 @@ async def update_user(db: AsyncSession, user_id: int, admin_id: int, req, ip: st
     audit = AuditLog(
         admin_id=admin_id,
         action="update_user",
-        target_resource=f"user_{user_id}",
+        entity_type="user",
+        entity_id=str(user_id),
         ip_address=ip,
         user_agent=user_agent,
         details=f"Updated user {user_id}: active={user.is_active}"
@@ -706,7 +756,9 @@ async def deploy_model(db: AsyncSession, model_id: int, admin_id: int, reason: s
     audit = AuditLog(
         admin_id=admin_id,
         action="deploy_model",
-        target_resource=f"model_{model_id}",
+        entity_type="model",
+        entity_id=str(model_id),
+        reason=reason,
         ip_address="127.0.0.1",
         user_agent="System",
         details=f"Deployed model version {model.version_tag}. Reason: {reason}"
@@ -716,6 +768,108 @@ async def deploy_model(db: AsyncSession, model_id: int, admin_id: int, reason: s
     await db.commit()
     await db.refresh(model)
     return model
+
+
+async def global_search(db: AsyncSession, q: str) -> Dict[str, Any]:
+    if not q or len(q.strip()) < 2:
+        return {"items": [], "total": 0}
+    
+    query = q.strip()
+    pattern = f"%{query}%"
+    results = []
+    
+    # 1. Search Users
+    user_stmt = select(User).where(
+        or_(
+            User.email.ilike(pattern),
+            User.full_name.ilike(pattern)
+        )
+    ).limit(5)
+    user_res = await db.execute(user_stmt)
+    for u in user_res.scalars():
+        results.append({
+            "id": f"user_{u.id}",
+            "type": "user",
+            "title": u.full_name or u.email,
+            "subtitle": f"บัญชีผู้ใช้ • {u.email} • #{u.id}",
+            "url": f"/admin/users/{u.id}"
+        })
+        
+    # 2. Search Reports
+    report_stmt = select(ScamReport).where(
+        or_(
+            ScamReport.reason.ilike(pattern),
+            ScamReport.category.ilike(pattern),
+            ScamReport.platform.ilike(pattern),
+            cast(ScamReport.id, String).ilike(pattern)
+        )
+    ).limit(5)
+    report_res = await db.execute(report_stmt)
+    for r in report_res.scalars():
+        results.append({
+            "id": f"report_{r.id}",
+            "type": "report",
+            "title": f"รายงานสแกน #{r.id} ({r.category})",
+            "subtitle": f"สถานะ: {r.status} • {r.reason[:50] if r.reason else ''}",
+            "url": f"/admin/reports/{r.id}"
+        })
+        
+    # 3. Search Models
+    model_stmt = select(ModelVersion).where(
+        or_(
+            ModelVersion.version_tag.ilike(pattern),
+            ModelVersion.file_path.ilike(pattern),
+            ModelVersion.framework_compatibility.ilike(pattern),
+        )
+    ).limit(5)
+    model_res = await db.execute(model_stmt)
+    for m in model_res.scalars():
+        results.append({
+            "id": f"model_{m.id}",
+            "type": "model",
+            "title": f"โมเดล {m.version_tag}",
+            "subtitle": f"Architecture: {m.framework_compatibility or 'onnx'} • สถานะ: {m.status}",
+            "url": "/admin/models"
+        })
+
+    # 4. Search Admins
+    admin_stmt = select(Admin).where(
+        or_(
+            Admin.email.ilike(pattern),
+            Admin.full_name.ilike(pattern),
+        )
+    ).limit(3)
+    admin_res = await db.execute(admin_stmt)
+    for a in admin_res.scalars():
+        results.append({
+            "id": f"admin_{a.id}",
+            "type": "user",
+            "title": a.full_name or a.email,
+            "subtitle": f"ผู้ดูแลระบบ • {a.email} • #{a.id}",
+            "url": "/admin/profile"
+        })
+        
+    # 4. Search Scans by ID
+    try:
+        scan_stmt = select(Scan).where(
+            cast(Scan.id, String).ilike(pattern)
+        ).limit(3)
+        scan_res = await db.execute(scan_stmt)
+        for s in scan_res.scalars():
+            results.append({
+                "id": f"scan_{s.id}",
+                "type": "scan",
+                "title": f"การสแกน #{str(s.id)[:8]}...",
+                "subtitle": f"Risk Score: {s.risk_score or 0}% • Grade: {s.risk_level or '-'}",
+                "url": "/admin/dashboard"
+            })
+    except Exception:
+        pass
+        
+    return {
+        "items": results,
+        "total": len(results)
+    }
 
 
 async def get_audit_logs(

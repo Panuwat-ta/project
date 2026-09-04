@@ -61,23 +61,23 @@ export function TopBar({ onMenuClick, onOpenCommandPalette, isWsConnected = true
         <button
           type="button"
           onClick={onOpenCommandPalette}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 text-xs text-slate-500 hover:border-cyan-500/50 hover:text-slate-800 dark:hover:text-slate-200 transition-all cursor-pointer select-none"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 text-xs text-slate-700 hover:border-cyan-500 hover:text-slate-950 dark:text-slate-400 dark:hover:text-slate-200 transition-all cursor-pointer select-none font-medium"
         >
-          <Search className="size-3.5 text-slate-400" />
+          <Search className="size-3.5 text-slate-500 dark:text-slate-400" />
           <span className="hidden sm:inline">ค้นหาด่วน...</span>
-          <kbd className="px-1.5 py-0.5 text-[10px] font-mono bg-slate-200/80 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-600 dark:text-slate-400">
+          <kbd className="px-1.5 py-0.5 text-[10px] font-mono bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-700 dark:text-slate-300 font-semibold">
             Ctrl K
           </kbd>
         </button>
 
         {/* Live System Status Pulse */}
         <div
-          className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 text-[11px] font-mono font-medium text-slate-600 dark:text-slate-400 select-none"
+          className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 text-[11px] font-mono font-semibold text-slate-700 dark:text-slate-300 select-none"
           title={isWsConnected ? "WebSocket เชื่อมต่อสมบูรณ์ (Real-time)" : "WebSocket หลุดการเชื่อมต่อ"}
         >
           <span
             className={`size-2 rounded-full ${
-              isWsConnected ? "bg-emerald-400 animate-pulse" : "bg-rose-400"
+              isWsConnected ? "bg-emerald-500 animate-pulse" : "bg-rose-500"
             }`}
           />
           <span>{isWsConnected ? "Live Telemetry" : "Offline"}</span>
@@ -88,16 +88,16 @@ export function TopBar({ onMenuClick, onOpenCommandPalette, isWsConnected = true
           type="button"
           onClick={handleThemeToggle}
           title={`โหมดปัจจุบัน: ${theme}`}
-          className="p-2 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          className="p-2 rounded-lg text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           aria-label="Toggle theme"
         >
-          {isDark ? <Sun className="size-4 text-amber-400" /> : <Moon className="size-4 text-slate-600" />}
+          {isDark ? <Sun className="size-4 text-amber-400" /> : <Moon className="size-4 text-slate-700" />}
         </button>
 
         {/* Profile Link */}
         <Link
           to="/admin/profile"
-          className="p-1.5 rounded-lg text-slate-500 hover:text-cyan-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          className="p-1.5 rounded-lg text-slate-600 hover:text-cyan-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-cyan-400 dark:hover:bg-slate-800 transition-colors"
           title="โปรไฟล์ Super Admin"
         >
           <User className="size-4" />

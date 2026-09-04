@@ -52,10 +52,10 @@ async def test_login_creates_session_with_sid(monkeypatch):
     admin = Admin(id=1, email="admin@scamguard.com", is_active=True, is_superadmin=True)
 
     store = {}
-    async def fake_create_admin_session(db, admin, refresh_raw, ip=None, user_agent=None):
-        store["sid"] = "session-1"
+    async def fake_create_admin_session(db, admin, refresh_raw, ip=None, user_agent=None, sid=None):
+        store["sid"] = sid or "session-1"
         store["refresh_raw"] = refresh_raw
-        return "session-1"
+        return store["sid"]
 
     monkeypatch.setattr(admin_router, "verify_password", lambda pw, hsh: True)
     monkeypatch.setattr(admin_router.admin_service, "create_admin_session", fake_create_admin_session)
@@ -72,9 +72,9 @@ async def test_login_creates_session_with_sid(monkeypatch):
     cookies = response.cookies
     assert "admin_refresh_token" in cookies
     
-    assert store["sid"] == "session-1"
+    assert store["sid"]
     payload = _decode_access(data["access_token"])
-    assert payload["sid"] == "session-1"
+    assert payload["sid"] == store["sid"]
     assert payload["role"] == "admin"
 
 

@@ -135,10 +135,10 @@ export function ProfileSettings() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2">
-            <Shield className="size-5 text-cyan-400" />
+            <Shield className="size-5 text-cyan-600 dark:text-cyan-400" />
             <span>การตั้งค่าบัญชีและความปลอดภัย (Profile & Security)</span>
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
             จัดการข้อมูล Super Admin, นโยบายรหัสผ่าน และเพิกถอนเซสชันการเข้าใช้งาน (Session Management)
           </p>
         </div>
@@ -158,20 +158,20 @@ export function ProfileSettings() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <User className="size-4 text-cyan-400" />
+              <User className="size-4 text-cyan-600 dark:text-cyan-400" />
               <span>ข้อมูลบัญชีผู้ดูแลระบบ (Super Admin)</span>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800">
-              <div className="size-12 rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 flex items-center justify-center font-bold text-base">
+              <div className="size-12 rounded-xl bg-cyan-500/20 text-cyan-700 dark:text-cyan-400 border border-cyan-500/30 flex items-center justify-center font-bold text-base">
                 {profile?.full_name?.substring(0, 2).toUpperCase() || "SA"}
               </div>
               <div className="min-w-0">
                 <div className="text-sm font-bold text-slate-900 dark:text-slate-100">
                   {profile?.full_name || "Super Admin"}
                 </div>
-                <div className="text-xs text-slate-600 dark:text-slate-300 font-mono font-medium">{profile?.email}</div>
+                <div className="text-xs text-slate-700 dark:text-slate-300 font-mono font-medium">{profile?.email}</div>
                 <div className="flex items-center gap-2 mt-1">
                   <Badge variant="primary" size="sm" withDot>
                     Super Admin
@@ -204,21 +204,21 @@ export function ProfileSettings() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <KeyRound className="size-4 text-cyan-400" />
+              <KeyRound className="size-4 text-cyan-600 dark:text-cyan-400" />
               <span>เปลี่ยนรหัสผ่าน (Change Password)</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleUpdatePassword} className="space-y-4">
               {passwordError && (
-                <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-center gap-2">
+                <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-400 text-xs flex items-center gap-2">
                   <AlertCircle className="size-4 shrink-0" />
                   <span>{passwordError}</span>
                 </div>
               )}
 
               <div className="space-y-1">
-                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
+                <label className="block text-xs font-medium text-slate-800 dark:text-slate-300">
                   รหัสผ่านปัจจุบัน
                 </label>
                 <input
@@ -232,7 +232,7 @@ export function ProfileSettings() {
               </div>
 
               <div className="space-y-1">
-                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
+                <label className="block text-xs font-medium text-slate-800 dark:text-slate-300">
                   รหัสผ่านใหม่ (ขั้นต่ำ 8 ตัวอักษร)
                 </label>
                 <input
@@ -246,7 +246,7 @@ export function ProfileSettings() {
               </div>
 
               <div className="space-y-1">
-                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
+                <label className="block text-xs font-medium text-slate-800 dark:text-slate-300">
                   ยืนยันรหัสผ่านใหม่
                 </label>
                 <input
@@ -278,7 +278,7 @@ export function ProfileSettings() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Clock className="size-4 text-cyan-400" />
+            <Clock className="size-4 text-cyan-600 dark:text-cyan-400" />
             <span>เซสชันการเข้าใช้งานปัจจุบัน (Active Admin Sessions)</span>
           </CardTitle>
         </CardHeader>
@@ -286,7 +286,7 @@ export function ProfileSettings() {
           <Table>
             <TableHeader>
               <TableRow isHoverable={false}>
-                <TableHead>อุปกรณ์ / เบราว์เซอร์</TableHead>
+                <TableHead>อุปกรณ์ / ไคลเอนต์</TableHead>
                 <TableHead>IP Address</TableHead>
                 <TableHead>เข้าใช้งานล่าสุด</TableHead>
                 <TableHead>สถานะ</TableHead>
@@ -296,7 +296,7 @@ export function ProfileSettings() {
             <TableBody>
               {sessions.length === 0 ? (
                 <TableRow isHoverable={false}>
-                  <TableCell colSpan={5} className="py-6 text-center text-xs text-slate-500">
+                  <TableCell colSpan={5} className="py-6 text-center text-xs text-slate-600 dark:text-slate-400">
                     ไม่พบข้อมูลเซสชันอื่นในระบบ
                   </TableCell>
                 </TableRow>
@@ -310,7 +310,7 @@ export function ProfileSettings() {
                     <TableRow key={sess.id}>
                       <TableCell>
                         <div className="flex items-center gap-2.5">
-                          <div className="size-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
+                          <div className="size-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400">
                             <Icon className="size-4" />
                           </div>
                           <div>
@@ -328,7 +328,7 @@ export function ProfileSettings() {
                         {sess.ip_address || "127.0.0.1"}
                       </TableCell>
 
-                      <TableCell className="font-mono text-xs text-slate-600 dark:text-slate-400 font-medium">
+                      <TableCell className="font-mono text-xs text-slate-700 dark:text-slate-400 font-medium">
                         {formatDate(sess.last_active_at || sess.created_at)}
                       </TableCell>
 
@@ -381,8 +381,8 @@ export function ProfileSettings() {
           </>
         }
       >
-        <p className="text-xs text-slate-400">
-          คุณต้องการเพิกถอน Session ID: <span className="font-mono text-cyan-400">#{revokeSessionId}</span> หรือไม่?
+        <p className="text-xs text-slate-700 dark:text-slate-300">
+          คุณต้องการเพิกถอน Session ID: <span className="font-mono text-cyan-700 dark:text-cyan-400 font-bold">#{revokeSessionId}</span> หรือไม่?
         </p>
       </Modal>
     </div>

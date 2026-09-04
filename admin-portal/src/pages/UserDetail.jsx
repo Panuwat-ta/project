@@ -99,7 +99,7 @@ export function UserDetail() {
         <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
           ไม่สามารถเปิดโปรไฟล์ผู้ใช้ #{id} ได้
         </h3>
-        <p className="text-xs text-slate-500 max-w-sm">{error || "ไม่พบบัญชีในระบบ"}</p>
+        <p className="text-xs text-slate-600 dark:text-slate-400 max-w-sm">{error || "ไม่พบบัญชีในระบบ"}</p>
         <Button variant="primary" size="sm" onClick={() => navigate("/admin/users")}>
           กลับไปรายชื่อผู้ใช้
         </Button>
@@ -117,7 +117,7 @@ export function UserDetail() {
         <div className="flex items-center gap-3">
           <Link
             to="/admin/users"
-            className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
             <ArrowLeft className="size-4" />
           </Link>
@@ -131,7 +131,7 @@ export function UserDetail() {
                 {user.role}
               </Badge>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">
+            <p className="text-xs text-slate-600 dark:text-slate-400 font-mono mt-0.5">
               User ID: #{user.id} • {user.email}
             </p>
           </div>
@@ -159,11 +159,11 @@ export function UserDetail() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card>
           <CardContent className="p-4 flex items-center gap-3.5">
-            <div className="size-10 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center">
+            <div className="size-10 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-600 dark:text-cyan-400 flex items-center justify-center">
               <Activity className="size-5" />
             </div>
             <div>
-              <div className="text-xs text-slate-500">สแกนสะสมทั้งหมด</div>
+              <div className="text-xs font-medium text-slate-600 dark:text-slate-400">สแกนสะสมทั้งหมด</div>
               <div className="text-xl font-bold font-mono text-slate-900 dark:text-slate-100">
                 {formatNumber(user.total_scans ?? user.scans_count ?? 0)} ครั้ง
               </div>
@@ -173,11 +173,11 @@ export function UserDetail() {
 
         <Card>
           <CardContent className="p-4 flex items-center gap-3.5">
-            <div className="size-10 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-400 flex items-center justify-center">
+            <div className="size-10 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 flex items-center justify-center">
               <Flag className="size-5" />
             </div>
             <div>
-              <div className="text-xs text-slate-500">ส่งรายงาน Scam ทั้งหมด</div>
+              <div className="text-xs font-medium text-slate-600 dark:text-slate-400">ส่งรายงาน Scam ทั้งหมด</div>
               <div className="text-xl font-bold font-mono text-slate-900 dark:text-slate-100">
                 {formatNumber(user.total_reports ?? 0)} รายการ
               </div>
@@ -187,11 +187,11 @@ export function UserDetail() {
 
         <Card>
           <CardContent className="p-4 flex items-center gap-3.5">
-            <div className="size-10 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center">
+            <div className="size-10 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
               <Clock className="size-5" />
             </div>
             <div>
-              <div className="text-xs text-slate-500">ลงทะเบียนเมื่อ</div>
+              <div className="text-xs font-medium text-slate-600 dark:text-slate-400">ลงทะเบียนเมื่อ</div>
               <div className="text-xs font-semibold font-mono text-slate-900 dark:text-slate-100 mt-1">
                 {formatDate(user.created_at)}
               </div>
@@ -206,7 +206,7 @@ export function UserDetail() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <User className="size-4 text-cyan-400" />
+              <User className="size-4 text-cyan-600 dark:text-cyan-400" />
               <span>ข้อมูลบัญชีผู้ใช้</span>
             </CardTitle>
           </CardHeader>
@@ -235,8 +235,8 @@ export function UserDetail() {
 
             {user.banned_reason && (
               <div className="py-2 space-y-1">
-                <span className="text-rose-400 font-semibold">เหตุผลการระงับล่าสุด:</span>
-                <p className="text-rose-200 font-sans bg-rose-950/40 p-2 rounded border border-rose-500/30">
+                <span className="text-rose-600 dark:text-rose-400 font-semibold">เหตุผลการระงับล่าสุด:</span>
+                <p className="text-rose-900 dark:text-rose-200 font-sans bg-rose-50 dark:bg-rose-950/40 p-2 rounded border border-rose-200 dark:border-rose-500/30">
                   {user.banned_reason}
                 </p>
               </div>
@@ -248,7 +248,7 @@ export function UserDetail() {
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Activity className="size-4 text-cyan-400" />
+              <Activity className="size-4 text-cyan-600 dark:text-cyan-400" />
               <span>ประวัติการสแกนล่าสุด (Recent Scan Activity)</span>
             </CardTitle>
           </CardHeader>
@@ -268,10 +268,10 @@ export function UserDetail() {
                 ) : (
                   recentScans.map((scan) => (
                     <TableRow key={scan.id}>
-                      <TableCell className="font-mono text-xs font-semibold">
+                      <TableCell className="font-mono text-xs font-semibold text-slate-900 dark:text-slate-100">
                         #{scan.id}
                       </TableCell>
-                      <TableCell className="font-mono text-xs">
+                      <TableCell className="font-mono text-xs font-bold text-slate-800 dark:text-slate-200">
                         {scan.risk_score}%
                       </TableCell>
                       <TableCell>
@@ -282,7 +282,7 @@ export function UserDetail() {
                           {scan.risk_level || (scan.risk_score >= 70 ? "HIGH" : scan.risk_score >= 40 ? "MEDIUM" : "LOW")}
                         </Badge>
                       </TableCell>
-                      <TableCell className="font-mono text-xs text-slate-500">
+                      <TableCell className="font-mono text-xs text-slate-700 dark:text-slate-400">
                         {formatDate(scan.created_at)}
                       </TableCell>
                     </TableRow>

@@ -63,7 +63,7 @@ export function Modal({
               </h3>
             )}
             {description && (
-              <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+              <p className="mt-1.5 text-xs text-slate-600 dark:text-slate-400 font-normal">
                 {description}
               </p>
             )}
@@ -71,7 +71,7 @@ export function Modal({
           <button
             type="button"
             onClick={onClose}
-            className="p-1 -mr-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-md transition-colors outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
+            className="p-1 -mr-1 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 rounded-md transition-colors outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
             aria-label="Close modal"
           >
             <X className="size-4" />

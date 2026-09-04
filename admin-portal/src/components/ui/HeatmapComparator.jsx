@@ -215,10 +215,10 @@ export function HeatmapComparator({
       </div>
 
       {/* Sub-toolbar: Opacity Slider (if in overlay mode) & Legend */}
-      <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 bg-slate-50 dark:bg-slate-950/70 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400">
+      <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 bg-slate-50 dark:bg-slate-950/70 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-400">
         {mode === "overlay" ? (
           <div className="flex items-center gap-3 w-full sm:w-72">
-            <span className="text-xs font-medium">ความโปร่งแสง Heatmap:</span>
+            <span className="text-xs font-semibold text-slate-800 dark:text-slate-300">ความโปร่งแสง Heatmap:</span>
             <input
               type="range"
               min="0"
@@ -227,26 +227,26 @@ export function HeatmapComparator({
               onChange={(e) => setOverlayOpacity(Number(e.target.value))}
               className="w-full accent-cyan-500 cursor-pointer"
             />
-            <span className="font-mono text-xs w-9 text-right">{overlayOpacity}%</span>
+            <span className="font-mono text-xs w-9 text-right font-bold text-slate-900 dark:text-slate-100">{overlayOpacity}%</span>
           </div>
         ) : (
-          <div className="text-xs text-slate-400">
+          <div className="text-xs text-slate-600 dark:text-slate-400 font-medium">
             เลื่อนเมาส์ผ่านภาพเพื่อเปรียบเทียบจุดตรวจจับพิกเซลผิดปกติ
           </div>
         )}
 
         {/* Heatmap Legend */}
         <div className="flex items-center gap-4 text-[11px]">
-          <span className="font-medium text-slate-400">ระดับความเสี่ยงพิกเซล:</span>
-          <div className="flex items-center gap-1.5">
+          <span className="font-semibold text-slate-700 dark:text-slate-400">ระดับความเสี่ยงพิกเซล:</span>
+          <div className="flex items-center gap-1.5 text-slate-800 dark:text-slate-200 font-medium">
             <span className="size-2 rounded-full bg-emerald-500" />
             <span>ธรรมชาติ (0-39)</span>
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 text-slate-800 dark:text-slate-200 font-medium">
             <span className="size-2 rounded-full bg-amber-500" />
             <span>สงสัยปานกลาง (40-69)</span>
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 text-slate-800 dark:text-slate-200 font-medium">
             <span className="size-2 rounded-full bg-rose-500" />
             <span>ผิดปกติสูง (70-100)</span>
           </div>

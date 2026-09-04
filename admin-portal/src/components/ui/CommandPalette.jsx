@@ -94,17 +94,17 @@ export function CommandPalette({ isOpen, onClose }) {
       >
         {/* Search Bar */}
         <div className="flex items-center px-4 border-b border-slate-200 dark:border-slate-800">
-          <Search className="size-5 text-slate-400 dark:text-slate-500 shrink-0" />
+          <Search className="size-5 text-slate-500 dark:text-slate-400 shrink-0" />
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="ค้นหารายงาน, ผู้ใช้, รหัสสแกน, หรือหน้าเมนู..."
-            className="w-full bg-transparent px-3 py-3.5 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 outline-none"
+            className="w-full bg-transparent px-3 py-3.5 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 outline-none"
           />
           {isSearching && <Loader2 className="size-4 animate-spin text-cyan-500 shrink-0" />}
-          <kbd className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-mono font-medium text-slate-400 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded">
+          <kbd className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-mono font-semibold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded">
             ESC
           </kbd>
         </div>
@@ -112,12 +112,12 @@ export function CommandPalette({ isOpen, onClose }) {
         {/* Results List */}
         <div className="max-h-80 overflow-y-auto p-2">
           {items.length === 0 ? (
-            <div className="p-8 text-center text-sm text-slate-500 dark:text-slate-400">
+            <div className="p-8 text-center text-sm font-medium text-slate-600 dark:text-slate-400">
               ไม่พบผลลัพธ์ที่ตรงกับคำค้นหา
             </div>
           ) : (
             <div className="space-y-1">
-              <div className="px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+              <div className="px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                 {query.length >= 2 ? "ผลการค้นหา" : "เมนูลัด (Navigation)"}
               </div>
               {items.map((item, idx) => {
@@ -133,8 +133,8 @@ export function CommandPalette({ isOpen, onClose }) {
                     className={cn(
                       "w-full flex items-center justify-between p-2.5 rounded-lg text-left text-sm transition-colors",
                       isSelected
-                        ? "bg-cyan-500/10 dark:bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 font-medium"
-                        : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                        ? "bg-cyan-500/10 dark:bg-cyan-500/15 text-cyan-700 dark:text-cyan-400 font-semibold"
+                        : "text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
                     )}
                   >
                     <div className="flex items-center gap-3 min-w-0">
@@ -142,23 +142,23 @@ export function CommandPalette({ isOpen, onClose }) {
                         className={cn(
                           "size-8 rounded-md flex items-center justify-center shrink-0",
                           isSelected
-                            ? "bg-cyan-500/20 text-cyan-500"
-                            : "bg-slate-100 dark:bg-slate-800 text-slate-400"
+                            ? "bg-cyan-500/20 text-cyan-700 dark:text-cyan-400"
+                            : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
                         )}
                       >
                         <Icon className="size-4" />
                       </div>
                       <div className="min-w-0">
-                        <div className="truncate font-medium">{item.title}</div>
+                        <div className="truncate font-semibold text-slate-900 dark:text-slate-100">{item.title}</div>
                         {item.subtitle && (
-                          <div className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                          <div className="text-xs text-slate-600 dark:text-slate-400 truncate font-normal">
                             {item.subtitle}
                           </div>
                         )}
                       </div>
                     </div>
 
-                    <ArrowRight className="size-4 opacity-40 shrink-0 ml-2" />
+                    <ArrowRight className="size-4 opacity-50 shrink-0 ml-2 text-slate-500 dark:text-slate-400" />
                   </button>
                 );
               })}
@@ -167,7 +167,7 @@ export function CommandPalette({ isOpen, onClose }) {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-4 py-2 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50 dark:bg-slate-950/50 text-[11px] text-slate-400">
+        <div className="flex items-center justify-between px-4 py-2 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50 dark:bg-slate-950/50 text-[11px] font-medium text-slate-600 dark:text-slate-400">
           <span>ใช้ลูกศรขึ้น/ลง เพื่อเลือก</span>
           <span>กด Enter เพื่อเปิด</span>
         </div>
