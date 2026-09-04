@@ -35,21 +35,21 @@ export function TopBar({ onMenuClick, onOpenCommandPalette, isWsConnected = true
     )?.[1] || "Admin Console";
 
   return (
-    <header className="h-14 shrink-0 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 md:px-6 z-20">
+    <header className="h-14 shrink-0 flex items-center justify-between border-b border-border bg-card text-card-foreground px-4 md:px-6 z-20">
       {/* Left: Mobile Menu & Current Context */}
       <div className="flex items-center gap-3">
         <button
           type="button"
           onClick={onMenuClick}
-          className="p-1.5 -ml-1.5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 rounded-md md:hidden hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          className="p-1.5 -ml-1.5 text-muted-foreground hover:text-foreground rounded-md md:hidden hover:bg-muted transition-colors"
           aria-label="Open sidebar menu"
         >
           <Menu className="size-5" />
         </button>
 
         <div className="flex items-center gap-2">
-          <ShieldCheck className="size-4 text-cyan-500 hidden sm:inline-block" />
-          <h1 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+          <ShieldCheck className="size-4 text-primary hidden sm:inline-block" />
+          <h1 className="text-sm font-semibold text-foreground">
             {activeTitle}
           </h1>
         </div>
@@ -61,23 +61,23 @@ export function TopBar({ onMenuClick, onOpenCommandPalette, isWsConnected = true
         <button
           type="button"
           onClick={onOpenCommandPalette}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 text-xs text-slate-700 hover:border-cyan-500 hover:text-slate-950 dark:text-slate-400 dark:hover:text-slate-200 transition-all cursor-pointer select-none font-medium"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-muted/60 text-xs text-muted-foreground hover:border-primary hover:text-foreground transition-all cursor-pointer select-none font-medium"
         >
-          <Search className="size-3.5 text-slate-500 dark:text-slate-400" />
+          <Search className="size-3.5 text-muted-foreground" />
           <span className="hidden sm:inline">ค้นหาด่วน...</span>
-          <kbd className="px-1.5 py-0.5 text-[10px] font-mono bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-700 dark:text-slate-300 font-semibold">
+          <kbd className="px-1.5 py-0.5 text-[10px] font-mono bg-secondary border border-border rounded text-secondary-foreground font-semibold">
             Ctrl K
           </kbd>
         </button>
 
         {/* Live System Status Pulse */}
         <div
-          className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 text-[11px] font-mono font-semibold text-slate-700 dark:text-slate-300 select-none"
+          className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted border border-border text-[11px] font-mono font-semibold text-foreground select-none"
           title={isWsConnected ? "WebSocket เชื่อมต่อสมบูรณ์ (Real-time)" : "WebSocket หลุดการเชื่อมต่อ"}
         >
           <span
             className={`size-2 rounded-full ${
-              isWsConnected ? "bg-emerald-500 animate-pulse" : "bg-rose-500"
+              isWsConnected ? "bg-success animate-pulse" : "bg-danger"
             }`}
           />
           <span>{isWsConnected ? "Live Telemetry" : "Offline"}</span>
@@ -88,16 +88,16 @@ export function TopBar({ onMenuClick, onOpenCommandPalette, isWsConnected = true
           type="button"
           onClick={handleThemeToggle}
           title={`โหมดปัจจุบัน: ${theme}`}
-          className="p-2 rounded-lg text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           aria-label="Toggle theme"
         >
-          {isDark ? <Sun className="size-4 text-amber-400" /> : <Moon className="size-4 text-slate-700" />}
+          {isDark ? <Sun className="size-4 text-warning" /> : <Moon className="size-4 text-foreground" />}
         </button>
 
         {/* Profile Link */}
         <Link
           to="/admin/profile"
-          className="p-1.5 rounded-lg text-slate-600 hover:text-cyan-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-cyan-400 dark:hover:bg-slate-800 transition-colors"
+          className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
           title="โปรไฟล์ Super Admin"
         >
           <User className="size-4" />

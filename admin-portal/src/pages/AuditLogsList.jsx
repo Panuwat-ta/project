@@ -104,11 +104,11 @@ export function AuditLogsList() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2">
-            <Shield className="size-5 text-cyan-600 dark:text-cyan-400" />
+          <h2 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
+            <Shield className="size-5 text-primary" />
             <span>บันทึกความมั่นคงปลอดภัย (Security Audit Trail)</span>
           </h2>
-          <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+          <p className="text-xs text-muted-foreground mt-0.5">
             เก็บบันทึกประวัติการตัดสินใจและการเข้าถึงของ Super Admin แบบ Immutable ย้อนหลัง
           </p>
         </div>
@@ -128,7 +128,7 @@ export function AuditLogsList() {
 
       {/* Filter and Table Card */}
       <Card>
-        <div className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800/80">
+        <div className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-border-subtle">
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
             <select
               value={entityType}
@@ -136,7 +136,7 @@ export function AuditLogsList() {
                 setEntityType(e.target.value);
                 setPage(1);
               }}
-              className="w-full sm:w-auto px-3 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700/80 text-xs text-slate-800 dark:text-slate-200 rounded-lg outline-none focus:border-cyan-500 font-medium"
+              className="w-full sm:w-auto px-3 py-1.5 bg-card border border-input text-xs text-foreground rounded-lg outline-none focus:border-ring font-medium"
             >
               {ENTITY_TYPES.map((et) => (
                 <option key={et.value} value={et.value}>
@@ -146,19 +146,19 @@ export function AuditLogsList() {
             </select>
 
             <div className="relative w-full sm:w-72">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-slate-500 dark:text-slate-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
               <input
                 type="search"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="ค้นหากิจกรรม, แอดมิน, IP, รายละเอียด..."
-                className="w-full pl-8 pr-3 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700/80 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 rounded-lg outline-none focus:border-cyan-500 font-mono"
+                className="w-full pl-8 pr-3 py-1.5 bg-card border border-input text-xs text-foreground placeholder:text-muted-foreground rounded-lg outline-none focus:border-ring font-mono"
               />
             </div>
           </div>
 
-          <div className="text-xs font-mono text-slate-600 dark:text-slate-400 hidden sm:block">
-            รายการทั้งหมด: <span className="font-bold text-slate-900 dark:text-slate-200">{formatNumber(total)}</span> รายการ
+          <div className="text-xs font-mono text-muted-foreground hidden sm:block">
+            รายการทั้งหมด: <span className="font-bold text-foreground">{formatNumber(total)}</span> รายการ
           </div>
         </div>
 
@@ -196,7 +196,7 @@ export function AuditLogsList() {
                           <TableCell>
                             <button
                               type="button"
-                              className="p-1 rounded text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200"
+                              className="p-1 rounded text-muted-foreground hover:text-foreground"
                             >
                               {isExpanded ? (
                                 <ChevronUp className="size-3.5" />
@@ -206,7 +206,7 @@ export function AuditLogsList() {
                             </button>
                           </TableCell>
 
-                          <TableCell className="font-mono text-xs font-semibold text-slate-800 dark:text-slate-300">
+                          <TableCell className="font-mono text-xs font-semibold text-foreground">
                             #{log.id}
                           </TableCell>
 
@@ -217,55 +217,55 @@ export function AuditLogsList() {
                           </TableCell>
 
                           <TableCell className="font-mono text-xs">
-                            <span className="text-slate-700 dark:text-slate-400 font-medium">{log.entity_type}</span>{" "}
-                            <span className="font-semibold text-slate-900 dark:text-slate-100">
+                            <span className="text-muted-foreground font-medium">{log.entity_type}</span>{" "}
+                            <span className="font-semibold text-foreground">
                               #{log.entity_id || "-"}
                             </span>
                           </TableCell>
 
                           <TableCell className="text-xs">
-                            <div className="font-medium text-slate-900 dark:text-slate-100 font-mono">
+                            <div className="font-medium text-foreground font-mono">
                               {log.admin_email || log.admin_id || "Super Admin"}
                             </div>
                           </TableCell>
 
-                          <TableCell className="font-mono text-xs text-slate-800 dark:text-slate-200">
+                          <TableCell className="font-mono text-xs text-foreground">
                             <div>{log.ip_address || log.ip || "127.0.0.1"}</div>
                             {log.user_agent && (
-                              <div className="text-[10px] text-slate-600 dark:text-slate-400 truncate max-w-[140px]">
+                              <div className="text-[10px] text-muted-foreground truncate max-w-[140px]">
                                 {log.user_agent}
                               </div>
                             )}
                           </TableCell>
 
-                          <TableCell className="font-mono text-xs text-slate-700 dark:text-slate-400 whitespace-nowrap">
+                          <TableCell className="font-mono text-xs text-muted-foreground whitespace-nowrap">
                             {formatDate(log.created_at)}
                           </TableCell>
                         </TableRow>
 
                         {/* Expanded Payload Viewer */}
                         {isExpanded && (
-                          <TableRow isHoverable={false} className="bg-slate-950/40">
+                          <TableRow isHoverable={false} className="bg-muted/20">
                             <TableCell colSpan={7} className="p-4">
-                              <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 font-mono text-xs space-y-3">
-                                <div className="flex items-center gap-2 text-cyan-400 font-semibold">
+                              <div className="p-4 rounded-lg bg-muted/40 border border-border font-mono text-xs space-y-3">
+                                <div className="flex items-center gap-2 text-primary font-semibold">
                                   <Terminal className="size-4" />
                                   <span>Structured Audit Payload (Before / After Snapshot)</span>
                                 </div>
 
                                 {log.reason && (
-                                  <div className="p-2.5 rounded bg-slate-900 border border-slate-800 text-slate-300">
-                                    <span className="text-amber-400 font-semibold">บันทึกเหตุผล: </span>
+                                  <div className="p-2.5 rounded bg-card border border-border text-foreground">
+                                    <span className="text-warning font-semibold">บันทึกเหตุผล: </span>
                                     {log.reason}
                                   </div>
                                 )}
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                   <div>
-                                    <div className="text-[11px] text-slate-400 uppercase tracking-wider mb-1">
+                                    <div className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">
                                       สถานะก่อนทำรายการ (Before)
                                     </div>
-                                    <pre className="p-3 rounded bg-slate-900 border border-slate-800 text-slate-400 text-[11px] overflow-x-auto">
+                                    <pre className="p-3 rounded bg-card border border-border text-muted-foreground text-[11px] overflow-x-auto">
                                       {log.before_state
                                         ? JSON.stringify(log.before_state, null, 2)
                                         : "null"}
@@ -273,10 +273,10 @@ export function AuditLogsList() {
                                   </div>
 
                                   <div>
-                                    <div className="text-[11px] text-emerald-400 uppercase tracking-wider mb-1">
+                                    <div className="text-[11px] text-success uppercase tracking-wider mb-1">
                                       สถานะหลังทำรายการ (After)
                                     </div>
-                                    <pre className="p-3 rounded bg-slate-900 border border-slate-800 text-emerald-400 text-[11px] overflow-x-auto">
+                                    <pre className="p-3 rounded bg-card border border-border text-success text-[11px] overflow-x-auto">
                                       {log.after_state || log.details
                                         ? JSON.stringify(log.after_state || log.details, null, 2)
                                         : "null"}

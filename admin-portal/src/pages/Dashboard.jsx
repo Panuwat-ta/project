@@ -140,14 +140,14 @@ export function Dashboard() {
   if (error && !data) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
-        <div className="size-14 rounded-full bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-500">
+        <div className="size-14 rounded-full bg-danger-subtle border border-danger-border flex items-center justify-center text-danger">
           <AlertCircle className="size-7" />
         </div>
         <div className="text-center space-y-1">
-          <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
+          <h2 className="text-base font-semibold text-foreground">
             ไม่สามารถโหลดข้อมูลสถิติได้
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm">{error}</p>
+          <p className="text-xs text-muted-foreground max-w-sm">{error}</p>
         </div>
         <Button
           variant="primary"
@@ -165,7 +165,7 @@ export function Dashboard() {
   if (isLoading || !data) {
     return (
       <div className="space-y-6">
-        <div className="h-10 bg-slate-200 dark:bg-slate-800 rounded-lg animate-pulse w-72" />
+        <div className="h-10 bg-muted rounded-lg animate-pulse w-72" />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <CardSkeleton />
           <CardSkeleton />
@@ -173,8 +173,8 @@ export function Dashboard() {
           <CardSkeleton />
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 h-80 bg-slate-200 dark:bg-slate-800 rounded-xl animate-pulse" />
-          <div className="h-80 bg-slate-200 dark:bg-slate-800 rounded-xl animate-pulse" />
+          <div className="lg:col-span-2 h-80 bg-muted rounded-xl animate-pulse" />
+          <div className="h-80 bg-muted rounded-xl animate-pulse" />
         </div>
       </div>
     );
@@ -201,13 +201,13 @@ export function Dashboard() {
       {/* Top Header & Telemetry Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2.5">
+          <h2 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2.5">
             <span>ศูนย์ควบคุมและตรวจจับการหลอกลวง</span>
             <Badge variant="primary" size="sm" withDot>
               Real-time
             </Badge>
           </h2>
-          <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 font-mono">
+          <p className="text-xs text-muted-foreground mt-1 font-mono">
             {lastUpdated ? `อัปเดตล่าสุด: ${lastUpdated.toLocaleTimeString("th-TH")}` : ""}
           </p>
         </div>
@@ -226,46 +226,46 @@ export function Dashboard() {
       </div>
 
       {/* System Infrastructure Telemetry Bar */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-3 rounded-xl bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 text-xs font-mono">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-3 rounded-xl bg-muted/40 border border-border text-xs font-mono">
         <div className="flex items-center gap-2">
-          <Database className="size-4 text-cyan-600 dark:text-cyan-500 shrink-0" />
-          <span className="text-slate-700 dark:text-slate-400 font-semibold">Database:</span>
-          <span className="font-bold text-emerald-700 dark:text-emerald-400">Connected</span>
+          <Database className="size-4 text-primary shrink-0" />
+          <span className="text-muted-foreground font-semibold">Database:</span>
+          <span className="font-bold text-success">Connected</span>
         </div>
         <div className="flex items-center gap-2">
-          <Cpu className="size-4 text-cyan-600 dark:text-cyan-500 shrink-0" />
-          <span className="text-slate-700 dark:text-slate-400 font-semibold">AI Node:</span>
-          <span className="font-bold text-emerald-700 dark:text-emerald-400">Ready (SegFormer)</span>
+          <Cpu className="size-4 text-primary shrink-0" />
+          <span className="text-muted-foreground font-semibold">AI Node:</span>
+          <span className="font-bold text-success">Ready (SegFormer)</span>
         </div>
         <div className="flex items-center gap-2">
-          <ShieldCheck className="size-4 text-cyan-600 dark:text-cyan-500 shrink-0" />
-          <span className="text-slate-700 dark:text-slate-400 font-semibold">Model:</span>
-          <span className="font-bold text-slate-900 dark:text-slate-200 truncate">
+          <ShieldCheck className="size-4 text-primary shrink-0" />
+          <span className="text-muted-foreground font-semibold">Model:</span>
+          <span className="font-bold text-foreground truncate">
             {health?.active_model || data?.model_status?.active_version || "SegFormer-B2"}
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-500 shrink-0" />
-          <span className="text-slate-700 dark:text-slate-400 font-semibold">Status:</span>
-          <span className="font-bold text-emerald-700 dark:text-emerald-400">All Operational</span>
+          <CheckCircle2 className="size-4 text-success shrink-0" />
+          <span className="text-muted-foreground font-semibold">Status:</span>
+          <span className="font-bold text-success">All Operational</span>
         </div>
       </div>
 
       {/* Primary KPI Instruments */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* KPI 1: Scan Velocity Today */}
-        <Card className="hover:border-cyan-500/30 transition-all">
+        <Card className="hover:border-primary-border transition-all">
           <CardContent className="p-4 space-y-2">
-            <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 font-medium">
+            <div className="flex items-center justify-between text-xs text-muted-foreground font-medium">
               <span>สแกนวันนี้ (24h Velocity)</span>
-              <Zap className="size-4 text-cyan-600 dark:text-cyan-400" />
+              <Zap className="size-4 text-primary" />
             </div>
-            <div className="text-2xl font-bold font-mono text-slate-900 dark:text-slate-100 tracking-tight">
+            <div className="text-2xl font-bold font-mono text-foreground tracking-tight">
               {formatNumber(data.overview.scans_today)}
             </div>
-            <div className="flex items-center justify-between text-[11px] text-slate-600 dark:text-slate-400 pt-1 border-t border-slate-100 dark:border-slate-800/60 font-mono font-medium">
+            <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-1 border-t border-border-subtle font-mono font-medium">
               <span>สะสมทั้งหมด</span>
-              <span className="font-bold text-slate-900 dark:text-slate-200">
+              <span className="font-bold text-foreground">
                 {formatNumber(data.overview.total_scans)} ครั้ง
               </span>
             </div>
@@ -276,25 +276,25 @@ export function Dashboard() {
         <Card
           className={
             data.reports.pending > 0
-              ? "border-rose-500/40 bg-rose-500/5 cursor-pointer hover:border-rose-500/60 transition-all"
-              : "hover:border-slate-700 transition-all cursor-pointer"
+              ? "border-danger-border/40 bg-danger-subtle/30 cursor-pointer hover:border-danger-border transition-all"
+              : "hover:border-border transition-all cursor-pointer"
           }
           onClick={() => navigate("/admin/reports?status=pending")}
         >
           <CardContent className="p-4 space-y-2">
-            <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 font-medium">
+            <div className="flex items-center justify-between text-xs text-muted-foreground font-medium">
               <span>ค้างการตรวจสอบ (Pending Queue)</span>
-              <Flag className="size-4 text-rose-600 dark:text-rose-500" />
+              <Flag className="size-4 text-danger" />
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold font-mono text-rose-600 dark:text-rose-500 tracking-tight">
+              <span className="text-2xl font-bold font-mono text-danger tracking-tight">
                 {formatNumber(data.reports.pending)}
               </span>
-              <span className="text-xs text-slate-600 dark:text-slate-400 font-mono font-medium">
+              <span className="text-xs text-muted-foreground font-mono font-medium">
                 / {formatNumber(data.reports.reviewing)} กำลังตรวจ
               </span>
             </div>
-            <div className="flex items-center justify-between text-[11px] text-rose-700 dark:text-rose-400 font-semibold pt-1 border-t border-slate-100 dark:border-slate-800/60">
+            <div className="flex items-center justify-between text-[11px] text-danger font-semibold pt-1 border-t border-border-subtle">
               <span>คลิกเพื่อเปิดคิวตรวจทันที</span>
               <ArrowUpRight className="size-3.5" />
             </div>
@@ -302,23 +302,23 @@ export function Dashboard() {
         </Card>
 
         {/* KPI 3: High Risk Anomaly Ratio */}
-        <Card className="hover:border-amber-500/30 transition-all">
+        <Card className="hover:border-warning-border transition-all">
           <CardContent className="p-4 space-y-2">
-            <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 font-medium">
+            <div className="flex items-center justify-between text-xs text-muted-foreground font-medium">
               <span>อัตราภาพเสี่ยงสูง (High Risk)</span>
-              <Activity className="size-4 text-amber-600 dark:text-amber-500" />
+              <Activity className="size-4 text-warning" />
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold font-mono text-amber-700 dark:text-amber-500 tracking-tight">
+              <span className="text-2xl font-bold font-mono text-warning tracking-tight">
                 {highRiskRatio}%
               </span>
-              <span className="text-xs text-slate-600 dark:text-slate-400 font-mono font-medium">
+              <span className="text-xs text-muted-foreground font-mono font-medium">
                 ({formatNumber(data.risk_distribution.high)} ภาพ)
               </span>
             </div>
-            <div className="flex items-center justify-between text-[11px] text-slate-600 dark:text-slate-400 pt-1 border-t border-slate-100 dark:border-slate-800/60 font-mono font-medium">
+            <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-1 border-t border-border-subtle font-mono font-medium">
               <span>สัดส่วนความเสี่ยง</span>
-              <span className="font-bold text-slate-900 dark:text-slate-200">
+              <span className="font-bold text-foreground">
                 L:{data.risk_distribution.low} M:{data.risk_distribution.medium} H:{data.risk_distribution.high}
               </span>
             </div>
@@ -326,18 +326,18 @@ export function Dashboard() {
         </Card>
 
         {/* KPI 4: Active Registered Users */}
-        <Card className="hover:border-cyan-500/30 transition-all">
+        <Card className="hover:border-primary-border transition-all">
           <CardContent className="p-4 space-y-2">
-            <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 font-medium">
+            <div className="flex items-center justify-between text-xs text-muted-foreground font-medium">
               <span>ผู้ใช้งานวันนี้ (Active Users)</span>
-              <Users className="size-4 text-cyan-600 dark:text-cyan-400" />
+              <Users className="size-4 text-primary" />
             </div>
-            <div className="text-2xl font-bold font-mono text-slate-900 dark:text-slate-100 tracking-tight">
+            <div className="text-2xl font-bold font-mono text-foreground tracking-tight">
               {formatNumber(data.overview.active_users_today)}
             </div>
-            <div className="flex items-center justify-between text-[11px] text-slate-600 dark:text-slate-400 pt-1 border-t border-slate-100 dark:border-slate-800/60 font-mono font-medium">
+            <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-1 border-t border-border-subtle font-mono font-medium">
               <span>บัญชีทั้งหมด</span>
-              <span className="font-bold text-slate-900 dark:text-slate-200">
+              <span className="font-bold text-foreground">
                 {formatNumber(data.overview.total_users)} บัญชี
               </span>
             </div>
@@ -352,10 +352,10 @@ export function Dashboard() {
           <CardHeader>
             <div>
               <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="size-4 text-cyan-600 dark:text-cyan-400" />
+                <TrendingUp className="size-4 text-primary" />
                 <span>แนวโน้มปริมาณการสแกนรูปภาพ (Scan Trend)</span>
               </CardTitle>
-              <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 สถิติการส่งรูปภาพตรวจจับความผิดปกติรายวัน
               </p>
             </div>
@@ -419,7 +419,7 @@ export function Dashboard() {
           <CardHeader>
             <div>
               <CardTitle>การกระจายระดับความเสี่ยง (Risk Tiers)</CardTitle>
-              <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 เกณฑ์ 3 ระดับ: ต่ำ, ปานกลาง, สูง
               </p>
             </div>
@@ -444,52 +444,52 @@ export function Dashboard() {
                   </Pie>
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: isDark ? "#0f172a" : "#ffffff",
-                      borderColor: isDark ? "#334155" : "#cbd5e1",
+                      backgroundColor: "var(--card)",
+                      borderColor: "var(--border)",
                       borderRadius: "0.5rem",
                       fontSize: "12px",
-                      color: isDark ? "#f8fafc" : "#0f172a",
+                      color: "var(--foreground)",
                       boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
                     }}
                   />
                 </PieChart>
               </ResponsiveContainer>
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-xl font-bold font-mono text-slate-900 dark:text-slate-100">
+                <span className="text-xl font-bold font-mono text-foreground">
                   {formatNumber(riskTotal)}
                 </span>
-                <span className="text-[10px] text-slate-600 dark:text-slate-400 uppercase tracking-wider font-semibold">ทั้งหมด</span>
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">ทั้งหมด</span>
               </div>
             </div>
 
             {/* Legend */}
-            <div className="w-full grid grid-cols-3 gap-2 mt-2 pt-3 border-t border-slate-100 dark:border-slate-800 text-center font-mono">
+            <div className="w-full grid grid-cols-3 gap-2 mt-2 pt-3 border-t border-border-subtle text-center font-mono">
               <div className="space-y-0.5">
-                <div className="flex items-center justify-center gap-1 text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold">
-                  <span className="size-2 rounded-full bg-emerald-500" />
+                <div className="flex items-center justify-center gap-1 text-[11px] text-success font-semibold">
+                  <span className="size-2 rounded-full bg-success" />
                   <span>Low</span>
                 </div>
-                <div className="text-xs font-bold text-slate-900 dark:text-slate-100">
+                <div className="text-xs font-bold text-foreground">
                   {formatNumber(data.risk_distribution.low)}
                 </div>
               </div>
 
               <div className="space-y-0.5">
-                <div className="flex items-center justify-center gap-1 text-[11px] text-amber-800 dark:text-amber-400 font-semibold">
-                  <span className="size-2 rounded-full bg-amber-500" />
+                <div className="flex items-center justify-center gap-1 text-[11px] text-warning font-semibold">
+                  <span className="size-2 rounded-full bg-warning" />
                   <span>Med</span>
                 </div>
-                <div className="text-xs font-bold text-slate-900 dark:text-slate-100">
+                <div className="text-xs font-bold text-foreground">
                   {formatNumber(data.risk_distribution.medium)}
                 </div>
               </div>
 
               <div className="space-y-0.5">
-                <div className="flex items-center justify-center gap-1 text-[11px] text-rose-700 dark:text-rose-400 font-semibold">
-                  <span className="size-2 rounded-full bg-rose-500" />
+                <div className="flex items-center justify-center gap-1 text-[11px] text-danger font-semibold">
+                  <span className="size-2 rounded-full bg-danger" />
                   <span>High</span>
                 </div>
-                <div className="text-xs font-bold text-slate-900 dark:text-slate-100">
+                <div className="text-xs font-bold text-foreground">
                   {formatNumber(data.risk_distribution.high)}
                 </div>
               </div>
@@ -505,14 +505,14 @@ export function Dashboard() {
             variant="ghost"
             size="xs"
             onClick={() => navigate("/admin/reports")}
-            className="text-cyan-700 dark:text-cyan-400 font-semibold hover:text-cyan-800"
+            className="text-primary font-semibold hover:text-primary"
           >
             ดูรายงานทั้งหมด →
           </Button>
         }>
           <div>
             <CardTitle>จำแนกตามประเภทการหลอกลวง (Scam Categories)</CardTitle>
-            <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+            <p className="text-xs text-muted-foreground mt-0.5">
               การกระจายตัวของภาพหลอกลวงที่ตรวจพบในระบบ
             </p>
           </div>

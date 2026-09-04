@@ -22,11 +22,11 @@ export function AdminLayout() {
   }, []);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans relative">
+    <div className="flex h-screen overflow-hidden bg-background text-foreground font-sans relative">
       {/* Mobile Backdrop */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-30 md:hidden transition-opacity"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 md:hidden transition-opacity"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
@@ -42,7 +42,7 @@ export function AdminLayout() {
           isWsConnected={isWsConnected}
         />
 
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50 dark:bg-[#080c14]">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-background">
           <Outlet context={{ setIsWsConnected }} />
         </main>
       </div>

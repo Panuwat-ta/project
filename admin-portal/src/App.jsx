@@ -44,11 +44,11 @@ function ProtectedRoute({ children }) {
 
   if (!isReady) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-950 text-slate-100 gap-3">
-        <div className="size-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 animate-pulse">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground gap-3">
+        <div className="size-10 rounded-xl bg-primary-subtle border border-primary-border flex items-center justify-center text-primary animate-pulse">
           <Shield className="size-5" />
         </div>
-        <p className="text-xs font-mono text-slate-400">กำลังตรวจสอบสิทธิ์ Super Admin...</p>
+        <p className="text-xs font-mono text-muted-foreground">กำลังตรวจสอบสิทธิ์ Super Admin...</p>
       </div>
     );
   }

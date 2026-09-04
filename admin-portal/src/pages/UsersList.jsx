@@ -117,10 +117,10 @@ export function UsersList() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+          <h2 className="text-xl font-bold tracking-tight text-foreground">
             การจัดการผู้ใช้งาน (User Management)
           </h2>
-          <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+          <p className="text-xs text-muted-foreground mt-0.5">
             ตรวจสอบประวัติการใช้งาน บัญชีผู้ส่งรายงาน และมาตรการระงับบัญชี (Ban/Unban)
           </p>
         </div>
@@ -140,20 +140,20 @@ export function UsersList() {
 
       {/* Filter and Table Card */}
       <Card>
-        <div className="p-4 flex items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800/80">
+        <div className="p-4 flex items-center justify-between gap-4 border-b border-border-subtle">
           <div className="relative w-full sm:w-80">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-slate-500 dark:text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
             <input
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="ค้นหาชื่อ, อีเมล, หรือ User ID..."
-              className="w-full pl-8 pr-3 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700/80 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 rounded-lg outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all font-mono"
+              className="w-full pl-8 pr-3 py-1.5 bg-card border border-input text-xs text-foreground placeholder:text-muted-foreground rounded-lg outline-none focus:border-ring focus:ring-1 focus:ring-ring transition-all font-mono"
             />
           </div>
 
-          <div className="text-xs font-mono text-slate-600 dark:text-slate-400 hidden sm:block">
-            ผู้ใช้ทั้งหมด: <span className="font-bold text-slate-900 dark:text-slate-200">{formatNumber(total)}</span> บัญชี
+          <div className="text-xs font-mono text-muted-foreground hidden sm:block">
+            ผู้ใช้ทั้งหมด: <span className="font-bold text-foreground">{formatNumber(total)}</span> บัญชี
           </div>
         </div>
 
@@ -186,16 +186,16 @@ export function UsersList() {
                         onClick={() => navigate(`/admin/users/${user.id}`)}
                       >
                         {/* ID */}
-                        <TableCell className="font-mono text-xs font-semibold text-slate-900 dark:text-slate-100">
+                        <TableCell className="font-mono text-xs font-semibold text-foreground">
                           #{user.id}
                         </TableCell>
 
                         {/* Name / Email */}
                         <TableCell>
-                          <div className="text-xs font-medium text-slate-900 dark:text-slate-100">
+                          <div className="text-xs font-medium text-foreground">
                             {user.full_name || "ไม่มีชื่อระบุ"}
                           </div>
-                          <div className="text-[10px] font-mono text-slate-600 dark:text-slate-400 font-medium">{user.email}</div>
+                          <div className="text-[10px] font-mono text-muted-foreground font-medium">{user.email}</div>
                         </TableCell>
 
                         {/* Role */}
@@ -211,12 +211,12 @@ export function UsersList() {
                         </TableCell>
 
                         {/* Total Scans */}
-                        <TableCell className="font-mono text-xs text-slate-800 dark:text-slate-200">
+                        <TableCell className="font-mono text-xs text-foreground">
                           {formatNumber(user.total_scans ?? user.scans_count ?? 0)} ครั้ง
                         </TableCell>
 
                         {/* Created At */}
-                        <TableCell className="text-xs text-slate-700 dark:text-slate-400 font-mono whitespace-nowrap">
+                        <TableCell className="text-xs text-muted-foreground font-mono whitespace-nowrap">
                           {formatDate(user.created_at)}
                         </TableCell>
 

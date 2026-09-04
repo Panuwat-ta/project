@@ -4,7 +4,7 @@ export function Card({ className, children, ...props }) {
   return (
     <div
       className={cn(
-        "rounded-xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900/90 shadow-sm transition-colors",
+        "rounded-xl border border-border bg-card text-card-foreground shadow-sm transition-colors",
         className
       )}
       {...props}
@@ -18,7 +18,7 @@ export function CardHeader({ className, children, action, ...props }) {
   return (
     <div
       className={cn(
-        "flex items-center justify-between p-5 pb-3 border-b border-slate-100 dark:border-slate-800/60",
+        "flex items-center justify-between p-5 pb-3 border-b border-border-subtle",
         className
       )}
       {...props}
@@ -33,7 +33,7 @@ export function CardTitle({ className, children, ...props }) {
   return (
     <h3
       className={cn(
-        "text-sm font-semibold text-slate-900 dark:text-slate-100 tracking-tight",
+        "text-sm font-semibold text-foreground tracking-tight",
         className
       )}
       {...props}
@@ -46,7 +46,7 @@ export function CardTitle({ className, children, ...props }) {
 export function CardDescription({ className, children, ...props }) {
   return (
     <p
-      className={cn("text-xs text-slate-600 dark:text-slate-400 font-normal", className)}
+      className={cn("text-xs text-muted-foreground font-normal", className)}
       {...props}
     >
       {children}
@@ -66,7 +66,7 @@ export function CardFooter({ className, children, ...props }) {
   return (
     <div
       className={cn(
-        "flex items-center p-5 pt-0 border-t border-slate-100 dark:border-slate-800/60 mt-4",
+        "flex items-center p-5 pt-0 border-t border-border-subtle mt-4",
         className
       )}
       {...props}

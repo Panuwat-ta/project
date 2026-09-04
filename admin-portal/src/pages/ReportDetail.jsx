@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
   CheckCircle2,
   XCircle,
   Clock,
   FileText,
-  AlertTriangle,
+  AlertCircle,
   Layers,
   KeyRound,
 } from "lucide-react";
@@ -22,6 +22,7 @@ import { formatDate } from "@/lib/utils";
 
 export function ReportDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const toast = useToast();
 
   const [report, setReport] = useState(null);
@@ -127,35 +128,38 @@ export function ReportDetail() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || !report) {
     return (
       <div className="space-y-6">
-        <div className="h-8 bg-slate-200 dark:bg-slate-800 rounded animate-pulse w-48" />
+        <div className="h-8 bg-muted rounded animate-pulse w-48" />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 h-[500px] bg-slate-200 dark:bg-slate-800 rounded-xl animate-pulse" />
-          <div className="h-[500px] bg-slate-200 dark:bg-slate-800 rounded-xl animate-pulse" />
+          <div className="lg:col-span-2 h-[500px] bg-muted rounded-xl animate-pulse" />
+          <div className="h-[500px] bg-muted rounded-xl animate-pulse" />
         </div>
       </div>
     );
   }
 
-  if (error || !report) {
+  if (error && !report) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4 text-center">
-        <div className="size-12 rounded-full bg-rose-500/10 flex items-center justify-center text-rose-500">
-          <AlertTriangle className="size-6" />
+      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+        <div className="size-14 rounded-full bg-danger-subtle border border-danger-border flex items-center justify-center text-danger">
+          <AlertCircle className="size-7" />
         </div>
-        <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
-          ไม่สามารถเปิดรายงาน #{id} ได้
-        </h3>
-        <p className="text-xs text-slate-600 dark:text-slate-400 max-w-sm">{error || "ไม่พบข้อมูลในระบบ"}</p>
-        <Link
-          to="/admin/reports"
-          className="mt-2 text-xs text-cyan-700 dark:text-cyan-400 hover:underline flex items-center gap-1"
+        <div className="text-center space-y-1">
+          <h3 className="text-base font-semibold text-foreground">
+            ไม่สามารถโหลดรายละเอียดรายงานได้
+          </h3>
+          <p className="text-xs text-muted-foreground max-w-sm">{error || "ไม่พบข้อมูลในระบบ"}</p>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          icon={ArrowLeft}
+          onClick={() => navigate("/admin/reports")}
         >
-          <ArrowLeft className="size-3" />
-          ย้อนกลับไปคิวรายงาน
-        </Link>
+          กลับไปหน้ารายการ
+        </Button>
       </div>
     );
   }
@@ -166,25 +170,25 @@ export function ReportDetail() {
 
   return (
     <div className="space-y-6 pb-12">
-      {/* Top Navigation & Status Summary */}
+      {/* Top Bar Navigation and Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <Link
-            to="/admin/reports"
-            className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-            title="ย้อนกลับไปคิวรายงาน"
+          <button
+            onClick={() => navigate("/admin/reports")}
+            className="p-1.5 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            title="กลับไปหน้ารายการ"
           >
             <ArrowLeft className="size-4" />
-          </Link>
+          </button>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold font-mono tracking-tight text-slate-900 dark:text-slate-100">
+              <h2 className="text-xl font-bold font-mono tracking-tight text-foreground">
                 รายงานตรวจสอบ #{report.id}
               </h2>
               <StatusBadge status={report.status} />
               <RiskBadge score={report.risk_score} />
             </div>
-            <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 font-mono">
+            <p className="text-xs text-muted-foreground mt-0.5 font-mono">
               ส่งตรวจเมื่อ: {formatDate(report.created_at)}
             </p>
           </div>
@@ -220,7 +224,6 @@ export function ReportDetail() {
                 size="sm"
                 icon={CheckCircle2}
                 onClick={() => openDecisionModal("approved")}
-                className="bg-emerald-600 hover:bg-emerald-500 text-white"
               >
                 ยืนยัน Scam (Approve)
               </Button>
@@ -243,19 +246,19 @@ export function ReportDetail() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <FileText className="size-4 text-cyan-600 dark:text-cyan-400" />
+                <FileText className="size-4 text-primary" />
                 <span>คำอธิบายจากผู้ส่งรายงาน (User Description)</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 text-sm text-slate-800 dark:text-slate-200 leading-relaxed">
+              <div className="p-3.5 rounded-lg bg-muted/40 border border-border text-sm text-foreground leading-relaxed">
                 {report.description || "ไม่มีข้อความเพิ่มเติมจากผู้ส่ง"}
               </div>
 
               {report.admin_note && (
                 <div className="space-y-1">
-                  <div className="text-xs font-semibold text-slate-700 dark:text-slate-300">บันทึกของเจ้าหน้าที่ (Admin Note):</div>
-                  <div className="p-3 rounded-lg bg-cyan-500/10 dark:bg-cyan-500/5 border border-cyan-500/30 dark:border-cyan-500/20 text-xs text-cyan-900 dark:text-cyan-300 font-mono font-medium">
+                  <div className="text-xs font-semibold text-foreground">บันทึกของเจ้าหน้าที่ (Admin Note):</div>
+                  <div className="p-3 rounded-lg bg-primary-subtle border border-primary-border text-xs text-primary font-mono font-medium">
                     {report.admin_note}
                   </div>
                 </div>
@@ -270,57 +273,57 @@ export function ReportDetail() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Layers className="size-4 text-cyan-600 dark:text-cyan-400" />
+                <Layers className="size-4 text-primary" />
                 <span>การวิเคราะห์หลายชั้น (Multi-layer Analysis)</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* Layer 1: Visual Anomaly (SegFormer) */}
-              <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-2">
+              {/* Layer 1: Visual Anomaly (SegFormer AI) */}
+              <div className="p-3.5 rounded-lg bg-muted/40 border border-border space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+                  <span className="text-xs font-semibold text-foreground">
                     1. Visual Anomaly (SegFormer AI)
                   </span>
                   <Badge variant={multiLayer.visual_anomaly?.score >= 70 ? "danger" : "primary"} size="sm">
                     {multiLayer.visual_anomaly?.score ?? report.risk_score}%
                   </Badge>
                 </div>
-                <p className="text-xs text-slate-600 dark:text-slate-400">
+                <p className="text-xs text-muted-foreground">
                   {multiLayer.visual_anomaly?.summary || "ตรวจพบจุดรบกวนของพิกเซลและร่องรอยการตัดต่อด้วยโมเดล Semantic Segmentation"}
                 </p>
               </div>
 
               {/* Layer 2: Textual OCR (Surya OCR) */}
-              <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-2">
+              <div className="p-3.5 rounded-lg bg-muted/40 border border-border space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+                  <span className="text-xs font-semibold text-foreground">
                     2. Textual / OCR Analysis (Surya)
                   </span>
                   <Badge variant={multiLayer.textual_analysis?.score >= 70 ? "danger" : "default"} size="sm">
                     {multiLayer.textual_analysis?.score ?? 0}%
                   </Badge>
                 </div>
-                <p className="text-xs text-slate-600 dark:text-slate-400">
+                <p className="text-xs text-muted-foreground">
                   {multiLayer.textual_analysis?.summary || "สกัดข้อความในภาพเพื่อตรวจสอบคำต้องสงสัยและรูปแบบข้อความหลอกลวง"}
                 </p>
                 {multiLayer.textual_analysis?.extracted_text && (
-                  <div className="p-2 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[11px] font-mono text-slate-800 dark:text-slate-300 max-h-24 overflow-y-auto">
+                  <div className="p-2 rounded bg-muted border border-border text-[11px] font-mono text-foreground max-h-24 overflow-y-auto">
                     {multiLayer.textual_analysis.extracted_text}
                   </div>
                 )}
               </div>
 
               {/* Layer 3: Source Verification (Reverse Search) */}
-              <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-2">
+              <div className="p-3.5 rounded-lg bg-muted/40 border border-border space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+                  <span className="text-xs font-semibold text-foreground">
                     3. Source Verification (Vision)
                   </span>
                   <Badge variant="default" size="sm">
                     {multiLayer.source_verification?.matches_count ?? 0} matches
                   </Badge>
                 </div>
-                <p className="text-xs text-slate-600 dark:text-slate-400">
+                <p className="text-xs text-muted-foreground">
                   {multiLayer.source_verification?.summary || "ค้นหาแหล่งที่มาของภาพผ่านฐานข้อมูลภาพสาธารณะ"}
                 </p>
               </div>
@@ -331,38 +334,38 @@ export function ReportDetail() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <KeyRound className="size-4 text-cyan-600 dark:text-cyan-400" />
+                <KeyRound className="size-4 text-primary" />
                 <span>ข้อมูลทางเทคนิค (Forensic Metadata)</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 font-mono text-xs">
-              <div className="flex items-center justify-between py-1.5 border-b border-slate-100 dark:border-slate-800/80">
-                <span className="text-slate-600 dark:text-slate-400 font-medium">Image Hash (SHA-256):</span>
-                <span className="text-slate-900 dark:text-slate-200 font-semibold truncate max-w-[180px]" title={report.image_hash}>
+              <div className="flex items-center justify-between py-1.5 border-b border-border-subtle">
+                <span className="text-muted-foreground font-medium">Image Hash (SHA-256):</span>
+                <span className="text-foreground font-semibold truncate max-w-[180px]" title={report.image_hash}>
                   {report.image_hash || "-"}
                 </span>
               </div>
 
-              <div className="flex items-center justify-between py-1.5 border-b border-slate-100 dark:border-slate-800/80">
-                <span className="text-slate-600 dark:text-slate-400 font-medium">ขนาดความละเอียด:</span>
-                <span className="text-slate-900 dark:text-slate-200 font-semibold">{report.metadata?.dimensions || "1080 x 1920"}</span>
+              <div className="flex items-center justify-between py-1.5 border-b border-border-subtle">
+                <span className="text-muted-foreground font-medium">ขนาดความละเอียด:</span>
+                <span className="text-foreground font-semibold">{report.metadata?.dimensions || "1080 x 1920"}</span>
               </div>
 
-              <div className="flex items-center justify-between py-1.5 border-b border-slate-100 dark:border-slate-800/80">
-                <span className="text-slate-600 dark:text-slate-400 font-medium">อุปกรณ์ที่ถ่าย (Camera):</span>
-                <span className="text-slate-900 dark:text-slate-200 font-semibold">{report.metadata?.device || "ไม่ระบุ"}</span>
+              <div className="flex items-center justify-between py-1.5 border-b border-border-subtle">
+                <span className="text-muted-foreground font-medium">อุปกรณ์ที่ถ่าย (Camera):</span>
+                <span className="text-foreground font-semibold">{report.metadata?.device || "ไม่ระบุ"}</span>
               </div>
 
-              <div className="flex items-center justify-between py-1.5 border-b border-slate-100 dark:border-slate-800/80">
-                <span className="text-slate-600 dark:text-slate-400 font-medium">ยินยอมให้นำไปวิจัย (PDPA):</span>
-                <span className={report.allow_research_use ? "text-emerald-700 dark:text-emerald-400 font-semibold" : "text-slate-600 dark:text-slate-400 font-semibold"}>
+              <div className="flex items-center justify-between py-1.5 border-b border-border-subtle">
+                <span className="text-muted-foreground font-medium">ยินยอมให้นำไปวิจัย (PDPA):</span>
+                <span className={report.allow_research_use ? "text-success font-semibold" : "text-muted-foreground font-semibold"}>
                   {report.allow_research_use ? "ยินยอม (Consent)" : "ไม่ยินยอม"}
                 </span>
               </div>
 
               <div className="flex items-center justify-between py-1.5">
-                <span className="text-slate-600 dark:text-slate-400 font-medium">ผู้ส่งรายงาน:</span>
-                <span className="text-slate-900 dark:text-slate-200 font-semibold">{report.user_email || "ไม่ระบุ"}</span>
+                <span className="text-muted-foreground font-medium">ผู้ส่งรายงาน:</span>
+                <span className="text-foreground font-semibold">{report.user_email || "ไม่ระบุ"}</span>
               </div>
             </CardContent>
           </Card>

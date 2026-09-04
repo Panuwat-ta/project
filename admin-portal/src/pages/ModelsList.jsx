@@ -144,10 +144,10 @@ export function ModelsList() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2.5">
+          <h2 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2.5">
             <span>การจัดการโมเดล AI (Model Registry & Deployment)</span>
           </h2>
-          <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+          <p className="text-xs text-muted-foreground mt-0.5">
             ควบคุมเวอร์ชันโมเดล SegFormer Semantic Segmentation, ทดสอบความพร้อม (Dry-run) และจัดการ Rollback
           </p>
         </div>
@@ -168,13 +168,13 @@ export function ModelsList() {
       {loading ? (
         <TableSkeleton rows={4} cols={3} />
       ) : models.length === 0 ? (
-        <Card className="border-dashed border-slate-300 dark:border-slate-800 p-12 text-center flex flex-col items-center justify-center space-y-3">
-          <div className="size-12 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 flex items-center justify-center text-slate-600 dark:text-slate-400">
-            <Cpu className="size-6 text-slate-600 dark:text-slate-400" />
+        <Card className="border-dashed border-border p-12 text-center flex flex-col items-center justify-center space-y-3">
+          <div className="size-12 rounded-xl bg-muted border border-border flex items-center justify-center text-muted-foreground">
+            <Cpu className="size-6 text-muted-foreground" />
           </div>
           <div className="space-y-1">
-            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">ไม่พบข้อมูลโมเดล AI ในระบบ</h3>
-            <p className="text-xs text-slate-600 dark:text-slate-400 max-w-sm">
+            <h3 className="text-sm font-semibold text-foreground">ไม่พบข้อมูลโมเดล AI ในระบบ</h3>
+            <p className="text-xs text-muted-foreground max-w-sm">
               ยังไม่มีโมเดล SegFormer ถูกบันทึกไว้ในทะเบียน ModelVersion ของฐานข้อมูล กรุณาตรวจสอบการลงทะเบียนโมเดลผ่าน backend
             </p>
           </div>
@@ -194,13 +194,13 @@ export function ModelsList() {
                 key={model.id}
                 className={
                   isActive
-                    ? "border-cyan-500 shadow-[0_0_20px_rgba(0,229,255,0.15)] ring-1 ring-cyan-500/50 bg-cyan-500/[0.03] dark:bg-cyan-950/20 relative"
-                    : "hover:border-slate-300 dark:hover:border-slate-700 transition-all"
+                    ? "border-primary shadow-[0_0_20px_rgba(0,229,255,0.15)] ring-1 ring-primary/50 bg-primary-subtle/20 relative"
+                    : "hover:border-border transition-all"
                 }
               >
                 {isActive && (
-                  <div className="absolute -top-2.5 right-4 px-2.5 py-0.5 rounded-full bg-cyan-500 text-slate-950 font-bold text-[10px] font-mono tracking-wider uppercase shadow-md flex items-center gap-1">
-                    <span className="size-1.5 rounded-full bg-slate-950 animate-pulse" />
+                  <div className="absolute -top-2.5 right-4 px-2.5 py-0.5 rounded-full bg-primary text-primary-foreground font-bold text-[10px] font-mono tracking-wider uppercase shadow-md flex items-center gap-1">
+                    <span className="size-1.5 rounded-full bg-primary-foreground animate-pulse" />
                     <span>Active Production</span>
                   </div>
                 )}
@@ -208,10 +208,10 @@ export function ModelsList() {
                 <CardHeader>
                   <div className="space-y-1">
                     <CardTitle className="flex items-center gap-2">
-                      <Cpu className={isActive ? "size-4 text-cyan-600 dark:text-cyan-400" : "size-4 text-slate-500 dark:text-slate-400"} />
+                      <Cpu className={isActive ? "size-4 text-primary" : "size-4 text-muted-foreground"} />
                       <span>{model.version_tag ? `SegFormer ${model.version_tag}` : (model.name || `Model Version v${model.version}`)}</span>
                     </CardTitle>
-                    <p className="text-xs font-mono text-slate-600 dark:text-slate-400 font-medium">
+                    <p className="text-xs font-mono text-muted-foreground font-medium">
                       ID: #{model.id} • Architecture: {model.framework_compatibility || model.framework || "SegFormer (MiT-B2)"}
                     </p>
                   </div>
@@ -219,53 +219,53 @@ export function ModelsList() {
 
                 <CardContent className="space-y-4">
                   {/* Model Performance Metrics */}
-                  <div className="grid grid-cols-2 gap-2 p-3 rounded-lg bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800/80 font-mono text-xs">
+                  <div className="grid grid-cols-2 gap-2 p-3 rounded-lg bg-muted/40 border border-border font-mono text-xs">
                     <div>
-                      <span className="text-slate-600 dark:text-slate-400 text-[11px] font-medium">Mean IoU (mIoU):</span>
-                      <div className="text-sm font-bold text-cyan-700 dark:text-cyan-400">
+                      <span className="text-muted-foreground text-[11px] font-medium">Mean IoU (mIoU):</span>
+                      <div className="text-sm font-bold text-primary">
                         {model.m_iou != null ? `${(model.m_iou * 100).toFixed(2)}%` : (model.accuracy ? `${(model.accuracy * 100).toFixed(1)}%` : "-")}
                       </div>
                     </div>
                     <div>
-                      <span className="text-slate-600 dark:text-slate-400 text-[11px] font-medium">All Acc (aAcc):</span>
-                      <div className="text-sm font-bold text-emerald-700 dark:text-emerald-400">
+                      <span className="text-muted-foreground text-[11px] font-medium">All Acc (aAcc):</span>
+                      <div className="text-sm font-bold text-success">
                         {model.a_acc != null ? `${(model.a_acc * 100).toFixed(2)}%` : "98.5%"}
                       </div>
                     </div>
                     <div>
-                      <span className="text-slate-600 dark:text-slate-400 text-[11px] font-medium">Mean Acc (mAcc):</span>
-                      <div className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                      <span className="text-muted-foreground text-[11px] font-medium">Mean Acc (mAcc):</span>
+                      <div className="text-sm font-bold text-foreground">
                         {model.m_acc != null ? `${(model.m_acc * 100).toFixed(2)}%` : "84.2%"}
                       </div>
                     </div>
                     <div>
-                      <span className="text-slate-600 dark:text-slate-400 text-[11px] font-medium">Mean Dice (mDice):</span>
-                      <div className="text-sm font-bold text-purple-700 dark:text-violet-400">
+                      <span className="text-muted-foreground text-[11px] font-medium">Mean Dice (mDice):</span>
+                      <div className="text-sm font-bold text-info">
                         {model.m_dice != null ? `${(model.m_dice * 100).toFixed(2)}%` : "82.6%"}
                       </div>
                     </div>
                   </div>
 
                   {/* Model Metadata Notes */}
-                  <div className="space-y-1.5 font-mono text-[11px] text-slate-600 dark:text-slate-400">
+                  <div className="space-y-1.5 font-mono text-[11px] text-muted-foreground">
                     <div className="flex items-center justify-between">
                       <span className="font-medium">Dataset Reference:</span>
-                      <span className="text-slate-900 dark:text-slate-200 font-semibold truncate max-w-[150px]">{model.dataset_reference || model.dataset_ref || "ScamGuard-v2.1"}</span>
+                      <span className="text-foreground font-semibold truncate max-w-[150px]">{model.dataset_reference || model.dataset_ref || "ScamGuard-v2.1"}</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="font-medium">Checksum:</span>
-                      <span className="text-slate-900 dark:text-slate-200 font-semibold truncate max-w-[140px]" title={model.artifact_checksum || model.checksum}>
+                      <span className="text-foreground font-semibold truncate max-w-[140px]" title={model.artifact_checksum || model.checksum}>
                         {model.artifact_checksum || model.checksum || "sha256:verified"}
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="font-medium">Deployed At:</span>
-                      <span className="text-slate-900 dark:text-slate-200 font-semibold">{formatDate(model.deployed_at || model.created_at)}</span>
+                      <span className="text-foreground font-semibold">{formatDate(model.deployed_at || model.created_at)}</span>
                     </div>
                     {model.file_path && (
                       <div className="flex items-center justify-between">
                         <span className="font-medium">File Path:</span>
-                        <span className="text-slate-900 dark:text-slate-200 font-semibold truncate max-w-[140px]" title={model.file_path}>
+                        <span className="text-foreground font-semibold truncate max-w-[140px]" title={model.file_path}>
                           {model.file_path.split("/").pop()}
                         </span>
                       </div>
@@ -277,15 +277,15 @@ export function ModelsList() {
                     <div
                       className={`p-3 rounded-lg border text-xs font-mono space-y-1 ${
                         dryResult.success !== false
-                          ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-300"
-                          : "bg-rose-500/10 border-rose-500/30 text-rose-800 dark:text-rose-300"
+                          ? "bg-success-subtle border-success-border text-success"
+                          : "bg-danger-subtle border-danger-border text-danger"
                       }`}
                     >
                       <div className="font-semibold flex items-center gap-1.5">
                         {dryResult.success !== false ? (
-                          <CheckCircle2 className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                          <CheckCircle2 className="size-3.5 text-success" />
                         ) : (
-                          <AlertTriangle className="size-3.5 text-rose-600 dark:text-rose-400" />
+                          <AlertTriangle className="size-3.5 text-danger" />
                         )}
                         <span>{dryResult.success !== false ? "Inference Health: PASS" : "Health Check: FAILED"}</span>
                       </div>
@@ -293,7 +293,7 @@ export function ModelsList() {
                         Latency: {dryResult.details?.latency_ms || dryResult.latency_ms || 98}ms • Memory: {dryResult.details?.memory_usage_mb ? `${dryResult.details.memory_usage_mb}MB` : "235MB"}
                       </div>
                       {dryResult.message && (
-                        <div className="text-[10px] text-slate-700 dark:text-slate-300 truncate">
+                        <div className="text-[10px] text-foreground truncate">
                           {dryResult.message}
                         </div>
                       )}
@@ -301,7 +301,7 @@ export function ModelsList() {
                   )}
 
                   {/* Action Buttons */}
-                  <div className="flex items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-800/80">
+                  <div className="flex items-center gap-2 pt-2 border-t border-border-subtle">
                     <Button
                       variant="outline"
                       size="xs"

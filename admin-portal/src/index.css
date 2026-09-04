@@ -10,23 +10,13 @@
   --font-sans: "Geist Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
+  /* Canvas & Surface Tokens */
   --color-border: var(--border);
+  --color-border-subtle: var(--border-subtle);
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
 
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
@@ -34,9 +24,57 @@
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
 
+  /* Muted & Secondary Tokens */
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  /* Brand Primary (Cyber Cyan) Tokens */
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-subtle: var(--primary-subtle);
+  --color-primary-border: var(--primary-border);
+
+  /* Status Colors */
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-subtle: var(--success-subtle);
+  --color-success-border: var(--success-border);
+
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning-subtle: var(--warning-subtle);
+  --color-warning-border: var(--warning-border);
+
+  --color-danger: var(--danger);
+  --color-danger-foreground: var(--danger-foreground);
+  --color-danger-subtle: var(--danger-subtle);
+  --color-danger-border: var(--danger-border);
+
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-info-subtle: var(--info-subtle);
+  --color-info-border: var(--info-border);
+
+  /* Risk Scoring Tiers */
   --color-risk-low: var(--risk-low);
+  --color-risk-low-subtle: var(--risk-low-subtle);
   --color-risk-medium: var(--risk-medium);
+  --color-risk-medium-subtle: var(--risk-medium-subtle);
   --color-risk-high: var(--risk-high);
+  --color-risk-high-subtle: var(--risk-high-subtle);
+
+  /* Dedicated Dark Sidebar */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-muted: var(--sidebar-muted);
+  --color-sidebar-accent: var(--sidebar-accent);
 
   --radius-sm: 0.25rem;
   --radius-md: 0.375rem;
@@ -50,7 +88,7 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased font-sans selection:bg-cyan-500/20 selection:text-cyan-400;
+    @apply bg-background text-foreground antialiased font-sans selection:bg-primary/20 selection:text-primary;
   }
 
   /* Force tabular numbers for data consistency across tables, badges, timestamps */
@@ -60,51 +98,139 @@
 }
 
 :root {
+  /* Canvas & Base */
   --background: #f8fafc;
-  --foreground: #020617;
+  --foreground: #0f172a;
+
+  /* Card & Surfaces */
   --card: #ffffff;
-  --card-foreground: #020617;
+  --card-foreground: #0f172a;
   --popover: #ffffff;
-  --popover-foreground: #020617;
-  --primary: #0891b2;
-  --primary-foreground: #ffffff;
-  --secondary: #f1f5f9;
-  --secondary-foreground: #020617;
+  --popover-foreground: #0f172a;
+
+  /* Muted & Secondary */
   --muted: #f1f5f9;
-  --muted-foreground: #1e293b;
+  --muted-foreground: #475569;
+  --secondary: #e2e8f0;
+  --secondary-foreground: #0f172a;
   --accent: #e2e8f0;
-  --accent-foreground: #020617;
+  --accent-foreground: #0f172a;
+
+  /* Borders & Inputs */
   --border: #cbd5e1;
+  --border-subtle: #e2e8f0;
   --input: #cbd5e1;
   --ring: #0891b2;
 
+  /* Brand Primary (Cyber Cyan) */
+  --primary: #0891b2;
+  --primary-foreground: #ffffff;
+  --primary-subtle: #ecfeff;
+  --primary-border: #a5f3fc;
+
+  /* Status Colors */
+  --success: #047857;
+  --success-foreground: #ffffff;
+  --success-subtle: #ecfdf5;
+  --success-border: #a7f3d0;
+
+  --warning: #b45309;
+  --warning-foreground: #ffffff;
+  --warning-subtle: #fffbeb;
+  --warning-border: #fde68a;
+
+  --danger: #be123c;
+  --danger-foreground: #ffffff;
+  --danger-subtle: #fff1f2;
+  --danger-border: #fecdd3;
+
+  --info: #0284c7;
+  --info-foreground: #ffffff;
+  --info-subtle: #f0f9ff;
+  --info-border: #bae6fd;
+
+  /* Risk Levels */
   --risk-low: #047857;
+  --risk-low-subtle: #ecfdf5;
   --risk-medium: #b45309;
+  --risk-medium-subtle: #fffbeb;
   --risk-high: #be123c;
+  --risk-high-subtle: #fff1f2;
+
+  /* Dedicated Dark Cyber Sidebar */
+  --sidebar: #090d16;
+  --sidebar-foreground: #f1f5f9;
+  --sidebar-border: #172133;
+  --sidebar-muted: #94a3b8;
+  --sidebar-accent: #172133;
 }
 
 .dark {
-  --background: #090d16;
-  --foreground: #f1f5f9;
+  /* Canvas & Base */
+  --background: #080c14;
+  --foreground: #f8fafc;
+
+  /* Card & Surfaces */
   --card: #0f1623;
-  --card-foreground: #f1f5f9;
+  --card-foreground: #f8fafc;
   --popover: #0f1623;
-  --popover-foreground: #f1f5f9;
-  --primary: #00e5ff;
-  --primary-foreground: #090d16;
-  --secondary: #172133;
-  --secondary-foreground: #f1f5f9;
+  --popover-foreground: #f8fafc;
+
+  /* Muted & Secondary */
   --muted: #131c2d;
   --muted-foreground: #94a3b8;
+  --secondary: #172133;
+  --secondary-foreground: #f8fafc;
   --accent: #1e293b;
-  --accent-foreground: #f1f5f9;
+  --accent-foreground: #f8fafc;
+
+  /* Borders & Inputs */
   --border: #1e2b40;
+  --border-subtle: #162032;
   --input: #1e2b40;
   --ring: #00e5ff;
 
+  /* Brand Primary (Cyber Cyan) */
+  --primary: #00e5ff;
+  --primary-foreground: #080c14;
+  --primary-subtle: rgba(0, 229, 255, 0.1);
+  --primary-border: rgba(0, 229, 255, 0.25);
+
+  /* Status Colors */
+  --success: #10b981;
+  --success-foreground: #022c22;
+  --success-subtle: rgba(16, 185, 129, 0.12);
+  --success-border: rgba(16, 185, 129, 0.25);
+
+  --warning: #f59e0b;
+  --warning-foreground: #451a03;
+  --warning-subtle: rgba(245, 158, 11, 0.12);
+  --warning-border: rgba(245, 158, 11, 0.25);
+
+  --danger: #f43f5e;
+  --danger-foreground: #4c0519;
+  --danger-subtle: rgba(244, 63, 94, 0.12);
+  --danger-border: rgba(244, 63, 94, 0.25);
+
+  --info: #38bdf8;
+  --info-foreground: #082f49;
+  --info-subtle: rgba(56, 189, 248, 0.12);
+  --info-border: rgba(56, 189, 248, 0.25);
+
+  /* Risk Levels */
   --risk-low: #10b981;
+  --risk-low-subtle: rgba(16, 185, 129, 0.12);
   --risk-medium: #f59e0b;
+  --risk-medium-subtle: rgba(245, 158, 11, 0.12);
   --risk-high: #f43f5e;
+  --risk-high-subtle: rgba(244, 63, 94, 0.12);
+
+  /* Dedicated Dark Cyber Sidebar */
+  --sidebar: #090d16;
+  --sidebar-foreground: #f1f5f9;
+  --sidebar-border: #172133;
+  --sidebar-muted: #94a3b8;
+  --sidebar-accent: #172133;
 }
 
 /* Custom Scrollbar */
@@ -118,20 +244,12 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #cbd5e1;
+  background-color: var(--border);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #94a3b8;
-}
-
-.dark ::-webkit-scrollbar-thumb {
-  background-color: #1e293b;
-}
-
-.dark ::-webkit-scrollbar-thumb:hover {
-  background-color: #334155;
+  background-color: var(--muted-foreground);
 }
 
 /* Recharts Outline fix */

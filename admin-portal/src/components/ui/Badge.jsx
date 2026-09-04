@@ -10,29 +10,29 @@ export function Badge({
 }) {
   const variants = {
     default:
-      "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-700",
+      "bg-muted text-foreground border-border",
     primary:
-      "bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border-cyan-500/30",
+      "bg-primary-subtle text-primary border-primary-border",
     success:
-      "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30",
+      "bg-success-subtle text-success border-success-border",
     warning:
-      "bg-amber-500/10 text-amber-800 dark:text-amber-400 border-amber-500/30",
+      "bg-warning-subtle text-warning border-warning-border",
     danger:
-      "bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/30",
+      "bg-danger-subtle text-danger border-danger-border",
     info:
-      "bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-500/30",
+      "bg-info-subtle text-info border-info-border",
     purple:
-      "bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/30",
+      "bg-accent text-accent-foreground border-border",
   };
 
   const dots = {
-    default: "bg-slate-400",
-    primary: "bg-cyan-400",
-    success: "bg-emerald-400",
-    warning: "bg-amber-400",
-    danger: "bg-rose-400",
-    info: "bg-sky-400",
-    purple: "bg-purple-400",
+    default: "bg-muted-foreground",
+    primary: "bg-primary",
+    success: "bg-success",
+    warning: "bg-warning",
+    danger: "bg-danger",
+    info: "bg-info",
+    purple: "bg-accent-foreground",
   };
 
   const sizes = {

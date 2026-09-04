@@ -84,27 +84,27 @@ export function CommandPalette({ isOpen, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4">
       <div
-        className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity animate-in fade-in duration-150"
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity animate-in fade-in duration-150"
         onClick={onClose}
       />
 
       <div
-        className="relative z-10 w-full max-w-xl rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden transition-all animate-in zoom-in-95 duration-150"
+        className="relative z-10 w-full max-w-xl rounded-xl bg-card border border-border shadow-2xl overflow-hidden transition-all animate-in zoom-in-95 duration-150"
         onKeyDown={handleKeyDown}
       >
         {/* Search Bar */}
-        <div className="flex items-center px-4 border-b border-slate-200 dark:border-slate-800">
-          <Search className="size-5 text-slate-500 dark:text-slate-400 shrink-0" />
+        <div className="flex items-center px-4 border-b border-border">
+          <Search className="size-5 text-muted-foreground shrink-0" />
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="ค้นหารายงาน, ผู้ใช้, รหัสสแกน, หรือหน้าเมนู..."
-            className="w-full bg-transparent px-3 py-3.5 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 outline-none"
+            className="w-full bg-transparent px-3 py-3.5 text-sm text-foreground placeholder:text-muted-foreground outline-none"
           />
-          {isSearching && <Loader2 className="size-4 animate-spin text-cyan-500 shrink-0" />}
-          <kbd className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-mono font-semibold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded">
+          {isSearching && <Loader2 className="size-4 animate-spin text-primary shrink-0" />}
+          <kbd className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-mono font-semibold text-muted-foreground bg-muted border border-border rounded">
             ESC
           </kbd>
         </div>
@@ -112,12 +112,12 @@ export function CommandPalette({ isOpen, onClose }) {
         {/* Results List */}
         <div className="max-h-80 overflow-y-auto p-2">
           {items.length === 0 ? (
-            <div className="p-8 text-center text-sm font-medium text-slate-600 dark:text-slate-400">
+            <div className="p-8 text-center text-sm font-medium text-muted-foreground">
               ไม่พบผลลัพธ์ที่ตรงกับคำค้นหา
             </div>
           ) : (
             <div className="space-y-1">
-              <div className="px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
+              <div className="px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                 {query.length >= 2 ? "ผลการค้นหา" : "เมนูลัด (Navigation)"}
               </div>
               {items.map((item, idx) => {
@@ -133,8 +133,8 @@ export function CommandPalette({ isOpen, onClose }) {
                     className={cn(
                       "w-full flex items-center justify-between p-2.5 rounded-lg text-left text-sm transition-colors",
                       isSelected
-                        ? "bg-cyan-500/10 dark:bg-cyan-500/15 text-cyan-700 dark:text-cyan-400 font-semibold"
-                        : "text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                        ? "bg-primary-subtle text-primary font-semibold"
+                        : "text-foreground hover:bg-muted"
                     )}
                   >
                     <div className="flex items-center gap-3 min-w-0">
@@ -142,23 +142,23 @@ export function CommandPalette({ isOpen, onClose }) {
                         className={cn(
                           "size-8 rounded-md flex items-center justify-center shrink-0",
                           isSelected
-                            ? "bg-cyan-500/20 text-cyan-700 dark:text-cyan-400"
-                            : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
+                            ? "bg-primary/20 text-primary"
+                            : "bg-muted text-muted-foreground"
                         )}
                       >
                         <Icon className="size-4" />
                       </div>
                       <div className="min-w-0">
-                        <div className="truncate font-semibold text-slate-900 dark:text-slate-100">{item.title}</div>
+                        <div className="truncate font-semibold text-foreground">{item.title}</div>
                         {item.subtitle && (
-                          <div className="text-xs text-slate-600 dark:text-slate-400 truncate font-normal">
+                          <div className="text-xs text-muted-foreground truncate font-normal">
                             {item.subtitle}
                           </div>
                         )}
                       </div>
                     </div>
 
-                    <ArrowRight className="size-4 opacity-50 shrink-0 ml-2 text-slate-500 dark:text-slate-400" />
+                    <ArrowRight className="size-4 opacity-50 shrink-0 ml-2 text-muted-foreground" />
                   </button>
                 );
               })}
@@ -167,7 +167,7 @@ export function CommandPalette({ isOpen, onClose }) {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-4 py-2 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50 dark:bg-slate-950/50 text-[11px] font-medium text-slate-600 dark:text-slate-400">
+        <div className="flex items-center justify-between px-4 py-2 border-t border-border-subtle bg-muted/40 text-[11px] font-medium text-muted-foreground">
           <span>ใช้ลูกศรขึ้น/ลง เพื่อเลือก</span>
           <span>กด Enter เพื่อเปิด</span>
         </div>

@@ -6,7 +6,7 @@ export function Table({ className, children, ...props }) {
     <div className="w-full overflow-x-auto">
       <table
         className={cn(
-          "w-full caption-bottom text-sm text-left text-slate-700 dark:text-slate-300",
+          "w-full caption-bottom text-sm text-left text-foreground",
           className
         )}
         {...props}
@@ -21,7 +21,7 @@ export function TableHeader({ className, children, ...props }) {
   return (
     <thead
       className={cn(
-        "bg-slate-50 dark:bg-slate-950/60 border-b border-slate-200 dark:border-slate-800 text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-400",
+        "bg-muted/60 border-b border-border text-xs font-semibold uppercase tracking-wider text-muted-foreground",
         className
       )}
       {...props}
@@ -34,7 +34,7 @@ export function TableHeader({ className, children, ...props }) {
 export function TableBody({ className, children, ...props }) {
   return (
     <tbody
-      className={cn("divide-y divide-slate-100 dark:divide-slate-800/60", className)}
+      className={cn("divide-y divide-border-subtle", className)}
       {...props}
     >
       {children}
@@ -47,7 +47,7 @@ export function TableRow({ className, children, isHoverable = true, ...props }) 
     <tr
       className={cn(
         "transition-colors",
-        isHoverable && "hover:bg-slate-50/70 dark:hover:bg-slate-800/40",
+        isHoverable && "hover:bg-muted/40",
         className
       )}
       {...props}
@@ -78,10 +78,10 @@ export function TableEmpty({ message = "ไม่พบรายการข้�
     <TableRow isHoverable={false}>
       <TableCell colSpan={colSpan} className="py-12 text-center">
         <div className="flex flex-col items-center justify-center gap-2">
-          <div className="size-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400">
+          <div className="size-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
             <Inbox className="size-5" />
           </div>
-          <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{message}</p>
+          <p className="text-sm font-medium text-foreground">{message}</p>
           {children}
         </div>
       </TableCell>
@@ -96,11 +96,11 @@ export function Pagination({ page, totalPages, totalItems, onPageChange, limit =
   const endItem = Math.min(page * limit, totalItems);
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 border-t border-slate-200 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/30 text-xs text-slate-600 dark:text-slate-400">
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 border-t border-border bg-muted/30 text-xs text-muted-foreground">
       <div>
-        แสดง <span className="font-bold text-slate-900 dark:text-slate-200">{startItem}</span> -{" "}
-        <span className="font-bold text-slate-900 dark:text-slate-200">{endItem}</span> จากทั้งหมด{" "}
-        <span className="font-bold text-slate-900 dark:text-slate-200">{totalItems?.toLocaleString() || 0}</span> รายการ
+        แสดง <span className="font-bold text-foreground">{startItem}</span> -{" "}
+        <span className="font-bold text-foreground">{endItem}</span> จากทั้งหมด{" "}
+        <span className="font-bold text-foreground">{totalItems?.toLocaleString() || 0}</span> รายการ
       </div>
 
       <div className="flex items-center gap-1.5">
@@ -108,13 +108,13 @@ export function Pagination({ page, totalPages, totalItems, onPageChange, limit =
           type="button"
           onClick={() => onPageChange(page - 1)}
           disabled={page <= 1}
-          className="p-1.5 rounded-md border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="p-1.5 rounded-md border border-border text-foreground hover:bg-card disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           aria-label="Previous page"
         >
           <ChevronLeft className="size-4" />
         </button>
 
-        <span className="px-3 py-1 font-mono text-xs font-semibold text-slate-900 dark:text-slate-200">
+        <span className="px-3 py-1 font-mono text-xs font-semibold text-foreground">
           หน้า {page} / {totalPages || 1}
         </span>
 
@@ -122,7 +122,7 @@ export function Pagination({ page, totalPages, totalItems, onPageChange, limit =
           type="button"
           onClick={() => onPageChange(page + 1)}
           disabled={page >= totalPages}
-          className="p-1.5 rounded-md border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="p-1.5 rounded-md border border-border text-foreground hover:bg-card disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           aria-label="Next page"
         >
           <ChevronRight className="size-4" />

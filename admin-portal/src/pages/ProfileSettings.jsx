@@ -120,10 +120,10 @@ export function ProfileSettings() {
   if (loading && !profile) {
     return (
       <div className="space-y-6">
-        <div className="h-8 bg-slate-200 dark:bg-slate-800 rounded animate-pulse w-48" />
+        <div className="h-8 bg-muted rounded animate-pulse w-48" />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="h-72 bg-slate-200 dark:bg-slate-800 rounded-xl animate-pulse" />
-          <div className="h-72 bg-slate-200 dark:bg-slate-800 rounded-xl animate-pulse" />
+          <div className="h-72 bg-muted rounded-xl animate-pulse" />
+          <div className="h-72 bg-muted rounded-xl animate-pulse" />
         </div>
       </div>
     );
@@ -134,11 +134,11 @@ export function ProfileSettings() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2">
-            <Shield className="size-5 text-cyan-600 dark:text-cyan-400" />
+          <h2 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
+            <Shield className="size-5 text-primary" />
             <span>การตั้งค่าบัญชีและความปลอดภัย (Profile & Security)</span>
           </h2>
-          <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+          <p className="text-xs text-muted-foreground mt-0.5">
             จัดการข้อมูล Super Admin, นโยบายรหัสผ่าน และเพิกถอนเซสชันการเข้าใช้งาน (Session Management)
           </p>
         </div>
@@ -158,20 +158,20 @@ export function ProfileSettings() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <User className="size-4 text-cyan-600 dark:text-cyan-400" />
+              <User className="size-4 text-primary" />
               <span>ข้อมูลบัญชีผู้ดูแลระบบ (Super Admin)</span>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800">
-              <div className="size-12 rounded-xl bg-cyan-500/20 text-cyan-700 dark:text-cyan-400 border border-cyan-500/30 flex items-center justify-center font-bold text-base">
+            <div className="flex items-center gap-4 p-4 rounded-xl bg-muted/40 border border-border">
+              <div className="size-12 rounded-xl bg-primary-subtle text-primary border border-primary-border flex items-center justify-center font-bold text-base">
                 {profile?.full_name?.substring(0, 2).toUpperCase() || "SA"}
               </div>
               <div className="min-w-0">
-                <div className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                <div className="text-sm font-bold text-foreground">
                   {profile?.full_name || "Super Admin"}
                 </div>
-                <div className="text-xs text-slate-700 dark:text-slate-300 font-mono font-medium">{profile?.email}</div>
+                <div className="text-xs text-muted-foreground font-mono font-medium">{profile?.email}</div>
                 <div className="flex items-center gap-2 mt-1">
                   <Badge variant="primary" size="sm" withDot>
                     Super Admin
@@ -184,17 +184,17 @@ export function ProfileSettings() {
             </div>
 
             <div className="space-y-2 font-mono text-xs">
-              <div className="flex justify-between py-1.5 border-b border-slate-200 dark:border-slate-800">
-                <span className="text-slate-600 dark:text-slate-400 font-medium">Account ID:</span>
-                <span className="text-slate-900 dark:text-slate-100 font-bold">#{profile?.id || "1"}</span>
+              <div className="flex justify-between py-1.5 border-b border-border-subtle">
+                <span className="text-muted-foreground font-medium">Account ID:</span>
+                <span className="text-foreground font-bold">#{profile?.id || "1"}</span>
               </div>
-              <div className="flex justify-between py-1.5 border-b border-slate-200 dark:border-slate-800">
-                <span className="text-slate-600 dark:text-slate-400 font-medium">สิทธิ์การเข้าถึง:</span>
-                <span className="text-emerald-700 dark:text-emerald-400 font-bold">Full System Governance (RBAC)</span>
+              <div className="flex justify-between py-1.5 border-b border-border-subtle">
+                <span className="text-muted-foreground font-medium">สิทธิ์การเข้าถึง:</span>
+                <span className="text-success font-bold">Full System Governance (RBAC)</span>
               </div>
               <div className="flex justify-between py-1.5">
-                <span className="text-slate-600 dark:text-slate-400 font-medium">เข้าสู่ระบบล่าสุด:</span>
-                <span className="text-slate-900 dark:text-slate-100 font-bold">{formatDate(profile?.last_login_at || new Date())}</span>
+                <span className="text-muted-foreground font-medium">เข้าสู่ระบบล่าสุด:</span>
+                <span className="text-foreground font-bold">{formatDate(profile?.last_login_at || new Date())}</span>
               </div>
             </div>
           </CardContent>
@@ -204,21 +204,21 @@ export function ProfileSettings() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <KeyRound className="size-4 text-cyan-600 dark:text-cyan-400" />
+              <KeyRound className="size-4 text-primary" />
               <span>เปลี่ยนรหัสผ่าน (Change Password)</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleUpdatePassword} className="space-y-4">
               {passwordError && (
-                <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-400 text-xs flex items-center gap-2">
+                <div className="p-3 rounded-lg bg-danger-subtle border border-danger-border text-danger text-xs flex items-center gap-2">
                   <AlertCircle className="size-4 shrink-0" />
                   <span>{passwordError}</span>
                 </div>
               )}
 
               <div className="space-y-1">
-                <label className="block text-xs font-medium text-slate-800 dark:text-slate-300">
+                <label className="block text-xs font-medium text-foreground">
                   รหัสผ่านปัจจุบัน
                 </label>
                 <input
@@ -227,12 +227,12 @@ export function ProfileSettings() {
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-cyan-500 font-mono"
+                  className="w-full px-3 py-1.5 rounded-lg bg-card border border-input text-xs text-foreground outline-none focus:border-ring font-mono"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="block text-xs font-medium text-slate-800 dark:text-slate-300">
+                <label className="block text-xs font-medium text-foreground">
                   รหัสผ่านใหม่ (ขั้นต่ำ 8 ตัวอักษร)
                 </label>
                 <input
@@ -241,12 +241,12 @@ export function ProfileSettings() {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-cyan-500 font-mono"
+                  className="w-full px-3 py-1.5 rounded-lg bg-card border border-input text-xs text-foreground outline-none focus:border-ring font-mono"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="block text-xs font-medium text-slate-800 dark:text-slate-300">
+                <label className="block text-xs font-medium text-foreground">
                   ยืนยันรหัสผ่านใหม่
                 </label>
                 <input
@@ -255,7 +255,7 @@ export function ProfileSettings() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-cyan-500 font-mono"
+                  className="w-full px-3 py-1.5 rounded-lg bg-card border border-input text-xs text-foreground outline-none focus:border-ring font-mono"
                 />
               </div>
 
@@ -278,7 +278,7 @@ export function ProfileSettings() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Clock className="size-4 text-cyan-600 dark:text-cyan-400" />
+            <Clock className="size-4 text-primary" />
             <span>เซสชันการเข้าใช้งานปัจจุบัน (Active Admin Sessions)</span>
           </CardTitle>
         </CardHeader>
@@ -296,7 +296,7 @@ export function ProfileSettings() {
             <TableBody>
               {sessions.length === 0 ? (
                 <TableRow isHoverable={false}>
-                  <TableCell colSpan={5} className="py-6 text-center text-xs text-slate-600 dark:text-slate-400">
+                  <TableCell colSpan={5} className="py-6 text-center text-xs text-muted-foreground">
                     ไม่พบข้อมูลเซสชันอื่นในระบบ
                   </TableCell>
                 </TableRow>
@@ -310,25 +310,25 @@ export function ProfileSettings() {
                     <TableRow key={sess.id}>
                       <TableCell>
                         <div className="flex items-center gap-2.5">
-                          <div className="size-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400">
+                          <div className="size-8 rounded-lg bg-muted flex items-center justify-center text-muted-foreground">
                             <Icon className="size-4" />
                           </div>
                           <div>
-                            <div className="text-xs font-semibold text-slate-900 dark:text-slate-100">
+                            <div className="text-xs font-semibold text-foreground">
                               {dev.label}
                             </div>
-                            <div className="text-[10px] text-slate-600 dark:text-slate-400 font-mono truncate max-w-xs font-medium">
+                            <div className="text-[10px] text-muted-foreground font-mono truncate max-w-xs font-medium">
                               {sess.user_agent || "Web Admin Client"}
                             </div>
                           </div>
                         </div>
                       </TableCell>
 
-                      <TableCell className="font-mono text-xs font-medium text-slate-800 dark:text-slate-200">
+                      <TableCell className="font-mono text-xs font-medium text-foreground">
                         {sess.ip_address || "127.0.0.1"}
                       </TableCell>
 
-                      <TableCell className="font-mono text-xs text-slate-700 dark:text-slate-400 font-medium">
+                      <TableCell className="font-mono text-xs text-muted-foreground font-medium">
                         {formatDate(sess.last_active_at || sess.created_at)}
                       </TableCell>
 
@@ -381,8 +381,8 @@ export function ProfileSettings() {
           </>
         }
       >
-        <p className="text-xs text-slate-700 dark:text-slate-300">
-          คุณต้องการเพิกถอน Session ID: <span className="font-mono text-cyan-700 dark:text-cyan-400 font-bold">#{revokeSessionId}</span> หรือไม่?
+        <p className="text-xs text-foreground">
+          คุณต้องการเพิกถอน Session ID: <span className="font-mono text-primary font-bold">#{revokeSessionId}</span> หรือไม่?
         </p>
       </Modal>
     </div>

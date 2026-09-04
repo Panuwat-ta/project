@@ -22,17 +22,17 @@ export const Button = forwardRef(
 
     const variants = {
       primary:
-        "bg-cyan-500 hover:bg-cyan-400 text-cyan-950 font-semibold shadow-sm focus-visible:ring-cyan-400 dark:focus-visible:ring-offset-slate-950 active:scale-[0.98]",
+        "bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-sm focus-visible:ring-ring active:scale-[0.98]",
       secondary:
-        "bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-slate-100 hover:bg-slate-300 dark:hover:bg-slate-700 focus-visible:ring-slate-400 active:scale-[0.98]",
+        "bg-secondary text-secondary-foreground hover:bg-secondary/80 focus-visible:ring-ring active:scale-[0.98]",
       outline:
-        "border border-slate-300 dark:border-slate-700 bg-transparent text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 focus-visible:ring-cyan-500",
+        "border border-border bg-transparent text-foreground hover:bg-muted focus-visible:ring-ring",
       ghost:
-        "bg-transparent text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 focus-visible:ring-slate-400",
+        "bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted focus-visible:ring-ring",
       danger:
-        "bg-rose-600 hover:bg-rose-500 text-white font-medium shadow-sm focus-visible:ring-rose-500 active:scale-[0.98]",
+        "bg-danger hover:bg-danger/90 text-danger-foreground font-medium shadow-sm focus-visible:ring-danger active:scale-[0.98]",
       dangerOutline:
-        "border border-rose-300 dark:border-rose-500/30 text-rose-700 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 focus-visible:ring-rose-500",
+        "border border-danger-border text-danger hover:bg-danger-subtle focus-visible:ring-danger",
     };
 
     const sizes = {

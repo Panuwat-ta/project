@@ -18,26 +18,26 @@ export function HeatmapComparator({
   const handleZoomReset = () => setZoom(1);
 
   return (
-    <div className={cn("flex flex-col rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden shadow-sm", className)}>
+    <div className={cn("flex flex-col rounded-xl border border-border bg-card text-card-foreground overflow-hidden shadow-sm", className)}>
       {/* Control Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40">
+      <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 border-b border-border bg-muted/50">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             {title}
           </span>
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
           {/* Mode Switcher */}
-          <div className="flex p-0.5 rounded-lg bg-slate-200/80 dark:bg-slate-800 border border-slate-300/60 dark:border-slate-700/60">
+          <div className="flex p-0.5 rounded-lg bg-muted border border-border">
             <button
               type="button"
               onClick={() => setMode("slider")}
               className={cn(
                 "px-2.5 py-1 text-xs font-medium rounded-md transition-all flex items-center gap-1.5",
                 mode === "slider"
-                  ? "bg-white dark:bg-slate-900 text-cyan-600 dark:text-cyan-400 shadow-sm"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                  ? "bg-card text-primary shadow-sm font-semibold"
+                  : "text-muted-foreground hover:text-foreground"
               )}
               title="Split Slider View"
             >
@@ -51,8 +51,8 @@ export function HeatmapComparator({
               className={cn(
                 "px-2.5 py-1 text-xs font-medium rounded-md transition-all flex items-center gap-1.5",
                 mode === "side-by-side"
-                  ? "bg-white dark:bg-slate-900 text-cyan-600 dark:text-cyan-400 shadow-sm"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                  ? "bg-card text-primary shadow-sm font-semibold"
+                  : "text-muted-foreground hover:text-foreground"
               )}
               title="Side by Side"
             >
@@ -66,8 +66,8 @@ export function HeatmapComparator({
               className={cn(
                 "px-2.5 py-1 text-xs font-medium rounded-md transition-all flex items-center gap-1.5",
                 mode === "overlay"
-                  ? "bg-white dark:bg-slate-900 text-cyan-600 dark:text-cyan-400 shadow-sm"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                  ? "bg-card text-primary shadow-sm font-semibold"
+                  : "text-muted-foreground hover:text-foreground"
               )}
               title="Adjustable Overlay"
             >
@@ -77,22 +77,22 @@ export function HeatmapComparator({
           </div>
 
           {/* Zoom Controls */}
-          <div className="flex items-center gap-1 pl-2 border-l border-slate-200 dark:border-slate-800">
+          <div className="flex items-center gap-1 pl-2 border-l border-border">
             <button
               type="button"
               onClick={handleZoomOut}
-              className="p-1 rounded text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+              className="p-1 rounded text-muted-foreground hover:bg-muted transition-colors"
               title="Zoom Out"
             >
               <ZoomOut className="size-3.5" />
             </button>
-            <span className="text-[11px] font-mono text-slate-500 min-w-10 text-center">
+            <span className="text-[11px] font-mono text-muted-foreground min-w-10 text-center">
               {Math.round(zoom * 100)}%
             </span>
             <button
               type="button"
               onClick={handleZoomIn}
-              className="p-1 rounded text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+              className="p-1 rounded text-muted-foreground hover:bg-muted transition-colors"
               title="Zoom In"
             >
               <ZoomIn className="size-3.5" />
@@ -101,7 +101,7 @@ export function HeatmapComparator({
               <button
                 type="button"
                 onClick={handleZoomReset}
-                className="p-1 rounded text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+                className="p-1 rounded text-muted-foreground hover:bg-muted transition-colors"
                 title="Reset Zoom"
               >
                 <RotateCcw className="size-3.5" />
@@ -112,10 +112,10 @@ export function HeatmapComparator({
       </div>
 
       {/* Main View Area */}
-      <div className="relative min-h-[380px] bg-slate-950 flex items-center justify-center overflow-hidden select-none p-4">
+      <div className="relative min-h-[380px] bg-black/90 flex items-center justify-center overflow-hidden select-none p-4">
         {mode === "slider" && (
           <div
-            className="relative overflow-hidden rounded-lg border border-slate-800 max-h-[500px] flex items-center justify-center cursor-ew-resize"
+            className="relative overflow-hidden rounded-lg border border-border max-h-[500px] flex items-center justify-center cursor-ew-resize"
             style={{ transform: `scale(${zoom})`, transformOrigin: "center center", transition: "transform 0.15s ease" }}
             onMouseMove={(e) => {
               const rect = e.currentTarget.getBoundingClientRect();
@@ -144,19 +144,19 @@ export function HeatmapComparator({
 
             {/* Divider Line */}
             <div
-              className="absolute inset-y-0 w-0.5 bg-cyan-400 shadow-[0_0_10px_rgba(0,229,255,0.7)] pointer-events-none"
+              className="absolute inset-y-0 w-0.5 bg-primary shadow-[0_0_10px_rgba(0,229,255,0.7)] pointer-events-none"
               style={{ left: `${sliderPosition}%` }}
             >
-              <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 size-6 rounded-full bg-cyan-400 text-cyan-950 flex items-center justify-center shadow-lg font-bold text-[9px]">
+              <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 size-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg font-bold text-[9px]">
                 ↔
               </div>
             </div>
 
             {/* Labels */}
-            <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-slate-950/80 text-[10px] font-mono text-white pointer-events-none">
+            <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/80 text-[10px] font-mono text-white pointer-events-none">
               Original
             </div>
-            <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-slate-950/80 text-[10px] font-mono text-cyan-400 pointer-events-none">
+            <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-black/80 text-[10px] font-mono text-primary pointer-events-none">
               SegFormer Heatmap
             </div>
           </div>
@@ -168,8 +168,8 @@ export function HeatmapComparator({
             style={{ transform: `scale(${zoom})`, transformOrigin: "center center", transition: "transform 0.15s ease" }}
           >
             <div className="flex flex-col items-center gap-2">
-              <span className="text-xs font-mono text-slate-400">ภาพต้นฉบับ (Original)</span>
-              <div className="rounded-lg border border-slate-800 overflow-hidden bg-slate-900/50 p-1">
+              <span className="text-xs font-mono text-muted-foreground">ภาพต้นฉบับ (Original)</span>
+              <div className="rounded-lg border border-border overflow-hidden bg-card/50 p-1">
                 <img
                   src={originalUrl}
                   alt="Original"
@@ -179,8 +179,8 @@ export function HeatmapComparator({
             </div>
 
             <div className="flex flex-col items-center gap-2">
-              <span className="text-xs font-mono text-cyan-400">Heatmap วิเคราะห์จุดผิดปกติ</span>
-              <div className="rounded-lg border border-cyan-900/40 overflow-hidden bg-slate-900/50 p-1">
+              <span className="text-xs font-mono text-primary">Heatmap วิเคราะห์จุดผิดปกติ</span>
+              <div className="rounded-lg border border-primary-border overflow-hidden bg-card/50 p-1">
                 <img
                   src={heatmapUrl || originalUrl}
                   alt="Heatmap"
@@ -193,7 +193,7 @@ export function HeatmapComparator({
 
         {mode === "overlay" && (
           <div
-            className="relative rounded-lg border border-slate-800 overflow-hidden max-h-[500px]"
+            className="relative rounded-lg border border-border overflow-hidden max-h-[500px]"
             style={{ transform: `scale(${zoom})`, transformOrigin: "center center", transition: "transform 0.15s ease" }}
           >
             {/* Base Original Image */}
@@ -215,39 +215,39 @@ export function HeatmapComparator({
       </div>
 
       {/* Sub-toolbar: Opacity Slider (if in overlay mode) & Legend */}
-      <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 bg-slate-50 dark:bg-slate-950/70 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-400">
+      <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 bg-muted/40 border-t border-border text-xs text-muted-foreground">
         {mode === "overlay" ? (
           <div className="flex items-center gap-3 w-full sm:w-72">
-            <span className="text-xs font-semibold text-slate-800 dark:text-slate-300">ความโปร่งแสง Heatmap:</span>
+            <span className="text-xs font-semibold text-foreground">ความโปร่งแสง Heatmap:</span>
             <input
               type="range"
               min="0"
               max="100"
               value={overlayOpacity}
               onChange={(e) => setOverlayOpacity(Number(e.target.value))}
-              className="w-full accent-cyan-500 cursor-pointer"
+              className="w-full accent-primary cursor-pointer"
             />
-            <span className="font-mono text-xs w-9 text-right font-bold text-slate-900 dark:text-slate-100">{overlayOpacity}%</span>
+            <span className="font-mono text-xs w-9 text-right font-bold text-foreground">{overlayOpacity}%</span>
           </div>
         ) : (
-          <div className="text-xs text-slate-600 dark:text-slate-400 font-medium">
+          <div className="text-xs text-muted-foreground font-medium">
             เลื่อนเมาส์ผ่านภาพเพื่อเปรียบเทียบจุดตรวจจับพิกเซลผิดปกติ
           </div>
         )}
 
         {/* Heatmap Legend */}
         <div className="flex items-center gap-4 text-[11px]">
-          <span className="font-semibold text-slate-700 dark:text-slate-400">ระดับความเสี่ยงพิกเซล:</span>
-          <div className="flex items-center gap-1.5 text-slate-800 dark:text-slate-200 font-medium">
-            <span className="size-2 rounded-full bg-emerald-500" />
+          <span className="font-semibold text-muted-foreground">ระดับความเสี่ยงพิกเซล:</span>
+          <div className="flex items-center gap-1.5 text-foreground font-medium">
+            <span className="size-2 rounded-full bg-risk-low" />
             <span>ธรรมชาติ (0-39)</span>
           </div>
-          <div className="flex items-center gap-1.5 text-slate-800 dark:text-slate-200 font-medium">
-            <span className="size-2 rounded-full bg-amber-500" />
+          <div className="flex items-center gap-1.5 text-foreground font-medium">
+            <span className="size-2 rounded-full bg-risk-medium" />
             <span>สงสัยปานกลาง (40-69)</span>
           </div>
-          <div className="flex items-center gap-1.5 text-slate-800 dark:text-slate-200 font-medium">
-            <span className="size-2 rounded-full bg-rose-500" />
+          <div className="flex items-center gap-1.5 text-foreground font-medium">
+            <span className="size-2 rounded-full bg-risk-high" />
             <span>ผิดปกติสูง (70-100)</span>
           </div>
         </div>

@@ -71,21 +71,21 @@ export function AppSidebar({ isOpen, setIsOpen }) {
   return (
     <aside
       className={cn(
-        "fixed inset-y-0 left-0 w-64 shrink-0 bg-slate-900 border-r border-slate-800 flex flex-col h-full z-40 transition-transform duration-200 ease-in-out md:static md:translate-x-0 select-none",
+        "fixed inset-y-0 left-0 w-64 shrink-0 bg-sidebar border-r border-sidebar-border text-sidebar-foreground flex flex-col h-full z-40 transition-transform duration-200 ease-in-out md:static md:translate-x-0 select-none",
         isOpen ? "translate-x-0" : "-translate-x-full"
       )}
     >
       {/* Brand Header */}
-      <div className="h-14 flex items-center justify-between px-4 border-b border-slate-800 bg-slate-950/50">
+      <div className="h-14 flex items-center justify-between px-4 border-b border-sidebar-border bg-sidebar">
         <Link to="/admin/dashboard" onClick={handleClose} className="flex items-center gap-2.5">
-          <div className="size-7 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center font-bold text-xs shadow-sm">
-            <Shield className="size-4 text-cyan-400" />
+          <div className="size-7 rounded-lg bg-primary/10 border border-primary/30 text-primary flex items-center justify-center font-bold text-xs shadow-sm">
+            <Shield className="size-4 text-primary" />
           </div>
           <div className="flex flex-col">
-            <span className="font-bold text-sm text-slate-100 tracking-tight leading-none">
+            <span className="font-bold text-sm text-sidebar-foreground tracking-tight leading-none">
               ScamGuard
             </span>
-            <span className="text-[10px] font-mono text-cyan-400 font-semibold tracking-wider uppercase mt-0.5">
+            <span className="text-[10px] font-mono text-primary font-semibold tracking-wider uppercase mt-0.5">
               Admin Console
             </span>
           </div>
@@ -94,7 +94,7 @@ export function AppSidebar({ isOpen, setIsOpen }) {
         <button
           type="button"
           onClick={handleClose}
-          className="p-1.5 text-slate-400 hover:text-slate-100 rounded-md hover:bg-slate-800 transition-colors md:hidden"
+          className="p-1.5 text-sidebar-muted hover:text-sidebar-foreground rounded-md hover:bg-sidebar-accent transition-colors md:hidden"
           aria-label="Close sidebar"
         >
           <X className="size-4" />
@@ -105,7 +105,7 @@ export function AppSidebar({ isOpen, setIsOpen }) {
       <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
         {NAV_GROUPS.map((group) => (
           <div key={group.label} className="space-y-1">
-            <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-3 pb-1">
+            <div className="text-[11px] font-semibold text-sidebar-muted uppercase tracking-wider px-3 pb-1">
               {group.label}
             </div>
 
@@ -119,17 +119,17 @@ export function AppSidebar({ isOpen, setIsOpen }) {
                   to={item.path}
                   onClick={handleClose}
                   className={cn(
-                    "flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all group outline-none focus-visible:ring-2 focus-visible:ring-cyan-500",
+                    "flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all group outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     isActive
-                      ? "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-semibold"
-                      : "text-slate-400 hover:bg-slate-800/80 hover:text-slate-200 border border-transparent"
+                      ? "bg-primary/10 text-primary border border-primary/20 font-semibold"
+                      : "text-sidebar-muted hover:bg-sidebar-accent hover:text-sidebar-foreground border border-transparent"
                   )}
                 >
                   <div className="flex items-center gap-2.5">
                     <Icon
                       className={cn(
                         "size-4 shrink-0 transition-colors",
-                        isActive ? "text-cyan-400" : "text-slate-400 group-hover:text-slate-200"
+                        isActive ? "text-primary" : "text-sidebar-muted group-hover:text-sidebar-foreground"
                       )}
                     />
                     <span>{item.name}</span>
@@ -140,8 +140,8 @@ export function AppSidebar({ isOpen, setIsOpen }) {
                       className={cn(
                         "px-1.5 py-0.5 rounded-full text-[10px] font-mono font-bold transition-colors",
                         isActive
-                          ? "bg-rose-500 text-white"
-                          : "bg-rose-500/20 text-rose-400 border border-rose-500/30"
+                          ? "bg-danger text-danger-foreground"
+                          : "bg-danger/20 text-danger border border-danger/30"
                       )}
                     >
                       {pendingCount}
@@ -155,22 +155,22 @@ export function AppSidebar({ isOpen, setIsOpen }) {
       </nav>
 
       {/* Admin User Footer Card */}
-      <div className="p-3 border-t border-slate-800 bg-slate-950/40">
-        <div className="flex items-center justify-between p-2 rounded-lg bg-slate-900 border border-slate-800/80">
+      <div className="p-3 border-t border-sidebar-border bg-sidebar">
+        <div className="flex items-center justify-between p-2 rounded-lg bg-sidebar-accent border border-sidebar-border">
           <Link
             to="/admin/profile"
             onClick={handleClose}
             className="flex items-center gap-2.5 min-w-0 flex-1 hover:opacity-85 transition-opacity"
           >
-            <div className="size-7 rounded-md bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 flex items-center justify-center font-bold text-xs shrink-0">
+            <div className="size-7 rounded-md bg-primary/20 text-primary border border-primary/40 flex items-center justify-center font-bold text-xs shrink-0">
               {user.full_name?.substring(0, 2).toUpperCase() || "SA"}
             </div>
             <div className="min-w-0 flex-1">
-              <div className="text-xs font-medium text-slate-200 truncate">
+              <div className="text-xs font-medium text-sidebar-foreground truncate">
                 {user.full_name || "Super Admin"}
               </div>
-              <div className="text-[10px] text-cyan-400 font-mono flex items-center gap-1">
-                <Radio className="size-2.5 text-emerald-400 animate-pulse" />
+              <div className="text-[10px] text-primary font-mono flex items-center gap-1">
+                <Radio className="size-2.5 text-success animate-pulse" />
                 <span>Super Admin</span>
               </div>
             </div>
@@ -180,7 +180,7 @@ export function AppSidebar({ isOpen, setIsOpen }) {
             type="button"
             onClick={logoutAdmin}
             title="ออกจากระบบ (Log out)"
-            className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-md transition-colors"
+            className="p-1.5 text-sidebar-muted hover:text-danger hover:bg-sidebar rounded-md transition-colors"
           >
             <LogOut className="size-4" />
           </button>

@@ -39,17 +39,17 @@ export function ToastProvider({ children }) {
       <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none p-2">
         {toasts.map((t) => {
           const icons = {
-            success: <CheckCircle2 className="size-4 text-emerald-400 shrink-0 mt-0.5" />,
-            error: <AlertCircle className="size-4 text-rose-400 shrink-0 mt-0.5" />,
-            warning: <AlertTriangle className="size-4 text-amber-400 shrink-0 mt-0.5" />,
-            info: <Info className="size-4 text-cyan-400 shrink-0 mt-0.5" />,
+            success: <CheckCircle2 className="size-4 text-success shrink-0 mt-0.5" />,
+            error: <AlertCircle className="size-4 text-danger shrink-0 mt-0.5" />,
+            warning: <AlertTriangle className="size-4 text-warning shrink-0 mt-0.5" />,
+            info: <Info className="size-4 text-info shrink-0 mt-0.5" />,
           };
 
           const borders = {
-            success: "border-emerald-500/30 bg-emerald-950/90 dark:bg-emerald-950/95 text-emerald-200",
-            error: "border-rose-500/30 bg-rose-950/90 dark:bg-rose-950/95 text-rose-200",
-            warning: "border-amber-500/30 bg-amber-950/90 dark:bg-amber-950/95 text-amber-200",
-            info: "border-cyan-500/30 bg-cyan-950/90 dark:bg-cyan-950/95 text-cyan-200",
+            success: "border-success-border/50 bg-card text-foreground",
+            error: "border-danger-border/50 bg-card text-foreground",
+            warning: "border-warning-border/50 bg-card text-foreground",
+            info: "border-info-border/50 bg-card text-foreground",
           };
 
           return (
@@ -57,7 +57,7 @@ export function ToastProvider({ children }) {
               key={t.id}
               className={cn(
                 "pointer-events-auto flex items-start gap-3 p-3.5 rounded-lg border shadow-xl backdrop-blur-md transition-all animate-in slide-in-from-bottom-3 duration-200",
-                borders[t.type] || "border-slate-700 bg-slate-900 text-slate-200"
+                borders[t.type] || "border-border bg-card text-foreground"
               )}
             >
               {icons[t.type]}
