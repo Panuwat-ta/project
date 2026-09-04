@@ -19,7 +19,7 @@ AI Inference Service คือ **หน่วย Deploy แยก** (Container) 
 - **Segmentation Mask** ระบุพิกเซลที่ถูกดัดแปลง
 - **Heatmap** สำหรับ XAI overlay
 - **คะแนนตรวจจับภาพ AI-Generated**
-- **Visual Risk Score (S_visual)** — น้ำหนัก 45% ของ Risk Score รวม
+- **Visual Risk Score (S_visual)** — สเกลอิสระ 0–100% (เป็นปัจจัยหลักใน Worst-Case Trigger และหาก $\ge 80$ บังคับเป็น High ทันที)
 
 ---
 

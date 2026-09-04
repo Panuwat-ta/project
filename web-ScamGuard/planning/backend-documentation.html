@@ -96,7 +96,7 @@
     │   └── utils/                  # Utility Functions
     │       ├── __init__.py
     │       ├── hashing.py          # SHA-256 Image Hash
-    │       └── risk_calculator.py  # Weighted Risk Score Calculator
+    │       └── risk_calculator.py  # Hybrid Risk Score Calculator (Worst-Case Trigger)
     │
     ├── migrations/                 # Alembic Database Migrations
     │   ├── env.py
@@ -424,19 +424,30 @@
     <p>อ้างอิงจาก <code>design/architecture.md</code> Section 5.1:</p>
     <pre><code class="language-python">def calculate_risk_score(text_score: int, visual_score: int, source_score: int) -&gt; dict:
         &quot;&quot;&quot;
-        สูตร: Risk Score = (S_text * 0.25) + (S_visual * 0.45) + (S_source * 0.30)
+        Recommended Hybrid Approach (Worst-Case Trigger with Multi-Factor Breakdown):
+        1. ประเมิน 3 มิติแยกอิสระ 0-100%
+        2. ยึดมิติที่เสี่ยงสูงสุดเป็นฐาน S_base = max(visual, text, source)
+        3. Multi-factor Compounding: +5 คะแนนต่อมิติรองที่มีคะแนน &gt;= 40 (สูงสุดไม่เกิน 100)
+        4. Visual &gt;= 80 บังคับเป็น High
     
         Risk Grades:
-          0-19  = safe   (สีเขียว)
-      20-39 = low    (สีเขียว)
-          40-69 = medium (สีเหลือง)
-          70-100 = high  (สีแดง)
+          0-39   = low
+          40-69  = medium
+          70-100 = high
         &quot;&quot;&quot;
-        total = round((text_score * 0.25) + (visual_score * 0.45) + (source_score * 0.30))
-        total = max(0, min(100, total))
+        text_score = max(0, min(100, int(text_score)))
+        visual_score = max(0, min(100, int(visual_score)))
+        source_score = max(0, min(100, int(source_score)))
     
-        if total &gt;= 70:
+        base_score = max(text_score, visual_score, source_score)
+        scores = [text_score, visual_score, source_score]
+        secondary_high = sum(1 for s in scores if s &gt;= 40) - (1 if base_score &gt;= 40 else 0)
+        compounding_bonus = secondary_high * 5
+        total = min(100, base_score + compounding_bonus)
+    
+        if total &gt;= 70 or visual_score &gt;= 80:
             grade = &quot;high&quot;
+            total = max(70, total)
         elif total &gt;= 40:
             grade = &quot;medium&quot;
         else:
@@ -445,6 +456,13 @@
         return {
             &quot;total_risk_score&quot;: total,
             &quot;grade&quot;: grade,
+            &quot;primary_factor&quot;: &quot;visual&quot; if visual_score == base_score else (&quot;textual&quot; if text_score == base_score else &quot;source&quot;),
+            &quot;is_multi_risk&quot;: secondary_high &gt; 0,
+            &quot;breakdown&quot;: {
+                &quot;visual&quot;: {&quot;score&quot;: visual_score, &quot;level&quot;: &quot;high&quot; if visual_score &gt;= 70 else (&quot;medium&quot; if visual_score &gt;= 40 else &quot;low&quot;)},
+                &quot;textual&quot;: {&quot;score&quot;: text_score, &quot;level&quot;: &quot;high&quot; if text_score &gt;= 70 else (&quot;medium&quot; if text_score &gt;= 40 else &quot;low&quot;)},
+                &quot;source&quot;: {&quot;score&quot;: source_score, &quot;level&quot;: &quot;high&quot; if source_score &gt;= 70 else (&quot;medium&quot; if source_score &gt;= 40 else &quot;low&quot;)},
+            },
         }
     </code></pre>
     <h3>5.3 Scan Service - <code>app/services/scan_service.py</code></h3>
@@ -460,7 +478,7 @@
         6. Task 3: Visual Forgery Detection (ส่งไป AI Inference)
         7. Task 4: Reverse Image Search (optional)
         8. Task 5: AI-Generated Image Detection
-        9. รวม Weighted Risk Score
+        9. รวม Overall Risk Score (Hybrid Worst-Case Trigger + Multi-factor Compounding)
         10. บันทึกลง PostgreSQL + เขียน Redis Cache
         11. return ผลลัพธ์ JSON
         &quot;&quot;&quot;

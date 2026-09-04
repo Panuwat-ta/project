@@ -390,7 +390,7 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 | OBJ-01 to OBJ-04 Consistency | ✅ Pass | Objectives consistent |
 | SC01 to SC04 Consistency | ✅ Pass | Scope Areas consistent |
 | Technology Stack Consistency | ✅ Pass | Flutter (not React Native) everywhere |
-| Risk Score Formula Consistency | ✅ Pass | `(S_text×0.25) + (S_visual×0.45) + (S_source×0.30)` |
+| Risk Score Formula Consistency | ✅ Pass | `Hybrid Worst-Case: max(S_visual, S_text, S_source) + Compounding` |
 | Risk Grade Mapping Consistency | ✅ Pass | Safe: 0-19, Low: 20-39, Medium: 40-69, High: 70-100 (visual ≥80 → High) |
 
 ---

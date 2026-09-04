@@ -17,19 +17,25 @@
     <h1>การตั้งค่าพารามิเตอร์ อัลกอริทึมและสมการคณิตศาสตร์ที่ใช้ (Configuration, Algorithms, and Mathematical Equations)</h1>
         <p class="lede">เอกสารฉบับนี้รวบรวมสมการคณิตศาสตร์ อัลกอริทึม และค่าการตั้งค่า (Configurations) หลักที่ใช้ในกระบวนการประมวลผล ประเมินผลลัพธ์ และการฝึกสอนโมเดล AI ภายในระบบ Scam Image Detection พร้อมคำอธิบายเหตุผลและหลักการที่อยู่เบื้องหลังการออกแบบแต่ละส่วน</p>
     <div class="divider"></div>
-    <h2>1. การคำนวณคะแนนความเสี่ยงรวม (Weighted Risk Score)</h2>
-    <p>ระบบประมวลผลคะแนนความเสี่ยงของรูปภาพโดยรวมผลลัพธ์จากการวิเคราะห์หลายชั้นเข้าด้วยกัน โดยใช้สมการแบบถ่วงน้ำหนัก (Weighted Average) จาก 3 ปัจจัยหลัก ตามสูตรเดียวกับ <code>server/app/utils/risk_calculator.py</code>:</p>
+    <h2>1. การคำนวณคะแนนความเสี่ยงรวม (Overall Risk Score - Recommended Hybrid Approach)</h2>
+    <p>ระบบประมวลผลคะแนนความเสี่ยงของรูปภาพโดยใช้หลักการ <strong>Maximum Impact (Worst-Case Trigger) ร่วมกับ Multi-Factor Compounding Penalty</strong> ซึ่งเป็นมาตรฐานวิศวกรรมความมั่นคงปลอดภัย (Fraud Detection &amp; Forensics) ตามโค้ดใน <code>server/app/utils/risk_calculator.py</code>:</p>
     <p>
-    <script type="math/tex; mode=display"> S_{total} = (S_{textual} \times 0.25) + (S_{visual} \times 0.45) + (S_{source} \times 0.30) </script>
+    <script type="math/tex; mode=display"> S_{base} = \max(S_{visual}, S_{textual}, S_{source}) </script>
+    </p>
+    <p>
+    <script type="math/tex; mode=display"> S_{total} = \min\left(100, S_{base} + \sum_{i \in \text{secondary}} [S_i \ge 40] \times 5\right) </script>
     </p>
     <p>โดยที่:
-    * <strong>$S_{total}$</strong> คือ คะแนนความเสี่ยงรวม (Weighted Risk Score) มีค่าตั้งแต่ 0 ถึง 100
-    * <strong>$S_{visual}$</strong> คือ คะแนนความผิดปกติทางภาพ (Visual Anomaly Score) จากโมเดล SegFormer — น้ำหนัก <strong>0.45</strong> หรือ 45%
-    * <strong>$S_{textual}$</strong> คือ คะแนนความเสี่ยงด้านข้อความ (Textual Analysis Score) จากโมเดล OCR + NLP — น้ำหนัก <strong>0.25</strong> หรือ 25%
-    * <strong>$S_{source}$</strong> คือ คะแนนความเสี่ยงจากแหล่งที่มาของภาพ (Source Reliability Score) จาก Reverse Image Search — น้ำหนัก <strong>0.30</strong> หรือ 30%</p>
+    * <strong>$S_{total}$</strong> คือ คะแนนความเสี่ยงรวม (Overall Risk Score) มีค่าตั้งแต่ 0 ถึง 100
+    * <strong>$S_{base}$</strong> คือ ค่าคะแนนสูงสุดในบรรดามิติที่ตรวจพบ ($\max$) เพื่อเป็นฐานความเสี่ยงหลัก
+    * <strong>$S_{visual}$</strong> คือ คะแนนความผิดปกติทางภาพ (Visual Anomaly Score 0–100%) จากโมเดล SegFormer + Heatmap
+    * <strong>$S_{textual}$</strong> คือ คะแนนความเสี่ยงด้านข้อความ (Textual Analysis Score 0–100%) จาก Surya-OCR + Pattern Matching
+    * <strong>$S_{source}$</strong> คือ คะแนนความเสี่ยงจากแหล่งที่มาของภาพ (Source Reliability Score 0–100%) จาก Reverse Image Search
+    * <strong>Compounding Penalty:</strong> หากมิติรองใดมีคะแนน $\ge 40$ (ระดับ Medium ขึ้นไป) จะบวกเพิ่ม $+5$ ต่อมิติ (สูงสุดไม่เกิน 100)</p>
     <p><strong>คำอธิบายและเหตุผลที่ใช้:</strong>
-    * <strong>เหตุผลการถ่วงน้ำหนัก:</strong> ระบบให้น้ำหนักทางด้านภาพ ($S_{visual}$) สูงสุดที่ 45% เนื่องจากเป็นสัญญาณนิติวิทยาศาสตร์ที่มีความแม่นยำที่สุด เป็นหลักฐานที่เกิดจากการประมวลผลระดับพิกเซล; แหล่งที่มา ($S_{source}$) ได้น้ำหนัก 30% เพื่อสะท้อนบริบทการถูกเผยแพร่บนอินเทอร์เน็ต; ขณะที่ข้อความ ($S_{textual}$) อาจมีความคลุมเครือตามบริบทหรือภาพบางชนิดอาจไม่มีข้อความเลย จึงได้น้ำหนัก 25%
-    * <strong>ประโยชน์:</strong> ผู้ใช้งานจะได้รับตัวเลขเดียวเพื่อใช้ในการตัดสินใจได้อย่างรวดเร็ว โดยคำนึงถึงความเสี่ยงทั้งจากร่องรอยการตัดต่อภาพ และจากข้อความหลอกลวงที่ปรากฏอยู่ในภาพไปพร้อมๆ กัน</p>
+    * <strong>แก้ปัญหา Dilution Problem:</strong> ในกรณีที่เป็นภาพตัดต่อหรือภาพสังเคราะห์ชัดเจนแต่ไม่มีข้อความ ($S_{visual} = 85, S_{text} = 0$) หรือกรณี Romance Scam การใช้ค่าเฉลี่ยถ่วงน้ำหนักจะทำให้คะแนนรวมถูกฉุดลงจนหลุดเกณฑ์อันตราย แต่ Worst-Case Trigger จะการันตีว่าคะแนนรวมไม่ต่ำกว่ามิติที่อันตรายที่สุด
+    * <strong>สะท้อนความอันตรายแบบทวีคูณ (Multi-factor Risk):</strong> หากภาพใดพบทั้งการตัดต่อภาพและมีข้อความหลอกลวงพร้อมกัน คะแนนรวมจะได้รับการเพิ่มพิเศษ (Compounding) เพื่อเตือนภัยผู้ใช้อย่างเด็ดขาด
+    * <strong>การนำเสนอผลแบบคู่ขนาน (UI Breakdown):</strong> นอกเหนือจาก Overall Score แล้ว บน UI จะแจกแจง Progress Bar และคำอธิบายแยกแต่ละมิติ 0–100% เสมอ</p>
     <div class="divider"></div>
     <h2>2. เกณฑ์การตัดสินระดับความเสี่ยง (Risk Grading Thresholds)</h2>
     <p>เมื่อคำนวณคะแนน $S_{total}$ ออกมาแล้ว ระบบจะนำไปจัดกลุ่มระดับความเสี่ยงตามเงื่อนไข (Threshold Configuration) ดังนี้:</p>
@@ -37,16 +43,14 @@
     <script type="math/tex; mode=display">
     \text{Risk Grade} = 
     \begin{cases} 
-    \text{Safe (ปลอดภัย)} & \text{if } S_{total} < 20 \\
-    \text{Low (เสี่ยงต่ำ)} & \text{if } 20 \le S_{total} \le 39 \\
+    \text{Low (เสี่ยงต่ำ)} & \text{if } 0 \le S_{total} \le 39 \\
     \text{Medium (น่าสงสัย)} & \text{if } 40 \le S_{total} \le 69 \\
     \text{High (อันตราย)} & \text{if } S_{total} \ge 70 
     \end{cases}
     </script>
     </p>
     <p><strong>คำอธิบายและเหตุผลที่ใช้:</strong>
-    * <strong>ช่วงปลอดภัย (0 -- 19):</strong> คะแนนตกอยู่ในช่วงที่ทุกชั้นการวิเคราะห์ (ภาพ ข้อความ และแหล่งที่มา) ไม่มีลักษณะเข้าข่ายการหลอกลวง ถือว่าเชื่อถือได้ในระดับสูง
-    * <strong>ช่วงเสี่ยงต่ำ (20 -- 39):</strong> มีสัญญาณอ่อนบางจุดที่ตรวจพบ แต่ยังไม่ถึงระดับที่ควรกังวล ผู้ใช้งานควรทราบแต่ไม่จำเป็นต้องดำเนินการใดเป็นพิเศษ
+    * <strong>ช่วงเสี่ยงต่ำ (0 -- 39):</strong> มีสัญญาณอ่อนบางจุดที่ตรวจพบ แต่ยังไม่ถึงระดับที่ควรกังวล ผู้ใช้งานควรทราบแต่ไม่จำเป็นต้องดำเนินการใดเป็นพิเศษ
     * <strong>ช่วงน่าสงสัย (40 -- 69):</strong> มีบางชั้นตรวจพบความผิดปกติ แต่ไม่ชัดเจนทุกชั้น หรือพบหลักฐานแบบอ่อนๆ ผู้ใช้งานควรพิจารณาประกอบกับวิจารณญาณส่วนตัว
     * <strong>ช่วงอันตราย (70 -- 100):</strong> ผลวิเคราะห์ส่วนใหญ่ชี้ไปในทิศทางเดียวกันว่าภาพถูกปรับแต่งหรือมีข้อความหลอกลวงที่ชัดเจน ให้ถือว่าภาพนี้มีความเสี่ยงสูงที่จะเป็นสแกม (กรณี $S_{visual} \ge 80$ ระบบจะขึ้นเป็น High ทันที)</p>
     <div class="divider"></div>

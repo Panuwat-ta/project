@@ -236,7 +236,7 @@ flowchart TB
 3. **Metadata Extraction** — สกัดข้อมูล EXIF/GPS จากรูปภาพ
 4. **OCR & NLP** — สกัดข้อความด้วย Surya-OCR (GGUF/Qwen2.5-VL) และตรวจจับ Scam Keywords
 5. **Reverse Image Search** — เชื่อมต่อ Google Vision API
-6. **Risk Score Calculation** — คำนวณคะแนนรวมตามสูตร: `Risk Score = (S_text × 0.25) + (S_visual × 0.45) + (S_source × 0.30)`
+6. **Risk Score Calculation** — คำนวณคะแนนรวมด้วยแนวทาง Hybrid Worst-Case (Max-Impact & Multi-Factor Compounding) ร่วมกับการแจกแจงความเสี่ยง 3 มิติอิสระเต็ม 100%
 
 **API Endpoints (Examples):**
 - `POST /auth/register` — สมัครสมาชิก
@@ -485,11 +485,12 @@ S_source = (source_count_factor × 0.5) + (context_risk_factor × 0.5)
 
 ---
 
-### 5.5 Weighted Risk Score Calculation
+### 5.5 Hybrid Worst-Case Risk Score Calculation
 
 **Final Formula:**
 ```
-Risk Score = (S_text × 0.25) + (S_visual × 0.45) + (S_source × 0.30)
+S_base = max(S_visual, S_textual, S_source)
+Risk Score = min(100, S_base + compounding_bonus)
 ```
 
 **Risk Grade Mapping:**
@@ -497,12 +498,12 @@ Risk Score = (S_text × 0.25) + (S_visual × 0.45) + (S_source × 0.30)
 - **Low Risk (สีเขียว):** 20-39
 - **Medium Risk (สีเหลือง):** 40-69
 - **High Risk (สีแดง):** 70-100
-- **Special Rule:** หาก `visual_score ≥ 80` → High ทันทีแม้ `Risk Score < 70`
+- **Special Rule:** หาก `visual_score ≥ 80` → High ทันที
 
 **Rationale:**
-- Visual Analysis มีน้ำหนักสูงสุด (45%) เพราะเป็นการตรวจสอบระดับพิกเซล
-- Source Analysis มีน้ำหนัก 30% เพราะช่วยยืนยันบริบท
-- Textual Analysis มีน้ำหนัก 25% เพราะเป็นการตรวจสอบเบื้องต้น
+- ป้องกันปัญหา Score Dilution เมื่อรูปภาพไม่มีองค์ประกอบข้อความ (เช่น ภาพ Romance Scam)
+- ยึดตามมิติที่พบความเสี่ยงรุนแรงที่สุดเป็นฐานหลัก (Worst-case Dominance)
+- เพิ่มค่าความเสี่ยงทวีคูณเมื่อพบภัยคุกคามหลายมิติพร้อมกัน (Multi-factor Compounding)
 
 **Evidence:**
 - File: project/design/architecture.md
@@ -732,7 +733,7 @@ sequenceDiagram
     %% Risk Calculation
     Service->>RiskCalc: calculate_risk_score(text_score, visual_score, source_score)
     activate RiskCalc
-    Note over RiskCalc: ถ่วงน้ำหนัก<br>Visual (60%) + Text (40%)
+    Note over RiskCalc: Hybrid Worst-Case<br>Max-Impact + Multi-factor
     RiskCalc-->>Service: return {total_risk_score, grade}
     deactivate RiskCalc
     
@@ -1117,7 +1118,7 @@ sequenceDiagram
 - Storage: Redis Cache, Cloud Storage, PostgreSQL
 
 **Analysis Pipeline:**
-- Multi-layer Analysis: Textual (25%), Visual (45%), Source (30%)
+- Multi-layer Analysis: Independent 3-Factor (Visual 0-100%, Text 0-100%, Source 0-100%) with Hybrid Worst-Case Trigger
 - Weighted Risk Score Calculation
 - Explainable AI (Grad-CAM Heatmap)
 

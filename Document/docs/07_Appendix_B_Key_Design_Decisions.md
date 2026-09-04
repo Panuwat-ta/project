@@ -114,10 +114,9 @@
 
 | Decision Area | Specification | Rationale | Evidence Source |
 |---------------|---------------|-----------|-----------------|
-| **Weighted Formula** | `(S_text × 0.25) + (S_visual × 0.45) + (S_source × 0.30)` | Visual Analysis มีความสำคัญสูงสุด (45%) เพราะตรงกับ Objective | Project Decision |
-| **Text Weight** | 0.25 (25%) | ข้อความเป็นสัญญาณเสริม แต่ไม่เพียงพอที่จะสรุปคนเดียว | Project Decision |
-| **Visual Weight** | 0.45 (45%) | การตัดต่อและ AI-Gen เป็นหัวใจของระบบ | Project Decision |
-| **Source Weight** | 0.30 (30%) | แหล่งที่มาช่วยระบุความน่าเชื่อถือ | Project Decision |
+| **Scoring Formula** | `Hybrid Worst-Case: max(S_visual, S_text, S_source) + Compounding` | ป้องกัน Score Dilution และสะท้อนความอันตรายตามมิติที่รุนแรงที่สุด | Project Decision |
+| **Independent Layers** | Visual, Textual, Source (0–100% แต่ละด้าน) | แจกแจงผลลัพธ์แยกมิติชัดเจนตามหลัก Explainable AI (XAI) | Project Decision |
+| **Multi-Factor Compounding** | +5 ต่อมิติรองที่ความเสี่ยง $\ge 40$ | สะท้อนความอันตรายทวีคูณเมื่อพบภัยคุกคามหลายด้านพร้อมกัน | Project Decision |
 
 ---
 

@@ -15,92 +15,108 @@
 <body>
   <main class="document">
     <h1>การคำนวณคะแนนความเสี่ยง (Risk Scoring)</h1>
-        <p class="lede">ระบบรวมผลลัพธ์จาก 3 ชั้นการวิเคราะห์เป็น <strong>Weighted Risk Score</strong> (0–100) และแสดงผลเป็นระดับความเสี่ยงแบบ color-coded ให้ผู้ใช้</p>
+        <p class="lede">ระบบประเมินคะแนนความเสี่ยงของรูปภาพตามแนวทาง <strong>Recommended Hybrid Approach (Worst-Case Trigger with Multi-Factor Breakdown)</strong> ตามมาตรฐานวิศวกรรมความมั่นคงปลอดภัย (Fraud Detection &amp; Forensics) โดยประเมิน 3 มิติแยกอิสระ (0–100%) และรวมผลลัพธ์เป็น <strong>Overall Risk Score</strong> (0–100) พร้อมผลแจกแจงแยกมิติ</p>
     <div class="divider"></div>
-    <h2>สูตรคำนวณ</h2>
-    <p>ระบบประมวลผลคะแนนความเสี่ยงของรูปภาพโดยรวมผลลัพธ์จากการวิเคราะห์หลายชั้นเข้าด้วยกัน โดยใช้สมการแบบถ่วงน้ำหนัก (Weighted Average) จาก 3 ปัจจัยหลัก ตามสูตรเดียวกับ <code>server/app/utils/risk_calculator.py</code>:</p>
-    <p><script type="math/tex; mode=display"> S_{total} = (S_{textual} \times 0.25) + (S_{visual} \times 0.45) + (S_{source} \times 0.30) </script></p>
+    <h2>1. การประเมินคะแนนแยกมิติ (Independent Factors - 0–100%)</h2>
     <table>
     <thead>
     <tr>
-    <th style="text-align: left;">ส่วนประกอบ</th>
+    <th style="text-align: left;">มิติการวิเคราะห์</th>
     <th style="text-align: left;">ตัวแปร</th>
-    <th style="text-align: left;">น้ำหนัก</th>
+    <th style="text-align: left;">ช่วงคะแนน</th>
+    <th style="text-align: left;">บทบาทและการวัดผล</th>
     </tr>
     </thead>
     <tbody>
     <tr>
-    <td style="text-align: left;">ตรวจจับความผิดปกติทางภาพ (SegFormer)</td>
+    <td style="text-align: left;"><strong>Visual Anomaly</strong></td>
     <td style="text-align: left;">$S_{visual}$</td>
-    <td style="text-align: left;"><strong>45%</strong> (0.45)</td>
+    <td style="text-align: left;">0–100%</td>
+    <td style="text-align: left;">วัดระดับการตัดต่อ/สังเคราะห์ภาพโดยตรง (Splicing, Copy-Move, AI Diffusion) ด้วย SegFormer และ Heatmap</td>
     </tr>
     <tr>
-    <td style="text-align: left;">วิเคราะห์ข้อความหลอกลวง (OCR+NLP)</td>
+    <td style="text-align: left;"><strong>Textual Analysis</strong></td>
     <td style="text-align: left;">$S_{textual}$</td>
-    <td style="text-align: left;"><strong>25%</strong> (0.25)</td>
+    <td style="text-align: left;">0–100%</td>
+    <td style="text-align: left;">วัดความอันตรายของข้อความ/คีย์เวิร์ดหลอกลวง (Blacklist, คำเร่งโอนเงิน, สัญญาผลตอบแทนสูง) ด้วย Surya-OCR</td>
     </tr>
     <tr>
-    <td style="text-align: left;">ตรวจสอบแหล่งที่มา (Reverse Search)</td>
+    <td style="text-align: left;"><strong>Source Verification</strong></td>
     <td style="text-align: left;">$S_{source}$</td>
-    <td style="text-align: left;"><strong>30%</strong> (0.30)</td>
+    <td style="text-align: left;">0–100%</td>
+    <td style="text-align: left;">วัดประวัติการถูกนำไปใช้ซ้ำบนอินเทอร์เน็ต (Reverse Image Search) ผ่าน Google Vision API</td>
     </tr>
     </tbody>
     </table>
-    <p>คะแนนแต่ละส่วนถูก normalize เป็น 0–100 ก่อนคูณน้ำหนัก</p>
-    <p><strong>เหตุผลการถ่วงน้ำหนัก:</strong> ระบบให้น้ำหนักทางด้านภาพ ($S_{visual}$) สูงสุดที่ 45% เนื่องจากเป็นสัญญาณนิติวิทยาศาสตร์ที่มีความแม่นยำที่สุด เป็นหลักฐานที่เกิดจากการประมวลผลระดับพิกเซล; แหล่งที่มา ($S_{source}$) ได้น้ำหนัก 30% เพื่อสะท้อนบริบทการถูกเผยแพร่บนอินเทอร์เน็ต; ขณะที่ข้อความ ($S_{textual}$) อาจมีความคลุมเครือตามบริบทหรือภาพบางชนิดอาจไม่มีข้อความเลย จึงได้น้ำหนัก 25%</p>
     <div class="divider"></div>
-    <h2>ระดับความเสี่ยง (Risk Grade)</h2>
+    <h2>2. สูตรคำนวณคะแนนรวม (Overall Risk Score Formulation)</h2>
+    <p>ระบบใช้หลักการ <strong>Maximum Impact (Worst-Case Trigger)</strong> ร่วมกับ <strong>Multi-Factor Compounding Penalty</strong> เพื่อป้องกันปัญหาคะแนนเจือจาง (Dilution Problem) เช่น ภาพตัดต่อชัดเจนแต่ไม่มีข้อความ ($S_{text} = 0$) คะแนนรวมจะไม่ถูกดึงลง:</p>
+    <p>
+    <script type="math/tex; mode=display"> S_{base} = \max(S_{visual}, S_{textual}, S_{source}) </script>
+    </p>
+    <p>
+    <script type="math/tex; mode=display"> S_{total} = \min\left(100, S_{base} + \sum_{i \in \text{secondary}} [S_i \ge 40] \times 5\right) </script>
+    </p>
+    <ul>
+    <li><strong>$S_{base}$</strong>: คะแนนความเสี่ยงของมิติที่รุนแรงที่สุด</li>
+    <li><strong>Multi-Factor Compounding</strong>: หากตรวจพบความเสี่ยงระดับปานกลางขึ้นไปในมิติอื่น ($\ge 40$) จะบวกคะแนนเพิ่ม $+5$ ต่อมิติ (สูงสุดไม่เกิน 100)</li>
+    <li><strong>Visual Override Rule</strong>: หากตรวจพบร่องรอยการดัดแปลงภาพในระดับวิกฤต ($S_{visual} \ge 80$) ระบบจะบังคับระดับผลลัพธ์เป็น <strong>High Risk</strong> ทันที</li>
+    </ul>
+    <div class="divider"></div>
+    <h2>3. ระดับความเสี่ยง (Risk Grade)</h2>
+    <p>ระบบแบ่งเกณฑ์การตัดสินเป็น 3 ระดับ (3-level Scale):</p>
     <table>
     <thead>
     <tr>
     <th style="text-align: left;">ช่วงคะแนน</th>
     <th style="text-align: left;">ระดับ</th>
     <th style="text-align: left;">สี</th>
-    <th style="text-align: left;">ความหมาย</th>
+    <th style="text-align: left;">ความหมายและข้อแนะนำ</th>
     </tr>
     </thead>
     <tbody>
     <tr>
-    <td style="text-align: left;">&lt; 20</td>
-    <td style="text-align: left;"><strong>Safe</strong> (ปลอดภัย)</td>
-    <td style="text-align: left;">เขียว</td>
-    <td style="text-align: left;">ไม่พบสัญญาณการดัดแปลงหรือหลอกลวงที่ชัดเจน</td>
-    </tr>
-    <tr>
-    <td style="text-align: left;">20 – 39</td>
+    <td style="text-align: left;">0 – 39</td>
     <td style="text-align: left;"><strong>Low</strong> (เสี่ยงต่ำ)</td>
-    <td style="text-align: left;">เหลืองอ่อน</td>
-    <td style="text-align: left;">พบสัญญาณน่าสงสัยเล็กน้อย หรือความน่าจะเป็นต่ำมาก</td>
+    <td style="text-align: left;">เขียว/เหลือง</td>
+    <td style="text-align: left;">ไม่พบร่องรอยการตัดต่อหรือข้อความหลอกลวงที่ชัดเจน ควรใช้วิจารณญาณประกอบ</td>
     </tr>
     <tr>
     <td style="text-align: left;">40 – 69</td>
     <td style="text-align: left;"><strong>Medium</strong> (น่าสงสัย)</td>
     <td style="text-align: left;">ส้ม</td>
-    <td style="text-align: left;">พบสัญญาณน่าสงสัยบางจุด ควรใช้วิจารณญาณประกอบ</td>
+    <td style="text-align: left;">พบสัญญาณน่าสงสัยระดับปานกลาง หรือพบความเสี่ยงหลายมิติควบคู่กัน</td>
     </tr>
     <tr>
-    <td style="text-align: left;">&gt;= 70</td>
+    <td style="text-align: left;">70 – 100</td>
     <td style="text-align: left;"><strong>High</strong> (อันตราย)</td>
     <td style="text-align: left;">แดง</td>
-    <td style="text-align: left;">พบหลักฐานการตัดต่อ คำหลอกลวง หรือภาพที่ถูกนำไปใช้ซ้ำชัดเจน</td>
+    <td style="text-align: left;">พบหลักฐานการตัดต่อชัดเจน ข้อความหลอกลวงรุนแรง หรือภาพถูกใช้ซ้ำในหลายแหล่ง ($S_{visual} \ge 80$ ปรับเป็น High อัตโนมัติ)</td>
     </tr>
     </tbody>
     </table>
     <div class="divider"></div>
-    <h2>เหตุผลของการกำหนดน้ำหนัก</h2>
-    <p>ชั้น Visual Anomaly มีน้ำหนักสูงสุด (45%) เพราะเป็นสัญญาณนิติวิทยาศาสตร์ที่แม่นยำที่สุด — ตรวจจับการดัดแปลงพิกเซลโดยตรง แหล่งที่มา ($S_{source}$) ได้น้ำหนัก 30% เพื่อสะท้อนบริบทการถูกเผยแพร่บนอินเทอร์เน็ต ชั้น Textual (25%) รวดเร็วและประหยัดทรัพยากร แต่อาจมีความคลุมเครือหรือภาพบางชนิดไม่มีข้อความเลย จึงได้น้ำหนักน้อยสุด</p>
+    <h2>4. การนำเสนอผลบนหน้าจอ (UI Presentation)</h2>
+    <ol>
+    <li><strong>ระดับภาพรวม (Overview Banner)</strong>: แสดง Risk Level สูงสุดที่พบ (Low / Medium / High) พร้อมคะแนนรวม Overall Score</li>
+    <li><strong>รายละเอียดการวิเคราะห์ (Breakdown Cards)</strong>: แสดง Progress Bar และคำอธิบายแยกแต่ละมิติตามที่ตรวจพบจริง:</li>
+    <li>ตรวจพบร่องรอยตัดต่อภาพ: $S_{visual}$% (ระดับความเสี่ยงของภาพ)</li>
+    <li>ตรวจพบข้อความน่าสงสัย: $S_{textual}$% (หรือ "ไม่พบข้อความ")</li>
+    <li>ประวัติแหล่งที่มา: $S_{source}$% (จำนวนแหล่งที่พบบนอินเทอร์เน็ต)</li>
+    <li><strong>หลักฐานเชิงภาพ (Explainable Heatmap)</strong>: แสดง Mask จุดที่โมเดลตรวจพบความผิดปกติซ้อนทับภาพต้นฉบับ</li>
+    </ol>
     <div class="divider"></div>
-    <h2>พฤติกรรมการ Cache</h2>
+    <h2>5. พฤติกรรมการ Cache</h2>
     <p>เมื่อคำนวณ Risk Score สำหรับภาพใดแล้ว จะ hash รูปภาพและเก็บไว้ใน <strong>Redis</strong> ถ้ามีการส่งรูปเดิมซ้ำ จะดึงผลลัพธ์จาก <strong>PostgreSQL</strong> ทันทีโดยไม่รัน AI Pipeline ซ้ำ ทำให้ latency ลดจาก 15 วินาทีเหลือต่ำกว่า 3 วินาทีสำหรับภาพที่เคยวิเคราะห์แล้ว</p>
     <div class="divider"></div>
-    <h2>การจัดการ Partial Failure</h2>
-    <p>ถ้าชั้นการวิเคราะห์ใดชั้นหนึ่งล้มเหลว (เช่น Reverse Image Search API timeout) ระบบยังคำนวณคะแนนบางส่วนจากชั้นที่ทำงานสำเร็จได้ และระบุใน response ว่าชั้นใดบ้างที่มีส่วนร่วมในการคำนวณ</p>
+    <h2>6. การจัดการ Partial Failure</h2>
+    <p>ถ้าชั้นการวิเคราะห์ใดชั้นหนึ่งล้มเหลว (เช่น Reverse Image Search API timeout) ระบบยังคำนวณคะแนนบางส่วนจากมิติที่ทำงานสำเร็จได้ โดยคำนวณ $\max$ จากมิติที่มีข้อมูลจริง และระบุใน response ว่ามิติใดบ้างที่มีส่วนร่วมในการคำนวณ</p>
     <div class="divider"></div>
-    <h2>ประเด็นสำคัญ</h2>
+    <h2>7. ประเด็นสำคัญ</h2>
     <ul>
     <li>คะแนนเป็นตัวเลขต่อเนื่อง 0–100 ไม่ใช่ pass/fail</li>
-    <li>ชั้น Visual Anomaly มีอิทธิพลมากที่สุดต่อคะแนนรวม</li>
-    <li>UI แสดงคะแนนเป็น color gauge และเปอร์เซ็นต์</li>
+    <li>การใช้ Worst-Case Trigger แก้ปัญหาเรื่อง False Negative จากการเฉลี่ยน้ำหนักได้อย่างสมบูรณ์</li>
+    <li>UI แสดงผลทั้งระดับสรุปและ Breakdown แยกมิติครบถ้วน</li>
     <li>การ Cache ขจัดการคำนวณซ้ำบนรูปที่เคยส่งมาแล้ว</li>
     </ul>
   </main>

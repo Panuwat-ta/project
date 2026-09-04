@@ -31,35 +31,38 @@
     โปรเจคนี้ตรวจจับ <strong>ภาพหลอกลวงในวงกว้าง</strong> ไม่ใช่เฉพาะ "สลิปปลอม" การแยกแยะประเภทการปลอมแปลง (splicing, copy-move, AI-generation, reverse image identity theft) คือฟีเจอร์หลักของระบบ</p>
     </blockquote>
     <div class="divider"></div>
-    <h2>แนวทางหลัก: การวิเคราะห์หลายชั้น</h2>
-    <p>ระบบไม่พึ่งพาวิธีตรวจจับเดียว แต่รันการวิเคราะห์ 3 ชั้นพร้อมกันและรวมผลเป็น <strong>Weighted Risk Score</strong> เดียว</p>
+    <h2>แนวทางหลัก: การวิเคราะห์หลายชั้น (Multi-layer Analysis)</h2>
+    <p>ระบบไม่พึ่งพาวิธีตรวจจับเดียว แต่รันการวิเคราะห์ 3 มิติอย่างอิสระและรวมผลเป็น <strong>Overall Risk Score</strong> ตามแนวทาง <strong>Recommended Hybrid Approach (Worst-Case Trigger with Multi-Factor Breakdown)</strong></p>
     <table>
     <thead>
     <tr>
-    <th style="text-align: left;">ชั้นการวิเคราะห์</th>
+    <th style="text-align: left;">มิติการวิเคราะห์ (Independent Factors)</th>
     <th style="text-align: left;">วิธีการ</th>
-    <th style="text-align: left;">น้ำหนัก</th>
+    <th style="text-align: left;">ช่วงคะแนนเดี่ยว</th>
     </tr>
     </thead>
     <tbody>
     <tr>
     <td style="text-align: left;">วิเคราะห์ข้อความ (Textual Analysis)</td>
-    <td style="text-align: left;">OCR + NLP ตรวจจับคำหลอกลวง</td>
-    <td style="text-align: left;">25%</td>
+    <td style="text-align: left;">OCR + Keyword/Pattern Matching ตรวจจับคำหลอกลวง</td>
+    <td style="text-align: left;">0–100%</td>
     </tr>
     <tr>
     <td style="text-align: left;">ตรวจสอบแหล่งที่มา (Source Verification)</td>
     <td style="text-align: left;">Reverse Image Search ผ่าน Google Vision API</td>
-    <td style="text-align: left;">30%</td>
+    <td style="text-align: left;">0–100%</td>
     </tr>
     <tr>
     <td style="text-align: left;">ตรวจจับความผิดปกติทางภาพ (Visual Anomaly)</td>
-    <td style="text-align: left;">Deep Learning (SegFormer) + Heatmap</td>
-    <td style="text-align: left;">45%</td>
+    <td style="text-align: left;">Deep Learning (SegFormer) + Heatmap Output</td>
+    <td style="text-align: left;">0–100%</td>
     </tr>
     </tbody>
     </table>
-    <p>คะแนนรวมอยู่ระหว่าง 0–100</p>
+    <ul>
+    <li><strong>สูตรคำนวณคะแนนรวม</strong>: ยึดมิติที่มีความเสี่ยงสูงสุดเป็นฐานหลัก $S_{base} = \max(S_{visual}, S_{textual}, S_{source})$ ร่วมกับ Multi-factor Compounding (+5 คะแนนต่อมิติรองที่มีความเสี่ยง $\ge 40$)</li>
+    <li>คะแนนรวมอยู่ระหว่าง 0–100 แบ่งเป็น 3 ระดับ: Low (0–39), Medium (40–69), High (70–100 หรือ Visual $\ge 80$) ดูเกณฑ์ที่ </li>
+    </ul>
     <div class="divider"></div>
     <h2>สรุปสถาปัตยกรรมระบบ</h2>
     <p>ระบบเป็นแบบ Cloud-Native และแยกส่วนออกเป็น 3 ชั้น:</p>
@@ -119,7 +122,7 @@
     <div class="divider"></div>
     <h2>ผลลัพธ์ที่ผู้ใช้ได้รับ</h2>
     <ol>
-    <li><strong>Weighted Risk Score</strong> (0–100) แสดงเป็น color gauge (เขียว/เหลือง/แดง)</li>
+    <li><strong>Overall Risk Score</strong> (0–100) แสดงเป็น color badge 3 ระดับ (Low / Medium / High) พร้อมผลแจกแจงแยก 3 มิติ (Multi-Factor Breakdown)</li>
     <li><strong>Heatmap</strong> ซ้อนทับรูปภาพต้นฉบับแสดงจุดที่โมเดลตรวจพบความผิดปกติ</li>
     <li><strong>ผลการวิเคราะห์ข้อความ</strong> — คำหลอกลวงหรือรูปแบบน่าสงสัยที่พบในภาพ</li>
     <li><strong>ผลการตรวจสอบแหล่งที่มา</strong> — รูปนี้พบในเว็บไซต์ใดบ้างและกี่แหล่ง</li>

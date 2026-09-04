@@ -14,7 +14,7 @@ adaptive
 ScamGuard เป็นระบบและแอปพลิเคชันตรวจสอบรูปภาพที่อาจถูกตัดต่อ ดัดแปลง ปลอมแปลง หรือสร้างขึ้นด้วย AI เพื่อนำมาใช้ในการหลอกลวง (Scam Image Detection) โดยใช้การวิเคราะห์หลายชั้น (Multi-layer Analysis) ได้แก่ การตรวจจับข้อความ (OCR), การตรวจสอบแหล่งที่มา (Source Verification) และการตรวจจับความผิดปกติของภาพด้วย AI (Visual Anomaly Detection) พร้อมแสดงผลลัพธ์แบบ Explainable AI ด้วย Heatmap และคำนวณคะแนนความเสี่ยง (Risk Score)
 
 ## Positioning
-ตรวจจับภาพหลอกลวงในวงกว้าง ไม่จำกัดเฉพาะสลิปโอนเงินธนาคาร แต่ครอบคลุม Romance Scam, ภาพตัดต่อปลอมแปลงตัวตน, สกรีนช็อตที่ดัดแปลงเนื้อหา และภาพสังเคราะห์จาก AI โดยเน้นความโปร่งใสด้วยการแสดง Heatmap ชี้ตำแหน่งผิดปกติบนภาพจริง และประเมินคะแนน Weighted Risk Score 3 ระดับ (Low: 0-39, Medium: 40-69, High: 70-100)
+ตรวจจับภาพหลอกลวงในวงกว้าง ไม่จำกัดเฉพาะสลิปโอนเงินธนาคาร แต่ครอบคลุม Romance Scam, ภาพตัดต่อปลอมแปลงตัวตน, สกรีนช็อตที่ดัดแปลงเนื้อหา และภาพสังเคราะห์จาก AI โดยเน้นความโปร่งใสด้วยการแสดง Heatmap ชี้ตำแหน่งผิดปกติบนภาพจริง และประเมินคะแนนความเสี่ยงแบบ Hybrid Worst-Case (Max-Impact & Multi-Factor Breakdown) 3 ระดับ (Low: 0-39, Medium: 40-69, High: 70-100)
 
 ## Operating Context
 - ผู้ใช้งานทั่วไปใช้งานผ่าน Flutter Mobile App (Android) โดยเลือกรูปภาพจากคลังภาพหรือถ่ายภาพจากกล้อง ส่งตรวจสอบ และรับผลการวิเคราะห์พร้อม Heatmap ซ้อนทับและคำอธิบายจุดน่าสงสัย
@@ -23,7 +23,7 @@ ScamGuard เป็นระบบและแอปพลิเคชันต�
 
 ## Capabilities and Constraints
 - ตรวจจับความผิดปกติของภาพและประเมินระดับความเสี่ยงได้ 3 ระดับ: Low, Medium, High (ไม่มีระดับ Safe)
-- ระบบวิเคราะห์ 3 ชั้น: Textual Analysis (OCR + NLP น้ำหนัก 25%), Source Verification (Google Vision API น้ำหนัก 30%), Visual Anomaly Detection (SegFormer AI Heatmap น้ำหนัก 45%)
+- ระบบวิเคราะห์ 3 ชั้นอิสระ (0–100% แต่ละชั้น): Textual Analysis (OCR + NLP), Source Verification (Google Vision API), Visual Anomaly Detection (SegFormer AI Heatmap) โดยคำนวณคะแนนภาพรวมด้วยหลักการ Maximum Impact (Worst-Case Dominance) ร่วมกับ Multi-Factor Compounding
 - มาตรการความเป็นส่วนตัว (PDPA): ผู้ใช้ต้องให้ความยินยอมก่อนจัดเก็บหรือนำภาพไปใช้ในการปรับปรุงโมเดล โดยสามารถจัดการสิทธิ์และความเป็นส่วนตัวได้
 - ห้ามใช้อิโมจิในทุกส่วนติดต่อผู้ใช้ (UI) และข้อความของระบบตามนโยบายของโปรเจกต์
 - Mobile App พัฒนาด้วย Flutter (Clean Architecture, BLoC State Management) รองรับ Android

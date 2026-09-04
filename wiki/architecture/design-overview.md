@@ -111,11 +111,11 @@ flowchart LR
 
 #### 4. Analysis Result Screen (หน้าแสดงผลลัพธ์)
 
-* แสดงผลคะแนนความเสี่ยงรวม (Weighted Risk Score) ในรูปของมาตรวัดวงกลมสี (Radial Risk Gauge)
+* แสดงผลคะแนนความเสี่ยงรวม (Overall Risk Score) ในรูปของมาตรวัดวงกลมสี (Radial Risk Gauge) พร้อมผลแจกแจงแยก 3 มิติ (Multi-Factor Breakdown)
 * ตัวเลือกระหว่าง:
   * หน้าแสดงข้อมูลภาพต้นฉบับ
   * หน้าภาพ Heatmap (แสดง Heatmap ที่ชี้พิกเซลผิดปกติจาก AI)
-* รายละเอียดผลวิเคราะห์ 3 ชั้น (Multi-layer Analysis Breakdown):
+* รายละเอียดผลวิเคราะห์ 3 มิติ (Multi-layer Analysis Breakdown):
   * ผลตรวจสอบ OCR & คำอันตราย (Textual Detection)
   * ผลตรวจสอบข้อมูลไฟล์และอุปกรณ์ที่ใช้บันทึกภาพ (Metadata Check)
   * ผลตรวจสอบแหล่งที่มาดั้งเดิม (Reverse Image Search Results)
@@ -156,7 +156,7 @@ sequenceDiagram
     Note over AI: ประมวลผลรูปภาพสร้างแผนที่ความร้อน (Heatmap)
     AI-->>API: ส่งผลการคำนวณและรูปภาพ Heatmap
     
-    Note over API: คำนวณ Weighted Risk Score สรุปผลภาพรวม
+    Note over API: คำนวณ Overall Risk Score (Hybrid Approach) สรุปผลภาพรวม
     API->>Push: ส่งคำสั่งแจ้งเตือนพร้อมสแกนเสร็จสิ้น (Push Payload)
     Push-->>App: เด้งหน้าต่างแจ้งเตือนที่เครื่องผู้ใช้ (Scan Completed)
     

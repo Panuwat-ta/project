@@ -70,7 +70,7 @@ sequenceDiagram
     %% Risk Calculation
     Service->>RiskCalc: calculate_risk_score(text_score, visual_score, source_score)
     activate RiskCalc
-    Note over RiskCalc: ถ่วงน้ำหนัก<br>Visual (60%) + Text (40%)
+    Note over RiskCalc: Hybrid Worst-Case<br>Max-Impact + Multi-factor
     RiskCalc-->>Service: return {total_risk_score, grade}
     deactivate RiskCalc
     

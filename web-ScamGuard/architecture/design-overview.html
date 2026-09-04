@@ -102,11 +102,11 @@
     </ul>
     <h4>4. Analysis Result Screen (หน้าแสดงผลลัพธ์)</h4>
     <ul>
-    <li>แสดงผลคะแนนความเสี่ยงรวม (Weighted Risk Score) ในรูปของมาตรวัดวงกลมสี (Radial Risk Gauge)</li>
+    <li>แสดงผลคะแนนความเสี่ยงรวม (Overall Risk Score) ในรูปของมาตรวัดวงกลมสี (Radial Risk Gauge) พร้อมผลแจกแจงแยก 3 มิติ (Multi-Factor Breakdown)</li>
     <li>ตัวเลือกระหว่าง:</li>
     <li>หน้าแสดงข้อมูลภาพต้นฉบับ</li>
     <li>หน้าภาพ Heatmap (แสดง Heatmap ที่ชี้พิกเซลผิดปกติจาก AI)</li>
-    <li>รายละเอียดผลวิเคราะห์ 3 ชั้น (Multi-layer Analysis Breakdown):</li>
+    <li>รายละเอียดผลวิเคราะห์ 3 มิติ (Multi-layer Analysis Breakdown):</li>
     <li>ผลตรวจสอบ OCR &amp; คำอันตราย (Textual Detection)</li>
     <li>ผลตรวจสอบข้อมูลไฟล์และอุปกรณ์ที่ใช้บันทึกภาพ (Metadata Check)</li>
     <li>ผลตรวจสอบแหล่งที่มาดั้งเดิม (Reverse Image Search Results)</li>
@@ -143,7 +143,7 @@
         Note over AI: ประมวลผลรูปภาพสร้างแผนที่ความร้อน (Heatmap)
         AI-->>API: ส่งผลการคำนวณและรูปภาพ Heatmap
     
-        Note over API: คำนวณ Weighted Risk Score สรุปผลภาพรวม
+        Note over API: คำนวณ Overall Risk Score (Hybrid Approach) สรุปผลภาพรวม
         API->>Push: ส่งคำสั่งแจ้งเตือนพร้อมสแกนเสร็จสิ้น (Push Payload)
         Push-->>App: เด้งหน้าต่างแจ้งเตือนที่เครื่องผู้ใช้ (Scan Completed)
     

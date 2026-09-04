@@ -69,17 +69,19 @@ flowchart TD
 
 ---
 
-## 4. อัลกอริทึมการประเมินความเสี่ยงรวม (Weighted Risk Score Algorithm)
+## 4. อัลกอริทึมการประเมินความเสี่ยงรวม (Hybrid Worst-Case Risk Algorithm)
 
-คะแนนความเสี่ยงโดยรวม (Total Risk Score) คำนวณจากการถ่วงน้ำหนักความสำคัญของผลลัพธ์ทั้ง 3 ชั้น ได้แก่ ข้อความ (Textual), ภาพ (Visual) และแหล่งที่มา (Source) ตามสูตรเดียวกับ `server/app/utils/risk_calculator.py`:
+คะแนนความเสี่ยงโดยรวม (Total Risk Score) คำนวณตามแนวทาง Hybrid Worst-Case Trigger ร่วมกับ Multi-Factor Compounding ตามสูตรเดียวกับ `server/app/utils/risk_calculator.py`:
 
-$$ S_{total} = (S_{textual} \times 0.25) + (S_{visual} \times 0.45) + (S_{source} \times 0.30) $$
+$$ S_{base} = \max(S_{visual}, S_{textual}, S_{source}) $$
+
+$$ S_{total} = \min\left(100, S_{base} + \sum_{i \neq \text{dominant}, S_i \ge 40} 5\right) $$
 
 โดยที่:
-* $S_{total}$ คือคะแนนความเสี่ยงรวม มีค่าตั้งแต่ 0 ถึง 100
-* $S_{textual}$ คือคะแนนความเสี่ยงด้านข้อความหลอกลวง (ประเมินจากระดับความรุนแรงของ Scam Keyword) — น้ำหนัก 25%
-* $S_{visual}$ คือคะแนนความเสี่ยงจากการถูกดัดแปลงภาพ (คำนวณจากค่าเฉลี่ยหรือพื้นที่พิกเซลความร้อนของ SegFormer) — น้ำหนัก 45%
-* $S_{source}$ คือคะแนนความเสี่ยงจากแหล่งที่มาของภาพ (Reverse Image Search) — น้ำหนัก 30%
+* $S_{total}$ คือคะแนนความเสี่ยงรวมภาพรวม มีค่าตั้งแต่ 0 ถึง 100
+* $S_{visual}$ คือคะแนนความเสี่ยงจากการถูกดัดแปลงภาพจาก SegFormer (0–100%)
+* $S_{textual}$ คือคะแนนความเสี่ยงด้านข้อความหลอกลวงจาก OCR + NLP (0–100%)
+* $S_{source}$ คือคะแนนความเสี่ยงจากแหล่งที่มาของภาพจาก Reverse Image Search (0–100%)
 
 เกณฑ์การตัดสินระดับความเสี่ยง (Risk Grade):
 

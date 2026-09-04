@@ -140,7 +140,7 @@
 - ระบบสามารถสกัดข้อความจากรูปภาพด้วย OCR (ภาษาไทยและอังกฤษ) ได้
 - ระบบสามารถตรวจจับคำสำคัญหลอกลวง (Scam Keywords) ได้
 - ระบบสามารถค้นหาแหล่งที่มาของภาพผ่าน Reverse Image Search ได้
-- ระบบคำนวณคะแนนความเสี่ยงรวมตามสูตร: Risk Score = (S_text × 0.25) + (S_visual × 0.45) + (S_source × 0.30)
+- ระบบคำนวณคะแนนความเสี่ยงรวมตามแนวทาง Hybrid Worst-Case (Maximum Trigger with Multi-Factor Compounding) ร่วมกับการแจกแจงความเสี่ยง 3 มิติอิสระเต็ม 100% (Visual, Textual, Source)
 
 **Related Stakeholders:** ST01, ST02
 

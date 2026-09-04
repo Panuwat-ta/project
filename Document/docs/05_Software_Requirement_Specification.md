@@ -379,15 +379,15 @@ Acceptance Criteria:
 
 **Acceptance Criteria:**
 
-**AC-1: คำนวณคะแนนรวมสำเร็จ**
-- **Input:** text_score = 75, visual_score = 87, source_score = 75
-- **Processing:** `Risk Score = round((75×0.25) + (87×0.45) + (75×0.30)) = round(18.75 + 39.15 + 22.5) = round(80.4) = 80`
-- **Expected Output:** `risk_score: 80`
+**AC-1: คำนวณคะแนนรวมสำเร็จตามหลัก Worst-Case Hybrid**
+- **Input:** text_score = 50, visual_score = 85, source_score = 0
+- **Processing:** `S_base = max(85, 50, 0) = 85`, `compounding = 5 (เนื่องจาก text_score >= 40)`, `Risk Score = min(100, 85 + 5) = 90`
+- **Expected Output:** `risk_score: 90`, `risk_grade: "High"`, `primary_factor: "visual"`
 
 **AC-2: จำกัดคะแนนในช่วง 0-100**
 - **Input:** text_score = 100, visual_score = 100, source_score = 100
-- **Processing:** `Risk Score = round((100×0.25) + (100×0.45) + (100×0.30)) = 100`
-- **Expected Output:** `risk_score: 100`
+- **Processing:** `S_base = 100`, `compounding = 10`, `Risk Score = min(100, 100 + 10) = 100`
+- **Expected Output:** `risk_score: 100`, `risk_grade: "High"`
 
 **AC-3: แปลงเป็น Risk Grade (Safe)**
 - **Input:** risk_score = 10

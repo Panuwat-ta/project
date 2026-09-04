@@ -35,7 +35,7 @@
     </ul>
     <h3>การแสดงรายงานความเสี่ยง (Risk Report Display)</h3>
     <ul>
-    <li><strong>FR-REPORT-01:</strong> แอปแสดงคะแนน Weighted Risk Score รวม (0-100) แบบ Color Gauge (เขียว/เหลือง/แดง)</li>
+    <li><strong>FR-REPORT-01:</strong> แอปแสดงคะแนนความเสี่ยงรวม Overall Risk Score (0-100) พร้อม Color Badge 3 ระดับ (Low/Medium/High)</li>
     <li><strong>FR-REPORT-02:</strong> แอปแสดงภาพ Heatmap ซ้อนทับรูปจริง</li>
     <li><strong>FR-REPORT-03:</strong> ผู้ใช้กดเปิด/ปิด (Toggle) ภาพ Heatmap ซ้อนทับได้</li>
     <li><strong>FR-REPORT-04:</strong> แอปแสดงคะแนนความเสี่ยงแยกย่อยแต่ละชั้น (Textual, Source, Visual)</li>
@@ -75,7 +75,7 @@
     <li><strong>FR-SYS-04:</strong> ระบบสแกนหาที่มาภาพย้อนกลับด้วย Google Vision API</li>
     <li><strong>FR-SYS-05:</strong> ระบบตรวจสอบร่องรอยการดัดแปลงภาพระดับพิกเซลด้วย Deep Learning (SegFormer)</li>
     <li><strong>FR-SYS-06:</strong> ระบบคัดกรองรูปภาพที่สร้างจาก AI ด้วย Classifier</li>
-    <li><strong>FR-SYS-07:</strong> ระบบประมวลผลคะแนนความเสี่ยง Weighted Risk Score สุทธิจากทุกโมดูล</li>
+    <li><strong>FR-SYS-07:</strong> ระบบประมวลผลคะแนนความเสี่ยงรวม Overall Risk Score ด้วยสูตร Hybrid Worst-Case Trigger พร้อม Multi-Factor Breakdown</li>
     <li><strong>FR-SYS-08:</strong> ระบบจำลองภาพ Heatmap</li>
     <li><strong>FR-SYS-09:</strong> ระบบเก็บผลสแกนลง Cache (Redis) เพื่อตอบกลับคำขอที่ซ้ำกันให้เร็วขึ้น</li>
     <li><strong>FR-SYS-10:</strong> ระบบยิง FCM Push Notification แจ้งเตือนเมื่อประมวลผลแบบเบื้องหลัง (Async) เสร็จ</li>

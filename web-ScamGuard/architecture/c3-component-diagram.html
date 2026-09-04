@@ -118,7 +118,7 @@
     <h3>2. Business Logic Layer (Services)</h3>
     <p>โฟลเดอร์ <code>server/app/services/</code>
     เป็นหัวใจหลักของแอปพลิเคชัน ทำหน้าที่ประมวลผลตามกฎทางธุรกิจ (Business Rules)
-    - <strong>Scan Service:</strong> ควบคุมขั้นตอนการตรวจสอบภาพทั้งหมด เริ่มตั้งแต่เช็ค Cache, สกัด EXIF, และคำนวณ <strong>Weighted Risk Score</strong>
+    - <strong>Scan Service:</strong> ควบคุมขั้นตอนการตรวจสอบภาพทั้งหมด เริ่มตั้งแต่เช็ค Cache, สกัด EXIF, และคำนวณ <strong>Overall Risk Score</strong> ตามสูตร Hybrid Worst-Case
     - <strong>Inference Coordinator (<code>inference_service.py</code>):</strong> ตัวประสานงานระหว่าง Backend กับ AI Model ทำหน้าที่จัดคิวรูปภาพและส่งคำสั่งข้าม Process ไปให้ ONNX Worker
     - <strong>Auth Service:</strong> จัดการการเข้ารหัสผ่าน (Hashing) และออก JWT Token </p>
     <h3>3. Data Access Layer (Repositories)</h3>

@@ -28,17 +28,18 @@ updated: 2026-08-02
 
 ---
 
-## แนวทางหลัก: การวิเคราะห์หลายชั้น
+## แนวทางหลัก: การวิเคราะห์หลายชั้น (Multi-layer Analysis)
 
-ระบบไม่พึ่งพาวิธีตรวจจับเดียว แต่รันการวิเคราะห์ 3 ชั้นพร้อมกันและรวมผลเป็น **Weighted Risk Score** เดียว ดูรายละเอียดที่ [[concepts/multi-layer-analysis]]
+ระบบไม่พึ่งพาวิธีตรวจจับเดียว แต่รันการวิเคราะห์ 3 มิติอย่างอิสระและรวมผลเป็น **Overall Risk Score** ตามแนวทาง **Recommended Hybrid Approach (Worst-Case Trigger with Multi-Factor Breakdown)** ดูรายละเอียดที่ [[concepts/multi-layer-analysis]]
 
-| ชั้นการวิเคราะห์ | วิธีการ | น้ำหนัก |
+| มิติการวิเคราะห์ (Independent Factors) | วิธีการ | ช่วงคะแนนเดี่ยว |
 | :--- | :--- | :--- |
-| วิเคราะห์ข้อความ (Textual Analysis) | OCR + NLP ตรวจจับคำหลอกลวง | 25% |
-| ตรวจสอบแหล่งที่มา (Source Verification) | Reverse Image Search ผ่าน Google Vision API | 30% |
-| ตรวจจับความผิดปกติทางภาพ (Visual Anomaly) | Deep Learning (SegFormer) + Heatmap | 45% |
+| วิเคราะห์ข้อความ (Textual Analysis) | OCR + Keyword/Pattern Matching ตรวจจับคำหลอกลวง | 0–100% |
+| ตรวจสอบแหล่งที่มา (Source Verification) | Reverse Image Search ผ่าน Google Vision API | 0–100% |
+| ตรวจจับความผิดปกติทางภาพ (Visual Anomaly) | Deep Learning (SegFormer) + Heatmap Output | 0–100% |
 
-คะแนนรวมอยู่ระหว่าง 0–100 ดูเกณฑ์การตัดสินที่ [[concepts/risk-scoring]]
+- **สูตรคำนวณคะแนนรวม**: ยึดมิติที่มีความเสี่ยงสูงสุดเป็นฐานหลัก $S_{base} = \max(S_{visual}, S_{textual}, S_{source})$ ร่วมกับ Multi-factor Compounding (+5 คะแนนต่อมิติรองที่มีความเสี่ยง $\ge 40$)
+- คะแนนรวมอยู่ระหว่าง 0–100 แบ่งเป็น 3 ระดับ: Low (0–39), Medium (40–69), High (70–100 หรือ Visual $\ge 80$) ดูเกณฑ์ที่ [[concepts/risk-scoring]]
 
 ---
 
@@ -74,7 +75,7 @@ updated: 2026-08-02
 
 ## ผลลัพธ์ที่ผู้ใช้ได้รับ
 
-1. **Weighted Risk Score** (0–100) แสดงเป็น color gauge (เขียว/เหลือง/แดง)
+1. **Overall Risk Score** (0–100) แสดงเป็น color badge 3 ระดับ (Low / Medium / High) พร้อมผลแจกแจงแยก 3 มิติ (Multi-Factor Breakdown)
 2. **Heatmap** ซ้อนทับรูปภาพต้นฉบับแสดงจุดที่โมเดลตรวจพบความผิดปกติ
 3. **ผลการวิเคราะห์ข้อความ** — คำหลอกลวงหรือรูปแบบน่าสงสัยที่พบในภาพ
 4. **ผลการตรวจสอบแหล่งที่มา** — รูปนี้พบในเว็บไซต์ใดบ้างและกี่แหล่ง
