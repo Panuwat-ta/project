@@ -66,9 +66,11 @@ jobs:
           DATABASE_URL: postgresql+asyncpg://scamguard:password@localhost:5432/scamguard_db
           REDIS_URL: redis://localhost:6379/0
           BASE_URL: ""
+          TESTING: "true"
         run: |
           cd automate_test
           pytest tests/api tests/e2e -v
+
 
       - name: Upload test reports
         if: always()

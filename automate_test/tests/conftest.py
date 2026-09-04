@@ -19,3 +19,13 @@ def clear_overrides():
         app.dependency_overrides.clear()
     except Exception:
         yield
+
+@pytest.fixture(autouse=True)
+async def dispose_engine_after_test():
+    yield
+    try:
+        from app.core.database import engine
+        await engine.dispose()
+    except Exception:
+        pass
+
