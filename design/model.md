@@ -29,7 +29,7 @@
 * **Output**: Tensor ที่เก็บค่าความน่าจะเป็นของการเป็นรอยดัดแปลง (Probability Map) ขนาดเท่ารูป Input
 * **Segmentation Mask**: ภาพขาวดำ (Binary Mask) ที่แบ่งแยกพิกเซลที่น่าจะถูกปลอมแปลงออกอย่างชัดเจน
 * **Heatmap**: อาร์เรย์ค่าความเชื่อมั่น (Confidence Score) ของแต่ละพิกเซล 
-* **Risk Score**: คะแนนความเสี่ยงรวม (0-100) ที่คำนวณจากการถ่วงน้ำหนักผลการวิเคราะห์ทั้ง 3 ชั้น: `S_text×0.25 + S_visual×0.45 + S_source×0.30` (Textual, Visual และ Source Analysis) แล้วจัดเกรดความเสี่ยง: 0-19 = Safe, 20-39 = Low, 40-69 = Medium, 70-100 = High (กรณี $S_{visual} \ge 80$ จะเป็น High ทันที)
+* **Risk Score**: คะแนนความเสี่ยงรวม (0-100) ที่คำนวณตามแนวทาง Hybrid Worst-Case Trigger (S_base = max(S_visual, S_text, S_source) + Compounding) ร่วมกับการแจกแจงความเสี่ยง 3 มิติอิสระเต็ม 100% แล้วจัดเกรดความเสี่ยง: Low (0-39), Medium (40-69), High (70-100) โดยกรณี $S_{visual} \ge 80$ เป็น High ทันที
 
 ## 5. Explainable AI
 * **Heatmap**: การแปลงค่าตัวเลขความเชื่อมั่นเป็นสี (เช่น แดง=เสี่ยงมาก, น้ำเงิน=ปลอดภัย) เพื่อให้ผู้ใช้เข้าใจผลการตรวจจับด้วยตาเปล่า
@@ -42,7 +42,7 @@
   2. การทำ Preprocessing บนภาพดิบ
   3. ส่งผ่านโมเดล AI (Forward Pass)
   4. ทำ Post Processing ดึงข้อมูล Mask และ Heatmap
-* **Post Processing**: การแปลงผลลัพธ์ดิบจาก Tensor กลับเป็นไฟล์รูปภาพ (เช่น PNG) การกรองสัญญาณรบกวน (Noise) ออก และรวมผลคะแนน (Risk Score) เป็นค่าเดียวจากการถ่วงน้ำหนักทั้ง 3 ชั้น: `S_text×0.25 + S_visual×0.45 + S_source×0.30` พร้อมจัดเกรด 0-19 = Safe, 20-39 = Low, 40-69 = Medium, 70-100 = High (กรณี $S_{visual} \ge 80$ จะเป็น High ทันที)
+* **Post Processing**: การแปลงผลลัพธ์ดิบจาก Tensor กลับเป็นไฟล์รูปภาพ (เช่น PNG) การกรองสัญญาณรบกวน (Noise) ออก และรวมผลคะแนน (Risk Score) ด้วยแนวทาง Hybrid Worst-Case Trigger (S_base = max(S_visual, S_text, S_source) + Compounding) พร้อมจัดเกรด Low (0-39), Medium (40-69), High (70-100) โดยกรณี $S_{visual} \ge 80$ เป็น High ทันที
 * **เป้าหมายประสิทธิภาพ (Target Metrics)**: Accuracy/F1-Score ≥ 85% และ Inference < 5 วินาทีต่อภาพ โดยรวมผลการทำงานผ่าน ONNX Runtime ใน Worker Subprocess แล้ว
 
 ## 7. Model Version

@@ -329,7 +329,8 @@ Requirement Candidates ถูกสกัดจาก:
 **Priority:** Must
 
 **Details:**
-- สูตร: `Risk Score = (S_text × 0.25) + (S_visual × 0.45) + (S_source × 0.30)`
+- สูตร: Hybrid Worst-Case: `S_base = max(S_visual, S_text, S_source)`, `Risk Score = min(100, S_base + compounding_bonus)`
+- แจกแจงผลคะแนนแยก 3 มิติอิสระเต็ม 100% (Visual, Text, Source)
 - ปัดเศษเป็นจำนวนเต็ม
 - จำกัดผลให้อยู่ในช่วง 0-100
 

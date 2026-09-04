@@ -18,9 +18,10 @@ class HistoryLoaded extends HistoryEvent {
 }
 
 class HistoryRefreshed extends HistoryEvent {
-  const HistoryRefreshed();
+  final Completer<void>? completer;
+  const HistoryRefreshed([this.completer]);
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [completer];
 }
 
 class HistorySearched extends HistoryEvent {
@@ -100,7 +101,13 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     HistoryRefreshed event,
     Emitter<HistoryState> emit,
   ) async {
-    await _fetchItems(emit, keyword: _currentKeyword);
+    try {
+      await _fetchItems(emit, keyword: _currentKeyword);
+    } finally {
+      if (event.completer?.isCompleted == false) {
+        event.completer?.complete();
+      }
+    }
   }
 
   Future<void> _onSearched(

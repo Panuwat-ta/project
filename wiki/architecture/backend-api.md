@@ -80,13 +80,13 @@ server/
 - **OCR Engine:** Surya-OCR (รองรับภาษาไทยและอังกฤษ)
 - ข้อความที่ดึงได้ → ส่งให้ NLP Module (RegEx Pattern + โมเดล NLP ขนาดเล็ก)
 - ตรวจจับคำหลอกลวง: คำแสดงความเร่งด่วน, สัญญาผลตอบแทนสูง, ชื่อที่อยู่ใน Blacklist
-- สร้างคะแนน `S_text` (0–100) ซึ่งมีน้ำหนัก 25% ของ Risk Score รวม
+- สร้างคะแนน `S_text` (0–100%) เป็นมิติอิสระสำหรับการประเมินความเสี่ยง
 
 ### 4. ประสานงาน Job
 
 - ตรวจสอบ Redis Cache สำหรับ Image Hash ที่เคยวิเคราะห์แล้ว
 - Cache Miss: ส่ง Task ตามลำดับ (Metadata → OCR → Visual → Source → AI-Gen)
-- รวมผลลัพธ์บางส่วนจาก AI Inference Service เป็น Weighted Risk Score
+- รวมผลลัพธ์จากทุกมิติเป็น Overall Risk Score (Recommended Hybrid Approach: Worst-Case Trigger + Multi-factor Compounding)
 - เก็บผลลัพธ์ใน PostgreSQL และ Cache Image Hash ใน Redis
 - ส่ง FCM Push Notification เมื่อ Async Processing เสร็จ
 

@@ -70,8 +70,8 @@ sequenceDiagram
     %% Risk Calculation
     Service->>RiskCalc: calculate_risk_score(text_score, visual_score, source_score)
     activate RiskCalc
-    Note over RiskCalc: ถ่วงน้ำหนัก<br>Visual (60%) + Text (40%)
-    RiskCalc-->>Service: return {total_risk_score, grade}
+    Note over RiskCalc: Hybrid Worst-Case Trigger<br>max(Visual, Text, Source) + Compounding
+    RiskCalc-->>Service: return {total_risk_score, grade, primary_factor, breakdown}
     deactivate RiskCalc
     
     %% DB Persistence
@@ -115,4 +115,4 @@ sequenceDiagram
 ### 4. Utility & Calculation
 *   **คลาส/โมดูล:** `RiskCalculator`
 *   **ฟังก์ชัน:** `calculate_risk_score(text, visual, source)`
-*   **หน้าที่:** เป็นเพียวฟังก์ชัน (Pure Function) ที่รับค่าตัวเลขคะแนนดิบเข้าไปคำนวณตามสูตรน้ำหนักคณิตศาสตร์ และส่งค่าความเสี่ยงรวม (Total Risk) กลับมา
+*   **หน้าที่:** เป็นเพียวฟังก์ชัน (Pure Function) ที่รับค่าตัวเลขคะแนนดิบเข้าไปคำนวณตามหลัก Worst-Case Trigger ร่วมกับ Multi-factor Compounding และส่งค่าความเสี่ยงรวม (Total Risk), ระดับ (Grade), ปัจจัยหลัก (Primary Factor) และ Breakdown แยกมิติกลับมา

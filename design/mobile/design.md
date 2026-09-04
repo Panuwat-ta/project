@@ -551,9 +551,10 @@ dev_dependencies:
 RiskLevel fromScore(int score, int visualScore) {
   if (score >= 70 || visualScore >= 80) return RiskLevel.high;
   if (score >= 40) return RiskLevel.medium;
-  if (score >= 20) return RiskLevel.low;
-  return RiskLevel.safe;
+  return RiskLevel.low;
 }
-// เกณฑ์: 0-19 Safe, 20-39 Low, 40-69 Medium, 70-100 High (visual >=80 บังคับ High)
-// สูตรรวม: S_total = (S_textual * 0.25) + (S_visual * 0.45) + (S_source * 0.30)
+// เกณฑ์: 0-39 Low, 40-69 Medium, 70-100 High (visual >= 80 บังคับ High)
+// สูตรคำนวณ: Hybrid Approach (Worst-Case Trigger with Multi-Factor Compounding)
+// S_base = max(S_visual, S_textual, S_source)
+// S_total = min(100, S_base + (N_secondary >= 40 * 5))
 ```

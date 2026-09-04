@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -121,6 +122,26 @@ void main() {
             .having((s) => s.items.length, 'items.length', 2),
       ],
     );
+
+    test('completes completer on refresh completion', () async {
+      when(() => mockRepo.getScanHistory(
+            page: any(named: 'page'),
+            limit: any(named: 'limit'),
+            riskLevel: any(named: 'riskLevel'),
+            fromDate: any(named: 'fromDate'),
+            toDate: any(named: 'toDate'),
+            keyword: any(named: 'keyword'),
+          )).thenAnswer((_) async => tItems);
+
+      final bloc = HistoryBloc(repository: mockRepo);
+      final completer = Completer<void>();
+
+      bloc.add(HistoryRefreshed(completer));
+      await completer.future.timeout(const Duration(seconds: 2));
+
+      expect(completer.isCompleted, isTrue);
+      await bloc.close();
+    });
   });
 
   group('HistorySearched', () {

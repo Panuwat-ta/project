@@ -1,7 +1,9 @@
 import secrets
+from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from datetime import timezone, timedelta
 
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
 TH_TIMEZONE = timezone(timedelta(hours=7), name="Asia/Bangkok")
 class Settings(BaseSettings):
     # App
@@ -39,12 +41,12 @@ class Settings(BaseSettings):
     DEFAULT_SOURCE_SCORE: int = 20
 
     # AI Inference
-    ONNX_MODEL_PATH: str = "/home/panuwat/project/model/segformer/work_dirs/v1.0.0/segformer_v1_dynamic.onnx"
+    ONNX_MODEL_PATH: str = str(PROJECT_ROOT / "model/segformer/work_dirs/v1.0.0/segformer_v1_dynamic.onnx")
     ONNX_TILE_SIZE: int = 512
     ONNX_TILE_OVERLAP: int = 64
 
     # Explainable AI (XAI) - Qwen2.5-1.5B (GGUF)
-    XAI_MODEL_PATH: str = "/home/panuwat/project/model/Qwen2.5-1.5B/qwen2.5-1.5b-instruct-q4_k_m.gguf"
+    XAI_MODEL_PATH: str = str(PROJECT_ROOT / "model/Qwen2.5-1.5B/qwen2.5-1.5b-instruct-q4_k_m.gguf")
     XAI_GPU_LAYERS: int = -1  # -1 = offload all layers to GPU
     XAI_CONTEXT_SIZE: int = 1024
 

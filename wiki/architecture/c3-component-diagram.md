@@ -117,7 +117,7 @@ flowchart TB
 ### 2. Business Logic Layer (Services)
 โฟลเดอร์ `server/app/services/`
 เป็นหัวใจหลักของแอปพลิเคชัน ทำหน้าที่ประมวลผลตามกฎทางธุรกิจ (Business Rules)
-- **Scan Service:** ควบคุมขั้นตอนการตรวจสอบภาพทั้งหมด เริ่มตั้งแต่เช็ค Cache, สกัด EXIF, และคำนวณ **Weighted Risk Score**
+- **Scan Service:** ควบคุมขั้นตอนการตรวจสอบภาพทั้งหมด เริ่มตั้งแต่เช็ค Cache, สกัด EXIF, และคำนวณ **Overall Risk Score** ตามสูตร Hybrid Worst-Case
 - **Inference Coordinator (`inference_service.py`):** ตัวประสานงานระหว่าง Backend กับ AI Model ทำหน้าที่จัดคิวรูปภาพและส่งคำสั่งข้าม Process ไปให้ ONNX Worker
 - **Auth Service:** จัดการการเข้ารหัสผ่าน (Hashing) และออก JWT Token 
 

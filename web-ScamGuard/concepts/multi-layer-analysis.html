@@ -17,7 +17,7 @@
     <h1>การวิเคราะห์หลายชั้น (Multi-layer Analysis)</h1>
         <p class="lede">กลยุทธ์การตรวจจับหลักของระบบ แทนที่จะพึ่งพาสัญญาณเดียว ระบบรัน 3 ชั้นการวิเคราะห์โดยอิสระและรวมผลออกมาเป็นคะแนนความเสี่ยงเดียว</p>
     <div class="divider"></div>
-    <h2>ชั้นที่ 1: วิเคราะห์ข้อความ (Textual Analysis) — น้ำหนัก 25%</h2>
+    <h2>ชั้นที่ 1: วิเคราะห์ข้อความ (Textual Analysis) — สเกลคะแนนอิสระ 0–100%</h2>
     <p>ดึงข้อมูลและวิเคราะห์ข้อความที่ฝังอยู่ในรูปภาพ</p>
     <p><strong>ขั้นตอน:</strong></p>
     <ol>
@@ -31,9 +31,9 @@
     <li>ชื่อบัญชีหรือเบอร์โทรที่อยู่ใน Blacklist</li>
     <li>คำสั่งทางการเงินที่น่าสงสัย</li>
     </ul>
-    <p><strong>ผลลัพธ์:</strong> คะแนนความเสี่ยงจากข้อความ (S_text) 0–100</p>
+    <p><strong>ผลลัพธ์:</strong> คะแนนความเสี่ยงจากข้อความ (S_text) 0–100%</p>
     <div class="divider"></div>
-    <h2>ชั้นที่ 2: ตรวจสอบแหล่งที่มา (Source Verification) — น้ำหนัก 30%</h2>
+    <h2>ชั้นที่ 2: ตรวจสอบแหล่งที่มา (Source Verification) — สเกลคะแนนอิสระ 0–100%</h2>
     <p>ตรวจสอบว่ารูปภาพเคยถูกเผยแพร่บนอินเทอร์เน็ตหรือไม่ — เป็นตัวบ่งชี้สำคัญของการนำภาพไปใช้ซ้ำในเชิงหลอกลวง</p>
     <p><strong>ขั้นตอน:</strong></p>
     <ol>
@@ -45,16 +45,16 @@
     <li>พบ &gt;= 3 แหล่งที่แตกต่างกัน → ความเสี่ยงจากแหล่งที่มาสูง (ภาพถูกเผยแพร่กว้าง อาจเป็นภาพแอบอ้าง)</li>
     <li>พบ &lt;= 1 แหล่ง → ความเสี่ยงต่ำ (ดำเนินการตรวจสอบภาพ AI-Generated ต่อ)</li>
     </ul>
-    <p><strong>ผลลัพธ์:</strong> คะแนนความเสี่ยงจากแหล่งที่มา (S_source) 0–100</p>
+    <p><strong>ผลลัพธ์:</strong> คะแนนความเสี่ยงจากแหล่งที่มา (S_source) 0–100%</p>
     <div class="divider"></div>
-    <h2>ชั้นที่ 3: ตรวจจับความผิดปกติทางภาพ (Visual Anomaly Detection) — น้ำหนัก 45%</h2>
-    <p>ชั้นที่มีน้ำหนักสูงสุด ใช้ Deep Learning ตรวจจับการดัดแปลงระดับพิกเซล</p>
+    <h2>ชั้นที่ 3: ตรวจจับความผิดปกติทางภาพ (Visual Anomaly Detection) — สเกลคะแนนอิสระ 0–100%</h2>
+    <p>ชั้นที่วัดระดับการตัดต่อ/สังเคราะห์ภาพโดยตรง ใช้ Deep Learning ตรวจจับการดัดแปลงระดับพิกเซล</p>
     <p>การตรวจสอบย่อย 2 อย่าง:</p>
     <ul>
     <li><strong>ตรวจจับการตัดต่อภาพ (Semantic Segmentation-based)</strong> — ตรวจจับ splicing, copy-move และการแก้ไขพิกเซล</li>
     <li><strong>ตรวจจับภาพสังเคราะห์จาก AI</strong> — จำแนกว่าภาพถูกสร้างโดยโมเดล Generative AI (เช่น GAN, Diffusion model) หรือไม่</li>
     </ul>
-    <p><strong>ผลลัพธ์:</strong> คะแนนความเสี่ยงทางภาพ (S_visual) 0–100 พร้อม <strong>Heatmap</strong> สำหรับ XAI</p>
+    <p><strong>ผลลัพธ์:</strong> คะแนนความเสี่ยงทางภาพ (S_visual) 0–100% พร้อม <strong>Heatmap</strong> สำหรับ XAI</p>
     <div class="divider"></div>
     <h2>การไหลของ Pipeline</h2>
     <pre><code>ผู้ใช้อัปโหลดภาพ
@@ -65,19 +65,19 @@
       ├── Cache Hit → ดึงผลลัพธ์เก่ากลับมาทันที
       └── Cache Miss → รัน Pipeline:
               Task 1: ดึง Metadata/EXIF
-              Task 2: OCR &amp; Textual Analysis  → S_text
+              Task 2: OCR &amp; Textual Analysis  → S_text (0-100%)
               Task 3: Visual Forgery Detection → S_visual (บางส่วน)
                    |
               พบคำหลอกลวง? → ส่งไป Aggregator ทันที
                    |
-              Task 4: Reverse Image Search → S_source
+              Task 4: Reverse Image Search → S_source (0-100%)
                    |
               &gt;= 3 แหล่ง? → ความเสี่ยงแหล่งที่มาสูง
-              &lt; 2 แหล่ง? → Task 5: AI-Gen Detection → S_visual (ครบ)
+              &lt; 2 แหล่ง? → Task 5: AI-Gen Detection → S_visual (ครบ 0-100%)
                    |
-              Aggregator: คำนวณ Weighted Risk Score
+              Aggregator: คำนวณ Overall Risk Score (Hybrid Worst-Case Trigger + Multi-factor Compounding)
                    |
-              สร้างคำอธิบาย XAI
+              สร้างคำอธิบาย XAI พร้อม Breakdown 3 มิติ
                    |
               เก็บข้อมูลใน PostgreSQL, cache hash ใน Redis
                    |
@@ -89,8 +89,9 @@
     <div class="divider"></div>
     <h2>ประเด็นสำคัญ</h2>
     <ul>
-    <li>ทั้ง 3 ชั้นออกแบบมาให้เสริมซึ่งกันและกัน — ภาพหลอกลวงอาจทำให้ triggered เพียงชั้นเดียวหรือทั้ง 3 ชั้น</li>
-    <li>ชั้น Visual Anomaly มีน้ำหนักมากที่สุด (45%) เพราะเป็นสัญญาณที่แม่นยำที่สุดในระดับนิติวิทยาศาสตร์</li>
+    <li>ทั้ง 3 มิติประเมินคะแนนแยกกันเป็นอิสระ (0–100%) ตามหลัก Fraud Detection &amp; Forensics</li>
+    <li>สรุปคะแนนรวมด้วยหลัก <strong>Worst-Case Trigger</strong>: $S_{base} = \max(S_{visual}, S_{text}, S_{source})$ เพื่อป้องกันปัญหา Dilution ไม่ให้ด้านที่ปลอดภัยมาฉุดคะแนนด้านที่อันตรายลง</li>
+    <li>เสริมคะแนนด้วย <strong>Multi-Factor Compounding</strong>: หากพบความเสี่ยงปานกลางขึ้นไปในมิติอื่น ($\ge 40$) จะเพิ่มคะแนนความเสี่ยง +5 ต่อมิติ</li>
     <li>การ Cache ด้วย Redis image hash ทำให้การส่งรูปซ้ำได้รับคำตอบทันทีโดยไม่ต้องรัน AI ซ้ำ</li>
     </ul>
   </main>

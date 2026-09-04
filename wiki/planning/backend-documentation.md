@@ -96,7 +96,7 @@ server/
 │   └── utils/                  # Utility Functions
 │       ├── __init__.py
 │       ├── hashing.py          # SHA-256 Image Hash
-│       └── risk_calculator.py  # Weighted Risk Score Calculator
+│       └── risk_calculator.py  # Hybrid Risk Score Calculator (Worst-Case Trigger)
 │
 ├── migrations/                 # Alembic Database Migrations
 │   ├── env.py
@@ -437,16 +437,26 @@ class Scan(Base):
 ```python
 def calculate_risk_score(text_score: int, visual_score: int, source_score: int) -> dict:
     """
-    สูตร: Risk Score = (S_text * 0.25) + (S_visual * 0.45) + (S_source * 0.30)
+    Recommended Hybrid Approach (Worst-Case Trigger with Multi-Factor Breakdown):
+    1. ประเมิน 3 มิติแยกอิสระ 0-100%
+    2. ยึดมิติที่เสี่ยงสูงสุดเป็นฐาน S_base = max(visual, text, source)
+    3. Multi-factor Compounding: +5 คะแนนต่อมิติรองที่มีคะแนน >= 40 (สูงสุดไม่เกิน 100)
+    4. Visual >= 80 บังคับเป็น High
 
     Risk Grades:
-      0-39  = low    (สีเขียว)
-      40-69 = medium (สีเหลือง)
-      70-100 = high  (สีแดง)
-      Special: visual_score >= 80 → high ทันที
+      0-39   = low
+      40-69  = medium
+      70-100 = high
     """
-    total = round((text_score * 0.25) + (visual_score * 0.45) + (source_score * 0.30))
-    total = max(0, min(100, total))
+    text_score = max(0, min(100, int(text_score)))
+    visual_score = max(0, min(100, int(visual_score)))
+    source_score = max(0, min(100, int(source_score)))
+
+    base_score = max(text_score, visual_score, source_score)
+    scores = [text_score, visual_score, source_score]
+    secondary_high = sum(1 for s in scores if s >= 40) - (1 if base_score >= 40 else 0)
+    compounding_bonus = secondary_high * 5
+    total = min(100, base_score + compounding_bonus)
 
     if total >= 70 or visual_score >= 80:
         grade = "high"
@@ -459,6 +469,13 @@ def calculate_risk_score(text_score: int, visual_score: int, source_score: int) 
     return {
         "total_risk_score": total,
         "grade": grade,
+        "primary_factor": "visual" if visual_score == base_score else ("textual" if text_score == base_score else "source"),
+        "is_multi_risk": secondary_high > 0,
+        "breakdown": {
+            "visual": {"score": visual_score, "level": "high" if visual_score >= 70 else ("medium" if visual_score >= 40 else "low")},
+            "textual": {"score": text_score, "level": "high" if text_score >= 70 else ("medium" if text_score >= 40 else "low")},
+            "source": {"score": source_score, "level": "high" if source_score >= 70 else ("medium" if source_score >= 40 else "low")},
+        },
     }
 ```
 
@@ -478,7 +495,7 @@ async def analyze_image(file_bytes: bytes, user_id: int, db) -> dict:
     6. Task 3: Visual Forgery Detection (ส่งไป AI Inference)
     7. Task 4: Reverse Image Search (optional)
     8. Task 5: AI-Generated Image Detection
-    9. รวม Weighted Risk Score
+    9. รวม Overall Risk Score (Hybrid Worst-Case Trigger + Multi-factor Compounding)
     10. บันทึกลง PostgreSQL + เขียน Redis Cache
     11. return ผลลัพธ์ JSON
     """
