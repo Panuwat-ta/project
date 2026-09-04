@@ -1,6 +1,7 @@
 // Unified API layer - จุดศูนย์กลางของ API calls + Token management + Global error handling
 
-const API_BASE = "/api/v1";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "/api/v1";
+const DEFAULT_LEEWAY = Number(import.meta.env.VITE_REFRESH_LEEWAY_SECONDS) || 10;
 
 const USER_KEY = "user";
 
@@ -52,7 +53,7 @@ export function decodeJwt(token) {
   }
 }
 
-export function isTokenExpired(token, leewaySeconds = 10) {
+export function isTokenExpired(token, leewaySeconds = DEFAULT_LEEWAY) {
   if (!token) return true;
   const payload = decodeJwt(token);
   if (!payload || !payload.exp) return true;
@@ -273,7 +274,21 @@ export function cancelExportJob(jobId) {
 }
 
 export function getExportDownloadUrl(jobId) {
-  return `/api/v1/admin/dataset/export-jobs/${jobId}/download`;
+  return `${API_BASE}/admin/dataset/export-jobs/${jobId}/download`;
+}
+
+export function getWebSocketUrl(path = "/admin/dashboard", token = "") {
+  const customWsUrl = import.meta.env.VITE_WS_URL;
+  const cleanPath = path.startsWith("/") ? path : `/${path}`;
+  const queryParam = token ? `?token=${encodeURIComponent(token)}` : "";
+
+  if (customWsUrl) {
+    const base = customWsUrl.replace(/\/$/, "");
+    return `${base}${cleanPath}${queryParam}`;
+  }
+
+  const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+  return `${protocol}//${window.location.host}/api/v1/ws${cleanPath}${queryParam}`;
 }
 
 // Add these for profile logic

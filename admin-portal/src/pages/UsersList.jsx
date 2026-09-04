@@ -1,317 +1,324 @@
-import { useState, useEffect } from "react";
-
-import { Link } from "react-router-dom";
-import { Users as UsersIcon, ShieldAlert, ShieldCheck, Search, ChevronLeft, ChevronRight } from "lucide-react";
-
+import { useState, useEffect, useCallback, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { Search, RefreshCw, Eye, Ban, CheckCircle2 } from "lucide-react";
 import { fetchUsers, updateUserStatus } from "@/lib/api";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell, TableEmpty, Pagination } from "@/components/ui/Table";
+import { StatusBadge, Badge } from "@/components/ui/Badge";
+import { TableSkeleton } from "@/components/ui/Skeleton";
+import { Modal } from "@/components/ui/Modal";
+import { Textarea } from "@/components/ui/Input";
+import { useToast } from "@/components/ui/ToastContext";
+import { formatDate, formatNumber } from "@/lib/utils";
+
+const LIMIT = 15;
 
 export function UsersList() {
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [modalState, setModalState] = useState({ isOpen: false, user: null, action: null });
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const searchTimer = useRef(null);
+
+  // Status Change Modal State
+  const [modalState, setModalState] = useState({
+    isOpen: false,
+    user: null,
+    targetActive: false, // true = unban, false = ban
+  });
   const [reason, setReason] = useState("");
   const [reasonError, setReasonError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [search, setSearch] = useState("");
-  const [searchInput, setSearchInput] = useState("");
+  const navigate = useNavigate();
+  const toast = useToast();
 
-  const loadUsers = async () => {
-    setLoading(true);
-    try {
-      const data = await fetchUsers(page, 15, search);
-      setUsers(data.items || []);
-      setTotalPages(data.total_pages || 1);
-    } catch (error) {
-      console.error("Failed to fetch users", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    clearTimeout(searchTimer.current);
+    searchTimer.current = setTimeout(() => {
+      setDebouncedSearch(search.trim());
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(searchTimer.current);
+  }, [search]);
+
+  const loadUsers = useCallback(
+    async (manual = false) => {
+      try {
+        if (manual) setIsRefreshing(true);
+        else setIsLoading(true);
+
+        const data = await fetchUsers(page, LIMIT, debouncedSearch);
+        setUsers(data.items || []);
+        setTotal(data.total || 0);
+
+        if (manual) toast.success("รีเฟรชรายชื่อผู้ใช้สำเร็จ");
+      } catch (err) {
+        console.error("Load users error:", err);
+        toast.error("ไม่สามารถโหลดรายชื่อผู้ใช้ได้: " + err.message);
+        setUsers([]);
+        setTotal(0);
+      } finally {
+        setIsLoading(false);
+        setIsRefreshing(false);
+      }
+    },
+    [page, debouncedSearch, toast]
+  );
 
   useEffect(() => {
     loadUsers();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, search]);
+  }, [loadUsers]);
 
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    setPage(1);
-    setSearch(searchInput);
-  };
-
-  const toggleUserStatus = async (userId, currentStatus) => {
-    if (!reason.trim()) {
-      setReasonError("กรุณากรอกเหตุผล");
-      return;
-    }
-    try {
-      await updateUserStatus(userId, !currentStatus, reason.trim());
-      loadUsers();
-      closeModal();
-    } catch (error) {
-      setReasonError(error.message || "Failed to update user");
-      console.error("Failed to update user", error);
-    }
-  };
-
-  const openModal = (user, action) => {
-    setModalState({ isOpen: true, user, action });
+  const openStatusModal = (user, targetActive) => {
+    setModalState({ isOpen: true, user, targetActive });
     setReason("");
     setReasonError("");
   };
 
-  const closeModal = () => {
-    setModalState({ isOpen: false, user: null, action: null });
+  const closeStatusModal = () => {
+    if (isSubmitting) return;
+    setModalState({ isOpen: false, user: null, targetActive: false });
+    setReason("");
+    setReasonError("");
   };
 
-  const renderStatusBadge = (user) => (
-    user.is_active ? (
-      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50">
-        Active
-      </span>
-    ) : (
-      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800/50">
-        Banned
-      </span>
-    )
-  );
+  const handleUpdateStatus = async () => {
+    if (!reason.trim()) {
+      setReasonError("กรุณาระบุเหตุผลในการดำเนินการเพื่อบันทึกลง Audit Log");
+      return;
+    }
 
-  const renderRoleBadge = (user) => (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium border ${
-      user.role === 'admin' 
-        ? "bg-slate-900 dark:bg-slate-100 text-slate-50 dark:text-slate-900 border-slate-900 dark:border-slate-100" 
-        : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700"
-    }`}>
-      {user.role}
-    </span>
-  );
+    setIsSubmitting(true);
+    try {
+      await updateUserStatus(modalState.user.id, modalState.targetActive, reason.trim());
+      toast.success(
+        modalState.targetActive
+          ? `ปลดการระงับบัญชี ${modalState.user.email} สำเร็จ`
+          : `ระงับการใช้งานบัญชี ${modalState.user.email} สำเร็จ`
+      );
+      closeStatusModal();
+      loadUsers();
+    } catch (err) {
+      toast.error("ดำเนินการไม่สำเร็จ: " + err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-  const renderActionButton = (user) => (
-    user.is_active ? (
-      <button 
-        onClick={() => openModal(user, 'ban')}
-        disabled={user.role === 'admin'}
-        className={`inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-colors outline-none focus:ring-2 focus:ring-red-500 ${
-          user.role === 'admin' 
-            ? "bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed" 
-            : "bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40"
-        }`}
-      >
-        <ShieldAlert className="size-4" />
-        แบนผู้ใช้
-      </button>
-    ) : (
-      <button 
-        onClick={() => openModal(user, 'unban')}
-        className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-md hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors outline-none focus:ring-2 focus:ring-emerald-500"
-      >
-        <ShieldCheck className="size-4" />
-        ปลดแบน
-      </button>
-    )
-  );
+  const totalPages = Math.max(1, Math.ceil(total / LIMIT));
 
   return (
-    <div className="flex flex-col gap-6 font-sans relative">
-      <div>
-        <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Manage Users</h2>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-          จัดการบัญชีผู้ใช้งานระบบ ScamGuard, ตั้งค่าสิทธิ์ และจัดการการแบนบัญชี
-        </p>
+    <div className="space-y-5">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+            การจัดการผู้ใช้งาน (User Management)
+          </h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            ตรวจสอบประวัติการใช้งาน บัญชีผู้ส่งรายงาน และมาตรการระงับบัญชี (Ban/Unban)
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            icon={RefreshCw}
+            isLoading={isRefreshing}
+            onClick={() => loadUsers(true)}
+          >
+            รีเฟรชรายชื่อ
+          </Button>
+        </div>
       </div>
 
-      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col overflow-hidden">
-        <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <UsersIcon className="size-5 text-indigo-600 dark:text-indigo-400" />
-              <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">ผู้ใช้งานทั้งหมด</h3>
-            </div>
-            <p className="text-sm text-slate-500 dark:text-slate-400">แสดงรายชื่อผู้ใช้งานทั้งหมดในระบบ เรียงตามวันที่สมัคร</p>
-          </div>
-          
-          <form onSubmit={handleSearchSubmit} className="relative w-full md:max-w-xs">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
+      {/* Filter and Table Card */}
+      <Card>
+        <div className="p-4 flex items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800/80">
+          <div className="relative w-full sm:w-80">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-slate-400" />
             <input
-              type="text"
-              placeholder="ค้นหาชื่อหรืออีเมล..."
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-slate-100 rounded-lg outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="ค้นหาชื่อ, อีเมล, หรือ User ID..."
+              className="w-full pl-8 pr-3 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700/80 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 rounded-lg outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all font-mono"
             />
-          </form>
+          </div>
+
+          <div className="text-xs font-mono text-slate-500 dark:text-slate-400 hidden sm:block">
+            ผู้ใช้ทั้งหมด: <span className="font-semibold text-slate-700 dark:text-slate-300">{formatNumber(total)}</span> บัญชี
+          </div>
         </div>
 
-        {/* Desktop table */}
-        <div className="hidden md:block flex-1 overflow-x-auto">
-          <table className="w-full text-sm text-left whitespace-nowrap">
-            <thead className="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 uppercase tracking-wider">
-              <tr>
-                <th className="px-4 py-3 font-medium">ID</th>
-                <th className="px-4 py-3 font-medium">Email / ชื่อ</th>
-                <th className="px-4 py-3 font-medium">สิทธิ์ (Role)</th>
-                <th className="px-4 py-3 font-medium text-center">สแกน (ครั้ง)</th>
-                <th className="px-4 py-3 font-medium text-center">ส่งรายงาน</th>
-                <th className="px-4 py-3 font-medium">สถานะ</th>
-                <th className="px-4 py-3 font-medium text-right">จัดการ</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-              {loading ? (
-                Array.from({ length: 5 }).map((_, i) => (
-                  <tr key={`skeleton-${i}`}>
-                    <td colSpan="6" className="px-4 py-3">
-                      <div className="h-12 bg-slate-100 dark:bg-slate-800/40 rounded-md w-full animate-pulse"></div>
-                    </td>
-                  </tr>
-                ))
-              ) : users.length === 0 ? (
-                <tr>
-                  <td colSpan="7" className="px-4 py-12 text-center text-slate-500 dark:text-slate-400">
-                    ไม่พบข้อมูลผู้ใช้งาน
-                  </td>
-                </tr>
-              ) : (
-                users.map((user) => (
-                  <tr key={user.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                    <td className="px-4 py-3 font-mono text-slate-500 dark:text-slate-400 text-xs">#{user.id}</td>
-                    <td className="px-4 py-3">
-                      <div className="flex flex-col">
-                        <Link to={`/admin/users/${user.id}`} className="font-medium text-indigo-600 dark:text-indigo-400 hover:underline">
-                          {user.email}
-                        </Link>
-                        {user.full_name && (
-                          <span className="text-xs text-slate-500 dark:text-slate-400">{user.full_name}</span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">{renderRoleBadge(user)}</td>
-                    <td className="px-4 py-3 text-center text-slate-900 dark:text-slate-100 font-medium">{user.total_scans}</td>
-                    <td className="px-4 py-3 text-center text-slate-900 dark:text-slate-100 font-medium">{user.total_reports}</td>
-                    <td className="px-4 py-3">{renderStatusBadge(user)}</td>
-                    <td className="px-4 py-3 text-right">{renderActionButton(user)}</td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+        {isLoading ? (
+          <TableSkeleton rows={8} cols={6} />
+        ) : (
+          <div>
+            <Table>
+              <TableHeader>
+                <TableRow isHoverable={false}>
+                  <TableHead>User ID</TableHead>
+                  <TableHead>ข้อมูลผู้ใช้งาน</TableHead>
+                  <TableHead>สิทธิ์ (Role)</TableHead>
+                  <TableHead>สถานะ</TableHead>
+                  <TableHead>สแกนสะสม</TableHead>
+                  <TableHead>วันที่ลงทะเบียน</TableHead>
+                  <TableHead className="text-right">การจัดการ</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {users.length === 0 ? (
+                  <TableEmpty colSpan={7} message="ไม่พบบัญชีผู้ใช้ที่ค้นหา" />
+                ) : (
+                  users.map((user) => {
+                    const isAdmin = user.role === "admin" || user.is_superadmin;
+                    return (
+                      <TableRow
+                        key={user.id}
+                        className="cursor-pointer"
+                        onClick={() => navigate(`/admin/users/${user.id}`)}
+                      >
+                        {/* ID */}
+                        <TableCell className="font-mono text-xs font-semibold text-slate-900 dark:text-slate-100">
+                          #{user.id}
+                        </TableCell>
 
-        {/* Mobile card layout */}
-        <div className="md:hidden flex flex-col divide-y divide-slate-200 dark:divide-slate-800">
-          {loading ? (
-            Array.from({ length: 5 }).map((_, i) => (
-              <div key={`skeleton-m-${i}`} className="p-4">
-                <div className="h-12 bg-slate-100 dark:bg-slate-800/40 rounded-md w-full animate-pulse"></div>
-              </div>
-            ))
-          ) : users.length === 0 ? (
-            <div className="px-4 py-12 text-center text-slate-500 dark:text-slate-400">ไม่พบข้อมูลผู้ใช้งาน</div>
-          ) : (
-            users.map((user) => (
-              <div key={user.id} className="p-4 flex flex-col gap-3">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex flex-col min-w-0">
-                    <Link to={`/admin/users/${user.id}`} className="font-medium text-indigo-600 dark:text-indigo-400 hover:underline truncate">
-                      {user.email}
-                    </Link>
-                    {user.full_name && (
-                      <span className="text-xs text-slate-500 dark:text-slate-400 truncate">{user.full_name}</span>
-                    )}
-                  </div>
-                  <span className="font-mono text-slate-500 dark:text-slate-400 text-xs shrink-0">#{user.id}</span>
-                </div>
-                <div className="flex justify-between text-sm mt-1 border-t border-slate-100 dark:border-slate-800/50 pt-2">
-                  <div className="flex gap-4">
-                    <span><span className="text-slate-500">Scans:</span> {user.total_scans}</span>
-                    <span><span className="text-slate-500">Reports:</span> {user.total_reports}</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  {renderRoleBadge(user)}
-                  {renderStatusBadge(user)}
-                </div>
-                <div className="flex justify-end">{renderActionButton(user)}</div>
-              </div>
-            ))
-          )}
-        </div>
-        
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="px-5 py-3 flex items-center justify-between border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
-            <span className="text-sm text-slate-500 dark:text-slate-400">
-              หน้า {page} จาก {totalPages}
-            </span>
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="p-1 rounded-md text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-50 transition-colors"
-              >
-                <ChevronLeft className="size-5" />
-              </button>
-              <button
-                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
-                className="p-1 rounded-md text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-50 transition-colors"
-              >
-                <ChevronRight className="size-5" />
-              </button>
-            </div>
+                        {/* Name / Email */}
+                        <TableCell>
+                          <div className="text-xs font-medium text-slate-900 dark:text-slate-100">
+                            {user.full_name || "ไม่มีชื่อระบุ"}
+                          </div>
+                          <div className="text-[10px] font-mono text-slate-400">{user.email}</div>
+                        </TableCell>
+
+                        {/* Role */}
+                        <TableCell>
+                          <Badge variant={isAdmin ? "primary" : "default"} size="sm">
+                            {user.role}
+                          </Badge>
+                        </TableCell>
+
+                        {/* Status */}
+                        <TableCell>
+                          <StatusBadge status={user.is_active ? "active" : "banned"} />
+                        </TableCell>
+
+                        {/* Total Scans */}
+                        <TableCell className="font-mono text-xs">
+                          {formatNumber(user.total_scans ?? user.scans_count ?? 0)} ครั้ง
+                        </TableCell>
+
+                        {/* Created At */}
+                        <TableCell className="text-xs text-slate-500 font-mono whitespace-nowrap">
+                          {formatDate(user.created_at)}
+                        </TableCell>
+
+                        {/* Actions */}
+                        <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+                          <div className="flex items-center justify-end gap-2">
+                            <Button
+                              variant="ghost"
+                              size="xs"
+                              icon={Eye}
+                              onClick={() => navigate(`/admin/users/${user.id}`)}
+                            >
+                              โปรไฟล์
+                            </Button>
+
+                            {!isAdmin && (
+                              user.is_active ? (
+                                <Button
+                                  variant="dangerOutline"
+                                  size="xs"
+                                  icon={Ban}
+                                  onClick={() => openStatusModal(user, false)}
+                                >
+                                  ระงับ
+                                </Button>
+                              ) : (
+                                <Button
+                                  variant="outline"
+                                  size="xs"
+                                  icon={CheckCircle2}
+                                  onClick={() => openStatusModal(user, true)}
+                                  className="text-emerald-500 border-emerald-500/30 hover:bg-emerald-500/10"
+                                >
+                                  ปลดแบน
+                                </Button>
+                              )
+                            )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                )}
+              </TableBody>
+            </Table>
+
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              totalItems={total}
+              onPageChange={(p) => setPage(p)}
+              limit={LIMIT}
+            />
           </div>
         )}
-      </div>
+      </Card>
 
-      {/* Custom Modal */}
-      {modalState.isOpen && modalState.user && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-xl shadow-xl max-w-md w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-slate-200 dark:border-slate-800">
-            <div className="p-6">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">
-                {modalState.action === 'ban' ? 'ยืนยันการแบนบัญชี' : 'ยืนยันการปลดแบนบัญชี'}
-              </h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                {modalState.action === 'ban' 
-                  ? 'คุณแน่ใจหรือไม่ที่จะแบนผู้ใช้นี้? บัญชีนี้จะไม่สามารถเข้าสู่ระบบและใช้งานฟีเจอร์ต่างๆ ได้อีกจนกว่าจะได้รับการปลดแบน' 
-                  : 'คุณกำลังจะคืนสิทธิ์การใช้งานให้กับบัญชีนี้ คุณแน่ใจหรือไม่?'}
-              </p>
-              
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">เหตุผลที่ต้องระบุ</label>
-                <textarea
-                  value={reason}
-                  onChange={(e) => { setReason(e.target.value); setReasonError(""); }}
-                  placeholder="กรุณาระบุเหตุผลการดำเนินการ..."
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-slate-100 rounded-lg outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all resize-none"
-                  rows="3"
-                ></textarea>
-                {reasonError && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{reasonError}</p>}
-              </div>
-            </div>
-            <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
-              <button 
-                onClick={closeModal}
-                className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors outline-none focus:ring-2 focus:ring-slate-500"
-              >
-                ยกเลิก
-              </button>
-              <button 
-                onClick={() => toggleUserStatus(modalState.user.id, modalState.user.is_active)}
-                className={`px-4 py-2 text-sm font-medium text-white rounded-md transition-colors outline-none ${
-                  modalState.action === 'ban' 
-                    ? "bg-red-600 hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900" 
-                    : "bg-emerald-600 hover:bg-emerald-700 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
-                }`}
-              >
-                {modalState.action === 'ban' ? 'แบนผู้ใช้' : 'ปลดแบน'}
-              </button>
-            </div>
-          </div>
+      {/* Suspend / Unban Confirmation Modal */}
+      <Modal
+        isOpen={modalState.isOpen}
+        onClose={closeStatusModal}
+        title={
+          modalState.targetActive
+            ? `ปลดการระงับสิทธิ์บัญชี: ${modalState.user?.email}`
+            : `ระงับการใช้งานบัญชี: ${modalState.user?.email}`
+        }
+        description={
+          modalState.targetActive
+            ? "ผู้ใช้จะสามารถเข้าสู่ระบบและใช้งานการสแกนภาพได้ตามปกติ"
+            : "ผู้ใช้จะไม่สามารถเข้าใช้งานระบบได้จนกว่าผู้ดูแลระบบจะปลดการระงับ"
+        }
+        footer={
+          <>
+            <Button variant="ghost" size="sm" onClick={closeStatusModal} disabled={isSubmitting}>
+              ยกเลิก
+            </Button>
+            <Button
+              variant={modalState.targetActive ? "primary" : "danger"}
+              size="sm"
+              isLoading={isSubmitting}
+              onClick={handleUpdateStatus}
+            >
+              {modalState.targetActive ? "ยืนยันปลดระงับ" : "ระงับการใช้งาน"}
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-4 pt-2">
+          <Textarea
+            label="เหตุผลในการดำเนินการ (Audit Reason) *"
+            required
+            value={reason}
+            onChange={(e) => {
+              setReason(e.target.value);
+              setReasonError("");
+            }}
+            placeholder="ระบุเหตุผล เช่น พบพฤติกรรมส่งรายงานเท็จซ้ำซาก, มีการสร้างบัญชีสแปม..."
+            error={reasonError}
+            rows={4}
+          />
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

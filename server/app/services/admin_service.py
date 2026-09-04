@@ -717,3 +717,39 @@ async def deploy_model(db: AsyncSession, model_id: int, admin_id: int, reason: s
     await db.refresh(model)
     return model
 
+
+async def get_audit_logs(
+    db: AsyncSession,
+    page: int = 1,
+    limit: int = 50,
+    search: Optional[str] = None,
+    action: Optional[str] = None,
+    entity_type: Optional[str] = None,
+):
+    query = select(AuditLog)
+    if action and action != "All":
+        query = query.where(AuditLog.action == action)
+    if entity_type and entity_type != "All":
+        query = query.where(AuditLog.entity_type == entity_type)
+    if search:
+        search_pattern = f"%{search}%"
+        query = query.where(
+            or_(
+                AuditLog.action.ilike(search_pattern),
+                AuditLog.entity_type.ilike(search_pattern),
+                AuditLog.entity_id.ilike(search_pattern),
+                AuditLog.reason.ilike(search_pattern),
+                AuditLog.details.ilike(search_pattern),
+            )
+        )
+
+    count_query = select(func.count()).select_from(query.subquery())
+    total_result = await db.execute(count_query)
+    total = total_result.scalar_one()
+
+    query = query.order_by(AuditLog.created_at.desc()).offset((page - 1) * limit).limit(limit)
+    result = await db.execute(query)
+    items = result.scalars().all()
+
+    return items, total
+

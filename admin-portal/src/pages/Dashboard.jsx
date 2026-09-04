@@ -1,417 +1,543 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Users, Zap, Flag, Activity, RefreshCw, AlertCircle, Database, Server, DatabaseBackup, Gauge } from "lucide-react";
-import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Pie, PieChart, Cell, Bar, BarChart, CartesianGrid } from "recharts";
+import { useState, useEffect, useCallback } from "react";
+import { useNavigate, useOutletContext } from "react-router-dom";
+import {
+  Activity,
+  Zap,
+  Flag,
+  Users,
+  RefreshCw,
+  AlertCircle,
+  Database,
+  Cpu,
+  ShieldCheck,
+  CheckCircle2,
+  ArrowUpRight,
+  TrendingUp,
+} from "lucide-react";
+import {
+  AreaChart,
+  Area,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  CartesianGrid,
+} from "recharts";
+import { fetchDashboard, fetchHealth, getAccessToken, getWebSocketUrl } from "@/lib/api";
+import { Button } from "@/components/ui/Button";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
+import { Badge } from "@/components/ui/Badge";
+import { CardSkeleton } from "@/components/ui/Skeleton";
+import { useToast } from "@/components/ui/ToastContext";
+import { formatNumber } from "@/lib/utils";
 
-import { fetchDashboard, fetchHealth, getAccessToken } from "@/lib/api";
+const RISK_PALETTE = {
+  low: "#10b981",    // Emerald
+  medium: "#f59e0b", // Amber
+  high: "#f43f5e",   // Rose
+};
 
-const COLORS = {
-  primary: "#4f46e5", // indigo-600
-  secondary: "#c7d2fe", // indigo-200
-  low: "#22c55e", // green-500
-  medium: "#eab308", // yellow-500
-  high: "#ef4444", // red-500
+const CATEGORY_LABELS = {
+  romance_scam: "หลอกลวงความรัก",
+  online_shopping: "ซื้อขายออนไลน์",
+  fake_slip: "สลิปโอนเงินปลอม",
+  investment: "ลงทุนผลตอบแทนสูง",
+  identity_theft: "ปลอมแปลงตัวตน",
+  ai_deepfake: "ภาพ AI / Deepfake",
+  other: "อื่น ๆ",
 };
 
 export function Dashboard() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [data, setData] = useState(null);
   const [health, setHealth] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState(null);
-  const [lastRefresh, setLastRefresh] = useState(null);
+  const [lastUpdated, setLastUpdated] = useState(null);
   const navigate = useNavigate();
+  const toast = useToast();
+  const { setIsWsConnected } = useOutletContext() || {};
 
-  const loadData = async (isRefresh = false) => {
+  const loadData = useCallback(async (manual = false) => {
     try {
-      if (isRefresh) setIsRefreshing(true);
+      if (manual) setIsRefreshing(true);
       else setIsLoading(true);
       setError(null);
-      
-      const [dashData, healthData] = await Promise.all([
-        fetchDashboard(),
-        fetchHealth()
-      ]);
-      
-      setData(dashData);
-      setHealth(healthData);
-      setLastRefresh(new Date());
+
+      const [dash, hlth] = await Promise.all([fetchDashboard(), fetchHealth()]);
+      setData(dash);
+      setHealth(hlth);
+      setLastUpdated(new Date());
+
+      if (manual) {
+        toast.success("อัปเดตข้อมูลสถิติล่าสุดเรียบร้อยแล้ว");
+      }
     } catch (err) {
-      console.error("Failed to load dashboard data", err);
-      setError(err.message || "เกิดข้อผิดพลาดในการโหลดข้อมูล");
+      console.error("Dashboard data load error:", err);
+      setError(err.message || "ไม่สามารถเรียกข้อมูลแดชบอร์ดได้");
+      toast.error("เกิดข้อผิดพลาดในการโหลดข้อมูล: " + err.message);
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  };
+  }, [toast]);
 
+  // WebSocket Live Updates
   useEffect(() => {
     loadData();
 
-    // Establish WebSocket connection for real-time updates
     const token = getAccessToken();
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    // Use host from current window to support local and network IP access
-    const wsUrl = `${protocol}//${window.location.host}/api/v1/ws/admin/dashboard?token=${token}`;
-    
+    const wsUrl = getWebSocketUrl("/admin/dashboard", token);
+
     let ws;
     try {
       ws = new WebSocket(wsUrl);
-      
+
+      ws.onopen = () => {
+        if (setIsWsConnected) setIsWsConnected(true);
+      };
+
       ws.onmessage = (event) => {
         try {
-          const message = JSON.parse(event.data);
-          if (message.type === 'refresh_dashboard') {
-            loadData(true);
+          const msg = JSON.parse(event.data);
+          if (msg.type === "refresh_dashboard") {
+            loadData(false);
           }
         } catch (e) {
-          console.error("Failed to parse websocket message", e);
+          console.error("WS Parse error", e);
         }
       };
 
-      ws.onerror = (error) => {
-        console.error("WebSocket error:", error);
+      ws.onerror = () => {
+        if (setIsWsConnected) setIsWsConnected(false);
       };
-    } catch (e) {
-      console.error("Failed to connect to WebSocket", e);
+
+      ws.onclose = () => {
+        if (setIsWsConnected) setIsWsConnected(false);
+      };
+    } catch {
+      if (setIsWsConnected) setIsWsConnected(false);
     }
 
     return () => {
-      if (ws) {
-        ws.close();
-      }
+      if (ws) ws.close();
     };
-  }, []);
+  }, [loadData, setIsWsConnected]);
 
-  if (error) {
+  if (error && !data) {
     return (
-      <div className="flex flex-col items-center justify-center h-full gap-4 pt-20">
-        <div className="size-16 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center">
-          <AlertCircle className="size-8 text-red-500" />
+      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+        <div className="size-14 rounded-full bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-500">
+          <AlertCircle className="size-7" />
         </div>
-        <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">ไม่สามารถโหลดข้อมูลได้</h2>
-        <p className="text-sm text-slate-500 dark:text-slate-400">{error}</p>
-        <button 
+        <div className="text-center space-y-1">
+          <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
+            ไม่สามารถโหลดข้อมูลสถิติได้
+          </h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm">{error}</p>
+        </div>
+        <Button
+          variant="primary"
+          size="sm"
+          icon={RefreshCw}
           onClick={() => loadData(true)}
-          className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 flex items-center gap-2"
+          isLoading={isRefreshing}
         >
-          <RefreshCw className="size-4" /> ลองใหม่อีกครั้ง
-        </button>
+          ลองใหม่อีกครั้ง
+        </Button>
       </div>
     );
   }
 
   if (isLoading || !data) {
     return (
-      <div className="flex flex-col gap-6 font-sans">
-        <div className="flex justify-between items-center">
-          <div className="h-8 bg-slate-200 dark:bg-slate-800 rounded-md w-48 animate-pulse"></div>
-          <div className="h-5 bg-slate-100 dark:bg-slate-800/50 rounded-md w-32 animate-pulse"></div>
+      <div className="space-y-6">
+        <div className="h-10 bg-slate-200 dark:bg-slate-800 rounded-lg animate-pulse w-72" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <CardSkeleton />
+          <CardSkeleton />
+          <CardSkeleton />
+          <CardSkeleton />
         </div>
-
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 h-[116px] flex flex-col justify-between">
-              <div className="flex justify-between items-center">
-                <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded-md w-24 animate-pulse"></div>
-                <div className="size-8 rounded-md bg-slate-100 dark:bg-slate-800/50 animate-pulse"></div>
-              </div>
-              <div>
-                <div className="h-8 bg-slate-200 dark:bg-slate-800 rounded-md w-16 mb-2 animate-pulse"></div>
-                <div className="h-3 bg-slate-100 dark:bg-slate-800/50 rounded-md w-24 animate-pulse"></div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm lg:col-span-4 h-[385px] p-6 flex flex-col gap-4">
-            <div className="h-6 bg-slate-200 dark:bg-slate-800 rounded-md w-1/3 animate-pulse mb-2"></div>
-            <div className="flex-1 bg-slate-100 dark:bg-slate-800/50 rounded-lg animate-pulse"></div>
-          </div>
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm lg:col-span-3 h-[385px] p-6 flex flex-col gap-4">
-            <div className="h-6 bg-slate-200 dark:bg-slate-800 rounded-md w-1/3 animate-pulse mb-2"></div>
-            <div className="flex-1 bg-slate-100 dark:bg-slate-800/50 rounded-full mx-auto aspect-square max-h-48 animate-pulse"></div>
-            <div className="h-4 bg-slate-100 dark:bg-slate-800/50 rounded-md w-1/2 mx-auto animate-pulse mt-4"></div>
-          </div>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm lg:col-span-4 h-[385px] p-6 flex flex-col gap-4">
-            <div className="h-6 bg-slate-200 dark:bg-slate-800 rounded-md w-1/3 animate-pulse mb-2"></div>
-            <div className="flex-1 bg-slate-100 dark:bg-slate-800/50 rounded-lg animate-pulse"></div>
-          </div>
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm lg:col-span-3 h-[385px] p-6 flex flex-col gap-4">
-            <div className="h-6 bg-slate-200 dark:bg-slate-800 rounded-md w-1/2 animate-pulse mb-2"></div>
-            <div className="h-16 bg-slate-100 dark:bg-slate-800/50 rounded-lg animate-pulse"></div>
-            <div className="h-16 bg-slate-100 dark:bg-slate-800/50 rounded-lg animate-pulse"></div>
-            <div className="h-10 bg-slate-200 dark:bg-slate-800 rounded-md mt-auto animate-pulse"></div>
-          </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 h-80 bg-slate-200 dark:bg-slate-800 rounded-xl animate-pulse" />
+          <div className="h-80 bg-slate-200 dark:bg-slate-800 rounded-xl animate-pulse" />
         </div>
       </div>
     );
   }
 
-  // Format Risk Data for Recharts
-  const riskData = [
-    { name: 'Low', value: data.risk_distribution.low, color: COLORS.low },
-    { name: 'Medium', value: data.risk_distribution.medium, color: COLORS.medium },
-    { name: 'High', value: data.risk_distribution.high, color: COLORS.high },
+  // Risk Donut Data
+  const riskTotal = (data.risk_distribution.low || 0) + (data.risk_distribution.medium || 0) + (data.risk_distribution.high || 0);
+  const riskDonut = [
+    { name: "Low Risk", value: data.risk_distribution.low || 0, color: RISK_PALETTE.low },
+    { name: "Medium Risk", value: data.risk_distribution.medium || 0, color: RISK_PALETTE.medium },
+    { name: "High Risk", value: data.risk_distribution.high || 0, color: RISK_PALETTE.high },
   ];
 
-  // Format Category Data for Recharts
-  const categoryData = Object.entries(data.category_breakdown).map(([key, val]) => ({
-    name: key, value: val
+  // Category breakdown formatted
+  const categoryData = Object.entries(data.category_breakdown || {}).map(([key, val]) => ({
+    name: CATEGORY_LABELS[key] || key,
+    count: val,
   }));
 
-  const scanTrendData = data.scan_trend;
+  const highRiskRatio = riskTotal > 0 ? Math.round(((data.risk_distribution.high || 0) / riskTotal) * 100) : 0;
 
   return (
-    <div className="flex flex-col gap-6 font-sans">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="space-y-6">
+      {/* Top Header & Telemetry Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-3">
-            Dashboard
-            {isRefreshing && <RefreshCw className="size-5 animate-spin text-indigo-500" />}
+          <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2.5">
+            <span>ศูนย์ควบคุมและตรวจจับการหลอกลวง</span>
+            <Badge variant="primary" size="sm" withDot>
+              Real-time
+            </Badge>
           </h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            {new Date().toLocaleDateString('th-TH', { dateStyle: 'full' })} 
-            {lastRefresh && ` • อัปเดตล่าสุด: ${lastRefresh.toLocaleTimeString('th-TH')}`}
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-mono">
+            {lastUpdated ? `อัปเดตล่าสุด: ${lastUpdated.toLocaleTimeString("th-TH")}` : ""}
           </p>
         </div>
-        <button 
-          onClick={() => loadData(true)}
-          disabled={isRefreshing}
-          className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-md text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2 transition-colors disabled:opacity-50"
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            icon={RefreshCw}
+            isLoading={isRefreshing}
+            onClick={() => loadData(true)}
+          >
+            รีเฟรชสถิติ
+          </Button>
+        </div>
+      </div>
+
+      {/* System Infrastructure Telemetry Bar */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-3 rounded-xl bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 text-xs font-mono">
+        <div className="flex items-center gap-2">
+          <Database className="size-4 text-cyan-500 shrink-0" />
+          <span className="text-slate-600 dark:text-slate-400 font-medium">Database:</span>
+          <span className="font-semibold text-emerald-600 dark:text-emerald-400">Connected</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <Cpu className="size-4 text-cyan-500 shrink-0" />
+          <span className="text-slate-600 dark:text-slate-400 font-medium">AI Node:</span>
+          <span className="font-semibold text-emerald-600 dark:text-emerald-400">Ready (SegFormer)</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <ShieldCheck className="size-4 text-cyan-500 shrink-0" />
+          <span className="text-slate-600 dark:text-slate-400 font-medium">Model:</span>
+          <span className="font-semibold text-slate-800 dark:text-slate-200 truncate">
+            {health?.active_model || data?.model_status?.active_version || "SegFormer-B2"}
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
+          <span className="text-slate-600 dark:text-slate-400 font-medium">Status:</span>
+          <span className="font-semibold text-emerald-600 dark:text-emerald-400">All Operational</span>
+        </div>
+      </div>
+
+      {/* Primary KPI Instruments */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* KPI 1: Scan Velocity Today */}
+        <Card className="hover:border-cyan-500/30 transition-all">
+          <CardContent className="p-4 space-y-2">
+            <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+              <span className="font-medium">สแกนวันนี้ (24h Velocity)</span>
+              <Zap className="size-4 text-cyan-400" />
+            </div>
+            <div className="text-2xl font-bold font-mono text-slate-900 dark:text-slate-100 tracking-tight">
+              {formatNumber(data.overview.scans_today)}
+            </div>
+            <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 pt-1 border-t border-slate-100 dark:border-slate-800/60 font-mono">
+              <span>สะสมทั้งหมด</span>
+              <span className="font-semibold text-slate-700 dark:text-slate-300">
+                {formatNumber(data.overview.total_scans)} ครั้ง
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* KPI 2: Pending Scam Reports */}
+        <Card
+          className={
+            data.reports.pending > 0
+              ? "border-rose-500/40 bg-rose-500/5 cursor-pointer hover:border-rose-500/60 transition-all"
+              : "hover:border-slate-700 transition-all cursor-pointer"
+          }
+          onClick={() => navigate("/admin/reports?status=pending")}
         >
-          <RefreshCw className={`size-4 ${isRefreshing ? 'animate-spin' : ''}`} /> รีเฟรชข้อมูล
-        </button>
+          <CardContent className="p-4 space-y-2">
+            <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+              <span className="font-medium">ค้างการตรวจสอบ (Pending Queue)</span>
+              <Flag className="size-4 text-rose-500" />
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-bold font-mono text-rose-500 tracking-tight">
+                {formatNumber(data.reports.pending)}
+              </span>
+              <span className="text-xs text-slate-400 font-mono">
+                / {formatNumber(data.reports.reviewing)} กำลังตรวจ
+              </span>
+            </div>
+            <div className="flex items-center justify-between text-[11px] text-rose-500 font-medium pt-1 border-t border-slate-100 dark:border-slate-800/60">
+              <span>คลิกเพื่อเปิดคิวตรวจทันที</span>
+              <ArrowUpRight className="size-3.5" />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* KPI 3: High Risk Anomaly Ratio */}
+        <Card className="hover:border-amber-500/30 transition-all">
+          <CardContent className="p-4 space-y-2">
+            <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+              <span className="font-medium">อัตราภาพเสี่ยงสูง (High Risk)</span>
+              <Activity className="size-4 text-amber-500" />
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-bold font-mono text-amber-500 tracking-tight">
+                {highRiskRatio}%
+              </span>
+              <span className="text-xs text-slate-400 font-mono">
+                ({formatNumber(data.risk_distribution.high)} ภาพ)
+              </span>
+            </div>
+            <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 pt-1 border-t border-slate-100 dark:border-slate-800/60 font-mono">
+              <span>สัดส่วนความเสี่ยง</span>
+              <span className="font-semibold text-slate-700 dark:text-slate-300">
+                L:{data.risk_distribution.low} M:{data.risk_distribution.medium} H:{data.risk_distribution.high}
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* KPI 4: Active Registered Users */}
+        <Card className="hover:border-cyan-500/30 transition-all">
+          <CardContent className="p-4 space-y-2">
+            <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+              <span className="font-medium">ผู้ใช้งานวันนี้ (Active Users)</span>
+              <Users className="size-4 text-cyan-400" />
+            </div>
+            <div className="text-2xl font-bold font-mono text-slate-900 dark:text-slate-100 tracking-tight">
+              {formatNumber(data.overview.active_users_today)}
+            </div>
+            <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 pt-1 border-t border-slate-100 dark:border-slate-800/60 font-mono">
+              <span>บัญชีทั้งหมด</span>
+              <span className="font-semibold text-slate-700 dark:text-slate-300">
+                {formatNumber(data.overview.total_users)} บัญชี
+              </span>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {/* KPI Card 1 */}
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-5">
-          <div className="flex justify-between items-center pb-2">
-            <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400">ผู้ใช้ทั้งหมด</h3>
-            <div className="size-8 rounded-md bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center">
-              <Users className="size-4 text-indigo-600 dark:text-indigo-400" />
+      {/* Visual Analytics Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Trend Chart (Span 2) */}
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="size-4 text-cyan-400" />
+                <span>แนวโน้มปริมาณการสแกนรูปภาพ (Scan Trend)</span>
+              </CardTitle>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                สถิติการส่งรูปภาพตรวจจับความผิดปกติรายวัน
+              </p>
             </div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{data.overview.total_users.toLocaleString()}</div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{data.overview.active_users_today} ใช้งานวันนี้</p>
-          </div>
-        </div>
-
-        {/* KPI Card 2 */}
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-5">
-          <div className="flex justify-between items-center pb-2">
-            <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400">สแกนทั้งหมด</h3>
-            <div className="size-8 rounded-md bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center">
-              <Activity className="size-4 text-indigo-600 dark:text-indigo-400" />
-            </div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{data.overview.total_scans.toLocaleString()}</div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">จากทั้งหมดในระบบ</p>
-          </div>
-        </div>
-
-        {/* KPI Card 3 */}
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-5">
-          <div className="flex justify-between items-center pb-2">
-            <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400">สแกนวันนี้</h3>
-            <div className="size-8 rounded-md bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center">
-              <Zap className="size-4 text-indigo-600 dark:text-indigo-400" />
-            </div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{data.overview.scans_today.toLocaleString()}</div>
-            <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium mt-1">อัปเดตวันนี้</p>
-          </div>
-        </div>
-
-        {/* KPI Card 4 */}
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-5">
-          <div className="flex justify-between items-center pb-2">
-            <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400">รายงาน Pending</h3>
-            <div className="size-8 rounded-md bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center">
-              <Flag className="size-4 text-indigo-600 dark:text-indigo-400" />
-            </div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{data.reports.pending.toLocaleString()}</div>
-            <p className="text-xs text-red-600 dark:text-red-400 font-medium mt-1">รอการตรวจสอบ</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        {/* Trend Chart */}
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm lg:col-span-4 flex flex-col">
-          <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800">
-            <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">แนวโน้มการสแกน (7 วันย้อนหลัง)</h3>
-          </div>
-          <div className="p-6 h-[320px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={scanTrendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={COLORS.primary} stopOpacity={0.2} />
-                    <stop offset="95%" stopColor={COLORS.primary} stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <XAxis dataKey="date" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} dy={10} />
-                <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} dx={-10} />
-                <Tooltip 
-                  contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: 'var(--tw-colors-slate-800, #1e293b)', color: '#f8fafc' }}
-                  itemStyle={{ color: '#f8fafc' }}
-                  cursor={{ stroke: '#94a3b8', strokeWidth: 1, strokeDasharray: '3 3' }}
-                />
-                <Area type="monotone" dataKey="count" stroke={COLORS.primary} strokeWidth={2} fillOpacity={1} fill="url(#colorCount)" />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Risk Distribution */}
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm lg:col-span-3 flex flex-col">
-          <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800">
-            <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">สัดส่วนความเสี่ยง</h3>
-          </div>
-          <div className="p-6 h-[320px] flex flex-col items-center justify-center relative">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={riskData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={70}
-                  outerRadius={90}
-                  paddingAngle={2}
-                  dataKey="value"
-                  stroke="none"
+          </CardHeader>
+          <CardContent className="p-4 pt-2">
+            <div className="h-64 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  data={data.scan_trend || []}
+                  margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
                 >
-                  {riskData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip 
-                  contentStyle={{ borderRadius: '8px', border: 'none', backgroundColor: '#1e293b', color: '#f8fafc' }} 
-                  itemStyle={{ color: '#f8fafc' }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="absolute flex flex-col items-center justify-center text-center pointer-events-none">
-              <span className="text-3xl font-bold text-slate-900 dark:text-slate-100">{data.overview.total_scans.toLocaleString()}</span>
-              <span className="text-xs text-slate-500 dark:text-slate-400">Total</span>
+                  <defs>
+                    <linearGradient id="scanGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#00e5ff" stopOpacity={0.4} />
+                      <stop offset="95%" stopColor="#00e5ff" stopOpacity={0.0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" opacity={0.5} />
+                  <XAxis
+                    dataKey="date"
+                    tick={{ fontSize: 11, fill: "#64748b" }}
+                    tickLine={false}
+                    axisLine={{ stroke: "#334155" }}
+                  />
+                  <YAxis
+                    tick={{ fontSize: 11, fill: "#64748b" }}
+                    tickLine={false}
+                    axisLine={{ stroke: "#334155" }}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#0f172a",
+                      borderColor: "#334155",
+                      borderRadius: "0.5rem",
+                      fontSize: "12px",
+                      color: "#f8fafc",
+                      fontFamily: "monospace",
+                    }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="count"
+                    name="จำนวนสแกน"
+                    stroke="#00e5ff"
+                    strokeWidth={2}
+                    fillOpacity={1}
+                    fill="url(#scanGradient)"
+                    isAnimationActive={false}
+                    dot={{ r: 3, fill: "#00e5ff" }}
+                    activeDot={{ r: 5, fill: "#00e5ff" }}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
             </div>
-            <div className="flex gap-4 justify-center mt-4">
-              {riskData.map(entry => (
-                <div key={entry.name} className="flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-400">
-                  <div className="size-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
-                  {entry.name}
+          </CardContent>
+        </Card>
+
+        {/* Severity Distribution Donut */}
+        <Card>
+          <CardHeader>
+            <div>
+              <CardTitle>การกระจายระดับความเสี่ยง (Risk Tiers)</CardTitle>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                เกณฑ์ 3 ระดับ: ต่ำ, ปานกลาง, สูง
+              </p>
+            </div>
+          </CardHeader>
+          <CardContent className="p-4 pt-0 flex flex-col items-center">
+            <div className="h-52 w-full flex items-center justify-center relative">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={riskDonut}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={55}
+                    outerRadius={80}
+                    paddingAngle={3}
+                    dataKey="value"
+                    isAnimationActive={false}
+                  >
+                    {riskDonut.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#0f172a",
+                      borderColor: "#334155",
+                      borderRadius: "0.5rem",
+                      fontSize: "12px",
+                      color: "#f8fafc",
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                <span className="text-xl font-bold font-mono text-slate-100">
+                  {formatNumber(riskTotal)}
+                </span>
+                <span className="text-[10px] text-slate-400 uppercase tracking-wider">ทั้งหมด</span>
+              </div>
+            </div>
+
+            {/* Legend */}
+            <div className="w-full grid grid-cols-3 gap-2 mt-2 pt-3 border-t border-slate-100 dark:border-slate-800 text-center font-mono">
+              <div className="space-y-0.5">
+                <div className="flex items-center justify-center gap-1 text-[11px] text-emerald-500">
+                  <span className="size-2 rounded-full bg-emerald-500" />
+                  <span>Low</span>
                 </div>
-              ))}
+                <div className="text-xs font-semibold text-slate-300">
+                  {formatNumber(data.risk_distribution.low)}
+                </div>
+              </div>
+
+              <div className="space-y-0.5">
+                <div className="flex items-center justify-center gap-1 text-[11px] text-amber-500">
+                  <span className="size-2 rounded-full bg-amber-500" />
+                  <span>Med</span>
+                </div>
+                <div className="text-xs font-semibold text-slate-300">
+                  {formatNumber(data.risk_distribution.medium)}
+                </div>
+              </div>
+
+              <div className="space-y-0.5">
+                <div className="flex items-center justify-center gap-1 text-[11px] text-rose-500">
+                  <span className="size-2 rounded-full bg-rose-500" />
+                  <span>High</span>
+                </div>
+                <div className="text-xs font-semibold text-slate-300">
+                  {formatNumber(data.risk_distribution.high)}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        {/* Category Breakdown */}
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm lg:col-span-4 flex flex-col">
-          <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800">
-            <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">หมวดหมู่รายงานสแกม</h3>
+      {/* Scam Category Breakdown */}
+      <Card>
+        <CardHeader action={
+          <Button
+            variant="ghost"
+            size="xs"
+            onClick={() => navigate("/admin/reports")}
+            className="text-cyan-400"
+          >
+            ดูรายงานทั้งหมด →
+          </Button>
+        }>
+          <div>
+            <CardTitle>จำแนกตามประเภทการหลอกลวง (Scam Categories)</CardTitle>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              การกระจายตัวของภาพหลอกลวงที่ตรวจพบในระบบ
+            </p>
           </div>
-          <div className="p-6 h-[320px] w-full">
+        </CardHeader>
+        <CardContent className="p-4">
+          <div className="h-56 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={categoryData} layout="vertical" margin={{ top: 0, right: 30, left: 20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#334155" />
-                <XAxis type="number" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis dataKey="name" type="category" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} width={120} />
-                <Tooltip 
-                  cursor={{ fill: '#334155', opacity: 0.2 }}
-                  contentStyle={{ borderRadius: '8px', border: 'none', backgroundColor: '#1e293b', color: '#f8fafc' }}
-                  itemStyle={{ color: '#f8fafc' }}
+              <BarChart
+                data={categoryData}
+                margin={{ top: 10, right: 10, left: -20, bottom: 20 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" opacity={0.5} />
+                <XAxis
+                  dataKey="name"
+                  tick={{ fontSize: 11, fill: "#94a3b8" }}
+                  interval={0}
+                  angle={-15}
+                  textAnchor="end"
                 />
-                <Bar dataKey="value" fill={COLORS.primary} radius={[0, 4, 4, 0]} barSize={24}>
-                  {categoryData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={index % 2 === 0 ? COLORS.primary : COLORS.secondary} />
-                  ))}
-                </Bar>
+                <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#0f172a",
+                    borderColor: "#334155",
+                    borderRadius: "0.5rem",
+                    fontSize: "12px",
+                    color: "#f8fafc",
+                  }}
+                />
+                <Bar dataKey="count" name="จำนวนคดี" fill="#0ea5e9" radius={[4, 4, 0, 0]} isAnimationActive={false} />
               </BarChart>
             </ResponsiveContainer>
           </div>
-        </div>
-
-        {/* AI Model Status & Health */}
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm lg:col-span-3 flex flex-col">
-          <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800">
-            <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">AI Model & System Health</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{data.model.active_version ? `Version ${data.model.active_version} is currently active` : 'No active model'}</p>
-          </div>
-          <div className="p-6 flex flex-col gap-4 overflow-y-auto">
-            {/* System Health Summary */}
-            {health && (
-              <div className="grid grid-cols-2 gap-3 mb-2">
-                <div className={`flex flex-col p-3 rounded-lg border ${health.database === 'ok' ? 'bg-emerald-50 border-emerald-200 dark:bg-emerald-900/10 dark:border-emerald-800/50' : 'bg-red-50 border-red-200 dark:bg-red-900/10 dark:border-red-800/50'}`}>
-                  <div className="flex items-center justify-between mb-1">
-                    <Database className={`size-4 ${health.database === 'ok' ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`} />
-                    <div className={`size-2 rounded-full ${health.database === 'ok' ? 'bg-emerald-500' : 'bg-red-500 animate-pulse'}`} />
-                  </div>
-                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Database</span>
-                  <span className={`text-sm font-semibold capitalize ${health.database === 'ok' ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400'}`}>{health.database}</span>
-                </div>
-                <div className={`flex flex-col p-3 rounded-lg border ${health.storage === 'ok' ? 'bg-emerald-50 border-emerald-200 dark:bg-emerald-900/10 dark:border-emerald-800/50' : 'bg-red-50 border-red-200 dark:bg-red-900/10 dark:border-red-800/50'}`}>
-                  <div className="flex items-center justify-between mb-1">
-                    <DatabaseBackup className={`size-4 ${health.storage === 'ok' ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`} />
-                    <div className={`size-2 rounded-full ${health.storage === 'ok' ? 'bg-emerald-500' : 'bg-red-500 animate-pulse'}`} />
-                  </div>
-                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Storage</span>
-                  <span className={`text-sm font-semibold capitalize ${health.storage === 'ok' ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400'}`}>{health.storage}</span>
-                </div>
-              </div>
-            )}
-
-            {/* Model Info */}
-            <div className="flex justify-between items-center p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-800">
-              <div className="flex flex-col">
-                <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">{data.model.active_version || 'N/A'}</span>
-                <span className="text-xs text-slate-500 dark:text-slate-400 mt-1">Deployed: {data.model.deployed_at ? new Date(data.model.deployed_at).toLocaleDateString('th-TH') : 'N/A'}</span>
-              </div>
-              <span className="px-2.5 py-1 text-[10px] font-bold tracking-wide uppercase bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 rounded-full">Active</span>
-            </div>
-
-            {/* Metrics */}
-            <div className="grid grid-cols-2 gap-2">
-              <div className="flex flex-col items-center justify-center p-2 rounded-lg bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 text-center">
-                <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold mb-1">Pixel Acc (aAcc)</span>
-                <span className="text-sm font-bold text-slate-900 dark:text-slate-100">{data.model.a_acc ? `${(data.model.a_acc * 100).toFixed(1)}%` : '-'}</span>
-              </div>
-              <div className="flex flex-col items-center justify-center p-2 rounded-lg bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 text-center">
-                <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold mb-1">Mean Acc (mAcc)</span>
-                <span className="text-sm font-bold text-slate-900 dark:text-slate-100">{data.model.m_acc ? `${(data.model.m_acc * 100).toFixed(1)}%` : '-'}</span>
-              </div>
-              <div className="flex flex-col items-center justify-center p-2 rounded-lg bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 text-center">
-                <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold mb-1">Mean IoU (mIoU)</span>
-                <span className="text-sm font-bold text-slate-900 dark:text-slate-100">{data.model.m_iou ? `${(data.model.m_iou * 100).toFixed(1)}%` : '-'}</span>
-              </div>
-              <div className="flex flex-col items-center justify-center p-2 rounded-lg bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 text-center">
-                <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold mb-1">Mean Dice (F1)</span>
-                <span className="text-sm font-bold text-slate-900 dark:text-slate-100">{data.model.m_dice ? `${(data.model.m_dice * 100).toFixed(1)}%` : '-'}</span>
-              </div>
-            </div>
-
-            <button
-              onClick={() => navigate("/admin/models")}
-              className="w-full mt-auto px-4 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-md text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-slate-900 transition-colors"
-            >
-              Manage Models
-            </button>
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

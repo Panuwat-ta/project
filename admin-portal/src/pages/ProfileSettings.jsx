@@ -1,217 +1,390 @@
-import { useState, useEffect } from "react";
-import { Lock, LogOut, CheckCircle2, AlertCircle, Laptop, Smartphone, Monitor } from "lucide-react";
-import { fetchAdminProfile, updateAdminProfile, fetchAdminSessions, revokeAdminSession } from "@/lib/api";
+import { useState, useEffect, useCallback } from "react";
+import {
+  User,
+  Shield,
+  Smartphone,
+  Laptop,
+  Monitor,
+  AlertCircle,
+  LogOut,
+  Clock,
+  KeyRound,
+} from "lucide-react";
+import {
+  fetchAdminProfile,
+  updateAdminProfile,
+  fetchAdminSessions,
+  revokeAdminSession,
+  logoutAdmin,
+} from "@/lib/api";
+import { Button } from "@/components/ui/Button";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
+import { Badge } from "@/components/ui/Badge";
+import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/Table";
+import { Modal } from "@/components/ui/Modal";
+import { useToast } from "@/components/ui/ToastContext";
+import { formatDate } from "@/lib/utils";
 
 export function ProfileSettings() {
   const [profile, setProfile] = useState(null);
   const [sessions, setSessions] = useState([]);
-  
+  const [loading, setLoading] = useState(true);
+
+  // Change Password Form
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
 
-  const loadData = async () => {
+  // Revoke Session Modal
+  const [revokeSessionId, setRevokeSessionId] = useState(null);
+  const [isRevoking, setIsRevoking] = useState(false);
+
+  const toast = useToast();
+
+  const loadProfileData = useCallback(async () => {
     try {
-      const [profRes, sessRes] = await Promise.all([
-        fetchAdminProfile(),
-        fetchAdminSessions()
-      ]);
-      setProfile(profRes);
-      setSessions(sessRes.items || []);
+      setLoading(true);
+      const [p, s] = await Promise.all([fetchAdminProfile(), fetchAdminSessions()]);
+      setProfile(p);
+      setSessions(s.items || []);
     } catch (err) {
-      setError("ไม่สามารถโหลดข้อมูลโปรไฟล์ได้: " + err.message);
+      console.error("Load admin profile error:", err);
+      toast.error("ไม่สามารถโหลดข้อมูลโปรไฟล์หรือเซสชันได้: " + err.message);
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [toast]);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    loadProfileData();
+  }, [loadProfileData]);
 
   const handleUpdatePassword = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
+    setPasswordError("");
 
-    if (newPassword !== confirmPassword) {
-      setError("รหัสผ่านใหม่ไม่ตรงกัน");
-      return;
-    }
     if (newPassword.length < 8) {
-      setError("รหัสผ่านใหม่ต้องยาวอย่างน้อย 8 ตัวอักษร");
+      setPasswordError("รหัสผ่านใหม่ต้องมีความยาวอย่างน้อย 8 ตัวอักษร");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordError("รหัสผ่านยืนยันไม่ตรงกับรหัสผ่านใหม่");
       return;
     }
 
-    setLoading(true);
+    setIsUpdatingPassword(true);
     try {
-      await updateAdminProfile({ current_password: currentPassword, new_password: newPassword });
-      setSuccess("เปลี่ยนรหัสผ่านสำเร็จ");
+      await updateAdminProfile({
+        current_password: currentPassword,
+        new_password: newPassword,
+      });
+      toast.success("เปลี่ยนรหัสผ่านสำเร็จเรียบร้อยแล้ว");
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch (err) {
-      setError(err.message);
+      setPasswordError(err.message || "ไม่สามารถเปลี่ยนรหัสผ่านได้ กรุณาตรวจสอบรหัสผ่านเดิม");
     } finally {
-      setLoading(false);
+      setIsUpdatingPassword(false);
     }
   };
 
-  const handleRevokeSession = async (sessionId) => {
-    if (!confirm("คุณแน่ใจหรือไม่ที่จะเพิกถอนเซสชันนี้?")) return;
+  const confirmRevokeSession = async () => {
+    if (!revokeSessionId) return;
+    setIsRevoking(true);
     try {
-      await revokeAdminSession(sessionId);
-      setSessions(sessions.filter(s => s.id !== sessionId));
+      await revokeAdminSession(revokeSessionId);
+      toast.success("เพิกถอนเซสชันสำเร็จ");
+      setSessions((prev) => prev.filter((s) => s.id !== revokeSessionId));
+      setRevokeSessionId(null);
     } catch (err) {
-      alert("ไม่สามารถเพิกถอนเซสชันได้: " + err.message);
+      toast.error("ไม่สามารถเพิกถอนเซสชันได้: " + err.message);
+    } finally {
+      setIsRevoking(false);
     }
   };
 
-  const parseUserAgent = (ua) => {
-    if (!ua) return { icon: Monitor, name: "Unknown Device" };
-    const lowerUA = ua.toLowerCase();
-    if (lowerUA.includes("mobile") || lowerUA.includes("android") || lowerUA.includes("iphone")) {
-      return { icon: Smartphone, name: "Mobile Device" };
+  const parseDevice = (ua = "") => {
+    const l = ua.toLowerCase();
+    if (l.includes("mobile") || l.includes("android") || l.includes("iphone")) {
+      return { icon: Smartphone, label: "Mobile Device" };
     }
-    if (lowerUA.includes("mac") || lowerUA.includes("windows") || lowerUA.includes("linux")) {
-      return { icon: Laptop, name: "Desktop" };
+    if (l.includes("mac") || l.includes("windows") || l.includes("linux")) {
+      return { icon: Laptop, label: "Workstation / Laptop" };
     }
-    return { icon: Monitor, name: "Device" };
+    return { icon: Monitor, label: "Web Console" };
   };
+
+  if (loading && !profile) {
+    return (
+      <div className="space-y-6">
+        <div className="h-8 bg-slate-200 dark:bg-slate-800 rounded animate-pulse w-48" />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="h-72 bg-slate-200 dark:bg-slate-800 rounded-xl animate-pulse" />
+          <div className="h-72 bg-slate-200 dark:bg-slate-800 rounded-xl animate-pulse" />
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-          ตั้งค่าโปรไฟล์ <span className="text-lg font-normal text-slate-500 dark:text-slate-400">(Profile Settings)</span>
-        </h1>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            <Shield className="size-5 text-cyan-400" />
+            <span>การตั้งค่าบัญชีและความปลอดภัย (Profile & Security)</span>
+          </h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            จัดการข้อมูล Super Admin, นโยบายรหัสผ่าน และเพิกถอนเซสชันการเข้าใช้งาน (Session Management)
+          </p>
+        </div>
+
+        <Button
+          variant="dangerOutline"
+          size="sm"
+          icon={LogOut}
+          onClick={logoutAdmin}
+        >
+          ออกจากระบบ
+        </Button>
       </div>
 
-      <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 space-y-8">
-        
-        {/* Read-only Profile info */}
-        <div className="space-y-4">
-          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 tracking-wide uppercase">ข้อมูลบัญชี</h3>
-          {profile ? (
-            <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-700 dark:text-indigo-400 font-bold text-lg flex-shrink-0">
-                {profile.full_name?.substring(0, 2).toUpperCase()}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Profile Info Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <User className="size-4 text-cyan-400" />
+              <span>ข้อมูลบัญชีผู้ดูแลระบบ (Super Admin)</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800">
+              <div className="size-12 rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 flex items-center justify-center font-bold text-base">
+                {profile?.full_name?.substring(0, 2).toUpperCase() || "SA"}
               </div>
-              <div className="min-w-0 flex-1">
-                <div className="font-medium text-slate-900 dark:text-slate-100 truncate">{profile.full_name}</div>
-                <div className="text-sm text-slate-500 dark:text-slate-400 truncate">{profile.email}</div>
-                <div className="text-xs text-indigo-600 dark:text-indigo-400 font-medium mt-1">Super Admin</div>
-              </div>
-            </div>
-          ) : (
-            <div className="h-20 bg-slate-100 dark:bg-slate-800 animate-pulse rounded-xl"></div>
-          )}
-        </div>
-
-        <div className="h-px bg-slate-200 dark:bg-slate-800"></div>
-
-        {/* Change Password */}
-        <div className="space-y-4">
-          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 tracking-wide uppercase flex items-center gap-2">
-            <Lock className="w-4 h-4" /> เปลี่ยนรหัสผ่าน
-          </h3>
-          
-          {error && (
-            <div className="flex items-center gap-2 p-3 text-sm text-red-600 bg-red-50 dark:bg-red-900/20 dark:text-red-400 rounded-lg border border-red-100 dark:border-red-800/50">
-              <AlertCircle className="w-4 h-4" /> {error}
-            </div>
-          )}
-          
-          {success && (
-            <div className="flex items-center gap-2 p-3 text-sm text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 dark:text-emerald-400 rounded-lg border border-emerald-100 dark:border-emerald-800/50">
-              <CheckCircle2 className="w-4 h-4" /> {success}
-            </div>
-          )}
-
-          <form onSubmit={handleUpdatePassword} className="space-y-4 max-w-sm">
-            <div className="space-y-1.5">
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">รหัสผ่านปัจจุบัน</label>
-              <input 
-                type="password" 
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                className="w-full px-3 py-2 bg-white dark:bg-slate-800/50 border border-slate-300 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" 
-              />
-            </div>
-            <div className="space-y-1.5">
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">รหัสผ่านใหม่ (อย่างน้อย 8 ตัวอักษร)</label>
-              <input 
-                type="password" 
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full px-3 py-2 bg-white dark:bg-slate-800/50 border border-slate-300 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" 
-              />
-            </div>
-            <div className="space-y-1.5">
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">ยืนยันรหัสผ่านใหม่</label>
-              <input 
-                type="password" 
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-3 py-2 bg-white dark:bg-slate-800/50 border border-slate-300 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" 
-              />
-            </div>
-            <button 
-              type="submit" 
-              disabled={loading || !currentPassword || !newPassword || !confirmPassword}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
-            >
-              บันทึกรหัสผ่าน
-            </button>
-          </form>
-        </div>
-
-        <div className="h-px bg-slate-200 dark:bg-slate-800"></div>
-
-        {/* Active Sessions */}
-        <div className="space-y-4">
-          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 tracking-wide uppercase">อุปกรณ์ที่เข้าสู่ระบบ</h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400">เซสชันทั้งหมดที่กำลังใช้งานบัญชีของคุณอยู่ คุณสามารถกดเพื่อออกจากระบบจากอุปกรณ์อื่นได้</p>
-          
-          <div className="space-y-3">
-            {sessions.filter(s => !s.revoked_at).map(session => {
-              const deviceInfo = parseUserAgent(session.user_agent);
-              const Icon = deviceInfo.icon;
-              return (
-                <div key={session.id} className="flex items-center justify-between p-4 bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl">
-                  <div className="flex items-center gap-4 min-w-0">
-                    <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg text-slate-600 dark:text-slate-300 flex-shrink-0">
-                      <Icon className="w-5 h-5" />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="font-medium text-slate-900 dark:text-slate-100 flex items-center gap-2 flex-wrap">
-                        <span className="truncate">{deviceInfo.name}</span>
-                        {session.is_current && <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400 text-xs rounded-full font-semibold whitespace-nowrap">Current</span>}
-                      </div>
-                      <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 break-words">
-                        IP: {session.ip_address} • เข้าใช้งานล่าสุด: {new Date(session.last_used_at || session.created_at).toLocaleString('th-TH')}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {!session.is_current && (
-                    <button 
-                      onClick={() => handleRevokeSession(session.id)}
-                      className="p-2 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-red-500"
-                      title="ออกจากระบบอุปกรณ์นี้"
-                    >
-                      <LogOut className="w-5 h-5" />
-                    </button>
-                  )}
+              <div className="min-w-0">
+                <div className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                  {profile?.full_name || "Super Admin"}
                 </div>
-              );
-            })}
-          </div>
-        </div>
-        
+                <div className="text-xs text-slate-600 dark:text-slate-300 font-mono font-medium">{profile?.email}</div>
+                <div className="flex items-center gap-2 mt-1">
+                  <Badge variant="primary" size="sm" withDot>
+                    Super Admin
+                  </Badge>
+                  <Badge variant="success" size="sm">
+                    Active
+                  </Badge>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2 font-mono text-xs">
+              <div className="flex justify-between py-1.5 border-b border-slate-200 dark:border-slate-800">
+                <span className="text-slate-600 dark:text-slate-400 font-medium">Account ID:</span>
+                <span className="text-slate-900 dark:text-slate-100 font-bold">#{profile?.id || "1"}</span>
+              </div>
+              <div className="flex justify-between py-1.5 border-b border-slate-200 dark:border-slate-800">
+                <span className="text-slate-600 dark:text-slate-400 font-medium">สิทธิ์การเข้าถึง:</span>
+                <span className="text-emerald-700 dark:text-emerald-400 font-bold">Full System Governance (RBAC)</span>
+              </div>
+              <div className="flex justify-between py-1.5">
+                <span className="text-slate-600 dark:text-slate-400 font-medium">เข้าสู่ระบบล่าสุด:</span>
+                <span className="text-slate-900 dark:text-slate-100 font-bold">{formatDate(profile?.last_login_at || new Date())}</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Change Password Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <KeyRound className="size-4 text-cyan-400" />
+              <span>เปลี่ยนรหัสผ่าน (Change Password)</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleUpdatePassword} className="space-y-4">
+              {passwordError && (
+                <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-center gap-2">
+                  <AlertCircle className="size-4 shrink-0" />
+                  <span>{passwordError}</span>
+                </div>
+              )}
+
+              <div className="space-y-1">
+                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
+                  รหัสผ่านปัจจุบัน
+                </label>
+                <input
+                  type="password"
+                  required
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  placeholder="••••••••••••"
+                  className="w-full px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-cyan-500 font-mono"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
+                  รหัสผ่านใหม่ (ขั้นต่ำ 8 ตัวอักษร)
+                </label>
+                <input
+                  type="password"
+                  required
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="••••••••••••"
+                  className="w-full px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-cyan-500 font-mono"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
+                  ยืนยันรหัสผ่านใหม่
+                </label>
+                <input
+                  type="password"
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="••••••••••••"
+                  className="w-full px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-cyan-500 font-mono"
+                />
+              </div>
+
+              <div className="pt-2 flex justify-end">
+                <Button
+                  type="submit"
+                  variant="primary"
+                  size="sm"
+                  isLoading={isUpdatingPassword}
+                >
+                  บันทึกรหัสผ่านใหม่
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
       </div>
+
+      {/* Active Sessions Management Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Clock className="size-4 text-cyan-400" />
+            <span>เซสชันการเข้าใช้งานปัจจุบัน (Active Admin Sessions)</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow isHoverable={false}>
+                <TableHead>อุปกรณ์ / เบราว์เซอร์</TableHead>
+                <TableHead>IP Address</TableHead>
+                <TableHead>เข้าใช้งานล่าสุด</TableHead>
+                <TableHead>สถานะ</TableHead>
+                <TableHead className="text-right">การจัดการ</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {sessions.length === 0 ? (
+                <TableRow isHoverable={false}>
+                  <TableCell colSpan={5} className="py-6 text-center text-xs text-slate-500">
+                    ไม่พบข้อมูลเซสชันอื่นในระบบ
+                  </TableCell>
+                </TableRow>
+              ) : (
+                sessions.map((sess) => {
+                  const dev = parseDevice(sess.user_agent);
+                  const Icon = dev.icon;
+                  const isCurrent = sess.is_current;
+
+                  return (
+                    <TableRow key={sess.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-2.5">
+                          <div className="size-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
+                            <Icon className="size-4" />
+                          </div>
+                          <div>
+                            <div className="text-xs font-semibold text-slate-900 dark:text-slate-100">
+                              {dev.label}
+                            </div>
+                            <div className="text-[10px] text-slate-600 dark:text-slate-400 font-mono truncate max-w-xs font-medium">
+                              {sess.user_agent || "Web Admin Client"}
+                            </div>
+                          </div>
+                        </div>
+                      </TableCell>
+
+                      <TableCell className="font-mono text-xs font-medium text-slate-800 dark:text-slate-200">
+                        {sess.ip_address || "127.0.0.1"}
+                      </TableCell>
+
+                      <TableCell className="font-mono text-xs text-slate-600 dark:text-slate-400 font-medium">
+                        {formatDate(sess.last_active_at || sess.created_at)}
+                      </TableCell>
+
+                      <TableCell>
+                        {isCurrent ? (
+                          <Badge variant="primary" size="sm" withDot>
+                            เซสชันปัจจุบัน
+                          </Badge>
+                        ) : (
+                          <Badge variant="default" size="sm">
+                            เชื่อมต่ออยู่
+                          </Badge>
+                        )}
+                      </TableCell>
+
+                      <TableCell className="text-right">
+                        {!isCurrent && (
+                          <Button
+                            variant="dangerOutline"
+                            size="xs"
+                            onClick={() => setRevokeSessionId(sess.id)}
+                          >
+                            เพิกถอน
+                          </Button>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      {/* Revoke Session Confirmation Modal */}
+      <Modal
+        isOpen={!!revokeSessionId}
+        onClose={() => setRevokeSessionId(null)}
+        title="ยืนยันการเพิกถอนเซสชัน (Revoke Session)"
+        description="การเพิกถอนจะบังคับให้อุปกรณ์ดังกล่าวออกจากระบบทันที และไม่สามารถใช้ Refresh Token เดิมได้อีก"
+        footer={
+          <>
+            <Button variant="ghost" size="sm" onClick={() => setRevokeSessionId(null)} disabled={isRevoking}>
+              ยกเลิก
+            </Button>
+            <Button variant="danger" size="sm" isLoading={isRevoking} onClick={confirmRevokeSession}>
+              ยืนยันเพิกถอนเซสชัน
+            </Button>
+          </>
+        }
+      >
+        <p className="text-xs text-slate-400">
+          คุณต้องการเพิกถอน Session ID: <span className="font-mono text-cyan-400">#{revokeSessionId}</span> หรือไม่?
+        </p>
+      </Modal>
     </div>
   );
 }

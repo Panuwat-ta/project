@@ -1,162 +1,107 @@
-import { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
-import { Bell, Search, Sun, Moon, Menu, Loader2, AlertCircle } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import { Menu, Sun, Moon, Search, User, ShieldCheck } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
-import { searchGlobal } from "@/lib/api";
 
-export function TopBar({ onMenuClick }) {
+const ROUTE_TITLES = {
+  "/admin/dashboard": "แดชบอร์ดภาพรวมระบบ",
+  "/admin/reports": "คิวตรวจสอบรายงานการหลอกลวง",
+  "/admin/users": "จัดการบัญชีผู้ใช้งาน",
+  "/admin/models": "การจัดการโมเดล AI (SegFormer & Surya)",
+  "/admin/dataset": "ส่งออกชุดข้อมูลวิจัย (Dataset Export)",
+  "/admin/audit-log": "บันทึกประวัติการตรวจสอบ (Audit Logs)",
+  "/admin/profile": "การตั้งค่าบัญชีและความปลอดภัย",
+};
+
+export function TopBar({ onMenuClick, onOpenCommandPalette, isWsConnected = true }) {
   const { theme, setTheme } = useTheme();
+  const location = useLocation();
 
   const handleThemeToggle = () => {
     const isSystemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const currentActualTheme = theme === 'system' ? (isSystemDark ? 'dark' : 'light') : theme;
-    
-    setTheme(currentActualTheme === 'light' ? 'dark' : 'light');
+    const currentActualTheme = theme === "system" ? (isSystemDark ? "dark" : "light") : theme;
+    setTheme(currentActualTheme === "light" ? "dark" : "light");
   };
 
-  // Determine which icon to show based on the current resolved theme
-  const isSystemDark = typeof window !== 'undefined' && window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const currentActualTheme = theme === 'system' ? (isSystemDark ? 'dark' : 'light') : theme;
-  const ThemeIcon = currentActualTheme === 'light' ? Sun : Moon;
+  const isDark =
+    theme === "dark" ||
+    (theme === "system" &&
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches);
 
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const abortControllerRef = useRef(null);
-  const dropdownRef = useRef(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowDropdown(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  useEffect(() => {
-    if (!query.trim() || query.length < 2) {
-      setResults([]);
-      setIsSearching(false);
-      return;
-    }
-
-    const search = async () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-      abortControllerRef.current = new AbortController();
-
-      setIsSearching(true);
-      try {
-        const res = await searchGlobal(query);
-        setResults(res.items || []);
-        setShowDropdown(true);
-      } catch (err) {
-        if (err.name !== "AbortError") {
-          console.error("Global search failed:", err);
-        }
-      } finally {
-        setIsSearching(false);
-      }
-    };
-
-    const debounceId = setTimeout(() => {
-      search();
-    }, 300);
-
-    return () => clearTimeout(debounceId);
-  }, [query]);
+  // Find matching title or default
+  const activeTitle =
+    Object.entries(ROUTE_TITLES).find(([route]) =>
+      location.pathname.startsWith(route)
+    )?.[1] || "Admin Console";
 
   return (
-    <header className="flex h-14 shrink-0 items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 md:px-6 z-10 relative">
-      <div className="flex-1 flex items-center gap-2 md:gap-4 relative">
-        <button 
+    <header className="h-14 shrink-0 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 md:px-6 z-20">
+      {/* Left: Mobile Menu & Current Context */}
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
           onClick={onMenuClick}
-          className="p-2 -ml-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors md:hidden focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          aria-label="Toggle Menu"
+          className="p-1.5 -ml-1.5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 rounded-md md:hidden hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          aria-label="Open sidebar menu"
         >
           <Menu className="size-5" />
         </button>
 
-        <div className="relative w-full max-w-md hidden md:block" ref={dropdownRef}>
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-slate-400 dark:text-slate-500" />
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              if (e.target.value.length >= 2) setShowDropdown(true);
-            }}
-            onFocus={() => {
-              if (query.length >= 2) setShowDropdown(true);
-            }}
-            placeholder="Search reports, users, scan IDs..."
-            className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 text-sm rounded-md pl-9 pr-3 py-1.5 outline-none focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-900 focus:ring-1 focus:ring-indigo-500 transition-all"
-          />
-          {isSearching && (
-            <div className="absolute right-2.5 top-1/2 -translate-y-1/2">
-              <Loader2 className="size-4 animate-spin text-indigo-500" />
-            </div>
-          )}
-
-          {showDropdown && query.length >= 2 && (
-            <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-lg rounded-md overflow-hidden z-50 max-h-96 overflow-y-auto">
-              {!isSearching && results.length === 0 ? (
-                <div className="p-4 text-center text-sm text-slate-500 dark:text-slate-400">
-                  ไม่พบผลลัพธ์
-                </div>
-              ) : (
-                <ul className="divide-y divide-slate-100 dark:divide-slate-800">
-                  {results.map((item) => (
-                    <li key={`${item.type}-${item.id}`}>
-                      <Link
-                        to={item.url}
-                        onClick={() => setShowDropdown(false)}
-                        className="block px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium text-slate-900 dark:text-slate-100">{item.title}</span>
-                          <span className={`text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full ${
-                            item.type === 'user' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400' :
-                            item.type === 'report' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' :
-                            'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
-                          }`}>
-                            {item.type}
-                          </span>
-                        </div>
-                        {item.subtitle && (
-                          <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">
-                            {item.subtitle}
-                          </div>
-                        )}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          )}
+        <div className="flex items-center gap-2">
+          <ShieldCheck className="size-4 text-cyan-500 hidden sm:inline-block" />
+          <h1 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+            {activeTitle}
+          </h1>
         </div>
       </div>
 
-      <div className="flex items-center gap-3">
-        <button 
-          onClick={handleThemeToggle}
-          title={`Theme: ${theme}`}
-          className="relative p-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors outline-none focus:ring-2 focus:ring-indigo-500"
+      {/* Right: Quick Command Search, Live Status, Theme & Profile */}
+      <div className="flex items-center gap-2.5">
+        {/* Command Search Trigger */}
+        <button
+          type="button"
+          onClick={onOpenCommandPalette}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 text-xs text-slate-500 hover:border-cyan-500/50 hover:text-slate-800 dark:hover:text-slate-200 transition-all cursor-pointer select-none"
         >
-          <ThemeIcon className="size-4" />
+          <Search className="size-3.5 text-slate-400" />
+          <span className="hidden sm:inline">ค้นหาด่วน...</span>
+          <kbd className="px-1.5 py-0.5 text-[10px] font-mono bg-slate-200/80 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-600 dark:text-slate-400">
+            Ctrl K
+          </kbd>
         </button>
 
-        <button 
-          className="relative p-2 text-slate-400 dark:text-slate-500 cursor-not-allowed rounded-md transition-colors"
-          title="Notifications (Coming soon)"
+        {/* Live System Status Pulse */}
+        <div
+          className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 text-[11px] font-mono font-medium text-slate-600 dark:text-slate-400 select-none"
+          title={isWsConnected ? "WebSocket เชื่อมต่อสมบูรณ์ (Real-time)" : "WebSocket หลุดการเชื่อมต่อ"}
         >
-          <Bell className="size-4 opacity-50" />
+          <span
+            className={`size-2 rounded-full ${
+              isWsConnected ? "bg-emerald-400 animate-pulse" : "bg-rose-400"
+            }`}
+          />
+          <span>{isWsConnected ? "Live Telemetry" : "Offline"}</span>
+        </div>
+
+        {/* Theme Toggle */}
+        <button
+          type="button"
+          onClick={handleThemeToggle}
+          title={`โหมดปัจจุบัน: ${theme}`}
+          className="p-2 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          aria-label="Toggle theme"
+        >
+          {isDark ? <Sun className="size-4 text-amber-400" /> : <Moon className="size-4 text-slate-600" />}
         </button>
+
+        {/* Profile Link */}
+        <Link
+          to="/admin/profile"
+          className="p-1.5 rounded-lg text-slate-500 hover:text-cyan-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          title="โปรไฟล์ Super Admin"
+        >
+          <User className="size-4" />
+        </Link>
       </div>
     </header>
   );

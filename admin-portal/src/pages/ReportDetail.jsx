@@ -1,509 +1,420 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
-  ArrowLeft, Check, X, ExternalLink, Loader2,
-  Image as ImageIcon, Map as MapIcon, FileText, KeyRound, Camera, User, ShieldAlert,
+  ArrowLeft,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  FileText,
+  AlertTriangle,
+  Layers,
+  KeyRound,
 } from "lucide-react";
-
 import { fetchReportDetail, updateReportStatus, startReviewReport } from "@/lib/api";
-
-const statusStyles = {
-  pending: "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400",
-  reviewing: "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400",
-  approved: "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400",
-  rejected: "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400",
-};
-
-const riskColor = (score) => {
-  if (score >= 70) return { color: "#ef4444", label: "HIGH" };
-  if (score >= 40) return { color: "#eab308", label: "MEDIUM" };
-  return { color: "#22c55e", label: "LOW" };
-};
-
-const riskBarColor = [
-  { key: "text", label: "Text", color: "#818CF8" },
-  { key: "visual", label: "Visual", color: "#F472B6" },
-  { key: "source", label: "Source", color: "#38BDF8" },
-];
-
-function ScoreRing({ value }) {
-  const { color, label } = riskColor(value);
-  const radius = 34;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (value / 100) * circumference;
-
-  return (
-    <div className="flex flex-col items-center gap-2">
-      <div className="relative size-20">
-        <svg viewBox="0 0 80 80" className="size-20 -rotate-90">
-          <circle cx="40" cy="40" r={radius} fill="none" stroke="currentColor" strokeWidth="8" className="text-slate-200 dark:text-slate-800" />
-          <circle
-            cx="40" cy="40" r={radius} fill="none" stroke={color} strokeWidth="8"
-            strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset}
-          />
-        </svg>
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-xl font-bold text-slate-900 dark:text-slate-100">{value}</span>
-          <span className="text-[9px] font-bold tracking-wider text-slate-500 dark:text-slate-400">{label}</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Field({ label, children }) {
-  return (
-    <div>
-      <p className="text-xs font-medium text-slate-500 dark:text-slate-400">{label}</p>
-      <div className="mt-1 text-sm text-slate-900 dark:text-slate-100">{children}</div>
-    </div>
-  );
-}
+import { Button } from "@/components/ui/Button";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
+import { RiskBadge, StatusBadge, Badge } from "@/components/ui/Badge";
+import { Modal } from "@/components/ui/Modal";
+import { Textarea } from "@/components/ui/Input";
+import { HeatmapComparator } from "@/components/ui/HeatmapComparator";
+import { useToast } from "@/components/ui/ToastContext";
+import { formatDate } from "@/lib/utils";
 
 export function ReportDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const toast = useToast();
 
   const [report, setReport] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [loadError, setLoadError] = useState("");
-  const [showOriginal, setShowOriginal] = useState(true);
+  const [error, setError] = useState("");
+
+  const [isStartingReview, setIsStartingReview] = useState(false);
+  const [isSubmittingDecision, setIsSubmittingDecision] = useState(false);
+
+  // Decision Modal State
+  const [modalState, setModalState] = useState({
+    isOpen: false,
+    decision: null, // 'approved' | 'rejected'
+  });
   const [adminNote, setAdminNote] = useState("");
   const [noteError, setNoteError] = useState("");
-  const [modalState, setModalState] = useState({ isOpen: false, action: null });
-  const [submitting, setSubmitting] = useState(false);
-  const [actionError, setActionError] = useState("");
+
+  const loadReport = useCallback(async () => {
+    setIsLoading(true);
+    setError("");
+    try {
+      const data = await fetchReportDetail(id);
+      setReport(data);
+      if (data.admin_note) {
+        setAdminNote(data.admin_note);
+      }
+    } catch (err) {
+      console.error("Load report detail failed:", err);
+      setError(err.message || "ไม่สามารถโหลดข้อมูลรายงานได้");
+      toast.error("เกิดข้อผิดพลาดในการโหลดรายงาน: " + err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [id, toast]);
 
   useEffect(() => {
-    async function load() {
-      setIsLoading(true);
-      setLoadError("");
-      try {
-        const data = await fetchReportDetail(id);
-        setReport(data);
-        setAdminNote(data.admin_note || "");
-      } catch (err) {
-        setLoadError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    load();
-  }, [id]);
+    loadReport();
+  }, [loadReport]);
 
-  const openModal = (action) => {
-    setActionError("");
-    if (action === "rejected" && !adminNote.trim()) {
-      setNoteError("กรุณากรอกบันทึกหรือเหตุผล ก่อนปัดตก");
+  // Handle "Start Review" transition: pending -> reviewing
+  const handleStartReview = async () => {
+    if (!report) return;
+    setIsStartingReview(true);
+    try {
+      const updated = await startReviewReport(report.id, report.version);
+      setReport(updated);
+      toast.success("เปลี่ยนสถานะเป็น 'กำลังตรวจสอบ (Reviewing)' เรียบร้อยแล้ว");
+    } catch (err) {
+      if (err.status === 409) {
+        toast.error("ข้อมูลถูกแก้ไขโดยผู้ดูแลท่านอื่นแล้ว กรุณารีเฟรชหน้าจอ");
+        loadReport();
+      } else {
+        toast.error("ไม่สามารถเริ่มการตรวจสอบได้: " + err.message);
+      }
+    } finally {
+      setIsStartingReview(false);
+    }
+  };
+
+  const openDecisionModal = (decision) => {
+    setModalState({ isOpen: true, decision });
+    setNoteError("");
+  };
+
+  const closeDecisionModal = () => {
+    if (isSubmittingDecision) return;
+    setModalState({ isOpen: false, decision: null });
+    setNoteError("");
+  };
+
+  // Submit Final Decision: approved or rejected
+  const handleSubmitDecision = async () => {
+    const { decision } = modalState;
+    if (decision === "rejected" && !adminNote.trim()) {
+      setNoteError("กรุณาระบุเหตุผลหรือบันทึกของเจ้าหน้าที่ในการปฏิเสธรายงาน");
       return;
     }
-    setModalState({ isOpen: true, action });
-  };
 
-  const handleStartReview = async () => {
-    setSubmitting(true);
-    setActionError("");
+    setIsSubmittingDecision(true);
     try {
-      const res = await startReviewReport(report.id, report.version);
-      setReport(prev => ({ ...prev, status: res.status, version: res.version }));
+      const updated = await updateReportStatus(
+        report.id,
+        report.version,
+        decision,
+        adminNote.trim()
+      );
+      setReport(updated);
+      closeDecisionModal();
+      toast.success(
+        decision === "approved"
+          ? "ยืนยันรายงานว่าเป็นภาพหลอกลวง (Approved) สำเร็จ"
+          : "ปฏิเสธรายงาน (Rejected) สำเร็จ"
+      );
     } catch (err) {
       if (err.status === 409) {
-        setActionError("ข้อมูลถูกอัปเดตโดยแอดมินท่านอื่นแล้ว กรุณาโหลดหน้าใหม่");
+        toast.error("เกิดข้อขัดแย้ง: ข้อมูลถูกปรับปรุงโดยผู้อื่นแล้ว กรุณารีเฟรช");
+        loadReport();
       } else {
-        setActionError(err.message);
+        toast.error("ทำรายการไม่สำเร็จ: " + err.message);
       }
     } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleSubmit = async () => {
-    setSubmitting(true);
-    setActionError("");
-    try {
-      await updateReportStatus(report.id, report.version, modalState.action, adminNote.trim() || null);
-      setModalState({ isOpen: false, action: null });
-      navigate("/admin/reports", { replace: true });
-    } catch (err) {
-      if (err.status === 409) {
-        setActionError("ข้อมูลถูกอัปเดตโดยแอดมินท่านอื่นแล้ว กรุณาโหลดหน้าใหม่");
-      } else {
-        setActionError(err.message);
-      }
-      setModalState({ isOpen: false, action: null });
-    } finally {
-      setSubmitting(false);
+      setIsSubmittingDecision(false);
     }
   };
 
   if (isLoading) {
     return (
-      <div className="flex flex-col gap-6 font-sans">
-        <div className="h-7 bg-slate-200 dark:bg-slate-800 rounded-md w-40 animate-pulse" />
-        <div className="grid gap-4 lg:grid-cols-5">
-          <div className="lg:col-span-3 h-72 bg-slate-100 dark:bg-slate-800/50 rounded-xl animate-pulse" />
-          <div className="lg:col-span-2 h-72 bg-slate-100 dark:bg-slate-800/50 rounded-xl animate-pulse" />
+      <div className="space-y-6">
+        <div className="h-8 bg-slate-200 dark:bg-slate-800 rounded animate-pulse w-48" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 h-[500px] bg-slate-200 dark:bg-slate-800 rounded-xl animate-pulse" />
+          <div className="h-[500px] bg-slate-200 dark:bg-slate-800 rounded-xl animate-pulse" />
         </div>
-        <div className="h-48 bg-slate-100 dark:bg-slate-800/50 rounded-xl animate-pulse" />
       </div>
     );
   }
 
-  if (loadError || !report) {
+  if (error || !report) {
     return (
-      <div className="flex flex-col items-center justify-center gap-4 py-20 font-sans">
-        <ShieldAlert className="size-12 text-slate-400" />
-        <p className="text-slate-500 dark:text-slate-400">{loadError || "ไม่พบรายงาน"}</p>
-        <Link to="/admin/reports" className="px-4 py-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 border border-slate-200 dark:border-slate-700 rounded-md hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-          กลับไปยังรายการ
-        </Link>
+      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4 text-center">
+        <div className="size-12 rounded-full bg-rose-500/10 flex items-center justify-center text-rose-500">
+          <AlertTriangle className="size-6" />
+        </div>
+        <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
+          ไม่สามารถเปิดรายงาน #{id} ได้
+        </h3>
+        <p className="text-xs text-slate-500 max-w-sm">{error || "ไม่พบข้อมูลในระบบ"}</p>
+        <Button variant="primary" size="sm" onClick={() => navigate("/admin/reports")}>
+          กลับไปคิวรายงาน
+        </Button>
       </div>
     );
   }
 
-  const scan = report.scan;
-  const imageUrl = showOriginal ? scan?.thumbnail_url : scan?.heatmap_image_url;
+  const multiLayer = report.multi_layer_analysis || {};
+  const isPending = report.status === "pending";
+  const isReviewing = report.status === "reviewing";
 
   return (
-    <div className="flex flex-col gap-6 font-sans">
-      <div>
-        <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-1">
-          <Link to="/admin/reports" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Reports</Link>
-          <span>/</span>
-          <span className="text-slate-700 dark:text-slate-300">Report #{report.id}</span>
-        </div>
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => navigate("/admin/reports")}
-              className="p-2 text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors outline-none"
-              aria-label="Back"
-            >
-              <ArrowLeft className="size-4" />
-            </button>
-            <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Report #{report.id}</h2>
-            <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-2">
-                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${statusStyles[report.status] || statusStyles.pending}`}>
-                  {report.status}
-                </span>
-                <span className="text-xs text-slate-400">v{report.version}</span>
-              </div>
+    <div className="space-y-6">
+      {/* Back and Action Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <Link
+            to="/admin/reports"
+            className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            title="ย้อนกลับไปคิวรายงาน"
+          >
+            <ArrowLeft className="size-4" />
+          </Link>
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-xl font-bold font-mono tracking-tight text-slate-900 dark:text-slate-100">
+                รายงานตรวจสอบ #{report.id}
+              </h2>
+              <StatusBadge status={report.status} />
+              <RiskBadge score={report.risk_score} />
             </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-mono">
+              ส่งตรวจเมื่อ: {formatDate(report.created_at)}
+            </p>
           </div>
+        </div>
+
+        {/* Workflow Actions */}
+        <div className="flex items-center gap-2">
+          {isPending && (
+            <Button
+              variant="primary"
+              size="sm"
+              icon={Clock}
+              isLoading={isStartingReview}
+              onClick={handleStartReview}
+            >
+              รับเรื่องตรวจ (Start Review)
+            </Button>
+          )}
+
+          {(isReviewing || isPending) && (
+            <>
+              <Button
+                variant="danger"
+                size="sm"
+                icon={XCircle}
+                onClick={() => openDecisionModal("rejected")}
+              >
+                ปัดตกรายงาน (Reject)
+              </Button>
+
+              <Button
+                variant="primary"
+                size="sm"
+                icon={CheckCircle2}
+                onClick={() => openDecisionModal("approved")}
+                className="bg-emerald-600 hover:bg-emerald-500 text-white"
+              >
+                ยืนยัน Scam (Approve)
+              </Button>
+            </>
+          )}
         </div>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-5">
-        {/* Left column - report & reporter info */}
-        <div className="lg:col-span-3 flex flex-col gap-4">
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800">
-              <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">ข้อมูลรายงาน</h3>
-            </div>
-            <div className="p-6 grid gap-4 sm:grid-cols-2">
-              <Field label="หมวดหมู่">
-                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-                  {report.category}
-                </span>
-              </Field>
-              <Field label="แพลตฟอร์ม">{report.platform || "-"}</Field>
-              <Field label="ยินยอมให้ใช้วิจัย">
-                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                  report.allow_research_use ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400" : "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
-                }`}>
-                  {report.allow_research_use ? "ใช่" : "ไม่"}
-                </span>
-              </Field>
-              <Field label="วันที่รายงาน">
-                {report.created_at ? new Date(report.created_at).toLocaleString("th-TH") : "-"}
-              </Field>
-              <div className="sm:col-span-2">
-                <Field label="รายละเอียด">
-                  <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">{report.description || "-"}</p>
-                </Field>
+      {/* Main Forensic Workbench: Two Columns */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Left: Dual Layer Heatmap & Visual Anomaly Visualizer (7 cols) */}
+        <div className="lg:col-span-7 space-y-6">
+          <HeatmapComparator
+            originalUrl={report.image_url}
+            heatmapUrl={report.heatmap_url}
+            title="การพิสูจน์ภาพตัดต่อ / AI Deepfake (SegFormer Anomaly)"
+          />
+
+          {/* Submitter Note & Reason */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="size-4 text-cyan-400" />
+                <span>คำอธิบายจากผู้ส่งรายงาน (User Description)</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 text-sm text-slate-800 dark:text-slate-200 leading-relaxed">
+                {report.description || "ไม่มีข้อความเพิ่มเติมจากผู้ส่ง"}
               </div>
-              {report.reference_url && (
-                <div className="sm:col-span-2">
-                  <Field label="ลิงก์อ้างอิง">
-                    <a href={report.reference_url} target="_blank" rel="noreferrer"
-                       className="inline-flex items-center gap-1 text-indigo-600 dark:text-indigo-400 hover:underline">
-                      {report.reference_url}
-                      <ExternalLink className="size-3" />
-                    </a>
-                  </Field>
+
+              {report.admin_note && (
+                <div className="space-y-1">
+                  <div className="text-xs font-semibold text-slate-400">บันทึกของเจ้าหน้าที่ (Admin Note):</div>
+                  <div className="p-3 rounded-lg bg-cyan-500/5 border border-cyan-500/20 text-xs text-cyan-300 font-mono">
+                    {report.admin_note}
+                  </div>
                 </div>
               )}
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
-              <User className="size-4 text-indigo-600 dark:text-indigo-400" />
-              <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">ข้อมูลผู้รายงาน</h3>
-            </div>
-            <div className="p-6 grid gap-4 sm:grid-cols-3">
-              <Field label="ชื่อ">{report.user?.full_name || "Unknown"}</Field>
-              <Field label="Email">{report.user?.email || "No Email"}</Field>
-              <Field label="รายงานที่เคยส่ง">{report.user?.total_reports_submitted ?? "-"}</Field>
-            </div>
-          </div>
-
-          {/* Decision section */}
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800">
-              <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">การตัดสินใจ</h3>
-            </div>
-            <div className="p-6">
-              {report.status === "approved" || report.status === "rejected" ? (
-                <div className="space-y-4">
-                  <div className={`p-4 rounded-lg border text-sm ${
-                    report.status === "approved"
-                      ? "bg-emerald-50 dark:bg-emerald-900/10 border-emerald-200 dark:border-emerald-800/50 text-emerald-700 dark:text-emerald-400"
-                      : "bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-800/50 text-red-700 dark:text-red-400"
-                  }`}>
-                    <p className="font-medium">{report.status === "approved" ? "รายงานนี้ได้รับการอนุมัติแล้ว" : "รายงานนี้ถูกปัดตกแล้ว"}</p>
-                    {report.admin_note && <p className="mt-1 text-xs opacity-80">หมายเหตุ: {report.admin_note}</p>}
-                  </div>
-                  
-                  {actionError && <p className="text-xs text-red-600 dark:text-red-400">{actionError}</p>}
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">เหตุผลในการรื้อฟื้น (Reopen)</label>
-                    <textarea
-                      value={adminNote}
-                      onChange={(e) => { setAdminNote(e.target.value); setNoteError(""); }}
-                      rows={2}
-                      placeholder="กรอกเหตุผลที่ต้องการนำรายงานกลับมาพิจารณาใหม่..."
-                      className="mt-2 w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-slate-100 rounded-lg outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all resize-y"
-                    />
-                    {noteError && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{noteError}</p>}
-                    <button
-                      onClick={() => openModal("pending")}
-                      className="mt-3 inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-                    >
-                      นำกลับมาตรวจสอบใหม่ (Reopen)
-                    </button>
-                  </div>
-                </div>
-              ) : report.status === "pending" ? (
-                <div className="flex flex-col items-start gap-3">
-                  <p className="text-sm text-slate-500 dark:text-slate-400">
-                    รายงานนี้ยังไม่ได้ถูกตรวจสอบ กดปุ่มด้านล่างเพื่อล็อครายงานและเริ่มพิจารณา
-                  </p>
-                  {actionError && <p className="text-xs text-red-600 dark:text-red-400">{actionError}</p>}
-                  <button
-                    onClick={handleStartReview}
-                    disabled={submitting}
-                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-70"
-                  >
-                    {submitting ? <Loader2 className="size-4 animate-spin" /> : <FileText className="size-4" />}
-                    เริ่มตรวจสอบรายงานนี้
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Admin Note</label>
-                  <textarea
-                    value={adminNote}
-                    onChange={(e) => { setAdminNote(e.target.value); setNoteError(""); }}
-                    rows={4}
-                    placeholder="กรอกบันทึกหรือเหตุผลประกอบการตัดสินใจ..."
-                    className="mt-2 w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-slate-100 rounded-lg outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all resize-y"
-                  />
-                  {noteError && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{noteError}</p>}
-                  {actionError && <p className="mt-2 text-xs text-red-600 dark:text-red-400">{actionError}</p>}
-                  <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <button
-                      onClick={() => openModal("approved")}
-                      className="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
-                    >
-                      <Check className="size-4" />
-                      อนุมัติ
-                    </button>
-                    <button
-                      onClick={() => openModal("rejected")}
-                      className="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
-                    >
-                      <X className="size-4" />
-                      ปัดตก
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Right column - image & analysis */}
-        <div className="lg:col-span-2 flex flex-col gap-4">
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-              <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">ภาพที่รายงาน</h3>
-              {scan?.heatmap_image_url && (
-                <div className="flex p-0.5 bg-slate-100 dark:bg-slate-800 rounded-md">
-                  <button
-                    onClick={() => setShowOriginal(true)}
-                    className={`px-2.5 py-1 text-xs font-medium rounded flex items-center gap-1 transition-colors ${
-                      showOriginal ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm" : "text-slate-500 dark:text-slate-400"
-                    }`}
-                  >
-                    <ImageIcon className="size-3" /> Original
-                  </button>
-                  <button
-                    onClick={() => setShowOriginal(false)}
-                    className={`px-2.5 py-1 text-xs font-medium rounded flex items-center gap-1 transition-colors ${
-                      !showOriginal ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm" : "text-slate-500 dark:text-slate-400"
-                    }`}
-                  >
-                    <MapIcon className="size-3" /> Heatmap
-                  </button>
+        {/* Right: Multi-Layer XAI & Metadata Breakdown (5 cols) */}
+        <div className="lg:col-span-5 space-y-6">
+          {/* Multi-Layer Intelligence Analysis */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Layers className="size-4 text-cyan-400" />
+                <span>การวิเคราะห์หลายชั้น (Multi-layer Analysis)</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Layer 1: Visual Anomaly (SegFormer) */}
+              <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    1. Visual Anomaly (SegFormer AI)
+                  </span>
+                  <Badge variant={multiLayer.visual_anomaly?.score >= 70 ? "danger" : "primary"} size="sm">
+                    {multiLayer.visual_anomaly?.score ?? report.risk_score}%
+                  </Badge>
                 </div>
-              )}
-            </div>
-            <div className="p-6">
-              {imageUrl ? (
-                <img
-                  src={imageUrl}
-                  alt="Reported scam"
-                  className="w-full aspect-square object-cover rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800"
-                  onError={(e) => { e.currentTarget.style.display = "none"; }}
-                />
-              ) : (
-                <div className="w-full aspect-square flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-400">
-                  ไม่มีรูปภาพ
-                </div>
-              )}
-            </div>
-          </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  {multiLayer.visual_anomaly?.summary || "ตรวจพบจุดรบกวนของพิกเซลและร่องรอยการตัดต่อด้วยโมเดล Semantic Segmentation"}
+                </p>
+              </div>
 
-          {scan && (
-            <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-              <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800">
-                <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">คะแนนเสี่ยง</h3>
-              </div>
-              <div className="p-6 flex flex-col items-center gap-5">
-                <ScoreRing value={scan.total_risk_score || 0} />
-                <div className="w-full flex flex-col gap-3">
-                  {riskBarColor.map(({ key, label, color }) => (
-                    <div key={key} className="w-full">
-                      <div className="flex justify-between text-xs mb-1.5">
-                        <span className="text-slate-600 dark:text-slate-400">{label}</span>
-                        <span className="font-bold text-slate-900 dark:text-slate-100">{scan[`${key}_score`] || 0}</span>
-                      </div>
-                      <div className="h-1.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
-                        <div className="h-full rounded-full" style={{ width: `${scan[`${key}_score`] || 0}%`, backgroundColor: color }} />
-                      </div>
-                    </div>
-                  ))}
+              {/* Layer 2: Textual OCR (Surya OCR) */}
+              <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    2. Textual / OCR Analysis (Surya)
+                  </span>
+                  <Badge variant={multiLayer.textual_analysis?.score >= 70 ? "danger" : "default"} size="sm">
+                    {multiLayer.textual_analysis?.score ?? 0}%
+                  </Badge>
                 </div>
-              </div>
-            </div>
-          )}
-
-          {/* Analysis */}
-          {scan && (
-            <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-              <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800">
-                <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">ผลวิเคราะห์</h3>
-              </div>
-              <div className="p-6 flex flex-col gap-5">
-                <div>
-                  <p className="flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">
-                    <FileText className="size-3.5" /> OCR Text
-                  </p>
-                  <pre className="whitespace-pre-wrap text-xs font-mono text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3 border border-slate-100 dark:border-slate-800">
-                    {scan.ocr_text || "No text detected."}
-                  </pre>
-                </div>
-                <div>
-                  <p className="flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">
-                    <KeyRound className="size-3.5" /> Scam Keywords
-                  </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {(scan.scam_keywords_found || []).length > 0 ? scan.scam_keywords_found.map((kw) => (
-                      <span key={kw} className="px-2 py-0.5 rounded-full text-xs font-medium bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-800/50">
-                        {kw}
-                      </span>
-                    )) : <span className="text-xs text-slate-500 dark:text-slate-400">ไม่พบคำสำคัญ</span>}
-                  </div>
-                </div>
-                {scan.exif_data && Object.keys(scan.exif_data).length > 0 && (
-                  <div>
-                    <p className="flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">
-                      <Camera className="size-3.5" /> EXIF Data
-                    </p>
-                    <div className="rounded-lg border border-slate-100 dark:border-slate-800 overflow-hidden text-xs">
-                      {Object.entries(scan.exif_data).slice(0, 12).map(([key, value]) => (
-                        <div key={key} className="flex justify-between gap-4 px-3 py-1.5 border-b border-slate-100 dark:border-slate-800 last:border-b-0">
-                          <span className="text-slate-500 dark:text-slate-400">{key}</span>
-                          <span className="text-slate-900 dark:text-slate-100 text-right truncate">{String(value)}</span>
-                        </div>
-                      ))}
-                    </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  {multiLayer.textual_analysis?.summary || "สกัดข้อความในภาพเพื่อตรวจสอบคำต้องสงสัยและรูปแบบข้อความหลอกลวง"}
+                </p>
+                {multiLayer.textual_analysis?.extracted_text && (
+                  <div className="p-2 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[11px] font-mono text-slate-400 max-h-24 overflow-y-auto">
+                    {multiLayer.textual_analysis.extracted_text}
                   </div>
                 )}
-                <div>
-                  <p className="flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">
-                    AI-Generated Probability
-                  </p>
-                  <div className="flex items-center gap-3">
-                    <div className="flex-1 h-1.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
-                      <div className="h-full rounded-full bg-indigo-500 transition-all"
-                           style={{ width: `${Math.min(100, (scan.ai_gen_probability || 0) * 100)}%` }} />
-                    </div>
-                    <span className="text-xs font-bold text-slate-900 dark:text-slate-100">
-                      {Math.round((scan.ai_gen_probability || 0) * 100)}%
-                    </span>
-                  </div>
-                </div>
               </div>
-            </div>
-          )}
+
+              {/* Layer 3: Source Verification (Reverse Search) */}
+              <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    3. Source Verification (Vision)
+                  </span>
+                  <Badge variant="default" size="sm">
+                    {multiLayer.source_verification?.matches_count ?? 0} matches
+                  </Badge>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  {multiLayer.source_verification?.summary || "ค้นหาแหล่งที่มาของภาพผ่านฐานข้อมูลภาพสาธารณะ"}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Forensic Image & EXIF Metadata */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <KeyRound className="size-4 text-cyan-400" />
+                <span>ข้อมูลทางเทคนิค (Forensic Metadata)</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 font-mono text-xs">
+              <div className="flex items-center justify-between py-1.5 border-b border-slate-100 dark:border-slate-800/80">
+                <span className="text-slate-500">Image Hash (SHA-256):</span>
+                <span className="text-slate-300 truncate max-w-[180px]" title={report.image_hash}>
+                  {report.image_hash || "-"}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between py-1.5 border-b border-slate-100 dark:border-slate-800/80">
+                <span className="text-slate-500">ขนาดความละเอียด:</span>
+                <span className="text-slate-300">{report.metadata?.dimensions || "1080 x 1920"}</span>
+              </div>
+
+              <div className="flex items-center justify-between py-1.5 border-b border-slate-100 dark:border-slate-800/80">
+                <span className="text-slate-500">อุปกรณ์ที่ถ่าย (Camera):</span>
+                <span className="text-slate-300">{report.metadata?.device || "ไม่ระบุ"}</span>
+              </div>
+
+              <div className="flex items-center justify-between py-1.5 border-b border-slate-100 dark:border-slate-800/80">
+                <span className="text-slate-500">ยินยอมให้นำไปวิจัย (PDPA):</span>
+                <span className={report.allow_research_use ? "text-emerald-400" : "text-slate-400"}>
+                  {report.allow_research_use ? "ยินยอม (Consent)" : "ไม่ยินยอม"}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between py-1.5">
+                <span className="text-slate-500">ผู้ส่งรายงาน:</span>
+                <span className="text-slate-300">{report.user_email || "ไม่ระบุ"}</span>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
 
-      {/* Confirmation Modal */}
-      {modalState.isOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-xl shadow-xl max-w-md w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-slate-200 dark:border-slate-800">
-            <div className="p-6">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">
-                ยืนยันการ{modalState.action === "approved" ? "อนุมัติ" : modalState.action === "rejected" ? "ปัดตก" : "รื้อฟื้น (Reopen)"}รายงาน #{report.id}
-              </h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                {modalState.action === "approved"
-                  ? "รายงานนี้จะถูกยืนยันว่าเป็นภาพหลอกลวง และนำไปรวมในชุดข้อมูล (Dataset) ได้"
-                  : modalState.action === "rejected"
-                  ? "รายงานนี้จะถูกปัดตก และจะไม่ถูกนำไปใช้ใน Dataset"
-                  : "รายงานนี้จะถูกนำกลับไปอยู่ในสถานะรอดำเนินการใหม่ เพื่อรอการพิจารณาอีกครั้ง"}
-              </p>
-            </div>
-            <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
-              <button
-                onClick={() => setModalState({ isOpen: false, action: null })}
-                className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-              >
-                ยกเลิก
-              </button>
-              <button
-                onClick={handleSubmit}
-                disabled={submitting}
-                className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white rounded-md transition-colors disabled:opacity-70 disabled:cursor-not-allowed ${
-                  modalState.action === "approved"
-                    ? "bg-emerald-600 hover:bg-emerald-700"
-                    : modalState.action === "rejected"
-                    ? "bg-red-600 hover:bg-red-700"
-                    : "bg-indigo-600 hover:bg-indigo-700"
-                }`}
-              >
-                {submitting && <Loader2 className="size-4 animate-spin" />}
-                ยืนยัน{modalState.action === "approved" ? "อนุมัติ" : modalState.action === "rejected" ? "ปัดตก" : "รื้อฟื้น"}
-              </button>
-            </div>
-          </div>
+      {/* Decision Confirmation Modal */}
+      <Modal
+        isOpen={modalState.isOpen}
+        onClose={closeDecisionModal}
+        title={
+          modalState.decision === "approved"
+            ? "ยืนยันการอนุมัติรายงาน (Mark as Confirmed Scam)"
+            : "ปฏิเสธรายงาน (Reject Report)"
+        }
+        description={
+          modalState.decision === "approved"
+            ? "การอนุมัติจะเปลี่ยนสถานะรายงานเป็น Approved และนำภาพเข้าสู่ระบบฝึกโมเดลหากได้รับความยินยอม"
+            : "การปฏิเสธจะทำเครื่องหมายรายงานเป็น Rejected จำเป็นต้องระบุเหตุผลในการตัดสินใจ"
+        }
+        footer={
+          <>
+            <Button variant="ghost" size="sm" onClick={closeDecisionModal} disabled={isSubmittingDecision}>
+              ยกเลิก
+            </Button>
+            <Button
+              variant={modalState.decision === "approved" ? "primary" : "danger"}
+              size="sm"
+              isLoading={isSubmittingDecision}
+              onClick={handleSubmitDecision}
+            >
+              {modalState.decision === "approved" ? "ยืนยันผลการตัดสิน" : "ปฏิเสธรายงาน"}
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-4 pt-2">
+          <Textarea
+            label="บันทึกเหตุผลของเจ้าหน้าที่ (Admin Reason / Note)"
+            required={modalState.decision === "rejected"}
+            value={adminNote}
+            onChange={(e) => {
+              setAdminNote(e.target.value);
+              setNoteError("");
+            }}
+            placeholder={
+              modalState.decision === "approved"
+                ? "ระบุรายละเอียดเพิ่มเติม (ถ้ามี)..."
+                : "ระบุสาเหตุที่ปฏิเสธรายงาน เช่น ภาพไม่ปรากฏจุดตัดต่อที่ผิดสังเกต..."
+            }
+            error={noteError}
+            rows={4}
+          />
         </div>
-      )}
+      </Modal>
     </div>
   );
 }
