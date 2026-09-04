@@ -10,13 +10,15 @@ async def register_and_login(email: str = None, password: str = None, full_name:
         password = "Test1234!@#"
     async with get_client() as client:
         # register — spec ต้อง full_name + consents
-        await client.post(api_url("/auth/register"), json={
+        register_resp = await client.post(api_url("/auth/register"), json={
             "email": email,
             "password": password,
             "full_name": full_name,
             "system_consent": True,
             "research_consent": False,
         })
+        register_resp.raise_for_status()
+
         # login — ใช้ OAuth2PasswordRequestForm = form-encoded username/password
         r = await client.post(api_url("/auth/login"), data={
             "username": email,
@@ -31,7 +33,7 @@ async def register_and_login(email: str = None, password: str = None, full_name:
 async def login_admin():
     from config.settings import TEST_ADMIN_EMAIL, TEST_ADMIN_PASSWORD
     async with get_client() as client:
-        r = await client.post(api_url("/auth/login"), data={
+        r = await client.post(api_url("/admin/login"), data={
             "username": TEST_ADMIN_EMAIL,
             "password": TEST_ADMIN_PASSWORD,
         }, headers={"Content-Type": "application/x-www-form-urlencoded"})
