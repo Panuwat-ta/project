@@ -89,7 +89,8 @@ class InferenceService:
                 pass
             
             # Set HF cache directory to the local model folder so models are saved there
-            os.environ["HF_HOME"] = "/home/panuwat/project/model/surya"
+            from app.core.config import PROJECT_ROOT
+            os.environ.setdefault("HF_HOME", str(PROJECT_ROOT / "model/surya"))
             
             import torch
             # Disable cuDNN to prevent CUDNN_STATUS_SUBLIBRARY_VERSION_MISMATCH

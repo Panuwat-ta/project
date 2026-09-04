@@ -1,5 +1,6 @@
 import json
 import os
+from pathlib import Path
 import zipfile
 import asyncio
 import tempfile
@@ -15,9 +16,13 @@ from app.models import ExportJob, ScamReport, Scan, AuditLog
 from app.core.config import settings, TH_TIMEZONE
 from app.core.database import async_session
 
-STORAGE_DIR = "/home/panuwat/project/server/private_storage/exports"
+SERVER_DIR = Path(__file__).resolve().parents[2]
+STORAGE_DIR = os.getenv("EXPORT_STORAGE_DIR", str(SERVER_DIR / "private_storage" / "exports"))
 
-os.makedirs(STORAGE_DIR, exist_ok=True)
+try:
+    os.makedirs(STORAGE_DIR, exist_ok=True)
+except Exception:
+    pass
 
 async def _cleanup_expired_jobs(db: AsyncSession):
     now = datetime.now(TH_TIMEZONE)
