@@ -82,7 +82,7 @@
 - **Priority**: P1 (High)
 - **Pre-conditions**:
   1. เปิดหน้าแดชบอร์ด
-  2. WebSocket Endpoint `/api/v1/admin/ws/telemetry` พร้อมทำงาน
+  2. WebSocket Endpoint `/api/v1/ws/admin/dashboard` พร้อมทำงาน
 - **Test Data**: สตรีมข้อมูลสถานะระบบ
 - **Test Steps**:
   1. ตรวจสอบสถานะการเชื่อมต่อ WebSocket บนหน้าจอ
@@ -162,7 +162,7 @@
 
 ### TC-ADM-REP-02: การป้องกัน Race Condition ด้วย Optimistic Locking (`version` column)
 - **Module / Feature**: Report Moderation / Concurrency Control
-- **Requirement ID**: FR-ADM-03
+- **Requirement ID**: FR-ADM-06
 - **Test Type**: Concurrency / Negative
 - **Priority**: P1 (High)
 - **Pre-conditions**:

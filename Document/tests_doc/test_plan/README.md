@@ -4,7 +4,7 @@
 - **Standard**: ISO/IEC/IEEE 29119-3 (Software Testing Documentation)
 - **Version**: 1.0.0
 - **Author**: Senior Software Tester / Lead QA Engineer
-- **Status**: Approved Baseline
+- **Status**: Approved
 
 ---
 
@@ -19,10 +19,10 @@
    - สกัดข้อความภาษาไทยและภาษาอังกฤษด้วย Surya OCR อย่างแม่นยำ
    - ให้คำอธิบายเชิงเหตุผลด้วย Qwen2.5-1.5B ที่สอดคล้องกับพิกเซลและข้อความจริง
 2. **การจำแนกระดับความเสี่ยง (Risk Scoring Integrity)**:
-   - จำแนกคะแนนความเสี่ยงอย่างเที่ยงตรงตามเกณฑ์ 3 ระดับ: Low (0-39), Medium (40-69), High (70-100) ปราศจากระดับ Safe
+   - จำแนกคะแนนความเสี่ยงอย่างเที่ยงตรงตามเกณฑ์ 3 ระดับ: Low (0-39), Medium (40-69), High (70-100)
 3. **ประสิทธิภาพและความพร้อมใช้งาน (Performance & Latency)**:
-   - ประมวลผลการสแกนภาพทั่วไปแล้วเสร็จภายในเวลาไม่เกิน 3 วินาที (Scan Latency < 3s)
-   - เร่งความเร็วการตอบกลับเมื่อภาพซ้ำด้วย Redis Caching (Image Hash Hit < 200ms)
+   - ตอบกลับคำขอภาพซ้ำจาก Redis Cache ภายในเวลาไม่เกิน 3 วินาทีแบบ End-to-End (Cache Hit ≤ 3s)
+   - ประมวลผลภาพใหม่เต็มรูปแบบ (Cache Miss) ภายในเวลาไม่เกิน 15 วินาที (Full Inference ≤ 15s)
 4. **ความปลอดภัยและการปกป้องข้อมูล (Security & PDPA)**:
    - ปราศจากฮาร์ดโค้ด Credentials/Keys โดยโหลดจาก Environment Variables ทั้งหมด
    - ป้องกันช่องโหว่ OWASP Top 10 และตรวจสอบความถูกต้องของไฟล์รูปภาพอย่างเข้มงวด
@@ -44,24 +44,24 @@
   - Authentication Endpoints (`/api/v1/auth/*`)
   - Image Scan Endpoint (`POST /api/v1/scan/`) พร้อม Multipart Upload
   - Magic Bytes Validation และ Image File Sanitization
-  - Redis Caching Mechanism (SHA-256 `image_hash`)
+  - Redis Caching Mechanism (SHA-256 image hash)
   - Slowapi Rate Limiting Middleware และ CORS Origin Filtering
   - Admin Endpoints (`/api/v1/admin/*`) พร้อมการแยกสิทธิ์ Role-Based Access Control
   - Model Version Registry (Deploy, Rollback พร้อม Database Row Lock)
-  - Audit Logging ลงตาราง `audit_logs` พร้อม Structured JSON
+  - Audit Logging พร้อม Structured JSON
   - Timezone UTC+7 (Asia/Bangkok) และ Database Cascades
 - **AI Inference Pipeline**:
   - Overlapping Tiling Inference (Patch 512x512, Overlap 64px, Probability Weight Averaging)
   - Full-Resolution Heatmap Reconstruction
   - Surya OCR Engine สำหรับภาษาไทยและภาษาอังกฤษ
-  - XAI Reasoning Pipeline (Qwen2.5-1.5B)
+  - XAI Reasoning Pipeline
   - Hybrid Worst-Case Risk Scoring Formula
-  - Subprocess Isolation (`onnx_worker.py`)
+  - Subprocess Isolation (ONNX worker แยกโปรเซส)
 - **Admin Portal (React / Vite)**:
   - Admin Authentication และ Token Refresh
   - Dashboard KPIs, Real-time WebSocket Telemetry
   - Model Version Management พร้อม Modal ยืนยัน Deploy/Rollback
-  - Report Moderation Flow พร้อม Optimistic Concurrency Control (`version` column)
+  - Report Moderation Flow พร้อม Optimistic Concurrency Control
   - User Management และการระงับการใช้งาน (Ban with Reason)
   - Audit Log Diff Viewer และ UI Accessibility (WCAG AA Contrast)
 - **Non-Functional Testing**:
@@ -72,7 +72,7 @@
 ### 2.2 ขอบเขตนอกการทดสอบ (Out-of-Scope)
 - การทดสอบการเชื่อมต่อกับ Payment Gateway ภายนอก (ระบบไม่มีธุรกรรมการเงิน)
 - การทดสอบฮาร์ดแวร์ Physical GPU ในระดับชิปเซ็ต (ทดสอบเฉพาะระดับ Driver / CUDA Container API)
-- การทดสอบบนระบบปฏิบัติการที่ไม่อยู่ในขอบเขต v1 (โครงการรุ่นแรกมุ่งเน้นเฉพาะระบบปฏิบัติการ Android เท่านั้น โดยระบบปฏิบัติการ iOS ถูกจัดอยู่นอกขอบเขต และเป็นแผนการพัฒนาในอนาคต - Future Release ตามข้อกำหนดโครงการ)
+- การทดสอบบน Desktop OS (Windows/macOS/Linux) — แอปเป็น Flutter cross-platform (Android + iOS) ทดสอบหลักบน Android
 
 ---
 
@@ -98,10 +98,11 @@
 
 ### 3.2 Integration Testing
 - **API Integration**: ทดสอบการทำงานร่วมกันระหว่าง API Router, Services, PostgreSQL Database และ Redis ใน `tests_all/automate_tests/tests/api/`
-- **AI Pipeline Integration**: ทดสอบการส่งภาพผ่าน `scan_service.py` ไปยัง Subprocess `onnx_worker.py` และการประกอบ Heatmap
+- **AI Pipeline Integration**: ทดสอบการส่งภาพไปยัง ONNX worker แยกโปรเซสและการประกอบ Heatmap
 
 ### 3.3 System & End-to-End Testing
 - ทดสอบ User Journey เต็มรูปแบบ ตั้งแต่การถ่ายภาพบน Mobile ส่งผ่าน Gateway ประมวลผลบน AI และแสดงผลลัพธ์บนมือถือ พร้อมการตรวจสอบข้อมูลย้อนหลังจาก Admin Portal
+- หมายเหตุ: กรณีทดสอบ E2E ฉบับ manual อยู่ใน `tests_all/manual_tests/test_cases_e2e.md` (ไม่มีไฟล์ `test_plan_e2e.md` แยกใน `manual_tests_doc/` — คู่ฉบับ automate อยู่ใน `automate_tests_doc/test_plan_e2e_automation.md`)
 
 ### 3.4 Non-Functional Testing
 - **Performance**: ยิงโหลดทดสอบ Throughput และ Latency ด้วย Locust
@@ -143,8 +144,8 @@
 1. 100% ของ Test Cases ระดับ P0 (Blocker) และ P1 (High) ผ่านการทดสอบทั้งหมด (Pass Rate = 100%)
 2. อัตราการผ่านของ Test Cases ระดับ P2 (Medium) ไม่ต่ำกว่า 95%
 3. ไม่มีข้อบกพร่องระดับ Critical หรือ Major ที่ยังค้างอยู่ในระบบ (0 Open Critical Bugs)
-4. การทดสอบโหลดด้วย Locust ยืนยันว่า Response Time เฉลี่ยของการสแกนภาพต่ำกว่า 3 วินาที
-5. เอกสารตารางสอบย้อนกลับ (RTM) ครอบคลุมความต้องการ FR-01 ถึง FR-18 และ NFR-01 ถึง NFR-10 ครบถ้วน 100%
+4. การทดสอบโหลดด้วย Locust ยืนยันว่า Response Time ของ Cache Hit ไม่เกิน 3 วินาที (p95 ≤ 3.0s) และของ Full Inference ไม่เกิน 15 วินาที (p90 ≤ 15.0s)
+5. เอกสารตารางสอบย้อนกลับครอบคลุม FR และ NFR ทั้งหมด — FR ใดยังไม่มี TC ให้ระบุ GAP/Deferred ชัดเจน
 
 ---
 
@@ -152,10 +153,10 @@
 
 | ความเสี่ยง (Risk Description) | ระดับผลกระทบ | โอกาสเกิด | แผนบรรเทาความเสี่ยง (Mitigation Plan) |
 |---|---|---|---|
-| **AI Subprocess Crash / Memory Leak** | สูงมาก | ปานกลาง | ใช้การแยก Subprocess Isolation ใน `onnx_worker.py` เพื่อจำกัดหน่วยความจำและเริ่มโพรเซสใหม่ทันทีเมื่อเกิดข้อผิดพลาด |
+| **AI Subprocess Crash / Memory Leak** | สูงมาก | ปานกลาง | ใช้การแยก worker แยกโปรเซสเพื่อจำกัดหน่วยความจำและเริ่มโพรเซสใหม่ทันทีเมื่อเกิดข้อผิดพลาด |
 | **False Positive / Negative อัตราสูง** | สูง | ปานกลาง | ใช้สูตร Hybrid Worst-Case Scoring ร่วมกับการวิเคราะห์หลายชั้น (Multi-layer) เพื่อป้องกันการตัดสินใจผิดพลาด |
 | **การอัปโหลดไฟล์ขนาดใหญ่ทำให้เน็ตเวิร์กตัน** | ปานกลาง | สูง | มีการจำกัดขนาดไฟล์ที่ Client (10MB) ก่อนอัปโหลด และมี Stream Reading บน FastAPI พร้อม Timeout |
-| **Admin แย่งกันแก้ไขสถานะรายงานพร้อมกัน** | ปานกลาง | ปานกลาง | ใช้ Optimistic Concurrency Control ผ่านคอลัมน์ `version` ในตาราง `scam_reports` เพื่อป้องกัน Race Condition |
+| **Admin แย่งกันแก้ไขสถานะรายงานพร้อมกัน** | ปานกลาง | ปานกลาง | ใช้ Optimistic Concurrency Control ในตาราง scam_reports เพื่อป้องกัน Race Condition |
 | **ความไม่สอดคล้องของเวลาใน Audit Log** | ปานกลาง | ต่ำ | บังคับเขตเวลาเป็น `Asia/Bangkok` (UTC+7) ทั้งใน Docker Database, Server App และ Client UI |
 
 ---

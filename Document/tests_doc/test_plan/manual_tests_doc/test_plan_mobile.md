@@ -3,7 +3,7 @@
 - **System / Component**: ScamGuard Mobile Client
 - **Architecture**: Clean Architecture, BLoC/Cubit State Management, Repository Pattern
 - **Tech Stack**: Flutter 3.x, Dart, Dio HTTP Client, Flutter Secure Storage, Hive
-- **Target Platform**: Android เท่านั้นสำหรับรุ่นแรก (Android 5.0+ / API 21+ ขึ้นไปตาม flutter.minSdkVersion; ทดสอบหลักบน Android 10+ ถึง 14 / API 29-34) ส่วนระบบ iOS จัดอยู่นอกขอบเขต (Future Release)
+- **Target Platform**: Flutter cross-platform; ทดสอบหลักบน Android (5.0+ / API 21+, เน้น Android 10-14 / API 29-34)
 - **Document Version**: 1.0.0
 - **Status**: Approved
 
@@ -24,9 +24,8 @@
 10. **UI/UX & Accessibility**: รองรับ Dark Mode / Light Mode, Responsive layout บนหน้าจอขนาดต่างๆ และ Touch target >= 48x48dp บนอุปกรณ์ Android
 
 ### 1.2 สิ่งที่อยู่นอกขอบเขต (Out-of-Scope)
-1. **การรองรับระบบปฏิบัติการ iOS**: โครงการระยะที่ 1 (v1) กำหนดขอบเขตชัดเจนว่ามุ่งเน้นเฉพาะระบบปฏิบัติการ Android เท่านั้น โดยเวอร์ชัน iOS ถูกจัดอยู่ในแผนการพัฒนาในอนาคต (Future Release) ตามเอกสารขอบเขตโครงการและ Wiki
-2. **การประมวลผลโมเดล AI ในระดับชิปเซ็ตสมาร์ตโฟน**: ระบบใช้ Server-side AI Inference Pipeline ทั้งหมด ไม่มีการทำ On-Device Deep Learning บนเครื่องผู้ใช้
-3. **ระบบการชำระเงิน**: ระบบไม่มีธุรกรรมทางการเงินหรือระบบ In-App Purchase
+1. **On-Device AI Inference**: ระบบใช้ Server-side AI Inference ทั้งหมด ไม่มีการทำ On-Device Deep Learning บนเครื่องผู้ใช้
+2. **ระบบการชำระเงิน**: ระบบไม่มีธุรกรรมทางการเงินหรือระบบ In-App Purchase
 
 ---
 

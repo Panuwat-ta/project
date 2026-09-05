@@ -50,8 +50,8 @@ flowchart LR
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | 1 | ST01 | OBJ-04 | SC01 | RC-AUTH-01 | FR-AUTH-01 | Must Have | สมัครสมาชิกผ่าน Mobile App ด้วย Email/Password พร้อมตรวจสอบความปลอดภัย |
 | 2 | ST01 | OBJ-04 | SC01 | RC-AUTH-02 | FR-AUTH-02 | Must Have | เข้าสู่ระบบและรับ JWT Access Token / Refresh Token เพื่อรักษาเซสชั่น |
-| 3 | ST01 | OBJ-01 | SC01 | RC-SCAN-01 | FR-INPUT-01/03 | Must Have | เลือกรูปภาพจากแกลเลอรีหรือถ่ายภาพ พร้อมเครื่องมือครอบตัดภาพ (Crop) |
-| 4 | ST01 | OBJ-01 | SC02 | RC-SCAN-02 | FR-SYS-09 | Must Have | คำนวณ Perceptual Hash และค้นหาผลลัพธ์จาก Redis Cache (< 3 วินาที) |
+| 3 | ST01 | OBJ-01 | SC01 | RC-SCAN-01 | FR-INPUT-01/03 | Must Have | เลือกรูปภาพจากแกลเลอรี พร้อมเครื่องมือครอบตัดภาพ (Crop) (Camera capture เป็น Phase 2) |
+| 4 | ST01 | OBJ-01 | SC02 | RC-SCAN-02 | FR-SYS-09 | Must Have | คำนวณ SHA-256 Hash และค้นหาผลลัพธ์จาก Redis Cache (< 3 วินาที) |
 | 5 | ST01 | OBJ-01 | SC03 | RC-ANALYSIS-01 | FR-SYS-02 | Must Have | สกัดข้อความภาษาไทยและอังกฤษด้วย Surya OCR 2 Engine |
 | 6 | ST01 | OBJ-01 | SC03 | RC-ANALYSIS-02 | FR-SYS-03 | Must Have | ตรวจจับคีย์เวิร์ดหลอกลวง (Scam Keywords) และคำนวณ Textual Score |
 | 7 | ST01 | OBJ-01 | SC03 | RC-ANALYSIS-03 | FR-SYS-05 | Must Have | ตรวจสอบร่องรอยการตัดต่อระดับพิกเซลด้วย SegFormer AI Model |
@@ -61,18 +61,17 @@ flowchart LR
 | 11 | ST01 | OBJ-03 | SC01 | RC-REPORT-01 | FR-REPORT-01 | Must Have | แสดงผลรายงานความเสี่ยง (Risk Badge 3 ระดับ, มิติคะแนน, Heatmap Toggle) |
 | 12 | ST01 | OBJ-04 | SC01 | RC-HIST-01 | FR-HIST-01 | Must Have | บันทึกประวัติการสแกนและเรียกดูย้อนหลังพร้อมภาพตัวอย่าง (Thumbnails) |
 | 13 | ST01 | OBJ-04 | SC01 | RC-REPORT-02 | FR-RPT-01 | Should Have | ผู้ใช้แจ้งยืนยันว่าภาพเป็น Scam เพื่อส่งต่อไปยังคิวตรวจสอบของผู้ดูแลระบบ |
-| 14 | ST02 | OBJ-04 | SC04 | RC-ADMIN-01 | FR-ADM-01 | Must Have | แดชบอร์ดสรุปสถิติระบบและ WebSocket Real-time Telemetry บน Admin Portal |
+| 14 | ST02 | OBJ-04 | SC04 | RC-ADMIN-01 | FR-ADM-01 | Must Have | แดชบอร์ดสรุปสถิติระบบ (จำนวนสแกน, ความแม่นยำ, ยอดใช้งาน) บน Admin Portal |
 | 15 | ST02 | OBJ-04 | SC04 | RC-ADMIN-02 | FR-ADM-02 | Must Have | ส่วนตรวจสอบรายงานข้อร้องเรียน (Moderation) เพื่อ Approve เข้า Research Dataset |
-| 16 | ST02 | OBJ-03 | SC04 | RC-ADMIN-03 | FR-ADM-04 | Must Have | ระบบ Model Registry จัดการเวอร์ชัน SegFormer และสั่ง Deploy/Rollback แบบปลอดภัย |
-| 17 | ST02 | OBJ-04 | SC04 | RC-ADMIN-04 | FR-SYS-10 | Must Have | บันทึกกิจกรรมของผู้ดูแลระบบลงตาราง `audit_log` แบบ Append-only |
+| 16 | ST02 | OBJ-03 | SC04 | RC-ADMIN-03 | FR-ADM-04 | Must Have | แอดมินอัปโหลดไฟล์น้ำหนัก SegFormer (ONNX) เวอร์ชันใหม่และสั่ง Deploy (มีเพียงเวอร์ชัน active เดียว; ไม่มี Model Registry แยกใน v1) |
+| 17 | ST02 | OBJ-04 | SC04 | RC-ADMIN-04 | FR-AUDIT-01 (ดู FR-ADM-06) | Must Have | บันทึกกิจกรรมของผู้ดูแลระบบลง Audit Log แบบ Append-only |
 | 18 | ST03 | OBJ-04 | SC01 | RC-PDPA-01 | FR-PDPA-01/02 | Must Have | ขอความยินยอม (Consent Screen) ก่อนใช้งาน และรองรับการถอนความยินยอม |
 
 ---
 
 ## 4. ข้อสังเกตความสอดคล้องทางวิศวกรรม (Engineering Consistency Note)
 
-> [!NOTE]
-> ในเอกสาร RTM ฉบับร่างเดิม ([Document/docs/06_Requirement_Traceability.md](file:///home/panuwat/project/Document/docs/06_Requirement_Traceability.md)) มีการระบุเกณฑ์ความเสี่ยงเป็น 4 ระดับ (Safe, Low, Medium, High) แต่ในสถาปัตยกรรมและโค้ดปัจจุบันของระบบ ScamGuard ได้ปรับเปลี่ยนเป็น **3 ระดับ** (Low: 0-39, Medium: 40-69, High: 70-100) ตามข้อกำหนดความปลอดภัยเพื่อป้องกัน False Sense of Security ทั้งนี้ ทุกข้อกำหนดในตารางข้างต้นได้รับการปรับให้สอดคล้องกับระบบ 3 ระดับเรียบร้อยแล้ว
+ระบบใช้เกณฑ์ความเสี่ยง 3 ระดับ: Low 0-39 / Medium 40-69 / High 70-100
 
 ---
 

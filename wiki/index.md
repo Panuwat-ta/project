@@ -60,7 +60,7 @@ updated: 2026-09-06
 | [[concepts/explainable-ai]] | แนวทาง XAI: การสร้าง Heatmap, overlay ลงรูปภาพ และการแสดงผล UI |
 | [[concepts/ai-model-segformer]] | สถาปัตยกรรม SegFormer, MiT encoder, All-MLP decoder และ output ระดับพิกเซล |
 | [[concepts/mmsegmentation]] | MMSegmentation Framework: สถาปัตยกรรมแบบโมดูลาร์, Backbone, Decode Head, Training Loss |
-| [[concepts/surya-ocr]] | สถาปัตยกรรม Surya OCR 2, VLM, GGUF Format และการสกัดข้อความ |
+| [[concepts/surya-ocr]] | สถาปัตยกรรม Surya OCR และการสกัดข้อความ |
 | [[concepts/semantic-segmentation]] | Semantic Segmentation — หลักการทำงานและการตรวจจับบริเวณที่ถูกดัดแปลง |
 | [[concepts/model-training]] | AI Model Training Workflow ขั้นตอนการฝึกและเทรนโมเดล |
 

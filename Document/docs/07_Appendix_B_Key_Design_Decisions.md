@@ -124,11 +124,12 @@
 
 | Decision Area | Specification | Rationale | Evidence Source |
 |---------------|---------------|-----------|-----------------|
-| **Safe (Green)** | 0-19 | ปลอดภัย ทุกชั้นไม่มีสัญญาณหลอกลวง | Project Decision |
-| **Low (Green)** | 20-39 | ความเสี่ยงต่ำ มีสัญญาณอ่อนบางจุดแต่ยังไม่น่ากังวล | Project Decision |
+| **Low (Green)** | 0-39 | ความเสี่ยงต่ำ มีสัญญาณอ่อนบางจุดแต่ยังไม่น่ากังวล | Project Decision |
 | **Medium (Yellow)** | 40-69 | ความเสี่ยงปานกลาง ควรตรวจสอบเพิ่มเติม | Project Decision |
 | **High (Red)** | 70-100 | ความเสี่ยงสูง ไม่ควรเชื่อถือ | Project Decision |
-| **Special Rule** | หาก `visual_score ≥ 80` → High แม้ `risk_score < 70` | การตัดต่อชัดเจนควรได้ High เสมอ | Project Decision |
+| **Special Rule** | หาก visual_score ≥ 80 → High แม้ risk_score < 70 | การตัดต่อชัดเจนควรได้ High เสมอ | Project Decision |
+
+> หมายเหตุ: ระบบจะมี 3 ระดับ: Low 0-39 / Medium 40-69 / High 70-100
 
 ---
 
@@ -136,7 +137,7 @@
 
 | Decision Area | Specification | Rationale | Evidence Source |
 |---------------|---------------|-----------|-----------------|
-| **API Down Handling** | Neutral Score = 50 | ไม่ควร Bias ต่ำหรือสูงเกินไป | Project Decision |
+| **API Down Handling** | ตัดมิตินั้นทิ้ง คำนวณค่าสูงสุดจากมิติที่สำเร็จ | ไม่ควร Bias ด้วยค่ากลางปลอม | Project Decision |
 | **Status Field** | `source_status: "unavailable"` | แจ้งผู้ใช้ให้ทราบว่าข้อมูลนี้ไม่พร้อมใช้งาน | Project Decision |
 | **Retry Logic** | ไม่มี Auto-Retry | หาก API Down ผู้ใช้สามารถ Scan ใหม่ภายหลัง | Project Decision |
 
@@ -167,7 +168,7 @@
 
 | Decision Area | Specification | Rationale | Evidence Source |
 |---------------|---------------|-----------|-----------------|
-| **Heatmap Method** | Grad-CAM (Gradient-weighted Class Activation Mapping) | Standard method สำหรับ CNN Explainability | Tech Stack Analysis |
+| **Heatmap Method** | Mask-to-heatmap overlay | แผนที่ความร้อนจาก segmentation mask | Tech Stack Analysis |
 | **Color Scheme** | แดง (High Risk) → เหลือง (Medium) → เขียว (Low) | สื่อความหมายตาม Universal Convention | wiki/architecture/mobile-design.md |
 | **Overlay Opacity** | Default 50%, ปรับได้ 0-100% | ให้ผู้ใช้ควบคุมความโปร่งใส | wiki/architecture/mobile-design.md |
 
@@ -284,7 +285,7 @@
 | Decision Area | Specification | Rationale | Evidence Source |
 |---------------|---------------|-----------|-----------------|
 | **100 Concurrent Users** | Cache Hit: ≤ 5s, Cache Miss: ≤ 20s, Error < 1% | เป้าหมายสำหรับ UAT | Project Decision |
-| **Auto-Scaling** | Horizontal Scaling สำหรับ ONNX Workers | เพิ่ม Workers เมื่อ Queue Length > 50 | Project Decision |
+| **Auto-Scaling** | ONNX worker แยกโปรเซส | แยกงานหนักออกจาก event loop | Project Decision |
 | **Load Balancer** | Nginx Reverse Proxy | กระจาย Load ไปยัง API Servers | Tech Stack Analysis |
 
 ---
@@ -293,10 +294,9 @@
 
 | Decision Area | Specification | Rationale | Evidence Source |
 |---------------|---------------|-----------|-----------------|
-| **Cache Method** | Perceptual Hash (pHash) ใน Redis | ตรวจจับภาพเดียวกันแม้มีการปรับขนาดหรือบีบอัด | wiki/architecture/database-schema.md |
-| **Cache TTL (Default)** | 30 วัน | สมดุลระหว่าง Hit Rate และ Storage Cost | wiki/architecture/database-schema.md |
-| **Cache TTL (Viral)** | 60-90 วัน | ภาพไวรัลมีโอกาสถูก Scan ซ้ำสูง | wiki/architecture/database-schema.md |
-| **Cache Hit Rate Target** | ≥ 40% | เป้าหมายเริ่มต้น | wiki/architecture/database-schema.md |
+| **Cache Method** | SHA-256 ใน Redis | ลดการประมวลผลซ้ำ | Project Decision |
+| **Cache TTL (Default)** | 30 วัน (`setex` 2592000 วินาที) | สมดุลระหว่าง Hit Rate และ Storage Cost | Project Decision |
+| **Cache Hit Rate Target** | ≥ 40% | เป้าหมายเริ่มต้น | Project Decision |
 
 ---
 
@@ -304,8 +304,8 @@
 
 | Decision Area | Specification | Rationale | Evidence Source |
 |---------------|---------------|-----------|-----------------|
-| **Strategy 1** | เพิ่ม TTL สำหรับภาพไวรัล/เสี่ยงสูง (60-90 วัน) | ภาพเหล่านี้มีโอกาส Scan ซ้ำสูง | wiki/architecture/database-schema.md |
-| **Strategy 2** | Auto-Scale ONNX Workers เมื่อ Queue > 50 | เพิ่มกำลังประมวลผล | wiki/architecture/database-schema.md |
+| **Strategy 1** | ตรวจสอบ cache key และ TTL 30 วัน | ลดการรัน ONNX worker ซ้ำ | Project Decision |
+| **Strategy 2** | ลดงานหนักใน event loop ด้วย worker แยกโปรเซส | เพิ่มกำลังประมวลผลโดยไม่บล็อก API | Project Decision |
 | **Strategy 3** | Graceful Degradation — แสดงข้อความ "มีผู้ใช้จำนวนมาก ใช้เวลา 15-60 วินาที" | แจ้งผู้ใช้ให้รอ | wiki/architecture/database-schema.md |
 | **Strategy 4** | Monitoring Alert เมื่อ Cache Hit < 35% | แจ้งเตือน Admin ให้ตรวจสอบ | wiki/architecture/database-schema.md |
 
@@ -405,7 +405,7 @@
 | Decision Area | Specification | Rationale | Evidence Source |
 |---------------|---------------|-----------|-----------------|
 | **Overall Accuracy** | ≥ 85% | ตาม Objective OBJ-02 | wiki/concepts/configs.md |
-| **F1-Score** | ≥ 85% | สมดุลระหว่าง Precision และ Recall | wiki/concepts/configs.md |
+| **mDice** | ≥ 85% | ความแม่นยำระดับพิกเซล | wiki/concepts/configs.md |
 | **Precision** | ≥ 85% | ลด False Positive (ภาพจริงแต่บอกว่าปลอม) | wiki/concepts/configs.md |
 | **Recall** | ≥ 85% | ลด False Negative (ภาพปลอมแต่บอกว่าจริง) | wiki/concepts/configs.md |
 
@@ -441,7 +441,7 @@
 | 14 | **CPU Inference** | ≤ 60 วินาที | Project Decision |
 | 15 | **Monitoring Stack** | Prometheus + Grafana + Sentry | Tech Stack Analysis |
 | 16 | **Concurrent Users** | Cache Hit: ≤ 5s, Cache Miss: ≤ 20s | Project Decision |
-| 17 | **Model Metrics** | Precision & Recall ≥ 85% | wiki/concepts/configs.md |
+| 17 | **Model Metrics** | Accuracy และ mDice ≥ 85% | wiki/concepts/configs.md |
 | 18 | **Cache Strategy** | 4-step: ↑TTL, Auto-Scale, Degrade, Alert | wiki/architecture/database-schema.md |
 | 19 | **UAT Sample** | 100 testers | wiki/requirements/objectives-kpis.md |
 | 20 | **Comprehension Test** | 4 scenario-based questions | wiki/requirements/objectives-kpis.md |

@@ -8,13 +8,13 @@ updated: 2026-08-02
 
 # AI Inference Service
 
-Container ประมวลผลเฉพาะสำหรับรัน Deep Learning Model แยกจาก API Application เพื่อให้ Scale GPU-intensive Task ได้อย่างอิสระ
+หน่วยประมวลผล AI ที่รันเป็น **ONNX Worker subprocess** ภายใน Backend เดียวกัน
 
 ---
 
 ## บทบาท
 
-AI Inference Service คือ **หน่วย Deploy แยก** (Container) ที่รับ Task วิเคราะห์รูปภาพจาก [[architecture/backend-api|API Application]] และส่งคืน:
+AI Inference Service คือ **ONNX Worker subprocess** ที่ถูกเรียกจาก [[architecture/backend-api|API Application]] และส่งคืน:
 
 - **Segmentation Mask** ระบุพิกเซลที่ถูกดัดแปลง
 - **Heatmap** สำหรับ XAI overlay
@@ -37,44 +37,41 @@ AI Inference Service คือ **หน่วย Deploy แยก** (Container) 
 - **ผลลัพธ์:** ค่าความน่าจะเป็น (0–1) ว่าภาพสร้างจาก Generative AI
 - **หน้าที่:** จับภาพจาก GAN, Diffusion Model ที่ไม่มี Splice Artifact แบบดั้งเดิม
 
-### 3. สร้าง Heatmap
+### 3. สร้าง Heatmap (Mask-to-Heatmap Overlay)
 
-- **Input:** ผลลัพธ์ Segmentation จาก SegFormer
-- **ผลลัพธ์:** ไฟล์ PNG Heatmap ที่แต่งสีแล้ว พร้อม overlay บนรูปต้นฉบับ
-- เก็บใน Cloud Object Storage สำหรับ Mobile App ดึงไปแสดงผล
+- **Input:** Probability map ระดับพิกเซลจาก SegFormer ONNX (tiling 512 + overlap 64)
+- **วิธี:** แปลง prob map เป็นภาพสีแล้วซ้อนทับบนภาพต้นฉบับ
+- **ผลลัพธ์:** ไฟล์ `{image_hash}_heatmap.jpg` เก็บที่ `{LOCAL_UPLOAD_DIR}/heatmaps/` เสิร์ฟผ่าน `/uploads` static mount ให้ Mobile App ดึงไปแสดงผล
 
 ---
 
 ## Inference Pipeline
 
 ```
-API ส่ง POST { image_bytes, task_id }
+scan_service เรียก inference_service
         |
   Preprocessing:
-    - Decode Image Bytes
-    - Resize ตาม Input Size (เช่น 512×512)
-    - Normalize ค่าพิกเซล
-    - (ถ้าต้องการ) คำนวณ Semantic Segmentation Difference Map
+    - ยืนยันไฟล์รูปจริง + ดึง EXIF (จำกัดภาพสูงสุด 100M พิกเซล)
+    - normalize เป็น PNG ก่อนส่ง AI
         |
-  Forward Pass (SegFormer ONNX Model)
+  Forward Pass (SegFormer ONNX):
+    - tiling 512x512 overlap 64, softmax 2 classes
+    - prob map เต็ม resolution ต้นฉบับ
         |
   Post-processing:
-    - แปลง Tensor เป็น Segmentation Mask
-    - กรอง Noise (ตัดบริเวณผิดปกติขนาดเล็กที่กระจัดกระจาย)
-    - คำนวณ Heatmap ความเชื่อมั่นต่อพิกเซล
-    - รวม Risk Score จาก Mask Coverage × Confidence
+    - คำนวณ visual_risk_score และ ai_gen_probability จากค่า max ของ prob map
+    - แผนที่ความร้อนแบบ mask-to-heatmap overlay
+    - ใช้ SegFormer ตัวเดียวใน pipeline
         |
-  AI-Gen Classifier Forward Pass แยก
+  OCR และ Text Extraction (Surya OCR v0.5.0):
+    - รองรับภาษาไทยและอังกฤษ
+    - ส่งมอบข้อความ OCR ให้ Scam Keyword Matching
         |
-  OCR & Text Extraction (Surya OCR 2 GGUF):
-    - รันโมเดล Qwen2.5-VL เพื่อดึงข้อความจากภาพ
-    - ส่งมอบ ocr_text ให้ Scam Keyword Matching
+  XAI reasoning (Qwen2.5-1.5B สำหรับสร้างคำอธิบายภาษาไทย)
         |
-  แต่งสี Heatmap และสร้างภาพ Overlay
+  บันทึกรูปต้นฉบับและ Heatmap ลง Storage
         |
-  อัปโหลด Heatmap PNG ไปยัง Cloud Object Storage
-        |
-  ส่งคืน { visual_risk_score, mask_url, heatmap_url, ai_gen_score }
+  ส่งคืนคะแนนภาพ, ความน่าจะเป็น AI-Gen, บริเวณผิดปกติ, Heatmap และข้อความ OCR
 ```
 
 ---
@@ -86,25 +83,29 @@ API ส่ง POST { image_bytes, task_id }
 | Framework (Training) | PyTorch |
 | Framework (Inference) | ONNX Runtime |
 | ความเร็วที่เพิ่มขึ้นจาก ONNX | 2–5 เท่าเทียบ Native PyTorch |
-| รูปแบบโมเดล | ไฟล์ `.onnx` เก็บใน Model Weights Store |
-| Input Tensor | `[1, 3, 512, 512]` (1 รูป, RGB) |
-| Output Tensor | `[1, 2, 512, 512]` (ความน่าจะเป็นต่อพิกเซลทุก Class) |
+| รูปแบบโมเดล | ไฟล์ ONNX (tile 512 / overlap 64) |
+| Input Tensor | ภาพ RGB ขนาด 512x512 ต่อ tile |
+| Output Tensor | 2 classes ต่อ tile (authentic / tampered) |
+| OCR | Surya OCR v0.5.0 (Native PyTorch) |
+| XAI reasoning | Qwen2.5-1.5B สำหรับสร้างคำอธิบายภาษาไทย |
+| Heatmap | แผนที่ความร้อนแบบ mask-to-heatmap overlay |
+| Topology | ONNX Worker subprocess ภายใน Backend เดียวกัน |
 
 ---
 
 ## การจัดการโมเดล
 
-- Model Weight เก็บใน **Model Registry** (Version-controlled File Store)
-- Admin Endpoint ของ API Application สั่ง Hot-swap โมเดล: Inference Service โหลด Weight ใหม่โดยไม่ต้อง Restart Container
+- Model Weight แบบ ONNX; ตาราง model_versions เก็บ registry พร้อม metrics
+- Admin deploy ผ่าน endpoint deploy/dry-run — worker โหลดโมเดลใหม่เมื่อ subprocess ถัดไปเริ่ม
 - Semantic Versioning: `segformer_v1.0.0`, `segformer_v1.1.0` เป็นต้น
 
 ---
 
 ## การพิจารณา Scaling
 
-- Container นี้ใช้ทรัพยากรมากที่สุดในระบบ (GPU/CPU สำหรับ Model Inference)
-- การแยกออกจาก API Application ช่วยให้ Auto-scale เฉพาะ Inference Service ในช่วง High Load
-- Redis Cache ใน API Application ลดการเรียก Service นี้สำหรับรูปที่เคยวิเคราะห์แล้ว
+- Subprocess นี้ใช้ทรัพยากรมากที่สุดในระบบ (GPU/CPU สำหรับ Model Inference)
+- การแยกเป็น subprocess ช่วยแยกภาระงาน AI ออกจากการตอบสนอง request หลักของ FastAPI
+- Redis Cache (SHA-256, TTL 30 วัน) ใน API Application ลดการเรียก subprocess นี้สำหรับรูปที่เคยวิเคราะห์แล้ว
 
 ---
 

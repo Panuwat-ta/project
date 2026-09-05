@@ -135,7 +135,7 @@ class AppRadius {
 |---|---|
 | `PrimaryButton` | Full-width primary CTA button with loading state |
 | `SecondaryButton` | Outlined button |
-| `RiskBadge` | Colored badge: ต่ำ/ปานกลาง/สูง/ปลอดภัย |
+| `RiskBadge` | Colored badge: ต่ำ/ปานกลาง/สูง |
 | `RiskGauge` | SVG semicircle gauge widget |
 | `RiskProgressBar` | Horizontal progress bar with color |
 | `AppBottomNavigation` | 4-tab bottom navigation |
@@ -392,7 +392,7 @@ class AnalysisResult {
   final String taskId;
   final String status;
   final int riskScore;
-  final String riskLevel;   // "safe" | "low" | "medium" | "high"
+  final String riskLevel;   // "low" | "medium" | "high"
   final String summary;
   final String? imageUrl;
   final String? heatmapUrl;
@@ -546,7 +546,7 @@ dev_dependencies:
 - User override เก็บใน SharedPreferences
 - AppTheme ใช้ Color Tokens จาก design HTML ทุกอัน
 
-### Risk Level Calculation (Client-side display only — ต้องตรงกับ `server/app/utils/risk_calculator.py`)
+### Risk Level Calculation (Client-side display)
 ```dart
 RiskLevel fromScore(int score, int visualScore) {
   if (score >= 70 || visualScore >= 80) return RiskLevel.high;

@@ -85,32 +85,30 @@ Base URL ของ API ถูกอ่านจาก ตัวแปรสภ�
 `AuthInterceptor` ทำงาน 2 อย่าง:
 
 1. ดึง access โทเคน (token) จาก `SecureStorage` แนบเป็น `Authorization: Bearer {โทเคน (token)}` ทุก คำขอ (request)
-2. เมื่อได้รับ HTTP 401 ให้ลอง ต่ออายุ (refresh) โทเคน (token) โดยเรียก `POST /auth/ต่ออายุ (refresh)` ด้วย Dio ใหม่ (เพื่อป้องกัน interceptor loop) ถ้า ต่ออายุ (refresh) สำเร็จจะ ลองใหม่ (retry) คำขอ (request) เดิมด้วย โทเคน (token) ใหม่ ถ้าล้มเหลวจะ `deleteAll()` tokens และส่ง ข้อผิดพลาด (error) ต่อเพื่อให้ app เปลี่ยนหน้า (navigate) ไป login
+2. เมื่อได้รับ HTTP 401 ให้ลอง ต่ออายุ (refresh) โทเคน (token) โดยเรียก `POST /api/v1/auth/refresh` ด้วย Dio ใหม่ (เพื่อป้องกัน interceptor loop) ถ้า ต่ออายุ (refresh) สำเร็จจะ ลองใหม่ (retry) คำขอ (request) เดิมด้วย โทเคน (token) ใหม่ ถ้าล้มเหลวจะ `deleteAll()` tokens และส่ง ข้อผิดพลาด (error) ต่อเพื่อให้ app เปลี่ยนหน้า (navigate) ไป login
 
-### 4.3 API Endpoints
-
-ทุก เส้นทาง (path) รวมอยู่ใน `ApiEndpoints` class เพื่อป้องกันการ ฝังค่าในโค้ด (hardcode) ข้อความ (string) ซ้ำ
+### 4.3 API Endpoints (prefix `/api/v1`)
 
 | เมธอด (method) | เส้นทาง (path) | หน้าที่ |
 |--------|------|---------|
-| POST | /auth/login | เข้าสู่ระบบ |
-| POST | /auth/register | สมัครสมาชิก |
-| POST | /auth/ต่ออายุ (refresh) | ต่ออายุ (refresh) โทเคน (token) |
-| POST | /auth/logout | ออกจากระบบ |
-| GET | /auth/me | ดึงข้อมูลผู้ใช้ปัจจุบัน |
-| POST | /scans | ส่งภาพเพื่อวิเคราะห์ (หลายส่วน (multipart)) |
-| GET | /scans/{taskId} | ตรวจสอบสถานะการวิเคราะห์ |
-| GET | /scans/{taskId}/result | ดึงผลการวิเคราะห์ |
-| DELETE | /scans/{taskId} | ยกเลิก/ลบงาน |
-| GET | /history | ดึงประวัติการสแกน (การแบ่งหน้า (pagination)) |
-| GET | /history/{scanId} | ดึงรายละเอียดประวัติ |
-| DELETE | /history/{scanId} | ลบรายการประวัติ |
-| POST | /reports | ส่งรายงาน |
-| GET | /reports/categories | ดึงประเภทการรายงาน |
-| GET | /consents/me | ดึงสถานะ ความยินยอม (consent) |
-| PUT | /consents/me | อัปเดต ความยินยอม (consent) |
-| POST | /privacy/export | ส่งออกข้อมูลส่วนตัว |
-| DELETE | /privacy/account | ลบบัญชี |
+| POST | /api/v1/auth/login | เข้าสู่ระบบ |
+| POST | /api/v1/auth/register | สมัครสมาชิก |
+| POST | /api/v1/auth/refresh | ต่ออายุ (refresh) โทเคน (token) |
+| POST | /api/v1/auth/logout | ออกจากระบบ |
+| GET | /api/v1/auth/me | ดึงข้อมูลผู้ใช้ปัจจุบัน |
+| POST | /api/v1/scan/ | ส่งภาพเพื่อวิเคราะห์ (multipart) |
+| GET | /api/v1/scan/{scanId} | ดึงผล/ตรวจสอบสถานะการวิเคราะห์ |
+| GET | /api/v1/history | ดึงประวัติการสแกน (การแบ่งหน้า (pagination)) |
+| GET | /api/v1/history/{scanId} | ดึงรายละเอียดประวัติ |
+| DELETE | /api/v1/history/{scanId} | ลบรายการประวัติ |
+| POST | /api/v1/reports | ส่งรายงาน |
+| GET | /api/v1/reports/categories | ดึงประเภทการรายงาน |
+| GET | /api/v1/reports/my | ดึงรายงานที่ตนเองเคยส่ง |
+| POST | /api/v1/admin/login | เข้าสู่ระบบ admin |
+| GET | /api/v1/admin/dashboard | สถิติภาพรวม |
+| WS | /api/v1/ws/admin/dashboard | Dashboard realtime |
+
+> หมายเหตุ: consent จะส่งผ่าน body ของ register
 
 ---
 
@@ -251,11 +249,10 @@ Full-width `ElevatedButton` ขนาด 52px สูง รูปทรง `Stad
 `OutlinedButton` สไตล์เดียวกับ `PrimaryButton` แต่ outlined
 
 ### RiskBadge
-Pill-shaped ป้ายกำกับ (badge) แสดงระดับความเสี่ยงเป็น enum `RiskLevel`:
+Pill-shaped ป้ายกำกับ (badge) แสดงระดับความเสี่ยงเป็น enum `RiskLevel` (3 ระดับ: Low 0-39 / Medium 40-69 / High 70-100):
 - `low` — พื้นสีเขียว (#006E2D) / ข้อความ "ต่ำ"
 - `medium` — พื้นสีเหลือง (#D68900) / ข้อความ "ปานกลาง"
 - `high` — พื้นสีแดง (#DC2626) / ข้อความ "สูง"
-- `safe` — พื้นสีเขียว (#006E2D) / ข้อความ "ปลอดภัย"
 
 มี static เมธอด (method) `levelFromString(ข้อความ (string))` สำหรับแปลง ข้อความ (string) จาก API
 
@@ -340,21 +337,20 @@ createdAt    DateTime
 title        ข้อความ (string)?
 ```
 
-### ConsentSetting
+### ConsentSetting (2 fields)
 ```
-processingConsent  bool (บังคับ)
-historyConsent     bool
-researchConsent    bool
+consent_analysis   bool (บังคับ — ยินยอมให้ประมวลผลรูปภาพ)
+consent_research   bool (ไม่บังคับ — ยินยอมให้ใช้ข้อมูลปรับปรุงโมเดล)
 ```
+ส่งผ่าน body ของ `POST /api/v1/auth/register` แล้วบันทึกเป็น `consent_logs`
 
 ### RiskLevelHelper
-Utility class แปลง numeric score เป็น enum ตาม `server/app/utils/risk_calculator.py`:
-- 0-19: `RiskLevel.safe`
-- 20-39: `RiskLevel.low`
+Utility class แปลง numeric score เป็น enum 3 ระดับ: Low 0-39 / Medium 40-69 / High 70-100 (และกรณี visual_score ≥80 → high ทันทีแม้ total < 70)
+- 0-39: `RiskLevel.low`
 - 40-69: `RiskLevel.medium`
 - 70-100: `RiskLevel.high` (และกรณี `visual_score >= 80` → `high` ทันทีแม้ total < 70)
 
-และ `toThaiLabel()` แปลง enum เป็นข้อความภาษาไทย (ปลอดภัย / ต่ำ / ปานกลาง / สูง)
+และ `toThaiLabel()` แปลง enum เป็นข้อความภาษาไทย (ต่ำ / ปานกลาง / สูง)
 
 ---
 
@@ -379,7 +375,7 @@ States: `AuthInitial`, `AuthLoading`, `AuthAuthenticated(User)`, `AuthUnauthenti
 ### ScanBloc
 Events: `ImageSelected`, `CropConfirmed`, `AnalysisStarted`, `AnalysisPollTick`, `AnalysisCompleted`
 States: `ScanInitial`, `ImagePicked`, `ImageCropped`, `Uploading`, `Polling(progress, step)`, `AnalysisDone`, `ScanError`
-- Polling `GET /scans/{taskId}` ทุก 3 วินาทีด้วย `Timer.periodic`
+- Polling `GET /api/v1/scan/{scanId}` ทุก 3 วินาทีด้วย `Timer.periodic`
 - หมดเวลา (timeout) หลัง 120 วินาที
 - เมื่อ status = "completed" fetch result แล้ว เปลี่ยนหน้า (navigate) ไป `/result/:scanId`
 
@@ -515,7 +511,7 @@ Requirement: FR-SCAN-02 (การตรวจสอบและอัปโห�
   - Step 2 (Source Check): active — spinner + search ไอคอน (icon)
   - Step 3 (Visual Analysis): pending — opacity 40%
 - Privacy ป้ายกำกับ (badge): "การวิเคราะห์แบบเข้ารหัส"
-- `ScanBloc` poll `GET /scans/{taskId}` ทุก 3 วินาที ด้วย `Timer.periodic`
+- `ScanBloc` poll `GET /api/v1/scan/{scanId}` ทุก 3 วินาที ด้วย `Timer.periodic`
 - หมดเวลา (timeout) 120 วินาที แสดง `ErrorStateView` พร้อมปุ่ม ลองใหม่ (retry)
 - เมื่อสำเร็จ เปลี่ยนหน้า (navigate) ไป `/result/:scanId`
 
@@ -554,7 +550,7 @@ Requirement: FR-ANALYSIS-01 ถึง FR-ANALYSIS-04
 - ปุ่ม download/save รูป
 - คำอธิบาย: สีร้อน (แดง) = ส่วนที่มีความเสี่ยงสูงที่สุด
 
-Requirement: FR-XAI-01 (Grad-CAM Heatmap)
+Requirement: FR-XAI-01 (Mask-to-Heatmap Overlay)
 
 ### 10.10 HistoryScreen (`/main/history`)
 
@@ -650,14 +646,15 @@ Requirement: NFR-06 (Usability)
 
 ### 10.16 PrivacyConsentScreen (`/main/settings/privacy`)
 
-- Section "การจัดการความยินยอม"
-- `SwitchListTile` 3 ตัว:
+- Section "การจัดการความยินยอม" (2 fields: `consent_analysis` บังคับ, `consent_research` ไม่บังคับ)
+- `SwitchListTile` 2 ตัว:
   1. ประมวลผลรูปภาพ (required — ปิดไม่ได้)
-  2. เก็บประวัติการสแกน
-  3. ใช้ข้อมูลเพื่อการวิจัย
-- ปุ่ม "ส่งออกข้อมูลของฉัน" เรียก `POST /privacy/export`
-- ปุ่ม "ลบบัญชี" (สีแดง danger) — 2-step confirmation dialog ก่อนเรียก `DELETE /privacy/account`
+  2. ใช้ข้อมูลเพื่อการวิจัย
+- ปุ่ม "ส่งออกข้อมูลของฉัน" (จัดการ local)
+- ปุ่ม "ลบบัญชี" (สีแดง danger) — 2-step confirmation dialog
 - ถอน research ความยินยอม (consent) ได้โดยไม่กระทบการใช้งานพื้นฐาน
+
+> หมายเหตุ: consent จะส่งผ่าน body ของ register
 
 Requirement: FR-PDPA-01 (Consent Management)
 
@@ -672,7 +669,7 @@ Requirement: FR-PDPA-01 (Consent Management)
 | โทเคน (token) lifecycle | ลบ โทเคน (token) ทุกครั้งที่ logout หรือ ต่ออายุ (refresh) ล้มเหลว |
 | Auto ต่ออายุ (refresh) | `AuthInterceptor` จัดการ 401 โดยอัตโนมัติ ไม่ต้องให้ผู้ใช้ login ใหม่ทันที |
 | ข้อผิดพลาด (error) messages | ไม่แสดง stack trace หรือข้อความ technical ข้อผิดพลาด (error) ต่อผู้ใช้ แปลงเป็นภาษาไทยที่เข้าใจง่าย |
-| Image upload | ตรวจสอบ format (jpg/jpeg/png/webp) และขนาด (<= 10MB) ก่อน upload |
+| Image upload | ตรวจสอบ format (jpg/jpeg/png/webp) และขนาด (mobile ≤ 10MB, server ≤ 20MB, จำกัดจำนวนพิกเซลสูงสุด 100M) ก่อน upload |
 | clientRequestId | ทุก scan คำขอ (request) ส่ง UUID เพื่อป้องกัน duplicate submission |
 
 ---
@@ -683,6 +680,9 @@ Requirement: FR-PDPA-01 (Consent Management)
 |---------|---------|
 | เปิดแอปถึงหน้าแรก | ภายใน 3 วินาที |
 | เลือกไฟล์เข้า preview | ภายใน 1 วินาที |
+| วิเคราะห์ใหม่ (median) | ≤ 15 วินาทีต่อภาพ |
+| Cache Hit | ≤ 3 วินาที |
+| AI inference (GPU) | ≤ 10 วินาที |
 | Image compression | บีบอัดอัตโนมัติเมื่อไฟล์ > 10MB โดยใช้ image_picker quality พารามิเตอร์ (parameter) |
 | Network หมดเวลา (timeout) | 30 วินาทีต่อ คำขอ (request) |
 | Analysis หมดเวลา (timeout) | 120 วินาทีรวม polling ทั้งหมด |
@@ -754,7 +754,7 @@ test/
     utils/
       risk_level_helper_test.dart           unit test boundary conditions
     widgets/
-      risk_badge_test.dart                  widget test สี + ข้อความ 4 ระดับ
+      risk_badge_test.dart                  widget test สี + ข้อความ 3 ระดับ
       consent_checkbox_tile_test.dart       widget test checkbox + ปุ่ม (button) integration
   features/
     auth/
@@ -778,7 +778,7 @@ test/
 - **Unit tests** — `RiskLevelHelper` boundary conditions (0, 39, 40, 69, 70, 100)
 - **BLoC tests** — `AuthBloc` (login สำเร็จ (success)/ล้มเหลว (failure)), `ScanBloc` (polling transitions)
 - **Widget tests**:
-  - `RiskBadge` — ตรวจสี พื้นหลัง (background) และข้อความ Thai ทุก 4 ระดับ
+  - `RiskBadge` — ตรวจสี พื้นหลัง (background) และข้อความ Thai ทุก 3 ระดับ
   - `ConsentCheckboxTile` — label, description, value toggle, onChanged callback
   - `LoginScreen` — email empty, email invalid format, password empty, password visibility toggle
   - `HistoryScreen` — HistoryEmpty, HistoryLoading, HistoryDataLoaded, HistoryError states
@@ -830,12 +830,12 @@ test/
      -> ผู้ใช้ crop/rotate รูป
      -> แตะ "เริ่มวิเคราะห์"
      -> /loading (พร้อม filePath)
-        -> ScanBloc POST /scans (หลายส่วน (multipart))
-        -> ได้ taskId
-        -> poll GET /scans/{taskId} ทุก 3 วินาที
-        -> status = "completed"
-        -> GET /scans/{taskId}/result
-        -> /result/:scanId
+      -> ScanBloc POST /api/v1/scan/ (หลายส่วน (multipart))
+         -> ได้ scanId
+         -> poll GET /api/v1/scan/{scanId} ทุก 3 วินาที
+         -> status = "completed"
+         -> GET /api/v1/scan/{scanId} (ผลอยู่ใน endpoint เดียวกัน)
+         -> /result/:scanId
            -> แสดง risk gauge, ป้ายกำกับ (badge), summary, factors
            -> ปุ่ม "ดู Heatmap" -> /heatmap/:scanId
            -> ปุ่ม "รายงาน" -> /main/report?scanId=...
@@ -846,14 +846,14 @@ test/
 
 ```
 /main/history
-  -> HistoryBloc load GET /history
+  -> HistoryBloc load GET /api/v1/history
   -> รายการ scan items
   -> แตะรายการ -> /detail/:scanId
      -> แสดงผล analysis เดิม
      -> "สแกนภาพใหม่" -> /main/home
   -> Swipe left -> delete item
   -> Pull to ต่ออายุ (refresh) -> reload
-  -> Search -> debounce 400ms -> GET /history?keyword=...
+  -> Search -> debounce 400ms -> GET /api/v1/history?keyword=...
 ```
 
 ### 17.5 Flow การรายงาน
@@ -865,7 +865,7 @@ test/
   -> เลือก platform
   -> กรอก URL/account (optional)
   -> ยินยอม ความยินยอม (consent)
-  -> "ส่งรายงาน" -> POST /reports
+  -> "ส่งรายงาน" -> POST /api/v1/reports
   -> สำเร็จ (success) feedback
 ```
 

@@ -6,12 +6,14 @@
 
 ## 1. การคำนวณคะแนนความเสี่ยงรวม (Hybrid Worst-Case & Multi-Factor Breakdown)
 
-ระบบประมวลผลคะแนนความเสี่ยงของรูปภาพด้วยแนวทางแบบไฮบริด (Hybrid Worst-Case Scoring) ร่วมกับการแจกแจงความเสี่ยงแยกมิติอิสระเต็ม 100% ตามสูตรใน `server/app/utils/risk_calculator.py`:
+ระบบประมวลผลคะแนนความเสี่ยงของรูปภาพด้วยแนวทางแบบไฮบริด (Hybrid Worst-Case Scoring) ร่วมกับการแจกแจงความเสี่ยงแยกมิติอิสระเต็ม 100%:
 
 ### 1.1 คะแนนแยกมิติอิสระ (Independent Factors - 0-100%)
 * **$S_{visual}$:** คะแนนความผิดปกติทางภาพ (Visual Anomaly Score) จากโมเดล SegFormer (0–100%)
 * **$S_{textual}$:** คะแนนความเสี่ยงด้านข้อความ (Textual Analysis Score) จากโมเดล Surya OCR + NLP (0–100%)
-* **$S_{source}$:** คะแนนความเสี่ยงจากแหล่งที่มาของภาพ (Source Reliability Score) จาก Reverse Image Search (0–100%)
+* **$S_{source}$:** คะแนนความเสี่ยงจากแหล่งที่มาของภาพ (Source Reliability Score) จาก Reverse Image Search (0–100%; พบ ≥3 แหล่ง = สูง, =2 = ปานกลาง/ไม่แน่ชัด, ≤1 = ต่ำ)
+
+**Partial Failure:** ถ้ามิติใดล้มเหลวระบบจะต้องตัดมิตินั้นทิ้งแล้วคำนวณค่าสูงสุดจากมิติที่สำเร็จเท่านั้น
 
 ### 1.2 สมการคะแนนรวมภาพรวม (Overall Risk Score Formulation)
 ใช้หลักการ Maximum Impact (Worst-Case Dominance) เป็นฐานคะแนนหลัก ร่วมกับ Multi-Factor Compounding หากพบความเสี่ยงในมิติอื่นร่วมด้วย:

@@ -27,16 +27,21 @@ tests_all/
 │   ├── fixtures/                    # ข้อมูล Mock, Payloads และ Image Factory
 │   ├── helpers/                     # API Client, Auth Helper, Assertions
 │   └── tests/                       # โค้ดทดสอบ Pytest (api, e2e, mobile bridge, locustfile)
-└── tests_report/                    # บันทึกผลการรันการทดสอบอัตโนมัติจริง (Actual Test Execution Results)
-    ├── automate_tests/              # รายงานผลการรันสคริปต์อัตโนมัติ (admin, mobile, model, server)
-    └── manual_tests/                # รายงานผลการทดสอบด้วยตนเอง (Manual Execution Reports)
+└── tests_report/                    # บันทึกผลการรันการทดสอบจริง (Actual Test Execution Results)
+    ├── automate_tests/              # รายงานผลการรันสคริปต์อัตโนมัติ (server, mobile มีรายงานจริง; admin, model ยังว่างมีแค่ .gitkeep)
+    │   ├── server/                  # รายงานฝั่ง Backend/AI (admin_api.md, api_suite_verification.md, qwen_xai.md, risk_calculator_*.md, scan_xai_gpu.md, automate_test_ci.md)
+    │   ├── mobile/                  # รายงานฝั่ง Mobile (api_base_url_env_test.md, history_refresh_fix.md, result_factors_test.md, xai_integration.md)
+    │   ├── admin/                   # (ว่าง — มีแค่ .gitkeep ยังไม่มีรายงาน automate ของ Admin Portal)
+    │   ├── model/                   # (ว่าง — มีแค่ .gitkeep ยังไม่มีรายงาน automate ของ Model)
+    │   └── README.md                # กฎการบันทึกรายงาน (ผลรันจริงเท่านั้น + ภาษาไทย 4 มิติ)
+    └── manual_tests/                # (ว่าง — ยังไม่มีรายงานผลการทดสอบ manual ที่บันทึกไว้)
 ```
 
 ---
 
 ## ความสัมพันธ์กับเอกสารใน `Document/tests_doc/`
 
-- **`Document/tests_doc/`**: จัดเก็บเอกสารระดับแผนงานและกลยุทธ์ เช่น `test_plan.md` (Master Test Plan & Strategy ตาม ISO/IEC/IEEE 29119) และแนวทางการออกแบบการทดสอบ
+- **`Document/tests_doc/`**: จัดเก็บเอกสารระดับแผนงานและกลยุทธ์ เช่น `test_plan/README.md` (Master Test Plan & Strategy ตาม ISO/IEC/IEEE 29119) และแนวทางการออกแบบการทดสอบ
 - **`tests_all/`**: จัดเก็บชุดทดสอบเชิงปฏิบัติการจริง สคริปต์อัตโนมัติ และผลลัพธ์การรันจริง
 
 ---

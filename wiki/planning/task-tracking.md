@@ -48,14 +48,14 @@ updated: 2026-09-06
 
 ### 3.2 Backend API & Database (FastAPI & PostgreSQL)
 - ออกแบบ RESTful API Endpoints สำหรับ Authentication, Scan Processing และ Admin Operations
-- วางระบบ Caching บน Redis ด้วย Perceptual Hash (pHash) ตอบกลับในเวลาน้อยกว่า 3 วินาที
+- วางระบบ Caching บน Redis ด้วย SHA-256 Hash ตอบกลับในเวลาไม่เกิน 3 วินาที
 - แยกสคีมาตาราง `admins` ออกจาก `users` เพื่อความปลอดภัยขั้นสูงสุด
 - ติดตั้งระบบ Database Migration ด้วย Alembic เพื่อควบคุมการเปลี่ยนแปลงของสคีมา
 
 ### 3.3 AI Inference Engine & Pipelines
 - พัฒนาและส่งออกโมเดล SegFormer (MiT-B0 ถึง MiT-B2) ในรูปแบบ ONNX Runtime
 - ใช้อัลกอริทึม Overlapping Tiling Inference ป้องกันรอยต่อของภาพขนาดใหญ่
-- ติดตั้ง Surya OCR 2 (GGUF) สำหรับการสกัดข้อความภาษาไทยและอังกฤษ
+- ติดตั้ง Surya OCR v0.5.0 (Native PyTorch) สำหรับการสกัดข้อความภาษาไทยและอังกฤษ
 - ปรับแต่ง XAI Pipeline ร่วมกับ Qwen2.5 สำหรับสร้างคำอธิบายความผิดปกติ
 
 ### 3.4 Admin Portal (React / Vite)

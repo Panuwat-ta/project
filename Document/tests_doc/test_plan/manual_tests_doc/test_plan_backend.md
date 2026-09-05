@@ -14,7 +14,7 @@
 1. **Authentication & Authorization**:
    - `POST /api/v1/auth/register`, `POST /api/v1/auth/login`, `GET /api/v1/auth/me`
    - การออก JWT Token (Access Token และ Refresh Token)
-   - การตรวจสอบสิทธิ์แบบ RBAC แยกบทบาท `user` และ `admin` (ตาราง `users` และ `admins`)
+   - การตรวจสอบสิทธิ์แบบ RBAC แยกบทบาท Admin / User / Researcher
 2. **Scan & Upload Pipeline**:
    - `POST /api/v1/scan/` รองรับ Multipart/form-data
    - การตรวจสอบขนาดไฟล์ (Limit 10MB) และ Magic Bytes (JPEG/PNG)

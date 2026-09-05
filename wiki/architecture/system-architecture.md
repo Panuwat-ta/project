@@ -15,8 +15,7 @@ updated: 2026-08-02
 ## หลักการออกแบบ
 
 - **Cloud-Native Architecture** — บริการรันบน Cloud Container; Storage อยู่บน Cloud
-- **Decoupled Architecture** — Mobile Frontend แยกจาก Business Logic; AI Inference Node แยกจาก API Gateway ช่วยให้ Scale GPU Inference อย่างอิสระโดยไม่ต้อง Scale ทั้ง Backend
-- **Microservices** — API Application และ AI Inference Service เป็นหน่วยที่ Deploy แยกกันได้
+- **Decoupled Architecture** — Mobile Frontend แยกจาก Business Logic; งาน AI หนักแยกเป็น ONNX Worker subprocess เพื่อไม่บล็อกการตอบสนองของ FastAPI
 
 ---
 
@@ -25,18 +24,18 @@ updated: 2026-08-02
 ```
 +---------------------------+
 |   ชั้นการแสดงผล          |   Flutter Mobile App (Android)
-|   (Presentation Layer)    |   React.js Admin Portal
+|   (Presentation Layer)    |   React.js Admin Portal (Tailwind CSS)
 +---------------------------+
             |  HTTPS/REST
 +---------------------------+
 |   ชั้นธุรกิจและประมวลผล  |   FastAPI API Application (Orchestrator)
-|   (Backend Layer)         |   AI Inference Service (PyTorch/ONNX)
+|   (Backend Layer)         |   ONNX Worker subprocess (SegFormer ONNX + Surya OCR + Qwen XAI)
 +---------------------------+
             |
 +---------------------------+
 |   ชั้นข้อมูลและจัดเก็บ   |   PostgreSQL (ข้อมูลเชิงสัมพันธ์)
-|   (Data & Storage Layer)  |   Redis (Image Hash Cache)
-|                           |   Cloud Storage (ไฟล์รูปและ Heatmap)
+|   (Data & Storage Layer)  |   Redis (SHA-256 image-hash Cache, TTL 30 วัน)
+|                           |   Local filesystem (รูปต้นฉบับ + Heatmap, เสิร์ฟผ่าน /uploads)
 +---------------------------+
 ```
 
@@ -59,12 +58,12 @@ updated: 2026-08-02
 | Container | เทคโนโลยี | ความรับผิดชอบ |
 | :--- | :--- | :--- |
 | Mobile App | Flutter | แอปผู้ใช้: อัปโหลดรูป, แสดงผลลัพธ์ |
-| Admin Portal | React.js + Tailwind | Dashboard, จัดการรายงาน, Deploy โมเดล |
+| Admin Portal | React.js + Tailwind CSS | Dashboard, จัดการรายงาน, Deploy โมเดล |
 | API Application | Python FastAPI | Orchestrator, Auth, OCR/NLP, ประสานงาน Job |
-| AI Inference Service | PyTorch / ONNX Runtime | Semantic Segmentation, ตรวจจับ AI-Gen, สร้าง Heatmap |
+| ONNX Worker (subprocess) | ONNX Runtime + Surya OCR + Qwen XAI | SegFormer segmentation, AI-Gen prob, แผนที่ความร้อนแบบ mask-to-heatmap overlay |
 | Main DB | PostgreSQL | ผู้ใช้, ประวัติสแกน, รายงาน, Log |
-| Cache Store | Redis | ค้นหา Image Hash, Cache ผลลัพธ์ |
-| Object Storage | Cloud Storage | รูปภาพดิบ, Heatmap Overlay |
+| Cache Store | Redis | SHA-256 image-hash Cache, TTL 30 วัน |
+| Object Storage | Local filesystem | รูปภาพต้นฉบับและ Heatmap |
 
 ---
 
@@ -73,10 +72,10 @@ updated: 2026-08-02
 | การเชื่อมต่อ | โปรโตคอล |
 | :--- | :--- |
 | Mobile/Admin → API Gateway | HTTPS / REST JSON |
-| API Gateway → AI Inference Service | HTTP (ภายใน) |
+| API Gateway → ONNX Worker | Subprocess IPC ภายใน Backend เดียวกัน |
 | API Gateway → PostgreSQL | SQLAlchemy ORM ผ่าน TCP |
-| API Gateway → Redis | Redis Protocol |
-| API Gateway → Cloud Storage | Cloud SDK (Presigned URLs สำหรับ Client) |
+| API Gateway → Redis | Redis Protocol (TTL 30 วัน) |
+| API Gateway → Local Storage | Filesystem สำหรับรูปภาพและ Heatmap |
 | API Gateway → Google Vision API | HTTPS / REST |
 | API Gateway → FCM | HTTPS / REST |
 

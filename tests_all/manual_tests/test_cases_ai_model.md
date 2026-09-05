@@ -2,7 +2,7 @@
 
 - **Models**:
   - **Visual Tampering Detection**: SegFormer (Semantic Segmentation, ONNX Runtime)
-  - **Optical Character Recognition**: Surya OCR 0.5.0 (PyTorch Native, TH/EN Support)
+  - **Optical Character Recognition**: Surya OCR v0.5.0 (PyTorch Native, TH/EN Support)
   - **Explainable AI (XAI)**: Qwen2.5-1.5B (Language & Reasoning Model)
   - **Source Verification**: Reverse Image Search Engine
 - **Inference Strategy**: Overlapping Tiling (Patch 512x512 with 64px Overlap), Weight Averaging
@@ -94,7 +94,7 @@
 
 ### TC-AI-XAI-01: การสร้างข้อความสรุปและเหตุผลประกอบการตรวจจับ (XAI Reasoning)
 - **Module / Feature**: Explainable AI / Qwen2.5-1.5B
-- **Requirement ID**: FR-SYS-10
+- **Requirement ID**: FR-SYS-11
 - **Test Type**: Integration / NLP
 - **Priority**: P1 (High)
 - **Pre-conditions**:

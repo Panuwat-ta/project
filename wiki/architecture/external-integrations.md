@@ -24,11 +24,12 @@ updated: 2026-08-02
 2. Google Vision ส่งคืน URL ของหน้าเว็บที่พบรูปคล้ายกัน
 3. ระบบนับ Domain ที่ไม่ซ้ำกัน
 4. >= 3 Domain → ความเสี่ยงแหล่งที่มาสูง
-5. <= 1 Domain → ความเสี่ยงต่ำ
+5. = 2 Domain → ความเสี่ยงปานกลาง/ไม่แน่ชัด (medium/uncertain)
+6. <= 1 Domain → ความเสี่ยงต่ำ
 
-**มีส่วนใน:** คะแนน S_source (30% ของ Risk Score รวม)
+**มีส่วนใน:** คะแนน $S_{source}$ (0–100 หนึ่งมิติในสูตร Hybrid max+bonus)
 
-**กรณี Failure:** ถ้า External API Timeout หรือ Error ระบบจะใช้คะแนน S_source กลางและระบุว่า "Source Verification ไม่พร้อมใช้งาน" ใน Response
+**กรณี Failure:** ถ้า External API Timeout หรือ Error ระบบจะตัดมิตินั้นทิ้งแล้วคำนวณค่าสูงสุดจากมิติที่สำเร็จ และระบุว่า "Source Verification ไม่พร้อมใช้งาน" ใน Response
 
 ---
 
@@ -54,8 +55,8 @@ updated: 2026-08-02
 | บริการ | หน้าที่ | สถานะ |
 | :--- | :--- | :--- |
 | Bing Visual Search | ทางเลือกสำรองสำหรับ Reverse Image Search | วางแผนแล้ว (Fallback) |
-| SynthID (Google DeepMind) | ตรวจจับภาพ AI ผ่าน Watermark | กล่าวถึงใน README แต่ยังไม่ได้ออกแบบ |
-| Gemini (Google AI) | วิเคราะห์บริบทภาพด้วย LLM | กล่าวถึงใน README แต่ยังไม่ได้ออกแบบ |
+| SynthID (Google DeepMind) | ตรวจจับภาพ AI ผ่าน Watermark | Future (นอกขอบเขต v1) |
+| Gemini (Google AI) | วิเคราะห์บริบทภาพด้วย LLM | Future (นอกขอบเขต v1) |
 
 > [!NOTE]
 > SynthID และ Gemini ถูกอ้างถึงใน README ภายใต้ "เทคโนโลยีระดับสูง" สำหรับ Visual Anomaly Detection แต่การออกแบบ Integration ยังไม่มีเอกสาร ให้ ingest เอกสารที่เกี่ยวข้องเมื่อมีความคืบหน้า

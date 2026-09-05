@@ -206,7 +206,7 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 | RC-ANALYSIS-01 | Textual Analysis | FR-ANALYSIS-01 | Textual Analysis (OCR + NLP) | 5 |
 | RC-ANALYSIS-02, 03, 04 | Visual Analysis | FR-ANALYSIS-02 | Visual Analysis (Forgery + AI-Gen) | 5 |
 | RC-ANALYSIS-05 | Source Analysis | FR-ANALYSIS-03 | Source Analysis (Reverse Search) | 4 |
-| RC-ANALYSIS-07, 08 | Risk Calculation | FR-ANALYSIS-04 | Weighted Risk Score Calculation | 6 |
+| RC-ANALYSIS-07, 08 | Risk Calculation | FR-ANALYSIS-04 | Risk Score Calculation | 6 |
 
 **Note:** RC-ANALYSIS-06 (EXIF Extraction) ถูกจัดเป็น Priority: Should และยังไม่ได้สร้าง FR แยก (รวมอยู่ใน FR-ANALYSIS-03)
 
@@ -216,7 +216,7 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 
 | RC ID | RC Title | FR ID | FR Title | AC Count |
 |-------|----------|-------|----------|----------|
-| RC-XAI-01, 02, 03 | Heatmap & Display | FR-XAI-01 | Grad-CAM Heatmap Generation & Display | 4 |
+| RC-XAI-01, 02, 03 | Heatmap & Display | FR-XAI-01 | Mask-to-Heatmap Overlay Generation & Display | 4 |
 | RC-HISTORY-01, 02, 03, 04 | History Management | FR-HISTORY-01 | จัดการประวัติการสแกน | 5 |
 | RC-HISTORY-05 | Report Scam | FR-HISTORY-02 | รายงานภาพหลอกลวง | 4 |
 | RC-PDPA-01, 02, 03 | Consent & Rights | FR-PDPA-01 | Consent Management | 5 |
@@ -231,13 +231,13 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 
 | RC ID | RC Title | NFR ID | NFR Title | AC Count |
 |-------|----------|--------|-----------|----------|
-| RC-NFR-01, 02, 03 | Response Time | NFR-01 | Performance — Response Time | 3 |
+| RC-NFR-01, 02, 03 | Response Time | NFR-01 | Performance — Response Time | 4 |
 | RC-NFR-05 | Concurrent Users | NFR-02 | Performance — Scalability | 1 |
-| RC-NFR-04 | System Uptime | NFR-03 | Availability — System Uptime | 1 |
+| RC-NFR-04 | System Uptime | NFR-03 | Availability — System Uptime | 3 |
 | RC-NFR-08 | Security | NFR-04 | Security — Auth, Encryption | 5 |
-| RC-NFR-06 | Model Accuracy | NFR-05 | Accuracy — Model Performance | 2 |
+| RC-NFR-06 | Model Accuracy | NFR-05 | Accuracy — Model Performance (Accuracy + mDice) | 4 |
 | RC-NFR-09, 10 | Satisfaction & XAI | NFR-06 | Usability — Satisfaction & Explainability | 2 |
-| RC-NFR-07 | Cache Hit Rate | NFR-07 | Cache Efficiency | 1 |
+| RC-NFR-07 | Cache Hit Rate | NFR-07 | Cache Efficiency | 2 |
 
 ---
 
@@ -307,15 +307,15 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 
 | RC Priority | RC Count | Converted to FR/NFR | Conversion Rate | Status |
 |-------------|----------|---------------------|-----------------|--------|
-| Must | 38 | 25 FR/NFR | 65.8% | ✅ Prioritized|
+| Must | 40 | 25 FR/NFR | 62.5% | ✅ Prioritized|
 | Should | 8 | 1 NFR | 12.5% | ⚠️ Deferred|
 | Could | 1 | 0 | 0% | ⏸️ Deferred |
 | **Total** | **49** | **26** | **53.1%** | |
 
-**Analysis:**
-- **Focus:** Must Requirements (38 RCs → 25 FR/NFR)
-- **Deferred:** Should/Could Requirements (9 RCs)
-- **13 Must RCs were merged** into existing FR/NFR (e.g., RC-SCAN-01 + RC-SCAN-02 → FR-SCAN-01)
+**Analysis (นับจริงจาก 04 — arithmetic 40+8+1=49):**
+- **Focus:** Must Requirements (40 RCs → 25 FR/NFR)
+- **Deferred:** Should/Could Requirements (9 RCs: RC-AUTH-05/06, RC-ANALYSIS-06, RC-HISTORY-02/04, RC-PDPA-04, RC-NOTIFY-01/02, RC-NFR-07)
+- **15 Must RCs were merged** into existing FR/NFR (e.g., RC-SCAN-01 + RC-SCAN-02 → FR-SCAN-01)
 
 ---
 
@@ -323,7 +323,11 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 
 ### 8.1 Orphan Requirements (FR/NFR without Traceability)
 
-**Result:** ✅ **No Orphan Requirements Detected**
+**Result:** ✅ **No Orphan FR/NFR — มี 4 RC ที่เป็น Deferred/Phase 2:**
+- RC-NOTIFY-01 (Push Analysis Complete, Should) — Phase 2
+- RC-NOTIFY-02 (Push Report Status, Could) — Phase 2
+- RC-PDPA-04 (Data Retention Cron, Should) — Phase 2
+- RC-ANALYSIS-06 (EXIF Extraction, Should) — แสดงผลเท่านั้น ไม่ใช้คำนวณ Risk
 
 ทุก FR/NFR มี Traceability Chain ครบถ้วน:
 - ✅ All 19 FR have: ST → OBJ → SC → RC → FR → AC
@@ -351,7 +355,7 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 - Should Priority: 1 NFR (Cache Efficiency)
 
 **Resolved & Integrated (23 RCs):**
-- 13 RCs merged into existing FR/NFR (e.g., RC-SCAN-01 + RC-SCAN-02 → FR-SCAN-01)
+- 15 RCs merged into existing FR/NFR (40 Must − 25 converted = 15 merged; e.g., RC-SCAN-01 + RC-SCAN-02 → FR-SCAN-01)
 - 10 RCs clarified and integrated with resolutions:
   - RC-AUTH-05: Email OTP → Integrated into FR-AUTH-02 context
   - RC-AUTH-06: Google Login → Deferred
@@ -369,7 +373,7 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
   - RC-NFR-03: CPU Inference → ≤ 60s
   - RC-NFR-04: Monitoring → Prometheus + Grafana
   - RC-NFR-05: 100 Users → Cache Hit ≤ 5s, Miss ≤ 20s
-  - RC-NFR-06: Precision/Recall → ≥ 85%
+  - RC-NFR-06: Accuracy และ mDice → ≥ 85%
   - RC-NFR-07: Cache Strategy → 4-step approach
   - RC-NFR-09: UAT Sample → 100 testers
   - RC-NFR-10: Questions → 4 scenario-based
@@ -391,7 +395,7 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 | SC01 to SC04 Consistency | ✅ Pass | Scope Areas consistent |
 | Technology Stack Consistency | ✅ Pass | Flutter (not React Native) everywhere |
 | Risk Score Formula Consistency | ✅ Pass | `Hybrid Worst-Case: max(S_visual, S_text, S_source) + Compounding` |
-| Risk Grade Mapping Consistency | ✅ Pass | Safe: 0-19, Low: 20-39, Medium: 40-69, High: 70-100 (visual ≥80 → High) |
+| Risk Grade Mapping Consistency | ✅ Pass | **3 ระดับ: Low 0-39 / Medium 40-69 / High 70-100 (visual ≥80 → High)** |
 
 ---
 
@@ -416,7 +420,7 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 
 | Priority | Document 1 (RC) | Document 2 (FR/NFR) | Consistent? |
 |----------|-----------------|---------------------|-------------|
-| Must | 38 RCs | 25 FR/NFR | ✅ Pass (Prioritized) |
+| Must | 40 RCs | 25 FR/NFR | ✅ Pass (Prioritized) |
 | Should | 8 RCs | 1 NFR | ✅ Pass (Deferred) |
 | Could | 1 RC | 0 | ✅ Pass (Deferred) |
 
@@ -493,7 +497,7 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 | Cache Efficiency | 1 | 2 | Performance Monitoring |  Medium |
 | **Total** | **7** | **23** | | |
 
-**Updated:** AC count increased from 15 to 23 (+8 AC for Monitoring, Performance Percentiles, Precision/Recall, UAT Questions, Cache Strategy)
+**Updated:** AC count increased from 15 to 23 (+8 AC for Monitoring, Performance Percentiles, UAT Questions, Cache Strategy)
 
 ---
 
@@ -521,7 +525,7 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 | **Objective Coverage** | 100% (4/4 OBJs covered) | ✅ Excellent |
 | **Scope Coverage** | 100% (4/4 SCs covered) | ✅ Excellent |
 | **RC → FR/NFR Conversion** | 53.1% (26/49 RCs) | ✅ Good (Must priority focus) |
-| **Must RC Coverage** | 65.8% (25/38 Must RCs) | ✅ Good |
+| **Must RC Coverage** | 62.5% (25/40 Must RCs) | ✅ Good |
 | **Should RC Coverage** | 12.5% (1/8 Should RCs) | ⚠️ Deferred |
 | **Orphan Requirements** | 0 (0/26 FR/NFR) | ✅ Excellent |
 | **Orphan AC** | 0 (0/98 ACs) | ✅ Excellent |
@@ -678,7 +682,7 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 | **CPU Inference** | ≤ 60 วินาที | Project Decision |
 | **Monitoring Stack** | Prometheus + Grafana + Sentry | Tech Stack Analysis |
 | **Concurrent Users** | Cache Hit: ≤ 5s, Cache Miss: ≤ 20s | Project Decision |
-| **Model Metrics** | Precision & Recall ≥ 85% | wiki/concepts/configs.md |
+| **Model Metrics** | Accuracy และ mDice ≥ 85% | wiki/concepts/configs.md |
 | **Cache Strategy** | 4-step: ↑TTL, Auto-Scale, Degrade, Alert | wiki/architecture/database-schema.md |
 | **UAT Sample** | 100 testers | wiki/requirements/objectives-kpis.md |
 | **Comprehension Test** | 4 scenario-based questions | wiki/requirements/objectives-kpis.md |

@@ -26,11 +26,7 @@
    - การควบคุมไม่ให้โมเดลเกิดอาการ Hallucination
 4. **Hybrid Risk Calculator**:
    - การคำนวณตามสูตรทางการ: Worst-Case Dominance `S_base = max(Visual, Textual, Source)` ร่วมกับ Multi-Factor Compounding (+5 คะแนนต่อมิติรองที่ >= 40) และ Visual Override (หาก Visual >= 80 ปรับเป็น High ทันที)
-   - การจัดกลุ่มความเสี่ยง 3 ระดับอย่างเข้มงวด:
-     - ต่ำ (Low): 0-39
-     - ปานกลาง (Medium): 40-69
-     - สูง (High): 70-100
-     - ต้องไม่ปรากฏคำว่า "Safe" หรือการจำแนก 4 ระดับแบบเดิม
+   - การจัดกลุ่มความเสี่ยง 3 ระดับ: Low 0-39 / Medium 40-69 / High 70-100
 5. **Full-Resolution Heatmap Generation**:
    - การแปลง Probability Map เป็นภาพสี (Color Map เช่น JET/Turbo) และซ้อนทับภาพต้นฉบับ
 6. **Subprocess Isolation & Fault Tolerance**:
@@ -76,4 +72,4 @@
 
 ## 4. ความเชื่อมโยงไปยังชุดกรณีทดสอบจริง
 - **เอกสารกรณีทดสอบละเอียด**: `tests_all/manual_tests/test_cases_ai_model.md`
-- **ตารางความสอดคล้องความต้องการ**: `tests_all/rtm.md` (หมวดหมู่ FR-SYS-02, FR-SYS-05 ถึง FR-SYS-10, NFR-AI-01, NFR-AI-02)
+- **ตารางความสอดคล้องความต้องการ**: `tests_all/rtm.md` (หมวดหมู่ FR-SYS-02, FR-SYS-05 ถึง FR-SYS-09, FR-SYS-11, NFR-AI-01, NFR-AI-02)

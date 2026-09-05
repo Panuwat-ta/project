@@ -24,7 +24,7 @@
 
 ### TC-E2E-SCAN-01: การตรวจสอบภาพต้องสงสัยแบบครบวงจร (Full Detection Workflow)
 - **Module / Feature**: Cross-System / End-to-End Scan Journey
-- **Requirement ID**: FR-INPUT-04, FR-SYS-01, FR-SYS-02, FR-SYS-05, FR-SYS-07, FR-SYS-08, FR-SYS-10, FR-REPORT-01, FR-REPORT-02, FR-REPORT-05
+- **Requirement ID**: FR-INPUT-04, FR-SYS-01, FR-SYS-02, FR-SYS-05, FR-SYS-07, FR-SYS-08, FR-SYS-11, FR-REPORT-01, FR-REPORT-02, FR-REPORT-05
 - **Test Type**: End-to-End Integration
 - **Priority**: P0 (Blocker)
 - **Pre-conditions**:
@@ -83,7 +83,7 @@
 
 ### TC-E2E-REPORT-03: การส่งรายงานข้อร้องเรียนและการตรวจสอบของแอดมิน (Report & Audit Flow)
 - **Module / Feature**: Cross-System / User Report to Admin Resolution
-- **Requirement ID**: FR-RPT-01, FR-ADM-02, FR-ADM-03, FR-ADM-06
+- **Requirement ID**: FR-RPT-01, FR-ADM-02, FR-ADM-06
 - **Test Type**: End-to-End Integration
 - **Priority**: P1 (Critical)
 - **Pre-conditions**:

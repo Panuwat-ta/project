@@ -18,7 +18,7 @@
    - การตัด Session เมื่อ Token หมดอายุหรือถูกเพิกถอน
 2. **Dashboard Overview & WebSocket Telemetry**:
    - การแสดงตัวเลขชี้วัดหลัก (Total Scans, High Risk Incidents, Pending Reports, System Health)
-   - การเชื่อมต่อ WebSocket (`/api/v1/ws/telemetry`) แสดงผลกราฟ CPU, GPU, Memory และปริมาณคำขอแบบเรียลไทม์
+   - การเชื่อมต่อ WebSocket (`/api/v1/ws/admin/dashboard`) แสดงผลกราฟ CPU, GPU, Memory และปริมาณคำขอแบบเรียลไทม์
    - กลไก Auto-reconnect เมื่อการเชื่อมต่อ WebSocket ขาดหาย
 3. **AI Model Management**:
    - การแสดงรายการโมเดลใน Model Registry โดยต้องนำโมเดลสถานะ ACTIVE มาปักหมุดไว้ที่อันดับแรกเสมอ
@@ -73,4 +73,4 @@
 
 ## 4. ความเชื่อมโยงไปยังชุดกรณีทดสอบจริง
 - **เอกสารกรณีทดสอบละเอียด**: `tests_all/manual_tests/test_cases_admin.md`
-- **ตารางความสอดคล้องความต้องการ**: `tests_all/rtm.md` (หมวดหมู่ FR-ADM-01 ถึง FR-ADM-06, NFR-A11Y-01)
+- **ตารางความสอดคล้องความต้องการ**: `tests_all/rtm.md` (หมวดหมู่ FR-ADM-01 ถึง FR-ADM-07, NFR-A11Y-01)

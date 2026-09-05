@@ -22,11 +22,11 @@ Admin Portal เป็น 1 ใน 4 คอนเทนเนอร์หลั�
 
 ## 2. เทคโนโลยีและสถาปัตยกรรมฟรอนต์เอนด์
 
-- **Framework:** React 18 (Single Page Application - SPA)
+- **Framework:** React 19 (Single Page Application - SPA)
 - **Build Tool:** Vite สำหรับการ Build และ Hot Module Replacement (HMR) ที่รวดเร็ว
-- **Styling:** Vanilla CSS ร่วมกับ Design Tokens และ Utility Classes เพื่อความยืดหยุ่นสูง
-- **State Management & Data Fetching:** React Hooks, Context API และ Axios สำหรับ HTTP Client
-- **Real-time Telemetry:** Native WebSocket Client เชื่อมต่อกับ Backend WebSocket Endpoint (`/api/v1/ws/telemetry`)
+- **Styling:** Tailwind CSS v4 พร้อม Design Tokens
+- **State Management & Data Fetching:** React Hooks, Context API และ `fetch` wrapper รวมศูนย์ใน `src/lib/api.js` (token management + auto refresh + global error handling)
+- **Real-time:** WebSocket client เชื่อมต่อ WS /api/v1/ws/admin/dashboard
 - **Icons & Visuals:** Lucide React และ Recharts สำหรับแสดงกราฟสถิติ
 - **Routing:** React Router DOM (v6) พร้อม Protected Route Guards
 
@@ -58,13 +58,13 @@ Admin Portal ออกแบบภายใต้มาตรฐานควา�
 
 ## 4. หน้าจอหลักและโมดูลการทำงาน (Core Modules)
 
-### 4.1 Dashboard & Real-time Telemetry
+### 4.1 Dashboard & Real-time
 - แสดงผลสรุปสถิติสำคัญ (KPI Summary Cards): จำนวนการสแกนทั้งหมดวันนี้, อัตราส่วนภาพความเสี่ยงสูง, โมเดล AI ที่ทำงานอยู่ (Active Model)
 - กราฟแนวโน้มการสแกนย้อนหลังและสัดส่วนระดับความเสี่ยง (Low / Medium / High)
-- WebSocket Telemetry Widget แสดงสถานะเชื่อมต่อสดของ Backend Server, ค่าหน่วงเวลา (Latency) และคิวการประมวลผล
+- WebSocket widget (/api/v1/ws/admin/dashboard) แสดงสถานะเชื่อมต่อสดของ Backend Server
 
 ### 4.2 การจัดการโมเดล AI (AI Model Registry & Rollback)
-- ตรวจสอบรายการโมเดล SegFormer ทั้งหมดในระบบ (`v1.0.0` ถึง `v1.0.4`) ดึงข้อมูลจากตาราง `model_versions`
+- ตรวจสอบรายการโมเดล SegFormer ทั้งหมดในระบบ ดึงข้อมูลจากตาราง model_versions
 - แสดงค่าเมตริกการทดสอบ: mIoU (Mean Intersection over Union), aAcc (All Accuracy), mAcc, mDice
 - กลไกการ Deployment และ Rollback:
   - ตรวจสอบความสมบูรณ์ของไฟล์น้ำหนักโมเดล (`.onnx`) ก่อนเปลี่ยนสถานะ
@@ -107,15 +107,15 @@ flowchart LR
     FastAPI --> RedisCache
 ```
 
-- **แยกการยืนยันตัวตนออกจากผู้ใช้ทั่วไป:** ผู้ดูแลระบบต้องลงชื่อเข้าใช้ผ่าน Endpoint `/api/v1/admin/auth/login` โดยตรวจสอบบัญชีและรหัสผ่านที่เข้ารหัส bcrypt กับตาราง `admins` โดยเฉพาะ
-- **Role-Based Access Control (RBAC):** มีการแยกบทบาทระหว่าง `Admin` ทั่วไป และ `Super Admin` (ที่มีสิทธิ์สร้างแอดมินอื่นและจัดการโครงสร้างระบบ)
+- **แยกการยืนยันตัวตนออกจากผู้ใช้ทั่วไป:** ผู้ดูแลระบบต้องลงชื่อเข้าใช้ผ่าน Endpoint POST /api/v1/admin/login โดยตรวจสอบบัญชีและรหัสผ่านกับตาราง admins โดยเฉพาะ
+- **Role-Based Access Control (RBAC):** ทุก /admin/* ต้องเป็น **Super Admin**
 - **Reverse Proxy Protection:** ในโหมดพัฒนาและ Production มีการซ่อนเบื้องหลังผ่าน Proxy เพื่อควบคุม CORS และป้องกันการเปิดเผย Endpoint ภายใน
 
 ---
 
 ## 6. ประเด็นสำคัญ
 
-- Admin Portal เป็นระบบควบคุมเบื้องหลังที่มีสิทธิ์สูง การดำเนินการทุกอย่างจึงถูกบันทึกเข้าสู่ตาราง `audit_log` เสมอ
+- Admin Portal เป็นระบบควบคุมเบื้องหลังที่มีสิทธิ์สูง การดำเนินการทุกอย่างจึงถูกบันทึกเข้าสู่ตาราง audit_log เสมอ
 - การเปลี่ยนโมเดล AI ผ่านหน้า Portal มีผลทันทีต่อการประมวลผลรูปภาพของผู้ใช้ Mobile ในการสแกนรอบถัดไป
 - UI ปฏิบัติตามมาตรฐาน 3-Level Risk Scale (Low 0-39, Medium 40-69, High 70-100) สอดคล้องกับ Mobile App และ Backend
 

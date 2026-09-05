@@ -2,15 +2,14 @@
 
 > ศูนย์รวม Automate Test สำหรับโปรเจค ScamGuard ทั้งหมด (Backend / Mobile / E2E / Performance)
 
-**Path:** `/home/panuwat/project/automate_test`  
-**Alias:** `/home/panuwat/project/automate test` (symlink ไปที่เดียวกัน รองรับชื่อมีเว้นวรรค)
+**Path:** `/home/panuwat/project/tests_all/automate_tests/` (โฟลเดอร์จริงที่มี `Makefile` / `run.sh` / `pytest.ini`)
 
 ---
 
 ## โครงสร้างโฟลเดอร์
 
 ```
-automate_test/
+tests_all/automate_tests/
 ├── config/               # ตั้งค่า environment, base URL, credentials
 │   ├── settings.py       # โหลด config จาก env + yaml
 │   └── environments.yaml # dev / staging / prod
@@ -37,8 +36,8 @@ automate_test/
 ## วิธีรัน (Quick Start)
 
 ```bash
-# 1. ติดตั้ง deps (แยก venv ของ automate_test)
-cd /home/panuwat/project/automate_test
+# 1. ติดตั้ง deps (แยก venv ของ automate_tests)
+cd /home/panuwat/project/tests_all/automate_tests
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
@@ -68,7 +67,7 @@ pytest tests/e2e -v
 
 ## เชื่อมกับของเดิม
 
-- **Server tests เดิม** ยังอยู่ที่ `server/tests/` — automate_test จะ import app จาก `server/app` โดยตรงและรันซ้ำได้
+- **Server tests เดิม** ยังอยู่ที่ `server/tests/` — `tests_all/automate_tests/tests/api/` import app จาก `server/app` โดยตรงและรันซ้ำได้
 - **Mobile tests เดิม** อยู่ที่ `scam_image_mobile/test` — `tests/mobile/` จะเป็น bridge เรียก `flutter test` อัตโนมัติ ไม่ต้องย้ายไฟล์เดิม
 - รูปทดสอบใช้ร่วมกันผ่าน symlink `fixtures/images -> ../../server/tests/test_img`
 

@@ -40,9 +40,9 @@
   - พฤติกรรมที่ผ่าน: ตรวจสอบการคำนวณเกรดความเสี่ยงแบบ 3 ระดับ (Low 0-39, Medium 40-69, High 70-100) โดยไม่มีสถานะ Safe เก่าหลงเหลือ ค่าที่คำนวณได้ตรงตามตาราง Risk Level Helper
 - **`HistoryDetailScreen` — Data Binding & Hardcoded Removal**:
   - พฤติกรรมที่ผ่าน: ตรวจสอบว่าหน้าจอแสดงรายละเอียดประวัติแสดงผลข้อมูลจริงจาก Entity:
-    - AI-Generated Probability แสดงผลจาก `result.aiGenProbability` จริง (ไม่ใช่ Mock 85%)
-    - XAI Explanation แสดงผลจากคำอธิบาย AI จริง (ไม่ใช่ข้อความสแตติก "บริเวณมุมขวาบน...")
-    - OCR Analysis สรุปผลจากคำสำคัญ `result.scamKeywords` และข้อความ `result.ocrText` จริง
+    - AI-Generated Probability แสดงผลจาก `result.aiGenProbability`
+    - XAI Explanation แสดงผลจากคำอธิบาย AI
+    - OCR Analysis สรุปผลจากคำสำคัญ `result.scamKeywords` และข้อความ `result.ocrText`
 - **`ResultBloc` & `HistoryBloc` — Stream Consistency**:
   - พฤติกรรมที่ผ่าน: BLoC จัดการข้อมูลชุดใหม่ที่เพิ่มฟิลด์ Dynamic Data ได้โดยไม่เกิด State Drop หรือ Deserialization Error
 

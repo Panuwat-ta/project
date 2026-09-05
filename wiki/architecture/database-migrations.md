@@ -33,13 +33,16 @@ server/
 │       ├── 002_add_admins_table.py
 │       └── ...
 └── app/
-    └── models/                    # นิยาม SQLAlchemy ORM Models
-        ├── admin.py               # Model ตาราง admins
+    └── models/                    # นิยาม SQLAlchemy ORM Models (9 ตาราง)
         ├── user.py                # Model ตาราง users
+        ├── admin.py               # Model ตาราง admins
         ├── scan.py                # Model ตาราง scans
-        ├── scam_report.py         # Model ตาราง scam_reports
+        ├── consent.py             # Model ตาราง consent_logs
+        ├── report.py              # Model ตาราง scam_reports
+        ├── model_version.py       # Model ตาราง model_versions
+        ├── admin_session.py       # Model ตาราง admin_sessions
         ├── audit_log.py           # Model ตาราง audit_log
-        └── model_version.py       # Model ตาราง model_versions
+        └── export_job.py          # Model ตาราง export_jobs
 ```
 
 ---
@@ -47,19 +50,19 @@ server/
 ## 3. ขั้นตอนการทำงานและคำสั่งที่ใช้บ่อย (Workflow & Commands)
 
 > [!IMPORTANT]
-> ต้องรันคำสั่งทั้งหมดภายในโฟลเดอร์ `server/` และต้องเปิดใช้งาน Virtual Environment (`venv`) พร้อมตั้งค่าตัวแปรสภาพแวดล้อมใน `.env` ให้ครบถ้วนเสมอ
+> ต้องรันคำสั่งทั้งหมดภายในโฟลเดอร์ server และต้องเปิดใช้งาน Virtual Environment พร้อมตั้งค่าตัวแปรสภาพแวดล้อมใน .env ให้ครบถ้วนเสมอ
 
 ### 3.1 การสร้างไฟล์ Migration อัตโนมัติ (Generate Migration)
-เมื่อมีการเพิ่มหรือแก้ไขฟิลด์ในคลาส Model ภายใต้ `server/app/models/` ให้รันคำสั่งเพื่อให้ Alembic เปรียบเทียบความแตกต่างและสร้าง Script อัตโนมัติ:
+เมื่อมีการเพิ่มหรือแก้ไขฟิลด์ในคลาส Model ภายใต้โฟลเดอร์ models ให้รันคำสั่งเพื่อให้ Alembic เปรียบเทียบความแตกต่างและสร้าง Script อัตโนมัติ:
 
 ```bash
 alembic revision --autogenerate -m "add admins table and scan title"
 ```
 
 ### 3.2 ตรวจสอบไฟล์ Script ก่อนนำไปใช้จริง
-หลังจากสร้างไฟล์ใน `server/migrations/versions/` ให้เปิดตรวจสอบคำสั่งภายในฟังก์ชัน:
-- `upgrade()`: คำสั่ง SQL สำหรับปรับใช้การเปลี่ยนแปลงใหม่
-- `downgrade()`: คำสั่ง SQL สำหรับย้อนกลับโครงสร้างเดิมกรณีมีปัญหา
+หลังจากสร้างไฟล์ในโฟลเดอร์ migrations/versions ให้เปิดตรวจสอบคำสั่งภายในฟังก์ชัน:
+- upgrade: คำสั่ง SQL สำหรับปรับใช้การเปลี่ยนแปลงใหม่
+- downgrade: คำสั่ง SQL สำหรับย้อนกลับโครงสร้างเดิมกรณีมีปัญหา
 
 ### 3.3 การปรับใช้การเปลี่ยนแปลงไปยังฐานข้อมูล (Upgrade)
 รันคำสั่งเพื่ออัปเดตสคีมาของ PostgreSQL ให้เป็นเวอร์ชันล่าสุด:
@@ -91,15 +94,15 @@ alembic downgrade -1
 
 1. **ห้ามแก้ไขสคีมาฐานข้อมูลโดยตรงด้วย SQL Console ในสภาพแวดล้อมจริง:** ทุกการเปลี่ยนแปลงของตาราง คอลัมน์ ดัชนี (Index) หรือ Foreign Key ต้องผ่านไฟล์ Script ของ Alembic เท่านั้น
 2. **ไม่ลบไฟล์ Migration ในอดีต:** ไฟล์ประวัติใน `migrations/versions/` ต้องถูกบันทึกลง Git เพื่อให้ผู้พัฒนารายอื่นและ Pipeline CI/CD สามารถ Replicate ฐานข้อมูลได้ตรงกัน 100%
-3. **การทดสอบ Downgrade เสมอ:** ทุกครั้งที่เขียน Migration ใหม่ ให้ทดสอบรัน `upgrade` แล้วตามด้วย `downgrade` บนเครื่องทดสอบ เพื่อยืนยันว่าสคริปต์สามารถย้อนกลับได้อย่างสมบูรณ์ ไม่ทิ้งขยะหรือข้อผิดพลาดตกค้าง
+3. **การทดสอบ Downgrade เสมอ:** ทุกครั้งที่เขียน Migration ใหม่ ให้ทดสอบรัน upgrade แล้วตามด้วย downgrade บนเครื่องทดสอบ เพื่อยืนยันว่าสคริปต์สามารถย้อนกลับได้อย่างสมบูรณ์ ไม่ทิ้งขยะหรือข้อผิดพลาดตกค้าง
 
 ---
 
 ## 5. ประเด็นสำคัญ
 
 - Alembic ทำงานคู่กับ SQLAlchemy เพื่อสร้างความสอดคล้องระหว่าง Python Code และ PostgreSQL
-- ทุก Migration Script ต้องมีทั้งฟังก์ชัน `upgrade()` และ `downgrade()` ที่ทำงานได้จริง
-- ข้อมูลการเชื่อมต่อฐานข้อมูลถูกดึงมาจากตัวแปรสภาพแวดล้อม `DATABASE_URL` ใน `.env` ปราศจากการ Hardcode ข้อมูลความลับ
+- ทุก Migration Script ต้องมีทั้งฟังก์ชัน upgrade และ downgrade ที่ทำงานได้จริง
+- ข้อมูลการเชื่อมต่อฐานข้อมูลถูกดึงมาจากตัวแปรสภาพแวดล้อม DATABASE_URL ใน .env ปราศจากการ Hardcode ข้อมูลความลับ
 
 ---
 

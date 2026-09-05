@@ -9,7 +9,7 @@
 
 ระบบหลังบ้านแบ่งออกเป็น 2 ส่วนหลัก (Decoupled Components) เพื่อแยกตรรกะธุรกิจและงานประมวลผลโมเดล AI ออกจากกัน:
 1. **API Application (Python FastAPI):** ทำหน้าที่เป็น API Gateway และ Core Orchestrator จัดการสิทธิ์การเข้าถึง ฐานข้อมูล แคช และจัดการท่อข้อมูลเบื้องต้น
-2. **AI Inference Worker (Python PyTorch / ONNX Runtime):** ทำหน้าที่ประมวลผลภาพถ่ายและรันโมเดลเชิงลึกโดยเฉพาะ โดยรันในรูปแบบ Isolated Subprocess (`services/onnx_worker.py`) **ภายใน API Service เดียวกัน** (สื่อสารผ่าน IPC stdin/stdout) ไม่ใช่ Microservice แยก Deployment เพื่อแยกภาระงานประมวลผลหนักออกจาก Event Loop ของ FastAPI
+2. **AI Inference Worker (Python PyTorch / ONNX Runtime):** ทำหน้าที่ประมวลผลภาพถ่ายและรันโมเดลเชิงลึกโดยเฉพาะ โดยรันในรูปแบบ Isolated Subprocess **ภายใน API Service เดียวกัน** (สื่อสารผ่าน IPC stdin/stdout) เพื่อแยกภาระงานประมวลผลหนักออกจาก Event Loop ของ FastAPI
 
 ```mermaid
 flowchart TD
@@ -21,7 +21,7 @@ flowchart TD
         ApiGateway -->|Upload/Retrieve Files| ObjectStorage[(Cloud Storage)]
         
         subgraph AIEnv [AI Inference - Subprocess ภายใน API Service]
-            ApiGateway -->|IPC stdin/stdout Base64| AIService[ONNX Worker<br>services/onnx_worker.py - PyTorch/ONNX]
+            ApiGateway -->|IPC stdin/stdout Base64| AIService[ONNX Worker<br>PyTorch/ONNX]
             AIService -->|Load Model Weights ตาม ONNX_MODEL_PATH| ModelStore[Model Weights Store .onnx]
         end
     end
@@ -115,7 +115,7 @@ server/
   * หากไม่พบข้อมูล (Cache Miss): สั่งงานประมวลผลตาม Multi-layer Pipeline และนำผลลัพธ์มาเขียนบันทึกใน Redis โดยกำหนดเวลาหมดอายุ (TTL) 30 วัน
 
 ### 2.3 Environment Variables (.env)
-ตัวแปรสภาพแวดล้อมทั้งหมด 17 ตัวที่ระบบอ่านค่าจากไฟล์ `.env` (อ้างอิง `server/app/core/config.py`):
+ตัวแปรสภาพแวดล้อมทั้งหมด 17 ตัวที่ระบบอ่านค่าจากไฟล์ `.env`:
 | Variable | คำอธิบาย |
 |---|---|
 | `APP_NAME` | ชื่อแอปพลิเคชัน API |
@@ -148,7 +148,7 @@ server/
 
 การจัดเก็บข้อมูลหลักจะออกแบบตาม Schema ความสัมพันธ์ (Entity-Relationship) ดังต่อไปนี้:
 
-> **หมายเหตุ:** นอกจากตารางหลักด้านล่าง ระบบยังมีตารางประกอบที่ถูกสร้างไว้แล้วใน Migrations ดูรายละเอียดได้ที่ `server/migrations/versions/`: `admins` (บัญชีผู้ดูแลระบบ), `admin_sessions` (Session/Refresh Token ฝั่ง Admin), `audit_log` (บันทึกการกระทำของ Admin แบบ Append-only), `export_jobs` (คิวงานส่งออก Dataset), และ `model_versions` (ทะเบียนเวอร์ชันโมเดล AI)
+> **หมายเหตุ:** นอกจากตารางหลักด้านล่าง ระบบยังมีตารางประกอบ: `admins` (บัญชีผู้ดูแลระบบ), `admin_sessions` (Session/Refresh Token ฝั่ง Admin), `audit_log` (บันทึกการกระทำของ Admin แบบ Append-only), `export_jobs` (คิวงานส่งออก Dataset), และ `model_versions` (ทะเบียนเวอร์ชันโมเดล AI)
 
 ### 4.1 ตารางผู้ใช้งาน (users)
 ตารางบันทึกข้อมูลบัญชีผู้ใช้งานระบบและระดับสิทธิ์:
@@ -377,20 +377,20 @@ CREATE INDEX idx_scam_reports_created_at ON scam_reports(created_at);
 ```
   * `400 Bad Request` — Validation ไม่ผ่าน เช่น category ไม่อยู่ในรายการ หรือ reason สั้นเกินไป
   * `401 Unauthorized` — ไม่ได้แนบ JWT หรือ Token หมดอายุ
-* **หมายเหตุ:** รายงานทุกรายการเริ่มต้นที่สถานะ `pending` และจะถูก Admin ตรวจสอบผ่านคิว Moderation (`status`: pending → reviewing → approved/rejected) โดยฟิลด์ `moderated_by` จะอ้างอิงถึงตาราง `admins` (ไม่ใช่ `users`) เมื่อมีการตัดสินผล
+* **หมายเหตุ:** รายงานทุกรายการเริ่มต้นที่สถานะ `pending` และจะถูก Admin ตรวจสอบผ่านคิว Moderation (`status`: pending → reviewing → approved/rejected) โดยฟิลด์ `moderated_by` จะอ้างอิงถึงตาราง `admins` เมื่อมีการตัดสินผล
 
 ### 5.4 หมวดการจัดการฝั่งผู้ดูแลระบบ (Admin Endpoints)
 
-#### 5.4.1 POST /api/v1/admin/train (วางแผนไว้ / ยังไม่ implement)
+#### 5.4.1 POST /api/v1/admin/train (แผนงาน)
 สั่งเทรนโมเดล AI เพิ่มเติม (Incremental Training) จากรายงานภาพหลอกลวงที่ Admin อนุมัติแล้ว
 * **Auth:** ต้องแนบ Admin JWT
-* **Request Body (JSON - ตามแผนที่วางไว้):**
+* **Request Body (JSON):**
 ```json
 {
   "reason": "เพิ่มชุดข้อมูลภาพสลิปปลอมรอบเดือนมิถุนายน"
 }
 ```
-* **Response (JSON - Status 202 Accepted ตามแผนที่วางไว้):**
+* **Response (JSON - Status 202 Accepted):**
 ```json
 {
   "job_id": "b3c1d9a0-1f2e-4c8a-9d7e-6f5a4b3c2d1e",
@@ -398,7 +398,7 @@ CREATE INDEX idx_scam_reports_created_at ON scam_reports(created_at);
   "message": "Incremental training job queued successfully"
 }
 ```
-* **สถานะปัจจุบัน:** Endpoint นี้อยู่ในแผนการพัฒนาตามเอกสารสรุประบบเซิร์ฟเวอร์ (`Document/server/server.md`) แต่ยังไม่ถูก implement ในซอร์สโค้ด (`server/app/api/v1/admin.py`) ณ ปัจจุบัน — ฝั่ง Admin API ที่ใช้งานจริงในตอนนี้คือการจัดการ Model Versions ผ่าน `POST /api/v1/admin/models/{model_id}/deploy` และ `POST /api/v1/admin/models/{model_id}/dry-run`
+* **หมายเหตุ:** ฝั่ง Admin API สำหรับจัดการโมเดลใช้งานผ่าน `POST /api/v1/admin/models/{model_id}/deploy` และ `POST /api/v1/admin/models/{model_id}/dry-run`
 
 ---
 

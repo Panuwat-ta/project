@@ -17,6 +17,8 @@ Document/tests_doc/
     │   ├── test_plan_ai_model.md        # แผนการทดสอบ AI Model & Heatmap Pipeline
     │   ├── test_plan_admin.md           # แผนการทดสอบ Admin Portal (React/Vite)
     │   └── test_plan_nfr.md             # แผนการทดสอบ Non-Functional (Security, Perf, WCAG)
+    │                                    # หมายเหตุ: ไม่มี test_plan_e2e แยก — กรณีทดสอบ E2E ฉบับ manual
+    │                                    # อยู่ใน tests_all/manual_tests/test_cases_e2e.md
     └── automate_tests_doc/              # เอกสารแผนและสถาปัตยกรรมชุดทดสอบอัตโนมัติ
         ├── test_plan_api_automation.md  # แผนการทดสอบ Backend API Automation (Pytest)
         ├── test_plan_e2e_automation.md  # แผนการทดสอบ End-to-End Automation

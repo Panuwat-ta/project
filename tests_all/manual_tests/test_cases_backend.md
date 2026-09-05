@@ -216,7 +216,7 @@
 - **Expected Results**:
   1. ตรวจพบคีย์แฮชใน Redis ทันที (Cache Hit)
   2. ได้รับ HTTP 200 พร้อมผลลัพธ์การสแกนเดิม
-  3. เวลาในการตอบกลับรวดเร็วมาก (< 100ms) โดยไม่มีการเรียกใช้งานโมเดล AI ใน Subprocess ซ้ำ
+  3. เวลาในการตอบกลับไม่เกิน 3 วินาทีแบบ End-to-End (≤ 3s ตรงตาม NFR-PERF-01) โดยไม่มีการเรียกใช้งานโมเดล AI ใน Subprocess ซ้ำ
 - **Automation Mapping**: `tests_all/automate_tests/tests/api/test_scan_workflow.py`
 
 ---

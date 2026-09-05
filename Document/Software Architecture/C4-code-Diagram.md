@@ -7,54 +7,54 @@ updated: 2026-08-08
 
 # C4: Code Diagram (Image Scanning Flow)
 
-แผนภาพ C4 (ระดับ Code) นี้แสดงลำดับขั้นตอน (Sequence Diagram) การทำงานเชิงลึกของกระบวนการวิเคราะห์รูปภาพ (Image Scanning) ภายใน Backend ของระบบ Scam Image Detection ซึ่งครอบคลุมตั้งแต่การรับ Request จากผู้ใช้ ไปจนถึงการจัดเก็บผลลัพธ์ลงฐานข้อมูล โดยอ้างอิงจากคลาสและฟังก์ชันจริงในซอร์สโค้ด
+แผนภาพ C4 นี้แสดงลำดับขั้นตอนการทำงานของกระบวนการวิเคราะห์รูปภาพ (Image Scanning) ภายใน Backend ของระบบ Scam Image Detection ซึ่งครอบคลุมตั้งแต่การรับ Request จากผู้ใช้ ไปจนถึงการจัดเก็บผลลัพธ์ลงฐานข้อมูล
 
 ```mermaid
 sequenceDiagram
     autonumber
     
     actor Client as Mobile App
-    participant Router as ScanRouter<br>(api/v1/scan.py)
-    participant Service as ScanService<br>(services/scan_service.py)
-    participant Utils as ImageUtils<br>(utils/image_utils.py)
-    participant FS as Local Storage<br>(File System)
-    participant Inference as InferenceService<br>(services/inference_service.py)
-    participant ONNX as ONNX Worker<br>(onnx_worker.py)
-    participant OCR as Surya OCR<br>(HuggingFace)
-    participant RiskCalc as RiskCalculator<br>(utils/risk_calculator.py)
-    participant DB as PostgreSQL<br>(SQLAlchemy)
+    participant Router as ScanRouter
+    participant Service as ScanService
+    participant Utils as ImageUtils
+    participant FS as Local Storage
+    participant Inference as InferenceService
+    participant ONNX as ONNX Worker
+    participant OCR as Surya OCR
+    participant RiskCalc as RiskCalculator
+    participant DB as PostgreSQL
 
-    Client->>Router: POST /api/v1/scan<br>(Multipart: UploadFile)
+    Client->>Router: POST /api/v1/scan (Multipart)
     
     activate Router
-    Router->>Service: await analyze_image(file, user_id, db)
+    Router->>Service: analyze_image(file, user_id, db)
     
     activate Service
     Note over Service: 1. อ่านไฟล์เป็น Bytes<br>และเช็คขนาดไฟล์ (Max MB)
     
-    Service->>Utils: await run_in_threadpool(load_image_verified)
+    Service->>Utils: load_image_verified
     Utils-->>Service: PIL Image, EXIF Data
     
-    Service->>Utils: await run_in_threadpool(encode_lossless_png)
+    Service->>Utils: encode_lossless_png
     Utils-->>Service: PNG Bytes
     
     Service->>FS: Save {hash}.png (เป็นหลักฐานรูปต้นฉบับ)
     FS-->>Service: Success
     
-    Note over Service: ส่งงานให้ AI แบบ Threadpool<br>เพื่อไม่บล็อก Event Loop
-    Service->>Inference: await run_in_threadpool(predict, png_bytes)
+    Note over Service: ส่งงานให้ AI แบบแยกโปรเซส<br>เพื่อไม่บล็อก Event Loop
+    Service->>Inference: predict(png_bytes)
     
     activate Inference
     
     %% SegFormer Processing
-    Inference->>ONNX: subprocess.Popen()<br>ส่งภาพผ่าน STDIN (Base64)
+    Inference->>ONNX: ส่งภาพเพื่อประมวลผล
     activate ONNX
     Note over ONNX: ประมวลผล Semantic Segmentation<br>ด้วยโมเดล ONNX
-    ONNX-->>Inference: STDOUT: JSON (visual_risk, heatmap_b64)
+    ONNX-->>Inference: JSON (visual_risk, heatmap)
     deactivate ONNX
     
     %% OCR Processing
-    Inference->>OCR: run_ocr([image], [["th", "en"]])
+    Inference->>OCR: สกัดข้อความไทย/อังกฤษ
     activate OCR
     Note over OCR: สกัดข้อความภาษาไทย/อังกฤษ<br>ด้วย Surya OCR
     OCR-->>Inference: ocr_text (ข้อความที่สกัดได้)
@@ -75,44 +75,40 @@ sequenceDiagram
     deactivate RiskCalc
     
     %% DB Persistence
-    Service->>DB: db.add(Scan Model)<br>db.commit()<br>db.refresh()
+    Service->>DB: บันทึกผลการสแกน
     activate DB
     DB-->>Service: new_scan_record
     deactivate DB
     
-    Service-->>Router: return new_scan (Scan Object)
+    Service-->>Router: return new_scan
     deactivate Service
     
-    Router-->>Client: 200 OK<br>ScanResponse (JSON)
+    Router-->>Client: 200 OK (ScanResponse JSON)
     deactivate Router
 ```
 
 ---
 
-## คำอธิบายคลาสและฟังก์ชันที่เกี่ยวข้อง (Code-Level Details)
+## คำอธิบายการทำงาน (Details)
 
-แผนภาพนี้เจาะลึกการทำงานของฟังก์ชันหลัก `analyze_image()` ภายใน `ScanService` ซึ่งแสดงให้เห็นถึงการทำงานแบบ Non-blocking (Asynchronous) และวิธีการที่ Backend สื่อสารกับ AI
+แผนภาพนี้แสดงการทำงานของฟังก์ชันหลัก `analyze_image` ภายใน ScanService ซึ่งแสดงให้เห็นถึงการทำงานแบบ Non-blocking และวิธีการที่ Backend สื่อสารกับ AI
 
-### 1. API Layer (`ScanRouter`)
-*   **ฟังก์ชัน:** `create_scan(file: UploadFile, db: AsyncSession, current_user: User)`
-*   **หน้าที่:** ตรวจสอบสิทธิ์ผู้ใช้งาน (`Depends(get_current_user)`) และรับไฟล์รูปแบบ Multipart Form Data จากนั้นส่งต่อให้ Service ประมวลผล
+### 1. API Layer (ScanRouter)
+**หน้าที่:** ตรวจสอบสิทธิ์ผู้ใช้งาน และรับไฟล์รูปแบบ Multipart Form Data จากนั้นส่งต่อให้ Service ประมวลผล
 
-### 2. Business Logic Layer (`ScanService`)
-*   **ฟังก์ชัน:** `analyze_image(file: UploadFile, user_id: int, db: AsyncSession)`
-*   **หน้าที่:** 
+### 2. Business Logic Layer (ScanService)
+**หน้าที่:** 
     1.  ตรวจสอบความปลอดภัยของไฟล์ (ขนาดไฟล์ และการแปลงเป็นภาพ Lossless PNG ป้องกันมัลแวร์แฝง)
     2.  สร้าง Hash จากไฟล์ต้นฉบับเพื่อใช้ตั้งชื่อไฟล์ (Deduplication)
-    3.  ครอบการเรียกฟังก์ชันประมวลผลหนักๆ เช่น AI และ Image Processing ด้วย `run_in_threadpool()` เพื่อไม่ให้ Event Loop ของ FastAPI ถูกบล็อก (Block)
-    4.  วิเคราะห์คำหลอกลวงเบื้องต้นจากผลลัพธ์ OCR ด้วย `scam_keywords`
-    5.  บันทึกออบเจกต์ (Model) สู่ฐานข้อมูลผ่าน `db.commit()`
+    3.  เรียกงานประมวลผลหนัก (AI และ Image Processing) ใน worker แยก เพื่อไม่ให้ Event Loop ของ API ถูกบล็อก
+    4.  วิเคราะห์คำหลอกลวงเบื้องต้นจากผลลัพธ์ OCR ด้วย scam keywords
+    5.  บันทึกผลสู่ฐานข้อมูล
 
-### 3. AI Integration Layer (`InferenceService`)
-*   **ฟังก์ชัน:** `predict(image_bytes: bytes)`
-*   **หน้าที่:** ทำงานประสาน AI โมเดลทั้ง 2 ตัว
-    *   **ONNX Worker (SegFormer):** ออกแบบให้รันสคริปต์ `onnx_worker.py` ใน **Subprocess** แยกต่างหาก (AI Workload Isolation) โดยส่งรูปผ่าน Pipe (STDIN) รูปแบบ Base64 และรับผลลัพธ์กลับมาทาง STDOUT เพื่อแยกการจัดการทรัพยากรและหน่วยความจำของฝั่ง AI ออกจาก Web Server หลักอย่างเด็ดขาด
-    *   **Surya OCR:** โมเดลจะถูกเตรียมพร้อมไว้ในหน่วยความจำหลัก (RAM-resident) ตั้งแต่ระบบเริ่มทำงาน เพื่อให้สามารถประมวลผลข้อความจากรูปภาพได้ทันทีโดยไม่ต้องเสียเวลาโหลดโมเดลใหม่ ช่วยลดความหน่วง (Latency) ในการตอบสนอง 
+### 3. AI Integration Layer (InferenceService)
+**หน้าที่:** ทำงานประสาน AI โมเดลทั้ง 2 ตัว
+    *   **ONNX Worker (SegFormer):** รันในโปรเซสแยกต่างหาก (AI Workload Isolation) เพื่อแยกการจัดการทรัพยากรและหน่วยความจำของฝั่ง AI ออกจาก Web Server หลัก
+    *   **Surya OCR:** โมเดลจะถูกเตรียมพร้อมไว้ในหน่วยความจำหลักตั้งแต่ระบบเริ่มทำงาน เพื่อให้สามารถประมวลผลข้อความจากรูปภาพได้ทันทีโดยไม่ต้องเสียเวลาโหลดโมเดลใหม่ ช่วยลดความหน่วง (Latency) ในการตอบสนอง 
 
 ### 4. Utility & Calculation
-*   **คลาส/โมดูล:** `RiskCalculator`
-*   **ฟังก์ชัน:** `calculate_risk_score(text, visual, source)`
-*   **หน้าที่:** เป็นเพียวฟังก์ชัน (Pure Function) ที่รับค่าตัวเลขคะแนนดิบเข้าไปคำนวณตามสูตรน้ำหนักคณิตศาสตร์ และส่งค่าความเสี่ยงรวม (Total Risk) กลับมา
+*   **โมดูล:** RiskCalculator
+*   **หน้าที่:** รับค่าตัวเลขคะแนนดิบเข้าไปคำนวณตามสูตร Hybrid max+bonus และส่งค่าความเสี่ยงรวม (Total Risk) กลับมา
