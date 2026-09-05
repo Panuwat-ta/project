@@ -47,7 +47,18 @@ export function ModelsList() {
       else setLoading(true);
 
       const data = await fetchModels();
-      setModels(data.items || []);
+      const sortedItems = (data.items || []).slice().sort((a, b) => {
+        const aActive = Boolean(a.is_active || a.status === "active");
+        const bActive = Boolean(b.is_active || b.status === "active");
+        if (aActive && !bActive) return -1;
+        if (!aActive && bActive) return 1;
+
+        if (a.version_tag && b.version_tag) {
+          return b.version_tag.localeCompare(a.version_tag, undefined, { numeric: true, sensitivity: "base" });
+        }
+        return (b.id || 0) - (a.id || 0);
+      });
+      setModels(sortedItems);
       if (manual) toast.success("รีเฟรชข้อมูลโมเดล AI สำเร็จ");
     } catch (err) {
       console.error("Load models failed:", err);

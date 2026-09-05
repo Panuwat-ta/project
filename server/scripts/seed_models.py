@@ -7,9 +7,9 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import select
 from app.models.model_version import ModelVersion
-from app.core.config import settings, TH_TIMEZONE
+from app.core.config import settings, TH_TIMEZONE, PROJECT_ROOT
 
-WORK_DIRS = "/home/panuwat/project/model/segformer/work_dirs"
+WORK_DIRS = str(PROJECT_ROOT / "model/segformer/work_dirs")
 
 async def seed():
     engine = create_async_engine(settings.DATABASE_URL)

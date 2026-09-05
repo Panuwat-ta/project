@@ -5,8 +5,12 @@ import { adminLogin } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 
 export function Login() {
-  const [email, setEmail] = useState(import.meta.env.VITE_DEFAULT_ADMIN_USERNAME || "");
-  const [password, setPassword] = useState(import.meta.env.VITE_DEFAULT_ADMIN_PASSWORD || "");
+  const [email, setEmail] = useState(
+    import.meta.env.DEV ? (import.meta.env.VITE_DEFAULT_ADMIN_USERNAME || "") : ""
+  );
+  const [password, setPassword] = useState(
+    import.meta.env.DEV ? (import.meta.env.VITE_DEFAULT_ADMIN_PASSWORD || "") : ""
+  );
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);

@@ -43,7 +43,7 @@ const NAV_GROUPS = [
 
 export function AppSidebar({ isOpen, setIsOpen }) {
   const location = useLocation();
-  const [user, setUser] = useState({ email: "admin@scamguard.local", full_name: "Super Admin" });
+  const [user, setUser] = useState(() => getStoredUser() || { email: "", full_name: "Admin" });
   const [pendingCount, setPendingCount] = useState(0);
 
   useEffect(() => {

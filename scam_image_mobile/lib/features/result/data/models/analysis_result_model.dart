@@ -83,8 +83,11 @@ class AnalysisResultModel extends AnalysisResult {
       if (url == null || url.isEmpty) return null;
       if (url.startsWith('http')) return url;
       
-      final baseUrl = dotenv.env['API_BASE_URL'] ?? 'http://127.0.0.1:8000/api/v1';
-      final uri = Uri.parse(baseUrl);
+      final baseUrl = dotenv.env['API_BASE_URL'];
+      if (baseUrl == null || baseUrl.trim().isEmpty) {
+        throw StateError('API_BASE_URL is required and must be configured in .env');
+      }
+      final uri = Uri.parse(baseUrl.trim());
       final hostUrl = '${uri.scheme}://${uri.host}:${uri.port}';
       
       String cleanUrl = url.replaceAll(r'\', '/');

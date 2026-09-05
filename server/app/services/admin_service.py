@@ -462,7 +462,11 @@ async def get_model_versions(db: AsyncSession) -> Tuple[List[Dict[str, Any]], in
     count_stmt = select(func.count(ModelVersion.id))
     total = await db.scalar(count_stmt)
     
-    stmt = select(ModelVersion).order_by(desc(ModelVersion.deployed_at))
+    stmt = select(ModelVersion).order_by(
+        desc(ModelVersion.is_active),
+        desc(ModelVersion.version_tag),
+        desc(ModelVersion.id)
+    )
     result = await db.execute(stmt)
     models = result.scalars().all()
     

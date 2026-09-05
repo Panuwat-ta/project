@@ -24,9 +24,13 @@ _env_cfg = _yaml.get("environments", {}).get(_env, {})
 BASE_URL = os.getenv("BASE_URL", _env_cfg.get("base_url", _yaml.get("base_url", "http://localhost:8000"))).rstrip("/")
 API_PREFIX = os.getenv("API_PREFIX", _yaml.get("api_prefix", "/api/v1"))
 TEST_USER_EMAIL = os.getenv("TEST_USER_EMAIL", "automate_test_user@example.com")
-TEST_USER_PASSWORD = os.getenv("TEST_USER_PASSWORD", "Test1234!@#")
+TEST_USER_PASSWORD = os.getenv("TEST_USER_PASSWORD")
 TEST_ADMIN_EMAIL = os.getenv("TEST_ADMIN_EMAIL", "admin@scamguard.local")
-TEST_ADMIN_PASSWORD = os.getenv("TEST_ADMIN_PASSWORD", "Admin1234!@#")
+TEST_ADMIN_PASSWORD = os.getenv("TEST_ADMIN_PASSWORD")
+
+if not TEST_USER_PASSWORD or not TEST_ADMIN_PASSWORD:
+    raise ValueError("TEST_USER_PASSWORD and TEST_ADMIN_PASSWORD are required and must be configured in .env")
+
 TIMEOUT = int(os.getenv("TIMEOUT", str(_yaml.get("defaults", {}).get("timeout", 30))))
 
 # ถ้า BASE_URL ว่าง = รันแบบ in-process ASGI (ไม่ต้องเปิด server)

@@ -9,7 +9,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
-  const backendTarget = env.VITE_BACKEND_TARGET || "http://127.0.0.1:8000";
+  const backendTarget = env.VITE_BACKEND_TARGET;
+  if (!backendTarget) {
+    throw new Error("VITE_BACKEND_TARGET is required and must be defined in .env");
+  }
 
   return {
     plugins: [

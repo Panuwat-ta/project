@@ -68,10 +68,13 @@ class ServiceLocator {
     secureStorage = SecureStorage();
 
     // ── Network ──────────────────────────────────────────────────────────────
-    // Base URL is configurable via environment; defaults to localhost for dev.
+    final apiBaseUrl = dotenv.env['API_BASE_URL'];
+    if (apiBaseUrl == null || apiBaseUrl.trim().isEmpty) {
+      throw StateError('API_BASE_URL is required and must be configured in .env');
+    }
     dio = DioClient.createDio(
       secureStorage: secureStorage,
-      baseUrl: dotenv.env['API_BASE_URL'] ?? 'http://localhost:8000/api/v1',
+      baseUrl: apiBaseUrl.trim(),
     );
 
     // ── Auth ──────────────────────────────────────────────────────────────────

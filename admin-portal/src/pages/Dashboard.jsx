@@ -241,7 +241,7 @@ export function Dashboard() {
           <ShieldCheck className="size-4 text-primary shrink-0" />
           <span className="text-muted-foreground font-semibold">Model:</span>
           <span className="font-bold text-foreground truncate">
-            {health?.active_model || data?.model_status?.active_version || "SegFormer-B2"}
+            {data?.model?.active_version ? `SegFormer ${data.model.active_version}` : (health?.models ? "SegFormer v1.0.0" : "SegFormer-B2")}
           </span>
         </div>
         <div className="flex items-center gap-2">

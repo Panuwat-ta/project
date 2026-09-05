@@ -8,13 +8,24 @@ import cv2
 from PIL import Image
 import io
 
-MODEL_PATH = os.environ.get("ONNX_MODEL_PATH", "/home/panuwat/project/model/segformer/work_dirs/v1.0.0/segformer_v1_dynamic.onnx")
+from pathlib import Path
+from dotenv import load_dotenv
+
+# โหลดคอนฟิกจาก .env.local และ .env ของ server หากยังไม่มีในสภาพแวดล้อม
+_SERVER_DIR = Path(__file__).resolve().parents[2]
+load_dotenv(_SERVER_DIR / ".env.local")
+load_dotenv(_SERVER_DIR / ".env")
+
+MODEL_PATH = os.environ.get("ONNX_MODEL_PATH")
+if not MODEL_PATH:
+    sys.stderr.write("FATAL ERROR: ONNX_MODEL_PATH environment variable is required and must be set in .env\n")
+    sys.exit(1)
 
 # Tiling strategy: ป้อนภาพที่ resolution ต้นฉบับผ่าน overlapping 512x512 patches
 # แทนการ resize ภาพทั้งใบ -> 512x512 (จุดที่ทำให้รายละเอียดหลุด).
 # โมเดลถูกเทรนที่ 512x512 ดังนั้นการป้อน tile ขนาด 512 เป็น on-distribution ที่แม่นที่สุด.
-TILE_SIZE = int(os.environ.get("ONNX_TILE_SIZE", "512"))
-TILE_OVERLAP = int(os.environ.get("ONNX_TILE_OVERLAP", "64"))
+TILE_SIZE = int(os.environ.get("ONNX_TILE_SIZE", 512))
+TILE_OVERLAP = int(os.environ.get("ONNX_TILE_OVERLAP", 64))
 STRIDE = TILE_SIZE - TILE_OVERLAP
 
 MEAN = np.array([0.485, 0.456, 0.406], dtype=np.float32)

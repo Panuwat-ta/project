@@ -157,12 +157,12 @@
   --risk-high: #be123c;
   --risk-high-subtle: #fff1f2;
 
-  /* Dedicated Dark Cyber Sidebar */
-  --sidebar: #090d16;
-  --sidebar-foreground: #f1f5f9;
-  --sidebar-border: #172133;
-  --sidebar-muted: #94a3b8;
-  --sidebar-accent: #172133;
+  /* Sidebar Tokens (Light Mode) */
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0f172a;
+  --sidebar-border: #e2e8f0;
+  --sidebar-muted: #475569;
+  --sidebar-accent: #f1f5f9;
 }
 
 .dark {

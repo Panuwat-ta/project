@@ -1,10 +1,11 @@
 import asyncio
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy import text
+from app.core.config import settings
 
 async def main():
     engine = create_async_engine(
-        "postgresql+asyncpg://scamguard:password@localhost/scamguard_db",
+        settings.DATABASE_URL,
         connect_args={"server_settings": {"timezone": "Asia/Bangkok"}}
     )
     async with engine.connect() as conn:

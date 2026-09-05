@@ -1,6 +1,9 @@
 // Unified API layer - จุดศูนย์กลางของ API calls + Token management + Global error handling
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "/api/v1";
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
+if (!API_BASE) {
+  throw new Error("VITE_API_BASE_URL is required and must be defined in .env");
+}
 const DEFAULT_LEEWAY = Number(import.meta.env.VITE_REFRESH_LEEWAY_SECONDS) || 10;
 
 const USER_KEY = "user";
