@@ -3,7 +3,7 @@ import subprocess
 import pytest
 from pathlib import Path
 
-MOBILE_ROOT = Path(__file__).resolve().parents[3] / "scam_image_mobile"
+MOBILE_ROOT = Path(__file__).resolve().parents[4] / "scam_image_mobile"
 
 @pytest.mark.mobile
 def test_flutter_unit():

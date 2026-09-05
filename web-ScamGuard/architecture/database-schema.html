@@ -30,27 +30,35 @@
     <tbody>
     <tr>
     <td style="text-align: left;"><code>users</code></td>
-    <td style="text-align: left;">บัญชีผู้ใช้, Role (user/admin), สถานะ Consent, เวลาสมัคร</td>
+    <td style="text-align: left;">บัญชีผู้ใช้ทั่วไปและนักวิจัย, Role (user/researcher), สถานะความยินยอม PDPA, เวลาสมัคร</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;"><code>admins</code></td>
+    <td style="text-align: left;">บัญชีผู้ดูแลระบบ (Admin และ Super Admin) แยกเดี่ยวเพื่อความปลอดภัย, แฟล็ก <code>is_superadmin</code></td>
     </tr>
     <tr>
     <td style="text-align: left;"><code>scans</code></td>
-    <td style="text-align: left;">แต่ละ Scan: อ้างอิงรูปภาพ, Risk Score, คะแนนแต่ละชั้น, สถานะ, เวลาสร้าง</td>
+    <td style="text-align: left;">รายการ Scan: <code>image_hash</code>, <code>title</code>, Risk Score รวมและแยกมิติ, <code>status</code>, <code>progress</code>, เวลาสร้าง/เสร็จ</td>
     </tr>
     <tr>
     <td style="text-align: left;"><code>scan_results</code></td>
     <td style="text-align: left;">ผลลัพธ์ละเอียดต่อ Scan: Mask URL, Heatmap URL, Keywords, Source URLs</td>
     </tr>
     <tr>
-    <td style="text-align: left;"><code>reports</code></td>
-    <td style="text-align: left;">รายงาน Scam จากผู้ใช้: Image ID, Reporter ID, สถานะการตรวจสอบของ Admin</td>
+    <td style="text-align: left;"><code>scam_reports</code></td>
+    <td style="text-align: left;">รายงาน Scam จากผู้ใช้: Scan ID, เหตุผล, สถานะ (pending, approved, rejected), แอดมินผู้ตรวจสอบ</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;"><code>consent_logs</code></td>
+    <td style="text-align: left;">ประวัติการยินยอม PDPA แบบตรวจสอบย้อนหลังได้ (Immutable): IP Address, User Agent, Timestamp</td>
     </tr>
     <tr>
     <td style="text-align: left;"><code>model_versions</code></td>
-    <td style="text-align: left;">Registry โมเดลที่ Deploy แล้วพร้อม Timestamp</td>
+    <td style="text-align: left;">Registry โมเดล SegFormer AI ที่ Deploy: เวอร์ชัน, พาธไฟล์, สถานะ Active, เมตริก mIoU</td>
     </tr>
     <tr>
     <td style="text-align: left;"><code>audit_log</code></td>
-    <td style="text-align: left;">บันทึก Append-only ของ Admin Actions ทั้งหมด (Deploy โมเดล, ตัดสิน Report)</td>
+    <td style="text-align: left;">บันทึก Append-only ของการกระทำโดย Admin ทั้งหมด (Deploy โมเดล, ตัดสิน Report, จัดการ User)</td>
     </tr>
     </tbody>
     </table>
@@ -137,7 +145,7 @@
       document.querySelectorAll('.mermaid-container').forEach(container => {
         const btn = document.createElement('button');
         btn.className = 'btn-expand-mermaid';
-        btn.innerHTML = '🔍 Fullscreen';
+        btn.innerHTML = ' Fullscreen';
 
         btn.onclick = () => {
           const originalSvg = container.querySelector('svg');

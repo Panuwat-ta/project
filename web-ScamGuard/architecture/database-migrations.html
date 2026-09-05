@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>การจัดการการย้ายฐานข้อมูล (Database Migrations) - ScamGuard</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../shared-theme.css">
+</head>
+
+<body>
+  <main class="document">
+    <h1>การจัดการการย้ายฐานข้อมูล (Database Migrations)</h1>
+        <p class="lede">คู่มือและข้อกำหนดการจัดการการเปลี่ยนแปลงโครงสร้างฐานข้อมูล PostgreSQL ของระบบ ScamGuard ด้วยเครื่องมือ Alembic ร่วมกับ SQLAlchemy</p>
+    <div class="divider"></div>
+    <h2>1. ภาพรวมและบทบาทของ Alembic</h2>
+    <p>Alembic ทำหน้าที่เป็นระบบควบคุมเวอร์ชัน (Version Control) สำหรับฐานข้อมูลเชิงสัมพันธ์ PostgreSQL ในระบบ ScamGuard ช่วยให้ทีมพัฒนาสามารถติดตาม ตรวจสอบ และปรับใช้การเปลี่ยนแปลงของสคีมาฐานข้อมูล (เช่น การเพิ่มตาราง <code>admins</code>, การเพิ่มคอลัมน์ <code>title</code> ใน <code>scans</code>) ได้อย่างเป็นระบบ ป้องกันความคลาดเคลื่อนของโครงสร้างฐานข้อมูลระหว่างสภาพแวดล้อม Development, Testing และ Production</p>
+    <div class="divider"></div>
+    <h2>2. โครงสร้างไฟล์และโฟลเดอร์ที่เกี่ยวข้อง</h2>
+    <p>ระบบเก็บไฟล์ที่เกี่ยวข้องกับการ Migration ไว้ภายในโฟลเดอร์ <code>server/</code> ดังนี้:</p>
+    <pre><code class="language-text">server/
+    ├── alembic.ini                    # ไฟล์กำหนดค่าการทำงานหลักของ Alembic
+    ├── migrations/
+    │   ├── env.py                     # สคริปต์เชื่อมต่อ SQLAlchemy Models กับฐานข้อมูล
+    │   ├── script.py.mako             # Template สำหรับสร้างไฟล์ Migration ใหม่
+    │   └── versions/                  # โฟลเดอร์เก็บไฟล์ประวัติการเปลี่ยนแปลงทั้งหมด
+    │       ├── 001_initial_schema.py
+    │       ├── 002_add_admins_table.py
+    │       └── ...
+    └── app/
+        └── models/                    # นิยาม SQLAlchemy ORM Models
+            ├── admin.py               # Model ตาราง admins
+            ├── user.py                # Model ตาราง users
+            ├── scan.py                # Model ตาราง scans
+            ├── scam_report.py         # Model ตาราง scam_reports
+            ├── audit_log.py           # Model ตาราง audit_log
+            └── model_version.py       # Model ตาราง model_versions
+    </code></pre>
+    <div class="divider"></div>
+    <h2>3. ขั้นตอนการทำงานและคำสั่งที่ใช้บ่อย (Workflow &amp; Commands)</h2>
+    <blockquote>
+    <p><strong>IMPORTANT:</strong><br />
+    ต้องรันคำสั่งทั้งหมดภายในโฟลเดอร์ <code>server/</code> และต้องเปิดใช้งาน Virtual Environment (<code>venv</code>) พร้อมตั้งค่าตัวแปรสภาพแวดล้อมใน <code>.env</code> ให้ครบถ้วนเสมอ</p>
+    </blockquote>
+    <h3>3.1 การสร้างไฟล์ Migration อัตโนมัติ (Generate Migration)</h3>
+    <p>เมื่อมีการเพิ่มหรือแก้ไขฟิลด์ในคลาส Model ภายใต้ <code>server/app/models/</code> ให้รันคำสั่งเพื่อให้ Alembic เปรียบเทียบความแตกต่างและสร้าง Script อัตโนมัติ:</p>
+    <pre><code class="language-bash">alembic revision --autogenerate -m &quot;add admins table and scan title&quot;
+    </code></pre>
+    <h3>3.2 ตรวจสอบไฟล์ Script ก่อนนำไปใช้จริง</h3>
+    <p>หลังจากสร้างไฟล์ใน <code>server/migrations/versions/</code> ให้เปิดตรวจสอบคำสั่งภายในฟังก์ชัน:
+    - <code>upgrade()</code>: คำสั่ง SQL สำหรับปรับใช้การเปลี่ยนแปลงใหม่
+    - <code>downgrade()</code>: คำสั่ง SQL สำหรับย้อนกลับโครงสร้างเดิมกรณีมีปัญหา</p>
+    <h3>3.3 การปรับใช้การเปลี่ยนแปลงไปยังฐานข้อมูล (Upgrade)</h3>
+    <p>รันคำสั่งเพื่ออัปเดตสคีมาของ PostgreSQL ให้เป็นเวอร์ชันล่าสุด:</p>
+    <pre><code class="language-bash">alembic upgrade head
+    </code></pre>
+    <h3>3.4 การตรวจสอบสถานะและประวัติเวอร์ชัน</h3>
+    <ul>
+    <li>ตรวจสอบเวอร์ชันปัจจุบันของฐานข้อมูล:
+      <code>bash
+      alembic current</code></li>
+    <li>ดูประวัติการ Migration ทั้งหมดตามลำดับเวลา:
+      <code>bash
+      alembic history --verbose</code></li>
+    </ul>
+    <h3>3.5 การย้อนกลับการเปลี่ยนแปลง (Downgrade)</h3>
+    <p>หากเกิดข้อผิดพลาดและต้องการย้อนกลับไปยังเวอร์ชันก่อนหน้า 1 ขั้น:</p>
+    <pre><code class="language-bash">alembic downgrade -1
+    </code></pre>
+    <div class="divider"></div>
+    <h2>4. ข้อควรระวังและแนวทางปฏิบัติที่ดีที่สุด (Best Practices)</h2>
+    <ol>
+    <li><strong>ห้ามแก้ไขสคีมาฐานข้อมูลโดยตรงด้วย SQL Console ในสภาพแวดล้อมจริง:</strong> ทุกการเปลี่ยนแปลงของตาราง คอลัมน์ ดัชนี (Index) หรือ Foreign Key ต้องผ่านไฟล์ Script ของ Alembic เท่านั้น</li>
+    <li><strong>ไม่ลบไฟล์ Migration ในอดีต:</strong> ไฟล์ประวัติใน <code>migrations/versions/</code> ต้องถูกบันทึกลง Git เพื่อให้ผู้พัฒนารายอื่นและ Pipeline CI/CD สามารถ Replicate ฐานข้อมูลได้ตรงกัน 100%</li>
+    <li><strong>การทดสอบ Downgrade เสมอ:</strong> ทุกครั้งที่เขียน Migration ใหม่ ให้ทดสอบรัน <code>upgrade</code> แล้วตามด้วย <code>downgrade</code> บนเครื่องทดสอบ เพื่อยืนยันว่าสคริปต์สามารถย้อนกลับได้อย่างสมบูรณ์ ไม่ทิ้งขยะหรือข้อผิดพลาดตกค้าง</li>
+    </ol>
+    <div class="divider"></div>
+    <h2>5. ประเด็นสำคัญ</h2>
+    <ul>
+    <li>Alembic ทำงานคู่กับ SQLAlchemy เพื่อสร้างความสอดคล้องระหว่าง Python Code และ PostgreSQL</li>
+    <li>ทุก Migration Script ต้องมีทั้งฟังก์ชัน <code>upgrade()</code> และ <code>downgrade()</code> ที่ทำงานได้จริง</li>
+    <li>ข้อมูลการเชื่อมต่อฐานข้อมูลถูกดึงมาจากตัวแปรสภาพแวดล้อม <code>DATABASE_URL</code> ใน <code>.env</code> ปราศจากการ Hardcode ข้อมูลความลับ</li>
+    </ul>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
+  </script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        displayMath: [['$$','$$'], ['\\[','\\]']]
+      }
+    });
+  </script>
+  <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.mermaid-container').forEach(container => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-expand-mermaid';
+        btn.innerHTML = ' Fullscreen';
+
+        btn.onclick = () => {
+          const originalSvg = container.querySelector('svg');
+          if (!originalSvg) return;
+
+          const overlay = document.createElement('div');
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.backgroundColor = 'var(--paper, #F6F4EE)';
+          overlay.style.zIndex = '999999';
+          overlay.style.display = 'flex';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+
+          const closeBtn = document.createElement('button');
+          closeBtn.innerHTML = '✖ Close';
+          closeBtn.style.position = 'absolute';
+          closeBtn.style.top = '20px';
+          closeBtn.style.right = '20px';
+          closeBtn.style.padding = '8px 16px';
+          closeBtn.style.fontSize = '1rem';
+          closeBtn.style.fontWeight = 'bold';
+          closeBtn.style.cursor = 'pointer';
+          closeBtn.style.backgroundColor = '#ff4d4d';
+          closeBtn.style.color = '#fff';
+          closeBtn.style.border = 'none';
+          closeBtn.style.borderRadius = '8px';
+          closeBtn.style.zIndex = '1000000';
+          closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+
+          closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
+          closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
+
+          const clonedSvg = originalSvg.cloneNode(true);
+          clonedSvg.style.width = '100%';
+          clonedSvg.style.height = '100%';
+          clonedSvg.style.maxWidth = '100vw';
+          clonedSvg.style.maxHeight = '100vh';
+
+          overlay.appendChild(clonedSvg);
+          overlay.appendChild(closeBtn);
+          document.body.appendChild(overlay);
+
+          const oldOverflow = document.body.style.overflow;
+          document.body.style.overflow = 'hidden';
+
+          const panZoomInstance = svgPanZoom(clonedSvg, {
+            zoomEnabled: true,
+            controlIconsEnabled: true,
+            fit: true,
+            center: true,
+            minZoom: 0.5,
+            maxZoom: 10,
+            mouseWheelZoomEnabled: true
+          });
+
+          closeBtn.onclick = () => {
+            panZoomInstance.destroy();
+            document.body.removeChild(overlay);
+            document.body.style.overflow = oldOverflow;
+          };
+        };
+        container.appendChild(btn);
+      });
+    });
+  </script>
+</body>
+</html>

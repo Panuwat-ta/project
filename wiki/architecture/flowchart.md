@@ -8,7 +8,7 @@ updated: 2026-08-04
 
 # Mobile App: Scam Image Detection
 
-## 👤 User Flow (การทำงานฝั่งผู้ใช้)
+## User Flow (การทำงานฝั่งผู้ใช้)
 
 ```mermaid
 graph TD

@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 ROOT = Path(__file__).resolve().parents[1]
 load_dotenv(ROOT / ".env")
 # fallback โหลดจาก server/.env ด้วยถ้ามี
-load_dotenv(ROOT.parent / "server" / ".env", override=False)
+load_dotenv(ROOT.parents[1] / "server" / ".env", override=False)
 
 ENV_FILE = ROOT / "config" / "environments.yaml"
 

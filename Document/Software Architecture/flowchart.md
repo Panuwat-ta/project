@@ -1,7 +1,7 @@
 # Mobile App: Scam Image Detection
 
 
-## 👤 User Flow (การทำงานฝั่งผู้ใช้)
+## User Flow (การทำงานฝั่งผู้ใช้)
 ```mermaid
 graph TD
     Start([เริ่มใช้งาน]) --> Home[หน้าแรก]
@@ -59,7 +59,7 @@ graph TD
 
 ---
 
-## ⚙️ System Logic (การทำงานฝั่งระบบ)
+## System Logic (การทำงานฝั่งระบบ)
 ```mermaid
 graph TD
     %% Source & Initial Validation
@@ -140,13 +140,13 @@ graph TD
 5. **Analysis Tasks**:
    - **Task 1 Metadata**: ดึงข้อมูล EXIF/GPS
    - **Task 2 OCR**: อ่านข้อความในภาพ
-   - **Task 3 Forgery**: ตรวจสอบการตัดต่อ (ELA)
+   - **Task 3 Forgery**: ตรวจสอบการตัดต่อ (Semantic Segmentation)
    - **Partial Failure**: ดักจับกรณี Timeout
    - **Keyword Check**: ตรวจสอบคำเสี่ยงสูง
    - **Task 4 Source**: ค้นหาที่มาของภาพ
      - หากพบน้อย (<=1): ความเสี่ยงต่ำ ส่งไปตรวจ AI-Gen (Task 5)
      - หากพบมาก (>=3): ความเสี่ยงสูง
-6. **Scoring**: คำนวณคะแนน Weighted Risk Score จากผลลัพธ์ทุกส่วน
+6. **Scoring**: คำนวณคะแนนความเสี่ยงรวม (Overall Risk Score) ตาม Hybrid Worst-Case Trigger จากผลลัพธ์ทุกมิติ
 7. **Output**: สร้างคำอธิบาย บันทึกลง Database และส่ง JSON กลับ Client
 
 ---

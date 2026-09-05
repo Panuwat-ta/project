@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>การติดตามงานและการบริหารโครงการ (Task Tracking & Jira) - ScamGuard</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../shared-theme.css">
+</head>
+
+<body>
+  <main class="document">
+    <h1>การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</h1>
+        <p class="lede">โครงสร้างการติดตามความคืบหน้าของงาน พัฒนาการของระบบ และการบริหารโครงการ ScamGuard ผ่านกระดาน Jira และรายงานสถานะตาม Work Packages</p>
+    <div class="divider"></div>
+    <h2>1. ข้อมูลโครงการและบอร์ดติดตามงาน (Jira Board)</h2>
+    <p>ทีมพัฒนาใช้ซอฟต์แวร์ Jira ในการบริหารจัดการและติดตามงานตามแนวทาง Agile/Scrum:</p>
+    <ul>
+    <li><strong>รหัสโครงการ (Project Key):</strong> SCM</li>
+    <li><strong>กระดานติดตามงาน (Board):</strong> ScamGuard Board</li>
+    <li><strong>สถานะการดำเนินงาน (Workflow Statuses):</strong></li>
+    <li><strong>To Do:</strong> งานที่ผ่านการวิเคราะห์และรอเริ่มดำเนินการ</li>
+    <li><strong>In Progress:</strong> งานที่อยู่ระหว่างการพัฒนาหรือทดสอบในเครื่องผู้พัฒนา</li>
+    <li><strong>In Review:</strong> งานที่เสร็จสิ้นแล้วและอยู่ระหว่างการตรวจสอบโค้ด (Code Review) หรือการทดสอบเทียบกับเกณฑ์ยอมรับ (Acceptance Criteria)</li>
+    <li><strong>Done:</strong> งานที่ผ่านการทดสอบ ผ่านการ Review และรวมเข้าสู่กิ่งหลัก (Main Branch) เรียบร้อยแล้ว</li>
+    </ul>
+    <div class="divider"></div>
+    <h2>2. สถานะความคืบหน้าภาพรวมรายเฟส (Phase Progress)</h2>
+    <table>
+    <thead>
+    <tr>
+    <th style="text-align: left;">เฟสการทำงาน</th>
+    <th style="text-align: left;">รายละเอียดงาน</th>
+    <th style="text-align: left;">สถานะ</th>
+    <th style="text-align: left;">ความคืบหน้า</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td style="text-align: left;"><strong>เฟส 1: ข้อกำหนดและการวางแผน</strong></td>
+    <td style="text-align: left;">รวบรวม Requirement Candidates (RC), วิเคราะห์ SRS, กำหนด KPI และขอบเขตงาน</td>
+    <td style="text-align: left;">เสร็จสิ้น</td>
+    <td style="text-align: left;">100%</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;"><strong>เฟส 2: การออกแบบระบบและสถาปัตยกรรม</strong></td>
+    <td style="text-align: left;">ออกแบบ C1-C4 Diagrams, ER Diagram, UI/UX บน Figma และ Design System</td>
+    <td style="text-align: left;">เสร็จสิ้น</td>
+    <td style="text-align: left;">100%</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;"><strong>เฟส 3: การพัฒนาส่วนประกอบหลัก</strong></td>
+    <td style="text-align: left;">พัฒนา Mobile App, FastAPI Backend, AI SegFormer Model, Surya OCR และ Admin Portal</td>
+    <td style="text-align: left;">กำลังดำเนินการ</td>
+    <td style="text-align: left;">90%</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;"><strong>เฟส 4: การทดสอบและการผสานระบบ</strong></td>
+    <td style="text-align: left;">Automated Test Suites (Unit/Integration/E2E), Performance Load Test และ NFR Validation</td>
+    <td style="text-align: left;">กำลังดำเนินการ</td>
+    <td style="text-align: left;">85%</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;"><strong>เฟส 5: การส่งมอบและเอกสารสมบูรณ์</strong></td>
+    <td style="text-align: left;">รวบรวมเอกสารคู่มือ บันทึกการดำเนินงาน และรายงานผลการตรวจรับโครงงานวิศวกรรม</td>
+    <td style="text-align: left;">กำลังดำเนินการ</td>
+    <td style="text-align: left;">80%</td>
+    </tr>
+    </tbody>
+    </table>
+    <div class="divider"></div>
+    <h2>3. รายการงานสำคัญแยกตามคอมโพเนนต์ (Key Component Work Packages)</h2>
+    <h3>3.1 Mobile Application (Flutter)</h3>
+    <ul>
+    <li>พัฒนาโครงสร้าง Clean Architecture (Presentation, Domain, Data) พร้อม BLoC State Management</li>
+    <li>ปรับปรุง UI รองรับ Dark Mode First และ Light Mode ตามมาตรฐาน WCAG AA</li>
+    <li>เชื่อมต่อ RESTful API เต็มรูปแบบกับระบบหลังบ้าน (นำ Mock Repositories ออก)</li>
+    <li>เพิ่มระบบแคชและประวัติการสแกนย้อนหลัง (Recent History, Thumbnails, Tap Navigation)</li>
+    </ul>
+    <h3>3.2 Backend API &amp; Database (FastAPI &amp; PostgreSQL)</h3>
+    <ul>
+    <li>ออกแบบ RESTful API Endpoints สำหรับ Authentication, Scan Processing และ Admin Operations</li>
+    <li>วางระบบ Caching บน Redis ด้วย Perceptual Hash (pHash) ตอบกลับในเวลาน้อยกว่า 3 วินาที</li>
+    <li>แยกสคีมาตาราง <code>admins</code> ออกจาก <code>users</code> เพื่อความปลอดภัยขั้นสูงสุด</li>
+    <li>ติดตั้งระบบ Database Migration ด้วย Alembic เพื่อควบคุมการเปลี่ยนแปลงของสคีมา</li>
+    </ul>
+    <h3>3.3 AI Inference Engine &amp; Pipelines</h3>
+    <ul>
+    <li>พัฒนาและส่งออกโมเดล SegFormer (MiT-B0 ถึง MiT-B2) ในรูปแบบ ONNX Runtime</li>
+    <li>ใช้อัลกอริทึม Overlapping Tiling Inference ป้องกันรอยต่อของภาพขนาดใหญ่</li>
+    <li>ติดตั้ง Surya OCR 2 (GGUF) สำหรับการสกัดข้อความภาษาไทยและอังกฤษ</li>
+    <li>ปรับแต่ง XAI Pipeline ร่วมกับ Qwen2.5 สำหรับสร้างคำอธิบายความผิดปกติ</li>
+    </ul>
+    <h3>3.4 Admin Portal (React / Vite)</h3>
+    <ul>
+    <li>พัฒนา Web Console สำหรับผู้ดูแลระบบ เชื่อมต่อ API จริงและฐานข้อมูล PostgreSQL</li>
+    <li>แสดงสถิติและสถานะระบบแบบ Real-time ด้วย WebSocket Telemetry</li>
+    <li>ระบบ AI Model Registry ควบคุมการ Deploy/Rollback เวอร์ชันโมเดลพร้อม Row Locking</li>
+    <li>ระบบจัดการและตรวจสอบข้อร้องเรียน (Moderation Queue) เพื่อคัดเลือกภาพเข้า Dataset</li>
+    </ul>
+    <div class="divider"></div>
+    <h2>4. ประเด็นสำคัญ</h2>
+    <ul>
+    <li>งานทั้งหมดถูกแบ่งย่อยและมี Traceability เชื่อมโยงกลับไปยังข้อกำหนดใน  เสมอ</li>
+    <li>การเปลี่ยนแปลงในแต่ละคอมโพเนนต์จะถูกบันทึกลงใน Git และบันทึกประวัติการพัฒนาใน <code>.agents/log.md</code></li>
+    <li>ความคืบหน้าทางเทคนิคในปัจจุบันมุ่งเน้นการเสริมความแข็งแกร่ง (Hardening) การทดสอบระบบอัตโนมัติ และความปลอดภัย</li>
+    </ul>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
+  </script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        displayMath: [['$$','$$'], ['\\[','\\]']]
+      }
+    });
+  </script>
+  <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.mermaid-container').forEach(container => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-expand-mermaid';
+        btn.innerHTML = ' Fullscreen';
+
+        btn.onclick = () => {
+          const originalSvg = container.querySelector('svg');
+          if (!originalSvg) return;
+
+          const overlay = document.createElement('div');
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.backgroundColor = 'var(--paper, #F6F4EE)';
+          overlay.style.zIndex = '999999';
+          overlay.style.display = 'flex';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+
+          const closeBtn = document.createElement('button');
+          closeBtn.innerHTML = '✖ Close';
+          closeBtn.style.position = 'absolute';
+          closeBtn.style.top = '20px';
+          closeBtn.style.right = '20px';
+          closeBtn.style.padding = '8px 16px';
+          closeBtn.style.fontSize = '1rem';
+          closeBtn.style.fontWeight = 'bold';
+          closeBtn.style.cursor = 'pointer';
+          closeBtn.style.backgroundColor = '#ff4d4d';
+          closeBtn.style.color = '#fff';
+          closeBtn.style.border = 'none';
+          closeBtn.style.borderRadius = '8px';
+          closeBtn.style.zIndex = '1000000';
+          closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+
+          closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
+          closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
+
+          const clonedSvg = originalSvg.cloneNode(true);
+          clonedSvg.style.width = '100%';
+          clonedSvg.style.height = '100%';
+          clonedSvg.style.maxWidth = '100vw';
+          clonedSvg.style.maxHeight = '100vh';
+
+          overlay.appendChild(clonedSvg);
+          overlay.appendChild(closeBtn);
+          document.body.appendChild(overlay);
+
+          const oldOverflow = document.body.style.overflow;
+          document.body.style.overflow = 'hidden';
+
+          const panZoomInstance = svgPanZoom(clonedSvg, {
+            zoomEnabled: true,
+            controlIconsEnabled: true,
+            fit: true,
+            center: true,
+            minZoom: 0.5,
+            maxZoom: 10,
+            mouseWheelZoomEnabled: true
+          });
+
+          closeBtn.onclick = () => {
+            panZoomInstance.destroy();
+            document.body.removeChild(overlay);
+            document.body.style.overflow = oldOverflow;
+          };
+        };
+        container.appendChild(btn);
+      });
+    });
+  </script>
+</body>
+</html>

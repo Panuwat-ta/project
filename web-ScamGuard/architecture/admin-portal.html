@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>สถาปัตยกรรมและการออกแบบ Admin Portal - ScamGuard</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../shared-theme.css">
+</head>
+
+<body>
+  <main class="document">
+    <h1>สถาปัตยกรรมและการออกแบบ Admin Portal</h1>
+        <p class="lede">เว็บคอนโซลสำหรับการบริหารจัดการระบบ ScamGuard แบบรวมศูนย์สำหรับผู้ดูแลระบบและนักวิจัย เพื่อควบคุมโมเดล AI ตรวจสอบรายงานการหลอกลวง และติดตามการทำงานของระบบแบบ Real-time</p>
+    <div class="divider"></div>
+    <h2>1. บทบาทและหน้าที่ในระบบ</h2>
+    <p>Admin Portal เป็น 1 ใน 4 คอนเทนเนอร์หลักของระบบ ScamGuard (ตาม ) ทำหน้าที่เป็นส่วนต่อประสานสำหรับ:
+    1. <strong>ผู้ดูแลระบบ (Admin / Super Admin):</strong> จัดการบัญชีผู้ใช้ ตรวจสอบ Audit Log และควบคุมความปลอดภัยของระบบ
+    2. <strong>นักวิจัยและวิศวกร AI (AI Engineers / Researchers):</strong> ควบคุมการปล่อยโมเดล AI (Model Deployment &amp; Rollback) ตรวจสอบค่าเมตริก mIoU และอนุมัติรูปภาพ Scam เข้าสู่ Research Dataset</p>
+    <div class="divider"></div>
+    <h2>2. เทคโนโลยีและสถาปัตยกรรมฟรอนต์เอนด์</h2>
+    <ul>
+    <li><strong>Framework:</strong> React 18 (Single Page Application - SPA)</li>
+    <li><strong>Build Tool:</strong> Vite สำหรับการ Build และ Hot Module Replacement (HMR) ที่รวดเร็ว</li>
+    <li><strong>Styling:</strong> Vanilla CSS ร่วมกับ Design Tokens และ Utility Classes เพื่อความยืดหยุ่นสูง</li>
+    <li><strong>State Management &amp; Data Fetching:</strong> React Hooks, Context API และ Axios สำหรับ HTTP Client</li>
+    <li><strong>Real-time Telemetry:</strong> Native WebSocket Client เชื่อมต่อกับ Backend WebSocket Endpoint (<code>/api/v1/ws/telemetry</code>)</li>
+    <li><strong>Icons &amp; Visuals:</strong> Lucide React และ Recharts สำหรับแสดงกราฟสถิติ</li>
+    <li><strong>Routing:</strong> React Router DOM (v6) พร้อม Protected Route Guards</li>
+    </ul>
+    <div class="divider"></div>
+    <h2>3. ระบบการออกแบบ (Design System &amp; Accessibility)</h2>
+    <p>Admin Portal ออกแบบภายใต้มาตรฐานความสามารถในการเข้าถึงระดับ WCAG AA โดยรองรับทั้ง Dark Mode และ Light Mode:</p>
+    <h3>3.1 Color Palette</h3>
+    <ul>
+    <li><strong>Theme Background:</strong></li>
+    <li>Dark Mode: Surface Dark (<code>#121826</code>), Surface Card (<code>#1E293B</code>), Surface Hover (<code>#334155</code>)</li>
+    <li>Light Mode: Neutral Background (<code>#F8FAFC</code>), Surface White (<code>#FFFFFF</code>), Border Light (<code>#E2E8F0</code>)</li>
+    <li><strong>Brand &amp; Interactive:</strong></li>
+    <li>Primary Indigo (<code>#4F46E5</code> / <code>#6366F1</code>) สำหรับปุ่มหลักและสเตตัสแอคทีฟ</li>
+    <li>Secondary Slate (<code>#64748B</code>) สำหรับข้อความรองและเส้นแบ่ง</li>
+    <li><strong>Semantic Status (3-Level Risk Scale):</strong></li>
+    <li>Low Risk: สีเขียวมรกต (<code>#10B981</code> / <code>#059669</code>)</li>
+    <li>Medium Risk: สีเหลืองอำพัน (<code>#F59E0B</code> / <code>#D97706</code>)</li>
+    <li>High Risk: สีแดงกุหลาบ (<code>#EF4444</code> / <code>#DC2626</code>)</li>
+    </ul>
+    <h3>3.2 Typography &amp; Spacing</h3>
+    <ul>
+    <li>ฟอนต์หลัก: Sarabun และ Inter สำหรับเนื้อหาทั่วไป, JetBrains Mono สำหรับ Hash, IP Address และค่าทางเทคนิค</li>
+    <li>Spacing Scale อิงตามระบบ 4px/8px Grid มาตรฐานเพื่อความสมดุลของข้อมูลบนหน้าจอขนาดใหญ่ (Desktop First: 1280px+)</li>
+    </ul>
+    <div class="divider"></div>
+    <h2>4. หน้าจอหลักและโมดูลการทำงาน (Core Modules)</h2>
+    <h3>4.1 Dashboard &amp; Real-time Telemetry</h3>
+    <ul>
+    <li>แสดงผลสรุปสถิติสำคัญ (KPI Summary Cards): จำนวนการสแกนทั้งหมดวันนี้, อัตราส่วนภาพความเสี่ยงสูง, โมเดล AI ที่ทำงานอยู่ (Active Model)</li>
+    <li>กราฟแนวโน้มการสแกนย้อนหลังและสัดส่วนระดับความเสี่ยง (Low / Medium / High)</li>
+    <li>WebSocket Telemetry Widget แสดงสถานะเชื่อมต่อสดของ Backend Server, ค่าหน่วงเวลา (Latency) และคิวการประมวลผล</li>
+    </ul>
+    <h3>4.2 การจัดการโมเดล AI (AI Model Registry &amp; Rollback)</h3>
+    <ul>
+    <li>ตรวจสอบรายการโมเดล SegFormer ทั้งหมดในระบบ (<code>v1.0.0</code> ถึง <code>v1.0.4</code>) ดึงข้อมูลจากตาราง <code>model_versions</code></li>
+    <li>แสดงค่าเมตริกการทดสอบ: mIoU (Mean Intersection over Union), aAcc (All Accuracy), mAcc, mDice</li>
+    <li>กลไกการ Deployment และ Rollback:</li>
+    <li>ตรวจสอบความสมบูรณ์ของไฟล์น้ำหนักโมเดล (<code>.onnx</code>) ก่อนเปลี่ยนสถานะ</li>
+    <li>รัน Dry-run Health Check เพื่อยืนยันว่า Subprocess Worker โหลดโมเดลได้สำเร็จ</li>
+    <li>ทำงานภายใต้ Database Row Locking (<code>SELECT FOR UPDATE</code>) เพื่อป้องกัน Race Condition</li>
+    <li>แสดงผลโมเดลที่ Active อยู่ลำดับแรกของตารางเสมอ</li>
+    </ul>
+    <h3>4.3 ตรวจสอบรายงานข้อร้องเรียน (Scam Reports Moderation)</h3>
+    <ul>
+    <li>รายการแจ้งเตือนจากผู้ใช้ที่ระบุว่าภาพสแกนเป็นการหลอกลวงจริง</li>
+    <li>หน้าตรวจสอบเปรียบเทียบแบบ Side-by-Side: รูปภาพต้นฉบับ, รูปภาพ Heatmap Overlay, สรุปข้อความ OCR และคะแนนความเสี่ยงแยกมิติ</li>
+    <li>การตัดสินใจของผู้ดูแลระบบ:</li>
+    <li><strong>Approve (อนุมัติ):</strong> ยืนยันว่าภาพเป็น Scam และบันทึกเข้าสู่คลัง Dataset เพื่อใช้ในการฝึกสอนโมเดลรอบถัดไป</li>
+    <li><strong>Reject (ปฏิเสธ):</strong> ปัดตกรายงานหากพบว่าเป็นภาพปกติหรือไม่เข้าข่ายหลอกลวง</li>
+    </ul>
+    <h3>4.4 การจัดการผู้ใช้งานและสิทธิ์ (User &amp; Consent Management)</h3>
+    <ul>
+    <li>ตรวจสอบรายชื่อผู้ใช้งานทั่วไปและนักวิจัย</li>
+    <li>การติดตามสถานะความยินยอมตาม พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล (PDPA): <code>consent_analysis</code> และ <code>consent_research</code></li>
+    <li>สิทธิ์การระงับการใช้งานชั่วคราว (Ban/Suspend) กรณีตรวจพบบัญชีที่ส่งคำขอผิดปกติ</li>
+    </ul>
+    <h3>4.5 บันทึกความปลอดภัยและการตรวจสอบ (Audit Logs)</h3>
+    <ul>
+    <li>ตารางบันทึกการกระทำของผู้ดูแลระบบแบบ Append-only ที่ไม่สามารถแก้ไขหรือลบได้</li>
+    <li>บันทึกข้อมูลสำคัญ: รหัสแอดมิน (<code>admin_id</code>), การกระทำ (<code>action</code>), รายละเอียด (<code>details</code>), IP Address และเวลา (<code>created_at</code>)</li>
+    <li>ระบบค้นหาและตัวกรองตามช่วงเวลาและประเภทกิจกรรม</li>
+    </ul>
+    <div class="divider"></div>
+    <h2>5. ความปลอดภัยและการเชื่อมต่อ (Security &amp; Integration)</h2>
+    <div class="mermaid-container"><div class="mermaid">flowchart LR
+        Browser["Admin Web Browser (React SPA)"]
+        ViteProxy["Vite Dev / Nginx Gateway"]
+        FastAPI["Backend API (/api/v1/admin/*)"]
+        AdminDB[("PostgreSQL (admins, audit_log)")]
+        RedisCache[("Redis (Active Model & Telemetry)")]
+    
+        Browser -->|HTTPS / JWT| ViteProxy
+        ViteProxy --> FastAPI
+        FastAPI --> AdminDB
+        FastAPI --> RedisCache
+    </div></div>
+    <ul>
+    <li><strong>แยกการยืนยันตัวตนออกจากผู้ใช้ทั่วไป:</strong> ผู้ดูแลระบบต้องลงชื่อเข้าใช้ผ่าน Endpoint <code>/api/v1/admin/auth/login</code> โดยตรวจสอบบัญชีและรหัสผ่านที่เข้ารหัส bcrypt กับตาราง <code>admins</code> โดยเฉพาะ</li>
+    <li><strong>Role-Based Access Control (RBAC):</strong> มีการแยกบทบาทระหว่าง <code>Admin</code> ทั่วไป และ <code>Super Admin</code> (ที่มีสิทธิ์สร้างแอดมินอื่นและจัดการโครงสร้างระบบ)</li>
+    <li><strong>Reverse Proxy Protection:</strong> ในโหมดพัฒนาและ Production มีการซ่อนเบื้องหลังผ่าน Proxy เพื่อควบคุม CORS และป้องกันการเปิดเผย Endpoint ภายใน</li>
+    </ul>
+    <div class="divider"></div>
+    <h2>6. ประเด็นสำคัญ</h2>
+    <ul>
+    <li>Admin Portal เป็นระบบควบคุมเบื้องหลังที่มีสิทธิ์สูง การดำเนินการทุกอย่างจึงถูกบันทึกเข้าสู่ตาราง <code>audit_log</code> เสมอ</li>
+    <li>การเปลี่ยนโมเดล AI ผ่านหน้า Portal มีผลทันทีต่อการประมวลผลรูปภาพของผู้ใช้ Mobile ในการสแกนรอบถัดไป</li>
+    <li>UI ปฏิบัติตามมาตรฐาน 3-Level Risk Scale (Low 0-39, Medium 40-69, High 70-100) สอดคล้องกับ Mobile App และ Backend</li>
+    </ul>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
+  </script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        displayMath: [['$$','$$'], ['\\[','\\]']]
+      }
+    });
+  </script>
+  <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.mermaid-container').forEach(container => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-expand-mermaid';
+        btn.innerHTML = ' Fullscreen';
+
+        btn.onclick = () => {
+          const originalSvg = container.querySelector('svg');
+          if (!originalSvg) return;
+
+          const overlay = document.createElement('div');
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.backgroundColor = 'var(--paper, #F6F4EE)';
+          overlay.style.zIndex = '999999';
+          overlay.style.display = 'flex';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+
+          const closeBtn = document.createElement('button');
+          closeBtn.innerHTML = '✖ Close';
+          closeBtn.style.position = 'absolute';
+          closeBtn.style.top = '20px';
+          closeBtn.style.right = '20px';
+          closeBtn.style.padding = '8px 16px';
+          closeBtn.style.fontSize = '1rem';
+          closeBtn.style.fontWeight = 'bold';
+          closeBtn.style.cursor = 'pointer';
+          closeBtn.style.backgroundColor = '#ff4d4d';
+          closeBtn.style.color = '#fff';
+          closeBtn.style.border = 'none';
+          closeBtn.style.borderRadius = '8px';
+          closeBtn.style.zIndex = '1000000';
+          closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+
+          closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
+          closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
+
+          const clonedSvg = originalSvg.cloneNode(true);
+          clonedSvg.style.width = '100%';
+          clonedSvg.style.height = '100%';
+          clonedSvg.style.maxWidth = '100vw';
+          clonedSvg.style.maxHeight = '100vh';
+
+          overlay.appendChild(clonedSvg);
+          overlay.appendChild(closeBtn);
+          document.body.appendChild(overlay);
+
+          const oldOverflow = document.body.style.overflow;
+          document.body.style.overflow = 'hidden';
+
+          const panZoomInstance = svgPanZoom(clonedSvg, {
+            zoomEnabled: true,
+            controlIconsEnabled: true,
+            fit: true,
+            center: true,
+            minZoom: 0.5,
+            maxZoom: 10,
+            mouseWheelZoomEnabled: true
+          });
+
+          closeBtn.onclick = () => {
+            panZoomInstance.destroy();
+            document.body.removeChild(overlay);
+            document.body.style.overflow = oldOverflow;
+          };
+        };
+        container.appendChild(btn);
+      });
+    });
+  </script>
+</body>
+</html>

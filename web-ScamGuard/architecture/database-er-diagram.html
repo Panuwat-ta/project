@@ -22,7 +22,7 @@
             string email
             string hashed_password
             string full_name
-            string role "user, admin"
+            string role "user, researcher"
             boolean is_active
             boolean consent_analysis
             boolean consent_research
@@ -31,10 +31,22 @@
             datetime updated_at
         }
     
+        admins {
+            int id PK
+            string email
+            string hashed_password
+            string full_name
+            boolean is_active
+            boolean is_superadmin
+            datetime created_at
+            datetime updated_at
+        }
+    
         scans {
             uuid id PK
             int user_id FK
             string image_hash
+            string title
             string raw_image_url
             string heatmap_image_url
             int text_score
@@ -47,6 +59,7 @@
             jsonb reverse_search_results
             float ai_gen_probability
             string status
+            int progress
             datetime created_at
             datetime completed_at
         }
@@ -101,21 +114,22 @@
         users ||--o{ scans : "performs"
         users ||--o{ scam_reports : "submits"
         users ||--o{ consent_logs : "records"
-        users ||--o{ scam_reports : "moderates (admin)"
-        users ||--o{ audit_log : "performs (admin)"
+        admins ||--o{ scam_reports : "moderates"
+        admins ||--o{ audit_log : "performs"
     
         scans ||--o| scan_results : "has details"
         scans ||--o{ scam_reports : "is reported in"
     </div></div>
     <h2>รายละเอียดแต่ละตาราง</h2>
     <ul>
-    <li><strong>users</strong>: เก็บข้อมูลบัญชีผู้ใช้และสถานะความยินยอม (Consent)</li>
-    <li><strong>scans</strong>: เก็บข้อมูลสรุปของการสแกนรูปภาพ พร้อมคะแนนความเสี่ยง</li>
+    <li><strong>users</strong>: เก็บข้อมูลบัญชีผู้ใช้ทั่วไปและนักวิจัย พร้อมสถานะความยินยอม (Consent) และสิทธิ์การใช้งาน</li>
+    <li><strong>admins</strong>: เก็บข้อมูลบัญชีผู้ดูแลระบบ (Admin และ Super Admin) แยกออกจากผู้ใช้ทั่วไปเพื่อความปลอดภัย</li>
+    <li><strong>scans</strong>: เก็บข้อมูลสรุปของการสแกนรูปภาพ พร้อมคะแนนความเสี่ยง สถานะการประมวลผล (<code>progress</code>) และหัวข้อภาพ (<code>title</code>)</li>
     <li><strong>scan_results</strong>: (ทางเลือก) เก็บข้อมูลรายละเอียดเพิ่มเติมในกรณีที่มีหลาย Layer ลึกๆ</li>
-    <li><strong>scam_reports</strong>: การรายงานภาพว่าเป็น Scam โดยผู้ใช้ และแอดมินใช้พิจารณา</li>
-    <li><strong>consent_logs</strong>: ใช้เก็บประวัติการยินยอมเพื่อทำ PDPA Compliance</li>
-    <li><strong>model_versions</strong>: ข้อมูลโมเดล AI ที่ Deploy แต่ละเวอร์ชัน</li>
-    <li><strong>audit_log</strong>: บันทึกกิจกรรมสำคัญที่กระทำโดย Admin (Append-only)</li>
+    <li><strong>scam_reports</strong>: การรายงานภาพว่าเป็น Scam โดยผู้ใช้ สำหรับให้แอดมินใช้ตรวจสอบและอนุมัติเข้าชุดข้อมูล</li>
+    <li><strong>consent_logs</strong>: ใช้เก็บประวัติการยินยอมเพื่อทำ PDPA Compliance แบบตรวจสอบย้อนหลังได้ (Immutable)</li>
+    <li><strong>model_versions</strong>: ข้อมูลโมเดล AI ที่ Deploy แต่ละเวอร์ชัน พร้อมค่าเมตริกและการควบคุมการ Rollback</li>
+    <li><strong>audit_log</strong>: บันทึกกิจกรรมสำคัญที่กระทำโดย Admin (Append-only) เพื่อความโปร่งใสและตรวจสอบความปลอดภัย</li>
     </ul>
   </main>
 
@@ -143,7 +157,7 @@
       document.querySelectorAll('.mermaid-container').forEach(container => {
         const btn = document.createElement('button');
         btn.className = 'btn-expand-mermaid';
-        btn.innerHTML = '🔍 Fullscreen';
+        btn.innerHTML = ' Fullscreen';
 
         btn.onclick = () => {
           const originalSvg = container.querySelector('svg');

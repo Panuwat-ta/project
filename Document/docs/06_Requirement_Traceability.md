@@ -468,13 +468,13 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 
 | FR Category | FR Count | Total AC | Average AC/FR | Test Priority |
 |-------------|----------|----------|---------------|---------------|
-| Authentication | 4 | 14 | 3.5 | 🔴 Critical |
-| Image & Scan | 3 | 9 | 3.0 | 🔴 Critical |
-| Analysis | 4 | 20 | 5.0 | 🔴 Critical |
-| XAI | 1 | 5 | 5.0 | 🟡 High |
-| History | 2 | 9 | 4.5 | 🟡 High |
-| PDPA | 1 | 5 | 5.0 | 🔴 Critical |
-| Admin | 4 | 20 | 5.0 | 🟡 High |
+| Authentication | 4 | 14 | 3.5 |  Critical |
+| Image & Scan | 3 | 9 | 3.0 |  Critical |
+| Analysis | 4 | 20 | 5.0 |  Critical |
+| XAI | 1 | 5 | 5.0 |  High |
+| History | 2 | 9 | 4.5 |  High |
+| PDPA | 1 | 5 | 5.0 |  Critical |
+| Admin | 4 | 20 | 5.0 |  High |
 | **Total** | **19** | **75** | **3.95** | |
 
 **Updated:** AC count increased from 70 to 75 (+5 AC for XAI Controls)
@@ -485,12 +485,12 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 
 | NFR Category | NFR Count | Total AC | Test Type | Test Priority |
 |-------------|----------|----------|-----------|---------------|
-| Performance | 2 | 5 | Load Testing, Benchmark | 🔴 Critical |
-| Availability & Monitoring | 1 | 3 | Uptime Monitor, Alerting | 🔴 Critical |
-| Security | 1 | 5 | Penetration Test, Code Review | 🔴 Critical |
-| Accuracy | 1 | 4 | Model Evaluation | 🔴 Critical |
-| Usability & XAI | 1 | 4 | UAT, User Interview | 🟡 High |
-| Cache Efficiency | 1 | 2 | Performance Monitoring | 🟢 Medium |
+| Performance | 2 | 5 | Load Testing, Benchmark |  Critical |
+| Availability & Monitoring | 1 | 3 | Uptime Monitor, Alerting |  Critical |
+| Security | 1 | 5 | Penetration Test, Code Review |  Critical |
+| Accuracy | 1 | 4 | Model Evaluation |  Critical |
+| Usability & XAI | 1 | 4 | UAT, User Interview |  High |
+| Cache Efficiency | 1 | 2 | Performance Monitoring |  Medium |
 | **Total** | **7** | **23** | | |
 
 **Updated:** AC count increased from 15 to 23 (+8 AC for Monitoring, Performance Percentiles, Precision/Recall, UAT Questions, Cache Strategy)
@@ -546,12 +546,12 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 
 | Chain | Strength | Evidence |
 |-------|----------|----------|
-| ST → OBJ | 🟢 Strong | 100% coverage, explicit mapping |
-| OBJ → SC | 🟢 Strong | 100% coverage, rationale documented |
-| SC → RC | 🟢 Strong | All RCs traced to SC |
-| RC → FR/NFR | 🟡 Medium | 53% conversion (Must priority) |
-| FR/NFR → AC | 🟢 Strong | All FR/NFR have testable AC |
-| **Overall** | **🟢 Strong** | **End-to-end traceability established** |
+| ST → OBJ |  Strong | 100% coverage, explicit mapping |
+| OBJ → SC |  Strong | 100% coverage, rationale documented |
+| SC → RC |  Strong | All RCs traced to SC |
+| RC → FR/NFR |  Medium | 53% conversion (Must priority) |
+| FR/NFR → AC |  Strong | All FR/NFR have testable AC |
+| **Overall** | ** Strong** | **End-to-end traceability established** |
 
 ---
 

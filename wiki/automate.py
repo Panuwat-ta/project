@@ -62,7 +62,7 @@ HTML_TEMPLATE = """<!doctype html>
       document.querySelectorAll('.mermaid-container').forEach(container => {{
         const btn = document.createElement('button');
         btn.className = 'btn-expand-mermaid';
-        btn.innerHTML = '🔍 Fullscreen';
+        btn.innerHTML = ' Fullscreen';
 
         btn.onclick = () => {{
           const originalSvg = container.querySelector('svg');

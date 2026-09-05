@@ -2,8 +2,8 @@
 title: "โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล"
 category: architecture
 tags: [PostgreSQL, Redis, cache, cloud-storage, schema, ACID]
-sources: [design/architecture.md, design/server.md]
-updated: 2026-08-02
+sources: [design/architecture.md, design/server.md, database/ER_Diagram.md]
+updated: 2026-09-06
 ---
 
 # โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล
@@ -20,12 +20,14 @@ updated: 2026-08-02
 
 | ตาราง | คำอธิบาย |
 | :--- | :--- |
-| `users` | บัญชีผู้ใช้, Role (user/admin), สถานะ Consent, เวลาสมัคร |
-| `scans` | แต่ละ Scan: อ้างอิงรูปภาพ, Risk Score, คะแนนแต่ละชั้น, สถานะ, เวลาสร้าง |
+| `users` | บัญชีผู้ใช้ทั่วไปและนักวิจัย, Role (user/researcher), สถานะความยินยอม PDPA, เวลาสมัคร |
+| `admins` | บัญชีผู้ดูแลระบบ (Admin และ Super Admin) แยกเดี่ยวเพื่อความปลอดภัย, แฟล็ก `is_superadmin` |
+| `scans` | รายการ Scan: `image_hash`, `title`, Risk Score รวมและแยกมิติ, `status`, `progress`, เวลาสร้าง/เสร็จ |
 | `scan_results` | ผลลัพธ์ละเอียดต่อ Scan: Mask URL, Heatmap URL, Keywords, Source URLs |
-| `reports` | รายงาน Scam จากผู้ใช้: Image ID, Reporter ID, สถานะการตรวจสอบของ Admin |
-| `model_versions` | Registry โมเดลที่ Deploy แล้วพร้อม Timestamp |
-| `audit_log` | บันทึก Append-only ของ Admin Actions ทั้งหมด (Deploy โมเดล, ตัดสิน Report) |
+| `scam_reports` | รายงาน Scam จากผู้ใช้: Scan ID, เหตุผล, สถานะ (pending, approved, rejected), แอดมินผู้ตรวจสอบ |
+| `consent_logs` | ประวัติการยินยอม PDPA แบบตรวจสอบย้อนหลังได้ (Immutable): IP Address, User Agent, Timestamp |
+| `model_versions` | Registry โมเดล SegFormer AI ที่ Deploy: เวอร์ชัน, พาธไฟล์, สถานะ Active, เมตริก mIoU |
+| `audit_log` | บันทึก Append-only ของการกระทำโดย Admin ทั้งหมด (Deploy โมเดล, ตัดสิน Report, จัดการ User) |
 
 ### Field ที่เกี่ยวกับ PDPA
 
@@ -99,8 +101,11 @@ bucket/
 
 ## หน้าที่เกี่ยวข้อง
 
-- [[architecture/backend-api]]
-- [[architecture/ai-inference-service]]
-- [[architecture/system-architecture]]
-- [[requirements/non-functional-requirements]]
-- [[concepts/risk-scoring]]
+- [[architecture/database-er-diagram|แผนผังความสัมพันธ์ฐานข้อมูล (ER Diagram)]]
+- [[architecture/database-migrations|การจัดการการย้ายฐานข้อมูล (Database Migrations)]]
+- [[architecture/backend-api|Backend API — FastAPI Orchestrator]]
+- [[architecture/admin-portal|สถาปัตยกรรม Admin Portal]]
+- [[architecture/ai-inference-service|AI Inference Service]]
+- [[architecture/system-architecture|สถาปัตยกรรมระบบรวม]]
+- [[requirements/non-functional-requirements|ข้อกำหนดความต้องการที่ไม่ใช่ฟังก์ชัน]]
+- [[concepts/risk-scoring|การคำนวณคะแนนความเสี่ยง]]

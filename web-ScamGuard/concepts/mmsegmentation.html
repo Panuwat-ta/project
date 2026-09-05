@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์ - ScamGuard</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../shared-theme.css">
+</head>
+
+<body>
+  <main class="document">
+    <h1>MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</h1>
+        <p class="lede">เฟรมเวิร์กโอเพนซอร์สบน PyTorch สำหรับงาน Semantic Segmentation ที่ใช้ในการพัฒนา ฝึกสอน และส่งออกโมเดล SegFormer ในระบบ ScamGuard</p>
+    <div class="divider"></div>
+    <h2>1. ภาพรวมของ MMSegmentation</h2>
+    <p><strong>MMSegmentation</strong> เป็นส่วนหนึ่งของโครงการ OpenMMLab ที่รวบรวมอัลกอริทึมและสถาปัตยกรรมเครือข่ายประสาทเทียมชั้นนำสำหรับงานวิเคราะห์และแบ่งส่วนรูปภาพระดับพิกเซล (Pixel-level Semantic Segmentation) โครงสร้างของเฟรมเวิร์กถูกออกแบบให้เป็นโมดูลาร์ (Modular Architecture) ช่วยให้นักวิจัยและวิศวกร AI สามารถสลับ ปรับเปลี่ยน หรือผสมผสานชิ้นส่วนของโมเดลได้อย่างอิสระโดยไม่ต้องเขียนโค้ดโครงสร้างใหม่ทั้งหมด</p>
+    <div class="divider"></div>
+    <h2>2. โครงสร้างสถาปัตยกรรมแบบโมดูลาร์ (Modular Decomposition)</h2>
+    <p>MMSegmentation แบ่งส่วนประกอบภายในของโมเดลออกเป็น 4 ชั้นหลัก:</p>
+    <div class="mermaid-container"><div class="mermaid">flowchart TD
+        Input["Input Image (B x 3 x H x W)"] --> Backbone["Backbone (Feature Extractor)"]
+        Backbone --> Neck["Neck (Feature Aggregator - Optional)"]
+        Neck --> DecodeHead["Decode Head (Segmentation Prediction)"]
+        Backbone -.-> AuxHead["Auxiliary Head (Training Loss Only)"]
+        DecodeHead --> Output["Prediction Mask / Heatmap (B x C x H x W)"]
+    </div></div>
+    <ol>
+    <li><strong>Backbone (ส่วนสกัดลักษณะเด่น):</strong> ทำหน้าที่รับภาพนำเข้าและสร้าง Feature Maps หลายระดับความละเอียด (Multi-scale Feature Maps) ในระบบ ScamGuard ใช้ <strong>Mix Vision Transformer (MiT-B0 ถึง MiT-B2)</strong></li>
+    <li><strong>Neck (ส่วนเชื่อมประสานลักษณะเด่น):</strong> ทำหน้าที่รวมลักษณะเด่นจากหลายชั้นความลึกของ Backbone เข้าด้วยกัน เช่น Feature Pyramid Network (FPN) เพื่อรวบรวมทั้งรายละเอียดระดับต่ำ (Low-level Details) และความหมายเชิงลึก (High-level Semantics)</li>
+    <li><strong>Decode Head (ส่วนถอดรหัสและทำนายผล):</strong> ส่วนปลายที่รับ Feature Maps ที่รวมแล้วมาแปลงเป็นหน้ากากการทำนายความน่าจะเป็นของแต่ละพิกเซล (Class Probability Mask) เช่น <strong>SegformerHead</strong> ที่ใช้ All-MLP Decoder น้ำหนักเบา</li>
+    <li><strong>Auxiliary Head (ส่วนเสริมการเรียนรู้):</strong> ชั้นประมวลผลเสริมที่ใช้เฉพาะช่วงการฝึกสอน (Training Phase) เพื่อช่วยส่งผ่าน Gradient ลึกลงไปยังชั้นต้นๆ ของ Backbone ผ่าน Auxiliary Loss ลดปัญหา Vanishing Gradient</li>
+    </ol>
+    <div class="divider"></div>
+    <h2>3. กลุ่มอัลกอริทึมและวิวัฒนาการใน MMSegmentation</h2>
+    <table>
+    <thead>
+    <tr>
+    <th style="text-align: left;">กลุ่มอัลกอริทึม</th>
+    <th style="text-align: left;">โมเดลตัวอย่าง</th>
+    <th style="text-align: left;">จุดเด่น</th>
+    <th style="text-align: left;">ข้อจำกัดสำหรับงานตรวจจับภาพตัดต่อ</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td style="text-align: left;"><strong>CNN-based</strong></td>
+    <td style="text-align: left;">FCN, PSPNet, DeepLabV3+</td>
+    <td style="text-align: left;">ประมวลผลแบบ Local Receptive Field มีความคงทนต่อการเลื่อนตำแหน่ง (Translation Invariance)</td>
+    <td style="text-align: left;">ขาดความสามารถในการจับความสัมพันธ์ระยะไกล (Long-range Context) ทำให้พลาดร่องรอยการผสมผสานแสงเงาที่ไม่สอดคล้องกันข้ามบริเวณ</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;"><strong>Transformer-based</strong></td>
+    <td style="text-align: left;">SegFormer, Swin Transformer, MaskFormer</td>
+    <td style="text-align: left;">ใช้กลไก Self-Attention เพื่อจับความสัมพันธ์ของบริบททั่วทั้งภาพพร้อมกันในทุกระดับความละเอียด</td>
+    <td style="text-align: left;">ต้องการการจัดเตรียมข้อมูลและการคำนวณที่เหมาะสม ซึ่งแก้ไขได้ด้วย Overlapping Tiling Inference</td>
+    </tr>
+    </tbody>
+    </table>
+    <div class="divider"></div>
+    <h2>4. การประยุกต์ใช้ในระบบ ScamGuard</h2>
+    <p>ในระบบ ScamGuard ได้เลือกใช้ MMSegmentation ในการเทรนโมเดล SegFormer ดังนี้:</p>
+    <ul>
+    <li><strong>การแก้ปัญหา Class Imbalance:</strong> บริเวณที่ถูกตัดต่อ มักมีสัดส่วนพื้นที่น้อยมากเมื่อเทียบกับพื้นที่ภาพทั้งหมด ระบบจึงกำหนด Loss Function แบบผสมผสานระหว่าง Cross-Entropy Loss และ Dice Loss:
+      <script type="math/tex; mode=display">\mathcal{L}_{total} = \alpha \mathcal{L}_{CE} + \beta \mathcal{L}_{Dice}</script>
+    </li>
+    <li><strong>การส่งออกไปยัง ONNX Runtime:</strong> โมเดลที่เทรนเสร็จสมบูรณ์จาก MMSegmentation จะถูกส่งออกเป็นไฟล์ <code>.onnx</code> ผ่านสคริปต์ <code>pytorch2onnx</code> เพื่อนำไปโหลดใช้งานในสภาพแวดล้อมจริง (Inference Engine) บน FastAPI Backend ทำให้สามารถทำนายผลได้รวดเร็วโดยไม่ต้องพึ่งพา PyTorch Runtime ตัวเต็ม</li>
+    </ul>
+    <div class="divider"></div>
+    <h2>5. ประเด็นสำคัญ</h2>
+    <ul>
+    <li>MMSegmentation ช่วยให้การทดลองเปรียบเทียบสถาปัตยกรรม (เช่น ResNet vs MiT) ทำได้บนมาตรฐานเดียวกัน</li>
+    <li>โครงสร้าง All-MLP Decoder ของ SegFormer บน MMSegmentation ให้ความเร็วในการทำนายระดับมิลลิวินาที</li>
+    <li>การฝึกสอนโมเดลรองรับการจำลองภาพตัดต่อ (Copy-Move, Splicing, Inpainting, AI-Gen artifacts) หลากหลายรูปแบบ</li>
+    </ul>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
+  </script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        displayMath: [['$$','$$'], ['\\[','\\]']]
+      }
+    });
+  </script>
+  <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.mermaid-container').forEach(container => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-expand-mermaid';
+        btn.innerHTML = ' Fullscreen';
+
+        btn.onclick = () => {
+          const originalSvg = container.querySelector('svg');
+          if (!originalSvg) return;
+
+          const overlay = document.createElement('div');
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.backgroundColor = 'var(--paper, #F6F4EE)';
+          overlay.style.zIndex = '999999';
+          overlay.style.display = 'flex';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+
+          const closeBtn = document.createElement('button');
+          closeBtn.innerHTML = '✖ Close';
+          closeBtn.style.position = 'absolute';
+          closeBtn.style.top = '20px';
+          closeBtn.style.right = '20px';
+          closeBtn.style.padding = '8px 16px';
+          closeBtn.style.fontSize = '1rem';
+          closeBtn.style.fontWeight = 'bold';
+          closeBtn.style.cursor = 'pointer';
+          closeBtn.style.backgroundColor = '#ff4d4d';
+          closeBtn.style.color = '#fff';
+          closeBtn.style.border = 'none';
+          closeBtn.style.borderRadius = '8px';
+          closeBtn.style.zIndex = '1000000';
+          closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+
+          closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
+          closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
+
+          const clonedSvg = originalSvg.cloneNode(true);
+          clonedSvg.style.width = '100%';
+          clonedSvg.style.height = '100%';
+          clonedSvg.style.maxWidth = '100vw';
+          clonedSvg.style.maxHeight = '100vh';
+
+          overlay.appendChild(clonedSvg);
+          overlay.appendChild(closeBtn);
+          document.body.appendChild(overlay);
+
+          const oldOverflow = document.body.style.overflow;
+          document.body.style.overflow = 'hidden';
+
+          const panZoomInstance = svgPanZoom(clonedSvg, {
+            zoomEnabled: true,
+            controlIconsEnabled: true,
+            fit: true,
+            center: true,
+            minZoom: 0.5,
+            maxZoom: 10,
+            mouseWheelZoomEnabled: true
+          });
+
+          closeBtn.onclick = () => {
+            panZoomInstance.destroy();
+            document.body.removeChild(overlay);
+            document.body.style.overflow = oldOverflow;
+          };
+        };
+        container.appendChild(btn);
+      });
+    });
+  </script>
+</body>
+</html>

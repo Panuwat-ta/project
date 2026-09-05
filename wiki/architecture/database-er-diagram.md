@@ -3,7 +3,7 @@ title: "Entity Relationship Diagram (ER Diagram)"
 category: architecture
 tags: [architecture, database, er, postgresql]
 sources: [database/ER_Diagram.md]
-updated: 2026-08-04
+updated: 2026-09-06
 ---
 
 # ER Diagram for ScamGuard
@@ -17,7 +17,7 @@ erDiagram
         string email
         string hashed_password
         string full_name
-        string role "user, admin"
+        string role "user, researcher"
         boolean is_active
         boolean consent_analysis
         boolean consent_research
@@ -26,10 +26,22 @@ erDiagram
         datetime updated_at
     }
 
+    admins {
+        int id PK
+        string email
+        string hashed_password
+        string full_name
+        boolean is_active
+        boolean is_superadmin
+        datetime created_at
+        datetime updated_at
+    }
+
     scans {
         uuid id PK
         int user_id FK
         string image_hash
+        string title
         string raw_image_url
         string heatmap_image_url
         int text_score
@@ -42,6 +54,7 @@ erDiagram
         jsonb reverse_search_results
         float ai_gen_probability
         string status
+        int progress
         datetime created_at
         datetime completed_at
     }
@@ -96,8 +109,8 @@ erDiagram
     users ||--o{ scans : "performs"
     users ||--o{ scam_reports : "submits"
     users ||--o{ consent_logs : "records"
-    users ||--o{ scam_reports : "moderates (admin)"
-    users ||--o{ audit_log : "performs (admin)"
+    admins ||--o{ scam_reports : "moderates"
+    admins ||--o{ audit_log : "performs"
     
     scans ||--o| scan_results : "has details"
     scans ||--o{ scam_reports : "is reported in"
@@ -105,10 +118,20 @@ erDiagram
 
 ## รายละเอียดแต่ละตาราง
 
-- **users**: เก็บข้อมูลบัญชีผู้ใช้และสถานะความยินยอม (Consent)
-- **scans**: เก็บข้อมูลสรุปของการสแกนรูปภาพ พร้อมคะแนนความเสี่ยง
+- **users**: เก็บข้อมูลบัญชีผู้ใช้ทั่วไปและนักวิจัย พร้อมสถานะความยินยอม (Consent) และสิทธิ์การใช้งาน
+- **admins**: เก็บข้อมูลบัญชีผู้ดูแลระบบ (Admin และ Super Admin) แยกออกจากผู้ใช้ทั่วไปเพื่อความปลอดภัย
+- **scans**: เก็บข้อมูลสรุปของการสแกนรูปภาพ พร้อมคะแนนความเสี่ยง สถานะการประมวลผล (`progress`) และหัวข้อภาพ (`title`)
 - **scan_results**: (ทางเลือก) เก็บข้อมูลรายละเอียดเพิ่มเติมในกรณีที่มีหลาย Layer ลึกๆ
-- **scam_reports**: การรายงานภาพว่าเป็น Scam โดยผู้ใช้ และแอดมินใช้พิจารณา
-- **consent_logs**: ใช้เก็บประวัติการยินยอมเพื่อทำ PDPA Compliance
-- **model_versions**: ข้อมูลโมเดล AI ที่ Deploy แต่ละเวอร์ชัน
-- **audit_log**: บันทึกกิจกรรมสำคัญที่กระทำโดย Admin (Append-only)
+- **scam_reports**: การรายงานภาพว่าเป็น Scam โดยผู้ใช้ สำหรับให้แอดมินใช้ตรวจสอบและอนุมัติเข้าชุดข้อมูล
+- **consent_logs**: ใช้เก็บประวัติการยินยอมเพื่อทำ PDPA Compliance แบบตรวจสอบย้อนหลังได้ (Immutable)
+- **model_versions**: ข้อมูลโมเดล AI ที่ Deploy แต่ละเวอร์ชัน พร้อมค่าเมตริกและการควบคุมการ Rollback
+- **audit_log**: บันทึกกิจกรรมสำคัญที่กระทำโดย Admin (Append-only) เพื่อความโปร่งใสและตรวจสอบความปลอดภัย
+
+---
+
+## หน้าที่เกี่ยวข้อง
+
+- [[architecture/database-schema|สคีมาฐานข้อมูล (Database Schema)]]
+- [[architecture/database-migrations|การจัดการการย้ายฐานข้อมูล (Database Migrations)]]
+- [[architecture/admin-portal|สถาปัตยกรรม Admin Portal]]
+- [[architecture/backend-api|Backend API]]

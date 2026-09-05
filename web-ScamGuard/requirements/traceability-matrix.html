@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>เมทริกซ์การสืบย้อนความต้องการ (Requirement Traceability Matrix - RTM) - ScamGuard</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../shared-theme.css">
+</head>
+
+<body>
+  <main class="document">
+    <h1>เมทริกซ์การสืบย้อนความต้องการ (Requirement Traceability Matrix - RTM)</h1>
+        <p class="lede">เอกสารตารางการสืบย้อนความต้องการแบบสองทิศทาง (Bidirectional Traceability) เพื่อตรวจสอบความครบถ้วนของระบบตั้งแต่เป้าหมายผู้มีส่วนได้ส่วนเสีย ขอบเขต ข้อกำหนดฟังก์ชัน ไปจนถึงการทดสอบระบบ</p>
+    <div class="divider"></div>
+    <h2>1. ห่วงโซ่การสืบย้อนความต้องการ (Traceability Chain)</h2>
+    <p>ระบบ ScamGuard ใช้กระบวนการวิศวกรรมความต้องการที่เป็นไปตามมาตรฐานสากล โดยเชื่อมโยงข้อกำหนดในแต่ละระดับชั้นเข้าด้วยกัน:</p>
+    <div class="mermaid-container"><div class="mermaid">flowchart LR
+        ST["Stakeholders (ST01 - ST03)"] --> OBJ["Project Objectives (OBJ-01 - OBJ-04)"]
+        OBJ --> SC["Project Scopes (SC01 - SC04)"]
+        SC --> RC["Requirement Candidates (RC-*)"]
+        RC --> FR_NFR["SRS Requirements (FR-* / NFR-*)"]
+        FR_NFR --> TC["Test Cases & Verification"]
+    </div></div>
+    <ul>
+    <li><strong>Stakeholder (ST):</strong> ผู้มีส่วนได้ส่วนเสียที่กำหนดคุณค่าของระบบ</li>
+    <li><strong>Objective (OBJ):</strong> วัตถุประสงค์เชิงกลยุทธ์ของโครงงาน</li>
+    <li><strong>Scope (SC):</strong> ขอบเขตของระบบที่ตกลงส่งมอบ</li>
+    <li><strong>Requirement Candidate (RC):</strong> ข้อกำหนดเบื้องต้นที่รวบรวมได้จากหลักฐาน</li>
+    <li><strong>Functional / Non-Functional Requirements (FR/NFR):</strong> ข้อกำหนดความต้องการทางซอฟต์แวร์ฉบับสมบูรณ์พร้อม Acceptance Criteria</li>
+    <li><strong>Test Cases (TC):</strong> กรณีทดสอบสำหรับยืนยันความถูกต้องของระบบ</li>
+    </ul>
+    <div class="divider"></div>
+    <h2>2. กลุ่มผู้มีส่วนได้ส่วนเสีย (Stakeholders)</h2>
+    <table>
+    <thead>
+    <tr>
+    <th style="text-align: left;">รหัส</th>
+    <th style="text-align: left;">ผู้มีส่วนได้ส่วนเสีย</th>
+    <th style="text-align: left;">ความต้องการหลัก</th>
+    <th style="text-align: left;">วัตถุประสงค์ที่เกี่ยวข้อง</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td style="text-align: left;"><strong>ST01</strong></td>
+    <td style="text-align: left;">ผู้ใช้งานทั่วไป (General Users)</td>
+    <td style="text-align: left;">ต้องการเครื่องมือที่ใช้งานง่ายบนมือถือ สามารถตรวจสอบภาพต้องสงสัยได้อย่างรวดเร็วและเข้าใจผลการวิเคราะห์ได้ทันที</td>
+    <td style="text-align: left;">, ,</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;"><strong>ST02</strong></td>
+    <td style="text-align: left;">ผู้ดูแลระบบและนักวิจัย (Admins / Researchers)</td>
+    <td style="text-align: left;">ต้องการระบบควบคุมหลังบ้าน จัดการรายงาน Scam คัดเลือก Dataset และควบคุมการ Deploy โมเดล AI</td>
+    <td style="text-align: left;">, ,</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;"><strong>ST03</strong></td>
+    <td style="text-align: left;">อาจารย์ที่ปรึกษาและคณะกรรมการ (Advisors &amp; Committee)</td>
+    <td style="text-align: left;">ต้องการระบบที่มีความถูกต้องตามหลักวิศวกรรมซอฟต์แวร์ มีกระบวนการทดสอบที่รัดกุม และปฏิบัติตามกฎหมาย PDPA</td>
+    <td style="text-align: left;">ทุกวัตถุประสงค์ (OBJ-01 ถึง OBJ-04)</td>
+    </tr>
+    </tbody>
+    </table>
+    <div class="divider"></div>
+    <h2>3. ตารางเมทริกซ์การสืบย้อนความต้องการ (Requirement Traceability Matrix)</h2>
+    <table>
+    <thead>
+    <tr>
+    <th style="text-align: left;">ลำดับ</th>
+    <th style="text-align: left;">ST</th>
+    <th style="text-align: left;">OBJ</th>
+    <th style="text-align: left;">SC</th>
+    <th style="text-align: left;">รหัสความต้องการเบื้องต้น (RC)</th>
+    <th style="text-align: left;">รหัสข้อกำหนด (FR / NFR)</th>
+    <th style="text-align: left;">ลำดับความสำคัญ</th>
+    <th style="text-align: left;">สรุปพฤติกรรมของระบบ</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td style="text-align: left;">1</td>
+    <td style="text-align: left;">ST01</td>
+    <td style="text-align: left;">OBJ-04</td>
+    <td style="text-align: left;">SC01</td>
+    <td style="text-align: left;">RC-AUTH-01</td>
+    <td style="text-align: left;">FR-AUTH-01</td>
+    <td style="text-align: left;">Must Have</td>
+    <td style="text-align: left;">สมัครสมาชิกผ่าน Mobile App ด้วย Email/Password พร้อมตรวจสอบความปลอดภัย</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">2</td>
+    <td style="text-align: left;">ST01</td>
+    <td style="text-align: left;">OBJ-04</td>
+    <td style="text-align: left;">SC01</td>
+    <td style="text-align: left;">RC-AUTH-02</td>
+    <td style="text-align: left;">FR-AUTH-02</td>
+    <td style="text-align: left;">Must Have</td>
+    <td style="text-align: left;">เข้าสู่ระบบและรับ JWT Access Token / Refresh Token เพื่อรักษาเซสชั่น</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">3</td>
+    <td style="text-align: left;">ST01</td>
+    <td style="text-align: left;">OBJ-01</td>
+    <td style="text-align: left;">SC01</td>
+    <td style="text-align: left;">RC-SCAN-01</td>
+    <td style="text-align: left;">FR-INPUT-01/03</td>
+    <td style="text-align: left;">Must Have</td>
+    <td style="text-align: left;">เลือกรูปภาพจากแกลเลอรีหรือถ่ายภาพ พร้อมเครื่องมือครอบตัดภาพ (Crop)</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">4</td>
+    <td style="text-align: left;">ST01</td>
+    <td style="text-align: left;">OBJ-01</td>
+    <td style="text-align: left;">SC02</td>
+    <td style="text-align: left;">RC-SCAN-02</td>
+    <td style="text-align: left;">FR-SYS-09</td>
+    <td style="text-align: left;">Must Have</td>
+    <td style="text-align: left;">คำนวณ Perceptual Hash และค้นหาผลลัพธ์จาก Redis Cache (&lt; 3 วินาที)</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">5</td>
+    <td style="text-align: left;">ST01</td>
+    <td style="text-align: left;">OBJ-01</td>
+    <td style="text-align: left;">SC03</td>
+    <td style="text-align: left;">RC-ANALYSIS-01</td>
+    <td style="text-align: left;">FR-SYS-02</td>
+    <td style="text-align: left;">Must Have</td>
+    <td style="text-align: left;">สกัดข้อความภาษาไทยและอังกฤษด้วย Surya OCR 2 Engine</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">6</td>
+    <td style="text-align: left;">ST01</td>
+    <td style="text-align: left;">OBJ-01</td>
+    <td style="text-align: left;">SC03</td>
+    <td style="text-align: left;">RC-ANALYSIS-02</td>
+    <td style="text-align: left;">FR-SYS-03</td>
+    <td style="text-align: left;">Must Have</td>
+    <td style="text-align: left;">ตรวจจับคีย์เวิร์ดหลอกลวง (Scam Keywords) และคำนวณ Textual Score</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">7</td>
+    <td style="text-align: left;">ST01</td>
+    <td style="text-align: left;">OBJ-01</td>
+    <td style="text-align: left;">SC03</td>
+    <td style="text-align: left;">RC-ANALYSIS-03</td>
+    <td style="text-align: left;">FR-SYS-05</td>
+    <td style="text-align: left;">Must Have</td>
+    <td style="text-align: left;">ตรวจสอบร่องรอยการตัดต่อระดับพิกเซลด้วย SegFormer AI Model</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">8</td>
+    <td style="text-align: left;">ST01</td>
+    <td style="text-align: left;">OBJ-01</td>
+    <td style="text-align: left;">SC03</td>
+    <td style="text-align: left;">RC-ANALYSIS-04</td>
+    <td style="text-align: left;">FR-SYS-08</td>
+    <td style="text-align: left;">Must Have</td>
+    <td style="text-align: left;">สร้างแผนภาพความร้อน Full-Resolution Heatmap แสดงจุดผิดปกติ</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">9</td>
+    <td style="text-align: left;">ST01</td>
+    <td style="text-align: left;">OBJ-02</td>
+    <td style="text-align: left;">SC02</td>
+    <td style="text-align: left;">RC-ANALYSIS-05</td>
+    <td style="text-align: left;">FR-SYS-04</td>
+    <td style="text-align: left;">Should Have</td>
+    <td style="text-align: left;">ค้นหาประวัติรูปภาพย้อนกลับผ่าน Google Vision Search API</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">10</td>
+    <td style="text-align: left;">ST01</td>
+    <td style="text-align: left;">OBJ-03</td>
+    <td style="text-align: left;">SC02</td>
+    <td style="text-align: left;">RC-ANALYSIS-07</td>
+    <td style="text-align: left;">FR-SYS-07</td>
+    <td style="text-align: left;">Must Have</td>
+    <td style="text-align: left;">คำนวณ Overall Risk Score ด้วยสูตร Hybrid Worst-Case Trigger Approach</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">11</td>
+    <td style="text-align: left;">ST01</td>
+    <td style="text-align: left;">OBJ-03</td>
+    <td style="text-align: left;">SC01</td>
+    <td style="text-align: left;">RC-REPORT-01</td>
+    <td style="text-align: left;">FR-REPORT-01</td>
+    <td style="text-align: left;">Must Have</td>
+    <td style="text-align: left;">แสดงผลรายงานความเสี่ยง (Risk Badge 3 ระดับ, มิติคะแนน, Heatmap Toggle)</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">12</td>
+    <td style="text-align: left;">ST01</td>
+    <td style="text-align: left;">OBJ-04</td>
+    <td style="text-align: left;">SC01</td>
+    <td style="text-align: left;">RC-HIST-01</td>
+    <td style="text-align: left;">FR-HIST-01</td>
+    <td style="text-align: left;">Must Have</td>
+    <td style="text-align: left;">บันทึกประวัติการสแกนและเรียกดูย้อนหลังพร้อมภาพตัวอย่าง (Thumbnails)</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">13</td>
+    <td style="text-align: left;">ST01</td>
+    <td style="text-align: left;">OBJ-04</td>
+    <td style="text-align: left;">SC01</td>
+    <td style="text-align: left;">RC-REPORT-02</td>
+    <td style="text-align: left;">FR-RPT-01</td>
+    <td style="text-align: left;">Should Have</td>
+    <td style="text-align: left;">ผู้ใช้แจ้งยืนยันว่าภาพเป็น Scam เพื่อส่งต่อไปยังคิวตรวจสอบของผู้ดูแลระบบ</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">14</td>
+    <td style="text-align: left;">ST02</td>
+    <td style="text-align: left;">OBJ-04</td>
+    <td style="text-align: left;">SC04</td>
+    <td style="text-align: left;">RC-ADMIN-01</td>
+    <td style="text-align: left;">FR-ADM-01</td>
+    <td style="text-align: left;">Must Have</td>
+    <td style="text-align: left;">แดชบอร์ดสรุปสถิติระบบและ WebSocket Real-time Telemetry บน Admin Portal</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">15</td>
+    <td style="text-align: left;">ST02</td>
+    <td style="text-align: left;">OBJ-04</td>
+    <td style="text-align: left;">SC04</td>
+    <td style="text-align: left;">RC-ADMIN-02</td>
+    <td style="text-align: left;">FR-ADM-02</td>
+    <td style="text-align: left;">Must Have</td>
+    <td style="text-align: left;">ส่วนตรวจสอบรายงานข้อร้องเรียน (Moderation) เพื่อ Approve เข้า Research Dataset</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">16</td>
+    <td style="text-align: left;">ST02</td>
+    <td style="text-align: left;">OBJ-03</td>
+    <td style="text-align: left;">SC04</td>
+    <td style="text-align: left;">RC-ADMIN-03</td>
+    <td style="text-align: left;">FR-ADM-04</td>
+    <td style="text-align: left;">Must Have</td>
+    <td style="text-align: left;">ระบบ Model Registry จัดการเวอร์ชัน SegFormer และสั่ง Deploy/Rollback แบบปลอดภัย</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">17</td>
+    <td style="text-align: left;">ST02</td>
+    <td style="text-align: left;">OBJ-04</td>
+    <td style="text-align: left;">SC04</td>
+    <td style="text-align: left;">RC-ADMIN-04</td>
+    <td style="text-align: left;">FR-SYS-10</td>
+    <td style="text-align: left;">Must Have</td>
+    <td style="text-align: left;">บันทึกกิจกรรมของผู้ดูแลระบบลงตาราง <code>audit_log</code> แบบ Append-only</td>
+    </tr>
+    <tr>
+    <td style="text-align: left;">18</td>
+    <td style="text-align: left;">ST03</td>
+    <td style="text-align: left;">OBJ-04</td>
+    <td style="text-align: left;">SC01</td>
+    <td style="text-align: left;">RC-PDPA-01</td>
+    <td style="text-align: left;">FR-PDPA-01/02</td>
+    <td style="text-align: left;">Must Have</td>
+    <td style="text-align: left;">ขอความยินยอม (Consent Screen) ก่อนใช้งาน และรองรับการถอนความยินยอม</td>
+    </tr>
+    </tbody>
+    </table>
+    <div class="divider"></div>
+    <h2>4. ข้อสังเกตความสอดคล้องทางวิศวกรรม (Engineering Consistency Note)</h2>
+    <blockquote>
+    <p><strong>NOTE:</strong><br />
+    ในเอกสาร RTM ฉบับร่างเดิม (<a href="file:///home/panuwat/project/Document/docs/06_Requirement_Traceability.md">Document/docs/06_Requirement_Traceability.md</a>) มีการระบุเกณฑ์ความเสี่ยงเป็น 4 ระดับ (Safe, Low, Medium, High) แต่ในสถาปัตยกรรมและโค้ดปัจจุบันของระบบ ScamGuard ได้ปรับเปลี่ยนเป็น <strong>3 ระดับ</strong> (Low: 0-39, Medium: 40-69, High: 70-100) ตามข้อกำหนดความปลอดภัยเพื่อป้องกัน False Sense of Security ทั้งนี้ ทุกข้อกำหนดในตารางข้างต้นได้รับการปรับให้สอดคล้องกับระบบ 3 ระดับเรียบร้อยแล้ว</p>
+    </blockquote>
+    <div class="divider"></div>
+    <h2>5. ประเด็นสำคัญ</h2>
+    <ul>
+    <li>RTM ช่วยรับประกันว่าทุกฟีเจอร์ใน Mobile App, Backend API, AI Model และ Admin Portal ล้วนตอบสนองต่อเป้าหมายของผู้มีส่วนได้ส่วนเสียโดยตรง</li>
+    <li>ไม่พบความต้องการที่หลุดออกนอกขอบเขต (No Scope Creep)</li>
+    <li>ทุกข้อกำหนดมีชุดการทดสอบรองรับทั้งในระดับ Unit Test, Integration Test และ System E2E Test</li>
+    </ul>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EFE9DA', primaryTextColor: '#1B1F2B', primaryBorderColor: '#3D4B94', lineColor: '#3D4B94', secondaryColor: '#F6F4EE', tertiaryColor: '#F6F4EE' } });
+  </script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        displayMath: [['$$','$$'], ['\\[','\\]']]
+      }
+    });
+  </script>
+  <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.mermaid-container').forEach(container => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-expand-mermaid';
+        btn.innerHTML = ' Fullscreen';
+
+        btn.onclick = () => {
+          const originalSvg = container.querySelector('svg');
+          if (!originalSvg) return;
+
+          const overlay = document.createElement('div');
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.backgroundColor = 'var(--paper, #F6F4EE)';
+          overlay.style.zIndex = '999999';
+          overlay.style.display = 'flex';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+
+          const closeBtn = document.createElement('button');
+          closeBtn.innerHTML = '✖ Close';
+          closeBtn.style.position = 'absolute';
+          closeBtn.style.top = '20px';
+          closeBtn.style.right = '20px';
+          closeBtn.style.padding = '8px 16px';
+          closeBtn.style.fontSize = '1rem';
+          closeBtn.style.fontWeight = 'bold';
+          closeBtn.style.cursor = 'pointer';
+          closeBtn.style.backgroundColor = '#ff4d4d';
+          closeBtn.style.color = '#fff';
+          closeBtn.style.border = 'none';
+          closeBtn.style.borderRadius = '8px';
+          closeBtn.style.zIndex = '1000000';
+          closeBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+
+          closeBtn.onmouseover = () => closeBtn.style.backgroundColor = '#e60000';
+          closeBtn.onmouseout = () => closeBtn.style.backgroundColor = '#ff4d4d';
+
+          const clonedSvg = originalSvg.cloneNode(true);
+          clonedSvg.style.width = '100%';
+          clonedSvg.style.height = '100%';
+          clonedSvg.style.maxWidth = '100vw';
+          clonedSvg.style.maxHeight = '100vh';
+
+          overlay.appendChild(clonedSvg);
+          overlay.appendChild(closeBtn);
+          document.body.appendChild(overlay);
+
+          const oldOverflow = document.body.style.overflow;
+          document.body.style.overflow = 'hidden';
+
+          const panZoomInstance = svgPanZoom(clonedSvg, {
+            zoomEnabled: true,
+            controlIconsEnabled: true,
+            fit: true,
+            center: true,
+            minZoom: 0.5,
+            maxZoom: 10,
+            mouseWheelZoomEnabled: true
+          });
+
+          closeBtn.onclick = () => {
+            panZoomInstance.destroy();
+            document.body.removeChild(overlay);
+            document.body.style.overflow = oldOverflow;
+          };
+        };
+        container.appendChild(btn);
+      });
+    });
+  </script>
+</body>
+</html>

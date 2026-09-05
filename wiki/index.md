@@ -1,6 +1,6 @@
 ---
 title: "สารบัญ Wiki — โปรเจค Scam Image Detection"
-updated: 2026-08-02
+updated: 2026-09-06
 ---
 
 # สารบัญ Wiki
@@ -26,6 +26,7 @@ updated: 2026-08-02
 | [[requirements/non-functional-requirements]] | ประสิทธิภาพ, ความปลอดภัย, ความพร้อมใช้งาน และการปฏิบัติตาม PDPA |
 | [[requirements/srs]] | Software Requirements Specification (SRS) ฉบับสมบูรณ์ |
 | [[requirements/use-case-diagram]] | Use Case Diagram และรายละเอียด Actor/System |
+| [[requirements/traceability-matrix]] | เมทริกซ์การสืบย้อนความต้องการ (RTM) เชื่อมโยง Stakeholder, Objectives, Scopes, RCs, FR/NFR |
 
 ---
 
@@ -36,8 +37,10 @@ updated: 2026-08-02
 | [[architecture/system-architecture]] | ภาพรวมสถาปัตยกรรม Cloud-Native แบบ 3 ชั้น และ data flow |
 | [[architecture/mobile-app]] | Flutter Mobile App: Clean Architecture, BLoC, หน้าจอต่างๆ และขั้นตอนการอัปโหลดรูป |
 | [[architecture/backend-api]] | FastAPI Orchestrator: auth, OCR/NLP, ดึง metadata และประสานงาน job |
+| [[architecture/admin-portal]] | Admin Portal: เว็บคอนโซล React/Vite, UI Design System, Model Registry & Telemetry |
 | [[architecture/ai-inference-service]] | PyTorch/ONNX AI Node: Semantic Segmentation, ตรวจจับภาพ AI-Gen, สร้าง Heatmap |
 | [[architecture/database-schema]] | PostgreSQL schema, Redis cache strategy, Cloud Object Storage layout |
+| [[architecture/database-migrations]] | การจัดการการย้ายฐานข้อมูล (Database Migrations) ด้วย Alembic และ SQLAlchemy |
 | [[architecture/external-integrations]] | Google Vision API (reverse search), Firebase FCM และ integration อื่นๆ ในอนาคต |
 | [[architecture/c1-system-context-diagram]] | C1 System Context Diagram ภาพรวมระบบระดับกว้าง |
 | [[architecture/c2-container-diagram]] | C2 Container Diagram เจาะลึกระดับ Container ภายใน |
@@ -56,6 +59,7 @@ updated: 2026-08-02
 | [[concepts/risk-scoring]] | สูตรคำนวณ Overall Risk Score (Hybrid Worst-Case Approach), เกณฑ์ระดับความเสี่ยง และการรวมคะแนน |
 | [[concepts/explainable-ai]] | แนวทาง XAI: การสร้าง Heatmap, overlay ลงรูปภาพ และการแสดงผล UI |
 | [[concepts/ai-model-segformer]] | สถาปัตยกรรม SegFormer, MiT encoder, All-MLP decoder และ output ระดับพิกเซล |
+| [[concepts/mmsegmentation]] | MMSegmentation Framework: สถาปัตยกรรมแบบโมดูลาร์, Backbone, Decode Head, Training Loss |
 | [[concepts/surya-ocr]] | สถาปัตยกรรม Surya OCR 2, VLM, GGUF Format และการสกัดข้อความ |
 | [[concepts/semantic-segmentation]] | Semantic Segmentation — หลักการทำงานและการตรวจจับบริเวณที่ถูกดัดแปลง |
 | [[concepts/model-training]] | AI Model Training Workflow ขั้นตอนการฝึกและเทรนโมเดล |
@@ -86,3 +90,4 @@ updated: 2026-08-02
 | [[planning/project-scope]] | 4 Development Container, Work Package และงานที่ยังไม่ได้พัฒนา |
 | [[planning/team]] | สมาชิกทีม, ความรับผิดชอบ และข้อมูลอาจารย์ที่ปรึกษา |
 | [[planning/backend-documentation]] | Backend Documentation คู่มือการเริ่มพัฒนาโค้ดฝั่ง Server |
+| [[planning/task-tracking]] | การติดตามงานและการบริหารโครงการ: กระดาน Jira SCM, สถานะรายเฟส และ Work Packages |
