@@ -215,7 +215,7 @@
 - **Expected Results**:
   1. Backend ปฏิเสธคำขอทันทีด้วย HTTP Status Code: `413 Payload Too Large`
   2. Response Body: `{"detail": "File too large. Maximum allowed size is 20 MB."}`
-  3. เซิร์ฟเวอร์ยกเลิกการอ่าน Stream เพื่อประหยัด RAM
+  3. หมายเหตุการอ่านไฟล์: เซิร์ฟเวอร์อ่านไฟล์ทั้งหมดเข้าหน่วยความจำก่อน (`await file.read()` ใน `create_scan_task`) แล้วจึงตรวจขนาด ไม่ได้ยกเลิกการอ่าน Stream กลางคัน
 - **Automation Mapping**: `server/tests/api/test_scan.py`
 
 ---
@@ -232,9 +232,9 @@
 - **Test Steps**:
   1. พยายามอัปโหลดไฟล์ดังกล่าวเข้าสู่ API สแกนภาพ
 - **Expected Results**:
-  1. Backend ตรวจสอบ Header Magic Bytes ของไฟล์ แล้วตรวจพบว่าเนื้อหาไม่ใช่รูปภาพจริง
-  2. ปฏิเสธด้วย HTTP `400 Bad Request` พร้อม `{"detail": "File is not a valid image."}`
-  3. ไฟล์ไม่ถูกส่งต่อไปยัง Subprocess หรือโมเดล AI ป้องกันช่องโหว่ RCE และ Memory Corrupt
+1. `POST /api/v1/scan/` ตอบ `200 OK` พร้อมสถานะ `uploading` ก่อน ไม่ตรวจ Magic Bytes ทันทีตอนอัปโหลด (การตรวจอยู่ในงานเบื้องหลังผ่าน `load_image_verified` ซึ่งตรวจ Magic Bytes โดยไม่เชื่อ `content_type`)
+2. งานเบื้องหลังตรวจพบว่าเนื้อหาไม่ใช่รูปภาพจริง สถานะงานเป็น `failed` เมื่อเรียกดูด้วย `GET /api/v1/scan/{scan_id}` ฝั่งแอปรับเป็น `ScanError` พร้อมข้อความทั่วไป (ข้อความรายละเอียด `File is not a valid image.` มีอยู่ใน `image_utils.py` แต่ไม่ถูกส่งกลับถึง Client ในโฟลว์ปัจจุบัน)
+3. ไฟล์ไม่ถูกบันทึกเป็นหลักฐานและไม่ถูกส่งต่อไปยัง Subprocess หรือโมเดล AI (การบันทึกไฟล์เกิดหลังตรวจผ่านเท่านั้น) ป้องกันช่องโหว่ RCE และ Memory Corrupt
 - **Automation Mapping**: `tests_all/automate_tests/tests/api/test_scan_workflow.py`
 
 ---
@@ -253,7 +253,7 @@
 - **Test Steps (ขั้นตอนการทดสอบ)**:
   1. อัปโหลดไฟล์เสียหายเข้าสู่ Endpoint สแกน
 - **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
-  1. Backend ตอบ `400 Bad Request` หรือ `422 Unprocessable Entity`
+  1. `POST /api/v1/scan/` ตอบ `200 OK` พร้อมสถานะ `uploading` ก่อนเช่นเดียวกับ TC-BE-SCAN-03 งานเบื้องหลังตรวจพบว่าไฟล์เสียหาย สถานะงานเป็น `failed` เมื่อเรียกดูด้วย `GET /api/v1/scan/{scan_id}` (ไม่มีการตอบ `400/422` ทันทีตอนอัปโหลดในโฟลว์ปัจจุบัน ข้อความ `Image is corrupted or unsupported.` มีอยู่ใน `image_utils.py` ฝั่งงานเบื้องหลัง)
   2. ไฟล์ไม่ถูกส่งต่อเข้า AI Pipeline
   3. ไม่เกิดการแครชของ Worker
 - **Automation Mapping**: `server/tests/api/test_scan.py`
@@ -494,7 +494,7 @@
   1. เรียกดูสถานะสุขภาพระบบ
   2. ค้นหาด้วยคำค้นแล้วตรวจผลลัพธ์
 - **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
-  1. `GET /health` ตอบ `200 OK` พร้อมสถานะฐานข้อมูล แคช และ Worker
+  1. `GET /api/v1/admin/health` ตอบ `200 OK` พร้อมฟิลด์ `database`, `storage`, `models`, `queue` (ไม่มีฟิลด์ชื่อแคชหรือ Worker โดยตรง คิวงานดูจาก `queue` และโมเดลดูจาก `models`)
   2. `GET /search` ตอบ `200 OK` พร้อมผลลัพธ์ที่ตรงกับคำค้น
   3. Token ผู้ใช้ทั่วไปเรียกแล้วได้ `403 Forbidden`
 - **Automation Mapping**: `tests_all/automate_tests/tests/api/test_admin.py`

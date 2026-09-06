@@ -161,11 +161,11 @@
   2. กดปุ่ม "Ban User" ระบบแสดง Modal บังคับกรอกเหตุผล
   3. กรอกเหตุผลและกดยืนยันด้วย `PATCH /api/v1/admin/users/{user_id}` พร้อม `is_active` เป็น `false` และ `reason` Backend บันทึกประวัติลง `audit_log`
   4. บน Mobile App ผู้ใช้ที่ถูกระงับพยายามกดปุ่ม "เริ่มสแกน" หรือดึงข้อมูลหน้า "ประวัติ"
-  5. Dio Interceptor ของ Mobile ตรวจสอบการตอบสนอง 403 Forbidden
+  5. ตรวจสอบว่า Dio Interceptor ส่งต่อ 403 ให้ชั้น BLoC แสดงข้อความผิดพลาด (ปัจจุบันไม่มีการล้าง Token อัตโนมัติสำหรับ 403 ซึ่งเป็น GAP ตามผลข้อ 2)
 - **Expected Results**:
   1. Backend ปฏิเสธคำขอทันทีด้วย HTTP 403 Forbidden พร้อม Message แจ้งว่าบัญชีถูกระงับ
-  2. Mobile Client ล้างค่า Token ออกจาก Secure Storage ทันที
-  3. แอปนำทางผู้ใช้กลับไปยังหน้า Login พร้อม Dialog แจ้งเตือนสาเหตุการระงับบัญชี
+2. สถานะนี้เป็น GAP ฝั่ง Client: `AuthInterceptor` ใน `dio_client.dart` จัดการเฉพาะ `401` (ต่ออายุ Token อัตโนมัติหรือล้าง Token เมื่อต่ออายุไม่สำเร็จ) ไม่มีการล้าง Token หรือนำทางกลับหน้า Login อัตโนมัติเมื่อได้ `403` บัญชีถูกระงับ ผู้ใช้จะเห็นเพียงข้อความผิดพลาด (เช่น `ReportBloc` แสดง `เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่`) จนกว่าจะออกจากระบบเองหรือ Token หมดอายุ
+3. การออกจากระบบเองเรียก `POST /api/v1/auth/logout` แล้วล้าง Token ผ่าน `clearTokens()` (`deleteAll()`) และ `AuthBloc` เปลี่ยนเป็น `AuthUnauthenticated` จึงกลับหน้า Login (โค้ดจริงไม่มี Dialog แจ้งสาเหตุการระงับบัญชีโดยเฉพาะ)
   4. ผู้ใช้ไม่สามารถเข้าสู่ระบบซ้ำได้จนกว่าแอดมินจะเปิดใช้งานใหม่
 - **Automation Mapping**: `tests_all/automate_tests/tests/api/test_admin.py` (partial: ตรวจสิทธิ์เข้าถึง) + Manual Console Test + Manual Device Test
 
@@ -189,7 +189,7 @@
   5. ปิดโหมดเครื่องบินเพื่อกู้คืนการเชื่อมต่ออินเทอร์เน็ต แล้วกด Pull-to-Refresh
 - **Expected Results**:
   1. ในขณะออฟไลน์ แอปสามารถแสดงผลรายการประวัติและภาพ Thumbnail ที่แคชไว้ได้โดยไม่เกิด Crash
-  2. หน้าจอแสดงแถบแจ้งเตือน "กำลังทำงานในโหมดออฟไลน์ (Offline Mode)"
+  2. สถานะนี้เป็น GAP ส่วนย่อยฝั่งหน้าจอ: ไม่พบแถบแจ้งเตือนโหมดออฟไลน์ในโค้ดปัจจุบัน (มีแคชประวัติใน `history_repository_impl` และแคชผลวิเคราะห์ใน `result_repository_impl` สำหรับดูออฟไลน์ แต่ไม่มีวิดเจ็ตแบนเนอร์แจ้งสถานะ) การยืนยันทำได้เพียงว่าไม่มี Crash และข้อมูลแคชยังเปิดดูได้
   3. เมื่อเชื่อมต่ออินเทอร์เน็ตสำเร็จ แถบแจ้งเตือนหายไป และข้อมูลถูกซิงก์อัปเดตล่าสุดจาก Backend
 - **Automation Mapping**: `scam_image_mobile/test/features/history/presentation/bloc/history_bloc_test.dart`
 
