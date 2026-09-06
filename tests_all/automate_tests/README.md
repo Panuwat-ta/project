@@ -20,7 +20,7 @@ tests_all/automate_tests/
 │   └── performance/      # Load test (locust)
 ├── helpers/              # ตัวช่วยใช้ร่วมกัน (api_client, auth, assertions)
 ├── fixtures/
-│   ├── images/           # รูปทดสอบ (symlink จาก server/tests/test_img)
+│   ├── images/           # รูปทดสอบ (ว่าง — ไม่มี symlink, ไม่มี server/tests/test_img)
 │   ├── payloads/         # JSON payload ตัวอย่าง
 │   └── reports/          # template รายงาน
 ├── reports/              # ผลรัน — html / junit / coverage
@@ -69,7 +69,7 @@ pytest tests/e2e -v
 
 - **Server tests เดิม** ยังอยู่ที่ `server/tests/` — `tests_all/automate_tests/tests/api/` import app จาก `server/app` โดยตรงและรันซ้ำได้
 - **Mobile tests เดิม** อยู่ที่ `scam_image_mobile/test` — `tests/mobile/` จะเป็น bridge เรียก `flutter test` อัตโนมัติ ไม่ต้องย้ายไฟล์เดิม
-- รูปทดสอบใช้ร่วมกันผ่าน symlink `fixtures/images -> ../../server/tests/test_img`
+- รูปทดสอบใน `fixtures/images` ขณะนี้ว่าง ไม่มี symlink และไม่มี `server/tests/test_img` ให้อ้างถึง
 
 ---
 

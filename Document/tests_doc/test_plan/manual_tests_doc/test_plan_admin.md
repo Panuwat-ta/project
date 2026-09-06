@@ -2,7 +2,7 @@
 
 - **System / Component**: ScamGuard Admin Portal & Forensic Console
 - **Architecture**: Single Page Application (SPA), Real-time WebSocket Client, Forensic Dashboard
-- **Tech Stack**: React 18, Vite, TypeScript, Tailwind CSS, Lucide React, Axios / Native WebSocket
+- **Tech Stack**: React 18, Vite, JavaScript (ESM), Tailwind CSS, Lucide React, Axios / Native WebSocket
 - **Target Browsers**: Chrome (v110+), Firefox (v110+), Edge (v110+), Safari (v16+)
 - **Document Version**: 1.0.0
 - **Status**: Approved
@@ -25,7 +25,7 @@
    - การทดสอบสุขภาพโมเดลล่วงหน้า (Dry-run Health Check) ก่อนกด Deploy
    - การปรับเปลี่ยนสถานะโมเดล (Deploy / Rollback) ภายใต้การควบคุม Row Lock
 4. **Report Review & Forensic Console**:
-   - ตารางรายการข้อร้องเรียนจากผู้ใช้ พร้อมตัวกรองตามสถานะ (PENDING, RESOLVED, REJECTED)
+    - ตารางรายการข้อร้องเรียนจากผู้ใช้ พร้อมตัวกรองตามสถานะ (pending, reviewing, approved, rejected)
    - การเปิดดูภาพต้นฉบับเปรียบเทียบกับ Heatmap ซ้อนทับ พร้อมข้อมูลคะแนน 3 มิติ
    - การอนุมัติหรือปฏิเสธรายงาน พร้อมการควบคุม Concurrency (Optimistic Locking ด้วยคอลัมน์ `version`)
 5. **User Management**:
@@ -60,7 +60,7 @@
 ## 3. เกณฑ์การตรวจรับ (Entry & Exit Criteria)
 
 ### 3.1 เกณฑ์การเริ่มต้นทดสอบ (Entry Criteria)
-- โปรเจกต์ผ่านการคอมไพล์ด้วยคำสั่ง `npm run build` โดยไม่มีข้อผิดพลาดด้าน TypeScript หรือ Lint
+- โปรเจกต์ผ่านการคอมไพล์ด้วยคำสั่ง `npm run build` โดยไม่มีข้อผิดพลาดด้าน ESLint
 - Backend API และ WebSocket Endpoint เปิดให้บริการปกติ
 
 ### 3.2 เกณฑ์การสิ้นสุดการทดสอบ (Exit Criteria)
@@ -73,4 +73,4 @@
 
 ## 4. ความเชื่อมโยงไปยังชุดกรณีทดสอบจริง
 - **เอกสารกรณีทดสอบละเอียด**: `tests_all/manual_tests/test_cases_admin.md`
-- **ตารางความสอดคล้องความต้องการ**: `tests_all/rtm.md` (หมวดหมู่ FR-ADM-01 ถึง FR-ADM-07, NFR-A11Y-01)
+- **ตารางความสอดคล้องความต้องการ**: `tests_all/rtm.md` (หมวดหมู่ FR-ADM-01 ถึง FR-ADM-07, หมวด NFR-01..10 ของ SRS)

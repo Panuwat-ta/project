@@ -37,7 +37,7 @@ tests_all/automate_tests/
 ## 2. รายละเอียดโมดูลการทดสอบ (Test Modules Breakdown)
 
 ### 2.1 Health & Service Readiness (`test_health.py`)
-- ตรวจสอบ `GET /health` และ `GET /api/v1/health`
+- ตรวจสอบ `GET /health` และ `GET /api/v1/admin/health`
 - ยืนยันการเชื่อมต่อของ Database Driver และ Redis Client
 - เกณฑ์ผ่าน: HTTP 200 OK พร้อมฟิลด์สถานะ `healthy`
 

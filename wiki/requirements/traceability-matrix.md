@@ -50,7 +50,7 @@ flowchart LR
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | 1 | ST01 | OBJ-04 | SC01 | RC-AUTH-01 | FR-AUTH-01 | Must Have | สมัครสมาชิกผ่าน Mobile App ด้วย Email/Password พร้อมตรวจสอบความปลอดภัย |
 | 2 | ST01 | OBJ-04 | SC01 | RC-AUTH-02 | FR-AUTH-02 | Must Have | เข้าสู่ระบบและรับ JWT Access Token / Refresh Token เพื่อรักษาเซสชั่น |
-| 3 | ST01 | OBJ-01 | SC01 | RC-SCAN-01 | FR-INPUT-01/03 | Must Have | เลือกรูปภาพจากแกลเลอรี พร้อมเครื่องมือครอบตัดภาพ (Crop) (Camera capture เป็น Phase 2) |
+| 3 | ST01 | OBJ-01 | SC01 | RC-SCAN-01 | FR-INPUT-01/02 | Must Have | เลือกรูปภาพจากแกลเลอรี พร้อมเครื่องมือครอบตัดภาพ (Crop) |
 | 4 | ST01 | OBJ-01 | SC02 | RC-SCAN-02 | FR-SYS-09 | Must Have | คำนวณ SHA-256 Hash และค้นหาผลลัพธ์จาก Redis Cache (< 3 วินาที) |
 | 5 | ST01 | OBJ-01 | SC03 | RC-ANALYSIS-01 | FR-SYS-02 | Must Have | สกัดข้อความภาษาไทยและอังกฤษด้วย Surya OCR 2 Engine |
 | 6 | ST01 | OBJ-01 | SC03 | RC-ANALYSIS-02 | FR-SYS-03 | Must Have | ตรวจจับคีย์เวิร์ดหลอกลวง (Scam Keywords) และคำนวณ Textual Score |

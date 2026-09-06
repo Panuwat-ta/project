@@ -17,21 +17,21 @@
    - การตรวจสอบสิทธิ์แบบ RBAC แยกบทบาท Admin / User / Researcher
 2. **Scan & Upload Pipeline**:
    - `POST /api/v1/scan/` รองรับ Multipart/form-data
-   - การตรวจสอบขนาดไฟล์ (Limit 10MB) และ Magic Bytes (JPEG/PNG)
+    - การตรวจสอบขนาดไฟล์ (Server ≤20MB; ฝั่ง Mobile จำกัด ≤10MB) และ Magic Bytes (JPEG/PNG/WebP)
    - การคำนวณ SHA-256 Hash เพื่อทำ Redis Caching
    - การสร้างงานส่งต่อไปยัง AI Subprocess Pipeline
 3. **Scan History & Detail Query**:
-   - `GET /api/v1/history/` และ `GET /api/v1/history/{scan_id}`
+    - `GET /api/v1/history` และ `GET /api/v1/history/{scan_id}`
    - การดึงข้อมูลผลลัพธ์ย้อนหลัง พร้อมคะแนนแยก 3 ปัจจัย และ URL ภาพ Heatmap
 4. **Scam Incident Reporting**:
-   - `POST /api/v1/reports/` สำหรับผู้ใช้ทั่วไป
-   - การบันทึกข้อร้องเรียนลงตาราง `reports` พร้อมการควบคุม Concurrency (คอลัมน์ `version`)
+    - `POST /api/v1/reports` สำหรับผู้ใช้ทั่วไป
+    - การบันทึกข้อร้องเรียนลงตาราง `scam_reports` พร้อมการควบคุม Concurrency (คอลัมน์ `version`)
 5. **Database Integrity & Migrations**:
    - การทำงานของ Alembic Migrations
    - ความถูกต้องของ Foreign Key Constraints, Indexes (Hash Index, B-Tree Index บน `user_id`, `image_hash`)
    - การจัดการ Timezone ต้องเป็น UTC+7 (Asia/Bangkok)
 6. **Security & Rate Limiting**:
-   - การป้องกัน Brute Force ด้วย Slowapi Rate Limiting (เช่น 5 requests/min สำหรับ Login, 30 requests/min สำหรับ Scan)
+    - การป้องกัน Brute Force ด้วย Slowapi Rate Limiting (ค่า default 60/hour; Admin Login/Refresh 5/minute)
    - การตั้งค่า CORS Header และ Security Headers
 
 ### 1.2 สิ่งที่อยู่นอกขอบเขต (Out-of-Scope)
@@ -63,7 +63,7 @@
 - รันคำสั่งตรวจสอบการเชื่อมต่อผ่าน `/health` ให้ผลลัพธ์สถานะ OK
 
 ### 3.2 เกณฑ์การสิ้นสุดการทดสอบ (Exit Criteria)
-- ชุดทดสอบ Automated API Suite ใน `tests_all/automate_tests/tests/api/` ผ่าน 100% (15/15 tests PASS)
+- ชุดทดสอบ Automated API Suite ใน `tests_all/automate_tests/tests/api/` ผ่าน 100% (อ้างอิงจำนวนปัจจุบัน)
 - กรณีทดสอบระดับ P0 และ P1 ใน `tests_all/manual_tests/test_cases_backend.md` ผ่าน 100%
 - ความครอบคลุมของโค้ด (Code Coverage) บนโมดูล Router และ Core Services ไม่น้อยกว่า 80%
 - ไม่มีข้อผิดพลาดประเภท Unhandled Exception (HTTP 500) เกิดขึ้นระหว่างการทดสอบ

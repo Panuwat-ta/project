@@ -14,13 +14,12 @@
 
 ภารกิจของคุณคือ:
 1. สำรวจ อ่าน และวิเคราะห์ซอร์สโค้ดและเอกสารสถาปัตยกรรมทั้งหมดของโปรเจค ScamGuard จากไฟล์จริงใน Repository
-2. จัดทำเอกสารแผนการทดสอบ (Test Plans & Strategy) จัดเก็บไว้ใน Document/tests_doc/ ประกอบด้วย:
-   - Document/tests_doc/README.md: ภาพรวมและสารบัญโครงสร้างเอกสารการทดสอบทั้งหมด
-   - Document/tests_doc/test_plan.md: แผนแม่บทการทดสอบระบบ (Master Test Plan & Strategy ตาม ISO/IEC/IEEE 29119)
-   - Document/tests_doc/manual_tests_doc/: เอกสารแผนและแนวทางการทดสอบแบบ Manual รายโมดูล
-   - Document/tests_doc/automate_tests_doc/: เอกสารแผนและสถาปัตยกรรมการทดสอบอัตโนมัติ
+  2. จัดทำเอกสารแผนการทดสอบ (Test Plans & Strategy) จัดเก็บไว้ใน Document/tests_doc/test_plan/ ประกอบด้วย:
+    - Document/tests_doc/test_plan/README.md: ภาพรวมและสารบัญโครงสร้างเอกสารการทดสอบทั้งหมด
+    - Document/tests_doc/test_plan/manual_tests_doc/: เอกสารแผนและแนวทางการทดสอบแบบ Manual รายโมดูล
+    - Document/tests_doc/test_plan/automate_tests_doc/: เอกสารแผนและสถาปัตยกรรมการทดสอบอัตโนมัติ
 3. จัดทำชุดกรณีทดสอบปฏิบัติการ (Executable Test Cases & RTM) จัดเก็บไว้ใน tests_all/ ประกอบด้วย:
-   - tests_all/rtm.md: ตารางสอบย้อนกลับความต้องการ (Requirements Traceability Matrix เชื่อมโยง FR-01..18, NFR-01..10)
+    - tests_all/rtm.md: ตารางสอบย้อนกลับความต้องการ (Requirements Traceability Matrix เชื่อมโยงตาม wiki baseline FR-AUTH/INPUT/SYS/REPORT/HIST/RPT/ADM/PDPA/AUDIT และ NFR-01..10 ตาม SRS โดยยึด tests_all/rtm.md §1.1 เป็น authority ถ้าขัดกัน)
    - tests_all/manual_tests/test_cases_mobile.md: ชุดกรณีทดสอบ Mobile App (Flutter)
    - tests_all/manual_tests/test_cases_backend.md: ชุดกรณีทดสอบ Backend API & Database (FastAPI)
    - tests_all/manual_tests/test_cases_ai_model.md: ชุดกรณีทดสอบ AI Model, Tiling & Heatmap Pipeline
@@ -64,8 +63,8 @@
 ## 2. วัตถุประสงค์และภารกิจ (Mission & Objectives)
 
 1. **อ่านและวิเคราะห์ทั้งโปรเจค ScamGuard** จากโครงสร้างโปรเจค, สเปกใน Wiki, เอกสารสถาปัตยกรรม และชุดทดสอบอัตโนมัติเดิม เพื่อทำความเข้าใจพฤติกรรมของระบบทุกจุด
-2. **ออกแบบและจัดทำเอกสารแผนการทดสอบ (Test Plans & Strategy)** จัดเก็บไว้ในไดเรกทอรี `Document/tests_doc/`
-3. **จัดทำชุดกรณีทดสอบปฏิบัติการ (Executable Test Cases) และตารางสอบย้อนกลับ (RTM)** จัดเก็บไว้ในไดเรกทอรี `tests_all/` เพื่อรองรับการทดสอบจริงและการเทียบเคียงกับชุดทดสอบอัตโนมัติ
+2. **ออกแบบและจัดทำเอกสารแผนการทดสอบ (Test Plans & Strategy)** จัดเก็บไว้ในไดเรกทอรี `Document/tests_doc/test_plan/`
+3. **จัดทำชุดกรณีทดสอบปฏิบัติการ (Executable Test Cases) และตารางสอบย้อนกลับ (RTM)** จัดเก็บไว้ในไดเรกทอรี `tests_all/` เพื่อรองรับการทดสอบจริงและการเทียบเคียงกับชุดทดสอบอัตโนมัติ โดยยึด Requirement ID ตาม wiki baseline (`FR-AUTH/INPUT/SYS/REPORT/HIST/RPT/ADM/PDPA/AUDIT`, `NFR-01..10` ตาม SRS) และยึด `tests_all/rtm.md §1.1` เป็น authority ถ้าขัดกัน
 
 ---
 
@@ -77,7 +76,7 @@
 - `wiki/index.md` — สารบัญ Wiki ทั้งหมด
 - `wiki/overview.md` — ภาพรวมระบบและขอบเขตของโครงการ
 - `wiki/requirements/srs.md` — Software Requirements Specification (SRS)
-- `wiki/requirements/functional-requirements.md` — Functional Requirements (FR-01 ถึง FR-18)
+- `wiki/requirements/functional-requirements.md` — Functional Requirements (wiki baseline FR-AUTH/INPUT/SYS/REPORT/HIST/RPT/ADM/PDPA/AUDIT)
 - `wiki/requirements/non-functional-requirements.md` — Non-Functional Requirements (NFR-01 ถึง NFR-10)
 - `wiki/requirements/traceability-matrix.md` — โครงสร้าง Requirement Traceability Matrix เดิม
 - `wiki/concepts/risk-scoring.md` — เกณฑ์คะแนนความเสี่ยง (Hybrid Worst-Case Approach)
@@ -90,11 +89,14 @@
 - `wiki/architecture/admin-portal.md` — สถาปัตยกรรมและ Design System ของ Admin Portal
 
 ### 3.2 Backend API & Database Service (FastAPI)
-- `server/app/main.py` — Entry point, Middlewares (CORS, Slowapi Rate Limiter, Lifespan)
+- `server/app/main.py` — Entry point, Middlewares (CORS, Slowapi Rate Limiter, Lifespan), Health Check (`GET /health`)
 - `server/app/core/config.py` — การตั้งค่า Pydantic Settings และการอ่านค่าจาก `.env` / `.env.local`
-- `server/app/api/v1/endpoints/auth.py` — Authentication API (`/register`, `/login`, `/refresh`)
-- `server/app/api/v1/endpoints/scan.py` — Image Scan API (`POST /api/v1/scan/`)
-- `server/app/api/v1/endpoints/admin.py` — Admin Management APIs (`/users`, `/reports`, `/models`, `/logs`, `/health`, `/search`)
+- `server/app/api/v1/auth.py` — Authentication API (`/register`, `/login`, `/refresh`)
+- `server/app/api/v1/scan.py` — Image Scan API (`POST /api/v1/scan/`)
+- `server/app/api/v1/admin.py` — Admin Management APIs (`/users`, `/reports`, `/models`, `/logs`, `/search`)
+- `server/app/api/v1/history.py` — Scan History APIs
+- `server/app/api/v1/report.py` — Scam Report APIs
+- `server/app/api/v1/ws.py` — WebSocket Real-time (`/api/v1/ws/admin/dashboard`)
 - `server/app/services/scan_service.py` — การประสานงานการสแกนภาพ, Redis cache check, AI pipeline invocation
 - `server/app/services/onnx_worker.py` — Subprocess Isolation, Overlapping Tiling Inference, Heatmap Generation
 - `server/app/schemas/` — Pydantic DTOs & Validation Models
@@ -104,11 +106,13 @@
 - `scam_image_mobile/lib/core/network/dio_client.dart` — HTTP Client, Token Interceptor, Error Handling
 - `scam_image_mobile/lib/core/di/injection_container.dart` — Dependency Injection Setup
 - `scam_image_mobile/lib/features/auth/` — Login & Register Screens, BLoC State Management
-- `scam_image_mobile/lib/features/scan/` — Camera/Gallery Picker, File Validation, Scan BLoC
+- `scam_image_mobile/lib/features/scan/` — Gallery Picker, File Validation, Scan BLoC
 - `scam_image_mobile/lib/features/result/` — Result View, Heatmap Overlay Toggle, Explainability Card
 - `scam_image_mobile/lib/features/history/` — Recent Scan History, Thumbnails, Local Cache Fallback
+- `scam_image_mobile/lib/features/report/` — Scam Report Submission
+- `scam_image_mobile/lib/features/notifications/` — Push Notification Handling
 - `scam_image_mobile/lib/features/settings/` — User Preferences, Language Switch, Theme Mode
-- `scam_image_mobile/lib/l10n/` — Localization Strings (Thai & English)
+- `scam_image_mobile/lib/core/localization/app_translations.dart` — Localization Strings (Thai & English)
 
 ### 3.4 Admin Portal (React / Vite)
 - `admin-portal/src/App.jsx` — Router Setup, Protected Routes, Lazy Loading
@@ -117,7 +121,7 @@
 - `admin-portal/src/pages/ModelsList.jsx` — Model Version Registry, Active Model First, Deploy & Rollback Modals
 - `admin-portal/src/pages/UsersList.jsx` & `UserDetail.jsx` — User Listing, Scan Quota, Ban with Reason
 - `admin-portal/src/pages/AuditLogsList.jsx` — Audit Log Filtering, Structured JSON Diff Viewer
-- `admin-portal/src/hooks/useTelemetry.js` — WebSocket Real-time Connection
+- `admin-portal/src/lib/api.js#getWebSocketUrl` — WebSocket Real-time Connection (`/api/v1/ws/admin/dashboard`)
 - `admin-portal/src/lib/api.js` — Axios Instance, JWT Interceptors, Auto Refresh Token
 
 ### 3.5 Automated Test Suites & Configurations เดิม
@@ -151,18 +155,19 @@
 5. **การจัดการเวลาและไทม์โซน (Timezone UTC+7)**:
    - ทุกระบบและฐานข้อมูลต้องบันทึกและแสดงผลเวลาในเขตเวลาประเทศไทย (`Asia/Bangkok` หรือ `UTC+7`)
 6. **การจัดการข้อผิดพลาดและโหมด Offline (Graceful Degradation)**:
-   - ฝั่ง Mobile ต้องรองรับ Local Storage Fallback เมื่อเครือข่ายขัดข้อง หรือเมื่อ Endpoint บางตัวยังไม่พร้อมใช้งาน
+    - ฝั่ง Mobile ต้องรองรับ Local Storage Fallback เมื่อเครือข่ายขัดข้อง หรือเมื่อ Endpoint บางตัวยังไม่พร้อมใช้งาน
+7. **การป้องกัน Hallucination (Anti-Hallucination)**:
+    - ทุก path/Requirement ID/BLoC state ที่อ้างต้องมีอยู่จริงใน repo — ถ้าไม่พบให้ mark GAP/Deferred ห้ามแต่ง
 
 ---
 
 ## 5. โครงสร้างเอกสารการทดสอบที่ต้องจัดทำ (Deliverables Structure)
 
-ระบบกำหนดให้แยกการจัดเก็บเอกสารอย่างชัดเจนระหว่าง **เอกสารแผนการทดสอบ (Test Plans)** ใน `Document/tests_doc/` และ **ชุดกรณีทดสอบปฏิบัติการ (Executable Tests)** ใน `tests_all/` ดังนี้:
+ระบบกำหนดให้แยกการจัดเก็บเอกสารอย่างชัดเจนระหว่าง **เอกสารแผนการทดสอบ (Test Plans)** ใน `Document/tests_doc/test_plan/` และ **ชุดกรณีทดสอบปฏิบัติการ (Executable Tests)** ใน `tests_all/` ดังนี้:
 
 ```text
-Document/tests_doc/                  # แหล่งจัดเก็บเอกสารแผนแม่บทและกลยุทธ์การทดสอบ (Test Plans & Strategy)
-├── README.md                        # สรุปภาพรวมและสารบัญเอกสารการทดสอบทั้งหมด
-├── test_plan.md                     # แผนแม่บทการทดสอบระบบ (Master Test Plan & Strategy ตาม ISO/IEC/IEEE 29119)
+Document/tests_doc/test_plan/          # แหล่งจัดเก็บเอกสารแผนแม่บทและกลยุทธ์การทดสอบ (Test Plans & Strategy)
+├── README.md                        # สรุปภาพรวมและสารบัญเอกสารการทดสอบทั้งหมด (Master Test Plan & Strategy ตาม ISO/IEC/IEEE 29119)
 ├── manual_tests_doc/                # เอกสารแผนการทดสอบแบบ Manual (Manual Test Plan & Design Specs)
 │   ├── test_plan_mobile.md          # แผนการทดสอบ Mobile App (Flutter)
 │   ├── test_plan_backend.md         # แผนการทดสอบ Backend API & Database (FastAPI)
@@ -192,7 +197,7 @@ tests_all/                               # แหล่งจัดเก็บ�
 
 ## 6. รายละเอียดเนื้อหาในแต่ละเอกสาร (Document Specifications)
 
-### 6.1 แผนแม่บทการทดสอบ: `Document/tests_doc/test_plan.md`
+### 6.1 แผนแม่บทการทดสอบ: `Document/tests_doc/test_plan/README.md`
 เขียนตามมาตรฐาน ISO/IEC/IEEE 29119 โดยครอบคลุม:
 1. **บทนำและวัตถุประสงค์ (Introduction & Objectives)**: วัตถุประสงค์การประกันคุณภาพของระบบ ScamGuard
 2. **ขอบเขตการทดสอบ (Test Scope)**: รายการสิ่งที่อยู่ในขอบเขต (In-Scope) และอยู่นอกขอบเขต (Out-of-Scope)
@@ -213,14 +218,15 @@ tests_all/                               # แหล่งจัดเก็บ�
 ---
 
 ### 6.2 ตารางสอบย้อนกลับความต้องการ: `tests_all/rtm.md`
-ตาราง Requirements Traceability Matrix ต้องเชื่อมโยงความต้องการทางซอฟต์แวร์ทั้งหมด:
-- **Requirement ID**: อ้างอิง FR-01 ถึง FR-18 และ NFR-01 ถึง NFR-10 จาก Wiki
+ตาราง Requirements Traceability Matrix ต้องเชื่อมโยงความต้องการทางซอฟต์แวร์ทั้งหมดตาม wiki baseline:
+- **Requirement ID**: อ้างอิง scheme `FR-AUTH/INPUT/SYS/REPORT/HIST/RPT/ADM/PDPA/AUDIT` และ `NFR-01..10` ตาม SRS — โดยยึด `tests_all/rtm.md §1.1` เป็น authority ถ้าขัดกัน
 - **Requirement Description**: คำอธิบายความต้องการสั้นๆ
 - **System Layer**: Mobile, Backend, AI Model, Admin Portal, Database
 - **Associated Test Case IDs**: รหัสกรณีทดสอบที่ครอบคลุม (เช่น `TC-MOB-SCAN-01`, `TC-BE-SCAN-02`)
 - **Testing Method**: Manual / Automated / Hybrid
 - **Automated Script Reference**: อ้างอิงไฟล์สคริปต์ใน `tests_all/automate_tests/` หรือ `server/tests/` (ถ้ามี)
-- **Coverage Status**: Covered / Partially Covered / Pending
+- **Coverage Status**: Covered / Partial / GAP / Deferred (GAP = ไม่มี TC/ไม่มี implementation, Deferred = Phase 2, Partial = ครอบคลุมบางส่วน — ทุก ID ที่อ้างต้องมีอยู่จริง ถ้าไม่พบให้ mark GAP/Deferred ห้ามแต่ง)
+- **ตัวอย่าง RTM 1 แถว**: `| FR-INPUT-04 | ปฏิเสธไฟล์เกิน 10MB และนามสกุลที่ไม่รองรับ | Backend | TC-BE-SCAN-02 | Automated | tests_all/automate_tests/tests/api/test_scan_workflow.py | Covered |`
 
 ---
 
@@ -248,16 +254,16 @@ tests_all/                               # แหล่งจัดเก็บ�
   1. [พฤติกรรมที่ถูกต้องของระบบ]
   2. [การเปลี่ยนแปลงของสถานะหรือ UI]
   3. [การบันทึกข้อมูลหรือ Response Code/Body]
-- **Automation Mapping**: [ระบุไฟล์สคริปต์ใน tests_all/automate_tests หรือ server/tests ที่รองรับ หรือระบุ Manual if none]
+- **Automation Mapping**: [ระบุไฟล์สคริปต์ใน tests_all/automate_tests หรือ server/tests ที่รองรับ หรือระบุ Manual if none — ต้อง cross-check กับ tests_all/automate_tests/ จริง ห้ามอ้างไฟล์ที่ไม่มีอยู่]
 ```
 
 #### รายการหัวข้อและกรณีทดสอบที่ต้องครอบคลุมในแต่ละไฟล์:
 
 1. **`test_cases_mobile.md` (Mobile Application - Flutter)**:
-   - **Authentication**: การลงทะเบียน, ล็อกอินด้วย Email/Password, การเก็บและต่ออายุ Token, Session Timeout
-   - **Image Selection**: การเลือกภาพจาก Photo Gallery, การเปิดกล้องถ่ายภาพ (Camera Capture), การขอสิทธิ์การเข้าถึง (Permissions)
-   - **File Validation (Client-Side)**: การตรวจสอบขนาดไฟล์ (ปฏิเสธภาพขนาดเกิน 10MB), การตรวจสอบนามสกุลไฟล์ (.png, .jpg, .webp เท่านั้น)
-   - **Scan Workflow & State Management**: BLoC State Transitions (`ScanInitial`, `ScanLoading` พร้อมแสดง Loading Animation, `ScanSuccess`, `ScanFailure`)
+    - **Authentication**: การลงทะเบียน, ล็อกอินด้วย Email/Password, การเก็บและต่ออายุ Token, Session Timeout
+    - **Image Selection**: การเลือกภาพจาก Photo Gallery, การขอสิทธิ์การเข้าถึง (Permissions)
+    - **File Validation (Client-Side)**: การตรวจสอบขนาดไฟล์ (ปฏิเสธภาพขนาดเกิน 10MB), การตรวจสอบนามสกุลไฟล์ (jpg, jpeg, png, webp เท่านั้น)
+    - **Scan Workflow & State Management**: BLoC State Transitions (`ScanInitial`, `ScanUploading`, `ScanPolling`, `ScanCompleted`, `ScanError`, `ScanTimeout`)
    - **Analysis Result Display**: การแสดงผลคะแนนความเสี่ยง (Risk Score) พร้อม Badge สีตาม 3 ระดับ (Low 0-39 เขียว, Medium 40-69 ส้ม, High 70-100 แดง)
    - **Heatmap Overlay Interaction**: การกดปุ่มเปิด/ปิด Heatmap Overlay เหนือภาพต้นฉบับ, การปรับความโปร่งใส (Opacity Slider), การแสดง Heatmap Legend
    - **Explainability & Breakdown**: การแสดงสรุปผลจาก AI (Qwen2.5), การแสดงรายการข้อความที่อ่านได้จาก OCR (Surya OCR)
@@ -269,12 +275,12 @@ tests_all/                               # แหล่งจัดเก็บ�
    - **Authentication Endpoints**: `POST /api/v1/auth/register`, `POST /api/v1/auth/login`, `POST /api/v1/auth/refresh`
    - **Image Upload & Scan API**: `POST /api/v1/scan/` รองรับ Multipart/form-data, Bearer Token Validation
    - **Server-Side File Validation**: การตรวจจับ Magic Bytes ป้องกันไฟล์อันตรายที่เปลี่ยนนามสกุล, การปฏิเสธไฟล์ที่ไม่ใช่รูปภาพ, ไฟล์รูปภาพที่เสียหาย (Corrupt Image)
-   - **Redis Caching Mechanism**: การคำนวณ SHA-256 `image_hash` เมื่อมีภาพซ้ำ (Cache Hit ส่งผลลัพธ์เดิมทันทีใน < 100ms, Cache Miss ส่งเข้า AI Pipeline)
-   - **Rate Limiting**: Slowapi Middleware ป้องกันการยิงสแกนภาพเกินโควตา (เช่น 10 ครั้ง/นาที ส่ง HTTP 429 Too Many Requests)
+    - **Redis Caching Mechanism**: การคำนวณ SHA-256 `image_hash` เมื่อมีภาพซ้ำ (Cache Hit ส่งผลลัพธ์เดิมทันทีใน ≤ 3s ตรงตาม NFR, Cache Miss ส่งเข้า AI Pipeline)
+    - **Rate Limiting**: Slowapi Middleware ป้องกันการยิงสแกนภาพเกินโควตา (default 60/hour + admin login/refresh 5/minute ส่ง HTTP 429 Too Many Requests)
    - **CORS Protection**: การยอมรับ Origins ที่อนุญาตใน `.env` และปฏิเสธ Origins แปลกปลอม
    - **Admin Endpoints**: การแยกสิทธิ์ Admin vs Regular User (User ทั่วไปเรียก `/api/v1/admin/*` ต้องได้ HTTP 403 Forbidden)
    - **Model Version Management**: การเปลี่ยนเวอร์ชันโมเดลใน `ModelVersion` Table พร้อม Database Row Lock ป้องกัน Race Condition
-   - **Audit Logging**: การบันทึกทุกการกระทำสำคัญของ Admin ลงตาราง `audit_logs` พร้อม Structured JSON (`before_state`, `after_state`)
+    - **Audit Logging**: การบันทึกทุกการกระทำสำคัญของ Admin ลงตาราง `audit_log` พร้อม Structured JSON (`before_state`, `after_state`)
    - **Data Integrity & Timezone**: Foreign Key Cascades, Database Transactions Rollback เมื่อเกิด Error, การบันทึกเวลาเป็นเขตเวลาไทย (UTC+7)
 
 3. **`test_cases_ai_model.md` (AI Inference & Heatmap Pipeline)**:
@@ -299,15 +305,18 @@ tests_all/                               # แหล่งจัดเก็บ�
 
 5. **`test_cases_e2e.md` (End-to-End System Integration)**:
    - **TC-E2E-01 (Full Scan Journey)**: ผู้ใช้อัปโหลดภาพจากแอป Mobile -> Backend รับไฟล์ -> ตรวจสอบ Cache Miss -> ส่งเข้า ONNX Worker -> ประกอบ Heatmap -> บันทึกลง PostgreSQL -> ส่งผลลัพธ์กลับแสดงบนหน้าจอมือถือพร้อม Heatmap และคำอธิบาย
-   - **TC-E2E-02 (Redis Cache Acceleration)**: ผู้ใช้อัปโหลดภาพซ้ำเดิม -> Backend ตรวจพบ Image Hash ใน Redis -> ส่งผลลัพธ์เดิมกลับทันทีโดยไม่ประมวลผลโมเดลซ้ำ (< 200ms)
+    - **TC-E2E-02 (Redis Cache Acceleration)**: ผู้ใช้อัปโหลดภาพซ้ำเดิม -> Backend ตรวจพบ Image Hash ใน Redis -> ส่งผลลัพธ์เดิมกลับทันทีโดยไม่ประมวลผลโมเดลซ้ำ (≤ 3s ตรงตาม NFR)
    - **TC-E2E-03 (Live Model Rollback Propagation)**: แอดมินกดสั่ง Rollback โมเดลใน Admin Portal -> ฐานข้อมูลอัปเดตสถานะ Active -> การสแกนภาพครั้งถัดไปจาก Mobile เรียกใช้โมเดลเวอร์ชันก่อนหน้าทันที
    - **TC-E2E-04 (High Risk Incident & Moderation)**: ภาพที่ตรวจพบความเสี่ยงสูง (High Risk 70-100) ถูกบันทึกลงระบบ -> ปรากฏในคิวรายงานของ Admin Portal ทันที -> แอดมินตรวจสอบและทำการตัดสิน
 
 6. **`test_cases_nfr.md` (Non-Functional Requirements)**:
-   - **Performance Testing (NFR-01, NFR-02)**: การจำลองโหลดด้วย Locust (`tests_all/automate_tests/tests/performance/locustfile.py`) ที่ 50 - 200 ผู้ใช้พร้อมกัน, Latency การสแกนภาพต้องต่ำกว่า 3 วินาทีสำหรับภาพขนาดปกติ
-   - **Security Testing (NFR-03, NFR-04)**: การทดสอบป้องกัน OWASP Top 10 (SQL Injection, XSS, Path Traversal, Insecure Direct Object References), การทดสอบการแทรกไฟล์มัลแวร์หรือสคริปต์อันตรายผ่านช่องทางอัปโหลดรูปภาพ
-   - **Data Privacy & PDPA (NFR-05)**: นโยบายการจัดเก็บและทำลายข้อมูลภาพสแกน, สิทธิ์การขอลบข้อมูลบัญชีและประวัติการสแกนของผู้ใช้
-   - **Accessibility & Usability (NFR-06)**: ความคมชัดของคู่สี (Contrast Ratio >= 4.5:1) บนทุกหน้าจอ, การรองรับ Screen Reader, ขนาด Touch Target บน Mobile ไม่ต่ำกว่า 48x48dp
+    - **Performance Testing (NFR-01, NFR-02)**: การจำลองโหลดด้วย Locust (`tests_all/automate_tests/tests/performance/locustfile.py`) ตาม threshold ใน Wiki (≥ 100 concurrent users, Cache Hit avg ≤ 5s / Cache Miss avg ≤ 20s, Error Rate < 1%), Latency การสแกนภาพต้องต่ำกว่า 3 วินาทีสำหรับ Cache Hit และ Full Inference P50 ≤ 15s
+    - **Security Testing (NFR-03, NFR-04)**: การทดสอบป้องกัน OWASP Top 10 (SQL Injection, XSS, Path Traversal, Insecure Direct Object References), การทดสอบการแทรกไฟล์มัลแวร์หรือสคริปต์อันตรายผ่านช่องทางอัปโหลดรูปภาพ
+    - **Data Privacy & PDPA (NFR-05)**: นโยบายการจัดเก็บและทำลายข้อมูลภาพสแกน, สิทธิ์การขอลบข้อมูลบัญชีและประวัติการสแกนของผู้ใช้
+    - **Accessibility & Usability (NFR-06)**: ความคมชัดของคู่สี (Contrast Ratio >= 4.5:1) บนทุกหน้าจอ, การรองรับ Screen Reader, ขนาด Touch Target บน Mobile ไม่ต่ำกว่า 48x48dp
+    - **AI Accuracy (NFR-AI)**: ความแม่นยำการตรวจจับภาพตัดต่อและภาพ AI-Generated ≥ 85% บน Test Set (mDice ≥ 85%)
+    - **Availability (NFR-07)**: Uptime ≥ 99.5% (ไม่นับ Planned Maintenance)
+    - **Push Notification (FCM)**: การแจ้งเตือน Firebase Cloud Messaging เมื่อ Background Task วิเคราะห์ภาพเสร็จสิ้น
 
 ---
 
@@ -319,16 +328,19 @@ tests_all/                               # แหล่งจัดเก็บ�
    - รันคำสั่งตรวจสอบโครงสร้างไฟล์และโค้ดในโปรเจค
    - อ่าน Wiki สถาปัตยกรรม และสเปกความต้องการ (FR/NFR)
    - ตรวจสอบ API Endpoints, Pydantic Schemas, ORM Models และ BLoC States
-2. **Phase 2: Test Plans Generation (ใน `Document/tests_doc/`)**
-   - สร้างไฟล์ `Document/tests_doc/README.md` อธิบายภาพรวมเอกสาร
-   - สร้างไฟล์ `Document/tests_doc/test_plan.md` ตามมาตรฐาน ISO/IEC/IEEE 29119
-   - จัดทำเอกสารแผนการทดสอบแยกตามโมดูลใน `Document/tests_doc/manual_tests_doc/` และ `Document/tests_doc/automate_tests_doc/`
+   - ทุก path/Requirement ID/BLoC state ที่อ้างต้องมีอยู่จริงใน repo — ถ้าไม่พบให้ mark GAP/Deferred ห้ามแต่ง
+2. **Phase 2: Test Plans Generation (ใน `Document/tests_doc/test_plan/`)**
+   - สร้างไฟล์ `Document/tests_doc/test_plan/README.md` อธิบายภาพรวมเอกสาร (Version header: `Version: x.y.z | Date: YYYY-MM-DD | Status: Draft/Baseline`)
+   - จัดทำเอกสารแผนการทดสอบแยกตามโมดูลใน `Document/tests_doc/test_plan/manual_tests_doc/` และ `Document/tests_doc/test_plan/automate_tests_doc/`
 3. **Phase 3: Requirements Traceability Matrix Generation (ใน `tests_all/`)**
-   - สร้างไฟล์ `tests_all/rtm.md` เชื่อมโยงความต้องการทั้งหมดเข้ากับ Test Cases
+   - สร้างไฟล์ `tests_all/rtm.md` เชื่อมโยงความต้องการทั้งหมดเข้ากับ Test Cases (Version header: `Version: x.y.z | Date: YYYY-MM-DD | Status: Draft/Baseline`)
+   - ใช้ Coverage Status: Covered / Partial / GAP / Deferred (GAP = ไม่มี TC/implementation, Deferred = Phase 2) และยึด `tests_all/rtm.md §1.1` เป็น authority ถ้าขัดกัน
 4. **Phase 4: Detailed Test Cases Generation (ใน `tests_all/manual_tests/`)**
    - สร้างไฟล์ใน `tests_all/manual_tests/` ทั้ง 6 ไฟล์ (`test_cases_mobile.md`, `test_cases_backend.md`, `test_cases_ai_model.md`, `test_cases_admin.md`, `test_cases_e2e.md`, `test_cases_nfr.md`)
    - ตรวจสอบว่าทุก Test Case มีรายละเอียดครบถ้วนตามแบบฟอร์มมาตรฐาน
-5. **Phase 5: Cross-Verification & Quality Audit**
+   - Automation Mapping ต้อง cross-check กับ `tests_all/automate_tests/` จริง ห้ามอ้างไฟล์ที่ไม่มีอยู่
+5. **Phase 5: Cross-Verification & Quality Audit (DoD Gate)**
    - ตรวจสอบความถูกต้องของพาธไฟล์ อ้างอิงสคริปต์อัตโนมัติ และความสอดคล้องกับสเปก
    - ตรวจสอบความบริสุทธิ์ของเอกสาร (Zero Emoji 100%)
+   - DoD Gate: ผ่านก็ต่อเมื่อ (1) ทุก path/ID/state มีอยู่จริงหรือ mark GAP/Deferred แล้ว, (2) RTM ครอบคลุม wiki baseline ครบ, (3) Automation Mapping ตรงกับไฟล์จริง, (4) Zero Emoji 100%
    - บันทึกประวัติการสร้างเอกสารลงใน `.agents/log.md` เป็นภาษาไทย

@@ -119,29 +119,9 @@
 
 ---
 
-### TC-MOB-IMG-02: การถ่ายรูปจากกล้องของสมาร์ตโฟน (Camera Capture)
-- **Module / Feature**: Image Input / Camera
-- **Requirement ID**: FR-INPUT-02
-- **Test Type**: Functional
-- **Priority**: P0 (Blocker)
-- **Pre-conditions**:
-  1. เครื่องมีกล้องที่พร้อมทำงาน
-  2. แอปได้รับสิทธิ์ Camera Permission
-- **Test Data**: เอกสารทดสอบบนโต๊ะ
-- **Test Steps**:
-  1. แตะปุ่ม "ถ่ายภาพ" (Take Photo)
-  2. เล็งกล้องไปยังเอกสารและกดชัตเตอร์
-  3. กดยืนยันการใช้ภาพถ่าย
-- **Expected Results**:
-  1. ภาพถ่ายถูกบันทึกและส่งต่อไปยังหน้า Preview
-  2. รูปภาพแสดงผลถูกต้องตามทิศทาง (Orientation) ไม่กลับหัว
-- **Automation Mapping**: Manual Device Test
-
----
-
-### TC-MOB-IMG-03: การปฏิเสธไฟล์ภาพที่มีขนาดเกิน 10MB (Client-Side Validation)
+### TC-MOB-IMG-03: การปฏิเสธไฟล์ภาพที่มีขนาดเกินลิมิต (Client-Side Validation Mobile 10MB / Server 20MB)
 - **Module / Feature**: Image Validation / File Size Limit
-- **Requirement ID**: FR-INPUT-05
+- **Requirement ID**: FR-INPUT-04
 - **Test Type**: Boundary / Negative
 - **Priority**: P1 (High)
 - **Pre-conditions**:
@@ -150,7 +130,7 @@
 - **Test Steps**:
   1. เลือกภาพ `large_image_12mb.jpg` จากแกลเลอรี
 - **Expected Results**:
-  1. แอปแสดงข้อความแจ้งเตือนทันที: "ขนาดไฟล์เกินกำหนด (สูงสุด 10 MB)"
+  1. แอปแสดงข้อความแจ้งเตือนทันที: "ขนาดไฟล์เกินกำหนด (Mobile สูงสุด 10MB / Server สูงสุด 20MB)"
   2. ภาพไม่ถูกอัปโหลด และไม่อนุญาตให้กดเริ่มสแกน
   3. ช่วยประหยัดแบนด์วิดท์และป้องกันเครือข่ายขัดข้อง
 - **Automation Mapping**: Manual UI Test
@@ -159,7 +139,7 @@
 
 ### TC-MOB-IMG-04: การปฏิเสธไฟล์นามสกุลที่ไม่รองรับ
 - **Module / Feature**: Image Validation / File Format
-- **Requirement ID**: FR-INPUT-05
+- **Requirement ID**: FR-INPUT-04
 - **Test Type**: Negative
 - **Priority**: P1 (High)
 - **Pre-conditions**:
@@ -178,7 +158,7 @@
 
 ### TC-MOB-SCAN-01: กระบวนการส่งสแกนภาพและการเปลี่ยนสถานะ BLoC สำเร็จ
 - **Module / Feature**: Scan Workflow / BLoC State Management
-- **Requirement ID**: FR-INPUT-04, FR-SYS-07
+- **Requirement ID**: FR-INPUT-03, FR-SYS-07
 - **Test Type**: Integration / State Flow
 - **Priority**: P0 (Blocker)
 - **Pre-conditions**:
@@ -252,7 +232,7 @@
   1. เลื่อนดูการ์ด "รายละเอียดการวิเคราะห์" (Analysis Breakdown)
 - **Expected Results**:
   1. แสดงคะแนนจำแนก 3 ด้าน: ข้อความ (Textual Score), แหล่งที่มา (Source Verification), และร่องรอยการตัดต่อ (Visual Anomaly)
-  2. แสดงกล่องข้อความอธิบายเหตุผลภาษาไทยจากโมเดล Qwen สรุปจุดที่ตรวจพบความผิดปกติ
+  2. แสดงคำที่เข้าข่ายน่าสงสัยจาก OCR/NLP keywords สรุปจุดที่ตรวจพบความผิดปกติ
 - **Automation Mapping**: Manual UI Test
 
 ---
@@ -297,7 +277,7 @@
 
 ### TC-MOB-HIST-03: การทำงานในโหมด Offline เมื่อเครือข่ายขัดข้อง (Local Storage Fallback)
 - **Module / Feature**: History / Offline Graceful Degradation
-- **Requirement ID**: FR-HIST-03
+- **Requirement ID**: NFR-PERF-03 (Offline, เดิม FR-HIST-03)
 - **Test Type**: Negative / Reliability
 - **Priority**: P1 (High)
 - **Pre-conditions**:
@@ -331,7 +311,7 @@
   2. เลือกหมวดหมู่และกรอกรายละเอียด
   3. กดปุ่มส่งรายงาน
 - **Expected Results**:
-  1. แอปส่งคำขอไปยัง `POST /api/v1/reports/`
+  1. แอปส่งคำขอไปยัง `POST /api/v1/reports`
   2. แสดง Dialog แจ้ง "ส่งรายงานสำเร็จ ข้อมูลจะถูกส่งให้ผู้เชี่ยวชาญตรวจสอบ"
   3. รายงานปรากฏในฐานข้อมูลพร้อมสถานะ `pending` เพื่อให้ Admin พิจารณา
 - **Automation Mapping**: `tests_all/automate_tests/tests/api/test_history.py`

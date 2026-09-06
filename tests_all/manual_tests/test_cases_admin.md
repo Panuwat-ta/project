@@ -112,7 +112,7 @@
   1. โมเดลที่มีสถานะ `is_active = true` จะต้องถูกจัดให้อยู่ในแถวบนสุดของตารางเสมอ
   2. มี Badge สีเขียวระบุชัดเจนว่า "ACTIVE"
   3. แสดงค่า Benchmark Metrics ครบถ้วน: mIoU, aAcc, mAcc, mDice
-- **Automation Mapping**: `tests_all/tests_report/automate_tests/server/admin_api.md`
+- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_admin.py`
 
 ---
 
@@ -133,7 +133,7 @@
   2. เมื่อกดยืนยัน Backend ทำการสลับสถานะในฐานข้อมูลแบบ Row-Level Lock
   3. ตารางรีเฟรช และโมเดลที่เลือกจะย้ายขึ้นมาอยู่อันดับแรกพร้อมป้าย ACTIVE ทันที
   4. มีการบันทึกการกระทำลงใน Audit Log
-- **Automation Mapping**: `server/tests/api/test_admin_models.py`
+- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_admin.py`
 
 ---
 
@@ -162,7 +162,7 @@
 
 ### TC-ADM-REP-02: การป้องกัน Race Condition ด้วย Optimistic Locking (`version` column)
 - **Module / Feature**: Report Moderation / Concurrency Control
-- **Requirement ID**: FR-ADM-06
+- **Requirement ID**: FR-ADM-02
 - **Test Type**: Concurrency / Negative
 - **Priority**: P1 (High)
 - **Pre-conditions**:
@@ -199,7 +199,7 @@
   2. เมื่อกรอกเหตุผลและกดยืนยัน ผู้ใช้ถูกเปลี่ยนสถานะเป็น `is_banned = true`
   3. บัญชีผู้ใช้นี้จะไม่สามารถล็อกอินเข้าสู่ระบบได้อีก
   4. เหตุผลการแบนถูกบันทึกลงใน Audit Log พร้อม Admin ID ผู้สั่งแบน
-- **Automation Mapping**: `server/tests/api/test_admin_users.py`
+- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_admin.py`
 
 ---
 

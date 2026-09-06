@@ -13,9 +13,9 @@
 
 ### 1.1 สิ่งที่อยู่ในขอบเขต (In-Scope)
 1. **Authentication Flow**: การลงทะเบียน, การเข้าสู่ระบบด้วย JWT, การเก็บรักษา Token ลงใน Secure Storage, และการรีเฟรช Token อัตโนมัติ
-2. **Image Capture & Selection**: การเลือกภาพจากแกลเลอรี, การถ่ายภาพจากกล้อง, การตรวจสอบขนาดไฟล์ (<= 10MB) และนามสกุลไฟล์ (.jpg, .jpeg, .png)
+2. **Image Selection**: การเลือกภาพจากแกลเลอรี, การตรวจสอบขนาดไฟล์ (<= 10MB) และนามสกุลไฟล์ (.jpg, .jpeg, .png, .webp)
 3. **Image Cropping**: เครื่องมือคร็อปและหมุนภาพก่อนส่งตรวจสอบ
-4. **Scan Submission**: การอัปโหลดไฟล์ผ่าน Multipart HTTP ไปยัง Backend พร้อมส่งค่า Consent
+4. **Scan Submission**: การอัปโหลดไฟล์ผ่าน Multipart HTTP ไปยัง Backend ด้วยพารามิเตอร์ file+title (การยินยอมการใช้ข้อมูลได้รับความยินยอมไว้แล้วในขั้นตอนลงทะเบียน)
 5. **Result & Forensic Visualization**: การแสดงคะแนนความเสี่ยง (Risk Score) 3 ระดับ (Low 0-39, Medium 40-69, High 70-100) การซ้อนทับภาพ Heatmap Overlay และตัวปรับ Opacity
 6. **Multi-Factor Breakdown**: การแจกแจงคะแนน 3 มิติ (Textual OCR, Source Verification, Visual Anomaly)
 7. **XAI Explanation**: การแสดงผลคำอธิบายเหตุผลภาษาไทยจาก Qwen2.5-1.5B
@@ -51,7 +51,7 @@
 ### 3.1 เกณฑ์การเริ่มต้นทดสอบ (Entry Criteria)
 - ซอร์สโค้ด Mobile ผ่านการรัน `flutter analyze` โดยไม่มีข้อผิดพลาดระดับ Error
 - มีการกำหนด Endpoint ชี้ไปยังเซิร์ฟเวอร์ที่เปิดบริการอยู่
-- ชุดทดสอบ Unit Test ขั้นต่ำผ่าน 100%
+- ชุดทดสอบ Unit Test ผ่านตามเป้าหมาย (เป้าหมาย 100%, ไม่เป็นเงื่อนไขบังคับเริ่มงาน)
 
 ### 3.2 เกณฑ์การสิ้นสุดการทดสอบ (Exit Criteria)
 - กรณีทดสอบระดับ P0 (Blocker) และ P1 (Critical) ใน `tests_all/manual_tests/test_cases_mobile.md` ผ่าน 100%

@@ -31,7 +31,7 @@ updated: 2026-08-02
 | กลุ่มงาน (Task Group) | รายละเอียด (Tasks) |
 | :--- | :--- |
 | Authentication | สมัครและล็อกอินด้วยอีเมล/รหัสผ่าน (Google OAuth = Phase 2 deferred), และระบบ Secure Storage |
-| Image Input | ส่วนการเลือกรูปภาพจาก Gallery และโหมด Crop ตัดรูปภาพก่อนส่งให้ระบบ (Camera capture เป็น Phase 2) |
+| Image Input | ส่วนการเลือกรูปภาพจาก Gallery และโหมด Crop ตัดรูปภาพก่อนส่งให้ระบบ |
 | Risk Visualization | ส่วนแสดงผล Risk Score (เกจสี เขียว/เหลือง/แดง), ภาพ Heatmap ทับซ้อน, พร้อมรายละเอียดผลสแกน |
 | History & PDPA | แสดงหน้าต่างประวัติการตรวจสอบย้อนหลัง, หน้าต่างยอมรับข้อตกลง PDPA และการยกเลิกอนุญาตข้อมูล |
 | Scam Report | แบบฟอร์มกดแจ้งเตือนภาพ Scam ให้ตรวจสอบเพิ่มเติม พร้อมคุณสมบัติ Share ข้อมูล |
@@ -83,7 +83,6 @@ updated: 2026-08-02
 | ระบบของ Google SynthID | ระบุไว้ว่าน่าสนใจแต่ยังไม่มีกระบวนการดีไซน์ในเวลาปัจจุบัน |
 | บริการ Google Gemini LLM | ระบุไว้ว่าน่าสนใจแต่ยังไม่มีกระบวนการดีไซน์ในเวลาปัจจุบัน |
 | Google OAuth / Social Login | เลื่อนไป Phase 2 (RC-AUTH-06 deferred) |
-| Camera capture ในแอป | Phase 2 (นอกขอบเขต v1) |
 
 ---
 

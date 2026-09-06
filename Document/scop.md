@@ -73,7 +73,7 @@ flowchart TD
   * เชื่อมต่อการล็อกอินภายนอก (Social OAuth - Google Login) — เลื่อนไป Phase 2 (RC-AUTH-06)
   * ออกแบบระบบจัดเก็บสถานะการเข้าสู่ระบบแบบปลอดภัย (Secure Storage)
 * **งานพัฒนาระบบนำเข้ารูปภาพ (Image Input Module — Gallery-only):**
-  * พัฒนาหน้าการเลือกและอัปโหลดรูปภาพจากคลังภาพ (Gallery) เพื่อส่งประมวลผล (รองรับเฉพาะ Gallery ใน v1 ยังไม่รองรับการถ่ายภาพจากกล้อง)
+  * พัฒนาหน้าการเลือกและอัปโหลดรูปภาพเพื่อส่งประมวลผล รองรับคลังภาพ (Gallery)
   * เพิ่มระบบครอปตัดรูปภาพ (Image Cropper) ก่อนส่งประมวลผล
 * **งานพัฒนาการแสดงผลรายงานระดับความเสี่ยง (Risk Visualization Dashboard):**
   * หน้าแสดงคะแนนความเสี่ยงโดยรวม (Hybrid max+bonus Risk Score: S_base คือค่าสูงสุดของ 3 มิติ +5 ต่อมิติรองที่มีคะแนน ≥40, 3 ระดับ Low/Medium/High) ในรูปของเกจสี (เขียว-เหลือง-แดง)
@@ -159,5 +159,5 @@ flowchart TD
 - **On-device Inference:** เก็บไว้ทำในอนาคต — ต้องผ่าน Model Quantization (INT8/FP16) ก่อน; v1 ประมวลผลบนเซิร์ฟเวอร์เท่านั้น
 - **Google SynthID / Gemini LLM:** น่าสนใจแต่ยังไม่มีดีไซน์ใน v1
 - **Google OAuth / Social Login:** เลื่อนไป Phase 2 (RC-AUTH-06)
-- **Real-time Camera Analysis:** ไม่มีการวิเคราะห์ real-time ผ่านกล้อง (Gallery-only ใน v1)
+- **Real-time Camera Analysis:** ไม่มีการวิเคราะห์แบบ real-time ต้องบันทึกภาพก่อนส่งตรวจสอบ
 - หมายเหตุ: **iOS อยู่ในขอบเขต** — Mobile เป็น Flutter cross-platform

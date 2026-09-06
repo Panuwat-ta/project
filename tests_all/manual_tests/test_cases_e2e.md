@@ -13,7 +13,7 @@
 |---|---|---|---|---|---|
 | `TC-E2E-SCAN-01` | Full User Scam Detection Journey | Mobile (Flutter) | FastAPI, Redis, SegFormer, Surya OCR, Qwen2.5 | Mobile Result Screen | P0 (Blocker) |
 | `TC-E2E-CACHE-02` | High-Speed Cache Hit Workflow | Mobile / API Client | FastAPI, Redis (SHA-256 Hash Cache) | Client (Bypass AI) | P0 (Blocker) |
-| `TC-E2E-REPORT-03` | User Incident Reporting to Admin Review | Mobile (User) | FastAPI, PostgreSQL (`reports` table) | Admin Forensic Console | P1 (Critical) |
+| `TC-E2E-REPORT-03` | User Incident Reporting to Admin Review | Mobile (User) | FastAPI, PostgreSQL (`scam_reports` table) | Admin Forensic Console | P1 (Critical) |
 | `TC-E2E-MODEL-04` | AI Model Deployment to Live Inference | Admin Portal | FastAPI, Model Registry, AI Worker | Mobile Scan Engine | P1 (Critical) |
 | `TC-E2E-BAN-05` | Malicious Actor Ban and Session Revocation | Admin Portal | FastAPI, DB Users, Mobile Dio Interceptor | Mobile Client Screen | P1 (Critical) |
 | `TC-E2E-OFFLINE-06` | Offline Storage and Reconnection Sync | Mobile Client | Local Cache (Flutter Secure Storage / Hive) | FastAPI Backend | P2 (Major) |
@@ -24,7 +24,7 @@
 
 ### TC-E2E-SCAN-01: การตรวจสอบภาพต้องสงสัยแบบครบวงจร (Full Detection Workflow)
 - **Module / Feature**: Cross-System / End-to-End Scan Journey
-- **Requirement ID**: FR-INPUT-04, FR-SYS-01, FR-SYS-02, FR-SYS-05, FR-SYS-07, FR-SYS-08, FR-SYS-11, FR-REPORT-01, FR-REPORT-02, FR-REPORT-05
+- **Requirement ID**: FR-INPUT-03, FR-SYS-01, FR-SYS-02, FR-SYS-05, FR-SYS-07, FR-SYS-08, FR-SYS-11, FR-REPORT-01, FR-REPORT-02, FR-REPORT-05
 - **Test Type**: End-to-End Integration
 - **Priority**: P0 (Blocker)
 - **Pre-conditions**:
@@ -94,16 +94,16 @@
   - Report Type: `FALSE_POSITIVE`
 - **Test Steps**:
   1. ผู้ใช้เปิดหน้าผลการสแกนใน Mobile App และกดปุ่ม "รายงานผลผิดพลาด" (Report)
-  2. กรอกเหตุผลและกดยืนยันส่งรายงานผ่าน `POST /api/v1/reports/`
+  2. กรอกเหตุผลและกดยืนยันส่งรายงานผ่าน `POST /api/v1/reports`
   3. เข้าสู่ Admin Portal ด้วยบัญชีแอดมิน ไปยังเมนู "Report Review"
-  4. ตรวจสอบว่ารายการรายงานใหม่ปรากฏขึ้นในตาราง พร้อมสถานะ `PENDING`
+  4. ตรวจสอบว่ารายการรายงานใหม่ปรากฏขึ้นในตาราง พร้อมสถานะ `pending`
   5. แอดมินกดเปิด Forensic Detail ตรวจดูภาพต้นฉบับ, Heatmap, และเหตุผลของผู้ร้องเรียน
   6. แอดมินกดปุ่ม "อนุมัติการแก้ไข" (Approve) หรือ "ปฏิเสธรายงาน" (Reject) พร้อมระบุบันทึก
-  7. ระบบอัปเดตสถานะในตาราง `reports` พร้อมปรับปรุงค่า `version` (Optimistic Locking)
+  7. ระบบอัปเดตสถานะในตาราง `scam_reports` พร้อมปรับปรุงค่า `version` (Optimistic Locking)
   8. ตรวจสอบบันทึกในหน้า "Audit Logs" ของระบบแอดมิน
 - **Expected Results**:
   1. Mobile App แสดงข้อความยืนยันการส่งรายงานสำเร็จ
-  2. ข้อมูลรายงานในตาราง `reports` มี `status` เปลี่ยนเป็น `RESOLVED` หรือ `REJECTED`
+  2. ข้อมูลรายงานในตาราง `scam_reports` มี `status` เปลี่ยนเป็น `approved` หรือ `rejected` (จาก `pending`/`reviewing`)
   3. คอลัมน์ `version` ถูกเพิ่มค่าขึ้น (+1) อย่างถูกต้องเพื่อป้องกัน Race Condition
   4. หน้า Audit Logs มีบันทึก Action `UPDATE_REPORT_STATUS` ระบุ Admin ID, Timestamp (UTC+7), และ JSON Diff ก่อนและหลังการเปลี่ยนสถานะ
 - **Automation Mapping**: `tests_all/automate_tests/tests/api/test_admin.py::test_admin_report_review_flow`
@@ -116,7 +116,7 @@
 - **Test Type**: End-to-End Integration
 - **Priority**: P1 (Critical)
 - **Pre-conditions**:
-  1. ตาราง `model_registry` มีโมเดล SegFormer อย่างน้อย 2 เวอร์ชัน (เช่น `v1.0.0` สถานะ ACTIVE และ `v1.0.1` สถานะ STAGING)
+  1. ตาราง `model_versions` มีโมเดล SegFormer อย่างน้อย 2 เวอร์ชัน (เช่น `v1.0.0` สถานะ ACTIVE และ `v1.0.1` สถานะ STAGING)
   2. แอดมินเข้าสู่ระบบ Admin Portal
 - **Test Data**:
   - Target Version: `v1.0.1` (SegFormer B0 Fine-Tuned)
@@ -124,16 +124,16 @@
   1. เข้าหน้า "AI Model Management" บน Admin Portal
   2. เลือกเวอร์ชัน `v1.0.1` และกดปุ่ม "Dry-run Verification" เพื่อตรวจสอบความพร้อมของไฟล์ Weights และ Checksum
   3. เมื่อระบบรายงานสุขภาพผ่าน ให้กดปุ่ม "Deploy Model"
-  4. Backend เรียก API `POST /api/v1/admin/models/deploy` ทำงานภายใต้ Database Row Lock (`SELECT FOR UPDATE`)
+  4. Backend เรียก API `POST /api/v1/admin/models/{model_id}/deploy` ทำงานภายใต้ Database Transaction แบบ Atomic
   5. ปรับสถานะ `v1.0.0` เป็น `INACTIVE` และ `v1.0.1` เป็น `ACTIVE`
   6. AI Inference Service โหลด Model Weights ของเวอร์ชันใหม่เข้าหน่วยความจำ
   7. ใช้ Mobile App ส่งสแกนภาพใหม่ 1 รายการ
 - **Expected Results**:
   1. Admin Portal อัปเดตการแสดงผลเวอร์ชัน `v1.0.1` ปักหมุดเป็นโมเดล Active อันดับแรกทันที
   2. สแกนใหม่สำเร็จโดยไม่มี Downtime หรือข้อผิดพลาด 500 Internal Server Error
-  3. ข้อมูลในตาราง `scans` ฟิลด์ `model_version` ต้องบันทึกเป็น `v1.0.1` อย่างถูกต้อง
+  3. ตรวจสอบ Active Model ผ่าน Admin API ว่าเป็น `v1.0.1` อย่างถูกต้อง
   4. หากเกิดความผิดพลาดระหว่างสลับโมเดล ระบบต้อง Rollback คืนเวอร์ชันเดิมอัตโนมัติ
-- **Automation Mapping**: `server/tests/api/test_admin_models.py`
+- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_admin.py`
 
 ---
 
@@ -165,7 +165,7 @@
 
 ### TC-E2E-OFFLINE-06: การจัดเก็บข้อมูลออฟไลน์และการกู้คืนข้อมูลเมื่อเชื่อมต่อใหม่ (Offline Resilience)
 - **Module / Feature**: Mobile / Local Persistence & Network Interruption
-- **Requirement ID**: FR-HIST-03, NFR-PERF-03
+- **Requirement ID**: NFR-PERF-03 (Offline, เดิม FR-HIST-03)
 - **Test Type**: End-to-End Resilience
 - **Priority**: P2 (Major)
 - **Pre-conditions**:

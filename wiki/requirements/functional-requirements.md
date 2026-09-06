@@ -25,11 +25,10 @@ updated: 2026-08-02
 ### การรับภาพ (Image Input)
 
 - **FR-INPUT-01:** ผู้ใช้เลือกรูปจากคลังภาพ (Gallery) ในเครื่องได้
-- **FR-INPUT-02:** (Phase 2) ผู้ใช้ใช้กล้องถ่ายรูปได้
-- **FR-INPUT-03:** ผู้ใช้ปรับขนาดและครอบตัด (Crop) ภาพก่อนส่งได้ เพื่อเน้นจุดสนใจ
-- **FR-INPUT-04:** แอปอัปโหลดภาพผ่าน Multipart HTTP เพื่อส่งไปวิเคราะห์
-- **FR-INPUT-05:** แอปตรวจสอบประเภท/ขนาดไฟล์ก่อนอัปโหลด (jpg/jpeg/png/webp; Mobile ≤ 10MB / API Server ≤ 20MB; decode แล้ว ≤ 100M พิกเซล)
-- **FR-INPUT-06:** ระบบคำนวณ SHA-256 Hash และค้นหาผลจาก Redis Cache (Cache Hit ตอบกลับ ≤ 3 วินาที; Miss เข้า Full inference P50 ≤ 15s)
+- **FR-INPUT-02:** ผู้ใช้ปรับขนาดและครอบตัด (Crop) ภาพก่อนส่งได้ เพื่อเน้นจุดสนใจ
+- **FR-INPUT-03:** แอปอัปโหลดภาพผ่าน Multipart HTTP เพื่อส่งไปวิเคราะห์
+- **FR-INPUT-04:** แอปตรวจสอบประเภท/ขนาดไฟล์ก่อนอัปโหลด (jpg/jpeg/png/webp; Mobile ≤ 10MB / API Server ≤ 20MB; decode แล้ว ≤ 100M พิกเซล)
+- **FR-INPUT-05:** ระบบคำนวณ SHA-256 Hash และค้นหาผลจาก Redis Cache (Cache Hit ตอบกลับ ≤ 3 วินาที; Miss เข้า Full inference P50 ≤ 15s)
 
 ### การแสดงรายงานความเสี่ยง (Risk Report Display)
 

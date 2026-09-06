@@ -55,7 +55,7 @@
    - ตรวจสอบไฟล์อัปโหลดด้วย Magic Bytes 100% ปฏิเสธไฟล์ Polyglot และ Executable
    - ความลับ (API Keys, JWT Secrets, DB Credentials) ทั้งหมดถูกเก็บใน Environment Variables
 3. **Privacy (PDPA)**:
-   - ระบบไม่ประมวลผลการสแกนหากไม่มีการยืนยัน Consent จากผู้ใช้
+    - ระบบกำหนดให้มีการยืนยัน Consent จากผู้ใช้ในขั้นตอนลงทะเบียนก่อนการใช้งานการสแกน
    - ข้อมูลประวัติและไฟล์ภาพถูกลบอย่างสมบูรณ์ตามคำขอขอลบข้อมูล
 4. **Accessibility**:
    - ทุกหน้าจอหลักของ Mobile App และ Admin Portal ผ่านเกณฑ์ WCAG 2.1 Level AA (Contrast Ratio >= 4.5:1)

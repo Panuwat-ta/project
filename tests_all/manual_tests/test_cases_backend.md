@@ -59,14 +59,19 @@
 - **Expected Results**:
   1. ได้รับ HTTP Status Code: `200 OK`
   2. Response Body ส่งคืนโครงสร้าง DTO:
-     ```json
-     {
-       "access_token": "eyJhbGciOiJIUzI1...",
-       "refresh_token": "eyJhbGciOiJIUzI1...",
-       "token_type": "bearer",
-       "expires_in": 3600
-     }
-     ```
+  ```json
+      {
+        "access_token": "eyJhbGciOiJIUzI1...",
+        "refresh_token": "eyJhbGciOiJIUzI1...",
+        "token_type": "bearer",
+        "user": {
+          "id": 1,
+          "email": "be_test_user@scamguard.local",
+          "full_name": "Backend Test User",
+          "role": "user"
+        }
+      }
+      ```
   3. Access Token ถอดรหัสได้ `sub` ตรงกับ User ID และมีค่า `exp` กำหนดวันหมดอายุ
 - **Automation Mapping**: `tests_all/automate_tests/tests/api/test_auth_flow.py`
 
@@ -116,7 +121,7 @@
 
 ### TC-BE-SCAN-01: การอัปโหลดภาพและรับผลการวิเคราะห์ (Normal Scan Flow)
 - **Module / Feature**: Scan / Image Scan Endpoint
-- **Requirement ID**: FR-INPUT-04, FR-SYS-07
+- **Requirement ID**: FR-INPUT-03, FR-SYS-07
 - **Test Type**: Integration / API
 - **Priority**: P0 (Blocker)
 - **Pre-conditions**:
@@ -142,21 +147,21 @@
 
 ---
 
-### TC-BE-SCAN-02: การปฏิเสธไฟล์ที่มีขนาดเกินขีดจำกัด 10MB (Server-side File Size Enforcement)
+### TC-BE-SCAN-02: การปฏิเสธไฟล์ที่มีขนาดเกินขีดจำกัด Server 20MB (Server-side File Size Enforcement)
 - **Module / Feature**: Scan / Size Enforcement
-- **Requirement ID**: FR-INPUT-05
+- **Requirement ID**: FR-INPUT-04
 - **Test Type**: Boundary / Negative
 - **Priority**: P1 (High)
 - **Pre-conditions**:
-  1. เตรียมไฟล์ภาพจำลองขนาด 10.5 MB
+  1. เตรียมไฟล์ภาพจำลองขนาด 21 MB (เกินลิมิตฝั่ง Server; ฝั่ง Mobile ปฏิเสธตั้งแต่เกิน 10MB)
 - **Test Data**:
   - Endpoint: `POST /api/v1/scan/`
-  - File: ขนาด 10.5 MB
+  - File: ขนาด 21 MB
 - **Test Steps**:
-  1. ยิงคำขออัปโหลดไฟล์ขนาดเกิน 10MB เข้าสู่ Endpoint
+  1. ยิงคำขออัปโหลดไฟล์ขนาดเกิน 20MB เข้าสู่ Endpoint
 - **Expected Results**:
-  1. Backend ปฏิเสธคำขอทันทีด้วย HTTP Status Code: `400 Bad Request` หรือ `413 Payload Too Large`
-  2. Response Body: `{"detail": "File size exceeds maximum limit of 10MB"}`
+  1. Backend ปฏิเสธคำขอทันทีด้วย HTTP Status Code: `413 Payload Too Large`
+  2. Response Body: `{"detail": "Maximum allowed size is 20 MB."}`
   3. เซิร์ฟเวอร์ยกเลิกการอ่าน Stream เพื่อประหยัด RAM
 - **Automation Mapping**: `tests_all/automate_tests/tests/api/test_scan_workflow.py`
 
@@ -164,7 +169,7 @@
 
 ### TC-BE-SCAN-03: การตรวจจับ Magic Bytes ป้องกันไฟล์ปลอมแปลงนามสกุล (MIME Spoofing / Magic Bytes)
 - **Module / Feature**: Security / File Sanitization
-- **Requirement ID**: FR-INPUT-06, NFR-SEC-04
+- **Requirement ID**: FR-INPUT-04, NFR-SEC-04
 - **Test Type**: Security / Negative
 - **Priority**: P0 (Blocker)
 - **Pre-conditions**:
@@ -291,16 +296,16 @@
   1. มีโมเดล SegFormer เวอร์ชัน `v1.0.0` (Active) และ `v1.0.1` (Inactive) ในตาราง `model_versions`
   2. ล็อกอินด้วยบัญชีแอดมิน
 - **Test Data**:
-  - Endpoint: `POST /api/v1/admin/models/v1.0.1/deploy`
+  - Endpoint: `POST /api/v1/admin/models/{model_id}/deploy`
 - **Test Steps**:
-  1. ส่งคำขอ Deploy โมเดล `v1.0.1`
+  1. ส่งคำขอ Deploy โมเดล `v1.0.1` โดยระบุ `model_id` (int) ของเวอร์ชันเป้าหมาย
   2. ตรวจสอบตาราง `model_versions` และ `audit_logs`
 - **Expected Results**:
   1. ได้รับ HTTP Status Code: `200 OK`
-  2. กระบวนการรันภายใต้ Transaction พร้อม Row-Level Lock (`with_for_update`)
+  2. กระบวนการรันภายใต้ Transaction แบบ Atomic
   3. โมเดลเดิมถูกปลดสถานะเป็น `is_active = false` และโมเดลใหม่กลายเป็น `is_active = true`
   4. มีการบันทึกประวัติการกระทำลงในตาราง `audit_logs` ทันที
-- **Automation Mapping**: `tests_all/tests_report/automate_tests/server/admin_api.md`
+- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_admin.py`
 
 ---
 

@@ -284,7 +284,7 @@ flowchart TB
 | รหัส (FR-ID) | รายละเอียดความต้องการเชิงฟังก์ชัน |
 | :--- | :--- |
 | **FR-01** | **ระบบเข้าสู่ระบบและยืนยันตัวตน (Authentication):** ผู้ใช้และผู้ดูแลระบบเข้าสู่ระบบด้วย Email/Password + JWT (Social Login / Google OAuth = Phase 2 deferred; ระบบกู้คืนรหัสผ่าน = Phase 2) |
-| **FR-02** | **ระบบนำเข้ารูปภาพ (Image Input):** ผู้ใช้เลือกรูปจากคลังภาพ (Gallery) แล้วอัปโหลดไฟล์ภาพเข้าสู่ระบบ (Camera capture เป็น Phase 2) |
+| **FR-02** | **ระบบนำเข้ารูปภาพ (Image Input):** ผู้ใช้เลือกรูปจากคลังภาพ (Gallery) แล้วอัปโหลดไฟล์ภาพเข้าสู่ระบบ |
 | **FR-03** | **ระบบวิเคราะห์ข้อมูลชั้นต้น (Primary Analysis):** ระบบสามารถดึงข้อมูลแฝง (Metadata/EXIF), สกัดข้อความในภาพ (OCR), และค้นหาแหล่งที่มาของภาพ (Reverse Image Search) ได้โดยอัตโนมัติ |
 | **FR-04** | **ระบบวิเคราะห์ด้วยปัญญาประดิษฐ์ (AI Inference):** ระบบส่งภาพเข้าสู่โมเดล Deep Learning เพื่อตรวจสอบร่องรอยการตัดต่อ (Image Forgery/Semantic Segmentation) และตรวจสอบภาพที่สร้างด้วยปัญญาประดิษฐ์ (AI-Generated) |
 | **FR-05** | **ระบบแสดงผลลัพธ์ (Result & Visualization):** ระบบคำนวณคะแนนความเสี่ยงรวม (Overall Risk Score) และสร้างแผนที่ความร้อน (Heatmap) เพื่ออธิบายผลลัพธ์ให้ผู้ใช้เข้าใจ |
@@ -359,7 +359,7 @@ flowchart TB
 | FR-ID | รายละเอียดความต้องการเชิงฟังก์ชัน | Use Case ที่เกี่ยวข้อง |
 | :--- | :--- | :--- |
 | **FR-01** | ระบบเข้าสู่ระบบและยืนยันตัวตนด้วย Email/Password + JWT (Authentication; Social Login / Google OAuth = Phase 2 deferred) | UC-01 |
-| **FR-02** | ระบบนำเข้ารูปภาพจากคลังภาพ (Image Input; Camera capture เป็น Phase 2) | UC-02 |
+| **FR-02** | ระบบนำเข้ารูปภาพจากคลังภาพ (Image Input) | UC-02 |
 | **FR-03** | ระบบวิเคราะห์ข้อมูลขั้นต้น (Metadata, OCR, Source) | UC-03 |
 | **FR-04** | ระบบวิเคราะห์ด้วยปัญญาประดิษฐ์ (AI Inference) | UC-04 |
 | **FR-05** | ระบบแสดงผลลัพธ์ Risk Score และภาพ Heatmap | UC-05 |

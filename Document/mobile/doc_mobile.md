@@ -722,7 +722,7 @@ Requirement: FR-PDPA-01 (Consent Management)
 | go_router | ^17.3.0 | Declarative routing |
 | dio | ^5.8.0+1 | HTTP client |
 | flutter_secure_storage | ^10.3.1 | เก็บ โทเคน (token) อย่างปลอดภัย |
-| image_picker | ^1.1.2 | เลือกรูปจาก gallery/camera |
+| image_picker | ^1.1.2 | เลือกรูปจาก gallery |
 | image_cropper | ^12.2.1 | crop และ rotate รูป |
 | cached_network_image | ^3.4.1 | แสดงรูปจาก URL พร้อม แคช (cache) |
 | google_fonts | ^8.1.0 | Sarabun + Inter fonts |

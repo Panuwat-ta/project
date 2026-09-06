@@ -35,8 +35,8 @@
 - **Mobile Application (Flutter)**:
   - Clean Architecture & BLoC/Cubit State Management
   - การลงทะเบียน ล็อกอิน และจัดการ Session Token
-  - การเลือกรูปภาพจาก Gallery และการถ่ายภาพผ่าน Camera
-  - Client-side File Validation (ขนาดไฟล์ไม่เกิน 10MB, นามสกุล PNG, JPG, WEBP)
+  - การเลือกรูปภาพจาก Gallery
+   - Client-side File Validation (ฝั่ง Mobile ขนาดไฟล์ไม่เกิน 10MB, นามสกุล jpg/jpeg/png/webp; ฝั่ง Server รองรับขนาดไฟล์ไม่เกิน 20MB)
   - หน้าแสดงผลคะแนนความเสี่ยงพร้อม Heatmap Overlay Interaction (เปิด/ปิด, ปรับ Opacity)
   - ประวัติการสแกนย้อนหลัง (Recent History, Thumbnails, Tap Navigation, Offline Cache Fallback)
   - การสลับภาษา (Localization ภาษาไทยและอังกฤษ) และ Dark/Light Mode
@@ -101,7 +101,7 @@
 - **AI Pipeline Integration**: ทดสอบการส่งภาพไปยัง ONNX worker แยกโปรเซสและการประกอบ Heatmap
 
 ### 3.3 System & End-to-End Testing
-- ทดสอบ User Journey เต็มรูปแบบ ตั้งแต่การถ่ายภาพบน Mobile ส่งผ่าน Gateway ประมวลผลบน AI และแสดงผลลัพธ์บนมือถือ พร้อมการตรวจสอบข้อมูลย้อนหลังจาก Admin Portal
+- ทดสอบ User Journey เต็มรูปแบบ ตั้งแต่การเลือกรูปจากคลังภาพบน Mobile ส่งผ่าน Gateway ประมวลผลบน AI และแสดงผลลัพธ์บนมือถือ พร้อมการตรวจสอบข้อมูลย้อนหลังจาก Admin Portal
 - หมายเหตุ: กรณีทดสอบ E2E ฉบับ manual อยู่ใน `tests_all/manual_tests/test_cases_e2e.md` (ไม่มีไฟล์ `test_plan_e2e.md` แยกใน `manual_tests_doc/` — คู่ฉบับ automate อยู่ใน `automate_tests_doc/test_plan_e2e_automation.md`)
 
 ### 3.4 Non-Functional Testing

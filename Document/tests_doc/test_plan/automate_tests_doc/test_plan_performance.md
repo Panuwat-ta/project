@@ -28,7 +28,7 @@
 - **ScamGuardUser Class**:
   - `wait_time`: สุ่มช่วงเวลาระหว่าง 1 ถึง 3 วินาที เพื่อจำลองพฤติกรรมมนุษย์จริง
   - Task 1 (Weight 3): ตรวจสอบสถานะความพร้อมผ่าน `GET /health`
-  - Task 2 (Weight 1): อัปโหลดรูปภาพทดสอบผ่าน `POST /api/v1/scan/upload` โดยสร้างภาพใน Memory ผ่าน PIL
+  - Task 2 (Weight 1): อัปโหลดรูปภาพทดสอบผ่าน `POST /api/v1/scan/` โดยสร้างภาพใน Memory ผ่าน PIL
 
 ### 2.2 สถานการณ์การทดสอบโหลด (Load Scenarios)
 1. **Baseline Load (Smoke Test)**:

@@ -63,7 +63,7 @@
   1. รันระบบ ScamGuard เต็มรูปแบบผ่าน Docker Compose
   2. สคริปต์ Health Monitor ทำงานตรวจสอบทุก 1 นาที
 - **Test Data**:
-  - Endpoint: `GET /health` และ `GET /api/v1/health`
+  - Endpoint: `GET /health` และ `GET /api/v1/admin/health`
   - ระยะเวลาทดสอบ: 24 ชั่วโมงต่อเนื่อง
 - **Test Steps**:
   1. ตั้งค่า Cron Job ยิงคำขอตรวจสอบ Health Check ทุก 60 วินาที
@@ -101,7 +101,7 @@
 
 ### TC-NFR-SEC-02: การป้องกันการโจมตีผ่านไฟล์อัปโหลดอันตราย (MIME Spoofing & Polyglot)
 - **Module / Feature**: Security / File Upload Hardening
-- **Requirement ID**: FR-INPUT-06, NFR-SEC-04
+- **Requirement ID**: FR-INPUT-04, NFR-SEC-04
 - **Test Type**: Security & Penetration Testing
 - **Priority**: P0 (Blocker)
 - **Pre-conditions**:

@@ -185,7 +185,7 @@
 - **Test Type**: Boundary / Stress
 - **Priority**: P2 (Medium)
 - **Pre-conditions**:
-  1. เตรียมภาพความละเอียด 3840x2160 (4K) และ 7680x4320 (8K) ขนาดไฟล์ไม่เกิน 10MB
+  1. เตรียมภาพความละเอียด 3840x2160 (4K) และ 7680x4320 (8K) ขนาดไฟล์ไม่เกิน 20MB (Server) / Mobile 10MB + decode ไม่เกิน 100M px
 - **Test Data**: ภาพ 4K Ultra-HD
 - **Test Steps**:
   1. ส่งภาพเข้าสู่ไปป์ไลน์ Tiling Inference

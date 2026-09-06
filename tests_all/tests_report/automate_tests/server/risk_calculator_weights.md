@@ -1,3 +1,7 @@
+> หมายเหตุแผนงาน: เอกสารนี้เป็นผลการรันของสูตร Weighted เดิมที่ถูกแทนด้วยสูตร Hybrid (max+bonus) แล้ว คงผลรันไว้เพื่ออ้างอิงประวัติ แต่สูตรทางการคือ Hybrid ตาม RTM และ SRS ปัจจุบัน
+>
+> ---
+
 ## 2026-09-04 09:47 +07 - Risk Calculator Weighted Formula Verification
 
 - Target: server/tests/utils/test_risk_calculator.py

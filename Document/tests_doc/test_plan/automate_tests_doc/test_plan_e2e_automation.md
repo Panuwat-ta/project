@@ -34,7 +34,7 @@
   1. `Register & Login`: สร้างบัญชีใหม่และรับ JWT Access Token
   2. `Scan Submission`: อัปโหลดภาพเสมือนพร้อมพารามิเตอร์ Multipart
   3. `Polling & Result Verification`: ดึงผลการสแกนผ่าน `GET /api/v1/scan/{scan_id}` ยืนยันว่าได้ผลลัพธ์สมบูรณ์
-  4. `History Verification`: เรียกดู `GET /api/v1/history/` และยืนยันว่าพบรายการที่เพิ่งส่งไป
+   4. `History Verification`: เรียกดู `GET /api/v1/history` และยืนยันว่าพบรายการที่เพิ่งส่งไป
   5. `Session Persistence`: ตรวจสอบความถูกต้องของสิทธิ์ผ่าน `GET /api/v1/auth/me`
 - **คำสั่งรัน**:
   ```bash
