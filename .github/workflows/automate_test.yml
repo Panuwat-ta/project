@@ -12,6 +12,20 @@ jobs:
     name: automate_test
     runs-on: ubuntu-latest
 
+    env:
+      DATABASE_URL: postgresql+asyncpg://scamguard:password@localhost:5432/scamguard_db
+      REDIS_URL: redis://localhost:6379/0
+      ALLOWED_ORIGINS: "*"
+      JWT_SECRET_KEY: ci-test-jwt-secret-key-32-chars-long-testing
+      ONNX_MODEL_PATH: model/segformer/work_dirs/v1.0.0/segformer_v1_0_0_dynamic.onnx
+      XAI_MODEL_PATH: model/Qwen2.5-1.5B/qwen2.5-1.5b-instruct-q4_k_m.gguf
+      TEST_USER_EMAIL: automate_test_user@example.com
+      TEST_USER_PASSWORD: TestPassword123!
+      TEST_ADMIN_EMAIL: admin@scamguard.local
+      TEST_ADMIN_PASSWORD: AdminPassword123!
+      BASE_URL: ""
+      TESTING: "true"
+
     services:
       postgres:
         image: postgres:15-alpine
@@ -54,19 +68,11 @@ jobs:
           pip install -r tests_all/automate_tests/requirements.txt
 
       - name: Run database migrations
-        env:
-          DATABASE_URL: postgresql+asyncpg://scamguard:password@localhost:5432/scamguard_db
-          REDIS_URL: redis://localhost:6379/0
         run: |
           cd server
           alembic upgrade head
 
       - name: Run automated tests (API & E2E)
-        env:
-          DATABASE_URL: postgresql+asyncpg://scamguard:password@localhost:5432/scamguard_db
-          REDIS_URL: redis://localhost:6379/0
-          BASE_URL: ""
-          TESTING: "true"
         run: |
           cd tests_all/automate_tests
           pytest tests/api tests/e2e -v
