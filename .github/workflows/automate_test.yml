@@ -2,9 +2,9 @@ name: automate_test
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, tests ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, develop, tests ]
   workflow_dispatch:
 
 jobs:
@@ -46,12 +46,12 @@ jobs:
         with:
           python-version: "3.10"
           cache: "pip"
-          cache-dependency-path: automate_test/requirements.txt
+          cache-dependency-path: tests_all/automate_tests/requirements.txt
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r automate_test/requirements.txt
+          pip install -r tests_all/automate_tests/requirements.txt
 
       - name: Run database migrations
         env:
@@ -68,13 +68,12 @@ jobs:
           BASE_URL: ""
           TESTING: "true"
         run: |
-          cd automate_test
+          cd tests_all/automate_tests
           pytest tests/api tests/e2e -v
-
 
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: automate-test-reports
-          path: automate_test/reports/
+          path: tests_all/automate_tests/reports/

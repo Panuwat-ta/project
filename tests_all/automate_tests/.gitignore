@@ -3,6 +3,7 @@ __pycache__/
 venv/
 venv
 .env
+.coverage*
 reports/html/
 reports/coverage/
 reports/junit.xml
