@@ -92,3 +92,27 @@ grep "^## \[" wiki/log.md | tail -5
 - ใช้สคริปต์ `mass_ingest.py` จัดการคัดลอกไฟล์ทั้งหมดและแทรก YAML Frontmatter ด้านบนของไฟล์โดยอัตโนมัติ เพื่อรักษาโครงสร้างเดิมของโปรเจคไว้
 - สั่ง Build HTML ใหม่ เพื่อให้เอกสารทั้งหมดเข้าไปอยู่ใน Web Portal (`web-ScamGuard`) อย่างสมบูรณ์
 ## [2026-08-06] ingest | /Document/model/model.md
+
+---
+
+## [2026-09-06] sync | อัปเดต Wiki ให้สอดคล้องกับ Document, design และระบบจริง
+
+**ประเภทงาน:** ซิงค์และเติมเต็มเอกสาร Wiki จาก Document, design และโครงสร้างระบบจริงล่าสุด
+
+**หน้าที่สร้างใหม่:**
+- `architecture/admin-portal.md` — สถาปัตยกรรมและการออกแบบ Admin Portal (React/Vite, UI Design System, Model Registry, Telemetry) จาก `design/admin.md` และ `Document/admin/admin.md`
+- `architecture/database-migrations.md` — คู่มือและขั้นตอนการย้ายฐานข้อมูล (Database Migrations) ด้วย Alembic จาก `Document/database/alembic.md`
+- `concepts/mmsegmentation.md` — สถาปัตยกรรมโมดูลาร์ MMSegmentation (Backbone MiT, Decode Head, Training Loss) จาก `Document/model/mmsegmentation.md`
+- `requirements/traceability-matrix.md` — เมทริกซ์การสืบย้อนความต้องการ (Requirement Traceability Matrix - RTM) เชื่อมโยง ST -> OBJ -> SC -> RC -> FR/NFR จาก `Document/docs/06_Requirement_Traceability.md` และ `07_Appendix_A_Full_Traceability_Matrix.md`
+- `planning/task-tracking.md` — การติดตามงานและการบริหารโครงการผ่านกระดาน Jira SCM และสถานะรายเฟส จาก `Document/jira/Task-Tracking.md` และ `Document/jira/to-do-list.md`
+
+**หน้าที่ปรับปรุง:**
+- `architecture/database-er-diagram.md` — อัปเดต Mermaid ER Diagram เพิ่มตาราง `admins` แยกเดี่ยว, เพิ่มฟิลด์ `title` และ `progress` ใน `scans`, ปรับ Foreign Key ให้ชี้ไปยัง `admins` ตาม `database/ER_Diagram.md` ล่าสุด
+- `architecture/database-schema.md` — อัปเดตคำอธิบายตารางหลักใน PostgreSQL ให้มี `admins`, `scam_reports`, `consent_logs` และเชื่อมโยงหน้ารายละเอียด
+- `index.md` — เพิ่มรายการหน้าใหม่ทั้งหมด 5 หน้าลงในสารบัญครบทุกหมวดหมู่
+
+**ผลการตรวจสอบ:**
+- สถาปัตยกรรมครอบคลุมครบทั้ง 4 คอนเทนเนอร์หลัก (Mobile App, Backend API, AI Inference, Admin Portal)
+- โครงสร้างฐานข้อมูลใน Wiki สอดคล้องกับ PostgreSQL และ `database/ER_Diagram.md` ล่าสุด
+- เอกสารทั้งหมดไม่มีสัญลักษณ์ Emoji และรันคอมไพล์เว็บ `web-ScamGuard` ผ่านสมบูรณ์
+

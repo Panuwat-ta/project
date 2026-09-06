@@ -1,8 +1,0 @@
-__pycache__/
-.pytest_cache/
-venv/
-venv
-.env
-reports/html/
-reports/coverage/
-reports/junit.xml

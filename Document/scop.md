@@ -31,7 +31,7 @@ flowchart TD
 
     %% Mobile App Details
     MobileApp --> UC1("Authentication")
-    MobileApp --> UC2("Image Upload/Capture")
+    MobileApp --> UC2("Image Upload (Gallery-only)")
     MobileApp --> UC3("Risk Score & Heatmap UI")
     MobileApp --> UC4("History & PDPA Controls")
     MobileApp --> UC5("Scam Report & Share")
@@ -44,10 +44,10 @@ flowchart TD
     Backend --> BE5("PostgreSQL DB Schema")
 
     %% AI Engine Details
-    AIEngine --> AI1("Error Level Analysis ELA")
-    AIEngine --> AI2("GenAI Image Detection")
+    AIEngine --> AI1("SegFormer ONNX (subprocess)")
+    AIEngine --> AI2("GenAI Image Detection (max prob)")
     AIEngine --> AI3("PyTorch to ONNX Pipeline")
-    AIEngine --> AI4("Grad-CAM Generation")
+    AIEngine --> AI4("Mask-to-Heatmap Overlay")
 
     %% Admin Portal Details
     AdminPortal --> AD1("RBAC & Dashboard")
@@ -66,19 +66,19 @@ flowchart TD
 ## รายละเอียดขอบเขตงานแยกตามส่วนประกอบ (Detailed Work Packages)
 
 ### 1. ระบบแอปพลิเคชันสำหรับผู้ใช้ทั่วไป (General User Mobile App)
-พัฒนาสำหรับ Android เพื่ออำนวยความสะดวกในการใช้งานบนอุปกรณ์เคลื่อนที่
+พัฒนาด้วย Flutter แบบ Cross-Platform เพื่ออำนวยความสะดวกในการใช้งานบนอุปกรณ์เคลื่อนที่
 
 * **งานพัฒนาระบบลงทะเบียนและยืนยันตัวตน (Authentication):**
   * พัฒนาหน้าลงทะเบียน (Register) และเข้าสู่ระบบ (Login) ด้วยอีเมลและรหัสผ่าน
   * เชื่อมต่อการล็อกอินภายนอก (Social OAuth - Google Login) — เลื่อนไป Phase 2 (RC-AUTH-06)
   * ออกแบบระบบจัดเก็บสถานะการเข้าสู่ระบบแบบปลอดภัย (Secure Storage)
-* **งานพัฒนาระบบนำเข้ารูปภาพ (Image Input Module):**
-  * พัฒนาหน้าการเลือกและอัปโหลดรูปภาพจากคลังภาพ (Gallery) เพื่อส่งประมวลผล
+* **งานพัฒนาระบบนำเข้ารูปภาพ (Image Input Module — Gallery-only):**
+  * พัฒนาหน้าการเลือกและอัปโหลดรูปภาพเพื่อส่งประมวลผล รองรับคลังภาพ (Gallery)
   * เพิ่มระบบครอปตัดรูปภาพ (Image Cropper) ก่อนส่งประมวลผล
 * **งานพัฒนาการแสดงผลรายงานระดับความเสี่ยง (Risk Visualization Dashboard):**
-  * หน้าแสดงคะแนนความเสี่ยงโดยรวม (Weighted Risk Score) ในรูปของเกจสี (เขียว-เหลือง-แดง)
-  * แสดงข้อมูลเหตุผลที่เสี่ยง (เช่น ตรวจพบร่องรอย ELA หรือดึงพิกัดผิดปกติ)
-  * หน้าแสดงภาพผลลัพธ์แผนที่ความร้อน (Grad-CAM Heatmap Overlay) เพื่อระบุจุดผิดปกติ
+  * หน้าแสดงคะแนนความเสี่ยงโดยรวม (Hybrid max+bonus Risk Score: S_base คือค่าสูงสุดของ 3 มิติ +5 ต่อมิติรองที่มีคะแนน ≥40, 3 ระดับ Low/Medium/High) ในรูปของเกจสี (เขียว-เหลือง-แดง)
+  * แสดงข้อมูลเหตุผลที่เสี่ยง (เช่น จุดพิกเซลผิดปกติจาก mask overlay หรือคำ scam ที่ OCR พบ)
+  * หน้าแสดงภาพผลลัพธ์แผนที่ความร้อนแบบ mask-to-heatmap overlay เพื่อระบุจุดผิดปกติ
 * **งานพัฒนาระบบจัดการประวัติและนโยบายความเป็นส่วนตัว (History & PDPA Control):**
   * หน้าเรียกดูรายการประวัติรูปภาพย้อนหลัง (History List)
   * ฟังก์ชันการลบประวัติการสแกนทีละรายการหรือทั้งหมด (ตามกฎ PDPA)
@@ -97,7 +97,7 @@ flowchart TD
   * ระบบความปลอดภัยการยืนยันตัวตนระดับ Token (JWT Authentication)
   * ระบบควบคุมอัตราการเรียกใช้ API (Rate Limiting) ป้องกันบอท
 * **งานพัฒนาโมดูลสกัดข้อความและการวิเคราะห์ประโยค (OCR & Textual Analysis):**
-  * พัฒนาโมดูลสกัดตัวอักษรไทย-อังกฤษ จากสลิปโอนเงินหรือข้อความในรูปภาพด้วยเทคโนโลยี OCR (Surya-OCR)
+  * พัฒนาโมดูลสกัดตัวอักษรไทย-อังกฤษ จากสลิปโอนเงินหรือข้อความในรูปภาพด้วยเทคโนโลยี OCR (Surya OCR v0.5.0 Native PyTorch)
   * พัฒนาระบบค้นหาและตรวจจับชุดคำค้นอันตราย (Scam Keywords) เช่น "กู้เงินด่วน", "ถอนยอด", "โบนัสพิเศษ" ด้วยตรรกะ Regex และ NLP
 * **งานพัฒนาสกัดข้อมูลแฝงและการค้นหาภาพย้อนกลับ (Metadata & Reverse Image Search):**
   * พัฒนาโมดูลการอ่านข้อมูลเมทาดาตาของภาพ (EXIF/GPS Extraction) เพื่อเช็คประวัติรุ่นอุปกรณ์ที่ใช้บันทึกภาพและรายละเอียดไฟล์ภาพ
@@ -110,19 +110,19 @@ flowchart TD
 ---
 
 ### 3. บริการตรวจจับภาพตัดต่อและปัญญาประดิษฐ์ (AI Inference Engine)
-พัฒนาส่วนประมวลผลโมเดล Deep Learning สำหรับแยกวิเคราะห์รูปภาพโดยเฉพาะ แยกคอนเทนเนอร์ทำงานอิสระเพื่อรองรับการขยายตัว (Scalability)
+พัฒนาส่วนประมวลผลโมเดล Deep Learning สำหรับแยกวิเคราะห์รูปภาพโดยเฉพาะ โดยจะรันเป็น ONNX Worker แยกโปรเซสจาก API หลัก
 
 * **งานวิจัยและคัดกรองชุดข้อมูลฝึกสอน (Scam Dataset Preparation):**
   * รวบรวมสลิปโอนเงินปลอม, ภาพบุคคลตัดต่อ, และรูปภาพที่สร้างจาก Generative AI มารวมจัดกลุ่มข้อมูล (Dataset)
   * ดำเนินการจัดทำป้ายกำกับพิกเซล (Pixel-level Annotations) ในส่วนที่ถูกแก้ไขของรูปภาพ
 * **งานพัฒนาโมดูลตรวจสอบร่องรอยการดัดแปลงภาพ (Image Forgery Detection):**
-  * พัฒนาโมดูลคำนวณและดึงข้อมูลระดับพิกเซลด้วยเทคนิค ELA (Error Level Analysis)
-  * พัฒนาโมเดล Deep Learning (เช่น PSCC-Net ร่วมกับ SegFormer) เพื่อหาค่าคะแนนความผิดปกติของภาพที่ผ่านการแต่งรูป (Copy-Move, Splice, Inpainting)
+  * พัฒนาโมเดล Deep Learning SegFormer ตัวเดียว (ONNX) เพื่อหาค่าคะแนนความผิดปกติของภาพที่ผ่านการแต่งรูป (Copy-Move, Splice, Inpainting)
 * **งานพัฒนาโมดูลตรวจสอบภาพสังเคราะห์จากปัญญาประดิษฐ์ (AI-Generated Image Detection):**
-  * พัฒนาโมเดลปัญญาประดิษฐ์เชิงลึกในการตรวจหาเศษซากลักษณะทางฟิสิกส์ผิดปกติ (Artifacts) ที่หลงเหลือจากการรันโมเดล Generative AI (เช่น DALL-E, Midjourney, Stable Diffusion)
+  * ใช้ค่าความน่าจะเป็นสูงสุดจากแผนที่ความน่าจะเป็นของโมเดลเป็นคะแนนภาพ AI-Generated ควบคู่กับคะแนนความเสี่ยงทางภาพ ในการตรวจหาเศษซากลักษณะทางฟิสิกส์ผิดปกติ (Artifacts) ที่หลงเหลือจากการรันโมเดล Generative AI (เช่น DALL-E, Midjourney, Stable Diffusion)
 * **งานพัฒนาเซอร์วิสประมวลผลและการอธิบายโมเดล (AI Inference & Explainability):**
-  * พัฒนาส่วนควบคุมการรับไฟล์ส่งประมวลผล (PyTorch Backend Service) และแปลงโมเดลให้อยู่ในรูปของ ONNX format เพื่อให้ Inference ได้เร็วที่สุด
-  * พัฒนาระบบส่งคืนแผนภาพอธิบายเหตุผลของปัญญาประดิษฐ์ (Explainable AI) ในรูปแบบแผนที่ความร้อน Grad-CAM (Gradient-weighted Class Activation Mapping) ซ้อนทับลงบนรูปภาพผลลัพธ์
+  * พัฒนาส่วนควบคุมการรับไฟล์ส่งประมวลผล (ONNX Worker) และแปลงโมเดลให้อยู่ในรูปของ ONNX format เพื่อให้ Inference ได้เร็วที่สุด
+  * พัฒนาระบบส่งคืนแผนภาพอธิบายเหตุผลของปัญญาประดิษฐ์ (Explainable AI) ในรูปแบบแผนที่ความร้อนแบบ mask-to-heatmap overlay ซ้อนทับลงบนรูปภาพผลลัพธ์
+  * XAI reasoning ภาษาไทยจะใช้โมเดลภาษาขนาดเล็ก (เฉพาะสร้างคำอธิบายภาษาไทยเท่านั้น แยกจากโมดูล OCR)
 
 ---
 
@@ -145,8 +145,19 @@ flowchart TD
 
 | ส่วนประกอบที่ต้องพัฒนา (Modules / Components) | ภานุวัฒน์ ต๋าคำ (70%) | เอกพันธ์ ทศทิศรังสรรค์ (30%) |
 | :--- | :---: | :---: |
-| **1. Mobile App (Flutter)**<br>- UI/UX Design, Camera & Gallery Integration<br>- Risk Score, History & Report System | **รับผิดชอบหลัก (Lead)** | ร่วมพัฒนาส่วนหน้าจอและทดสอบการใช้งาน |
+| **1. Mobile App (Flutter)**<br>- UI/UX Design, Gallery-only Image Integration (v1 รองรับเฉพาะ Gallery)<br>- Risk Score, History & Report System | **รับผิดชอบหลัก (Lead)** | ร่วมพัฒนาส่วนหน้าจอและทดสอบการใช้งาน |
 | **2. API Backend (FastAPI & Integrations)**<br>- API Gateway, User Auth (JWT)<br>- OCR Text Extraction, EXIF Extraction<br>- Cloud Storage, Redis Cache, PostgreSQL | **รับผิดชอบหลัก (Lead)** | สนับสนุนการออกแบบ Database & Schema |
-| **3. AI Inference Service (PyTorch / ONNX)**<br>- Dataset Prep, ELA & GenAI Detection Model<br>- ONNX conversion, Grad-CAM Generation | **รับผิดชอบหลัก (Lead)** | - |
+| **3. AI Inference Service (PyTorch / ONNX)**<br>- Dataset Prep, SegFormer ONNX Detection + GenAI Detection<br>- ONNX conversion, Mask-to-Heatmap Overlay | **รับผิดชอบหลัก (Lead)** | - |
 | **4. Admin Web Portal (React)**<br>- User Controls & statistical dashboard<br>- Scam Reports approval queue, Model Weight Upload | ร่วมพัฒนาและเชื่อมต่อ Backend API | **รับผิดชอบหลัก (Lead)** |
 | **5. SIT, Performance & Security Testing**<br>- Verification of AI performance<br>- Load test & Security audit | **รับผิดชอบหลัก (Lead)** | ร่วมดำเนินการทดสอบระบบแบบ SIT และเขียนบันทึกผลการทดสอบ |
+
+---
+
+## สิ่งที่อยู่นอกขอบเขต v1 (Out of Scope)
+
+- **Video Analysis:** เก็บไว้ทำในอนาคต (ใช้ Keyframe Extraction) — v1 รองรับเฉพาะภาพนิ่ง jpg/jpeg/png/webp
+- **On-device Inference:** เก็บไว้ทำในอนาคต — ต้องผ่าน Model Quantization (INT8/FP16) ก่อน; v1 ประมวลผลบนเซิร์ฟเวอร์เท่านั้น
+- **Google SynthID / Gemini LLM:** น่าสนใจแต่ยังไม่มีดีไซน์ใน v1
+- **Google OAuth / Social Login:** เลื่อนไป Phase 2 (RC-AUTH-06)
+- **Real-time Camera Analysis:** ไม่มีการวิเคราะห์แบบ real-time ต้องบันทึกภาพก่อนส่งตรวจสอบ
+- หมายเหตุ: **iOS อยู่ในขอบเขต** — Mobile เป็น Flutter cross-platform

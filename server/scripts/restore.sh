@@ -12,10 +12,28 @@ if [ ! -f "$ENCRYPTED_FILE" ]; then
     exit 1
 fi
 
-DB_NAME="scamguard_db"
-DB_USER="admin"
+cd "$(dirname "$0")/.."
+
+# โหลดค่าคอนฟิกจาก .env.local หรือ .env
+if [ -f .env.local ]; then
+    set -a
+    source .env.local
+    set +a
+elif [ -f .env ]; then
+    set -a
+    source .env
+    set +a
+fi
+
+if [ -z "$BACKUP_PASSWORD" ]; then
+    echo "Error: BACKUP_PASSWORD must be defined in .env or environment"
+    exit 1
+fi
+
+DB_NAME="${POSTGRES_DB:-scamguard_db}"
+DB_USER="${POSTGRES_USER:-admin}"
 DECRYPTED_FILE="/tmp/scamguard_restore.sql"
-ENCRYPTION_PASS=${BACKUP_PASSWORD:-"supersecret123"}
+ENCRYPTION_PASS="${BACKUP_PASSWORD}"
 
 echo "Decrypting backup file..."
 openssl enc -d -aes-256-cbc -in "${ENCRYPTED_FILE}" -out "${DECRYPTED_FILE}" -pass pass:${ENCRYPTION_PASS}

@@ -1,9 +1,9 @@
-import secrets
 from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from datetime import timezone, timedelta
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
+SERVER_DIR = Path(__file__).resolve().parents[2]
 TH_TIMEZONE = timezone(timedelta(hours=7), name="Asia/Bangkok")
 class Settings(BaseSettings):
     # App
@@ -16,19 +16,19 @@ class Settings(BaseSettings):
     
     # Security
     SECURE_COOKIES: bool = False
-    ALLOWED_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173,http://localhost:59913,*"
+    ALLOWED_ORIGINS: str
 
-    # Database
-    DATABASE_URL: str = "postgresql+asyncpg://scamguard:password@localhost:5432/scamguard_db"
+    # Database 
+    DATABASE_URL: str
 
-    # JWT
-    JWT_SECRET_KEY: str = secrets.token_urlsafe(64)
+    # JWT Authentication 
+    JWT_SECRET_KEY: str
     JWT_ALGORITHM: str = "HS256"
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     JWT_REFRESH_TOKEN_EXPIRE_MINUTES: int = 10080  # 7 days
 
-    # Redis
-    REDIS_URL: str = "redis://localhost:6379/0"
+    # Redis Cache 
+    REDIS_URL: str
 
     # Storage
     STORAGE_BACKEND: str = "local"  # "local" สำหรับ dev, "gcs" สำหรับ production
@@ -40,19 +40,28 @@ class Settings(BaseSettings):
     # Risk scoring (ค่าเริ่มต้นของ source score)
     DEFAULT_SOURCE_SCORE: int = 20
 
-    # AI Inference
-    ONNX_MODEL_PATH: str = str(PROJECT_ROOT / "model/segformer/work_dirs/v1.0.0/segformer_v1_dynamic.onnx")
+    # AI Inference 
+    ONNX_MODEL_PATH: str
     ONNX_TILE_SIZE: int = 512
     ONNX_TILE_OVERLAP: int = 64
 
-    # Explainable AI (XAI) - Qwen2.5-1.5B (GGUF)
-    XAI_MODEL_PATH: str = str(PROJECT_ROOT / "model/Qwen2.5-1.5B/qwen2.5-1.5b-instruct-q4_k_m.gguf")
+    # Explainable AI (XAI) - Qwen2.5-1.5B (GGUF) 
+    XAI_MODEL_PATH: str
     XAI_GPU_LAYERS: int = -1  # -1 = offload all layers to GPU
     XAI_CONTEXT_SIZE: int = 1024
 
     # Rate Limit
     RATE_LIMIT_PER_HOUR: int = 60
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=(
+            str(SERVER_DIR / ".env"),
+            str(SERVER_DIR / ".env.local"),
+            ".env",
+            ".env.local",
+        ),
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
 
 settings = Settings()

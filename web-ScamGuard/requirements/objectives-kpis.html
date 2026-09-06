@@ -19,7 +19,7 @@
     <div class="divider"></div>
     <h2>วัตถุประสงค์</h2>
     <h3>OBJ-01: พัฒนาแอปพลิเคชันมือถือสำหรับคัดกรองรูปภาพต้องสงสัย</h3>
-    <p>พัฒนา Mobile App แบบ Cross-Platform เพื่อให้ผู้ใช้ทั่วไปเลือกหรือถ่ายรูปต้องสงสัย (เช่น สลิปโอนเงิน, รูปโปรไฟล์) แล้วส่งให้ระบบวิเคราะห์หาความเสี่ยง</p>
+    <p>พัฒนา Mobile App แบบ Cross-Platform เพื่อให้ผู้ใช้ทั่วไปเลือกรูปต้องสงสัยจากคลังภาพ (เช่น สลิปโอนเงิน, รูปโปรไฟล์) แล้วส่งให้ระบบวิเคราะห์หาความเสี่ยง</p>
     <h3>OBJ-02: ใช้ Deep Learning ตรวจจับภาพตัดต่อและภาพสังเคราะห์จาก AI</h3>
     <p>พัฒนาและเทรนโมเดล Deep Learning เพื่อประเมินร่องรอยการดัดแปลงพิกเซลด้วยเทคนิค Semantic Segmentation (ตรวจจับ Splicing และ Copy-Move) และคัดกรองภาพที่สร้างจาก AI</p>
     <h3>OBJ-03: พัฒนาระบบวิเคราะห์ความเสี่ยงหลายชั้นที่ทำงานร่วมกัน</h3>
@@ -114,7 +114,7 @@
       document.querySelectorAll('.mermaid-container').forEach(container => {
         const btn = document.createElement('button');
         btn.className = 'btn-expand-mermaid';
-        btn.innerHTML = '🔍 Fullscreen';
+        btn.innerHTML = ' Fullscreen';
 
         btn.onclick = () => {
           const originalSvg = container.querySelector('svg');

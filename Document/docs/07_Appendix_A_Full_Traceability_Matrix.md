@@ -72,7 +72,7 @@
 | 37 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-05 | FR-ANALYSIS-03 | 4 | Fallback เมื่อ API Down | Must | ✅ | srs-doc.md |
 | 38 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-07 | FR-ANALYSIS-04 | 1 | คำนวณคะแนนรวมสำเร็จ | Must | ✅ | srs-doc.md |
 | 39 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-07 | FR-ANALYSIS-04 | 2 | จำกัดคะแนนในช่วง 0-100 | Must | ✅ | srs-doc.md |
-| 40 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-08 | FR-ANALYSIS-04 | 3 | แปลงเป็น Risk Grade (Safe) | Must | ✅ | srs-doc.md |
+| 40 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-08 | FR-ANALYSIS-04 | 3 | แปลงเป็น Risk Grade (Low 0-39) | Must | ✅ | srs-doc.md |
 | 41 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-08 | FR-ANALYSIS-04 | 4 | แปลงเป็น Risk Grade (Low) | Must | ✅ | srs-doc.md |
 | 42 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-08 | FR-ANALYSIS-04 | 5 | แปลงเป็น Risk Grade (Medium) | Must | ✅ | srs-doc.md |
 | 43 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-08 | FR-ANALYSIS-04 | 6 | แปลงเป็น Risk Grade (High) | Must | ✅ | srs-doc.md |
@@ -130,7 +130,7 @@
 | 95 | ST01, ST02 | OBJ-04 | SC02 | RC-NFR-08 | NFR-04 | 4 | Rate Limiting ทำงาน | Must | ✅ | srs-doc.md |
 | 96 | ST01, ST02 | OBJ-04 | SC02 | RC-NFR-08 | NFR-04 | 5 | Input Validation | Must | ✅ | srs-doc.md |
 | 97 | ST01, ST02, ST03 | OBJ-02 | SC03 | RC-NFR-06 | NFR-05 | 1 | Accuracy ≥ 85% | Must | ✅ | srs-doc.md |
-| 98 | ST01, ST02, ST03 | OBJ-02 | SC03 | RC-NFR-06 | NFR-05 | 2 | F1-Score ≥ 85% | Must | ✅ | srs-doc.md |
+| 98 | ST01, ST02, ST03 | OBJ-02 | SC03 | RC-NFR-06 | NFR-05 | 2 | mDice ≥ 85% | Must | ✅ | srs-doc.md |
 | 99 | ST01, ST02, ST03 | OBJ-02 | SC03 | RC-NFR-06 | NFR-05 | 3 | Precision ≥ 85% | Must | ✅ | srs-doc.md |
 | 100 | ST01, ST02, ST03 | OBJ-02 | SC03 | RC-NFR-06 | NFR-05 | 4 | Recall ≥ 85% | Must | ✅ | srs-doc.md |
 | 101 | ST01, ST03 | OBJ-04 | SC01, SC03 | RC-NFR-09 | NFR-06 | 1 | คะแนนความพึงพอใจ ≥ 4.00 | Must | ✅ | srs-doc.md |

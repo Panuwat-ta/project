@@ -36,8 +36,8 @@ updated: 2026-08-02
 
 ## หน้าจอหลัก / User Flow
 
-1. **หน้าจอ Authentication** — สมัครสมาชิก, Login (email/password + Google OAuth)
-2. **หน้าจอรับรูปภาพ** — เลือกจาก Gallery หรือถ่ายด้วยกล้อง พร้อม Image Cropper เพื่อโฟกัสบริเวณที่ต้องการตรวจก่อนส่ง
+1. **หน้าจอ Authentication** — สมัครสมาชิก, Login (email/password; Google OAuth เป็น Phase 2)
+2. **หน้าจอรับรูปภาพ** — เลือกจาก Gallery พร้อม Image Cropper เพื่อโฟกัสบริเวณที่ต้องการตรวจก่อนส่ง
 3. **หน้าจอรอประมวลผล** — แสดงระหว่าง Pipeline ทำงาน (สูงสุด 15 วินาที หรือเกือบทันทีสำหรับ Cache Hit)
 4. **หน้าจอรายงานความเสี่ยง** — แสดง:
    - Overall Risk Score แบบ color badge 3 ระดับ (Low / Medium / High)
@@ -53,7 +53,7 @@ updated: 2026-08-02
 ## ขั้นตอนการอัปโหลดรูปภาพ
 
 ```
-ผู้ใช้เลือก/ถ่ายรูป
+ผู้ใช้เลือกรูปจากคลังภาพ
         |
   Image Cropper (ถ้าต้องการ)
         |
@@ -69,7 +69,7 @@ updated: 2026-08-02
 
 ## ความปลอดภัยใน App
 
-- JWT Token เก็บใน **Secure Storage** (ไม่ใช่ SharedPreferences หรือไฟล์ธรรมดา)
+- JWT Token เก็บใน **Secure Storage**
 - ไม่เก็บข้อมูลรูปภาพบนอุปกรณ์หลังส่งประมวลผลแล้ว
 - แสดงหน้าจอยินยอม PDPA ตอน Launch ครั้งแรก สามารถถอนยินยอมได้ในหน้าตั้งค่า
 
@@ -86,15 +86,11 @@ lib/
     report/       # ส่งรายงาน Scam
   main.dart
 ```
-
-> [!NOTE]
-> โครงสร้างโฟลเดอร์โดยละเอียดพร้อม Feature subdirectory ทั้งหมดอยู่ใน `design/mobile.md` ซึ่งยังไม่ได้ ingest ครบ
-
 ---
 
 ## Admin Portal (แยกต่างหาก)
 
-Admin Web Portal เป็น React.js + Tailwind CSS แยกต่างหากสำหรับใช้งานภายใน ไม่ใช่ Mobile App ดู [[architecture/backend-api]] สำหรับ Endpoint ที่ใช้
+Admin Web Portal เป็น React.js + Tailwind CSS แยกต่างหากสำหรับใช้งานภายใน ดู [[architecture/backend-api]] สำหรับ Endpoint ที่ใช้
 
 **ความสามารถของ Admin Portal:**
 

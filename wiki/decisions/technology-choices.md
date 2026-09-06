@@ -35,7 +35,7 @@ updated: 2026-08-02
 
 **เหตุผล:**
 
-- งานนี้ต้องระบุการดัดแปลงใน **ระดับพิกเซล** ซึ่งเป็นปัญหา Segmentation ไม่ใช่ Classification แบบ CNN ที่บอกแค่ Label รวมๆ
+- งานนี้ต้องระบุการดัดแปลงใน **ระดับพิกเซล** ซึ่งเป็นปัญหา Segmentation ที่ต้องระบุตำแหน่งระดับพิกเซล
 - SegFormer จัดการเรื่อง Multi-scale Features (ทั้ง Global Context และ Local Pixel Detail) ได้ดีกว่า Transformer รุ่นแรกๆ
 - ไม่มี Fixed Positional Encoding → Generalize กับรูปหลายขนาดได้ดีกว่า
 - เร็วกว่า ViT-based Model ตัวเต็ม
@@ -101,17 +101,18 @@ updated: 2026-08-02
 
 **ความเสี่ยง:** ยึดติดกับบริการภายนอก — หาก Google Vision ล่ม ระบบตรวจสอบความเสี่ยงจะคืนค่าคะแนนกลางสำหรับส่วนนี้ (Source Verification) โดยมี Bing เป็นแผนสำรอง
 
-## การตัดสินใจ 7: ใช้ Surya OCR 2 (GGUF/Qwen2.5-VL) แทน Tesseract สำหรับอ่านตัวอักษร
+## การตัดสินใจ 7: ใช้ Surya OCR Native PyTorch แทน Tesseract สำหรับอ่านตัวอักษร
 
-**สิ่งที่เลือก:** Surya OCR 2 (รันผ่าน llama-cpp-python รูปแบบ GGUF)
+**สิ่งที่เลือก:** Surya OCR v0.5.0 (Native PyTorch)
 **ทางเลือก:** Tesseract OCR (ดั้งเดิม), Google Cloud Vision API (Text Detection)
 
 **เหตุผล:**
 
 - Tesseract OCR ขาดความแม่นยำในการอ่านภาษาไทย โดยเฉพาะรูปที่มีพื้นหลังลวดลายเยอะหรือมีสัญญาณรบกวน (Noise)
-- Surya OCR 2 อาศัยสถาปัตยกรรม Vision-Language Model (Qwen2.5-VL) ทำให้มีความเข้าใจบริบท โครงสร้างภาพ (Layout) และภาษาไทยได้แม่นยำกว่ามาก
-- การใช้ GGUF + `llama-cpp-python` ช่วยให้สามารถรันโมเดลบน GPU VRAM 4GB (เช่น RTX 3050) ได้อย่างมีประสิทธิภาพ และยัง Fallback ไปรันบน CPU ได้ถ้าไม่มี GPU
+- Surya OCR Native รันบน PyTorch/CUDA โดยตรง เสถียรและใช้ GPU ได้เต็มประสิทธิภาพ โดยไม่ต้องพึ่งเซิร์ฟเวอร์แยก
 - ช่วยคัดกรอง "Scam Keywords" หลอกลวง (เช่น ด่วน, โบนัส, กู้เงิน) ได้แม่นยำ ลด False Negative
+
+ส่วน Qwen2.5-1.5B ใช้สำหรับสร้างคำอธิบายภาษาไทย (XAI reasoning)
 
 ---
 

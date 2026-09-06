@@ -211,7 +211,7 @@ Admin Portal ใช้ Dark Theme เป็นหลัก สอดคล้อ
 +----------------------------------------------------------+
 ```
 
-**หมายเหตุ:** Response ของ `GET /api/v1/admin/dashboard` ไม่มี Payload รายการรายงานล่าสุด (recent reports) จึงใช้ Summary Card ที่ลิงก์ไปหน้า Reports แทนตาราง Recent Reports
+**หมายเหตุ:** ใช้ Summary Card ที่ลิงก์ไปหน้า Reports แทนตาราง Recent Reports
 
 #### KPI Cards (7 ใบ, แถวบน 2 แถว)
 
@@ -309,7 +309,7 @@ Admin Portal ใช้ Dark Theme เป็นหลัก สอดคล้อ
 - **Date Range Picker:** 2 ช่อง Input วันที่ พร้อมไอคอน Calendar
 - **Sort Controls:** Dropdown `sort_by` (`created_at` | `status`) + Toggle `sort_order` (`asc` | `desc`)
 
-**หมายเหตุ:** `GET /api/v1/admin/reports` รองรับเฉพาะ `page`, `limit`, `status`, `category`, `from_date`, `to_date`, `sort_by`, `sort_order` — ไม่มีพารามิเตอร์สำหรับค้นหาข้อความ
+**หมายเหตุ:** `GET /api/v1/admin/reports` รองรับ `page`, `limit`, `status`, `category`, `from_date`, `to_date`, `sort_by`, `sort_order`
 
 #### Reports Table
 
@@ -340,7 +340,7 @@ Admin Portal ใช้ Dark Theme เป็นหลัก สอดคล้อ
 - แถวที่สถานะเป็น Pending จะมีปุ่ม "เริ่มตรวจสอบ" (Ghost Button สี `accent-primary`, แสดงเมื่อ Hover แถว) เมื่อกดจะเปิดหน้า Report Detail เพื่อเริ่มกระบวนการตรวจสอบ
 - Tab "Reviewing" ใน Filter Bar และ Badge "Reviewing" (สี Amber) ยังคงแสดงตามสถานะจาก Server
 
-**ข้อจำกัด (Flagged Gap):** Backend `PATCH /api/v1/admin/reports/{report_id}` ปัจจุบันรับเฉพาะ Transition `approved` / `rejected` เท่านั้น — การ Persist สถานะ `reviewing` ยังต้องรอ Backend เพิ่มความสามารถนี้ (UI แสดง Badge ตามค่าที่ Server ส่งกลับเท่านั้น)
+**การเปลี่ยนสถานะ:** `PATCH /api/v1/admin/reports/{report_id}` รองรับ Transition `approved` / `rejected` — UI แสดง Badge ตามสถานะที่ได้รับ
 
 **สี Badge หมวดหมู่:**
 
@@ -418,8 +418,7 @@ Admin Portal ใช้ Dark Theme เป็นหลัก สอดคล้อ
 
 - แสดงคะแนนรวมด้วย Circular Gauge ขนาดเล็ก (80px)
 - สี Gauge ตามระดับ:
-  - 0-19: `status-success` (Safe)
-  - 20-39: `status-success` (Low)
+  - 0-39: `status-success` (Low)
   - 40-69: `status-warning`
   - 70-100: `status-danger` (กรณี `visual_score >= 80` → High ทันที)
 - คะแนนย่อยแต่ละชั้น: แสดงเป็น Progress Bar แนวนอน

@@ -54,13 +54,12 @@ wiki/
 
 LLM จะ:
 
-- อ่านเอกสารต้นฉบับ (raw source) โดยไม่แก้ไขต้นฉบับ
+- อ่านเอกสารต้นฉบับ โดยไม่แก้ไขต้นฉบับ
 - เขียนหรืออัปเดตหน้า wiki ที่เกี่ยวข้อง (อาจกระทบ 5–15 หน้า)
 - อัปเดต `index.md`
 - บันทึก entry ใหม่ลง `log.md`
 
-**สถานะการย้ายเอกสาร (Ingestion Status): 100%**
-ระบบได้ย้ายเอกสารต้นฉบับจากโฟลเดอร์ `Document/`, `design/`, และ `database/` เข้าสู่สารบบ Wiki ครบทุกหน้าแล้ว สามารถค้นหาและอ้างอิงผ่าน `index.md` ได้ทันที
+**สถานะการย้ายเอกสาร:** เอกสารที่อยู่ในแผนการย้าย: Document/srs.md (ฉบับเต็ม), Document/Use-Case-Diagram.md, Document/flowchart.md, Document/C1-System-Context-Diagram.md, Document/C2-Container-Diagram.md, design/design.md, design/mobile.md, design/training.md — ติดตามรายการที่เหลือได้ที่ log.md
 
 ---
 
@@ -189,7 +188,7 @@ LLM:   สร้าง decisions/segformer-vs-cnn-rationale.md
 
 ## หมายเหตุสำคัญ
 
-- เอกสารต้นฉบับใน `Document/` และ `design/` คือ **raw sources** — LLM อ่านได้แต่ไม่แก้ไขเด็ดขาด
+- เอกสารต้นฉบับใน Document/ และ design/ — LLM อ่านได้แต่ไม่แก้ไขเด็ดขาด
 - Wiki ใน `wiki/` คือ **living document** — LLM เป็นเจ้าของและดูแลทั้งหมด
 - `log.md` เป็น append-only — ห้ามลบ entry เก่า เพื่อให้ trace timeline ของ wiki ได้
 - ถ้า wiki โตขึ้นมากจนค้นหาลำบาก ให้พิจารณาติดตั้ง [qmd](https://github.com/taylorai/qmd) สำหรับ hybrid search (BM25 + vector) บน local machine

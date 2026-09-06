@@ -99,7 +99,7 @@ flowchart LR
 
 #### 2. Login & Authentication Screen
 
-* หน้าจอกรอก Email/Password และช่องทางล็อกอินแบบรวดเร็ว (Google Login / Apple ID)
+* หน้าจอกรอก Email/Password (Google Login / Apple ID เป็น Phase 2)
 * มีลิงก์สำหรับสมัครสมาชิกใหม่ และระบบขอเปลี่ยนรหัสผ่านใหม่ (Forgot Password)
 
 #### 3. Home / Scan Screen (หน้าแรกและนำเข้ารูปภาพ)

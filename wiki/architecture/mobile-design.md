@@ -68,8 +68,7 @@ updated: 2026-08-04
 ### 3.1 ฟังก์ชันที่อยู่ในขอบเขต
 
 - สมัครสมาชิกและเข้าสู่ระบบ
-- เข้าสู่ระบบด้วย Email/Password
-- เข้าสู่ระบบด้วย Google หรือ Apple ID ในระยะต่อยอด
+- เข้าสู่ระบบด้วย Email/Password (Google/Apple OAuth เป็น Phase 2)
 - อัปโหลดไฟล์รูปภาพจากอุปกรณ์
 - Crop หรือปรับขอบเขตรูปก่อนส่งวิเคราะห์
 - อัปโหลดรูปภาพไปยัง Backend API
@@ -277,12 +276,12 @@ flowchart TD
 
 ### 6.1 Bottom Navigation
 
-รายการเมนูหลัก:
+รายการเมนูหลัก (4 tabs):
 
-1. หน้าสแกน
-2. ประวัติ
-3. การแจ้งเตือน
-4. ตั้งค่า
+1. หน้าหลัก (home)
+2. ประวัติ (history)
+3. แจ้งรายงาน (report/flag)
+4. ตั้งค่า (settings)
 
 หลักการใช้งาน:
 
@@ -349,7 +348,7 @@ Validation:
 - ช่อง Email
 - ช่อง Password พร้อมปุ่มแสดงหรือซ่อนรหัสผ่าน
 - ปุ่มเข้าสู่ระบบ
-- ปุ่มเข้าสู่ระบบด้วย Google
+- ปุ่มเข้าสู่ระบบด้วย Google (Phase 2)
 
 - ลิงก์สมัครสมาชิก
 - ลิงก์ลืมรหัสผ่าน
@@ -409,9 +408,9 @@ Validation:
 
 ข้อจำกัดไฟล์:
 
-- รองรับ `jpg`, `jpeg`, `png`, `webp`
-- ขนาดไฟล์สูงสุดที่แนะนำ 10 MB
-- ความละเอียดขั้นต่ำ 300 x 300 px
+- รองรับ jpg, jpeg, png, webp
+- ขนาดไฟล์: mobile ตรวจก่อนอัปโหลด ≤10MB / server ปฏิเสธเกิน 20MB
+- จำกัดภาพสูงสุด 100M พิกเซลฝั่ง server
 - หากไฟล์ใหญ่เกิน ให้บีบอัดก่อนอัปโหลดโดยยังรักษาความชัดพอสำหรับ OCR
 
 ### 7.6 Image Preview และ Crop Screen
@@ -800,17 +799,19 @@ Component ที่ควรสร้างเป็น Reusable Widget:
 
 ---
 
-## 10. API Integration
+## 10. API Integration (prefix /api/v1)
 
 ### 10.1 Authentication
 
 ```http
-POST /auth/login
-POST /auth/register
-POST /auth/refresh
-POST /auth/logout
-GET /auth/me
+POST /api/v1/auth/login
+POST /api/v1/auth/register
+POST /api/v1/auth/refresh
+POST /api/v1/auth/logout
+GET /api/v1/auth/me
 ```
+
+เข้าสู่ระบบด้วย Email/Password (Google/Apple OAuth เป็น Phase 2); consent ส่งผ่าน body ของ register
 
 ข้อมูลที่แอปต้องจัดเก็บ:
 
@@ -818,31 +819,26 @@ GET /auth/me
 - Refresh Token ใน Secure Storage
 - User Profile ที่จำเป็น
 
-### 10.2 Image Scan
+### 10.2 Image Scan (`/api/v1/scan` เอกพจน์)
 
 ```http
-POST /scans
-GET /scans/{taskId}
-GET /scans/{taskId}/result
-DELETE /scans/{taskId}
+POST /api/v1/scan/
+GET /api/v1/scan/{scanId}
 ```
 
-`POST /scans` ใช้ `multipart/form-data`
+`POST /api/v1/scan/` ใช้ `multipart/form-data`
 
 Field ที่แนะนำ:
 
-- `image`: ไฟล์ภาพ
-- `source`: `upload`
-- `consentForResearch`: `true` หรือ `false`
-- `clientRequestId`: UUID จากแอปเพื่อกันการส่งซ้ำ
+- `file`: ไฟล์ภาพ
+- `title`: หัวข้อภาพ (optional)
 
 ### 10.3 History
 
 ```http
-GET /history
-GET /history/{scanId}
-DELETE /history/{scanId}
-DELETE /history
+GET /api/v1/history
+GET /api/v1/history/{scanId}
+DELETE /api/v1/history/{scanId}
 ```
 
 Query ที่แนะนำ:
@@ -857,8 +853,9 @@ Query ที่แนะนำ:
 ### 10.4 Report
 
 ```http
-POST /reports
-GET /reports/categories
+POST /api/v1/reports
+GET /api/v1/reports/categories
+GET /api/v1/reports/my
 ```
 
 Field ที่แนะนำ:
@@ -870,14 +867,17 @@ Field ที่แนะนำ:
 - `referenceUrl`
 - `allowResearchUse`
 
-### 10.5 Consent
+### 10.5 Admin & WebSocket (เฉพาะ role admin)
 
 ```http
-GET /consents/me
-PUT /consents/me
-POST /privacy/export
-DELETE /privacy/account
+POST /api/v1/admin/login
+GET /api/v1/admin/dashboard
+WS /api/v1/ws/admin/dashboard
 ```
+
+### 10.6 Consent / Privacy
+
+consent ส่งผ่าน body ของ POST /api/v1/auth/register แล้วบันทึกเป็น consent logs
 
 ---
 
@@ -1036,7 +1036,7 @@ DELETE /privacy/account
 
 ## 16. Acceptance Criteria
 
-แอปเวอร์ชันแรกถือว่าพร้อมใช้งานเมื่อทำได้ครบดังนี้
+แอปเวอร์ชันแรกพร้อมใช้งานเมื่อทำได้ครบดังนี้
 
 1. ผู้ใช้สมัครสมาชิกและเข้าสู่ระบบได้
 2. ผู้ใช้อัปโหลดไฟล์รูปจากอุปกรณ์ได้

@@ -44,6 +44,7 @@ updated: 2026-08-02
 **เกณฑ์การให้คะแนน:**
 
 - พบ >= 3 แหล่งที่แตกต่างกัน → ความเสี่ยงจากแหล่งที่มาสูง (ภาพถูกเผยแพร่กว้าง อาจเป็นภาพแอบอ้าง)
+- พบ = 2 แหล่ง → ความเสี่ยงปานกลาง/ไม่แน่ชัด (medium/uncertain)
 - พบ <= 1 แหล่ง → ความเสี่ยงต่ำ (ดำเนินการตรวจสอบภาพ AI-Generated ต่อ)
 
 **ผลลัพธ์:** คะแนนความเสี่ยงจากแหล่งที่มา (S_source) 0–100%
@@ -81,8 +82,9 @@ updated: 2026-08-02
                |
           Task 4: Reverse Image Search → S_source (0-100%)
                |
-          >= 3 แหล่ง? → ความเสี่ยงแหล่งที่มาสูง
-          < 2 แหล่ง? → Task 5: AI-Gen Detection → S_visual (ครบ 0-100%)
+           >= 3 แหล่ง? → ความเสี่ยงแหล่งที่มาสูง
+           = 2 แหล่ง? → ความเสี่ยงปานกลาง/ไม่แน่ชัด (medium/uncertain)
+           < 2 แหล่ง? → Task 5: AI-Gen Detection → S_visual (ครบ 0-100%)
                |
           Aggregator: คำนวณ Overall Risk Score (Hybrid Worst-Case Trigger + Multi-factor Compounding)
                |

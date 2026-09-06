@@ -116,9 +116,8 @@ async def process_export_job(job_id: str):
                             "id": r.id,
                             "category": r.category,
                             "platform": r.platform,
-                            "reference_url": r.reference_url,
-                            "description": r.description,
-                            "status": r.status,
+                            "reason": getattr(r, "reason", None) or getattr(r, "description", None),
+                            "description": getattr(r, "reason", None) or getattr(r, "description", None),
                             "created_at": r.created_at.isoformat() if r.created_at else None,
                         }
                         meta_filename = f"{r.id}_meta.json"
