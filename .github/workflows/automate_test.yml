@@ -2,9 +2,9 @@ name: automate_test
 
 on:
   push:
-    branches: [ main, develop, tests ]
+    branches: [ main, develop ]
   pull_request:
-    branches: [ main, develop, tests ]
+    branches: [ main, develop ]
   workflow_dispatch:
 
 jobs:
