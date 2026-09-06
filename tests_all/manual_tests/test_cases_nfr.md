@@ -339,3 +339,233 @@
   2. สคริปต์ตรวจสอบเขตเวลาผ่านโดยไม่มี Record ที่คลาดเคลื่อน
   3. หน้า Audit Logs แสดง Timestamp (UTC+7) พร้อม JSON Diff ก่อนและหลังการเปลี่ยนสถานะ
 - **Automation Mapping**: Script (`server/tests/check_time_tz.py`)
+
+---
+
+## 8. หมวดหมู่ความทนทานภายใต้โหลดต่อเนื่องและโหลดกระชาก (Soak and Spike)
+
+### TC-NFR-PERF-04: การทดสอบความเสถียรเมื่อรับโหลดต่อเนื่องยาวนาน (Soak Test)
+- **Module / Feature**: Performance / Sustained Load Stability
+- **Requirement ID**: NFR-PERF-01, NFR-PERF-02, NFR-PERF-03
+- **Test Type**: Performance
+- **Priority**: P2 (Major)
+- **Pre-conditions**:
+  1. รันระบบเต็มรูปแบบผ่านคอนเทนเนอร์ Backend PostgreSQL และ Redis พร้อมใช้งาน
+  2. เตรียมบัญชีผู้ใช้สำหรับยิงโหลดและภาพทดสอบทั้งแบบซ้ำแคชและแบบใหม่ไม่ซ้ำแคช
+  3. ติดตั้งเครื่องมือ Locust พร้อมสคริปต์โหลดที่มีอยู่
+- **Test Data**:
+  - เส้นทาง `GET /health` และ `POST /api/v1/scan/` ผ่านฟิลด์ `file` พร้อมหัวข้อ
+  - รูปแบบโหลดต่อเนื่องระดับปานกลางเป็นเวลาหลายชั่วโมง ไม่ใช่การยิงกระชากสั้น
+  - เกณฑ์อ้างอิงเดิมคือ Cache Hit ไม่เกิน 3 วินาที งานวิเคราะห์ใหม่ค่ามัธยฐานไม่เกิน 15 วินาที อัตราผิดพลาดรวมต่ำกว่า 1 เปอร์เซ็นต์
+- **Test Steps**:
+  1. ใช้ `tests_all/automate_tests/tests/performance/locustfile.py` ยิง `GET /health` สลับกับ `POST /api/v1/scan/` แบบต่อเนื่องยาวนาน
+  2. บันทึกค่ามัธยฐาน เปอร์เซ็นไทล์ที่ 95 และ 99 ของเวลาตอบสนองแยกกลุ่ม Cache Hit และ Cache Miss
+  3. เฝ้าระวังหน่วยความจำ Worker การเชื่อมต่อฐานข้อมูลและ Redis ตลอดช่วงทดสอบ
+  4. ตรวจ `GET /health` เป็นระยะว่าสถานะฐานข้อมูลและแคชยังปกติ
+- **Expected Results**:
+  1. เวลาตอบสนองกลุ่ม Cache Hit ยังไม่เกิน 3 วินาทีแบบ End-to-End ตลอดช่วงทดสอบ
+  2. งานวิเคราะห์ใหม่ค่ามัธยฐานไม่เกิน 15 วินาที ไม่เกิด Timeout หรือหน่วยความจำล้นในงานเบื้องหลัง
+  3. อัตราความผิดพลาดรวมต่ำกว่า 1 เปอร์เซ็นต์และไม่มีหน่วยความจำรั่วจนต้องรีสตาร์ตกลางคัน
+  4. หลังจบการทดสอบ ระบบยังสแกนภาพใหม่และดึงประวัติได้ตามปกติ
+- **Automation Mapping**: `tests_all/automate_tests/tests/performance/locustfile.py`
+
+---
+
+### TC-NFR-PERF-05: การทดสอบเมื่อโหลดพุ่งกระชากฉับพลันแล้วคลายตัว (Spike Test)
+- **Module / Feature**: Performance / Burst Load Recovery
+- **Requirement ID**: NFR-PERF-01, NFR-PERF-02, NFR-PERF-03
+- **Test Type**: Performance
+- **Priority**: P2 (Major)
+- **Pre-conditions**:
+  1. ระบบอยู่ในสถานะว่างก่อนเริ่มทดสอบและวัดเวลาตอบสนองฐานไว้แล้ว
+  2. เตรียมภาพทดสอบแบบซ้ำแคชและแบบใหม่แยกกันเพื่อดูผลกระทบรายกลุ่ม
+  3. ติดตั้งเครื่องมือ Locust พร้อมสคริปต์โหลดที่มีอยู่
+- **Test Data**:
+  - เส้นทาง `GET /health` และ `POST /api/v1/scan/` ผ่านฟิลด์ `file` พร้อมหัวข้อ
+  - รูปแบบโหลดฐานต่ำ สลับช่วงพุ่งสูงฉับพลัน แล้วลดกลับสู่ระดับฐาน
+  - เกณฑ์อ้างอิงเดิมคือ Cache Hit ไม่เกิน 3 วินาที อัตราผิดพลาดรวมต่ำกว่า 1 เปอร์เซ็นต์ ความพร้อมใช้งานรวมไม่น้อยกว่า 99.5 เปอร์เซ็นต์
+- **Test Steps**:
+  1. ยิงโหลดฐานต่ำด้วย `tests_all/automate_tests/tests/performance/locustfile.py` เพื่อเก็บค่าฐาน
+  2. เพิ่มผู้ใช้พร้อมกันแบบฉับพลันในช่วงสั้นแล้วลดกลับสู่ระดับฐาน
+  3. บันทึกเวลาตอบสนอง อัตราผิดพลาด และพฤติกรรมคิวงานเบื้องหลังช่วงพีคและช่วงฟื้นตัว
+  4. ตรวจ `GET /health` ว่าสถานะฐานข้อมูลและแคชกลับมาปกติหลังพีค
+- **Expected Results**:
+  1. ช่วงพีคระบบไม่ล่ม ไม่ตอบ `500 Internal Server Error` เป็นวงกว้าง งานที่รับไว้ยังจบสถานะ `completed` หรือ `failed` อย่างชัดเจน
+  2. หลังลดโหลด เวลาตอบสนองกลุ่ม Cache Hit กลับมาต่ำกว่าหรือเท่ากับ 3 วินาทีโดยไม่ต้องรีสตาร์ตระบบ
+  3. ไม่เกิดงานค้างถาวรในคิวเบื้องหลังและไม่มีข้อมูลประวัติสูญหาย
+  4. สรุปกราฟเวลาตอบสนองช่วงก่อนพีค ขณะพีค และหลังพีคครบถ้วน
+- **Automation Mapping**: `tests_all/automate_tests/tests/performance/locustfile.py`
+
+---
+
+## 9. หมวดหมู่ความมั่นคงเพิ่มเติม (Session Fixation and Rate Limit Resilience)
+
+### TC-NFR-SEC-05: การตรึงเซสชันและการใช้ Token ต่อหลังออกจากระบบ (Session Fixation and Post Logout Refresh)
+- **Module / Feature**: Security / Session Fixation and Logout Revocation
+- **Requirement ID**: NFR-SEC-02, NFR-SEC-03, FR-AUTH-04, FR-AUTH-05
+- **Test Type**: Security
+- **Priority**: P1 (Critical)
+- **Pre-conditions**:
+  1. มีบัญชีผู้ใช้ทั่วไปและบัญชีแอดมินที่เปิดใช้งานอยู่
+  2. ทราบพฤติกรรมจริงว่าฝั่งผู้ใช้ใช้ JWT แบบไร้สถานะ ส่วนฝั่งแอดมินผูก Access Token กับเซสชันและเพิกถอนได้
+  3. เตรียมเครื่องมือดักจับคำขอเพื่อเก็บค่า Token ก่อนและหลังล็อกอิน
+- **Test Data**:
+  - ฝั่งผู้ใช้คือ `POST /api/v1/auth/login` ผ่านฟอร์ม `username` และ `password` `POST /api/v1/auth/refresh` พร้อมฟิลด์ `refresh_token` `GET /api/v1/auth/me` และ `POST /api/v1/auth/logout`
+  - ฝั่งแอดมินคือ `POST /api/v1/admin/login` `POST /api/v1/admin/refresh` ผ่านคุกกี้ `admin_refresh_token` `GET /api/v1/admin/me` `GET /api/v1/admin/sessions` และ `POST /api/v1/admin/logout`
+- **Test Steps**:
+  1. ล็อกอินผู้ใช้ เก็บ Access Token และ Refresh Token ชุดแรกไว้ แล้วเรียก `GET /api/v1/auth/me` เพื่อยืนยัน
+  2. เรียก `POST /api/v1/auth/logout` แล้วนำ Refresh Token ชุดเดิมไปเรียก `POST /api/v1/auth/refresh` ซ้ำ
+  3. ล็อกอินแอดมิน เก็บ Access Token และคุกกี้ Refresh ไว้ แล้วเรียก `GET /api/v1/admin/me` และ `GET /api/v1/admin/sessions`
+  4. เรียก `POST /api/v1/admin/logout` แล้วนำ Access Token เดิมไปเรียก `GET /api/v1/admin/me` และนำคุกกี้เดิมไปเรียก `POST /api/v1/admin/refresh` ซ้ำ
+  5. ทดสอบการตรึงเซสชันโดยนำ Token เก่าก่อนล็อกอินใหม่กลับมาใช้ซ้ำหลังล็อกอินรอบใหม่
+- **Expected Results**:
+  1. ฝั่งผู้ใช้ `POST /api/v1/auth/logout` ตอบ `200 OK` พร้อม `{"message": "Successfully logged out"}` โดยการล้าง Token หลักทำที่ฝั่ง Client และ Refresh Token เดิมยังต่ออายุได้จนกว่าจะหมดอายุหรือบัญชีถูกระงับ จึงต้องล้าง Secure Storage ทุกครั้งหลังออกจากระบบ
+  2. ฝั่งแอดมินหลัง `POST /api/v1/admin/logout` เซสชันปัจจุบันถูกเพิกถอน Access Token เดิมเรียก `GET /api/v1/admin/me` ไม่สำเร็จ และคุกกี้เดิมเรียก `POST /api/v1/admin/refresh` ตอบ `401 Unauthorized`
+  3. Token ก่อนล็อกอินใหม่ไม่สามารถสวมสิทธิ์เซสชันใหม่ได้ ระบบยึดตัวตนจาก Token ชุดปัจจุบันเท่านั้น
+  4. บัญชีที่ถูกระงับเรียกเส้นทางที่ต้องยืนยันตัวตนถูกปฏิเสธด้วย `403 Forbidden`
+  5. ไม่มีการเปิดเผยข้อมูลภายในในข้อความผิดพลาด `401 Unauthorized` และ `403 Forbidden`
+- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_auth_flow.py` + `server/tests/api/test_admin_auth.py` + Manual Verification
+
+---
+
+### TC-NFR-SEC-06: การรับมือเมื่อถูกจำกัดอัตราและการถอยจังหวะตามเวลาที่แจ้ง (Rate Limit Backoff)
+- **Module / Feature**: Security and Performance / Rate Limit Client Resilience
+- **Requirement ID**: NFR-SEC-04, NFR-PERF-01
+- **Test Type**: Security and Performance
+- **Priority**: P1 (Critical)
+- **Pre-conditions**:
+  1. ทราบโควตาจริงคือภาพรวม 60 ครั้งต่อชั่วโมงต่อ IP และเส้นทาง `POST /api/v1/admin/login` กับ `POST /api/v1/admin/refresh` จำกัด 5 ครั้งต่อนาที
+  2. เตรียม Client ทดสอบจาก IP เดียวกันเพื่อยิงเกินโควตาโดยตั้งใจ
+  3. เตรียมภาพทดสอบสำหรับ `POST /api/v1/scan/` และบัญชีแอดมินสำหรับเส้นทางล็อกอิน
+- **Test Data**:
+  - เส้นทาง `POST /api/v1/admin/login` ผ่านฟอร์ม `username` และ `password`
+  - เส้นทาง `GET /health` และ `POST /api/v1/scan/` ผ่านฟิลด์ `file` พร้อมหัวข้อ
+  - ตัวนับคำขอแยกโควตาภาพรวมและโควตาแอดมินออกจากกัน
+- **Test Steps**:
+  1. ยิง `POST /api/v1/admin/login` เกิน 5 ครั้งภายใน 1 นาทีจาก IP เดียวกันแล้วบันทึกสถานะและส่วนหัวเวลารอ
+  2. ยิงคำขอภาพรวมเกิน 60 ครั้งต่อชั่วโมงแล้วสังเกตสถานะ `429 Too Many Requests`
+  3. ให้ Client หยุดยิงตามเวลารอที่แจ้งแล้วลองใหม่หลังพ้นช่วงเวลาจำกัด
+  4. ยืนยันว่าคำขอในโควตายังทำงานปกติระหว่างการทดสอบ
+- **Expected Results**:
+  1. คำขอในโควตาตอบตามปกติ คำขอเกินโควตาตอบ `429 Too Many Requests` พร้อมส่วนหัวแจ้งเวลารอ
+  2. Client ที่เคารพเวลารอสามารถกลับมาทำงานได้โดยไม่ต้องรีสตาร์ตระบบ
+  3. โควตาภาพรวม 60 ครั้งต่อชั่วโมงมีผลทุกคำขอ ส่วนโควตา 5 ครั้งต่อนาทีมีผลเฉพาะเส้นทางล็อกอินและต่ออายุฝั่งแอดมิน
+  4. ไม่พบการหลุดโควตา ไม่พบข้อมูลรั่วในช่วงถูกจำกัดอัตรา
+- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_admin.py` + `tests_all/automate_tests/tests/performance/locustfile.py`
+
+---
+
+## 10. หมวดหมู่ความเข้ากันได้ (Compatibility)
+
+### TC-NFR-COMP-01: การใช้งาน Mobile บน Android หลายรุ่นและ iOS (Android 10 to 14 and iOS)
+- **Module / Feature**: Compatibility / Mobile OS Coverage
+- **Requirement ID**: NFR-COMP-01
+- **Test Type**: Compatibility
+- **Priority**: P2 (Major)
+- **Pre-conditions**:
+  1. เตรียมอุปกรณ์หรือโปรแกรมจำลอง Android 10 11 12 13 14 และอุปกรณ์ iOS ที่มีโครงสร้าง Runner พร้อมติดตั้ง
+  2. ติดตั้งแอปจากชุดซอร์ส Flutter ชุดเดียวกัน ไม่แยกโค้ดรายรุ่น
+  3. Backend พร้อมใช้งานและมีบัญชีทดสอบที่ล็อกอินได้
+- **Test Data**:
+  - อุปกรณ์ Android 10 11 12 13 14 และ iOS อย่างน้อย 1 รุ่น
+  - เส้นทางใช้งานคือสมัครด้วย `POST /api/v1/auth/register` ล็อกอิน สแกนด้วย `POST /api/v1/scan/` ดูประวัติด้วย `GET /api/v1/history` และส่งรายงานด้วย `POST /api/v1/reports`
+  - การตั้งค่ากำหนดรุ่นขั้นต่ำและรุ่นเป้าหมายอ้างอิงไฟล์ `android/app/build.gradle.kts` ผ่านค่า `flutter.minSdkVersion` และ `flutter.targetSdkVersion`
+- **Test Steps**:
+  1. ติดตั้งและเปิดแอปบน Android ครบทุกรุ่นและบน iOS
+  2. สมัครหรือล็อกอิน เลือกรูป สแกน รอผล เปิดประวัติ และส่งรายงาน 1 รอบบนแต่ละอุปกรณ์
+  3. ตรวจการแสดงผลปุ่ม ตัวอักษร ภาพตัวอย่าง และ Heatmap บนขนาดจอต่างกัน
+  4. ตรวจการขอสิทธิ์แกลเลอรีและการจัดการเมื่อผู้ใช้ปฏิเสธสิทธิ์บนแต่ละรุ่น
+- **Expected Results**:
+  1. ติดตั้งและเปิดแอปได้ทุกอุปกรณ์ทดสอบโดยไม่ Crash ตั้งแต่หน้าแรก
+  2. วงจรสมัคร สแกน ประวัติ และรายงานสำเร็จครบทุกรุ่น ระดับความเสี่ยงแสดงตัวพิมพ์เล็ก `low` `medium` `high` ตรงกัน
+  3. การปฏิเสธสิทธิ์แกลเลอรีแสดงคำอธิบายและทางไปต่อ ไม่ค้างหน้าว่าง
+  4. บันทึกผลรายรุ่นพร้อมชื่อรุ่นและเลขระบบปฏิบัติการ หากรุ่นใดไม่ผ่านให้แยกบันทึกเป็นข้อบกพร่องรายรุ่น
+- **Automation Mapping**: Manual Device Test
+
+---
+
+### TC-NFR-COMP-02: การใช้งาน Admin Portal บนเบราว์เซอร์หลัก (Chrome Firefox Safari)
+- **Module / Feature**: Compatibility / Admin Portal Browsers
+- **Requirement ID**: NFR-COMP-02
+- **Test Type**: Compatibility
+- **Priority**: P2 (Major)
+- **Pre-conditions**:
+  1. เตรียม Chrome Firefox และ Safari รุ่นล่าสุดบนคอมพิวเตอร์
+  2. Backend พร้อมใช้งานและมีบัญชีแอดมินที่มีสิทธิ์ Super Admin
+  3. Admin Portal สร้างจากชุดซอร์ส React และ Vite ชุดเดียวกัน
+- **Test Data**:
+  - เบราว์เซอร์ Chrome Firefox และ Safari รุ่นล่าสุด
+  - เส้นทางแอดมินคือ `GET /api/v1/admin/dashboard` `GET /api/v1/admin/health` `GET /api/v1/admin/reports` `GET /api/v1/admin/models` และ `GET /api/v1/admin/audit-logs`
+  - หน้าจอที่ตรวจคือ Dashboard รายงาน โมเดล ผู้ใช้ และ Audit Logs
+- **Test Steps**:
+  1. เปิด Admin Portal บนทั้งสามเบราว์เซอร์แล้วล็อกอินด้วยบัญชีเดียวกัน
+  2. เปิด Dashboard ตรวจการ์ดตัวเลขและกราฟ แล้วเปิดหน้า Report Review ค้นหาและเปิดรายละเอียด
+  3. เปิดหน้าโมเดล ตรวจ Dry-run และเปิดหน้า Audit Logs ตรวจตัวกรอง `action` และ `entity_type`
+  4. ย่อขยายหน้าจอและรีเฟรชเพื่อดูความเสถียรของการแสดงผล
+- **Expected Results**:
+  1. ล็อกอินและใช้งานทุกหน้าได้ทั้งสามเบราว์เซอร์โดยไม่พบ Error จนใช้งานต่อไม่ได้
+  2. ตัวเลข Dashboard ตารางรายงานและบันทึก Audit แสดงตรงกันทั้งสามเบราว์เซอร์
+  3. การแสดงผลไม่แตก ไม่ซ้อนทับจนอ่านไม่ได้ที่ความกว้างจอปกติของคอมพิวเตอร์
+  4. บันทึกผลรายเบราว์เซอร์พร้อมเลขรุ่น หากเบราว์เซอร์ใดไม่ผ่านให้แยกบันทึกเป็นข้อบกพร่องรายเบราว์เซอร์
+- **Automation Mapping**: Manual Browser Test
+
+---
+
+## 11. หมวดหมู่ความสะดวกใช้ภายใต้สภาพจริง (Usability Under Real Conditions)
+
+### TC-NFR-USE-01: การอ่านจอกลางแจ้ง ฟอนต์ระบบขนาดใหญ่ และโหมดประหยัดแบต (Light Font Battery Saver)
+- **Module / Feature**: Usability and Accessibility / Real World Readability
+- **Requirement ID**: NFR-A11Y-01, NFR-A11Y-02, FR-SET-02
+- **Test Type**: Usability
+- **Priority**: P2 (Major)
+- **Pre-conditions**:
+  1. เตรียมอุปกรณ์ Android หรือ iOS ที่ปรับขนาดฟอนต์ระบบ เปิดโหมดประหยัดแบต และทดสอบกลางแจ้งได้
+  2. แอปรองรับโหมดสว่างและโหมดมืดผ่านการตั้งค่าธีมและใช้ Material Design
+  3. มีบัญชีทดสอบ ภาพทดสอบ และประวัติเดิมสำหรับเปิดดู
+- **Test Data**:
+  - ขนาดฟอนต์ระบบระดับปกติและระดับใหญ่สุดของเครื่อง
+  - สภาพแสงในร่มและกลางแจ้ง
+  - สถานะโหมดประหยัดแบตเปิดและปิด
+  - หน้าที่ตรวจคือหน้าสแกน หน้าผล หน้าประวัติ และหน้ารายงาน
+- **Test Steps**:
+  1. ตั้งฟอนต์ระบบเป็นขนาดใหญ่สุดแล้วเปิดหน้าสแกน หน้าผล หน้าประวัติ และหน้ารายงาน
+  2. นำอุปกรณ์ออกกลางแจ้งแล้วอ่านคะแนน ระดับความเสี่ยง และปุ่มหลักทั้งโหมดสว่างและโหมดมืด
+  3. เปิดโหมดประหยัดแบตแล้วสแกน 1 รอบ เปิดประวัติ เปิด Heatmap และสลับธีม
+  4. ตรวจปุ่มหลักว่ายังแตะง่าย ไม่ซ้อนทับ และข้อความไม่ล้นจนใช้งานไม่ได้
+- **Expected Results**:
+  1. ข้อความสำคัญ คะแนน และปุ่มหลักยังอ่านออกและแตะได้ทั้งฟอนต์ปกติและฟอนต์ใหญ่สุด ไม่พบข้อความล้นจนใช้งานไม่ได้
+  2. กลางแจ้งยังแยกป้ายระดับ `low` `medium` `high` และอ่านคะแนนออกทั้งสองธีม
+  3. โหมดประหยัดแบตยังสแกน เปิดประวัติ และแสดง Heatmap ได้ครบ ไม่ค้างหรือ Crash
+  4. บันทึกจุดที่อ่านยากหรือแตะพลาดพร้อมชื่อหน้าและสภาพที่พบแยกเป็นข้อเสนอปรับปรุง
+- **Automation Mapping**: Manual UI Test
+
+---
+
+## 12. หมวดหมู่การสำรองและกู้คืนข้อมูล (Backup and Restore)
+
+### TC-NFR-DB-01: การสำรองและกู้คืนฐานข้อมูลพร้อมการเข้ารหัส (Encrypted Backup Restore)
+- **Module / Feature**: Database / Backup Encryption and Restore Verification
+- **Requirement ID**: NFR-PERF-03
+- **Test Type**: Reliability and Database
+- **Priority**: P1 (Critical)
+- **Pre-conditions**:
+  1. กำหนดรหัสผ่านสำรอง `BACKUP_PASSWORD` ในไฟล์ `.env` เรียบร้อยแล้ว
+  2. ฐานข้อมูล PostgreSQL มีข้อมูลจริงทั้งบัญชีผู้ใช้ ประวัติสแกน รายงาน และบันทึกตรวจสอบ
+  3. มีสิทธิ์รันสคริปต์สำรองและกู้คืนบนเครื่องทดสอบ
+- **Test Data**:
+  - สคริปต์ `server/scripts/backup.sh` ซึ่งสำรองด้วย `pg_dump` แล้วเข้ารหัสด้วย `openssl enc -aes-256-cbc` เป็นไฟล์ `.enc`
+  - สคริปต์ `server/scripts/restore.sh` ซึ่งถอดรหัสแล้วนำเข้าด้วย `psql`
+  - ข้อมูลอ้างอิงคือแถวในตาราง `users` `scans` `scam_reports` `consent_logs` `model_versions` และ `audit_log` เอกพจน์
+  - คู่มืออ้างอิง `Document/admin/runbook.md`
+- **Test Steps**:
+  1. รัน `bash server/scripts/backup.sh` แล้วตรวจสอบว่ามีไฟล์สำรอง `.enc` ใหม่เกิดขึ้น
+  2. บันทึกจำนวนแถวอ้างอิงและตัวอย่าง `scan_id` ก่อนกู้คืน
+  3. จำลองความเสียหายบนฐานข้อมูลทดสอบแล้วรัน `./restore.sh <backup_file.enc>` ด้วยไฟล์จากข้อ 1
+  4. ตรวจจำนวนแถว ตัวอย่าง `scan_id` และการล็อกอินด้วยบัญชีเดิม
+  5. ตรวจว่าไฟล์สำรองที่ไม่อยู่ในรูปแบบ `.enc` หรือรหัสผ่านผิดไม่สามารถกู้คืนได้
+- **Expected Results**:
+  1. สำรองสำเร็จได้ไฟล์ `.enc` ไฟล์ดิบ `.sql` ถูกลบทิ้งหลังเข้ารหัส หากไม่มี `BACKUP_PASSWORD` สคริปต์หยุดพร้อมแจ้งให้กำหนดค่า
+  2. กู้คืนสำเร็จ ข้อมูลบัญชี ประวัติ รายงาน และบันทึกตรวจสอบกลับมาตรงกับก่อนทดสอบ
+  3. บัญชีเดิมล็อกอินได้ ประวัติดเดิมเรียกด้วย `GET /api/v1/history` ได้ครบ
+  4. ไฟล์สำรองเสียหายหรือรหัสผ่านผิดกู้คืนไม่สำเร็จและมีข้อความผิดพลาดชัดเจน ไม่เขียนข้อมูลครึ่งเดียวโดยไม่มีการแจ้ง
+- **Automation Mapping**: `server/scripts/backup.sh` + `server/scripts/restore.sh` + `Document/admin/runbook.md`

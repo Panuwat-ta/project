@@ -563,3 +563,187 @@
   1. ค่าเวลา `created_at` ตรงกับเวลาจริงของประเทศไทย (`Asia/Bangkok` หรือ `UTC+7`)
   2. ไม่เกิดปัญหาเวลาเลื่อนถอยหลังไป 7 ชั่วโมง (UTC Offset 0)
 - **Automation Mapping**: `server/tests/check_time_tz.py`
+
+---
+
+## 9. หมวดหมู่การตรวจสอบข้อมูลนำเข้าและสิทธิ์ผิดพลาด (Negative Auth & API Errors)
+
+### TC-BE-AUTH-07: การปฏิเสธข้อมูลสมัครสมาชิกไม่ครบ รูปแบบผิด อีเมลซ้ำ และฟิลด์บทบาทแปลกปลอม (Register Negative Plus Duplicate)
+- **Module / Feature**: Auth / Register Validation and Duplicate Handling
+- **Requirement ID**: FR-AUTH-01
+- **Test Type**: Functional / API
+- **Priority**: P1 (High)
+- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
+  1. PostgreSQL และ FastAPI ทำงานปกติ
+  2. มีผู้ใช้ `be_test_user@scamguard.local` อยู่แล้ว
+- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
+  - Endpoint: `POST /api/v1/auth/register`
+  - เคส body ว่าง: `{}`
+  - เคสอีเมลผิดรูปแบบ: `{"email": "not-an-email", "password": "StrongPassword123!", "full_name": "Test"}`
+  - เคสไม่ส่ง `full_name`
+  - เคสอีเมลซ้ำ: อีเมล `be_test_user@scamguard.local` พร้อมรหัสผ่านและชื่อครบ
+  - เคสฟิลด์แปลกปลอม: body ครบถ้วนบวก `"role": "admin"`
+  - เคสรหัสผ่านสั้น: `"password": "abc"`
+- **Test Steps (ขั้นตอนการทดสอบ)**:
+  1. ยิงทีละเคสไปยัง `POST /api/v1/auth/register`
+  2. ตรวจรหัสสถานะ ข้อความตอบกลับ และแถวในตาราง `users` กับ `consent_logs`
+- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
+  1. body ว่าง อีเมลผิดรูปแบบ และไม่ส่ง `full_name` ได้ `422 Unprocessable Entity` และไม่มีแถวใหม่ในตาราง `users`
+  2. อีเมลซ้ำได้ `400 Bad Request` พร้อม `{"detail": "Email already registered"}` (หมายเหตุ: ปลายทางนี้ใช้ 400 ไม่ใช่ 409)
+  3. ฟิลด์ `role` ที่ส่งมาเพิ่มถูกเพิกเฉย บัญชีใหม่มี `role` เป็น `user` เสมอ และไม่มี Plaintext Password ใน Response
+  4. รหัสผ่านสั้นยังสร้างบัญชีสำเร็จ (`201 Created`) เนื่องจากฝั่งบริการไม่มีเกณฑ์ความยาวขั้นต่ำ การตรวจความยาวทำที่ฝั่งแอปเท่านั้น
+  5. ไม่ส่ง `system_consent` และ `research_consent` ระบบบันทึกค่าเริ่มต้น (`system_consent` เป็นจริง `research_consent` เป็นเท็จ) ลงตาราง `consent_logs`
+- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_auth_flow.py`
+
+---
+
+### TC-BE-API-01: การปฏิเสธ Token หมดอายุ รูปแบบผิด และบทบาทไม่ตรงงาน (Expired Token Plus Wrong Role)
+- **Module / Feature**: Auth / Cross-endpoint Authorization
+- **Requirement ID**: NFR-SEC-02, NFR-SEC-03
+- **Test Type**: API
+- **Priority**: P0 (Blocker)
+- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
+  1. มี Token ผู้ใช้ทั่วไปที่ถูกต้อง 1 ชุด และ Token หมดอายุ 1 ชุด
+  2. มี `scan_id` ของผู้ใช้อีกคนหนึ่งราย
+- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
+  - Endpoint: `GET /api/v1/history`, `GET /api/v1/scan/{scan_id}`, `POST /api/v1/reports`, `GET /api/v1/admin/users`
+  - Header: `Authorization: Bearer <expired_or_malformed_token>` และ `Bearer <normal_user_token>`
+- **Test Steps (ขั้นตอนการทดสอบ)**:
+  1. เรียก `GET /api/v1/history` ด้วย Token หมดอายุและด้วย Token รูปแบบผิด
+  2. เรียก `GET /api/v1/scan/{scan_id}` ของผู้ใช้คนอื่นด้วย Token ผู้ใช้ทั่วไป
+  3. ส่ง `POST /api/v1/reports` อ้าง `scan_id` ของผู้ใช้คนอื่น
+  4. เรียก `GET /api/v1/admin/users` ด้วย Token ผู้ใช้ทั่วไป
+- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
+  1. Token หมดอายุหรือรูปแบบผิดเรียก `GET /api/v1/history` ได้ `401 Unauthorized` พร้อม `{"detail": "Could not validate credentials"}`
+  2. เปิดงานสแกนของผู้อื่นได้ `403 Forbidden` พร้อม `{"detail": "Not authorized to view this scan"}`
+  3. รายงานงานของผู้อื่นได้ `403 Forbidden` พร้อม `{"detail": "Scan not found or you don't have permission"}`
+  4. ผู้ใช้ทั่วไปเรียกปลายทางแอดมินได้ `403 Forbidden` พร้อม `{"detail": "Super Admin access required"}`
+- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_admin.py`
+
+---
+
+## 10. หมวดหมู่การป้องกันข้อมูลอันตราย (Injection Safety)
+
+### TC-BE-SEC-01: การรับข้อความ SQLi และ XSS ในชื่อเรื่อง คำค้น และรายละเอียดรายงาน (SQLi Plus XSS Payloads)
+- **Module / Feature**: Security / Untrusted Text in Title Keyword and Description
+- **Requirement ID**: NFR-SEC-04
+- **Test Type**: Security
+- **Priority**: P0 (Blocker)
+- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
+  1. มี Bearer Token ที่ถูกต้อง
+  2. มีภาพตัวอย่างขนาดไม่เกิน 20MB
+- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
+  - Endpoint: `POST /api/v1/scan/` ฟิลด์ฟอร์ม `title` เป็น `' OR '1'='1` และ `<script>alert(1)</script>`
+  - Endpoint: `GET /api/v1/history?keyword=<script>alert(1)</script>`
+  - Endpoint: `POST /api/v1/reports` ฟิลด์ `description` (ยาวเกิน 10 ตัวอักษร) เป็น `<img src=x onerror=alert(1)> สลิปปลอมยอดเงิน`
+- **Test Steps (ขั้นตอนการทดสอบ)**:
+  1. อัปโหลดภาพพร้อม `title` ที่เป็นข้อความโจมตี แล้วเปิดดูประวัติ
+  2. ค้นหาประวัติด้วย `keyword` ที่เป็นข้อความโจมตี
+  3. ส่งรายงานด้วย `description` ที่ฝังแท็ก แล้วดึงรายงานของตนเองด้วย `GET /api/v1/reports/my`
+- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
+  1. ทุกคำขอผ่านตามปกติ (`200 OK` หรือ `201 Created`) โดยข้อความโจมตีถูกเก็บและแสดงเป็นตัวอักษรธรรมดา ไม่รันสคริปต์
+  2. การค้นหาไม่เกิดข้อผิดพลาดฐานข้อมูล ไม่คืนข้อมูลของผู้อื่น ไม่หลุดโครงสร้างตาราง
+  3. ไม่มีไฟล์อันตรายถูกเขียนลงดิสก์เพิ่มนอกเหนือภาพหลักฐานปกติ และไม่มีบันทึกผิดปกติในตาราง `audit_log`
+- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_scan_workflow.py`
+
+---
+
+## 11. หมวดหมู่ความสัมพันธ์ข้อมูล (Database Relations)
+
+### TC-BE-DB-02: การคงความสัมพันธ์เมื่อลบผู้ใช้ (งานสแกน รายงาน บันทึกยินยอม) (FK Delete Behavior)
+- **Module / Feature**: Database / Foreign Key Delete Rules
+- **Requirement ID**: FR-HIST-03, NFR-PDPA-02
+- **Test Type**: Database
+- **Priority**: P1 (High)
+- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
+  1. สร้างผู้ใช้ทดสอบที่มีงานสแกน 1 งาน รายงาน 1 ฉบับ และบันทึกยินยอม 1 แถว
+  2. จด `user_id`, `scan_id`, ค่า `image_hash` ไว้
+- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
+  - ตาราง `users`, `scans`, `scam_reports`, `consent_logs`
+- **Test Steps (ขั้นตอนการทดสอบ)**:
+  1. ลบแถวผู้ใช้ทดสอบออกจากตาราง `users`
+  2. ค้นตาราง `scans` ด้วย `image_hash` เดิม
+  3. ค้นตาราง `scam_reports` และ `consent_logs` ของผู้ใช้นั้น
+- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
+  1. แถวงานสแกนยังคงอยู่ โดย `user_id` กลายเป็นค่าว่าง (ไม่ถูกลบตามผู้ใช้)
+  2. แถวรายงานยังคงอยู่ โดย `user_id` กลายเป็นค่าว่าง (ไม่ถูกลบตามผู้ใช้)
+  3. บันทึกยินยอมของผู้ใช้ถูกลบตามผู้ใช้จนหมด (ลบแบบพ่วง)
+- **Automation Mapping**: Manual DB Verification
+
+---
+
+### TC-BE-DB-03: การสแกนภาพซ้ำรหัสแฮชเดิมและการลบไฟล์เมื่อไม่มีงานใดใช้แล้ว (Duplicate Hash Plus Shared File Delete)
+- **Module / Feature**: Database / Duplicate Image Hash Handling
+- **Requirement ID**: FR-INPUT-03, FR-HIST-03
+- **Test Type**: Database
+- **Priority**: P1 (High)
+- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
+  1. มี Bearer Token ที่ถูกต้อง
+  2. มีภาพตัวอย่าง 1 ไฟล์
+- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
+  - Endpoint: `POST /api/v1/scan/`, `DELETE /api/v1/history/{scan_id}`, `GET /api/v1/history/{scan_id}`
+  - อัปโหลดไฟล์เดิมซ้ำ 2 ครั้ง
+- **Test Steps (ขั้นตอนการทดสอบ)**:
+  1. อัปโหลดไฟล์เดิม 2 ครั้ง จด `scan_id` ทั้งสองและค่า `image_hash`
+  2. ลบงานแรกด้วย `DELETE /api/v1/history/{scan_id}` แล้วตรวจไฟล์ภาพต้นฉบับและ Heatmap
+  3. ลบงานที่สอง แล้วเรียกดูงานที่ลบด้วย `GET` ซ้ำ
+- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
+  1. ทั้งสองครั้งสำเร็จ (`200 OK`) ได้งานคนละรหัสแต่ `image_hash` เดียวกัน (คอลัมน์นี้เป็นดัชนีค้นหา ไม่ใช่ค่าห้ามซ้ำ)
+  2. ลบงานแรกแล้วไฟล์ภาพยังอยู่ เพราะยังมีอีกงานใช้รหัสแฮชเดียวกัน
+  3. ลบงานที่สองแล้วไฟล์ถูกลบออกจากดิสก์ และเรียกดูซ้ำได้ `404 Not Found` พร้อม `{"detail": "Scan not found"}`
+- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_history.py`
+
+---
+
+## 12. หมวดหมู่การเชื่อมงานข้ามบริการ (Cross-service Integration)
+
+### TC-BE-INT-01: โซ่สแกน ประวัติ รายงาน ตั้งแต่ต้นจนจบ (Scan to History to Report Chain)
+- **Module / Feature**: Integration / Scan History Report Flow
+- **Requirement ID**: FR-INPUT-03, FR-HIST-01, FR-RPT-01
+- **Test Type**: Integration
+- **Priority**: P1 (High)
+- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
+  1. มี Bearer Token ที่ถูกต้อง
+  2. มีภาพตัวอย่างที่ไม่เคยรายงานมาก่อน
+- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
+  - Endpoint: `POST /api/v1/scan/` พร้อม `file` และ `title` ว่า `สลิปทดสอบโซ่`
+  - Endpoint: `GET /api/v1/history?page=1&limit=20`
+  - Endpoint: `GET /api/v1/scan/{scan_id}`
+  - Endpoint: `POST /api/v1/reports` พร้อม `scan_id`, `category` เป็น `fake_slip`, `description` ยาวเกิน 10 ตัวอักษร
+  - Endpoint: `GET /api/v1/reports/my`
+- **Test Steps (ขั้นตอนการทดสอบ)**:
+  1. อัปโหลดภาพแล้วรอจน `GET /api/v1/scan/{scan_id}` มีสถานะ `completed`
+  2. เปิด `GET /api/v1/history` ตรวจว่างานใหม่ปรากฏรายการแรก
+  3. ส่งรายงานของงานนั้น แล้วดึง `GET /api/v1/reports/my`
+- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
+  1. งานสแกนจบด้วยสถานะตัวพิมพ์เล็ก `completed` มีคะแนน 3 ด้าน `text_score`, `visual_score`, `source_score` และ `risk_grade` เป็น `low`, `medium` หรือ `high`
+  2. ประวัติแสดงงานใหม่เป็นรายการแรก มี `scan_id`, `risk_score`, `risk_level` ตัวพิมพ์เล็ก, `status`, `created_at`, `title` ตรงกัน
+  3. ส่งรายงานสำเร็จได้ `201 Created` สถานะ `pending` ตัวพิมพ์เล็ก และพบรายงานใน `GET /my` ของผู้ใช้คนเดียวกัน
+- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_history.py`
+
+---
+
+## 13. หมวดหมู่การถดถอยหลังเปลี่ยนโมเดล (Post-deploy Regression)
+
+### TC-BE-REG-01: ข้อมูลเดิมยังอ่านได้และเกณฑ์เสี่ยงไม่เปลี่ยนหลัง Deploy โมเดล (History Readable After Deploy)
+- **Module / Feature**: Regression / Model Deploy Backward Compatibility
+- **Requirement ID**: FR-ADM-04, FR-HIST-01
+- **Test Type**: Regression
+- **Priority**: P1 (High)
+- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
+  1. ล็อกอินแอดมินที่มี `is_superadmin` เป็นจริง
+  2. มีประวัติสแกนเดิมของผู้ใช้ทั่วไปอย่างน้อย 2 งาน พร้อมจด `scan_id`, `total_risk_score`, `risk_grade`
+  3. มีโมเดลเป้าหมายในตาราง `model_versions` พร้อม `model_id` (int)
+- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
+  - Endpoint: `POST /api/v1/admin/models/{model_id}/deploy` พร้อมเหตุผล
+  - Endpoint: `GET /api/v1/history`, `GET /api/v1/history/{scan_id}`, `POST /api/v1/scan/`
+  - เกณฑ์เดิม: 0-39 เป็น `low`, 40-69 เป็น `medium`, 70-100 เป็น `high`
+- **Test Steps (ขั้นตอนการทดสอบ)**:
+  1. Deploy โมเดลเป้าหมาย แล้วตรวจตาราง `audit_log`
+  2. เรียกประวัติและรายละเอียดงานเดิมซ้ำ เปรียบเทียบคะแนนและระดับกับค่าที่จดไว้
+  3. สแกนภาพตัวอย่างใหม่อีก 1 ภาพ ตรวจโครงสร้าง Response เดิม
+- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
+  1. Deploy สำเร็จ (`200 OK`) โมเดลเก่าหมดสถานะ โมเดลใหม่ใช้งาน และมีบันทึกในตาราง `audit_log`
+  2. งานเดิมทุกงานยังอ่านได้ คะแนนและระดับความเสี่ยงเท่าเดิมทุกประการ
+  3. งานสแกนใหม่ยังได้ฟิลด์ครบ (`id`, `total_risk_score`, `risk_grade`, `text_score`, `visual_score`, `source_score`, `heatmap_image_url`, `status`, `progress`) และเกณฑ์ 3 ระดับยังแบ่งที่ 40 กับ 70 เหมือนเดิม
+- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_admin.py`

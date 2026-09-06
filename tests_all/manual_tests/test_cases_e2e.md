@@ -17,6 +17,10 @@
 | `TC-E2E-MODEL-04` | AI Model Deployment to Live Inference | Admin Portal | FastAPI, Model Versions, AI Worker | Mobile Scan Engine | P1 (Critical) |
 | `TC-E2E-BAN-05` | Malicious Actor Ban and Session Revocation | Admin Portal | FastAPI, DB Users, Mobile Dio Interceptor | Mobile Client Screen | P1 (Critical) |
 | `TC-E2E-OFFLINE-06` | Offline Storage and Reconnection Sync | Mobile Client | Local Cache (History/Result Local DataSource) | FastAPI Backend | P2 (Major) |
+| `TC-E2E-FULL-07` | Full Lifecycle Register to Audit Verification | Mobile (Flutter) | FastAPI, PostgreSQL (`scans`, `scam_reports`, `audit_log`), Admin Portal | Audit Logs Screen | P1 (Critical) |
+| `TC-E2E-AUTH-08` | Mid Journey Access Expiry With Refresh Resume | Mobile (Flutter) | FastAPI, Dio AuthInterceptor, Secure Storage | Mobile History and Scan Screen | P1 (Critical) |
+| `TC-E2E-REG-09` | Post Deploy Scan Regression Stability | Admin Portal | FastAPI, Model Versions, AI Worker | Mobile Scan Engine | P1 (Critical) |
+| `TC-E2E-HIST-10` | History Delete Then Detail Not Found | Mobile (Flutter) | FastAPI, PostgreSQL (`scans`), Local Uploads | Mobile History Screen | P2 (Major) |
 
 ---
 
@@ -188,3 +192,122 @@
   2. หน้าจอแสดงแถบแจ้งเตือน "กำลังทำงานในโหมดออฟไลน์ (Offline Mode)"
   3. เมื่อเชื่อมต่ออินเทอร์เน็ตสำเร็จ แถบแจ้งเตือนหายไป และข้อมูลถูกซิงก์อัปเดตล่าสุดจาก Backend
 - **Automation Mapping**: `scam_image_mobile/test/features/history/presentation/bloc/history_bloc_test.dart`
+
+---
+
+### TC-E2E-FULL-07: การเดินทางครบวงจรตั้งแต่สมัครจนถึงตรวจสอบบันทึกย้อนหลัง (Full Lifecycle Register to Audit)
+- **Module / Feature**: Cross-System / Register Scan History Report Admin Audit Journey
+- **Requirement ID**: FR-AUTH-01, FR-INPUT-03, FR-HIST-01, FR-RPT-01, FR-ADM-02, FR-ADM-06
+- **Test Type**: End-to-End Integration
+- **Priority**: P1 (Critical)
+- **Pre-conditions**:
+  1. Backend FastAPI PostgreSQL และ Redis พร้อมใช้งาน
+  2. มีบัญชีแอดมินที่มีสิทธิ์ Super Admin สำหรับตัดสินรายงาน
+  3. เตรียมภาพทดสอบที่ไม่เคยสแกนมาก่อน 1 ไฟล์
+- **Test Data**:
+  - อีเมลสมัครใหม่ 1 บัญชี พร้อมรหัสผ่าน ชื่อผู้ใช้ ค่า `system_consent` และ `research_consent`
+  - ภาพ `slip_e2e_full.jpg` ขนาดไม่เกิน 20 MB พร้อมหัวข้อภาษาไทย
+  - หมวดรายงาน `fake_slip` พร้อมคำอธิบายยาวไม่ต่ำกว่า 10 ตัวอักษร
+  - เหตุผลการ Deploy โมเดลไม่ใช้ในเคสนี้ ใช้เพียงการตัดสินรายงานด้วยสถานะ `approved` หรือ `rejected` และเลข `version`
+- **Test Steps**:
+  1. สมัครสมาชิกด้วย `POST /api/v1/auth/register` แล้วเข้าสู่ระบบด้วย `POST /api/v1/auth/login` ผ่านฟอร์ม `username` และ `password`
+  2. อัปโหลดภาพด้วย `POST /api/v1/scan/` ผ่านฟิลด์ `file` พร้อมหัวข้อ แล้วรอจนสถานะเป็น `completed` ผ่าน `GET /api/v1/scan/{scan_id}`
+  3. เปิดรายการประวัติด้วย `GET /api/v1/history?page=1&limit=20` แล้วยืนยันว่ารายการใหม่ปรากฏพร้อม `scan_id` `risk_score` `risk_level` ตัวพิมพ์เล็ก `status` `created_at` `title`
+  4. ส่งรายงานด้วย `POST /api/v1/reports` ระบุ `scan_id` `category` และ `description`
+  5. เข้าสู่ Admin Portal ด้วยบัญชีแอดมิน เปิดรายละเอียดด้วย `GET /api/v1/admin/reports/{report_id}` แล้วรับเรื่องด้วย `POST /api/v1/admin/reports/{report_id}/review` พร้อม `version`
+  6. ตัดสินด้วย `PATCH /api/v1/admin/reports/{report_id}` พร้อม `status` และ `version` โดยแนบ `admin_note` ทุกครั้งเมื่อตัดสินเป็น `rejected` หรือส่งกลับเป็น `pending`
+  7. ตรวจสอบบันทึกด้วย `GET /api/v1/admin/audit-logs` พร้อมตัวกรอง `action` และ `entity_type`
+- **Expected Results**:
+  1. สมัครสำเร็จได้ `201 Created` ล็อกอินสำเร็จได้ Token ครบทั้ง `access_token` `refresh_token` `token_type` และ `user`
+  2. สแกนสำเร็จ สถานะเป็น `completed` ระดับความเสี่ยงเป็นตัวพิมพ์เล็ก `low` หรือ `medium` หรือ `high` ตรงกับช่วงคะแนน 0-39 40-69 70-100
+  3. ประวัติแสดงรายการใหม่และมีบันทึกความยินยอมในตาราง `consent_logs`
+  4. รายงานใหม่มีสถานะเริ่มต้น `pending` ตัวพิมพ์เล็ก ตัดสินแล้วสถานะเปลี่ยนเป็น `reviewing` แล้วเป็น `approved` หรือ `rejected` พร้อมเลข `version` เพิ่มขึ้น
+  5. ตาราง `audit_log` เอกพจน์มีรายการเปลี่ยนสถานะพร้อมผลต่าง `status` และ `version` ก่อนหลังครบถ้วน
+- **Automation Mapping**: `tests_all/automate_tests/tests/e2e/test_e2e_scam_flow.py` + `tests_all/automate_tests/tests/api/test_history.py`
+
+---
+
+### TC-E2E-AUTH-08: การหมดอายุกลางการเดินทางแล้วต่ออายุเพื่อทำต่อโดยไม่ล็อกอินใหม่ (Mid Journey Refresh Resume)
+- **Module / Feature**: Cross-System / Token Expiry During Journey With Auto Refresh
+- **Requirement ID**: FR-AUTH-04, FR-HIST-01, FR-INPUT-03, NFR-SEC-02
+- **Test Type**: End-to-End Integration and Security
+- **Priority**: P1 (Critical)
+- **Pre-conditions**:
+  1. ผู้ใช้ล็อกอินค้างไว้ มี Access Token และ Refresh Token ที่ถูกต้อง
+  2. แอป Mobile เก็บ Token ใน Secure Storage และเปิดใช้งานตัวดักจับการยืนยันตัวตนที่ลองใหม่หลังต่ออายุ
+  3. มีภาพทดสอบ 1 ไฟล์สำหรับสแกนต่อเนื่อง
+- **Test Data**:
+  - Access Token ที่ปล่อยให้หมดอายุระหว่างรอผล
+  - Refresh Token ที่ยังไม่หมดอายุสำหรับเรียก `POST /api/v1/auth/refresh` พร้อมฟิลด์ `refresh_token`
+  - เส้นทางที่เรียกต่อเนื่องคือ `GET /api/v1/scan/{scan_id}` และ `GET /api/v1/history`
+- **Test Steps**:
+  1. เริ่มสแกนด้วย `POST /api/v1/scan/` ขณะ Access Token ยังใช้งานได้ แล้วจดค่า `scan_id`
+  2. รอให้ Access Token หมดอายุระหว่างการรอผล แล้วเรียก `GET /api/v1/scan/{scan_id}` หรือ `GET /api/v1/history` ซ้ำ
+  3. สังเกตว่าแอปรับ `401 Unauthorized` แล้วเรียก `POST /api/v1/auth/refresh` อัตโนมัติโดยไม่ขอรหัสผ่านใหม่
+  4. สังเกตการลองคำขอเดิมซ้ำหลังได้ Token ชุดใหม่
+  5. ทำงานต่อจนดูผลสแกนและเปิดประวัติได้ครบ
+- **Expected Results**:
+  1. คำขอแรกหลังหมดอายุตอบ `401 Unauthorized` พร้อม `{"detail": "Could not validate credentials"}`
+  2. การต่ออายุด้วย Refresh Token ที่ถูกต้องตอบ `200 OK` พร้อม `access_token` ใหม่โดยไม่ต้องกรอกรหัสผ่านซ้ำ
+  3. คำขอเดิมถูกลองใหม่สำเร็จโดยผู้ใช้ไม่ต้องล็อกอินใหม่และไม่เสีย `scan_id` ระหว่างทาง
+  4. หาก Refresh Token หมดอายุด้วย แอปล้าง Token ใน Secure Storage แล้วนำทางกลับหน้า Login พร้อมแจ้งให้ล็อกอินใหม่
+  5. ไม่มีการใช้ Token ที่หมดอายุเข้าถึงข้อมูลสำเร็จแม้แต่ครั้งเดียว
+- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_auth_flow.py` + Manual Device Test
+
+---
+
+### TC-E2E-REG-09: การสแกนซ้ำหลังขึ้นโมเดลใหม่แล้วผลยังคงรูปเดิม (Post Deploy Regression Stability)
+- **Module / Feature**: Cross-System / Model Deploy Regression Guard
+- **Requirement ID**: FR-ADM-04, FR-INPUT-03, NFR-PERF-03
+- **Test Type**: End-to-End Regression
+- **Priority**: P1 (Critical)
+- **Pre-conditions**:
+  1. ตาราง `model_versions` มีเวอร์ชัน `v1.0.0` สถานะ `active` และ `v1.0.1` สถานะ `inactive`
+  2. แอดมินเข้าสู่ระบบด้วยสิทธิ์ Super Admin
+  3. เตรียมภาพอ้างอิง 1 ไฟล์ที่ไม่เปลี่ยนไบต์ตลอดการทดสอบ
+- **Test Data**:
+  - รหัสโมเดลเป้าหมายชนิดตัวเลข พร้อมเหตุผลการ Deploy
+  - ภาพอ้างอิง `slip_regression_ref.jpg` 1 ไฟล์
+  - เกณฑ์เปรียบเทียบคือโครงสร้างผลลัพธ์ ไม่ใช่คะแนนต้องตรงทศนิยมทุกจุด
+- **Test Steps**:
+  1. สแกนภาพอ้างอิงก่อน Deploy ด้วย `POST /api/v1/scan/` แล้วรอจน `completed` บันทึก `risk_grade` `status` และชุดฟิลด์หลักไว้
+  2. ตรวจสอบความพร้อมด้วย `POST /api/v1/admin/models/{model_id}/dry-run`
+  3. ขึ้นโมเดลด้วย `POST /api/v1/admin/models/{model_id}/deploy` พร้อม `reason`
+  4. ยืนยันโมเดลปัจจุบันด้วย `GET /api/v1/admin/models` ว่าเวอร์ชันเป้าหมายเป็น `is_active` จริง
+  5. สแกนภาพอ้างอิงไฟล์เดิมซ้ำด้วย `POST /api/v1/scan/` แล้วรอจน `completed`
+  6. เปรียบเทียบโครงสร้างผลรอบก่อนและหลัง Deploy
+- **Expected Results**:
+  1. Deploy สำเร็จโดยไม่มีข้อผิดพลาด `500 Internal Server Error` และไม่มีช่วงหยุดให้บริการ
+  2. สแกนหลัง Deploy สำเร็จ สถานะเป็น `completed` มีฟิลด์ `id` `image_hash` `text_score` `visual_score` `source_score` `total_risk_score` `risk_grade` `status` `progress` ครบเหมือนเดิม
+  3. ระดับความเสี่ยงยังเป็นตัวพิมพ์เล็ก `low` `medium` หรือ `high` และอยู่ในช่วงคะแนนเดิม ไม่พบค่าหลุดช่วง 0-100
+  4. มีบันทึกการ Deploy ในตาราง `audit_log` เอกพจน์พร้อมเหตุผล
+  5. หากไฟล์ Weights ไม่พร้อม การ Deploy ต้องไม่สำเร็จและเวอร์ชันเดิมยังเป็น Active อยู่
+- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_admin.py` + Manual Console Test + Manual Device Test
+
+---
+
+### TC-E2E-HIST-10: การลบประวัติแล้วเรียกดูซ้ำต้องไม่พบข้อมูล (History Delete Then Not Found)
+- **Module / Feature**: Cross-System / History Delete Consistency Across Mobile Backend Storage
+- **Requirement ID**: FR-HIST-02, FR-HIST-03, NFR-PDPA-02
+- **Test Type**: End-to-End Integration and Database
+- **Priority**: P2 (Major)
+- **Pre-conditions**:
+  1. ผู้ใช้ล็อกอินและมีประวัติการสแกนที่เป็นของตนเองอย่างน้อย 1 รายการ
+  2. ทราบค่า `scan_id` รูปแบบ UUID ของรายการที่จะลบ
+  3. เปิดหน้าประวัติบน Mobile เพื่อยืนยันภาพรวมก่อนลบ
+- **Test Data**:
+  - `scan_id` เป้าหมายที่เป็นของผู้ใช้เอง
+  - เส้นทาง `GET /api/v1/history/{scan_id}` และ `DELETE /api/v1/history/{scan_id}` และ `GET /api/v1/history?page=1&limit=20`
+- **Test Steps**:
+  1. เปิดรายละเอียดด้วย `GET /api/v1/history/{scan_id}` เพื่อยืนยันว่าเป็นของตนเอง
+  2. ลบด้วย `DELETE /api/v1/history/{scan_id}` จาก Mobile หรือ API Client
+  3. รีเฟรชรายการด้วย `GET /api/v1/history?page=1&limit=20` แล้วค้นหา `scan_id` เดิม
+  4. เรียกดูรายการเดิมซ้ำด้วย `GET /api/v1/history/{scan_id}`
+  5. ตรวจสอบไฟล์ภาพต้นฉบับและ Heatmap ในที่เก็บไฟล์ตามเงื่อนไขการใช้ `image_hash` ร่วมกัน
+- **Expected Results**:
+  1. การดูครั้งแรกตอบ `200 OK` พร้อมข้อมูลตรงกับเจ้าของงาน
+  2. การลบสำเร็จและรายการหายจากหน้าประวัติบน Mobile หลังรีเฟรช
+  3. การดูซ้ำตอบ `404 Not Found` พร้อม `{"detail": "Scan not found"}`
+  4. แถวในตาราง `scans` ถูกลบจริง และไฟล์ภาพถูกลบเมื่อไม่มีงานอื่นใช้ `image_hash` เดียวกัน หากมีงานอื่นใช้ร่วม ไฟล์ต้องคงอยู่เพื่อไม่กระทบงานอื่น
+  5. บันทึกในตาราง `audit_log` ยังคงอยู่เพื่อการตรวจสอบย้อนหลัง
+- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_history.py` + Manual Device Test

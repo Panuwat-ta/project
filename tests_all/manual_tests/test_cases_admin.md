@@ -379,3 +379,225 @@
   2. ตารางมี Scroll แนวนอนหรือจัดเรียงใหม่โดยไม่ล้นจอ
   3. Modal Deploy และ Ban ยังกดยืนยันได้ในจอเล็ก
 - **Automation Mapping**: Manual Verification
+
+---
+
+## 8. หมวดหมู่การค้นหาและการแบ่งหน้าเพิ่มเติม
+
+### TC-ADM-SRCH-01: การค้นหาด้วยคำพิเศษ คำว่าง และคำสั้น
+- **Module / Feature**: Dashboard / Global Search and List Search
+- **Requirement ID**: FR-ADM-01, FR-ADM-02
+- **Test Type**: Functional
+- **Priority**: P2 (Medium)
+- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
+  1. ล็อกอินด้วยสิทธิ์ Super Admin
+  2. มีข้อมูลผู้ใช้ รายงาน และโมเดลในระบบ
+- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
+  - Endpoint `GET /api/v1/admin/search?q=`
+  - Endpoint `GET /api/v1/admin/reports?search=`
+  - Endpoint `GET /api/v1/admin/users?search=`
+  - คำค้นว่าง คำค้น 1 ตัวอักษร คำค้น `%` `_` และคำค้นมีเว้นวรรคหน้า-หลัง
+- **Test Steps (ขั้นตอนการทดสอบ)**:
+  1. เรียกค้นหาหลักด้วยคำว่างและคำ 1 ตัวอักษรแล้วตรวจผล
+  2. เรียกค้นหาหลักด้วยอักขระพิเศษ `%` `_` `<` `>` แล้วตรวจผล
+  3. เรียกค้นหารายงานและผู้ใช้ด้วยคำพิเศษชุดเดียวกันแล้วตรวจผล
+- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
+  1. คำว่างและคำสั้นกว่า 2 ตัวอักษรตอบ `200 OK` พร้อมรายการว่างและยอดรวม 0
+  2. คำพิเศษตอบ `200 OK` โดยไม่เกิดข้อผิดพลาดฝั่งเซิร์ฟเวอร์
+  3. คำค้นมีเว้นวรรคถูกตัดช่องว่างก่อนค้นหาและได้ผลตรงกับคำหลัก
+- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_admin.py`
+
+---
+
+### TC-ADM-PAGE-01: การแบ่งหน้าเมื่อหน้าเกินจริงและค่าขอบเขตไม่ถูกต้อง
+- **Module / Feature**: Report and User Lists / Pagination Guard
+- **Requirement ID**: FR-ADM-02, FR-ADM-05, FR-ADM-06
+- **Test Type**: Functional
+- **Priority**: P2 (Medium)
+- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
+  1. ล็อกอินด้วยสิทธิ์ Super Admin
+  2. มีรายงาน ผู้ใช้ และบันทึก Audit อย่างละหลายรายการ
+- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
+  - Endpoint `GET /api/v1/admin/reports?page=9999&limit=20`
+  - Endpoint `GET /api/v1/admin/users?page=9999&limit=20`
+  - Endpoint `GET /api/v1/admin/audit-logs?page=9999&limit=50`
+  - ค่าผิดปกติ `page=0` `limit=0` `limit=-5` `limit=101`
+- **Test Steps (ขั้นตอนการทดสอบ)**:
+  1. เรียกรายการทั้งสามด้วยหน้าเกินจริงแล้วตรวจโครงสร้างผล
+  2. เรียกรายการรายงานด้วย `page=0` และ `limit=0` แล้วตรวจรหัสตอบกลับ
+  3. เรียกซ้ำด้วย `limit=-5` และ `limit=101` แล้วตรวจข้อความแจ้ง
+- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
+  1. หน้าเกินจริงตอบ `200 OK` พร้อมรายการว่างแต่ยอดรวมเท่าเดิม
+  2. `page` น้อยกว่า 1 ตอบ `400 Bad Request` พร้อมข้อความว่า `page must be >= 1`
+  3. `limit` นอกช่วง 1-100 ตอบ `400 Bad Request` พร้อมข้อความว่า `limit must be between 1 and 100`
+- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_admin.py`
+
+---
+
+## 9. หมวดหมู่การจัดการโมเดลส่วนขาดและการส่งออกชุดข้อมูล
+
+### TC-ADM-MOD-04: การ Deploy และ Dry-Run ด้วยรหัสโมเดลที่ไม่มีจริง
+- **Module / Feature**: Model Registry / Missing Model Guard
+- **Requirement ID**: FR-ADM-04
+- **Test Type**: Functional / API
+- **Priority**: P1 (High)
+- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
+  1. ล็อกอินด้วยสิทธิ์ Super Admin
+  2. ทราบรหัสที่ไม่มีในตาราง `model_versions` เช่น 999999
+- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
+  - Endpoint `POST /api/v1/admin/models/999999/deploy` พร้อมเหตุผล
+  - Endpoint `POST /api/v1/admin/models/999999/dry-run`
+  - Endpoint `GET /api/v1/admin/models` สำหรับยืนยันรายการจริง
+- **Test Steps (ขั้นตอนการทดสอบ)**:
+  1. เรียกรายการโมเดลแล้วยืนยันว่าไม่มีรหัสทดสอบ
+  2. เรียก Deploy ด้วยรหัสที่ไม่มีจริงพร้อมเหตุผล
+  3. เรียก Dry-Run ด้วยรหัสที่ไม่มีจริง
+- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
+  1. ทั้ง Deploy และ Dry-Run ตอบ `404 Not Found` พร้อมข้อความว่าไม่พบโมเดล
+  2. โมเดล Active เดิมยังเป็น Active ไม่มีการสลับสถานะ
+  3. ไม่มีบันทึก Deploy ใหม่ในประวัติของโมเดลอื่น
+- **Automation Mapping**: Manual Verification
+
+---
+
+### TC-ADM-EXP-01: การสร้าง ติดตาม ยกเลิก และดาวน์โหลดงานส่งออกชุดข้อมูล
+- **Module / Feature**: Dataset Export / Job Lifecycle
+- **Requirement ID**: FR-ADM-03
+- **Test Type**: Functional
+- **Priority**: P1 (High)
+- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
+  1. ล็อกอินด้วยสิทธิ์ Super Admin อยู่ที่หน้า `/admin/dataset`
+  2. มีรายงานสถานะ `approved` ที่ยินยอมงานวิจัยในระบบ
+- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
+  - Endpoint `POST /api/v1/admin/dataset/export-jobs` พร้อม `categories` `from_date` `to_date` `include_metadata`
+  - Endpoint `GET /api/v1/admin/dataset/export-jobs?page=1&limit=20`
+  - Endpoint `GET /api/v1/admin/dataset/export-jobs/{job_id}`
+  - Endpoint `POST /api/v1/admin/dataset/export-jobs/{job_id}/cancel`
+  - Endpoint `GET /api/v1/admin/dataset/export-jobs/{job_id}/download`
+- **Test Steps (ขั้นตอนการทดสอบ)**:
+  1. สร้างงานส่งออกใหม่แบบทุกหมวดหมู่แล้วจดรหัสงาน
+  2. เรียกดูรายการและรายละเอียดงานแล้วสังเกตสถานะ `queued` `running` `succeeded` `failed`
+  3. ยกเลิกงานที่ยังรอหรือกำลังทำแล้วตรวจสถานะ
+  4. ดาวน์โหลดไฟล์ของงานที่สำเร็จแล้วตรวจชนิดไฟล์
+- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
+  1. งานใหม่มีสถานะเริ่มต้น `queued` พร้อมความคืบหน้า 0-100
+  2. รายการแสดงยอดรวม หน้า และขีดจำกัดถูกต้อง งานที่ยกเลิกเปลี่ยนเป็น `canceled`
+  3. งานสำเร็จดาวน์โหลดได้เป็นไฟล์ ZIP ส่วนงานยังไม่สำเร็จตอบ `404 Export file not ready or expired`
+  4. งานที่ล้มเหลวมีข้อความ `error_message` ระบุสาเหตุชัดเจน
+- **Automation Mapping**: Manual Verification
+
+---
+
+## 10. หมวดหมู่ความปลอดภัย การแสดงผล และความเข้ากันได้
+
+### TC-ADM-SEC-01: การป้องกันสคริปต์แทรกในบันทึกแอดมินและคำค้น
+- **Module / Feature**: Report Moderation / Input Neutralization
+- **Requirement ID**: FR-ADM-02, FR-ADM-01
+- **Test Type**: Security
+- **Priority**: P1 (High)
+- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
+  1. มีรายงานสถานะ `reviewing` สำหรับทดสอบตัดสิน
+  2. ล็อกอินด้วยสิทธิ์ Super Admin ทั้งฝั่ง API และหน้าเว็บ
+- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
+  - ฟิลด์ `admin_note` ใน `PATCH /api/v1/admin/reports/{report_id}` ใส่ `<script>alert(1)</script>`
+  - ฟิลด์ `admin_note` ใส่ `<img src=x onerror=alert(1)>`
+  - คำค้น `q` ใน `GET /api/v1/admin/search` และ `search` ในรายการรายงานใส่สคริปต์เดียวกัน
+- **Test Steps (ขั้นตอนการทดสอบ)**:
+  1. บันทึก `admin_note` ที่มีสคริปต์ผ่าน API แล้วเปิดดูรายละเอียดรายงาน
+  2. ค้นหาด้วยคำค้นที่มีสคริปต์ทั้งค้นหาหลักและค้นหารายงาน
+  3. เปิดหน้ารายงาน `/admin/reports` และรายละเอียด `/admin/reports/{id}` บนเบราว์เซอร์
+- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
+  1. API บันทึกและส่งกลับเป็นข้อความธรรมดาโดยไม่มีการรันสคริปต์
+  2. ผลค้นหาแสดงคำค้นเป็นข้อความธรรมดาโดยไม่เกิดป๊อปอัปหรือเปลี่ยนหน้า
+  3. หน้าเว็บบน React แสดงสคริปต์เป็นตัวอักษร ไม่มีการรันโค้ดแปลกปลอม
+- **Automation Mapping**: `server/tests/api/test_admin_reports.py`
+
+---
+
+### TC-ADM-SEC-02: การใช้โทเคนต่อหลังเพิกถอน Session
+- **Module / Feature**: Admin Auth / Session Revocation Enforcement
+- **Requirement ID**: FR-ADM-01
+- **Test Type**: Security
+- **Priority**: P0 (Blocker)
+- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
+  1. ล็อกอิน Admin สำเร็จมี Access Token และ Session ปัจจุบัน
+- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
+  - Endpoint `GET /api/v1/admin/me`
+  - Endpoint `GET /api/v1/admin/dashboard`
+  - Endpoint `POST /api/v1/admin/logout`
+  - Endpoint `POST /api/v1/admin/sessions/{session_id}/revoke`
+  - Endpoint `GET /api/v1/admin/sessions`
+- **Test Steps (ขั้นตอนการทดสอบ)**:
+  1. เรียก `GET /api/v1/admin/me` ด้วยโทเคนปัจจุบันเพื่อยืนยันว่าใช้ได้
+  2. เรียก `POST /api/v1/admin/logout` หรือเพิกถอน Session ปัจจุบันผ่าน `POST /api/v1/admin/sessions/{session_id}/revoke`
+  3. นำโทเคนเดิมเรียก `GET /api/v1/admin/me` และ `GET /api/v1/admin/dashboard` ซ้ำ
+  4. ลองต่ออายุด้วยคุกกี้เดิมผ่าน `POST /api/v1/admin/refresh`
+- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
+  1. ก่อนเพิกถอนเรียก `GET /me` ได้ `200 OK`
+  2. หลังเพิกถอนโทเคนเดิมเรียก `GET /me` และ `GET /dashboard` ได้ `401 Unauthorized`
+  3. การต่ออายุด้วย Session เดิมได้ `401 Unauthorized` และต้องล็อกอินใหม่เท่านั้น
+- **Automation Mapping**: `server/tests/api/test_admin_auth.py`
+
+---
+
+### TC-ADM-UI-03: การใช้งานจอเล็กและซูม 200 เปอร์เซ็นต์
+- **Module / Feature**: Admin Portal / Small Screen and Zoom
+- **Requirement ID**: NFR-A11Y-01, FR-ADM-01
+- **Test Type**: UI/UX / Usability
+- **Priority**: P2 (Medium)
+- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
+  1. ล็อกอินด้วยสิทธิ์ Super Admin
+  2. เตรียมเบราว์เซอร์สำหรับปรับขนาดและซูม
+- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
+  - หน้า `/admin/dashboard` `/admin/reports` `/admin/users` `/admin/models` `/admin/dataset` `/admin/audit-log` `/admin/profile`
+  - ขนาดจอ 360x740 และ 320x568
+  - ซูมเบราว์เซอร์ 200 เปอร์เซ็นต์บนจอ Desktop
+- **Test Steps (ขั้นตอนการทดสอบ)**:
+  1. เปิดทุกหน้าด้วยจอ 360px แล้วตรวจตาราง ปุ่ม และ Modal
+  2. เปิดซ้ำด้วยจอ 320px แล้วลองกด Deploy Rollback Ban และส่งออก
+  3. เปิดจอ Desktop แล้วซูม 200 เปอร์เซ็นต์ จากนั้นใช้งานทุกหน้าโดยไม่เลื่อนแนวนอนค้าง
+- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
+  1. ทุกหน้าไม่มีเนื้อหาล้นจนกดปุ่มไม่ได้ ตารางเลื่อนแนวนอนได้
+  2. Modal ยืนยัน Deploy Rollback และ Ban ยังอ่านครบและกดยืนยันได้ในจอเล็ก
+  3. ที่ซูม 200 เปอร์เซ็นต์ยังเห็นและใช้งานเมนูหลัก ตัวกรอง และปุ่มบันทึกครบ
+- **Automation Mapping**: Manual Verification
+
+---
+
+### TC-ADM-COMP-01: การแสดงผลบน Chrome Firefox และ Safari รุ่นล่าสุด
+- **Module / Feature**: Admin Portal / Cross-Browser Rendering
+- **Requirement ID**: FR-ADM-01, NFR-A11Y-01
+- **Test Type**: Compatibility
+- **Priority**: P2 (Medium)
+- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
+  1. เตรียม Chrome Firefox Safari รุ่นล่าสุดบน Desktop
+  2. มีบัญชี Super Admin สำหรับล็อกอิน
+- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
+  - หน้า `/login` `/admin/dashboard` `/admin/reports` `/admin/users` `/admin/models` `/admin/dataset` `/admin/audit-log` `/admin/profile`
+  - ธีมมืดและธีมสว่าง
+- **Test Steps (ขั้นตอนการทดสอบ)**:
+  1. ล็อกอินผ่าน `POST /api/v1/admin/login` บนทั้งสามเบราว์เซอร์แล้วเข้าแดชบอร์ด
+  2. เปิดทุกหน้าบนทั้งสามเบราว์เซอร์แล้วเทียบเค้าโครง ตาราง กราฟ และ Modal
+  3. ทดสอบต่ออายุและออกจากระบบบนทั้งสามเบราว์เซอร์
+- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
+  1. ทุกเบราว์เซอร์ล็อกอินสำเร็จและเข้า `/admin/dashboard` ได้โดยไม่ค้าง
+  2. เค้าโครง ตาราง กราฟ และ Modal ตรงกัน ไม่มีการซ้อนทับจนใช้งานไม่ได้
+  3. การต่ออายุและออกจากระบบทำงานได้ครบทั้งสามเบราว์เซอร์
+- **Automation Mapping**: Manual Verification
+
+---
+
+## ภาคผนวก ก. ตารางครอบคลุม 10 หมวดหลักของไฟล์นี้
+
+| หมวดหลัก | รหัสที่ครอบคลุม | สถานะ |
+|---|---|---|
+| 1 Functional | AUTH-01, AUTH-03, DASH-01, DASH-02, MOD-01, REP-01, REP-02, USR-01, USR-02, AUD-01, SRCH-01, PAGE-01, MOD-04, EXP-01 | ครอบคลุม |
+| 2 UI/UX | UI-03 | ครอบคลุม |
+| 3 API | MOD-04, SRCH-01, PAGE-01, EXP-01, DASH-01, DASH-02 | ครอบคลุม |
+| 4 Database | AUD-01, USR-01, MOD-01 | ครอบคลุมบางส่วน |
+| 5 Integration | MOD-02, MOD-03, WS-01 | ครอบคลุม |
+| 6 Regression | ไม่มี TC ถดถอยเฉพาะในไฟล์นี้ | GAP |
+| 7 Performance | ไม่มี TC วัดเวลาและโหลดเฉพาะในไฟล์นี้ | GAP |
+| 8 Security | AUTH-01, AUTH-02, AUTH-03, AUTH-04, SEC-01, SEC-02 | ครอบคลุม |
+| 9 Compatibility | COMP-01 | ครอบคลุม |
+| 10 Usability และ Accessibility | UI-01, UI-02, UI-03 | ครอบคลุม |
