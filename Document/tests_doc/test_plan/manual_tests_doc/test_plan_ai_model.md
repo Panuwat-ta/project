@@ -1,13 +1,16 @@
 # แผนการทดสอบ: โมเดลปัญญาประดิษฐ์และไพป์ไลน์การวิเคราะห์ (AI Model & Inference Pipeline Test Plan)
 
+> Version: 1.0.1 | Date: 2026-09-06 | Status: Baseline
+
 - **System / Component**: ScamGuard AI Inference Pipeline
 - **Architecture**: Multi-Layer Analysis Pipeline, Subprocess Worker Isolation, Tiling Inference Engine
 - **Models**:
   - **Visual Anomaly**: SegFormer B0 Fine-Tuned (Semantic Segmentation)
   - **Text Extraction**: Surya OCR (รองรับภาษาไทยและภาษาอังกฤษ TH/EN)
   - **Explainable AI**: Qwen2.5-1.5B Instruct (XAI Reasoning & Contextual Summary)
-- **Document Version**: 1.0.0
-- **Status**: Approved
+- **Document Version**: 1.0.1
+- **Date**: 2026-09-06
+- **Status**: Baseline
 
 ---
 

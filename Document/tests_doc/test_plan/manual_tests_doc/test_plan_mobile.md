@@ -1,11 +1,14 @@
 # แผนการทดสอบ: แอปพลิเคชันสมาร์ตโฟน (Mobile Application Test Plan)
 
+> Version: 1.0.1 | Date: 2026-09-06 | Status: Baseline
+
 - **System / Component**: ScamGuard Mobile Client
 - **Architecture**: Clean Architecture, BLoC/Cubit State Management, Repository Pattern
 - **Tech Stack**: Flutter 3.x, Dart, Dio HTTP Client, Flutter Secure Storage, Hive
 - **Target Platform**: Flutter cross-platform; ทดสอบหลักบน Android (5.0+ / API 21+, เน้น Android 10-14 / API 29-34)
-- **Document Version**: 1.0.0
-- **Status**: Approved
+- **Document Version**: 1.0.1
+- **Date**: 2026-09-06
+- **Status**: Baseline
 
 ---
 
@@ -13,7 +16,7 @@
 
 ### 1.1 สิ่งที่อยู่ในขอบเขต (In-Scope)
 1. **Authentication Flow**: การลงทะเบียน, การเข้าสู่ระบบด้วย JWT, การเก็บรักษา Token ลงใน Secure Storage, และการรีเฟรช Token อัตโนมัติ
-2. **Image Selection**: การเลือกภาพจากแกลเลอรี, การตรวจสอบขนาดไฟล์ (<= 10MB) และนามสกุลไฟล์ (.jpg, .jpeg, .png, .webp)
+2. **Image Selection**: การเลือกภาพจากแกลเลอรีเท่านั้น (Gallery-only) การตรวจสอบนามสกุลไฟล์ (.jpg, .jpeg, .png, .webp) และตัวชี้วัด isValidSize 10MB โดย usecase ไม่ปฏิเสธไฟล์เกินแต่ส่ง compress ต่อ สุดท้าย Server ปฏิเสธเกิน 20MB ด้วย HTTP 413 และปฏิเสธภาพเกิน 100M px
 3. **Image Cropping**: เครื่องมือคร็อปและหมุนภาพก่อนส่งตรวจสอบ
 4. **Scan Submission**: การอัปโหลดไฟล์ผ่าน Multipart HTTP ไปยัง Backend ด้วยพารามิเตอร์ file+title (การยินยอมการใช้ข้อมูลได้รับความยินยอมไว้แล้วในขั้นตอนลงทะเบียน)
 5. **Result & Forensic Visualization**: การแสดงคะแนนความเสี่ยง (Risk Score) 3 ระดับ (Low 0-39, Medium 40-69, High 70-100) การซ้อนทับภาพ Heatmap Overlay และตัวปรับ Opacity
@@ -26,6 +29,11 @@
 ### 1.2 สิ่งที่อยู่นอกขอบเขต (Out-of-Scope)
 1. **On-Device AI Inference**: ระบบใช้ Server-side AI Inference ทั้งหมด ไม่มีการทำ On-Device Deep Learning บนเครื่องผู้ใช้
 2. **ระบบการชำระเงิน**: ระบบไม่มีธุรกรรมทางการเงินหรือระบบ In-App Purchase
+3. **การถ่ายภาพจากกล้องโดยตรง**: รองรับ Gallery-only ไม่มีทดสอบกล้อง
+4. **OAuth Social Login และ FCM Push Notification**: Deferred เป็น Phase 2
+
+### 1.3 หมายเหตุ GAP
+- ชุดค่า category keys ฝั่ง Mobile กับ Backend ไม่ตรงกัน ให้ mark เป็น GAP ห้ามเขียนแผนเทสว่าตรงกัน
 
 ---
 

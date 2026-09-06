@@ -1,10 +1,13 @@
 # แผนการทดสอบอัตโนมัติ: การทดสอบประสิทธิภาพและอัตราการรองรับ (Performance & Load Automation Test Plan)
 
+> Version: 1.0.1 | Date: 2026-09-06 | Status: Baseline
+
 - **System / Component**: ScamGuard Infrastructure & API Gateway
 - **Framework**: Locust (Python-based Distributed Load Testing Framework)
 - **Execution Script**: `tests_all/automate_tests/run.sh perf`
-- **Document Version**: 1.0.0
-- **Status**: Approved
+- **Document Version**: 1.0.1
+- **Date**: 2026-09-06
+- **Status**: Baseline
 
 ---
 
@@ -27,8 +30,12 @@
 ### 2.1 โครงสร้างการทำงานของ Locustfile (`locustfile.py`)
 - **ScamGuardUser Class**:
   - `wait_time`: สุ่มช่วงเวลาระหว่าง 1 ถึง 3 วินาที เพื่อจำลองพฤติกรรมมนุษย์จริง
-  - Task 1 (Weight 3): ตรวจสอบสถานะความพร้อมผ่าน `GET /health`
+  - Task 1 (Weight 3): ตรวจสอบสถานะความพร้อมผ่าน `GET /health` ที่รากเซิร์ฟเวอร์
   - Task 2 (Weight 1): อัปโหลดรูปภาพทดสอบผ่าน `POST /api/v1/scan/` โดยสร้างภาพใน Memory ผ่าน PIL
+
+### 2.1.1 หมายเหตุ GAP เส้นทาง Locust เดิม
+- ไฟล์ `tests_all/automate_tests/tests/performance/locustfile.py` ยิง POST /api/v1/scan/ พร้อม Bearer Token
+- การทดสอบโหลดที่ถูกต้องต้องยิง POST /api/v1/scan/ พร้อม Bearer Token เท่านั้น ห้ามเขียนแผนเทสของเส้นทางที่ไม่มี
 
 ### 2.2 สถานการณ์การทดสอบโหลด (Load Scenarios)
 1. **Baseline Load (Smoke Test)**:

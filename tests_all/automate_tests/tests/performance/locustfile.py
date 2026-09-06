@@ -1,4 +1,4 @@
-"""Locust load test — ยิง /health และ /api/v1/scan/upload"""
+"""Locust load test — ยิง /health และ /api/v1/scan/"""
 from locust import HttpUser, task, between
 import io
 from PIL import Image
@@ -21,7 +21,7 @@ class ScamGuardUser(HttpUser):
     def scan(self):
         # ต้องมี token ถ้า endpoint ต้อง auth — สำหรับ load test จะลองแบบไม่ auth ก่อน
         self.client.post(
-            "/api/v1/scan/upload",
+            "/api/v1/scan/",
             files={"file": ("load.png", _img(), "image/png")},
-            data={"consent": "true"},
+            data={"title": "locust-load-test"},
         )

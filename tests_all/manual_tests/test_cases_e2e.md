@@ -14,9 +14,9 @@
 | `TC-E2E-SCAN-01` | Full User Scam Detection Journey | Mobile (Flutter) | FastAPI, Redis, SegFormer, Surya OCR, Qwen2.5 | Mobile Result Screen | P0 (Blocker) |
 | `TC-E2E-CACHE-02` | High-Speed Cache Hit Workflow | Mobile / API Client | FastAPI, Redis (SHA-256 Hash Cache) | Client (Bypass AI) | P0 (Blocker) |
 | `TC-E2E-REPORT-03` | User Incident Reporting to Admin Review | Mobile (User) | FastAPI, PostgreSQL (`scam_reports` table) | Admin Forensic Console | P1 (Critical) |
-| `TC-E2E-MODEL-04` | AI Model Deployment to Live Inference | Admin Portal | FastAPI, Model Registry, AI Worker | Mobile Scan Engine | P1 (Critical) |
+| `TC-E2E-MODEL-04` | AI Model Deployment to Live Inference | Admin Portal | FastAPI, Model Versions, AI Worker | Mobile Scan Engine | P1 (Critical) |
 | `TC-E2E-BAN-05` | Malicious Actor Ban and Session Revocation | Admin Portal | FastAPI, DB Users, Mobile Dio Interceptor | Mobile Client Screen | P1 (Critical) |
-| `TC-E2E-OFFLINE-06` | Offline Storage and Reconnection Sync | Mobile Client | Local Cache (Flutter Secure Storage / Hive) | FastAPI Backend | P2 (Major) |
+| `TC-E2E-OFFLINE-06` | Offline Storage and Reconnection Sync | Mobile Client | Local Cache (History/Result Local DataSource) | FastAPI Backend | P2 (Major) |
 
 ---
 
@@ -24,7 +24,7 @@
 
 ### TC-E2E-SCAN-01: การตรวจสอบภาพต้องสงสัยแบบครบวงจร (Full Detection Workflow)
 - **Module / Feature**: Cross-System / End-to-End Scan Journey
-- **Requirement ID**: FR-INPUT-03, FR-SYS-01, FR-SYS-02, FR-SYS-05, FR-SYS-07, FR-SYS-08, FR-SYS-11, FR-REPORT-01, FR-REPORT-02, FR-REPORT-05
+- **Requirement ID**: FR-INPUT-01, FR-INPUT-03, FR-INPUT-05, FR-SYS-01, FR-SYS-02, FR-SYS-03, FR-SYS-05, FR-SYS-07, FR-SYS-08, FR-SYS-09, FR-SYS-11, FR-REPORT-01, FR-REPORT-02, FR-REPORT-03, FR-REPORT-04, FR-REPORT-05, FR-HIST-01, NFR-PERF-02
 - **Test Type**: End-to-End Integration
 - **Priority**: P0 (Blocker)
 - **Pre-conditions**:
@@ -36,8 +36,8 @@
   - Title: "ตรวจสอบสลิปโอนเงินต้องสงสัย"
 - **Test Steps**:
   1. เปิดแอป ScamGuard บนสมาร์ตโฟน แล้วเลือกภาพ `slip_tampered_high_res.jpg` จากแกลเลอรี
-  2. ครอบตัด (Crop) ภาพตามสัดส่วนที่ต้องการ และกดปุ่ม "เริ่มสแกน" (Start Scan)
-  3. สังเกตหน้าจอ Mobile แสดงแอนิเมชัน Loading พร้อมข้อความอธิบายสถานะการวิเคราะห์แบบเรียลไทม์
+  2. กดปุ่ม "เริ่มสแกน" (Start Scan)
+  3. สังเกตหน้าจอ Mobile เปลี่ยน State จาก `ScanInitial` เป็น `ScanUploading` แล้วเป็น `ScanPolling`
   4. Backend รับไฟล์ผ่าน `POST /api/v1/scan/` ตรวจสอบ Magic Bytes และสร้าง SHA-256 Hash
   5. AI Inference Pipeline รับงานและประมวลผล:
      - Tiling 512x512 with 64px overlap ส่งเข้า SegFormer Model
@@ -47,10 +47,10 @@
   6. Backend บันทึกผลลัพธ์ลง PostgreSQL และบันทึกแคชลง Redis
   7. Mobile รับ Response และเปลี่ยนเส้นทางไปยังหน้า Result Screen
 - **Expected Results**:
-  1. Mobile แสดง Risk Score อยู่ในช่วงความเสี่ยงถูกต้อง (Low: 0-39, Medium: 40-69, High: 70-100) ไม่พบคำว่า "Safe"
+  1. Mobile แสดง Risk Score พร้อมระดับตัวพิมพ์เล็กถูกต้อง (low: 0-39, medium: 40-69, high: 70-100) ไม่พบคำว่าระดับ Safe
   2. Heatmap ซ้อนทับภาพต้นฉบับตรงตำแหน่งที่มีการตัดต่อ พร้อมสไลเดอร์ปรับ Opacity ได้
   3. แสดงผลคะแนนแยก 3 ปัจจัย: Text Analysis, Source Verification, Visual Anomaly
-  4. แสดงบทวิเคราะห์สรุปจาก AI Explainable Text ภาษาไทยอย่างถูกต้อง
+  4. แสดงบทวิเคราะห์สรุปจาก Qwen2.5 ภาษาไทยสอดคล้องกับข้อความ Surya OCR และพิกัด Heatmap
   5. ประวัติการสแกนปรากฏในหน้า History ทันที
 - **Automation Mapping**: `tests_all/automate_tests/tests/e2e/test_e2e_scam_flow.py`
 
@@ -66,18 +66,19 @@
   2. ผู้ใช้อีกรายหนึ่ง (User B) หรือผู้ใช้เดิมเปิดแอปเพื่อทดสอบ
 - **Test Data**:
   - Image: `voucher_sample.png` (ไฟล์เดิม ข้อมูลไบต์เหมือนเดิม 100%)
+  - Endpoint: `POST /api/v1/scan/` พร้อมภาพที่มี SHA-256 ซ้ำกับในแคช
 - **Test Steps**:
-  1. ผู้ใช้ทำการอัปโหลดไฟล์ `voucher_sample.png` เข้าสู่ระบบผ่านหน้า Mobile หรือ API
+  1. ผู้ใช้ทำการอัปโหลดไฟล์ `voucher_sample.png` ผ่าน `POST /api/v1/scan/` (หน้า Mobile หรือ API Client)
   2. Backend คำนวณ SHA-256 Checksum ของไฟล์ที่รับเข้ามา
   3. Backend ตรวจสอบคีย์ใน Redis Cache
   4. ตรวจสอบว่าระบบข้ามขั้นตอนการเรียก GPU Model Inference หรือไม่
   5. ส่งผลลัพธ์เดิมกลับมายัง Client ทันที
 - **Expected Results**:
-  1. ค่า `cached: true` ถูกส่งกลับมาใน Response Payload
+  1. ระบบคืนผลลัพธ์เดิมโดยไม่เรียก GPU Model Inference ซ้ำ
   2. เวลาในการประมวลผล (Response Time) ต้องน้อยกว่าหรือเท่ากับ 3 วินาที (E2E Latency <= 3.0s)
   3. ผลลัพธ์ Risk Score, Visual Anomaly, และ Heatmap URL ตรงกับผลการสแกนรอบแรก 100%
   4. ระบบไม่เกิดการคำนวณ GPU ซ้ำซ้อน ซึ่งช่วยลดภาระของ Inference Worker
-- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_scan_workflow.py::test_scan_image_cache_hit`
+- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_scan_workflow.py`
 
 ---
 
@@ -90,23 +91,25 @@
   1. มีรายการประวัติการสแกน (Scan ID) ที่ผู้ใช้ต้องการรายงาน
   2. บัญชี Admin มีสิทธิ์จัดการรายงานบน Admin Portal
 - **Test Data**:
-  - Reason: "ภาพใบเสร็จนี้ไม่ใช่สลิปปลอม แต่ระบบตรวจว่ามีความเสี่ยงสูงผิดปกติ"
-  - Report Type: `FALSE_POSITIVE`
+  - scan_id ของผลสแกนที่ต้องการรายงาน
+  - category: `fake_slip`
+  - description: "ภาพใบเสร็จนี้ระบบตรวจว่ามีความเสี่ยงสูงผิดปกติ ขอให้ตรวจสอบซ้ำ" (ยาวไม่ต่ำกว่า 10 ตัวอักษร)
 - **Test Steps**:
   1. ผู้ใช้เปิดหน้าผลการสแกนใน Mobile App และกดปุ่ม "รายงานผลผิดพลาด" (Report)
   2. กรอกเหตุผลและกดยืนยันส่งรายงานผ่าน `POST /api/v1/reports`
   3. เข้าสู่ Admin Portal ด้วยบัญชีแอดมิน ไปยังเมนู "Report Review"
   4. ตรวจสอบว่ารายการรายงานใหม่ปรากฏขึ้นในตาราง พร้อมสถานะ `pending`
-  5. แอดมินกดเปิด Forensic Detail ตรวจดูภาพต้นฉบับ, Heatmap, และเหตุผลของผู้ร้องเรียน
-  6. แอดมินกดปุ่ม "อนุมัติการแก้ไข" (Approve) หรือ "ปฏิเสธรายงาน" (Reject) พร้อมระบุบันทึก
+  5. แอดมินกดเปิด Forensic Detail ด้วย `GET /api/v1/admin/reports/{report_id}` ตรวจดูภาพต้นฉบับ, Heatmap, และเหตุผลของผู้ร้องเรียน
+  6. แอดมินเริ่มตรวจด้วย `POST /api/v1/admin/reports/{report_id}/review` พร้อม `version` แล้วตัดสินด้วย `PATCH /api/v1/admin/reports/{report_id}` พร้อม `status` และ `version` (แนบ `admin_note` ทุกครั้งเมื่อตัดสินเป็น `rejected` หรือส่งกลับเป็น `pending`)
   7. ระบบอัปเดตสถานะในตาราง `scam_reports` พร้อมปรับปรุงค่า `version` (Optimistic Locking)
-  8. ตรวจสอบบันทึกในหน้า "Audit Logs" ของระบบแอดมิน
+  8. ตรวจสอบบันทึกในหน้า "Audit Logs" ผ่าน `GET /api/v1/admin/audit-logs`
 - **Expected Results**:
   1. Mobile App แสดงข้อความยืนยันการส่งรายงานสำเร็จ
-  2. ข้อมูลรายงานในตาราง `scam_reports` มี `status` เปลี่ยนเป็น `approved` หรือ `rejected` (จาก `pending`/`reviewing`)
+  2. ข้อมูลรายงานในตาราง `scam_reports` มี `status` เปลี่ยนเป็น `approved` หรือ `rejected` (จาก `pending` ผ่าน `reviewing` ตัวพิมพ์เล็กเท่านั้น)
   3. คอลัมน์ `version` ถูกเพิ่มค่าขึ้น (+1) อย่างถูกต้องเพื่อป้องกัน Race Condition
-  4. หน้า Audit Logs มีบันทึก Action `UPDATE_REPORT_STATUS` ระบุ Admin ID, Timestamp (UTC+7), และ JSON Diff ก่อนและหลังการเปลี่ยนสถานะ
-- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_admin.py::test_admin_report_review_flow`
+  4. หน้า Audit Logs มีบันทึก Action ระบุ Admin ID, Timestamp (UTC+7), และ JSON Diff ก่อนและหลังการเปลี่ยนสถานะ
+  5. รายงานที่ผูกกับภาพคะแนนสูง (70-100 ระดับ high) แสดงคะแนนและระดับความเสี่ยงของภาพต้นฉบับในหน้ารายละเอียดเพื่อให้แอดมินจัดลำดับความสำคัญได้
+- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_history.py`
 
 ---
 
@@ -116,24 +119,25 @@
 - **Test Type**: End-to-End Integration
 - **Priority**: P1 (Critical)
 - **Pre-conditions**:
-  1. ตาราง `model_versions` มีโมเดล SegFormer อย่างน้อย 2 เวอร์ชัน (เช่น `v1.0.0` สถานะ ACTIVE และ `v1.0.1` สถานะ STAGING)
+  1. ตาราง `model_versions` มีโมเดล SegFormer อย่างน้อย 2 เวอร์ชัน (เช่น `v1.0.0` สถานะ `active` และ `v1.0.1` สถานะ `inactive`)
   2. แอดมินเข้าสู่ระบบ Admin Portal
 - **Test Data**:
   - Target Version: `v1.0.1` (SegFormer B0 Fine-Tuned)
+  - model_id (int) ของเวอร์ชันเป้าหมาย
 - **Test Steps**:
   1. เข้าหน้า "AI Model Management" บน Admin Portal
-  2. เลือกเวอร์ชัน `v1.0.1` และกดปุ่ม "Dry-run Verification" เพื่อตรวจสอบความพร้อมของไฟล์ Weights และ Checksum
-  3. เมื่อระบบรายงานสุขภาพผ่าน ให้กดปุ่ม "Deploy Model"
-  4. Backend เรียก API `POST /api/v1/admin/models/{model_id}/deploy` ทำงานภายใต้ Database Transaction แบบ Atomic
-  5. ปรับสถานะ `v1.0.0` เป็น `INACTIVE` และ `v1.0.1` เป็น `ACTIVE`
+  2. เลือกเวอร์ชัน `v1.0.1` และกดปุ่ม Dry-run ผ่าน `POST /api/v1/admin/models/{model_id}/dry-run` เพื่อตรวจสอบความพร้อมของไฟล์ Weights และ Checksum
+  3. เมื่อระบบรายงานสุขภาพผ่าน ให้กดปุ่ม "Deploy Model" ผ่าน `POST /api/v1/admin/models/{model_id}/deploy` พร้อม `reason`
+  4. Backend ทำงานภายใต้ Database Transaction แบบ Atomic
+  5. ปรับสถานะ `v1.0.0` เป็น `inactive` และ `v1.0.1` เป็น `active`
   6. AI Inference Service โหลด Model Weights ของเวอร์ชันใหม่เข้าหน่วยความจำ
   7. ใช้ Mobile App ส่งสแกนภาพใหม่ 1 รายการ
 - **Expected Results**:
   1. Admin Portal อัปเดตการแสดงผลเวอร์ชัน `v1.0.1` ปักหมุดเป็นโมเดล Active อันดับแรกทันที
   2. สแกนใหม่สำเร็จโดยไม่มี Downtime หรือข้อผิดพลาด 500 Internal Server Error
   3. ตรวจสอบ Active Model ผ่าน Admin API ว่าเป็น `v1.0.1` อย่างถูกต้อง
-  4. หากเกิดความผิดพลาดระหว่างสลับโมเดล ระบบต้อง Rollback คืนเวอร์ชันเดิมอัตโนมัติ
-- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_admin.py`
+  4. หากเกิดความผิดพลาดระหว่างสลับโมเดล (เช่น ไฟล์ Weights ไม่อยู่) การ Deploy ต้องไม่สำเร็จ และตรวจสอบว่าเวอร์ชันเดิมยังคงสถานะ Active อยู่
+- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_admin.py` (partial: ตรวจสิทธิ์เข้าถึง) + Manual Console Test
 
 ---
 
@@ -146,20 +150,20 @@
   1. มีบัญชีผู้ใช้ `abusive_user@scamguard.local` กำลังใช้งานอยู่ในระบบ Mobile
   2. ผู้ใช้มี Access Token ที่ยังไม่หมดอายุ
 - **Test Data**:
-  - User ID: UUID ของ `abusive_user`
+  - User ID (int) ของ `abusive_user`
   - Ban Reason: "ตรวจพบพฤติกรรมพยายามยิงคำขอโจมตีระบบเกินอัตราปกติ"
 - **Test Steps**:
-  1. แอดมินเปิดหน้า "User Management" บน Admin Portal และค้นหา `abusive_user@scamguard.local`
+  1. แอดมินเปิดหน้า "User Management" บน Admin Portal และค้นหา `abusive_user@scamguard.local` ด้วย `GET /api/v1/admin/users?search=`
   2. กดปุ่ม "Ban User" ระบบแสดง Modal บังคับกรอกเหตุผล
-  3. กรอกเหตุผลและกดยืนยัน Backend ทำการอัปเดตฟิลด์ `is_banned = true` และบันทึก `ban_reason`
+  3. กรอกเหตุผลและกดยืนยันด้วย `PATCH /api/v1/admin/users/{user_id}` พร้อม `is_active` เป็น `false` และ `reason` Backend บันทึกประวัติลง `audit_log`
   4. บน Mobile App ผู้ใช้ที่ถูกระงับพยายามกดปุ่ม "เริ่มสแกน" หรือดึงข้อมูลหน้า "ประวัติ"
   5. Dio Interceptor ของ Mobile ตรวจสอบการตอบสนอง 403 Forbidden
 - **Expected Results**:
   1. Backend ปฏิเสธคำขอทันทีด้วย HTTP 403 Forbidden พร้อม Message แจ้งว่าบัญชีถูกระงับ
   2. Mobile Client ล้างค่า Token ออกจาก Secure Storage ทันที
   3. แอปนำทางผู้ใช้กลับไปยังหน้า Login พร้อม Dialog แจ้งเตือนสาเหตุการระงับบัญชี
-  4. ผู้ใช้ไม่สามารถเข้าสู่ระบบซ้ำได้จนกว่าแอดมินจะทำการ Unban
-- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_admin.py::test_ban_user_and_token_revocation`
+  4. ผู้ใช้ไม่สามารถเข้าสู่ระบบซ้ำได้จนกว่าแอดมินจะเปิดใช้งานใหม่
+- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_admin.py` (partial: ตรวจสิทธิ์เข้าถึง) + Manual Console Test + Manual Device Test
 
 ---
 
@@ -183,4 +187,4 @@
   1. ในขณะออฟไลน์ แอปสามารถแสดงผลรายการประวัติและภาพ Thumbnail ที่แคชไว้ได้โดยไม่เกิด Crash
   2. หน้าจอแสดงแถบแจ้งเตือน "กำลังทำงานในโหมดออฟไลน์ (Offline Mode)"
   3. เมื่อเชื่อมต่ออินเทอร์เน็ตสำเร็จ แถบแจ้งเตือนหายไป และข้อมูลถูกซิงก์อัปเดตล่าสุดจาก Backend
-- **Automation Mapping**: `scam_image_mobile/test/features/history/data/datasources/history_local_data_source_test.dart`
+- **Automation Mapping**: `scam_image_mobile/test/features/history/presentation/bloc/history_bloc_test.dart`

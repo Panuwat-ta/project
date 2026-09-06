@@ -1,10 +1,13 @@
 # แผนการทดสอบ: ระบบหลังบ้านและฐานข้อมูล (Backend API & Database Test Plan)
 
+> Version: 1.0.1 | Date: 2026-09-06 | Status: Baseline
+
 - **System / Component**: ScamGuard Backend Core Service
 - **Architecture**: Asynchronous RESTful API, Service Layer Pattern, Repository Pattern
 - **Tech Stack**: FastAPI (Python 3.10), SQLAlchemy 2.0, Alembic, PostgreSQL 15, Redis 7, Slowapi, Pydantic v2
-- **Document Version**: 1.0.0
-- **Status**: Approved
+- **Document Version**: 1.0.1
+- **Date**: 2026-09-06
+- **Status**: Baseline
 
 ---
 
@@ -12,31 +15,38 @@
 
 ### 1.1 สิ่งที่อยู่ในขอบเขต (In-Scope)
 1. **Authentication & Authorization**:
-   - `POST /api/v1/auth/register`, `POST /api/v1/auth/login`, `GET /api/v1/auth/me`
+   - `POST /api/v1/auth/register`, `POST /api/v1/auth/login`, `POST /api/v1/auth/refresh`, `POST /api/v1/auth/logout`, `GET /api/v1/auth/me`
    - การออก JWT Token (Access Token และ Refresh Token)
-   - การตรวจสอบสิทธิ์แบบ RBAC แยกบทบาท Admin / User / Researcher
+   - การตรวจสอบสิทธิ์แยกบทบาท Admin จากตาราง admins แบบบังคับ is_superadmin กับ User จากตาราง users
 2. **Scan & Upload Pipeline**:
-   - `POST /api/v1/scan/` รองรับ Multipart/form-data
-    - การตรวจสอบขนาดไฟล์ (Server ≤20MB; ฝั่ง Mobile จำกัด ≤10MB) และ Magic Bytes (JPEG/PNG/WebP)
-   - การคำนวณ SHA-256 Hash เพื่อทำ Redis Caching
+   - `POST /api/v1/scan/` รองรับ Multipart/form-data พารามิเตอร์ file+title และ `GET /api/v1/scan/{id}` สำหรับดึงผลหรือ Poll สถานะ
+    - การตรวจสอบขนาดไฟล์ (Server ปฏิเสธเกิน 20MB ด้วย HTTP 413 และปฏิเสธภาพเกิน 100M px ฝั่ง Mobile มีตัวชี้วัด isValidSize 10MB แต่ usecase ไม่ปฏิเสธให้ compress ต่อ) และ Magic Bytes (JPEG/PNG/WebP)
+   - การคำนวณ SHA-256 Hash เพื่อทำ Redis Caching TTL 30 วัน
    - การสร้างงานส่งต่อไปยัง AI Subprocess Pipeline
 3. **Scan History & Detail Query**:
-    - `GET /api/v1/history` และ `GET /api/v1/history/{scan_id}`
+    - `GET /api/v1/history` และ `GET /api/v1/history/{scan_id}` และ `DELETE /api/v1/history/{scan_id}`
    - การดึงข้อมูลผลลัพธ์ย้อนหลัง พร้อมคะแนนแยก 3 ปัจจัย และ URL ภาพ Heatmap
 4. **Scam Incident Reporting**:
-    - `POST /api/v1/reports` สำหรับผู้ใช้ทั่วไป
-    - การบันทึกข้อร้องเรียนลงตาราง `scam_reports` พร้อมการควบคุม Concurrency (คอลัมน์ `version`)
+    - `POST /api/v1/reports` สำหรับผู้ใช้ทั่วไป `GET /api/v1/reports/categories` สำหรับดึงประเภท และ `GET /api/v1/reports/my` สำหรับดูรายงานตนเอง
+    - การบันทึกข้อร้องเรียนลงตาราง `scam_reports` สถานะ pending/reviewing/approved/rejected พร้อมการควบคุม Concurrency (คอลัมน์ `version`)
 5. **Database Integrity & Migrations**:
    - การทำงานของ Alembic Migrations
    - ความถูกต้องของ Foreign Key Constraints, Indexes (Hash Index, B-Tree Index บน `user_id`, `image_hash`)
    - การจัดการ Timezone ต้องเป็น UTC+7 (Asia/Bangkok)
+   - การบันทึกทุกการกระทำสำคัญของ Admin ลงตารางเอกพจน์ audit_log พร้อม Structured JSON before_state และ after_state
 6. **Security & Rate Limiting**:
-    - การป้องกัน Brute Force ด้วย Slowapi Rate Limiting (ค่า default 60/hour; Admin Login/Refresh 5/minute)
+    - การป้องกัน Brute Force ด้วย Slowapi Rate Limiting (ค่า default 60/hour; Admin Login/Refresh 5/minute ส่ง HTTP 429)
+   - การบังคับ is_superadmin ทุกเส้น /api/v1/admin/* ผู้ใช้ทั่วไปเรียกต้องได้ HTTP 403
    - การตั้งค่า CORS Header และ Security Headers
 
 ### 1.2 สิ่งที่อยู่นอกขอบเขต (Out-of-Scope)
 1. การเทรนโมเดล AI (การทดสอบนี้มุ่งเน้นการให้บริการ API Backend)
 2. การจัดการ DNS หรือ Cloud CDN ระดับองค์กร
+
+### 1.3 หมายเหตุ GAP ที่ห้ามเขียนแผนเทสของสิ่งที่ไม่มี
+- เส้นทาง POST /api/v1/scan/upload ไม่มีอยู่จริง ต้องใช้ POST /api/v1/scan/ เท่านั้น
+- เส้นทาง DELETE /api/v1/scan/{id} ไม่มีอยู่จริง มีเฉพาะ DELETE /api/v1/history/{id}
+- ชุดค่า category keys ฝั่ง Mobile กับ Backend ไม่ตรงกัน ให้ mark เป็น GAP
 
 ---
 
@@ -60,7 +70,7 @@
 ### 3.1 เกณฑ์การเริ่มต้นทดสอบ (Entry Criteria)
 - ฐานข้อมูล PostgreSQL และ Redis พร้อมเชื่อมต่อ และ Migration อยู่ในสถานะ Head ล่าสุด
 - Environment Variables ถูกกำหนดผ่านไฟล์ `.env` ครบถ้วนโดยไม่มี Missing Config
-- รันคำสั่งตรวจสอบการเชื่อมต่อผ่าน `/health` ให้ผลลัพธ์สถานะ OK
+- รันคำสั่งตรวจสอบการเชื่อมต่อผ่าน GET /health ที่รากเซิร์ฟเวอร์ ให้ผลลัพธ์สถานะ OK
 
 ### 3.2 เกณฑ์การสิ้นสุดการทดสอบ (Exit Criteria)
 - ชุดทดสอบ Automated API Suite ใน `tests_all/automate_tests/tests/api/` ผ่าน 100% (อ้างอิงจำนวนปัจจุบัน)

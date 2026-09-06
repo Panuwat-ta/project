@@ -2,8 +2,9 @@
 
 - **Project**: ScamGuard (Scam Image Detection System)
 - **Standard**: ISO/IEC/IEEE 29119-3 Test Documentation
-- **Version**: 1.1.0
-- **Status**: Baseline (68 TCs, Version 1.1.0)
+- **Version**: 1.3.0
+- **Date**: 2026-09-06
+- **Status**: Baseline (106 TCs, Version 1.3.0)
 
 ---
 
@@ -15,7 +16,7 @@
 
 - **Wiki scheme (`FR-AUTH` / `FR-INPUT` / `FR-SYS` / `FR-REPORT` / `FR-HIST` / `FR-RPT` / `FR-ADM` / `FR-PDPA`) คือ baseline สำหรับงานทดสอบ**
 - **Document scheme (`FR-SCAN` / `FR-ANALYSIS` / `FR-XAI` / `FR-HISTORY` / `FR-ADMIN`) ให้ map มาหา wiki scheme ผ่าน mapping table ใน §2.8**
-- **กฎการอ้างอิง**: ทุก `Test Case ID` ที่ RTM อ้างถึงต้องมีอยู่ใน `tests_all/manual_tests/*.md` — FR ใดที่ยังไม่มี TC ให้ระบุเป็น **GAP** / **Deferred** และไม่นับเป็น Covered
+- **กฎการอ้างอิง**: ทุก `Test Case ID` ที่ RTM อ้างถึงต้องมีอยู่ใน `tests_all/manual_tests/*.md` — FR ใดที่ยังไม่มี TC ให้ระบุเป็น GAP / Deferred และไม่นับเป็น Covered
 
 ### 1.2 Baseline ทางเทคนิค
 
@@ -34,10 +35,10 @@
 | Requirement ID | รายละเอียดความต้องการ | Test Case ID | รูปแบบการทดสอบ | สคริปต์อัตโนมัติอ้างอิง | สถานะความครอบคลุม |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **FR-AUTH-01** | ผู้ใช้สมัครสมาชิกด้วย Email/Password ได้ | `TC-MOB-AUTH-01`<br>`TC-BE-AUTH-01` | Hybrid | `tests_all/automate_tests/tests/api/test_auth_flow.py` | Covered |
-| **FR-AUTH-02** | ผู้ใช้เข้าสู่ระบบด้วย Email/Password ได้รับ JWT | `TC-MOB-AUTH-02`<br>`TC-MOB-AUTH-03`<br>`TC-BE-AUTH-02` | Hybrid | `tests_all/automate_tests/tests/api/test_auth_flow.py` | Covered |
-| **FR-AUTH-03** | ผู้ใช้เข้าสู่ระบบด้วย Google OAuth ได้ | — (ไม่มี TC) | — | — | **Deferred (Phase 2)** |
-| **FR-AUTH-04** | เก็บ Token ใน Secure Storage + ต่ออายุด้วย Refresh Token | `TC-MOB-AUTH-02`<br>`TC-BE-AUTH-03` | Hybrid | `tests_all/automate_tests/tests/api/test_auth_flow.py` | Covered |
-| **FR-AUTH-05** | ผู้ใช้ออกจากระบบ (Logout) เพื่อล้างค่า Session | `TC-MOB-AUTH-04` | Manual | Manual Verification | Covered |
+| **FR-AUTH-02** | ผู้ใช้เข้าสู่ระบบด้วย Email/Password ได้รับ JWT | `TC-MOB-AUTH-02`<br>`TC-MOB-AUTH-03`<br>`TC-BE-AUTH-02`<br>`TC-BE-AUTH-05` | Hybrid | `tests_all/automate_tests/tests/api/test_auth_flow.py` | Covered |
+| **FR-AUTH-03** | ผู้ใช้เข้าสู่ระบบด้วย Google OAuth ได้ | — (ไม่มี TC) | — | — | Deferred |
+| **FR-AUTH-04** | เก็บ Token ใน Secure Storage + ต่ออายุด้วย Refresh Token | `TC-MOB-AUTH-02`<br>`TC-BE-AUTH-03`<br>`TC-MOB-AUTH-05`<br>`TC-MOB-AUTH-06` | Hybrid | `tests_all/automate_tests/tests/api/test_auth_flow.py` | Covered |
+| **FR-AUTH-05** | ผู้ใช้ออกจากระบบ (Logout) เพื่อล้างค่า Session | `TC-MOB-AUTH-04`<br>`TC-BE-AUTH-05` | Hybrid | `tests_all/automate_tests/tests/api/test_auth_flow.py` + Manual Verification | Covered |
 
 ---
 
@@ -45,10 +46,10 @@
 
 | Requirement ID | รายละเอียดความต้องการ | Test Case ID | รูปแบบการทดสอบ | สคริปต์อัตโนมัติอ้างอิง | สถานะความครอบคลุม |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **FR-INPUT-01** | เลือกรูปภาพจากแกลเลอรีในเครื่องได้ | `TC-MOB-IMG-01` | Manual | Manual UI Test | Covered |
-| **FR-INPUT-02** | เครื่องมือครอบตัด (Crop) ภาพก่อนส่งสแกน | — (ไม่มี TC) | — | — | **GAP** |
-| **FR-INPUT-03** | อัปโหลดภาพผ่าน Multipart HTTP ไปยัง Backend | `TC-MOB-SCAN-01`<br>`TC-BE-SCAN-01` | Hybrid | `tests_all/automate_tests/tests/api/test_scan_workflow.py` | Covered |
-| **FR-INPUT-04** | ปฏิเสธไฟล์เกินลิมิต (Mobile ≤10MB / Server ≤20MB + decode ≤100M px), นามสกุลที่ไม่รองรับ และตรวจ Magic Bytes | `TC-MOB-IMG-03`<br>`TC-MOB-IMG-04`<br>`TC-BE-SCAN-02`<br>`TC-BE-SCAN-03` | Hybrid | `tests_all/automate_tests/tests/api/test_scan_workflow.py` | Covered |
+| **FR-INPUT-01** | เลือกรูปภาพจากแกลเลอรีในเครื่องได้ | `TC-MOB-IMG-01`<br>`TC-MOB-IMG-02` | Manual | Manual UI Test | Covered |
+| **FR-INPUT-02** | เครื่องมือครอบตัด (Crop) ภาพก่อนส่งสแกน | `TC-MOB-IMG-05` | Manual | Manual UI Test | Covered |
+| **FR-INPUT-03** | อัปโหลดภาพผ่าน Multipart HTTP ไปยัง Backend — GAP: cancelScan เรียก DELETE /scan/{id} แต่ฝั่ง Server มีแค่ POST / กับ GET /{scan_id} ยังไม่มี endpoint ยกเลิก | `TC-MOB-SCAN-01`<br>`TC-MOB-SCAN-02`<br>`TC-MOB-SCAN-03`<br>`TC-MOB-SCAN-04`<br>`TC-BE-SCAN-01` | Hybrid | `tests_all/automate_tests/tests/api/test_scan_workflow.py` + `scam_image_mobile/test/features/scan/presentation/bloc/scan_bloc_test.dart` | Partial |
+| **FR-INPUT-04** | ปฏิเสธไฟล์เกินลิมิต (Mobile ≤10MB / Server ≤20MB + decode ≤100M px), นามสกุลที่ไม่รองรับ และตรวจ Magic Bytes — GAP: ฝั่ง Mobile ไม่ปฏิเสธไฟล์เกิน 10MB ส่งต่อให้ data source เสมอ เหลือแค่เตือนใน debug | `TC-MOB-IMG-03`<br>`TC-MOB-IMG-04`<br>`TC-BE-SCAN-02`<br>`TC-BE-SCAN-03`<br>`TC-BE-SCAN-04` | Hybrid | `tests_all/automate_tests/tests/api/test_scan_workflow.py` + `server/tests/api/test_scan.py` | Partial |
 | **FR-INPUT-05** | ตรวจ SHA-256 + Redis Cache ระดับ input (ซ้ำกับ FR-SYS-09) | `TC-BE-CACHE-01`<br>`TC-BE-CACHE-02` | Automated | `tests_all/automate_tests/tests/api/test_scan_workflow.py` | Covered |
 
 ---
@@ -57,16 +58,16 @@
 
 | Requirement ID | รายละเอียดความต้องการ | Test Case ID | รูปแบบการทดสอบ | สคริปต์อัตโนมัติอ้างอิง | สถานะความครอบคลุม |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **FR-SYS-01** | ดึงข้อมูล EXIF และ Metadata จากรูปภาพ | — (ไม่มี TC) | — | — | **GAP** |
+| **FR-SYS-01** | ดึงข้อมูล EXIF และ Metadata จากรูปภาพ | — (ไม่มี TC) | — | — | GAP |
 | **FR-SYS-02** | สกัดข้อความ (OCR) ด้วย Surya OCR v0.5.0 PyTorch Native (TH/EN) | `TC-AI-OCR-01` | Hybrid | `server/tests/inference/test_surya.py` | Covered |
 | **FR-SYS-03** | ตรวจจับคำหลอกลวงหรือข้อความผิดปกติด้วย NLP | `TC-AI-OCR-02` | Automated | `tests_all/automate_tests/tests/api/test_scan_workflow.py` | Covered |
-| **FR-SYS-04** | สืบค้นประวัติภาพย้อนกลับด้วย Reverse Image Search | — (ไม่มี TC) | — | — | **GAP** |
-| **FR-SYS-05** | ตรวจจับร่องรอยการตัดต่อด้วย SegFormer Tiling | `TC-AI-TILE-01`<br>`TC-AI-TILE-02`<br>`TC-AI-EDGE-01`<br>`TC-AI-EDGE-02` | Hybrid | `server/tests/inference/test_segformer.py` | Covered |
-| **FR-SYS-06** | คัดกรองภาพสังเคราะห์ Generative AI | — (ไม่มี TC) | — | — | **GAP** |
+| **FR-SYS-04** | สืบค้นประวัติภาพย้อนกลับด้วย Reverse Image Search | — (ไม่มี TC) | — | — | GAP |
+| **FR-SYS-05** | ตรวจจับร่องรอยการตัดต่อด้วย SegFormer Tiling | `TC-AI-TILE-01`<br>`TC-AI-TILE-02`<br>`TC-AI-EDGE-01`<br>`TC-AI-EDGE-02`<br>`TC-AI-EDGE-03`<br>`TC-AI-EDGE-04` | Hybrid | `server/tests/inference/test_gpu.py` (partial: โหลด ONNX SegFormer) + Manual Tiling | Covered |
+| **FR-SYS-06** | คัดกรองภาพสังเคราะห์ Generative AI | — (ไม่มี TC) | — | — | GAP |
 | **FR-SYS-07** | คำนวณ Overall Risk Score (Hybrid Worst-Case max+bonus) | `TC-AI-RISK-01`<br>`TC-AI-RISK-02` | Automated | `server/tests/utils/test_risk_calculator.py` | Covered |
-| **FR-SYS-08** | สร้าง Full-Resolution Mask Heatmap Overlay | `TC-AI-TILE-02` (ประกอบ heatmap)<br>`TC-MOB-RES-02` (แสดงผล) | Hybrid | `server/tests/inference/test_heatmap.py` | **Partial** — ครอบคลุมบางส่วนผ่าน TC ประกอบ/แสดงผล heatmap |
+| **FR-SYS-08** | สร้าง Full-Resolution Mask Heatmap Overlay — ครอบคลุมบางส่วนผ่าน TC ประกอบและแสดงผล heatmap | `TC-AI-TILE-02` (ประกอบ heatmap)<br>`TC-AI-HEAT-01` (ประกอบเต็ม)<br>`TC-MOB-RES-02` (แสดงผล) | Hybrid | `server/tests/inference/test_heatmap.py` | Partial |
 | **FR-SYS-09** | แคชผลการสแกนลง Redis ด้วย SHA-256 Hash (TTL 30 วัน) | `TC-BE-CACHE-01`<br>`TC-BE-CACHE-02` | Automated | `tests_all/automate_tests/tests/api/test_scan_workflow.py` | Covered |
-| **FR-SYS-10** | ยิง FCM Push Notification เมื่อประมวลผลแบบ Async เสร็จ | — (ไม่มี TC) | — | — | **Deferred** |
+| **FR-SYS-10** | ยิง FCM Push Notification เมื่อประมวลผลแบบ Async เสร็จ — มี TC รองรับแต่รอทำ Phase 2 | `TC-MOB-NOTIF-01`<br>`TC-NFR-FCM-01` | Manual | Manual Device Test | Deferred |
 
 ---
 
@@ -74,16 +75,16 @@
 
 | Requirement ID | รายละเอียดความต้องการ | Test Case ID | รูปแบบการทดสอบ | สคริปต์อัตโนมัติอ้างอิง | สถานะความครอบคลุม |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **FR-REPORT-01** | แสดง Risk Score (0-100) พร้อมสี 3 ระดับ (Low / Medium / High) | `TC-MOB-RES-01` | Manual | `scam_image_mobile/test/core/utils/` | Covered |
+| **FR-REPORT-01** | แสดง Risk Score (0-100) พร้อมสี 3 ระดับ (Low / Medium / High) — GAP: app_translations ยังมี key safe และ result_safe ตกค้าง ขัดกับกฎ 3 ระดับ | `TC-MOB-RES-01` | Manual | `scam_image_mobile/test/core/utils/risk_level_helper_test.dart` | Partial |
 | **FR-REPORT-02** | แสดง Heatmap Overlay ซ้อนทับภาพต้นฉบับ | `TC-MOB-RES-02` | Manual | Manual UI Test | Covered |
 | **FR-REPORT-03** | ปุ่มเปิด/ปิด และปรับความโปร่งใส Heatmap | `TC-MOB-RES-02` | Manual | Manual UI Test | Covered |
 | **FR-REPORT-04** | แสดงคะแนนจำแนกรายชั้น (Text, Source, Visual) | `TC-MOB-RES-03` | Manual | Manual UI Test | Covered |
 | **FR-REPORT-05** | แสดงคำที่เข้าข่ายน่าสงสัย (OCR/NLP keywords) | `TC-MOB-RES-03` | Manual | Manual UI Test | Covered |
-| **FR-REPORT-06** | แสดงผล Source Verification (จำนวนเว็บไซต์ที่พบภาพเดียวกัน) | `TC-MOB-RES-03` (บางส่วน: การ์ด Source ใน breakdown) | Manual | Manual UI Test | **Partial** — ฝั่ง backend (FR-SYS-04) ยังเป็น GAP |
-| **FR-HIST-01** | แสดงรายการประวัติการสแกนย้อนหลังเรียงตามเวลา | `TC-MOB-HIST-01` | Hybrid | `tests_all/automate_tests/tests/api/test_history.py` | Covered |
-| **FR-HIST-02** | แตะรายการประวัติเพื่อเปิดดูผลลัพธ์เดิมได้ | `TC-MOB-HIST-02` | Manual | Manual UI Test | Covered |
-| **FR-HIST-03** | ลบประวัติการสแกน (DELETE /api/v1/history/{id} ลบไฟล์ original/heatmap) — Offline ย้ายเป็น NFR/out-of-scope | `TC-NFR-PRIV-02` | Automated | `tests_all/automate_tests/tests/api/test_history.py` | Covered |
-| **FR-RPT-01** | ผู้ใช้ส่งรายงานข้อร้องเรียน (Scam Report) ได้ | `TC-MOB-RPT-01` | Hybrid | `tests_all/automate_tests/tests/api/test_history.py` (`test_report_create`, `test_report_categories`) | Covered |
+| **FR-REPORT-06** | แสดงผล Source Verification (จำนวนเว็บไซต์ที่พบภาพเดียวกัน) — ฝั่ง backend (FR-SYS-04) ยังเป็น GAP | `TC-MOB-RES-03` (บางส่วน: การ์ด Source ใน breakdown) | Manual | Manual UI Test | Partial |
+| **FR-HIST-01** | แสดงรายการประวัติการสแกนย้อนหลังเรียงตามเวลา | `TC-MOB-HIST-01`<br>`TC-BE-HIST-01` | Hybrid | `tests_all/automate_tests/tests/api/test_history.py` | Covered |
+| **FR-HIST-02** | แตะรายการประวัติเพื่อเปิดดูผลลัพธ์เดิมได้ | `TC-MOB-HIST-02`<br>`TC-BE-HIST-02` | Hybrid | `tests_all/automate_tests/tests/api/test_history.py` + Manual UI Test | Covered |
+| **FR-HIST-03** | ลบประวัติการสแกน (DELETE /api/v1/history/{id} ลบไฟล์ original/heatmap) — Offline ย้ายเป็น NFR/out-of-scope | `TC-NFR-PRIV-02`<br>`TC-MOB-HIST-04`<br>`TC-BE-HIST-02` | Hybrid | `tests_all/automate_tests/tests/api/test_history.py` + Manual Device Test | Covered |
+| **FR-RPT-01** | ผู้ใช้ส่งรายงานข้อร้องเรียน (Scam Report) ได้ — GAP: category keys ไม่ตรงกัน ฝั่ง Server ใช้ romance_scam online_shopping ส่วนฝั่ง Mobile ใช้ cat_romance cat_ecommerce | `TC-MOB-RPT-01`<br>`TC-MOB-RPT-02`<br>`TC-BE-RPT-01` | Hybrid | `tests_all/automate_tests/tests/api/test_history.py` (`test_report_create`, `test_report_categories`) | Partial |
 
 ---
 
@@ -91,13 +92,13 @@
 
 | Requirement ID | รายละเอียดความต้องการ | Test Case ID | รูปแบบการทดสอบ | สคริปต์อัตโนมัติอ้างอิง | สถานะความครอบคลุม |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **FR-ADM-01** | แดชบอร์ดสถิติภาพรวม + WebSocket realtime (`/api/v1/ws/admin/dashboard`) | `TC-ADM-AUTH-01`<br>`TC-ADM-DASH-01`<br>`TC-ADM-WS-01` | Manual | Manual Console Test | Covered |
+| **FR-ADM-01** | แดชบอร์ดสถิติภาพรวม + WebSocket realtime (`/api/v1/ws/admin/dashboard`) | `TC-ADM-AUTH-01`<br>`TC-ADM-DASH-01`<br>`TC-ADM-WS-01`<br>`TC-ADM-AUTH-03`<br>`TC-ADM-DASH-02`<br>`TC-BE-ADMIN-02`<br>`TC-BE-ADMIN-03` | Hybrid | `tests_all/automate_tests/tests/api/test_admin.py` + `server/tests/api/test_admin_auth.py` + Manual Console Test | Covered |
 | **FR-ADM-02** | ตรวจสอบข้อร้องเรียน อนุมัติ/ปัดตก รายงาน (Concurrency เป็น impl detail ด้วย version column) | `TC-ADM-REP-01`<br>`TC-ADM-REP-02` | Hybrid | `tests_all/automate_tests/tests/api/test_history.py` (`test_report_create`) + `server/tests/api/test_admin_reports.py` | Covered |
-| **FR-ADM-03** | แอดมิน Export ภาพ Scam ที่ยืนยันแล้วไปทำ Dataset | — (ไม่มี TC เฉพาะ) | — | — | **GAP** |
+| **FR-ADM-03** | แอดมิน Export ภาพ Scam ที่ยืนยันแล้วไปทำ Dataset | — (ไม่มี TC เฉพาะ) | — | — | GAP |
 | **FR-ADM-04** | การบริหารจัดการโมเดล AI (Deploy / Rollback) | `TC-ADM-MOD-01`<br>`TC-ADM-MOD-02`<br>`TC-BE-MODEL-01` | Hybrid | Manual Console + `tests_all/automate_tests/tests/api/test_admin.py` (partial: auth/RBAC) | Covered |
 | **FR-ADM-05** | จัดการรายชื่อผู้ใช้และสั่งระงับการใช้งาน (Ban) | `TC-ADM-USR-01` | Hybrid | Manual Console + `tests_all/automate_tests/tests/api/test_admin.py` (partial) | Covered |
-| **FR-ADM-06** | ดู Audit Logs (append-only) | `TC-E2E-REPORT-03` (ตรวจ Audit Logs) | Hybrid | `tests_all/automate_tests/tests/api/test_admin.py` + Manual Console | Covered |
-| **FR-AUDIT-01** | ตรวจสอบบันทึกความปลอดภัย (Audit Logs + JSON Diff) | — (ไม่มี TC) | — | — | **GAP** |
+| **FR-ADM-06** | ดู Audit Logs (append-only) | `TC-E2E-REPORT-03` (ตรวจ Audit Logs)<br>`TC-BE-AUDIT-01`<br>`TC-ADM-AUD-01` | Hybrid | `tests_all/automate_tests/tests/api/test_admin.py` + Manual Console | Covered |
+| **FR-AUDIT-01** | ตรวจสอบบันทึกความปลอดภัย (Audit Logs + JSON Diff) — มี TC แล้วแต่ยังขาดการตรวจ JSON Diff ครบทุก entity | `TC-BE-AUDIT-01`<br>`TC-ADM-AUD-01` | Hybrid | `tests_all/automate_tests/tests/api/test_admin.py` + Manual Console | Partial |
 
 ---
 
@@ -119,7 +120,7 @@
 | Requirement ID | รายละเอียดความต้องการ | Test Case ID | รูปแบบการทดสอบ | สคริปต์อัตโนมัติอ้างอิง | สถานะความครอบคลุม |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **FR-PDPA-01** | แสดงหน้า Consent ยินยอมการประมวลผลข้อมูลในครั้งแรกที่เปิดแอป | `TC-MOB-PDPA-01` | Manual | Manual UI Test | Covered |
-| **FR-PDPA-02** | ผู้ใช้ถอนความยินยอมในการเข้าร่วมวิจัยได้จากหน้าการตั้งค่า | `TC-MOB-PDPA-01`<br>`TC-NFR-PRIV-01` | Hybrid | `server/tests/api/test_history.py` | Covered |
+| **FR-PDPA-02** | ผู้ใช้ถอนความยินยอมในการเข้าร่วมวิจัยได้จากหน้าการตั้งค่า | `TC-MOB-PDPA-01`<br>`TC-NFR-PRIV-01` | Hybrid | `tests_all/automate_tests/tests/api/test_history.py` | Covered |
 | **FR-PDPA-03** | หากถอนความยินยอม ระบบต้องลบภาพของผู้ใช้ออกจาก Dataset วิจัย | `TC-NFR-PRIV-02` | Automated | `tests_all/automate_tests/tests/api/test_history.py` | Covered |
 
 ---
@@ -180,11 +181,11 @@ Document scheme ให้ map มาหา wiki scheme ดังนี้:
 
 | Requirement ID | ประเภทข้อกำหนด | เป้าหมายและเกณฑ์การยอมรับ | Test Case ID | วิธีการทดสอบ | สถานะความครอบคลุม |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **NFR-PERF-01** | Performance | เวลาตอบสนอง Cache Hit ≤ 3 วินาที (E2E) | `TC-NFR-PERF-01` | Automated (Locust) | Covered |
-| **NFR-PERF-02** | Performance | เวลาตอบสนอง Full Inference ≤ 15 วินาที | `TC-NFR-PERF-02` | Automated (Locust) | Covered |
+| **NFR-PERF-01** | Performance | เวลาตอบสนอง Cache Hit ≤ 3 วินาที (E2E) | `TC-NFR-PERF-01` | Automated (Locust `tests_all/automate_tests/tests/performance/locustfile.py`) | Covered |
+| **NFR-PERF-02** | Performance | เวลาตอบสนอง Full Inference ≤ 15 วินาที | `TC-NFR-PERF-02` | Automated (Locust `tests_all/automate_tests/tests/performance/locustfile.py`) | Covered |
 | **NFR-PERF-03** | Availability | System Availability / Uptime ≥ 99.5% | `TC-NFR-PERF-03`<br>`TC-AI-ISO-01`<br>`TC-MOB-HIST-03`<br>`TC-E2E-OFFLINE-06` | Monitoring / Health | Covered |
-| **NFR-AI-01** | AI Accuracy | SegFormer mDice การตรวจจับภาพตัดต่อ ≥ 85% | — (ไม่มี TC) | — | **GAP** |
-| **NFR-AI-02** | AI Accuracy | ความแม่นยำจำแนกภาพ AI-Generated ≥ 85% | — (ไม่มี TC) | — | **GAP** |
+| **NFR-AI-01** | AI Accuracy | SegFormer mDice การตรวจจับภาพตัดต่อ ≥ 85% — มี TC แล้วแต่ยังไม่มีชุดทดสอบมาตรฐาน | `TC-AI-ACC-01`<br>`TC-NFR-AI-01` | Manual | Manual Verification | Partial |
+| **NFR-AI-02** | AI Accuracy | ความแม่นยำจำแนกภาพ AI-Generated ≥ 85% — มี TC แล้วแต่ยังไม่มีโมเดลจำแนกเฉพาะ | `TC-AI-ACC-02`<br>`TC-NFR-AI-02` | Manual | Manual Verification | Partial |
 | **NFR-SEC-01** | Security | เข้ารหัสการรับส่งข้อมูลด้วย HTTPS/TLS 100% | `TC-NFR-SEC-01`<br>`TC-BE-CORS-01` | Security Audit | Covered |
 | **NFR-SEC-02** | Security | บังคับตรวจสอบสิทธิ์ JWT ทุก Protected Endpoint | `TC-BE-AUTH-04` | Automated (Pytest) | Covered |
 | **NFR-SEC-03** | Security | แยกสิทธิ์ Admin RBAC ปฏิเสธ User ทั่วไป (403) | `TC-BE-ADMIN-01`<br>`TC-ADM-AUTH-02` | Automated (Pytest) | Covered |
@@ -192,7 +193,7 @@ Document scheme ให้ map มาหา wiki scheme ดังนี้:
 | **NFR-SEC-05** | Security | Zero Hardcoded Secrets (โหลดจาก .env ล้วน) | `TC-NFR-SEC-03` | Code Audit / Pytest | Covered |
 | **NFR-PDPA-01** | Privacy & PDPA | หน้า Consent ยินยอมการประมวลผลข้อมูล | `TC-MOB-PDPA-01` | Manual UI Test | Covered |
 | **NFR-PDPA-02** | Privacy & PDPA | สิทธิ์การขอลบข้อมูลและภาพสแกนของผู้ใช้ | `TC-NFR-PRIV-02` | Integration Test | Covered |
-| **NFR-A11Y-01** | Accessibility | Contrast Ratio ≥ 4.5:1 ตามเกณฑ์ WCAG AA | `TC-NFR-A11Y-01`<br>`TC-ADM-UI-01` | Automated Lighthouse | Covered |
+| **NFR-A11Y-01** | Accessibility | Contrast Ratio ≥ 4.5:1 ตามเกณฑ์ WCAG AA | `TC-NFR-A11Y-01`<br>`TC-ADM-UI-01`<br>`TC-ADM-UI-02` | Hybrid | Automated Lighthouse + Manual Verification | Covered |
 | **NFR-A11Y-02** | Usability | ขนาด Touch Target บน Mobile ≥ 48x48dp | `TC-NFR-A11Y-02` | Manual UI Test | Covered |
 | **NFR-SYS-01** | Data Integrity | Timezone UTC+7 (Asia/Bangkok) ทุก Record | `TC-BE-DB-01` | Script (`server/tests/check_time_tz.py`) | Covered |
 
@@ -202,10 +203,10 @@ Document scheme ให้ map มาหา wiki scheme ดังนี้:
 
 ## 4. สรุปภาพรวมความครอบคลุม (Coverage Summary)
 
-- **ขอบเขตการครอบคลุม: FR 30/40, NFR 13/15**
-- **Functional Requirements (wiki scheme) 40 รายการ** (ตัด FR-SYS-11 เป็น extra): Covered เต็ม **30** รายการ (**75.0%**), Partial **2** รายการ (`FR-SYS-08`, `FR-REPORT-06`), **GAP 6** รายการ (`FR-INPUT-02`, `FR-SYS-01`, `FR-SYS-04`, `FR-SYS-06`, `FR-ADM-03`, `FR-AUDIT-01`) + **Deferred (Phase 2) 2** รายการ (`FR-AUTH-03` OAuth, `FR-SYS-10` FCM) — รวม mapped 32/40 (**80.0%** นับ Partial)
+- **ขอบเขตการครอบคลุม: FR 27/40 Covered (34/40 รวม Partial), NFR 13/15 Covered (15/15 รวม Partial)**
+- **Functional Requirements (wiki scheme) 40 รายการ** (ตัด FR-SYS-11 เป็น extra): Covered เต็ม **27** รายการ (**67.5%**), Partial **7** รายการ (`FR-INPUT-03` cancelScan ไม่มี endpoint, `FR-INPUT-04` Mobile ไม่ปฏิเสธเกิน 10MB, `FR-SYS-08`, `FR-REPORT-01` key safe ตกค้าง, `FR-REPORT-06`, `FR-RPT-01` category keys ไม่ตรง, `FR-AUDIT-01` ขาด JSON Diff ครบ), GAP **4** รายการ (`FR-SYS-01`, `FR-SYS-04`, `FR-SYS-06`, `FR-ADM-03`) + Deferred **2** รายการ (`FR-AUTH-03` OAuth, `FR-SYS-10` FCM) — รวม mapped 34/40 (**85.0%** นับ Partial)
 - **FR เพิ่มเติมนอก wiki baseline 3 รายการ** (`FR-SET-01`, `FR-SET-02`, `FR-SYS-11` Qwen XAI): Covered 3/3 (100%)
-- **Non-Functional Requirements 15 รายการ**: Covered **13** รายการ (**86.7%**), **GAP 2** รายการ (`NFR-AI-01`, `NFR-AI-02`)
+- **Non-Functional Requirements 15 รายการ**: Covered **13** รายการ (**86.7%**), Partial **2** รายการ (`NFR-AI-01`, `NFR-AI-02` มี TC แล้วแต่ขาดชุดทดสอบมาตรฐาน), GAP **0** รายการ — รวม mapped 15/15 (**100%** นับ Partial)
 - **Cross-System Journeys (E2E) 6 กระบวนการ**: Covered 6/6 (**100%**)
-- **Manual TCs ทั้งหมด 68 TCs**: ทุก ID มีที่อ้างใน RTM แล้ว ไม่มี orphan (10 orphan เดิม map เข้า FR/NFR ที่เหมาะสม + Offline `TC-MOB-HIST-03`/`TC-E2E-OFFLINE-06` ย้ายไป `NFR-PERF-03`)
-- **รูปแบบการทดสอบ** (54 rows ที่มี TC, strict): Hybrid 18 รายการ / Automated 13 รายการ / Manual 18 รายการ + 5 NFR กำกวมแยกหมวด (`NFR-PERF-03`, `NFR-SEC-01`, `NFR-SEC-05`, `NFR-PDPA-02`, `NFR-SYS-01` นิยามชัดด้านบน); เดิมนับผิดเป็น 17/16/22 เพราะนับ 5 แถวกำกวมปนใน Auto/Manual — strict ที่ถูกต้องคือ 17/13/20+5 ก่อนแก้ type, หลังแก้ mapping FR-HIST-03 Manual→Automated และ FR-ADM-06 Automated→Hybrid จึงเป็น 18/13/18+5
+- **Manual TCs ทั้งหมด 106 TCs**: ทุก ID มีที่อ้างใน RTM แล้ว ไม่มี orphan (mobile 28, backend 24, ai 16, admin 17, e2e 6, nfr 15 + Offline `TC-MOB-HIST-03`/`TC-E2E-OFFLINE-06` ย้ายไป `NFR-PERF-03`)
+- **รูปแบบการทดสอบ** (58 rows ที่มี TC, strict): Hybrid 24 รายการ / Automated 11 รายการ / Manual 18 รายการ + 5 NFR กำกวมแยกหมวด (`NFR-PERF-03`, `NFR-SEC-01`, `NFR-SEC-05`, `NFR-PDPA-02`, `NFR-SYS-01` นิยามชัดด้านบน); เพิ่มจาก 54 rows หลัง map TC ใหม่ โดย `FR-AUTH-05` Manual→Hybrid, `FR-HIST-02` Manual→Hybrid, `FR-HIST-03` Automated→Hybrid, `FR-ADM-01` Manual→Hybrid, `NFR-A11Y-01` เพิ่ม TC แบบ Manual, `FR-SYS-10` กับ `NFR-AI-01` `NFR-AI-02` `FR-AUDIT-01` เพิ่ม TC แบบ Manual Partial/Deferred

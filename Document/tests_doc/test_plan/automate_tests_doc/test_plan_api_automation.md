@@ -1,10 +1,13 @@
 # แผนการทดสอบอัตโนมัติ: การทดสอบส่วนต่อประสานโปรแกรมประยุกต์ (Backend API Automation Test Plan)
 
+> Version: 1.0.1 | Date: 2026-09-06 | Status: Baseline
+
 - **System / Component**: ScamGuard Backend REST API
 - **Framework**: Pytest, Pytest-Asyncio, HTTPX AsyncClient, Pydantic
 - **Execution Script**: `tests_all/automate_tests/run.sh api`
-- **Document Version**: 1.0.0
-- **Status**: Approved
+- **Document Version**: 1.0.1
+- **Date**: 2026-09-06
+- **Status**: Baseline
 
 ---
 
@@ -37,22 +40,22 @@ tests_all/automate_tests/
 ## 2. รายละเอียดโมดูลการทดสอบ (Test Modules Breakdown)
 
 ### 2.1 Health & Service Readiness (`test_health.py`)
-- ตรวจสอบ `GET /health` และ `GET /api/v1/admin/health`
+- ตรวจสอบ `GET /health` ที่รากเซิร์ฟเวอร์ และ `GET /api/v1/admin/health` แบบบังคับ is_superadmin
 - ยืนยันการเชื่อมต่อของ Database Driver และ Redis Client
 - เกณฑ์ผ่าน: HTTP 200 OK พร้อมฟิลด์สถานะ `healthy`
 
 ### 2.2 Authentication Flow (`test_auth_flow.py`)
 - ทดสอบการลงทะเบียนผู้ใช้ใหม่ด้วยอีเมลสุ่ม (Randomized Email) เพื่อป้องกันชนกับข้อมูลเก่า
-- ทดสอบการเข้าสู่ระบบและตรวจสอบโครงสร้าง JWT Token
+- ทดสอบการเข้าสู่ระบบและตรวจสอบโครงสร้าง JWT Token ครอบคลุม POST /api/v1/auth/register|login|refresh|logout และ GET /api/v1/auth/me
 - ทดสอบกรณี Negative: ปฏิเสธการลงทะเบียนอีเมลซ้ำ (HTTP 400), ปฏิเสธรหัสผ่านผิด (HTTP 401)
 - ตรวจสอบ `GET /api/v1/auth/me` ภายใต้ Bearer Authorization Header
 
 ### 2.3 Scan Workflow & Caching (`test_scan_workflow.py`)
 - สร้างไฟล์ภาพจำลองในหน่วยความจำผ่าน `image_factory.py` (RGB 512x512)
-- ส่งคำขอ `POST /api/v1/scan/` แบบ Multipart
-- ตรวจสอบการส่งคืน `scan_id`, `risk_score`, และ `risk_level` (ตรงตาม 3 ระดับ)
-- ทดสอบ Cache Hit โดยการส่งภาพเดิมซ้ำ ตรวจสอบว่า `cached: true` และตอบกลับทันที
-- ทดสอบส่งไฟล์ที่ไม่ใช่รูปภาพ (Text file หรือ Corrupted file) เพื่อยืนยันการปฏิเสธของระบบ
+- ส่งคำขอ `POST /api/v1/scan/` แบบ Multipart พารามิเตอร์ file+title
+- ตรวจสอบการส่งคืน `scan_id`, `risk_score`, และ `risk_level` ตรง 3 ระดับ Low 0-39 Medium 40-69 High 70-100
+- ทดสอบ Cache Hit ด้วย SHA-256 TTL 30 วัน โดยการส่งภาพเดิมซ้ำ ตรวจสอบว่า `cached: true` และตอบกลับทันที
+- ทดสอบส่งไฟล์ที่ไม่ใช่รูปภาพ (Text file หรือ Corrupted file) เพื่อยืนยันการปฏิเสธของระบบ และไฟล์เกิน 20MB ต้องได้ HTTP 413
 
 ### 2.4 History Management (`test_history.py`)
 - ตรวจสอบ `GET /api/v1/history/` ยืนยันว่าพบรายการที่เพิ่งสแกน
@@ -60,9 +63,13 @@ tests_all/automate_tests/
 - ทดสอบการส่งคำขอลบประวัติ `DELETE /api/v1/history/{scan_id}`
 
 ### 2.5 Admin Operations (`test_admin.py`)
-- ทดสอบการล็อกอินของแอดมินและการเข้าถึง Protected Admin Endpoints
+- ทดสอบการล็อกอินของแอดมินและการเข้าถึง Protected Admin Endpoints แบบบังคับ is_superadmin อัตรา login/refresh 5/minute
 - ทดสอบการปฏิเสธ User ทั่วไปเมื่อพยายามเรียก `/api/v1/admin/*` (HTTP 403 Forbidden)
-- ทดสอบการอนุมัติ/ปฏิเสธรายงานข้อร้องเรียนและการทำงานของคอลัมน์ `version`
+- ทดสอบการอนุมัติ/ปฏิเสธรายงานข้อร้องเรียนสถานะ pending/reviewing/approved/rejected และการทำงานของคอลัมน์ `version`
+
+### 2.6 หมายเหตุ GAP ที่ห้ามเขียนแผนเทสของสิ่งที่ไม่มี
+- เส้นทาง POST /api/v1/scan/upload ไม่มีอยู่จริง ต้องใช้ POST /api/v1/scan/ เท่านั้น
+- เส้นทาง DELETE /api/v1/scan/{scan_id} ไม่มีอยู่จริง มีเฉพาะ DELETE /api/v1/history/{scan_id}
 
 ---
 

@@ -1,11 +1,14 @@
 # แผนการทดสอบ: พอร์ทัลผู้ดูแลระบบ (Admin Portal Test Plan)
 
+> Version: 1.0.1 | Date: 2026-09-06 | Status: Baseline
+
 - **System / Component**: ScamGuard Admin Portal & Forensic Console
 - **Architecture**: Single Page Application (SPA), Real-time WebSocket Client, Forensic Dashboard
 - **Tech Stack**: React 18, Vite, JavaScript (ESM), Tailwind CSS, Lucide React, Axios / Native WebSocket
 - **Target Browsers**: Chrome (v110+), Firefox (v110+), Edge (v110+), Safari (v16+)
-- **Document Version**: 1.0.0
-- **Status**: Approved
+- **Document Version**: 1.0.1
+- **Date**: 2026-09-06
+- **Status**: Baseline
 
 ---
 
@@ -13,12 +16,12 @@
 
 ### 1.1 สิ่งที่อยู่ในขอบเขต (In-Scope)
 1. **Admin Authentication & Role Separation**:
-   - การลงชื่อเข้าใช้ผ่านฟอร์มเฉพาะแอดมิน โดยตรวจสอบข้อมูลจากตาราง `admins` เท่านั้น
+   - การลงชื่อเข้าใช้ผ่านฟอร์มเฉพาะแอดมิน โดยตรวจสอบข้อมูลจากตาราง `admins` เท่านั้น บังคับ is_superadmin ทุกเส้น /api/v1/admin/* อัตรา login/refresh 5/minute
    - การปฏิเสธบัญชีผู้ใช้ทั่วไปจากตาราง `users` ด้วยข้อความแจ้งเตือนที่ชัดเจนและ HTTP 403
    - การตัด Session เมื่อ Token หมดอายุหรือถูกเพิกถอน
 2. **Dashboard Overview & WebSocket Telemetry**:
    - การแสดงตัวเลขชี้วัดหลัก (Total Scans, High Risk Incidents, Pending Reports, System Health)
-   - การเชื่อมต่อ WebSocket (`/api/v1/ws/admin/dashboard`) แสดงผลกราฟ CPU, GPU, Memory และปริมาณคำขอแบบเรียลไทม์
+   - การเชื่อมต่อ WebSocket เต็มเส้นทาง WS /api/v1/ws/admin/dashboard แสดงผลกราฟ CPU, GPU, Memory และปริมาณคำขอแบบเรียลไทม์
    - กลไก Auto-reconnect เมื่อการเชื่อมต่อ WebSocket ขาดหาย
 3. **AI Model Management**:
    - การแสดงรายการโมเดลใน Model Registry โดยต้องนำโมเดลสถานะ ACTIVE มาปักหมุดไว้ที่อันดับแรกเสมอ
@@ -31,7 +34,7 @@
 5. **User Management**:
    - การค้นหาบัญชีผู้ใช้ ตรวจสอบประวัติ และการสั่งระงับบัญชี (Ban User) โดยต้องมี Modal บังคับระบุเหตุผลเสมอ
 6. **Audit Logs & Security Tracing**:
-   - การตรวจสอบบันทึกการกระทำของผู้ดูแลระบบทั้งหมด พร้อมการแสดงผล JSON Diff เปรียบเทียบข้อมูลก่อนและหลังแก้ไข
+   - การตรวจสอบบันทึกการกระทำของผู้ดูแลระบบทั้งหมดลงตารางเอกพจน์ audit_log พร้อมการแสดงผล JSON Diff เปรียบเทียบข้อมูลก่อนและหลังแก้ไข
    - การแสดงเวลาในรูปแบบ UTC+7 (เวลาประเทศไทย)
 7. **Accessibility & Responsive Design**:
    - การสลับธีม Dark Mode / Light Mode โดยมีค่าความเปรียบต่างสี (Contrast Ratio) >= 4.5:1 ตามมาตรฐาน WCAG 2.1 AA

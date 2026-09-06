@@ -329,7 +329,7 @@
 |---------------|---------------|-----------|-----------------|
 | **Authenticated User** | 60 requests/minute | ป้องกัน Abuse และ DoS Attack | Project Decision |
 | **Anonymous User** | 10 requests/minute | จำกัดการใช้งานโดยไม่ Login | Project Decision |
-| **Endpoint-Specific** | `/api/scan/upload`: 5 requests/minute | อัปโหลดภาพมีต้นทุนสูง | Project Decision |
+| **Endpoint-Specific** | `POST /api/v1/scan/`: 5 requests/minute | อัปโหลดภาพมีต้นทุนสูง | Project Decision |
 
 ---
 

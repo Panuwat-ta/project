@@ -24,16 +24,19 @@
     {
       "email": "be_test_user@scamguard.local",
       "password": "StrongPassword123!",
-      "full_name": "Backend Test User"
+      "full_name": "Backend Test User",
+      "system_consent": true,
+      "research_consent": false
     }
     ```
 - **Test Steps**:
   1. ยิง HTTP POST ไปยัง `/api/v1/auth/register` พร้อม JSON Payload
-  2. ตรวจสอบข้อมูลในตาราง `users` ของฐานข้อมูล
+  2. ตรวจสอบข้อมูลในตาราง `users` และ `consent_logs` ของฐานข้อมูล
 - **Expected Results**:
   1. ได้รับ HTTP Status Code: `201 Created`
-  2. Response Body มี `user_id`, `email`, `created_at` (ไม่มี Plaintext Password คืนกลับมา)
-  3. ในตาราง `users` คอลัมน์ `hashed_password` ต้องถูกเข้ารหัสด้วย bcrypt โดยมีความยาวแฮชมาตรฐาน
+  2. Response Body มี `id`, `email`, `full_name`, `role` (ไม่มี Plaintext Password คืนกลับมา)
+  3. ในตาราง `users` คอลัมน์ `hashed_password` ต้องถูกเข้ารหัส โดยมีความยาวแฮชมาตรฐาน
+  4. มีบันทึกความยินยอมในตาราง `consent_logs` ตรงกับค่าที่ส่งมา
 - **Automation Mapping**: `tests_all/automate_tests/tests/api/test_auth_flow.py`
 
 ---
@@ -47,15 +50,12 @@
   1. มีผู้ใช้ `be_test_user@scamguard.local` ในระบบ
 - **Test Data**:
   - Endpoint: `POST /api/v1/auth/login`
-  - Payload:
-    ```json
-    {
-      "email": "be_test_user@scamguard.local",
-      "password": "StrongPassword123!"
-    }
-    ```
+  - Content-Type: `application/x-www-form-urlencoded`
+  - Form fields:
+    - `username`: `be_test_user@scamguard.local` (ใช้อีเมลเป็นชื่อผู้ใช้)
+    - `password`: `StrongPassword123!`
 - **Test Steps**:
-  1. ส่งคำขอ Login ไปยัง Backend
+  1. ส่งคำขอ Login แบบฟอร์มพร้อมฟิลด์ `username` และ `password` ไปยัง Backend
 - **Expected Results**:
   1. ได้รับ HTTP Status Code: `200 OK`
   2. Response Body ส่งคืนโครงสร้าง DTO:
@@ -86,9 +86,15 @@
   1. มี Valid Refresh Token จากการล็อกอิน
 - **Test Data**:
   - Endpoint: `POST /api/v1/auth/refresh`
-  - Headers: `Authorization: Bearer <valid_refresh_token>`
+  - Content-Type: `application/json`
+  - Payload:
+    ```json
+    {
+      "refresh_token": "<valid_refresh_token>"
+    }
+    ```
 - **Test Steps**:
-  1. ส่งคำขอเพื่อขอ Access Token ชุดใหม่
+  1. ส่งคำขอพร้อม JSON ที่มีฟิลด์ `refresh_token` เพื่อขอ Access Token ชุดใหม่
 - **Expected Results**:
   1. ได้รับ HTTP Status Code: `200 OK`
   2. ได้รับ `access_token` ใหม่ที่มีอายุการใช้งานนับจากเวลาปัจจุบัน
@@ -110,9 +116,54 @@
 - **Test Steps**:
   1. ยิงคำขอไปยัง Protected Endpoint
 - **Expected Results**:
-  1. ระบบตอบกลับด้วย HTTP Status Code: `401 Unauthorized`
-  2. Response Body: `{"detail": "Could not validate credentials"}` หรือ `{"detail": "Token expired"}`
-  3. ไม่สามารถเข้าถึงข้อมูลเบื้องหลังได้
+1. ระบบตอบกลับด้วย HTTP Status Code: `401 Unauthorized`
+2. Response Body: `{"detail": "Could not validate credentials"}` สำหรับ Token ไม่ถูกต้องหรือหมดอายุ หรือ `{"detail": "Invalid or expired refresh token"}` สำหรับการต่ออายุด้วย Refresh Token ที่ใช้ไม่ได้
+3. ไม่สามารถเข้าถึงข้อมูลเบื้องหลังได้
+- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_auth_flow.py`
+
+---
+
+### TC-BE-AUTH-05: การดึงโปรไฟล์และการออกจากระบบ (Me Plus Logout)
+- **Module / Feature**: Auth / Profile and Logout
+- **Requirement ID**: FR-AUTH-02, FR-AUTH-05
+- **Test Type**: Functional
+- **Priority**: P1 (High)
+- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
+  1. มี Access Token ที่ยังไม่หมดอายุ
+- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
+  - Endpoint: `GET /api/v1/auth/me`
+  - Endpoint: `POST /api/v1/auth/logout`
+  - Headers: `Authorization: Bearer <valid_access_token>`
+- **Test Steps (ขั้นตอนการทดสอบ)**:
+  1. เรียก `GET /api/v1/auth/me` พร้อม Token ที่ถูกต้อง
+  2. เรียก `POST /api/v1/auth/logout` พร้อม Token เดียวกัน
+- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
+1. `GET /me` ตอบ `200 OK` พร้อม `id`, `email`, `full_name`, `role`
+2. `POST /logout` ตอบ `200 OK` พร้อม `{"message": "Successfully logged out"}`
+3. ฝั่ง Server ใช้ JWT แบบ Stateless การล้าง Token หลักทำที่ Client
+- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_auth_flow.py`
+
+---
+
+### TC-BE-AUTH-06: การปฏิเสธการเข้าสู่ระบบเมื่อรหัสผ่านผิด (Login Wrong Password)
+- **Module / Feature**: Auth / Login Error Handling
+- **Requirement ID**: FR-AUTH-02
+- **Test Type**: Negative
+- **Priority**: P1 (High)
+- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
+  1. มีผู้ใช้ `be_test_user@scamguard.local` ในระบบ
+- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
+  - Endpoint: `POST /api/v1/auth/login`
+  - Content-Type: `application/x-www-form-urlencoded`
+  - Form fields:
+    - `username`: `be_test_user@scamguard.local`
+    - `password`: `WrongPassword999`
+- **Test Steps (ขั้นตอนการทดสอบ)**:
+  1. ส่งคำขอ Login แบบฟอร์มโดยกรอกอีเมลถูกแต่รหัสผ่านผิด
+- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
+  1. ได้รับ HTTP Status Code: `401 Unauthorized`
+  2. Response Body: `{"detail": "Incorrect email or password"}`
+  3. ไม่มีการออก Token ใดๆ
 - **Automation Mapping**: `tests_all/automate_tests/tests/api/test_auth_flow.py`
 
 ---
@@ -131,17 +182,19 @@
   - Endpoint: `POST /api/v1/scan/`
   - Content-Type: `multipart/form-data`
   - File: `sample.jpg`
+  - Field: `file` พร้อม `title` (ถ้ามี)
 - **Test Steps**:
   1. แนบไฟล์รูปภาพใน Form Field `file`
   2. ส่งคำขอพร้อม Authorization Header
 - **Expected Results**:
   1. ได้รับ HTTP Status Code: `200 OK`
   2. Response Body ประกอบด้วย:
-     - `analysis_id`: รหัสการสแกน (UUID v4)
-     - `overall_risk_score`: ตัวเลขอัตราความเสี่ยง 0 – 100
-     - `risk_level`: ระดับความเสี่ยง (`Low`, `Medium`, หรือ `High`)
-     - `breakdown`: คะแนนจำแนก Textual, Source, Visual
-     - `heatmap_url`: URL สำหรับดาวน์โหลดภาพ Heatmap
+     - `id`: รหัสการสแกน (UUID v4)
+     - `total_risk_score`: ตัวเลขอัตราความเสี่ยง 0 – 100
+     - `risk_grade`: ระดับความเสี่ยงตัวพิมพ์เล็ก (`low`, `medium`, `high`)
+     - `text_score`, `visual_score`, `source_score`: คะแนนจำแนกรายด้าน
+     - `heatmap_image_url`: URL สำหรับดาวน์โหลดภาพ Heatmap
+     - `status` และ `progress`: สถานะงานปัจจุบัน
   3. ข้อมูลถูกบันทึกลงในตาราง `scans` ของ PostgreSQL พร้อมเวลาที่บันทึก
 - **Automation Mapping**: `tests_all/automate_tests/tests/api/test_scan_workflow.py`
 
@@ -153,7 +206,7 @@
 - **Test Type**: Boundary / Negative
 - **Priority**: P1 (High)
 - **Pre-conditions**:
-  1. เตรียมไฟล์ภาพจำลองขนาด 21 MB (เกินลิมิตฝั่ง Server; ฝั่ง Mobile ปฏิเสธตั้งแต่เกิน 10MB)
+  1. เตรียมไฟล์ภาพจำลองขนาด 21 MB (เกินลิมิตฝั่ง Server 20MB; ฝั่ง Mobile ไม่ปฏิเสธไฟล์เกิน 10MB แต่แสดงคำเตือนและบีบอัดก่อนส่ง)
 - **Test Data**:
   - Endpoint: `POST /api/v1/scan/`
   - File: ขนาด 21 MB
@@ -161,9 +214,9 @@
   1. ยิงคำขออัปโหลดไฟล์ขนาดเกิน 20MB เข้าสู่ Endpoint
 - **Expected Results**:
   1. Backend ปฏิเสธคำขอทันทีด้วย HTTP Status Code: `413 Payload Too Large`
-  2. Response Body: `{"detail": "Maximum allowed size is 20 MB."}`
+  2. Response Body: `{"detail": "File too large. Maximum allowed size is 20 MB."}`
   3. เซิร์ฟเวอร์ยกเลิกการอ่าน Stream เพื่อประหยัด RAM
-- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_scan_workflow.py`
+- **Automation Mapping**: `server/tests/api/test_scan.py`
 
 ---
 
@@ -179,10 +232,31 @@
 - **Test Steps**:
   1. พยายามอัปโหลดไฟล์ดังกล่าวเข้าสู่ API สแกนภาพ
 - **Expected Results**:
-  1. Backend ตรวจสอบ Header Magic Bytes ของไฟล์ในฟังก์ชันตรวจสอบ
-  2. ตรวจพบว่าเนื้อหาไม่ใช่รูปภาพจริง ปฏิเสธด้วย HTTP `400 Bad Request`
+  1. Backend ตรวจสอบ Header Magic Bytes ของไฟล์ แล้วตรวจพบว่าเนื้อหาไม่ใช่รูปภาพจริง
+  2. ปฏิเสธด้วย HTTP `400 Bad Request` พร้อม `{"detail": "File is not a valid image."}`
   3. ไฟล์ไม่ถูกส่งต่อไปยัง Subprocess หรือโมเดล AI ป้องกันช่องโหว่ RCE และ Memory Corrupt
 - **Automation Mapping**: `tests_all/automate_tests/tests/api/test_scan_workflow.py`
+
+---
+
+### TC-BE-SCAN-04: การปฏิเสธไฟล์รูปภาพที่เสียหายเปิดไม่ได้ (Corrupt Image)
+- **Module / Feature**: Scan / Corrupt File Handling
+- **Requirement ID**: FR-INPUT-04
+- **Test Type**: Negative
+- **Priority**: P1 (High)
+- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
+  1. มี Bearer Token ที่ถูกต้อง
+  2. เตรียมไฟล์นามสกุล jpg แต่ข้อมูลภายในเสียหายเปิดไม่ได้
+- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
+  - Endpoint: `POST /api/v1/scan/`
+  - File: `corrupt.jpg` (ข้อมูลไบต์ไม่สมบูรณ์)
+- **Test Steps (ขั้นตอนการทดสอบ)**:
+  1. อัปโหลดไฟล์เสียหายเข้าสู่ Endpoint สแกน
+- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
+  1. Backend ตอบ `400 Bad Request` หรือ `422 Unprocessable Entity`
+  2. ไฟล์ไม่ถูกส่งต่อเข้า AI Pipeline
+  3. ไม่เกิดการแครชของ Worker
+- **Automation Mapping**: `server/tests/api/test_scan.py`
 
 ---
 
@@ -228,20 +302,21 @@
 
 ## 4. หมวดหมู่ความปลอดภัยและการจำกัดอัตราคำขอ (Security & Rate Limiting)
 
-### TC-BE-RATE-01: การจำกัดอัตราการยิงสแกนภาพด้วย Slowapi (Rate Limiting)
+### TC-BE-RATE-01: การจำกัดอัตราคำขอทั่วไปและฝั่ง Admin (Rate Limiting)
 - **Module / Feature**: Security / Rate Limiting Middleware
 - **Requirement ID**: NFR-SEC-04
-- **Test Type**: Boundary / Stress
+- **Test Type**: Boundary
 - **Priority**: P1 (High)
 - **Pre-conditions**:
-  1. Slowapi กำหนด Limit การสแกนภาพไว้ที่ 10 คำขอต่อนาทีต่อผู้ใช้/IP
-- **Test Data**: ยิงคำขออัปโหลดภาพต่อเนื่อง 12 ครั้งติดต่อกันในเวลา 5 วินาที
+  1. Server กำหนดโควตาทั่วไว้ที่ 60 ครั้งต่อชั่วโมงต่อ IP และกำหนด Limit ของ `POST /api/v1/admin/login` กับ `POST /api/v1/admin/refresh` ไว้ที่ 5 ครั้งต่อนาที
+- **Test Data**: ยิงคำขอ `POST /api/v1/admin/login` เกิน 5 ครั้งภายใน 1 นาทีจาก IP เดียวกัน
 - **Test Steps**:
-  1. ใช้ลูปยิงคำขอ `POST /api/v1/scan/` รัวเกินโควตา
+  1. ใช้ลูปยิงคำขอล็อกอิน Admin รัวเกินโควตา
 - **Expected Results**:
-  1. คำขอที่ 1 ถึง 10 ตอบกลับสำเร็จ HTTP 200
-  2. คำขอที่ 11 เป็นต้นไป ถูกปฏิเสธด้วย HTTP Status Code: `429 Too Many Requests`
+  1. คำขอภายในโควตาตอบกลับตามปกติ
+  2. คำขอเกินโควตาถูกปฏิเสธด้วย HTTP Status Code: `429 Too Many Requests`
   3. มี Header `Retry-After` แจ้งเวลาที่ต้องรอก่อนยิงใหม่อีกครั้ง
+  4. โควตาทั่ว 60 ครั้งต่อชั่วโมงมีผลกับทุกคำขอ ส่วนโควตา Admin 5 ครั้งต่อนาทีมีผลเฉพาะเส้นล็อกอินและต่ออายุ Token ฝั่ง Admin
 - **Automation Mapping**: `tests_all/automate_tests/tests/api/test_admin.py`
 
 ---
@@ -275,19 +350,19 @@
 - **Pre-conditions**:
   1. มี Token ของผู้ใช้ทั่วไป (Normal User จากตาราง `users`)
 - **Test Data**:
-  - Endpoint: `GET /api/v1/admin/users/` หรือ `GET /api/v1/admin/models/`
+  - Endpoint: `GET /api/v1/admin/users` หรือ `GET /api/v1/admin/models`
   - Headers: `Authorization: Bearer <normal_user_token>`
 - **Test Steps**:
   1. ใช้ Token ของผู้ใช้ธรรมดาเรียก Endpoint ของ Admin
 - **Expected Results**:
   1. ระบบปฏิเสธคำขอทันทีด้วย HTTP Status Code: `403 Forbidden`
-  2. Response Body: `{"detail": "Admin privileges required"}`
+  2. Response Body: `{"detail": "Super Admin access required"}`
   3. ข้อมูลรายชื่อผู้ใช้และระบบจัดการโมเดลไม่ถูกเปิดเผย
 - **Automation Mapping**: `tests_all/automate_tests/tests/api/test_admin.py`
 
 ---
 
-### TC-BE-MODEL-01: การสลับสถานะโมเดล Active พร้อม Database Row Lock (Atomic Model Deployment)
+### TC-BE-MODEL-01: การสลับสถานะโมเดล Active ภายใต้งานฐานข้อมูลเดียว (Atomic Model Deployment)
 - **Module / Feature**: Admin / Model Registry
 - **Requirement ID**: FR-ADM-04
 - **Test Type**: Concurrency / Integration
@@ -297,19 +372,181 @@
   2. ล็อกอินด้วยบัญชีแอดมิน
 - **Test Data**:
   - Endpoint: `POST /api/v1/admin/models/{model_id}/deploy`
+  - Body: `{"reason": "เลื่อนเวอร์ชันที่ผ่านการทดสอบขึ้นใช้งานจริง"}`
 - **Test Steps**:
-  1. ส่งคำขอ Deploy โมเดล `v1.0.1` โดยระบุ `model_id` (int) ของเวอร์ชันเป้าหมาย
-  2. ตรวจสอบตาราง `model_versions` และ `audit_logs`
+  1. ส่งคำขอ Deploy โมเดล `v1.0.1` โดยระบุ `model_id` (int) ของเวอร์ชันเป้าหมายพร้อมเหตุผล
+  2. ตรวจสอบตาราง `model_versions` และ `audit_log`
 - **Expected Results**:
-  1. ได้รับ HTTP Status Code: `200 OK`
-  2. กระบวนการรันภายใต้ Transaction แบบ Atomic
-  3. โมเดลเดิมถูกปลดสถานะเป็น `is_active = false` และโมเดลใหม่กลายเป็น `is_active = true`
-  4. มีการบันทึกประวัติการกระทำลงในตาราง `audit_logs` ทันที
+1. ได้รับ HTTP Status Code: `200 OK`
+2. กระบวนการรันภายใต้ Transaction แบบ Atomic โดยไม่มีการล็อกแถวแยกต่างหาก
+3. โมเดลเดิมถูกปลดสถานะเป็น `is_active = false` และโมเดลใหม่กลายเป็น `is_active = true`
+  4. มีการบันทึกประวัติการกระทำลงในตาราง `audit_log` เอกพจน์ทันที
 - **Automation Mapping**: `tests_all/automate_tests/tests/api/test_admin.py`
 
 ---
 
-## 6. หมวดหมู่ความสอดคล้องของฐานข้อมูลและเวลา (Database Integrity & Timezone)
+### TC-BE-ADMIN-04: การรับเรื่องและตัดสินรายงานข้อร้องเรียน (Report Moderation)
+- **Module / Feature**: Admin / Report Review and Decision
+- **Requirement ID**: FR-ADM-02
+- **Test Type**: Functional
+- **Priority**: P1 (High)
+- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
+  1. ล็อกอินด้วยบัญชี Admin ที่มี `is_superadmin` เป็นจริง
+  2. มีรายงานของผู้ใช้สถานะ `pending` พร้อมเลข `version` ปัจจุบัน
+- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
+  - Endpoint: `POST /api/v1/admin/reports/{report_id}/review` พร้อม `{"version": 1}`
+  - Endpoint: `PATCH /api/v1/admin/reports/{report_id}`
+- **Test Steps (ขั้นตอนการทดสอบ)**:
+  1. เรียกดูรายละเอียดด้วย `GET /api/v1/admin/reports/{report_id}`
+  2. กดรับเรื่องด้วย `POST /review` โดยส่งเลข `version` ปัจจุบัน สถานะต้องเปลี่ยนเป็น `reviewing`
+  3. ตัดสินรายงานด้วย `PATCH` แล้วตรวจตาราง `audit_log`
+- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
+  1. กดรับเรื่องสำเร็จ สถานะเป็น `reviewing` ตัวพิมพ์เล็ก เลข `version` เพิ่มขึ้น
+  2. ส่งเลข `version` เก่าซ้ำได้ `409 Conflict` พร้อม `{"detail": "Conflict: Report has been updated by another user"}`
+  3. การตัดสินบันทึกผลต่าง `status` และ `version` ก่อนหลังลงตาราง `audit_log` เอกพจน์
+  4. Token ผู้ใช้ทั่วไปเรียกแล้วได้ `403 Forbidden` พร้อม `{"detail": "Super Admin access required"}`
+- **Automation Mapping**: `server/tests/api/test_admin_reports.py`
+
+---
+
+## 6. หมวดหมู่ประวัติและรายงานของผู้ใช้ (History Plus User Reports)
+
+### TC-BE-HIST-01: การดึงรายการประวัติการสแกน (History List)
+- **Module / Feature**: History / List Scans
+- **Requirement ID**: FR-HIST-01
+- **Test Type**: Functional
+- **Priority**: P1 (High)
+- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
+  1. ผู้ใช้มีประวัติการสแกนอย่างน้อย 2 รายการ
+- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
+  - Endpoint: `GET /api/v1/history?page=1&limit=20`
+  - Headers: `Authorization: Bearer <valid_access_token>`
+- **Test Steps (ขั้นตอนการทดสอบ)**:
+  1. เรียกดูรายการประวัติพร้อม Token ที่ถูกต้อง
+  2. ตรวจสอบการเรียงลำดับและฟิลด์ที่ได้
+- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
+  1. ตอบ `200 OK` พร้อม `items`, `total`, `page`, `limit`
+  2. รายการเรียงจากใหม่ไปเก่า มี `scan_id`, `risk_score`, `risk_level` ตัวพิมพ์เล็ก, `status`, `created_at`, `title`
+  3. เวลาเป็นเขตเวลาไทย UTC+7
+- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_history.py`
+
+---
+
+### TC-BE-HIST-02: การดูรายละเอียดประวัติรายฉบับและการลบประวัติ (History Detail Plus Delete)
+- **Module / Feature**: History / Detail and Delete
+- **Requirement ID**: FR-HIST-02, FR-HIST-03
+- **Test Type**: Functional
+- **Priority**: P1 (High)
+- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
+  1. มี scan_id ที่เป็นของผู้ใช้เอง
+- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
+  - Endpoint: `GET /api/v1/history/{scan_id}`
+  - Endpoint: `DELETE /api/v1/history/{scan_id}`
+- **Test Steps (ขั้นตอนการทดสอบ)**:
+  1. เรียกดูรายละเอียดด้วย `GET /api/v1/history/{scan_id}`
+  2. ลบด้วย `DELETE /api/v1/history/{scan_id}`
+  3. เรียกดูซ้ำด้วย `GET` เดิม
+- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
+1. `GET` ครั้งแรกตอบ `200 OK` พร้อมข้อมูลตรงกับเจ้าของงาน
+2. `DELETE` ตอบสำเร็จและลบไฟล์ภาพเมื่อไม่มีงานอื่นใช้ `image_hash` เดียวกัน
+3. `GET` ซ้ำตอบ `404 Not Found` พร้อม `{"detail": "Scan not found"}`
+- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_history.py`
+
+---
+
+### TC-BE-RPT-01: การส่งรายงานและการดึงหมวดหมู่กับรายงานของตนเอง (User Reports)
+- **Module / Feature**: User Reports / Submit and Query
+- **Requirement ID**: FR-RPT-01
+- **Test Type**: Functional
+- **Priority**: P1 (High)
+- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
+  1. มี scan_id ที่เป็นของผู้ใช้เองและยังไม่เคยถูกรายงาน
+- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
+  - Endpoint: `POST /api/v1/reports` พร้อม `scan_id`, `category` เป็น `fake_slip`, `description` ยาวไม่ต่ำกว่า 10 ตัวอักษร
+  - Endpoint: `GET /api/v1/reports/categories`
+  - Endpoint: `GET /api/v1/reports/my`
+- **Test Steps (ขั้นตอนการทดสอบ)**:
+  1. ดึงหมวดหมู่จาก `GET /api/v1/reports/categories`
+  2. ส่งรายงานด้วย `POST /api/v1/reports`
+  3. ดึงรายงานของตนเองด้วย `GET /api/v1/reports/my`
+- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
+1. หมวดหมู่มี 7 ค่า ได้แก่ `romance_scam`, `online_shopping`, `fake_slip`, `investment`, `identity_theft`, `ai_deepfake`, `other`
+2. ส่งรายงานสำเร็จได้ `201 Created` พร้อมสถานะ `pending` ตัวพิมพ์เล็ก
+3. ส่งงานเดิมซ้ำได้ `409 Conflict` พร้อม `{"detail": "This scan has already been reported"}` ส่วนการรายงานงานที่ไม่ใช่ของตนเองได้ `403 Forbidden`
+4. `GET /my` แสดงรายงานของตนเองพร้อมสถานะและเลข `version`
+- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_history.py`
+
+---
+
+## 7. หมวดหมู่การบริหาร Admin ขั้นสูง (Admin Health Search Sessions Audit)
+
+### TC-BE-ADMIN-02: การตรวจสุขภาพระบบและการค้นหาข้ามระบบ (Admin Health Plus Search)
+- **Module / Feature**: Admin / Health and Global Search
+- **Requirement ID**: FR-ADM-01
+- **Test Type**: Functional
+- **Priority**: P2 (Medium)
+- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
+  1. ล็อกอินด้วยบัญชี Admin ที่มี `is_superadmin` เป็นจริง
+- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
+  - Endpoint: `GET /api/v1/admin/health`
+  - Endpoint: `GET /api/v1/admin/search?q=slip`
+- **Test Steps (ขั้นตอนการทดสอบ)**:
+  1. เรียกดูสถานะสุขภาพระบบ
+  2. ค้นหาด้วยคำค้นแล้วตรวจผลลัพธ์
+- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
+  1. `GET /health` ตอบ `200 OK` พร้อมสถานะฐานข้อมูล แคช และ Worker
+  2. `GET /search` ตอบ `200 OK` พร้อมผลลัพธ์ที่ตรงกับคำค้น
+  3. Token ผู้ใช้ทั่วไปเรียกแล้วได้ `403 Forbidden`
+- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_admin.py`
+
+---
+
+### TC-BE-ADMIN-03: การดูและเพิกถอน Session ของ Admin (Admin Sessions)
+- **Module / Feature**: Admin / Session Management
+- **Requirement ID**: FR-ADM-01
+- **Test Type**: Security
+- **Priority**: P1 (High)
+- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
+  1. ล็อกอิน Admin สำเร็จมี Session ปัจจุบัน
+- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
+  - Endpoint: `GET /api/v1/admin/sessions`
+  - Endpoint: `POST /api/v1/admin/sessions/{session_id}/revoke`
+  - Endpoint: `GET /api/v1/admin/me`
+- **Test Steps (ขั้นตอนการทดสอบ)**:
+  1. ดึงรายการ Session ทั้งหมดของตนเอง
+  2. เพิกถอน Session ที่สร้างเพื่อทดสอบ
+  3. นำ Refresh Token เดิมไปเรียก `POST /api/v1/admin/refresh`
+- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
+  1. รายการ Session แสดงรหัส วันหมดอายุ และการใช้งานล่าสุด
+  2. เพิกถอนสำเร็จและ Session ที่ถูกเพิกถอนใช้งานต่อไม่ได้
+  3. Refresh Token ที่ถูกเพิกถอนตอบ `401 Unauthorized`
+- **Automation Mapping**: `server/tests/api/test_admin_auth.py`
+
+---
+
+### TC-BE-AUDIT-01: การกรองบันทึก Audit Log และการแสดงผลต่าง JSON (Audit Filter)
+- **Module / Feature**: Admin / Audit Log Viewer
+- **Requirement ID**: FR-ADM-06, FR-AUDIT-01
+- **Test Type**: Functional
+- **Priority**: P1 (High)
+- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
+  1. มีประวัติการ Deploy โมเดลหรือตัดสินรายงานในตาราง `audit_log`
+- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
+  - Endpoint: `GET /api/v1/admin/audit-logs?page=1&limit=50&search=&action=&entity_type=`
+- **Test Steps (ขั้นตอนการทดสอบ)**:
+  1. ดึงบันทึกแบบไม่กรอง
+  2. กรองด้วย `action` และ `entity_type`
+  3. ตรวจสอบฟิลด์ผลต่างของรายการที่เปลี่ยนสถานะ
+- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
+  1. ตอบ `200 OK` พร้อม `items`, `total`, `page`, `limit`
+  2. แต่ละรายการมี `action`, `entity_type`, `entity_id`, `before_state`, `after_state`
+  3. การเปลี่ยนสถานะรายงานแสดงผลต่าง `status` และ `version` ก่อนหลังถูกต้อง
+  4. ตารางที่ใช้คือ `audit_log` เอกพจน์
+- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_admin.py`
+
+---
+
+## 8. หมวดหมู่ความสอดคล้องของฐานข้อมูลและเวลา (Database Integrity & Timezone)
 
 ### TC-BE-DB-01: การบันทึกเวลาเป็นเขตเวลาประเทศไทย UTC+7 (Timezone Verification)
 - **Module / Feature**: Database / Timezone Consistency
@@ -318,7 +555,7 @@
 - **Priority**: P1 (High)
 - **Pre-conditions**:
   1. PostgreSQL Container และระบบ FastAPI ตั้งค่า Timezone ตรงกัน
-- **Test Data**: การสร้าง Record ใหม่ในตาราง `users`, `scans`, หรือ `audit_logs`
+- **Test Data**: การสร้าง Record ใหม่ในตาราง `users`, `scans`, หรือ `audit_log`
 - **Test Steps**:
   1. ส่งคำขอสร้างข้อมูลใหม่
   2. ตรวจสอบค่าในคอลัมน์ `created_at` ใน PostgreSQL

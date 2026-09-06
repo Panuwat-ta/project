@@ -1,9 +1,12 @@
 # แผนการทดสอบ: คุณลักษณะที่ไม่ใช่เชิงหน้าที่ (Non-Functional Requirements Test Plan)
 
+> Version: 1.0.1 | Date: 2026-09-06 | Status: Baseline
+
 - **System / Component**: ScamGuard Whole System (Infrastructure, Security, Performance, Compliance)
 - **Standards & Guidelines**: ISO/IEC 25010 (Software Quality Models), OWASP Top 10:2021, PDPA (พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562), WCAG 2.1 Level AA
-- **Document Version**: 1.0.0
-- **Status**: Approved
+- **Document Version**: 1.0.1
+- **Date**: 2026-09-06
+- **Status**: Baseline
 
 ---
 
@@ -17,7 +20,7 @@
    - ตรวจวัดเวลาประมวลผลการวิเคราะห์เต็มรูปแบบของ AI Pipeline (<= 15 วินาที)
    - ความสามารถในการรองรับโหลดพร้อมกัน (Concurrency) ตั้งแต่ 50 ถึง 200 ผู้ใช้เสมือน (Virtual Users)
 2. **ความมั่นคงปลอดภัย (Security & Hardening)**:
-   - การตรวจสอบความถูกต้องของไฟล์อัปโหลด (Magic Bytes & Content-Type Validation)
+   - การตรวจสอบความถูกต้องของไฟล์อัปโหลด (Magic Bytes & Content-Type Validation Server ปฏิเสธเกิน 20MB ด้วย HTTP 413 และปฏิเสธภาพเกิน 100M px อัตรา default 60/hour)
    - การป้องกันช่องโหว่ OWASP Top 10 (Injection, Broken Access Control, Security Misconfiguration)
    - การจัดการความลับ (Zero Hardcoded Secrets) และการบังคับใช้ HTTPS/TLS
 3. **การคุ้มครองข้อมูลส่วนบุคคล (Data Privacy & PDPA)**:
@@ -66,3 +69,7 @@
 - **เอกสารกรณีทดสอบละเอียด**: `tests_all/manual_tests/test_cases_nfr.md`
 - **ชุดทดสอบประสิทธิภาพอัตโนมัติ**: `tests_all/automate_tests/tests/performance/locustfile.py`
 - **ตารางความสอดคล้องความต้องการ**: `tests_all/rtm.md` (หมวดหมู่ NFR ทั้งหมด)
+
+## 5. ขอบเขตนอกการทดสอบและ GAP
+- FCM Push Notification และ OAuth Social Login เป็น Deferred Phase 2 ไม่อยู่ในขอบเขตการทดสอบรอบนี้
+- เส้นทาง POST /api/v1/scan/upload ไม่มีอยู่จริง ต้องใช้ POST /api/v1/scan/ เท่านั้น

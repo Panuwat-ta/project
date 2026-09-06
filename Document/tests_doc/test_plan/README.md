@@ -1,10 +1,13 @@
 # Master Test Plan & Strategy: ScamGuard System
 
+> Version: 1.0.1 | Date: 2026-09-06 | Status: Baseline
+
 - **Project**: ScamGuard (Scam Image Detection System)
 - **Standard**: ISO/IEC/IEEE 29119-3 (Software Testing Documentation)
-- **Version**: 1.0.0
+- **Version**: 1.0.1
+- **Date**: 2026-09-06
 - **Author**: Senior Software Tester / Lead QA Engineer
-- **Status**: Approved
+- **Status**: Baseline
 
 ---
 
@@ -35,33 +38,34 @@
 - **Mobile Application (Flutter)**:
   - Clean Architecture & BLoC/Cubit State Management
   - การลงทะเบียน ล็อกอิน และจัดการ Session Token
-  - การเลือกรูปภาพจาก Gallery
-   - Client-side File Validation (ฝั่ง Mobile ขนาดไฟล์ไม่เกิน 10MB, นามสกุล jpg/jpeg/png/webp; ฝั่ง Server รองรับขนาดไฟล์ไม่เกิน 20MB)
+  - การเลือกรูปภาพจาก Gallery เท่านั้น (Gallery-only ไม่มีถ่ายจากกล้อง)
+   - Client-side File Validation (ฝั่ง Mobile มีตัวชี้วัด isValidSize 10MB แต่อนุญาตไฟล์เกินเพื่อส่ง compress ต่อ ฝั่ง Server ปฏิเสธเกิน 20MB ด้วย HTTP 413 และปฏิเสธภาพเกิน 100M px)
   - หน้าแสดงผลคะแนนความเสี่ยงพร้อม Heatmap Overlay Interaction (เปิด/ปิด, ปรับ Opacity)
   - ประวัติการสแกนย้อนหลัง (Recent History, Thumbnails, Tap Navigation, Offline Cache Fallback)
   - การสลับภาษา (Localization ภาษาไทยและอังกฤษ) และ Dark/Light Mode
 - **Backend API & Database (FastAPI & PostgreSQL)**:
-  - Authentication Endpoints (`/api/v1/auth/*`)
-  - Image Scan Endpoint (`POST /api/v1/scan/`) พร้อม Multipart Upload
+  - Authentication Endpoints (POST /api/v1/auth/register|login|refresh|logout, GET /api/v1/auth/me)
+  - Image Scan Endpoint (`POST /api/v1/scan/`, GET /api/v1/scan/{id}) พร้อม Multipart Upload
   - Magic Bytes Validation และ Image File Sanitization
-  - Redis Caching Mechanism (SHA-256 image hash)
-  - Slowapi Rate Limiting Middleware และ CORS Origin Filtering
-  - Admin Endpoints (`/api/v1/admin/*`) พร้อมการแยกสิทธิ์ Role-Based Access Control
+  - Redis Caching Mechanism (SHA-256 image hash TTL 30 วัน)
+  - Slowapi Rate Limiting (default 60/hour, admin login/refresh 5/minute) และ CORS Origin Filtering
+  - Admin Endpoints (`/api/v1/admin/*` ทุกเส้นบังคับ is_superadmin) พร้อมการแยกสิทธิ์ Role-Based Access Control
   - Model Version Registry (Deploy, Rollback พร้อม Database Row Lock)
-  - Audit Logging พร้อม Structured JSON
+  - Audit Logging ลงตารางเอกพจน์ audit_log พร้อม Structured JSON
+  - Scan History (GET /api/v1/history, GET /api/v1/history/{id}, DELETE /api/v1/history/{id}) และ Scam Reports (POST /api/v1/reports, GET /api/v1/reports/categories, GET /api/v1/reports/my)
   - Timezone UTC+7 (Asia/Bangkok) และ Database Cascades
 - **AI Inference Pipeline**:
   - Overlapping Tiling Inference (Patch 512x512, Overlap 64px, Probability Weight Averaging)
   - Full-Resolution Heatmap Reconstruction
   - Surya OCR Engine สำหรับภาษาไทยและภาษาอังกฤษ
-  - XAI Reasoning Pipeline
-  - Hybrid Worst-Case Risk Scoring Formula
+  - XAI Reasoning Pipeline ด้วย Qwen2.5-1.5B
+  - Hybrid Worst-Case Risk Scoring 3 ระดับ Low 0-39 Medium 40-69 High 70-100
   - Subprocess Isolation (ONNX worker แยกโปรเซส)
 - **Admin Portal (React / Vite)**:
-  - Admin Authentication และ Token Refresh
-  - Dashboard KPIs, Real-time WebSocket Telemetry
+  - Admin Authentication และ Token Refresh (login/refresh 5/minute ทุกเส้นบังคับ is_superadmin)
+  - Dashboard KPIs, Real-time WebSocket Telemetry ผ่าน WS /api/v1/ws/admin/dashboard
   - Model Version Management พร้อม Modal ยืนยัน Deploy/Rollback
-  - Report Moderation Flow พร้อม Optimistic Concurrency Control
+  - Report Moderation Flow สถานะ pending/reviewing/approved/rejected พร้อม Optimistic Concurrency Control ด้วยคอลัมน์ version
   - User Management และการระงับการใช้งาน (Ban with Reason)
   - Audit Log Diff Viewer และ UI Accessibility (WCAG AA Contrast)
 - **Non-Functional Testing**:
@@ -70,9 +74,16 @@
   - Privacy & PDPA Compliance
 
 ### 2.2 ขอบเขตนอกการทดสอบ (Out-of-Scope)
+- การถ่ายภาพโดยตรงจากกล้อง (Camera Capture) — Mobile รองรับ Gallery-only เลือกภาพจากคลังภาพเท่านั้น
+- การล็อกอินด้วย OAuth Social Login และการแจ้งเตือน Firebase Cloud Messaging (FCM) — Deferred เป็น Phase 2
 - การทดสอบการเชื่อมต่อกับ Payment Gateway ภายนอก (ระบบไม่มีธุรกรรมการเงิน)
 - การทดสอบฮาร์ดแวร์ Physical GPU ในระดับชิปเซ็ต (ทดสอบเฉพาะระดับ Driver / CUDA Container API)
 - การทดสอบบน Desktop OS (Windows/macOS/Linux) — แอปเป็น Flutter cross-platform (Android + iOS) ทดสอบหลักบน Android
+
+### 2.3 หมายเหตุ GAP ที่ห้ามเขียนแผนเทสของสิ่งที่ไม่มี (Anti-Hallucination)
+- เส้นทาง POST /api/v1/scan/upload ไม่มีอยู่จริง ต้องใช้ POST /api/v1/scan/ เท่านั้น
+- เส้นทาง DELETE /api/v1/scan/{id} ไม่มีอยู่จริง มีเฉพาะ DELETE /api/v1/history/{id}
+- ชุดค่า category keys ฝั่ง Mobile กับ Backend ไม่ตรงกัน ให้ mark เป็น GAP ห้ามสมมติว่าตรงกัน
 
 ---
 

@@ -1,10 +1,13 @@
 # แผนการทดสอบอัตโนมัติ: การทดสอบข้ามระบบครบวงจร (End-to-End Automation Test Plan)
 
+> Version: 1.0.1 | Date: 2026-09-06 | Status: Baseline
+
 - **System / Component**: ScamGuard Integrated Ecosystem (Client-Backend-Worker Bridge)
 - **Framework**: Pytest, Asyncio, HTTPX, Mobile Contract Bridge
 - **Execution Scripts**: `tests_all/automate_tests/run.sh e2e` และ `tests_all/automate_tests/run.sh mobile`
-- **Document Version**: 1.0.0
-- **Status**: Approved
+- **Document Version**: 1.0.1
+- **Date**: 2026-09-06
+- **Status**: Baseline
 
 ---
 
@@ -66,3 +69,6 @@
 ## 4. การวินิจฉัยข้อผิดพลาด (Failure Diagnosis)
 - หากเกิดข้อผิดพลาดในขั้นตอน Polling: ให้ตรวจสอบ Worker Logs ใน `server/` เพื่อดูว่าเกิด GPU/CPU Subprocess Exception หรือไม่
 - หากเกิดข้อผิดพลาดในขั้นตอน Mobile Bridge: ให้ตรวจสอบว่ามีการเพิ่มหรือลบฟิลด์ใน Pydantic Schema โดยยังไม่ได้ปรับโค้ด Model ฝั่ง Flutter หรือไม่
+
+## 5. หมายเหตุ GAP
+- ชุดค่า category keys ฝั่ง Mobile กับ Backend ไม่ตรงกัน ให้ mark เป็น GAP ห้ามสมมติว่าตรงกันในการตรวจ Contract
