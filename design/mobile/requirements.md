@@ -47,7 +47,7 @@ ScamGuard Mobile App เป็นแอปพลิเคชัน Flutter ส�
 ### REQ-005: Home / Scan Screen
 - ระบบต้องแสดงหน้าหลักพร้อม Header ทักทายผู้ใช้
 - ต้องมีปุ่มอัปโหลดรูปภาพ (Card หลัก) เปิด File Picker
-- รองรับไฟล์ jpg, jpeg, png, webp ขนาดไม่เกิน 10 MB (Hard Limit)
+- รองรับไฟล์ jpg, jpeg, png, webp; ฝั่ง client บีบอัดเมื่อไฟล์ > 10 MB ส่วน server ปฏิเสธไฟล์เกิน 20 MB (413, MAX_UPLOAD_SIZE_MB)
 - ต้องแสดงแถบ Safety Tips (Bento Grid)
 - ต้องแสดงรายการประวัติการสแกนล่าสุด 3-5 รายการ
 - เมื่อเลือกไฟล์สำเร็จ → นำทางไป Image Crop Screen
