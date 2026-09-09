@@ -407,7 +407,7 @@ Validation:
 ข้อจำกัดไฟล์:
 
 - รองรับ `jpg`, `jpeg`, `png`, `webp`
-- ขนาดไฟล์ไม่เกิน 10 MB (Hard Limit)
+- ขนาดไฟล์ฝั่ง server ไม่เกิน 20 MB (Hard Limit, MAX_UPLOAD_SIZE_MB)
 - หากไฟล์ใหญ่เกิน ให้บีบอัดก่อนอัปโหลดโดยยังรักษาความชัดพอสำหรับ OCR
 
 ### 7.6 Image Preview และ Crop Screen
