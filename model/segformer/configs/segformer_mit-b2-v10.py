@@ -254,7 +254,7 @@ dataset_imd2020_val = dict(
 # ============================================================
 
 train_dataloader = dict(
-    batch_size=16,          # ขยายเป็น 16 สำหรับการ์ดจอ VRAM 8 GB
+    batch_size=16,          # การ์ด 8 GB; ถ้า OOM ลดเหลือ 8 (เท่ากับ v8 ตรงๆ)
     num_workers=8,
     persistent_workers=True,
 
