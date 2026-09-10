@@ -37,26 +37,19 @@ AI จะไม่รู้ว่า "รอยตัดต่อ" คืออ�
 
 Google Drive: [dataset](https://drive.google.com/file/d/1jxQS3HwH0DHHHaCtf_prKPj6fMUpZ5jp/view?usp=sharing)
 
-3. **รันสคริปต์เตรียมข้อมูล**: เปิด `prepare_dataset.sh` แก้ path ให้ตรงกับ dataset ที่ต้องการ แล้วรัน:
+3. **รันสคริปต์เตรียมข้อมูล**: ดูวิธีใช้ใน `prepare_dataset/README.md` แล้วรัน:
 ```bash
-# แก้ path ใน prepare_dataset.sh ก่อนรัน (ส่วน Path Configuration)
-./prepare_dataset.sh
+# smoke test ก่อน
+/tmp/plotvenv/bin/python prepare_dataset/clean_dataset.py --out /tmp/dataset_smoke --limit 30
+
+# รันจริง (USB -> ~/Pictures/dataset)
+nohup /tmp/plotvenv/bin/python prepare_dataset/clean_dataset.py > /tmp/clean_full.log 2>&1 &
 ```
 
 สคริปต์จะ:
-- Activate virtual environment ให้อัตโนมัติ
-- Undersample ภาพ Authentic ให้สมดุลกับ Tampered (1:1)
-- แบ่ง Train/Val (80/20) พร้อมบันทึก `split.json` สำหรับ reproduce
-- เพิ่ม prefix `au_`/`tp_` ป้องกันชื่อไฟล์ชนกัน
-- Resize mask ให้ตรงกับรูปอัตโนมัติ
-
-เมื่อต้องการใช้ dataset ตัวอื่น (เช่น copymove) ให้แก้ path ใน `prepare_dataset.sh`:
-```bash
-TP_DIR="${BASE_DIR}/defacto-copymove/copymove_img/img"
-MASK1_DIR="${BASE_DIR}/defacto-copymove/copymove_annotations/donor_mask"
-MASK2_DIR="${BASE_DIR}/defacto-copymove/copymove_annotations/probe_mask"
-OUT_DIR="${BASE_DIR}/defacto-copymove"
-```
+- อ่านดิบจาก `/run/media/panuwat/USB/data` (ไม่แตะต้นฉบับ) ครอบคลุม Authentic, CASIA2, splicing 1-7, copymove, inpainting 2 ชุด, IMD2020
+- เซฟ PNG lossless + undersample ไม่ทิ้งแบบเงียบ + แบ่ง stratified 80/20 พร้อม `split` เดิมของ inpaint2
+- เขียน `manifest.json` (รายชื่อไฟล์ทุกไฟล์) + `clean_log.json` (skipped/quarantine/duplicates พร้อมเหตุผล)
 
 ---
 

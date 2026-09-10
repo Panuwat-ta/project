@@ -7,53 +7,46 @@
 ```text
 /home/panuwat/project/model/
 │
-├── segformer/                # [แอปพลิเคชันหลัก] โค้ดและข้อมูลเฉพาะสำหรับโปรเจคสแกนสลิป
-│   │
-│   ├── env/                  # สภาพแวดล้อมจำลอง (Virtual Environment) สำหรับติดตั้ง Dependency
-│   │
+├── segformer/                # [แอปหลัก] เทรน/export/test SegFormer
+│   ├── configs/              # คอนฟิกเฉพาะโปรเจกต์ (segformer_mit-b2.py, v1-v9)
+│   │                         # - num_classes = 2 (background/forgery)
+│   │                         # - v8/v9 = พร้อมเทรนรอบถัดไป (balanced multi-dataset)
 │   ├── library/
-│   │   └── mmsegmentation/   # โค้ดต้นฉบับจาก OpenMMLab
-│   │       ├── configs/      # ไฟล์คอนฟิกพื้นฐานทั้งหมด (เช่น โครงสร้าง SegFormer)
-│   │       ├── mmseg/        # โค้ดกลไกภายใน (Model, Loss, Datasets)
-│   │       ├── tools/        # สคริปต์สำเร็จรูป เช่น train.py, test.py, pytorch2onnx.py
-│   │       └── ...           # (ห้ามแก้ไขโค้ดใดๆ ในโฟลเดอร์นี้)
-│   │
-│   ├── data/                 # แหล่งจัดเก็บข้อมูลสำหรับสอน AI
-│   │   └── slip_dataset/
-│   │       ├── images/       # รูปภาพสลิปต้นฉบับ (คำถาม)
-│   │       │   ├── train/    # - รูปสลิปสำหรับสอน
-│   │       │   └── val/      # - รูปสลิปสำหรับสอบวัดผล
-│   │       └── annotations/  # รูปภาพหน้ากากขาว-ดำ (เฉลยรอยตัดต่อ)
-│   │           ├── train/    # - เฉลยของรูปภาพใน images/train
-│   │           └── val/      # - เฉลยของรูปภาพใน images/val
-│   │
-│   ├── configs/              # โฟลเดอร์เก็บไฟล์ตั้งค่าเฉพาะ (Custom Configs)
-│   │   └── segformer_mit-b2.py
-│   │                         # ไฟล์คอนฟิกของเราเอง ที่ทำการเขียนทับ (Override):
-│   │                         # 1. เปลี่ยน num_classes = 2
-│   │                         # 2. ชี้ Path ของ Dataloader ไปที่ data/slip_dataset/
-│   │                         # 3. อ้างอิง _base_ กลับไปยัง library/mmsegmentation/...
-│   │
-│   ├── work_dirs/            # (สร้างอัตโนมัติเมื่อสั่งเทรน) แหล่งเก็บผลลัพธ์การเรียนรู้
-│   │   └── segformer_mit-b2.../
-│   │       ├── epoch_*.pth   # ไฟล์น้ำหนักที่ถูกบันทึกระหว่างการเทรน
-│   │       ├── latest.pth    # ไฟล์น้ำหนักตัวล่าสุดที่เทรนสำเร็จ
-│   │       └── training.log  # ล็อกบันทึกความแม่นยำ (Loss/mIoU)
-│   │
-│   ├── prepare_dataset.py    # สคริปต์จัดการ Dataset (เช่น แปลงค่าสี, สุ่มแบ่ง Train/Val)
-│   ├── requirements.txt      # ไฟล์รวมรายการ Dependency ที่ต้องใช้ (เช่น PyTorch, mmcv)
-│   ├── predict.py            # สคริปต์ Python สำหรับรันทดสอบ (Inference) โหลด .pth มาพ่น Heatmap
-│   └── README.md             # คู่มืออธิบายวิธีเตรียมข้อมูลและการสั่งรันเทรนโมเดล
+│   │   └── mmsegmentation/   # โค้ดต้นฉบับ OpenMMLab (ห้ามแก้ไข)
+│   ├── work_dirs/            # ผลเทรนรายเวอร์ชัน (สร้างโดย train.sh, auto-versioning)
+│   │   ├── segformer_v1.0.0(test-model)/, segformer_v2.0.0(test-model)/
+│   │   ├── v1.0.0/           # Production: best_mIoU_iter_112000.pth + .onnx
+│   │   └── v1.0.1/ ... v1.0.4/  # fine-tune ต่อ, v1.0.4 deprecated (forgetting)
+│   │       ├── <run>/vis_data/scalars.json  # log เทรน (JSON-lines)
+│   │       ├── best_mIoU_iter_*.pth / iter_*.pth
+│   │       └── *_dynamic.onnx (+ .data)
+│   ├── report/               # รายงาน + สคริปต์พล็อต
+│   │   ├── reportmodel.md    # สรุปผล/benchmark/root-cause ทุกรุ่น
+│   │   ├── plot_training.py  # พล็อต log v1.0.0-v1.0.4 (รันด้วย /tmp/plotvenv)
+│   │   └── figs/             # PNG ที่ส่งออก
+│   ├── tests_model/img/      # ภาพตัวอย่างทดสอบ (test.jpg) + test.sh
+│   ├── prepare_dataset/          # pipeline เดียว: clean_dataset.py + README
+│   │   │                         # USB(/run/media/panuwat/USB/data) -> ~/Pictures/dataset
+│   │   │                         # PNG lossless + stratified split + manifest.json
+│   ├── train.sh              # เทรน (auto-version, --load-from/--no-load)
+│   ├── export_onnx_dynamic.py# export ONNX dynamic axes
+│   ├── predict_test.py       # inference + heatmap overlay
+│   ├── requirements.txt venv/ .gitignore
+│   └── README.md error.md test.jpg
 │
-└── doc.md                    # เอกสารอธิบายโครงสร้างและการออกแบบ (ไฟล์นี้)
+├── surya/                    # Surya OCR (HF_HOME) — hub/vikp/surya_det3+rec2
+├── Qwen2.5-1.5B/             # Qwen XAI (qwen2.5-1.5b-instruct-q4_k_m.gguf)
+├── README.md                 # เอกสารอ้างอิงกลางของโมเดลทั้งหมด
+└── doc.md                    # ไฟล์นี้
 ```
 
 ## กระบวนการทำงาน (Workflow)
 
 หากคุณอยู่ที่พาธ `project/model/segformer/` กระบวนการทำงานจะเป็นดังนี้:
 
-1. **เตรียมสภาพแวดล้อม:** ติดตั้ง Library ที่จำเป็นผ่าน `env` โดยใช้ `requirements.txt` และ `mim install`
-2. **จัดการข้อมูล:** รันสคริปต์ `prepare_dataset.py` เพื่อแปลงภาพและจัดเตรียมลงในโฟลเดอร์ `data/slip_dataset/`
-3. **ปรับแต่ง:** แก้ไขไฟล์ใน `configs/` เพื่อกำหนดจำนวนคลาสและพาธของข้อมูลให้ถูกต้อง
-4. **สอนโมเดล (Train):** เรียกใช้สคริปต์จากไลบรารี โดยรัน `python library/mmsegmentation/tools/train.py configs/segformer_mit-b2.py`
-5. **นำไปใช้งาน (Deploy):** โค้ดฝั่งเซิร์ฟเวอร์จะเรียกใช้ไฟล์ `latest.pth` จากโฟลเดอร์ `work_dirs/` ร่วมกับสคริปต์ `predict.py` เพื่อสแกนสลิปจริง
+1. **เตรียมสภาพแวดล้อม:** ใช้ `venv/` ติดตั้งผ่าน `requirements.txt` (ปัญหา mmcv ดู `error.md`)
+2. **จัดการข้อมูล:** รัน `prepare_dataset/clean_dataset.py` (ดู `prepare_dataset/README.md`) แปลงดิบจาก USB เป็น clean ใน `~/Pictures/dataset`
+3. **ปรับแต่ง:** แก้ไฟล์ใน `configs/` (num_classes=2, dataloader paths, LR แยก backbone/head)
+4. **สอนโมเดล (Train):** รัน `./train.sh [--load-from <pth> | --no-load]` (auto-versioning ไป `work_dirs/vX.Y.Z/`)
+5. **ทดสอบ:** รัน `./tests_model/test.sh` หรือ `python predict_test.py --checkpoint ... --image ...` ดู heatmap
+6. **นำไปใช้งาน (Deploy):** export ด้วย `export_onnx_dynamic.py` แล้วชี้ `ONNX_MODEL_PATH` ใน `server/.env` ไปที่ `.onnx` ตัวใหม่

@@ -43,6 +43,8 @@
 * **จุดเด่น:**
   * มีความแม่นยำในภาษาไทยสูงกว่าระบบ OCR แบบดั้งเดิม (เช่น Tesseract)
   * จัดการโครงสร้างเอกสารและตำแหน่งข้อความในภาพได้อย่างถูกต้อง
+* **น้ำหนักที่ใช้งานจริง:** `model/surya/hub/` (`vikp/surya_det3` + `vikp/surya_rec2`, safetensors ผ่าน `surya.ocr`, `HF_HOME=model/surya`)
+* **หมายเหตุไฟล์เลิกใช้:** `model/surya/surya-2.gguf` + `surya-2-mmproj.gguf` (~1.4 GB) เป็นของเหลือจากการทดลองแนวทาง llama-cpp เมื่อ ส.ค. 2026 (ดู `wiki/log.md` 2026-08-04) ปัจจุบันไม่มีโค้ดอ้างถึงแล้ว ลบได้อย่างปลอดภัยด้วย `rm model/surya/surya-2*.gguf`
 
 ---
 
