@@ -3,7 +3,7 @@ title: "Entity Relationship Diagram (ER Diagram)"
 category: architecture
 tags: [architecture, database, er, postgresql]
 sources: [database/ER_Diagram.md]
-updated: 2026-08-04
+updated: 2026-09-06
 ---
 
 # ER Diagram for ScamGuard
@@ -17,11 +17,19 @@ erDiagram
         string email
         string hashed_password
         string full_name
-        string role "user, admin"
+        string role "user, researcher, admin"
         boolean is_active
-        boolean consent_analysis
-        boolean consent_research
-        datetime consent_revoked_at
+        datetime created_at
+        datetime updated_at
+    }
+
+    admins {
+        int id PK
+        string email
+        string hashed_password
+        string full_name
+        boolean is_active
+        boolean is_superadmin
         datetime created_at
         datetime updated_at
     }
@@ -29,7 +37,8 @@ erDiagram
     scans {
         uuid id PK
         int user_id FK
-        string image_hash
+        string image_hash "SHA-256 String(64)"
+        string title
         string raw_image_url
         string heatmap_image_url
         int text_score
@@ -41,29 +50,28 @@ erDiagram
         jsonb scam_keywords_found
         jsonb reverse_search_results
         float ai_gen_probability
+        text xai_explanation
         string status
+        int progress
         datetime created_at
         datetime completed_at
-    }
-    
-    scan_results {
-        int id PK
-        uuid scan_id FK
-        string mask_url
-        string heatmap_url
-        jsonb keywords
-        jsonb source_urls
     }
 
     scam_reports {
         int id PK
         int user_id FK
         uuid scan_id FK
+        string category
         text reason
-        string status "pending, approved, rejected"
+        string platform
+        string reference_url
+        boolean allow_research_use
+        string status "pending, reviewing, approved, rejected"
+        text admin_note
         int moderated_by FK
         datetime moderated_at
         datetime created_at
+        int version
     }
 
     consent_logs {
@@ -78,37 +86,97 @@ erDiagram
 
     model_versions {
         int id PK
-        string version_tag
+        string version_tag "unique"
         string file_path
         boolean is_active
         datetime deployed_at
+        string artifact_checksum
+        string framework_compatibility "onnx"
+        float a_acc
+        float m_iou
+        float m_acc
+        float m_dice
+        string dataset_reference
+        int created_by FK
+        string status
+        jsonb deployment_history
     }
-    
+
+    admin_sessions {
+        string id PK
+        int admin_id FK
+        string refresh_hash
+        datetime expires_at
+        datetime revoked_at
+        string replaced_by
+        string user_agent
+        string ip_address
+        datetime created_at
+        datetime last_used_at
+    }
+
     audit_log {
         int id PK
         int admin_id FK
         string action
+        string entity_type
+        string entity_id
+        jsonb before_state
+        jsonb after_state
+        text reason
+        string ip_address
+        text user_agent
+        string request_id
         text details
         datetime created_at
+    }
+
+    export_jobs {
+        uuid id PK
+        int admin_id FK
+        string status
+        float progress
+        int total_rows
+        bigint file_size_bytes
+        string error_message
+        string file_path
+        jsonb manifest
+        jsonb filter_config
+        datetime expires_at
+        datetime created_at
+        datetime completed_at
     }
 
     %% Relationships
     users ||--o{ scans : "performs"
     users ||--o{ scam_reports : "submits"
     users ||--o{ consent_logs : "records"
-    users ||--o{ scam_reports : "moderates (admin)"
-    users ||--o{ audit_log : "performs (admin)"
-    
-    scans ||--o| scan_results : "has details"
+    admins ||--o{ scam_reports : "moderates"
+    admins ||--o{ audit_log : "performs"
+    admins ||--o{ admin_sessions : "has"
+    admins ||--o{ model_versions : "deploys"
+    admins ||--o{ export_jobs : "creates"
+
     scans ||--o{ scam_reports : "is reported in"
 ```
 
 ## รายละเอียดแต่ละตาราง
 
-- **users**: เก็บข้อมูลบัญชีผู้ใช้และสถานะความยินยอม (Consent)
-- **scans**: เก็บข้อมูลสรุปของการสแกนรูปภาพ พร้อมคะแนนความเสี่ยง
-- **scan_results**: (ทางเลือก) เก็บข้อมูลรายละเอียดเพิ่มเติมในกรณีที่มีหลาย Layer ลึกๆ
-- **scam_reports**: การรายงานภาพว่าเป็น Scam โดยผู้ใช้ และแอดมินใช้พิจารณา
-- **consent_logs**: ใช้เก็บประวัติการยินยอมเพื่อทำ PDPA Compliance
-- **model_versions**: ข้อมูลโมเดล AI ที่ Deploy แต่ละเวอร์ชัน
-- **audit_log**: บันทึกกิจกรรมสำคัญที่กระทำโดย Admin (Append-only)
+- **users**: เก็บข้อมูลบัญชีผู้ใช้ (role: user/researcher/admin); consent เก็บใน consent_logs
+- **admins**: เก็บข้อมูลบัญชีผู้ดูแลระบบแยกตาราง
+- **scans**: เก็บข้อมูลสรุปของการสแกนรูปภาพ พร้อมคะแนนความเสี่ยง สถานะการประมวลผล หัวข้อภาพ และคำอธิบาย XAI (ระดับความเสี่ยงคำนวณตอนแสดงผล)
+- **scam_reports**: การรายงานภาพว่าเป็น Scam โดยผู้ใช้ สำหรับให้แอดมินใช้ตรวจสอบและอนุมัติเข้าชุดข้อมูล
+- **consent_logs**: ใช้เก็บประวัติการยินยอมเพื่อทำ PDPA Compliance แบบตรวจสอบย้อนหลังได้
+- **model_versions**: ข้อมูลโมเดล AI ที่ Deploy แต่ละเวอร์ชัน พร้อม metrics และการควบคุม Rollback
+- **admin_sessions**: session/refresh-token rotation ของ admin
+- **audit_log**: บันทึกกิจกรรมสำคัญที่กระทำโดย Admin (Append-only) เพื่อความโปร่งใสและตรวจสอบความปลอดภัย
+- **export_jobs**: งาน export dataset ของ admin
+
+---
+
+## หน้าที่เกี่ยวข้อง
+
+- [[architecture/database-schema|สคีมาฐานข้อมูล (Database Schema)]]
+- [[architecture/database-migrations|การจัดการการย้ายฐานข้อมูล (Database Migrations)]]
+- [[architecture/admin-portal|สถาปัตยกรรม Admin Portal]]
+- [[architecture/backend-api|Backend API]]

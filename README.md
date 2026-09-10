@@ -48,7 +48,7 @@ project/
 ├── model/                  # AI Model Files & Inference Engine (SegFormer ONNX, Surya OCR, Qwen2.5)
 ├── admin-portal/           # Admin Web Portal (React, Vite, Tailwind CSS, Dark Mode)
 ├── database/               # Database Services (PostgreSQL, Redis, Docker/Podman Compose, init.sql)
-├── automate_test/          # Automated Testing Suite (Pytest สำหรับ API, E2E และ Performance Tests)
+├── tests_all/              # Automated & Manual Testing Suites (Pytest API/E2E, Performance, Manual Test Cases)
 ├── prototype/              # Web Prototype สำหรับทดสอบแนวคิดระบบ (React, Vite, TypeScript)
 ├── posman/                 # Postman API Collection สำหรับทดสอบ API Endpoints
 ├── Document/               # เอกสารวิศวกรรมซอฟต์แวร์ (SRS, Scope, Objectives, C1-C4 Diagrams)
@@ -196,16 +196,16 @@ flutter run
 ---
 
 ### 6. การรันชุดทดสอบระบบอัตโนมัติ (Automated Testing)
-สามารถรันการทดสอบ API และ E2E ผ่านชุดทดสอบอัตโนมัติในโฟลเดอร์ `automate_test`:
+สามารถรันการทดสอบ API และ E2E ผ่านชุดทดสอบอัตโนมัติในโฟลเดอร์ `tests_all/automate_tests`:
 
 ```bash
-cd automate_test
+cd tests_all/automate_tests
 ./run.sh all       # รันทั้ง API และ E2E Tests
 ./run.sh api       # รันเฉพาะ API Tests
 ./run.sh e2e       # รันเฉพาะ E2E Tests
 ```
 
-ผลการทดสอบแบบละเอียดจะถูกสร้างขึ้นในโฟลเดอร์ `automate_test/reports/html/report.html`
+ผลการทดสอบแบบละเอียดจะถูกสร้างขึ้นในโฟลเดอร์ `tests_all/automate_tests/reports/html/report.html`
 
 ---
 

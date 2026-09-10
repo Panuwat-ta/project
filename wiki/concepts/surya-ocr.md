@@ -8,7 +8,7 @@ updated: 2026-08-06
 
 # โมเดล AI — Surya OCR
 
-**Surya-OCR** คือโมเดล Modern OCR ที่ใช้ดึงข้อความและวิเคราะห์โครงสร้าง (Layout Detection) จากรูปภาพที่อัปโหลดเข้ามาระบบ โดยถูกจัดอยู่ใน **Layer 1: Textual Analysis (ชั้นวิเคราะห์ข้อความ)**
+**Surya-OCR** คือโมเดล Modern OCR ที่ใช้ดึงข้อความและวิเคราะห์โครงสร้าง (Layout Detection) จากรูปภาพที่อัปโหลดเข้ามาระบบ โดยถูกจัดอยู่ใน **Layer 1: Textual Analysis (ชั้นวิเคราะห์ข้อความ)** รันแบบ **Surya OCR v0.5.0 (Native PyTorch)**
 
 ---
 

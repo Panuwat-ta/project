@@ -29,7 +29,7 @@
 
 ระบบถูกแบ่งออกเป็น 3 เลเยอร์หลัก:
 1. **Presentation Layer (Frontend):** แอปพลิเคชันสมาร์ทโฟนที่พัฒนาด้วย **Flutter** สำหรับผู้ใช้งานทั่วไป และระบบเว็บพอร์ทัลที่พัฒนาด้วย **React.js** สำหรับผู้ดูแลระบบ
-2. **Business & Processing Layer (Backend Services):** ใช้ระบบย่อยประเภท Microservices โดยมี **API Application (FastAPI)** ทำหน้าที่คอยประสานงาน และสั่งงานการคำนวณเฉพาะด้านแยกไปที่ **AI Inference Service (PyTorch/ONNX)** *หมายเหตุ:* ตาม C3/C4 ONNX Worker เป็น Subprocess แยกโดดภายใน API Service (ไม่ใช่คอนเทนเนอร์ Deploy แยก)
+2. **Business & Processing Layer (Backend Services):** ใช้ระบบย่อยประเภท Microservices โดยมี **API Application (FastAPI)** ทำหน้าที่คอยประสานงาน และสั่งงานการคำนวณเฉพาะด้านแยกไปที่ **AI Inference Service (PyTorch/ONNX)** โดย ONNX Worker เป็น Subprocess แยกโดดภายใน API Service
 3. **Data & Storage Layer (Storages):** ระบบจัดเก็บข้อมูลเชิงสัมพันธ์ **PostgreSQL**, หน่วยความจำแคชความเร็วสูง **Redis Cache** และพื้นที่จัดเก็บไฟล์ (Cloud Storage)
 
 ---
@@ -128,7 +128,7 @@ flowchart TB
     AdminPortal -- "API Requests<br>[HTTPS / REST JSON]" --> APIGateway
 
     APIGateway -- "1. ค้นหา Image Hash (Cache Lookup)" --> Cache
-    APIGateway -- "4. ส่งตรวจร่องรอยการตัดต่อ<br>(SegFormer + PSCC-Net / ELA)" --> AIInference
+    APIGateway -- "4. ส่งตรวจร่องรอยการตัดต่อ<br>(SegFormer)" --> AIInference
     APIGateway -- "6. ค้นหารูปภาพใกล้เคียงบนเว็บ<br>[HTTPS]" --> ReverseSearch
     APIGateway -- "7. ส่งตรวจจับภาพ AI-Generated" --> AIInference
     APIGateway -- "บันทึก / เรียกดึงไฟล์รูปภาพ" --> ObjectStore
@@ -177,18 +177,18 @@ flowchart TB
   4. **Job Coordinator:** ดำเนินการกระจายภารกิจสแกนภาพที่เหลือไปยังคอนเทนเนอร์ AI Inference และฐานข้อมูลตามลำดับ
 
 #### 4.2.2 AI Inference Service (PyTorch / ONNX Runtime)
-* **บทบาท:** เซอร์วิสวิเคราะห์รูปภาพเชิงลึก (Deep Learning Node) แยกต่างหากเพื่อลดการใช้ CPU/GPU ของเครื่อง API Gateway *หมายเหตุ:* ตามแผนภาพ C3/C4 ส่วนนี้ไม่ได้ถูก Deploy เป็น Microservice แยกอิสระ แต่ ONNX Worker (`services/onnx_worker.py`) ทำงานเป็น **Subprocess** ที่ถูกแยกโดดภายใน API Service โดยสื่อสารผ่าน STDIN/STDOUT JSON IPC
+* **บทบาท:** เซอร์วิสวิเคราะห์รูปภาพเชิงลึก (Deep Learning Node) แยกต่างหากเพื่อลดการใช้ CPU/GPU ของเครื่อง API Gateway โดย ONNX Worker ทำงานเป็น **Subprocess** ที่ถูกแยกโดดภายใน API Service โดยสื่อสารผ่าน STDIN/STDOUT JSON IPC
 * **โมเดลการวิเคราะห์หลัก:**
-  * **Visual Forgery Detection (SegFormer + PSCC-Net):** ตรวจสอบระดับพิกเซลด้วย Semantic Segmentation โดยใช้ ELA (Error Level Analysis) เป็นวิธีวิเคราะห์พื้นฐานแบบดั้งเดิมประกอบการพิจารณา เพื่อหาร่องรอยการบันทึกภาพซ้ำหรือปรับแต่งระดับพิกเซล เช่น บริเวณตัวเลขสลิปโอนเงิน หรือการเปลี่ยนใบหน้าบุคคล
+  * **Visual Forgery Detection (SegFormer):** ตรวจสอบระดับพิกเซลด้วย Semantic Segmentation เพื่อหาร่องรอยการบันทึกภาพซ้ำหรือปรับแต่งระดับพิกเซล เช่น บริเวณตัวเลขสลิปโอนเงิน หรือการเปลี่ยนใบหน้าบุคคล
   * **AI-Generated Image Detection:** ใช้โมเดลจำแนกภาพเชิงลึกเพื่อตรวจสอบลวดลายความถี่ของเม็ดสีพิกเซลที่เกิดจากการสร้างด้วยปัญญาประดิษฐ์ (Generative AI)
-  * **Explainable AI (XAI):** สร้างภาพแผนที่ความร้อน (**Heatmap**) ด้วยเทคนิค **Grad-CAM** เพื่อใช้พล็อตทับลงบนรูปภาพจริง ส่งให้ผู้ใช้เห็นพื้นที่ที่มีความเสี่ยงสูง
+  * **Explainable AI (XAI):** สร้างภาพแผนที่ความร้อน (**Heatmap**) ด้วย mask-to-heatmap overlay จาก segmentation mask เพื่อใช้พล็อตทับลงบนรูปภาพจริง ส่งให้ผู้ใช้เห็นพื้นที่ที่มีความเสี่ยงสูง
 
 ---
 
 ### 4.3 Storage Containers
 
 * **Cache Store (Redis):** ทำหน้าที่เป็น Cache Lookup เมื่อมีผู้ส่งตรวจสอบรูปภาพ ระบบจะแปลงภาพเป็นค่า Hash และเช็กที่ Redis หากพบค่าเดิม (Cache Hit) จะตอบกลับข้อมูลผลลัพธ์เก่าทันทีโดยไม่ต้องรัน AI ซ้ำ
-* **Object Storage (Cloud Storage):** จัดเก็บรูปภาพต้นฉบับของผู้ใช้ โดยแบ่ง Directory อย่างมีระเบียบ และจัดเก็บรูปผลลัพธ์ Grad-CAM Heatmap เพื่อให้หน้าจอแอปแสดงภาพซ้อนทับบริเวณที่ตัดต่อ
+* **Object Storage (Cloud Storage):** จัดเก็บรูปภาพต้นฉบับของผู้ใช้ โดยแบ่ง Directory อย่างมีระเบียบ และจัดเก็บรูปผลลัพธ์ Heatmap เพื่อให้หน้าจอแอปแสดงภาพซ้อนทับบริเวณที่ตัดต่อ
 * **Main Relational Database (PostgreSQL):** ใช้จัดเก็บข้อมูลที่มีความสัมพันธ์กันและต้องรับประกันความปลอดภัยของข้อมูล (ACID Transaction) ได้แก่ ตารางประวัติผู้ใช้งาน, รายการประวัติสแกน, สถิติคะแนนความเสี่ยง, ข้อมูลรายงานสแกม และสถานะ Consent การยินยอมความเป็นส่วนตัว
 
 ---
@@ -234,7 +234,7 @@ graph TD
     Task5 -- ตรวจสอบความถูกต้องสมบูรณ์ --> Collector
     
     %% Final Calculation & Storage
-    Collector --> Calc[คำนวณคะแนนรวมถ่วงน้ำหนัก Weighted Risk Score]
+    Collector --> Calc[คำนวณคะแนนรวม Hybrid Risk Score]
     Calc --> Gen[สร้างคำอธิบายความปลอดภัยอ้างอิงอธิบายได้ XAI]
     Gen --> DB[(จัดเก็บบันทึกลง PostgreSQL)]
     
@@ -281,17 +281,15 @@ $$Risk\ Score = \min\left(100, S_{base} + \sum_{i \neq \text{dominant}, S_i \ge 
 $$
 \text{Risk Grade} = 
 \begin{cases} 
-\text{Safe (ปลอดภัย)} & \text{if } S_{total} < 20 \\
-\text{Low (เสี่ยงต่ำ)} & \text{if } 20 \le S_{total} \le 39 \\
+\text{Low (เสี่ยงต่ำ)} & \text{if } 0 \le S_{total} \le 39 \\
 \text{Medium (น่าสงสัย)} & \text{if } 40 \le S_{total} \le 69 \\
 \text{High (อันตราย)} & \text{if } S_{total} \ge 70 
 \end{cases}
 $$
 
-* **0 - 19 คะแนน (Safe):** ปลอดภัย สีเขียว 🟢 ไม่พบสิ่งบอกเหตุอันตราย ทุกชั้นการวิเคราะห์ไม่มีลักษณะเข้าข่ายหลอกลวง
-* **20 - 39 คะแนน (Low Risk):** ระดับความเสี่ยงต่ำ สีเขียว 🟢 มีสัญญาณอ่อนบางจุดแต่ยังไม่ถึงระดับที่ควรกังวล
-* **40 - 69 คะแนน (Medium Risk):** ระดับความเสี่ยงปานกลาง สีเหลือง 🟡 พบความผิดปกติบางชั้นหรือหลักฐานอ่อนๆ ควรใช้วิจารณญาณประกอบ
-* **70 - 100 คะแนน (High Risk):** ระดับความเสี่ยงสูง สีแดง 🔴 ตรวจพบร่องรอยการตัดแต่ง คัดลอก หรือพบคำหลอกลวงเด่นชัด (กรณี $S_{visual} \ge 80$ จะเป็น High ทันที)
+* **0 - 39 คะแนน (Low Risk):** ระดับความเสี่ยงต่ำ สีเขียว มีสัญญาณอ่อนบางจุดแต่ยังไม่ถึงระดับที่ควรกังวล
+* **40 - 69 คะแนน (Medium Risk):** ระดับความเสี่ยงปานกลาง สีเหลือง พบความผิดปกติบางชั้นหรือหลักฐานอ่อนๆ ควรใช้วิจารณญาณประกอบ
+* **70 - 100 คะแนน (High Risk):** ระดับความเสี่ยงสูง สีแดง ตรวจพบร่องรอยการตัดแต่ง คัดลอก หรือพบคำหลอกลวงเด่นชัด (กรณี $S_{visual} \ge 80$ จะเป็น High ทันที)
 
 ---
 
@@ -385,8 +383,8 @@ Actors: General User, Admin และ **System (Automated)** (Actor ที่ส
 ### A.7 สรุปโครงสร้าง C3/C4 (Component & Code Level)
 
 * Backend แบ่ง Layering เป็น Routers → Services → Repositories แยกความรับผิดชอบชัดเจน
-* Inference Coordinator (`inference_service.py`) ประสานงานกับ ONNX Worker ซึ่งรันเป็น Subprocess แยกโดดภายใน API Service ผ่าน STDIN/STDOUT JSON IPC
-* Key Sequence: `POST /api/v1/scan` → `analyze_image()` รันผ่าน Threadpool Isolation → ส่งภาพ STDIN (Base64) → รับผล STDOUT JSON → `RiskCalculator` ถ่วงน้ำหนักคะแนนรวม
+* Inference Coordinator ประสานงานกับ ONNX Worker ซึ่งรันเป็น Subprocess แยกโดดภายใน API Service ผ่าน STDIN/STDOUT JSON IPC
+* Key Sequence: `POST /api/v1/scan` → วิเคราะห์ภาพผ่าน Threadpool Isolation → ส่งภาพ STDIN (Base64) → รับผล STDOUT JSON → คำนวณคะแนนรวมแบบ Hybrid
 
 ### A.8 ไฮไลต์ Risk Register
 

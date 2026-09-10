@@ -30,7 +30,7 @@
     <p><strong>สิ่งที่ทำได้:</strong></p>
     <ul>
     <li>สมัครสมาชิกและเข้าสู่ระบบ (Email/Password หรือ Google OAuth)</li>
-    <li>อัปโหลดหรือถ่ายรูปเพื่อตรวจสอบ</li>
+    <li>เลือกรูปจากคลังภาพเพื่อตรวจสอบ</li>
     <li>ตัดภาพ (Crop) ก่อนส่งเพื่อโฟกัสบริเวณใดบริเวณหนึ่ง</li>
     <li>ดู Risk Score และ Heatmap overlay</li>
     <li>ดูประวัติการสแกน</li>
@@ -90,7 +90,7 @@
       document.querySelectorAll('.mermaid-container').forEach(container => {
         const btn = document.createElement('button');
         btn.className = 'btn-expand-mermaid';
-        btn.innerHTML = '🔍 Fullscreen';
+        btn.innerHTML = ' Fullscreen';
 
         btn.onclick = () => {
           const originalSvg = container.querySelector('svg');

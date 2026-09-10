@@ -88,10 +88,11 @@ server/
 │   │   ├── router.py           # รวม Router ทั้งหมดไว้ที่นี่
 │   │   └── v1/
 │   │       ├── __init__.py
-│   │       ├── auth.py         # POST /register, POST /login
-│   │       ├── scan.py         # POST /scan, GET /scan/{id}
-│   │       ├── report.py       # POST /report
-│   │       └── admin.py        # POST /admin/train, POST /admin/model
+│   │       ├── auth.py         # POST /register, POST /login, POST /refresh, GET /me, POST /logout
+│   │       ├── scan.py         # POST /scan/, GET /scan/{scan_id} (เอกพจน์, prefix /api/v1)
+│   │       ├── report.py       # POST /reports, GET /reports/my, GET /reports/categories
+│   │       ├── history.py      # GET /history, GET /history/{id}, DELETE /history/{id}
+│   │       └── admin.py        # /admin/* (login/users/reports/models/deploy/audit-logs/export-jobs)
 │   │
 │   └── utils/                  # Utility Functions
 │       ├── __init__.py
@@ -308,7 +309,7 @@ from passlib.context import CryptContext
 from jose import jwt, JWTError
 from app.core.config import settings
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["bcrypt"])
 
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
@@ -430,7 +431,7 @@ class Scan(Base):
     completed_at = Column(DateTime(timezone=True))
 ```
 
-### 5.2 Risk Calculator - `app/utils/risk_calculator.py`
+### 5.2 Risk Calculator
 
 อ้างอิงจาก `design/architecture.md` Section 5.1:
 
@@ -631,11 +632,8 @@ async def create_report(body: ReportCreateRequest, ...):
     """POST /api/v1/report - ผู้ใช้รายงานภาพหลอกลวง"""
     ...
 
-# app/api/v1/admin.py
-@router.post("/train")
-async def trigger_training(...):
-    """POST /api/v1/admin/train - Admin สั่ง Incremental Training"""
-    ...
+# app/api/v1/admin.py (มีเฉพาะ deploy/dry-run สำหรับจัดการโมเดล)
+# POST /api/v1/admin/models/{id}/deploy และ /dry-run สำหรับ deploy โมเดล
 
 @router.post("/model")
 async def update_model(...):
@@ -770,11 +768,11 @@ pip install -r requirements.txt
 | GET | `/health` | Health Check | - |
 | POST | `/api/v1/auth/register` | สมัครสมาชิก | - |
 | POST | `/api/v1/auth/login` | เข้าสู่ระบบ รับ JWT Token | - |
-| POST | `/api/v1/scan` | อัปโหลดรูปภาพเพื่อตรวจวิเคราะห์ | User |
-| GET | `/api/v1/scan/{id}` | ดูผลลัพธ์การสแกนย้อนหลัง | User |
-| POST | `/api/v1/report` | รายงานภาพหลอกลวง | User |
-| POST | `/api/v1/admin/train` | สั่ง Incremental Training | Admin |
-| POST | `/api/v1/admin/model` | อัปโหลดโมเดล ONNX ใหม่ | Admin |
+| POST | `/api/v1/scan/` | อัปโหลดรูปภาพเพื่อตรวจวิเคราะห์ (เอกพจน์) | User |
+| GET | `/api/v1/scan/{scan_id}` | ดูผลลัพธ์การสแกน | User |
+| POST | `/api/v1/reports` | รายงานภาพหลอกลวง (พหูพจน์) | User |
+| GET | `/api/v1/history` | ประวัติการสแกน | User |
+| POST | `/api/v1/admin/models/{id}/deploy` | Deploy โมเดล | Admin (super) |
 
 ---
 

@@ -47,8 +47,8 @@ updated: 2026-08-02
 
 ระบบเป็นแบบ Cloud-Native และแยกส่วนออกเป็น 3 ชั้น:
 
-1. **Frontend** — Flutter Mobile App (Android) สำหรับผู้ใช้ทั่วไป; React.js Admin Portal สำหรับนักวิจัยและเจ้าหน้าที่
-2. **Backend** — Python FastAPI ทำหน้าที่เป็น Orchestrator/API Gateway; AI Inference Service (PyTorch/ONNX) แยกต่างหากสำหรับประมวลผลโมเดล
+1. **Frontend** — Flutter Mobile App (cross-platform: Android + iOS) สำหรับผู้ใช้ทั่วไป; React.js Admin Portal สำหรับนักวิจัยและเจ้าหน้าที่
+2. **Backend** — Python FastAPI ทำหน้าที่เป็น Orchestrator/API Gateway; ONNX Worker subprocess สำหรับประมวลผลโมเดล
 3. **Storage** — PostgreSQL สำหรับข้อมูลเชิงสัมพันธ์; Redis สำหรับ cache; Cloud Storage สำหรับไฟล์รูปภาพและ Heatmap
 
 ดูสถาปัตยกรรมเต็มที่ [[architecture/system-architecture]]
@@ -59,7 +59,7 @@ updated: 2026-08-02
 
 | งาน | เทคโนโลยี |
 | :--- | :--- |
-| Mobile App | Flutter (Dart) — Android |
+| Mobile App | Flutter (Dart) — cross-platform (Android + iOS) |
 | Admin Portal | React.js + Tailwind CSS |
 | API Backend | Python FastAPI |
 | โมเดล AI | SegFormer (PyTorch → ONNX) |
@@ -96,8 +96,8 @@ Heatmap เป็นหัวใจของการออกแบบ **Explai
 ## สิ่งที่อยู่นอกขอบเขต (v1)
 
 - วิเคราะห์วิดีโอ (วางแผนในอนาคตด้วย keyframe extraction)
-- รองรับ iOS (Android เท่านั้นใน v1)
 - Inference บนอุปกรณ์ (วางแผนด้วย model quantization)
+- แอปเป็น Flutter cross-platform ทดสอบหลักบน Android — iOS อยู่ในขอบเขต v1
 
 ---
 

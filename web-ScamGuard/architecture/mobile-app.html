@@ -54,7 +54,7 @@
     <h2>หน้าจอหลัก / User Flow</h2>
     <ol>
     <li><strong>หน้าจอ Authentication</strong> — สมัครสมาชิก, Login (email/password + Google OAuth)</li>
-    <li><strong>หน้าจอรับรูปภาพ</strong> — เลือกจาก Gallery หรือถ่ายด้วยกล้อง พร้อม Image Cropper เพื่อโฟกัสบริเวณที่ต้องการตรวจก่อนส่ง</li>
+    <li><strong>หน้าจอรับรูปภาพ</strong> — เลือกจาก Gallery พร้อม Image Cropper เพื่อโฟกัสบริเวณที่ต้องการตรวจก่อนส่ง</li>
     <li><strong>หน้าจอรอประมวลผล</strong> — แสดงระหว่าง Pipeline ทำงาน (สูงสุด 15 วินาที หรือเกือบทันทีสำหรับ Cache Hit)</li>
     <li><strong>หน้าจอรายงานความเสี่ยง</strong> — แสดง:</li>
     <li>Overall Risk Score แบบ color badge 3 ระดับ (Low / Medium / High)</li>
@@ -67,7 +67,7 @@
     </ol>
     <div class="divider"></div>
     <h2>ขั้นตอนการอัปโหลดรูปภาพ</h2>
-    <pre><code>ผู้ใช้เลือก/ถ่ายรูป
+    <pre><code>ผู้ใช้เลือกรูปจากคลังภาพ
             |
       Image Cropper (ถ้าต้องการ)
             |
@@ -135,7 +135,7 @@
       document.querySelectorAll('.mermaid-container').forEach(container => {
         const btn = document.createElement('button');
         btn.className = 'btn-expand-mermaid';
-        btn.innerHTML = '🔍 Fullscreen';
+        btn.innerHTML = ' Fullscreen';
 
         btn.onclick = () => {
           const originalSvg = container.querySelector('svg');

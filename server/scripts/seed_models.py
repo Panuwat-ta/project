@@ -7,9 +7,9 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import select
 from app.models.model_version import ModelVersion
-from app.core.config import settings, TH_TIMEZONE
+from app.core.config import settings, TH_TIMEZONE, PROJECT_ROOT
 
-WORK_DIRS = "/home/panuwat/project/model/segformer/work_dirs"
+WORK_DIRS = str(PROJECT_ROOT / "model/segformer/work_dirs")
 
 async def seed():
     engine = create_async_engine(settings.DATABASE_URL)
@@ -81,8 +81,8 @@ async def seed():
                 "m_iou": m_iou,
                 "m_acc": m_acc,
                 "m_dice": m_dice,
-                "status": "inactive" if item != "v1.0.1" else "active", # Simple logic for active
-                "is_active": True if item == "v1.0.1" else False,
+                "status": "active" if item == "v1.0.0" else "inactive",
+                "is_active": True if item == "v1.0.0" else False,
             })
             
     async with async_session() as db:

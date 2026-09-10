@@ -17,7 +17,7 @@
 
 เนื่องจากระบบใช้แนวทางการ **Differential Learning Rates** ให้ $\theta_{backbone}$ แทนค่าน้ำหนักของเครือข่ายหลัก และ $\theta_{head}$ แทนค่าน้ำหนักของส่วนวิเคราะห์ผลลัพธ์ (Classification Head) 
 
-ฟังก์ชันสูญเสีย (Loss Function) สำหรับการแยกแยะรูปภาพตัดต่อ (Binary Classification) สำหรับทุกระดับพิกเซล จะใช้ **Binary Cross-Entropy Loss (BCE Loss)** ผสมกับ **Dice Loss** (อ้างอิงตามโค้ดตั้งค่า `loss_decode`):
+ฟังก์ชันสูญเสีย (Loss Function) สำหรับการแยกแยะรูปภาพตัดต่อ (Binary Classification) สำหรับทุกระดับพิกเซล จะใช้ **Binary Cross-Entropy Loss (BCE Loss)** ผสมกับ **Dice Loss**:
 $$ L = L_{BCE} + L_{Dice} $$
 
 การอัปเดตน้ำหนัก (Weight Update) ของโมเดลจะใช้การคำนวณผ่านอัลกอริทึม **AdamW Optimization** โดยมีค่าตัวคูณอัตราการเรียนรู้ (Learning Rate Multiplier) ที่ต่างกัน:
@@ -33,7 +33,7 @@ $$ \theta_{head}^{(t+1)} = \theta_{head}^{(t)} - (\eta \times 10.0) \frac{\parti
 
 ## 2. ขั้นตอนการประเมินและวัดผล (Evaluation & Metrics)
 
-* **ความแม่นยำรวมของ AI (F1-Score / Accuracy):** เป้าหมายอยู่ที่ความแม่นยำ >= 85% สำหรับการตรวจจับภาพตัดต่อและการแยกแยะจุดเสี่ยง
+* **ความแม่นยำรวมของ AI (Accuracy และ mDice):** เป้าหมายอยู่ที่ความแม่นยำ >= 85% สำหรับการตรวจจับภาพตัดต่อและการแยกแยะจุดเสี่ยง
 * **Validation Checkpoint:** ในแต่ละรอบการเทรนจะมีการเซฟ Checkpoint เมื่อผลลัพธ์การเรียนรู้ (Loss) ต่ำสุด เพื่อนำไฟล์น้ำหนักเหล่านั้นไปใช้ต่อ หรือ Rollback หากเกิดความผิดพลาด
 
 ### 2.1 สมการคณิตศาสตร์สำหรับการวัดประสิทธิภาพ (Evaluation Metrics)
@@ -70,8 +70,8 @@ $$ \text{F1-Score} = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text
 $$ \text{IoU} = \frac{|A \cap B|}{|A \cup B|} = \frac{TP}{TP + FP + FN} $$
 *mIoU คือการหาค่าเฉลี่ยของ IoU ในทุกๆ คลาส (ภาพจริง, ภาพตัดต่อ)*
 
-**2. Dice Coefficient (F1-Score ระดับพิกเซล):**
-ให้ความสำคัญกับการซ้อนทับกันของพิกเซลที่ตรวจจับได้คล้ายคลึงกับ F1-Score:
+**2. Dice Coefficient (ระดับพิกเซล):**
+ให้ความสำคัญกับการซ้อนทับกันของพิกเซลที่ตรวจจับได้:
 $$ \text{Dice} = \frac{2 |A \cap B|}{|A| + |B|} = \frac{2TP}{2TP + FP + FN} $$
 *mDice คือการหาค่าเฉลี่ยของ Dice Coefficient ในทุกๆ คลาส*
 

@@ -32,7 +32,7 @@ flowchart TB
 
         subgraph Backends [Backend & API Layer]
             APIGateway("API Application<br>[Container: Python FastAPI]<br>จัดการ Logic หลัก, ดึง Metadata,<br>ตรวจสอบ OCR")
-            AIInference("AI Inference Service<br>[Container: PyTorch / ONNX]<br>ตรวจการตัดต่อ (Semantic Segmentation),<br>เช็คว่าเป็นภาพ AI")
+            AIInference("ONNX Worker<br>[Subprocess]<br>ตรวจการตัดต่อ (Semantic Segmentation),<br>เช็คว่าเป็นภาพ AI")
         end
 
         subgraph Storages [Storage & Cache Layer]
@@ -56,7 +56,7 @@ flowchart TB
     AdminPortal -- "API Calls<br>[HTTPS / JSON]" --> APIGateway
 
     APIGateway -- "เช็คประวัติการสแกน" --> Cache
-    APIGateway -- "ส่งตรวจร่องรอย / AI" --> AIInference
+    APIGateway -- "ส่งตรวจร่องรอย / AI<br>[Subprocess IPC]" --> AIInference
     APIGateway -- "จัดเก็บ / ดึงรูปภาพ" --> ObjectStore
     APIGateway -- "บันทึกผลลัพธ์ขั้นสุดท้าย" --> MainDB
     
@@ -75,7 +75,7 @@ flowchart TB
 
 ### คำอธิบาย Container Diagram
 
-สถาปัตยกรรมของระบบ Scam Image Detection ถูกออกแบบภายใต้แนวคิด **Microservices** และ **Cloud-Native Architecture** เพื่อให้ระบบสามารถรองรับการประมวลผลข้อมูลรูปภาพและโมเดลปัญญาประดิษฐ์ (ซึ่งใช้ทรัพยากรการคำนวณสูง) ได้อย่างมีประสิทธิภาพ โดยไม่ส่งผลกระทบต่อความเร็วในการตอบสนองของแอปพลิเคชัน ภายในขอบเขตของระบบ (System Boundary) ประกอบด้วยคอนเทนเนอร์หลัก 3 ส่วน ดังนี้:
+สถาปัตยกรรมของระบบ Scam Image Detection ถูกออกแบบภายใต้แนวคิด **Cloud-Native Architecture** โดยงาน AI หนักแยกเป็น ONNX Worker subprocess เพื่อให้ระบบสามารถรองรับการประมวลผลข้อมูลรูปภาพและโมเดลปัญญาประดิษฐ์ (ซึ่งใช้ทรัพยากรการคำนวณสูง) ได้อย่างมีประสิทธิภาพ โดยไม่ส่งผลกระทบต่อความเร็วในการตอบสนองของแอปพลิเคชัน ภายในขอบเขตของระบบ (System Boundary) ประกอบด้วยคอนเทนเนอร์หลัก 3 ส่วน ดังนี้:
 
 ### 1. ส่วนติดต่อผู้ใช้งาน (Frontend Containers)
 
@@ -96,10 +96,10 @@ flowchart TB
   * **หน้าที่:** จัดการตรรกะทางธุรกิจหลัก (Core Business Logic) ทั้งหมด เช่น การยืนยันตัวตน, จัดการข้อมูลผู้ใช้, ดึงข้อมูลเมทาดาตาแฝงของรูปภาพ (Metadata/EXIF Extraction), และสั่งประมวลผลสกัดตัวอักษรในภาพ (OCR) จากนั้นประสานงานส่งข้อมูลไปยังบริการวิเคราะห์ตัวอื่น ๆ
   * **เทคโนโลยี:** Python FastAPI
 
-* **AI Inference Service (PyTorch / ONNX):**
-  * **บทบาท:** เซอร์วิสวิเคราะห์รูปภาพผ่านระบบปัญญาประดิษฐ์เชิงลึก (Deep Learning)
-  * **หน้าที่:** ประมวลผลรูปภาพเพื่อตรวจหาร่องรอยการแก้ไขภาพในระดับพิกเซลด้วยเทคนิค Semantic Segmentation และตรวจสอบลักษณะทางกายภาพของภาพว่าถูกสร้างด้วยปัญญาประดิษฐ์ (AI-Generated Image) หรือไม่
-  * **เทคโนโลยี:** PyTorch / ONNX Runtime (เพื่อเพิ่มประสิทธิภาพความเร็วในการ Inference โมเดล)
+* **ONNX Worker (subprocess):**
+  * **บทบาท:** งานวิเคราะห์รูปภาพผ่านระบบปัญญาประดิษฐ์เชิงลึก (Deep Learning) รันแยกโปรเซสจาก FastAPI event loop
+  * **หน้าที่:** ประมวลผลรูปภาพเพื่อตรวจหาร่องรอยการแก้ไขภาพในระดับพิกเซลด้วย SegFormer ONNX (tiling 512/overlap 64) และตรวจสอบลักษณะทางกายภาพของภาพว่าถูกสร้างด้วยปัญญาประดิษฐ์ (AI-Generated Image) หรือไม่ พร้อมสร้างแผนที่ความร้อนแบบ mask-to-heatmap overlay
+  * **เทคโนโลยี:** ONNX Runtime; เรียกผ่าน IPC ภายใน Backend
 
 ### 3. ส่วนจัดเก็บข้อมูล (Storage Containers)
 

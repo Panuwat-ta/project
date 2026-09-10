@@ -17,7 +17,11 @@ updated: 2026-08-02
 | ข้อกำหนด | เป้าหมาย |
 | :--- | :--- |
 | ความเร็วตอบสนอง — แบบ Cache Hit | <= 3 วินาที (End-to-End) |
-| ความเร็วตอบสนอง — แบบ Full Inference (Cache Miss) | <= 15 วินาทีต่อภาพ |
+| ความเร็วตอบสนอง — แบบ Full Inference (Cache Miss) | <= 15 วินาทีต่อภาพ (P50; P95 <= 25s, P99 <= 35s) |
+| AI Inference — GPU (NVIDIA T4+) | <= 10 วินาที/ภาพ |
+| AI Inference — CPU Fallback | <= 60 วินาที/ภาพ (แสดงคำเตือน "Processing may take longer (CPU mode)") |
+| รองรับผู้ใช้พร้อมกัน (Concurrent Users) | >= 100 users (Cache Hit avg <= 5s, Cache Miss avg <= 20s, Error Rate < 1%) |
+| อัตรา Cache Hit (Cache Hit Rate) | >= 40% (วัดรายสัปดาห์; Alert เมื่อ < 35%) |
 | System Availability (API + AI Inference) | Uptime >= 99.5% ในช่วงทดสอบ |
 
 **หมายเหตุ:**
@@ -28,7 +32,16 @@ updated: 2026-08-02
 
 ---
 
-## ความแม่นยำของ AI (AI Model Accuracy)
+## ความแม่นยำของ AI — NFR-AI (AI Model Accuracy)
+
+| ตัวชี้วัด | เป้าหมาย |
+| :--- | :--- |
+| ความแม่นยำ (Accuracy) การตรวจจับภาพตัดต่อ | >= 85% บน Test Set |
+| ค่า mDice การตรวจจับภาพตัดต่อ | >= 85% บน Test Set |
+| ความแม่นยำ (Accuracy) การคัดกรอง AI-Generated | >= 85% บน Test Set |
+| ค่า mDice การคัดกรอง AI-Generated | >= 85% บน Test Set |
+
+ตาราง metrics ของโมเดล (a_acc, m_iou, m_acc, m_dice) ดูรายละเอียดที่ตาราง model_versions
 
 | ตัวชี้วัด | เป้าหมาย |
 | :--- | :--- |
@@ -49,9 +62,17 @@ updated: 2026-08-02
 ### Authentication และ Authorization
 
 - **JWT (JSON Web Token)** — ออกให้เพื่อรับรองการ Login และบังคับตรวจสอบทุก Endpoint ป้องกันระดับสิทธิ์
-- นำ Token ไปเก็บใน **Secure Storage** ของสมาร์ตโฟนผู้ใช้ (ไม่ใช่ Shared Preferences หรือไฟล์ข้อความธรรมดา)
+- นำ Token ไปเก็บใน **Secure Storage** ของสมาร์ตโฟนผู้ใช้
 - **RBAC (Role-Based Access Control)** — แยกสิทธิ์ระหว่าง User ธรรมดา และ Admin ป้องกันการละเมิด
 - Endpoint ของ Admin ทั้งหมดจะปฏิเสธ Token ผู้ใช้ระดับธรรมดาทันที
+
+### Rate Limiting
+
+| กลุ่มผู้ใช้ | เป้าหมาย |
+| :--- | :--- |
+| Guest (ยังไม่ login) | 10 requests/minute |
+| Authenticated User | 60 requests/minute |
+| Admin | 300 requests/minute |
 
 ### ข้อมูล (Data Security)
 
@@ -86,9 +107,14 @@ updated: 2026-08-02
 - ผู้ใช้สามารถกดถอนความยินยอมของงานวิจัยจากหน้าจอตั้งค่า
 - การกดยกเลิก ส่งผลให้ระบบล้างข้อมูลรูปภาพของผู้ใช้ท่านนั้นๆ ออกจาก Research Dataset ทันที
 
+### นโยบายการเก็บข้อมูล (Data Retention)
+
+- เก็บข้อมูล Scan และ Images เป็นระยะเวลา **1 ปี** แล้วลบอัตโนมัติ (Auto-delete ผ่าน Cron Job รายวัน)
+- Audit Logs ไม่ลบ (เก็บไว้เพื่อ Compliance)
+
 ---
 
-## ความสามารถในการใช้งาน (Usability)
+## ความสามารถในการใช้งาน — NFR-A11Y (Usability & Accessibility)
 
 | ข้อกำหนด | เป้าหมาย |
 | :--- | :--- |

@@ -204,7 +204,7 @@ Acceptance Criteria:
 **Acceptance Criteria:**
 
 **AC-1: อัปโหลดรูปภาพสำเร็จ**
-- **Input:** รูปภาพ JPG/PNG/WebP, ขนาด ≤ 10 MB, ความละเอียด ≤ 10,000×10,000 พิกเซล
+- **Input:** รูปภาพ JPG/JPEG/PNG/WebP; **Mobile ≤ 10 MB** (client-side check), **API Server ≤ 20 MB**; ขนาดภาพหลัง decode ≤ 100 ล้านพิกเซล
 - **Processing:** 
   - ตรวจสอบ MIME Type (Magic Bytes)
   - ตรวจสอบขนาดไฟล์
@@ -219,14 +219,14 @@ Acceptance Criteria:
 - **Expected Output:** Error Message: "Unsupported file type. Please upload JPG, PNG, or WebP."
 
 **AC-3: ปฏิเสธไฟล์ขนาดใหญ่เกินไป**
-- **Input:** ไฟล์ขนาด > 10 MB
-- **Processing:** ตรวจสอบขนาดไฟล์
-- **Expected Output:** Error Message: "File size exceeds 10 MB. Please compress or select a smaller image."
+- **Input:** ไฟล์ขนาด > 10 MB บน Mobile / > 20 MB บน API Server
+- **Processing:** ตรวจสอบขนาดไฟล์ (Mobile ≤ 10MB; Server ≤ 20MB)
+- **Expected Output:** Error Message: "File size exceeds 10 MB (mobile) / Maximum allowed size is 20 MB (server). Please compress or select a smaller image."
 
 **AC-4: ปฏิเสธภาพความละเอียดสูงเกินไป**
-- **Input:** ภาพขนาด > 10,000×10,000 พิกเซล
+- **Input:** ภาพขนาด > 100 ล้านพิกเซล
 - **Processing:** Decode ภาพและนับพิกเซล
-- **Expected Output:** Error Message: "Image resolution too high. Maximum: 10,000×10,000 pixels."
+- **Expected Output:** Error Message: "Image is too large to process (max 100M pixels)."
 
 ---
 
@@ -239,17 +239,17 @@ Acceptance Criteria:
 **Acceptance Criteria:**
 
 **AC-1: Cache Hit — ส่งผลลัพธ์ทันที**
-- **Input:** scan_id, รูปภาพที่เคยวิเคราะห์แล้ว (pHash match ใน Redis)
+- **Input:** scan_id, รูปภาพที่เคยวิเคราะห์แล้ว (SHA-256 match ใน Redis)
 - **Processing:** 
-  - คำนวณ Perceptual Hash (pHash)
-  - ค้นหา pHash ใน Redis Cache
+  - คำนวณ SHA-256 Hash
+  - ค้นหา SHA-256 ใน Redis Cache
   - Cache Hit → ดึงผลลัพธ์จาก Cache
 - **Expected Output:** HTTP 200, ผลลัพธ์ส่งกลับภายใน ≤ 3 วินาที, Response Body มี: `{scan_id, risk_score, risk_grade, text_score, visual_score, source_score, heatmap_url, cached: true}`
 
 **AC-2: Cache Miss — ประมวลผลเต็มรูปแบบ**
-- **Input:** scan_id, รูปภาพใหม่ (ไม่มี pHash ใน Cache)
+- **Input:** scan_id, รูปภาพใหม่ (ไม่มี SHA-256 ใน Cache)
 - **Processing:** 
-  - คำนวณ pHash
+  - คำนวณ SHA-256
   - Cache Miss → เข้าสู่ Multi-layer Analysis Pipeline
   - บันทึกผลลัพธ์ลง Redis Cache (TTL: 30 วัน)
 - **Expected Output:** HTTP 200, ผลลัพธ์ส่งกลับภายใน ≤ 15 วินาที (median), `cached: false`
@@ -268,12 +268,12 @@ Acceptance Criteria:
 
 **AC-1: สกัดข้อความสำเร็จ (ภาษาไทย)**
 - **Input:** รูปภาพมีข้อความภาษาไทย
-- **Processing:** รัน Surya-OCR (GGUF/Qwen2.5-VL)
+- **Processing:** รัน Surya OCR v0.5.0 (Native PyTorch)
 - **Expected Output:** OCR Text ถูกสกัดได้ (ความแม่นยำ ≥ 80% เมื่อเทียบกับ Ground Truth)
 
 **AC-2: สกัดข้อความสำเร็จ (ภาษาอังกฤษ)**
 - **Input:** รูปภาพมีข้อความภาษาอังกฤษ
-- **Processing:** รัน Surya-OCR
+- **Processing:** รัน Surya-OCR native
 - **Expected Output:** OCR Text ถูกสกัดได้ (ความแม่นยำ ≥ 85%)
 
 **AC-3: ตรวจจับคำสำคัญหลอกลวง**
@@ -306,10 +306,9 @@ Acceptance Criteria:
 **AC-1: ตรวจจับการตัดต่อสำเร็จ (Splicing)**
 - **Input:** รูปภาพที่มีการสอดแทรก (Splicing)
 - **Processing:** 
-  - รัน ELA Preprocessing
-  - รัน PSCC-Net + SegFormer Model
-  - คำนวณ Forgery Confidence
-- **Expected Output:** `forgery_confidence: 85` (ช่วง 0-100), ความแม่นยำ ≥ 85% (F1-Score)
+  - รัน SegFormer (ONNX) เพื่อตรวจจับ
+  - คำนวณ Forgery Confidence ด้วย Normalize(Confidence×Coverage)
+- **Expected Output:** `forgery_confidence: 85` (ช่วง 0-100), ความแม่นยำ ≥ 85% (Accuracy และ mDice)
 
 **AC-2: ตรวจจับภาพ AI-Generated สำเร็จ**
 - **Input:** รูปภาพที่สร้างจาก Stable Diffusion
@@ -320,8 +319,8 @@ Acceptance Criteria:
 
 **AC-3: คำนวณ Visual Risk Score**
 - **Input:** forgery_confidence = 85, ai_gen_confidence = 90
-- **Processing:** `S_visual = (85 × 0.6) + (90 × 0.4) = 51 + 36 = 87`
-- **Expected Output:** `visual_score: 87`
+- **Processing:** คำนวณ Normalize(Confidence×Coverage) จาก SegFormer แล้วรวมด้วย Hybrid max+bonus (S_base คือค่าสูงสุดของ 3 มิติ +5 ต่อมิติรองที่มีคะแนน ≥40, cap 100)
+- **Expected Output:** `visual_score` จาก Normalize(Confidence×Coverage) (ช่วง 0-100; ตัวอย่างเดิม 87 ใช้เพื่ออ้างอิงเท่านั้น)
 
 **AC-4: ภาพจริงไม่ถูกตัดต่อ**
 - **Input:** รูปภาพจริงที่ไม่ถูกแก้ไข
@@ -371,7 +370,7 @@ Acceptance Criteria:
 
 ---
 
-#### FR-ANALYSIS-04: Weighted Risk Score Calculation
+#### FR-ANALYSIS-04: Risk Score Calculation
 **Description:** ระบบต้องคำนวณคะแนนความเสี่ยงรวม  
 **Source:** RC-ANALYSIS-07, RC-ANALYSIS-08  
 **Traceability:** ST01 → OBJ-03 → SC02 → RC-ANALYSIS-07/08 → FR-ANALYSIS-04  
@@ -389,15 +388,15 @@ Acceptance Criteria:
 - **Processing:** `S_base = 100`, `compounding = 10`, `Risk Score = min(100, 100 + 10) = 100`
 - **Expected Output:** `risk_score: 100`, `risk_grade: "High"`
 
-**AC-3: แปลงเป็น Risk Grade (Safe)**
+**AC-3: แปลงเป็น Risk Grade (Low) — 3 ระดับ: Low 0-39 / Medium 40-69 / High 70-100**
 - **Input:** risk_score = 10
-- **Processing:** 0-19 = Safe
-- **Expected Output:** `risk_grade: "Safe"`, สีเขียว
+- **Processing:** 0-39 = Low
+- **Expected Output:** `risk_grade: "low"`, สีเขียว
 
-**AC-4: แปลงเป็น Risk Grade (Low)**
+**AC-4: แปลงเป็น Risk Grade (Low ปลายช่วง)**
 - **Input:** risk_score = 30
-- **Processing:** 20-39 = Low
-- **Expected Output:** `risk_grade: "Low"`, สีเขียว
+- **Processing:** 0-39 = Low
+- **Expected Output:** `risk_grade: "low"`, สีเขียว
 
 **AC-5: แปลงเป็น Risk Grade (Medium)**
 - **Input:** risk_score = 55
@@ -418,8 +417,8 @@ Acceptance Criteria:
 
 ### 2.4 Explainability (FR-XAI)
 
-#### FR-XAI-01: Grad-CAM Heatmap Generation & Display
-**Description:** ระบบต้องสร้างและแสดงแผนที่ความร้อน  
+#### FR-XAI-01: Mask-to-Heatmap Overlay Generation & Display
+**Description:** ระบบต้องสร้างและแสดงแผนที่ความร้อนแบบ mask-to-heatmap overlay จาก SegFormer พร้อมคำอธิบายภาษาธรรมชาติ  
 **Source:** RC-XAI-01, RC-XAI-02, RC-XAI-03  
 **Traceability:** ST01, ST03 → OBJ-02, OBJ-04 → SC01, SC03 → RC-XAI-01/02/03 → FR-XAI-01  
 **Priority:** Must
@@ -427,9 +426,11 @@ Acceptance Criteria:
 **Acceptance Criteria:**
 
 **AC-1: สร้าง Heatmap สำเร็จ**
-- **Input:** รูปภาพ, Visual Analysis Model Output
+- **Input:** รูปภาพ, SegFormer Model Output (segmentation mask)
 - **Processing:** 
-  - ใช้ Grad-CAM (Gradient-weighted Class Activation Mapping)
+  - แปลง mask เป็นแผนที่ความร้อนแล้ว overlay บนภาพต้นฉบับ
+  - คำอธิบายประกอบด้วยโมเดลภาษาขนาดเล็กสำหรับสร้างคำอธิบายภาษาไทย
+  - สร้างภาพ Heatmap พร้อม Color Map (แดง=เสี่ยงสูง, เหลือง=ปานกลาง, เขียว=ปลอดภัย)
   - สร้างภาพ Heatmap พร้อม Color Map (แดง=เสี่ยงสูง, เหลือง=ปานกลาง, เขียว=ปลอดภัย)
   - บันทึก Heatmap เป็น heatmap.jpg
   - อัปโหลดไปยัง Object Storage
@@ -622,12 +623,12 @@ Acceptance Criteria:
 - **Expected Output:** HTTP 200, รายการผู้ใช้ที่ตรงกัน
 
 **AC-4: เปลี่ยนบทบาทผู้ใช้**
-- **Input:** PUT /admin/users/{user_id}/role, Body: `{role: "moderator"}`
+- **Input:** PUT /admin/users/{user_id}/role, Body: `{role: "researcher"}`
 - **Processing:** 
   - ตรวจสอบสิทธิ์ Admin
-  - อัปเดต role
+  - อัปเดต role (อนุญาตเฉพาะ user / researcher / admin; ถ้าส่งบทบาทอื่นต้อง HTTP 400)
   - บันทึก Audit Log
-- **Expected Output:** HTTP 200, `{user_id, role: "moderator"}`
+- **Expected Output:** HTTP 200, `{user_id, role: "researcher"}`
 
 **AC-5: เปลี่ยนสถานะผู้ใช้**
 - **Input:** PUT /admin/users/{user_id}/status, Body: `{status: "inactive"}`
@@ -768,7 +769,7 @@ Acceptance Criteria:
 **Acceptance Criteria:**
 
 **AC-1: Cache Hit Response Time ≤ 3 วินาที**
-- **Test:** ส่งรูปภาพที่เคยวิเคราะห์แล้ว (pHash match)
+- **Test:** ส่งรูปภาพที่เคยวิเคราะห์แล้ว (SHA-256 match)
 - **Measurement:** วัดเวลาจาก Request ถึง Response
 - **Expected:** P95 ≤ 3 วินาที
 
@@ -871,8 +872,8 @@ Acceptance Criteria:
 
 ---
 
-### NFR-05: Accuracy — Model Performance
-**Description:** โมเดล AI ต้องมีความแม่นยำ ≥ 85%  
+### NFR-05: Accuracy — Model Performance (Accuracy + mDice)
+**Description:** โมเดล AI ต้องมีความแม่นยำ Accuracy ≥ 85% และ mDice ≥ 85%  
 **Source:** RC-NFR-06  
 **Traceability:** ST01, ST02, ST03 → OBJ-02 → SC03 → RC-NFR-06 → NFR-05  
 **Priority:** Must
@@ -884,17 +885,17 @@ Acceptance Criteria:
 - **Measurement:** `Accuracy = (TP + TN) / (TP + TN + FP + FN) × 100`
 - **Expected:** ≥ 85%
 
-**AC-2: F1-Score ≥ 85%**
-- **Test:** คำนวณ F1-Score จาก Precision และ Recall
-- **Measurement:** `F1 = 2 × (Precision × Recall) / (Precision + Recall)`
+**AC-2: mDice ≥ 85%**
+- **Test:** ประเมินโมเดลบน Testing Set (1,000 ภาพ)
+- **Measurement:** mDice
 - **Expected:** ≥ 85%
 
-**AC-3: Precision ≥ 85%**
+**AC-3: Precision ≥ 85% (เกณฑ์เสริมเพื่อ traceability ใช้ Accuracy + mDice เป็นเกณฑ์หลัก)**
 - **Test:** ประเมินโมเดลบน Testing Set
 - **Measurement:** `Precision = TP / (TP + FP) × 100`
 - **Expected:** ≥ 85% (ลด False Positive — ภาพจริงแต่ระบบบอกว่าปลอม)
 
-**AC-4: Recall ≥ 85%**
+**AC-4: Recall ≥ 85% (เกณฑ์เสริมเพื่อ traceability ใช้ Accuracy + mDice เป็นเกณฑ์หลัก)**
 - **Test:** ประเมินโมเดลบน Testing Set
 - **Measurement:** `Recall = TP / (TP + FN) × 100`
 - **Expected:** ≥ 85% (ลด False Negative — ภาพปลอมแต่ระบบบอกว่าจริง)
@@ -1016,7 +1017,7 @@ Acceptance Criteria:
 - XAI Controls: Toggle Button + Opacity Slider สำหรับ Heatmap Overlay
 - Monitoring: Prometheus + Grafana + Sentry พร้อม Real-time Dashboard
 - Alerting: Slack/LINE/Email with 4 Trigger Conditions
-- Model Metrics: Accuracy/Precision/Recall/F1 ≥ 85%
+- Model Metrics: Accuracy และ mDice ≥ 85%
 - Performance Targets: Percentiles (P50/P95/P99) และ Concurrent Users
 - Cache Strategy: 4-step Performance Tuning Approach
 - UAT Plan: 100 testers, 4 Scenario-based Comprehension Questions

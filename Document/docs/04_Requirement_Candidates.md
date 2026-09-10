@@ -111,8 +111,8 @@ Requirement Candidates ถูกสกัดจาก:
 
 ---
 
-#### RC-AUTH-06: Social Login (Google Login)
-**Description:** ผู้ใช้ต้องสามารถเข้าสู่ระบบด้วย Google OAuth  
+#### RC-AUTH-06: Social Login (Google Login) — DEFERRED (Phase 2)
+**Description:** ผู้ใช้ต้องสามารถเข้าสู่ระบบด้วย Google OAuth (Phase 2)  
 **Source:** scop.md, Section: SC01 — ระบบลงทะเบียนและยืนยันตัวตน  
 **Related Stakeholder:** ST01  
 **Related Objective:** OBJ-01  
@@ -120,7 +120,7 @@ Requirement Candidates ถูกสกัดจาก:
 **Priority:** Should
 
 **Details:**
-- รองรับ **Google Login เท่านั้น** (ไม่มี Apple ID)
+- รองรับ **Google Login เท่านั้น** (ไม่มี Apple ID) (Phase 2)
 - ผู้ใช้คลิกปุ่ม "เข้าสู่ระบบด้วย Google"
 - ระบบเชื่อมต่อกับ Google OAuth 2.0
 - ระบบสร้างหรืออัปเดตบัญชีจาก Google Profile (email, name, picture)
@@ -172,10 +172,9 @@ Requirement Candidates ถูกสกัดจาก:
 **Priority:** Must
 
 **Details:**
-- รองรับไฟล์: JPG/JPEG, PNG, WebP
-- ขนาดไฟล์สูงสุด: 10 MB (Mobile App) / 20 MB (API)
-- ขนาดภาพหลังถอดรหัส: สูงสุด 100 ล้านพิกเซล (10,000 × 10,000)
-- ตรวจสอบ Magic Bytes ไม่เชื่อ Content-Type เพียงอย่างเดียว
+- รองรับไฟล์: JPG/JPEG, PNG, WebP (ตรวจ Magic Bytes ไม่เชื่อ Content-Type)
+- ขนาดไฟล์สูงสุดแยกชัด: **Mobile App 10 MB / API Server 20 MB**
+- ขนาดภาพหลังถอดรหัส: สูงสุด 100 ล้านพิกเซล
 - หากเกินขนาด ให้แจ้งเตือนผู้ใช้หรือบีบอัดอัตโนมัติ
 
 ---
@@ -206,8 +205,8 @@ Requirement Candidates ถูกสกัดจาก:
 **Priority:** Must
 
 **Details:**
-- คำนวณ Perceptual Hash (pHash) ของรูปภาพ
-- ค้นหา pHash ใน Redis Cache
+- คำนวณ SHA-256 Hash ของรูปภาพ
+- ค้นหา hash ใน Redis Cache (TTL 30 วัน)
 - หาก Cache Hit: ส่งผลลัพธ์เก่ากลับทันที (≤ 3 วินาที)
 - หาก Cache Miss: ดำเนินการวิเคราะห์แบบเต็ม
 
@@ -224,7 +223,7 @@ Requirement Candidates ถูกสกัดจาก:
 **Priority:** Must
 
 **Details:**
-- สกัดข้อความจากรูปภาพด้วย Surya-OCR (GGUF/Qwen2.5-VL)
+- สกัดข้อความจากรูปภาพด้วย Surya OCR v0.5.0 (Native PyTorch)
 - รองรับภาษาไทยและอังกฤษ
 - ตรวจจับ Scam Keywords ด้วย RegEx และ NLP:
   - คำหลอกลวง: กู้เงินด่วน, ถอนยอด, โบนัสพิเศษ, ด่วน, รับเงิน, ลงทุน, แจกเงิน, รวยเร็ว
@@ -242,13 +241,12 @@ Requirement Candidates ถูกสกัดจาก:
 **Priority:** Must
 
 **Details:**
-- ประมวลผล Error Level Analysis (ELA) Preprocessing
-- รันโมเดล PSCC-Net + SegFormer เพื่อตรวจจับ:
+- รันโมเดล SegFormer (ONNX) เพื่อตรวจจับ:
   - Splicing (การสอดแทรกรูปภาพ)
   - Copy-Move (การคัดลอกและวาง)
   - Inpainting (การลบวัตถุ)
-- เป้าหมายความแม่นยำ: Accuracy และ F1-Score ≥ 85%
-- คำนวณ Forgery Confidence Score (0-100)
+- เป้าหมายความแม่นยำ: Accuracy และ mDice ≥ 85%
+- คำนวณ Forgery Confidence Score (0-100) ด้วย Normalize(Confidence×Coverage)
 
 ---
 
@@ -279,7 +277,7 @@ Requirement Candidates ถูกสกัดจาก:
 **Priority:** Must
 
 **Details:**
-- สูตร: `S_visual = (forgery_confidence × 0.6) + (ai_gen_confidence × 0.4)`
+- Visual score จะใช้วิธี Normalize(Confidence×Coverage) จาก SegFormer ONNX แล้วรวมคะแนนรวมด้วยสูตร Hybrid max+bonus (S_base คือค่าสูงสุดของ 3 มิติ +5 ต่อมิติรองที่มีคะแนน ≥40, cap 100 — ดู RC-ANALYSIS-07)
 - ผลลัพธ์อยู่ในช่วง 0-100
 
 ---
@@ -320,7 +318,7 @@ Requirement Candidates ถูกสกัดจาก:
 
 ---
 
-#### RC-ANALYSIS-07: Weighted Risk Score Calculation
+#### RC-ANALYSIS-07: Risk Score Calculation
 **Description:** ระบบต้องคำนวณคะแนนความเสี่ยงรวมจาก 3 ชั้นการวิเคราะห์  
 **Source:** srs-doc.md, Section: 3.1 กฎทางธุรกิจ BUS-08; objective.md, OBJ-03  
 **Related Stakeholder:** ST01  
@@ -329,7 +327,7 @@ Requirement Candidates ถูกสกัดจาก:
 **Priority:** Must
 
 **Details:**
-- สูตร: Hybrid Worst-Case: `S_base = max(S_visual, S_text, S_source)`, `Risk Score = min(100, S_base + compounding_bonus)`
+- สูตร: Hybrid Worst-Case: S_base คือค่าสูงสุดของ 3 มิติ, Risk Score = ค่าต่ำสุดระหว่าง 100 กับ S_base + compounding_bonus โดย +5 ต่อมิติรองที่มีคะแนน ≥40 (cap 100)
 - แจกแจงผลคะแนนแยก 3 มิติอิสระเต็ม 100% (Visual, Text, Source)
 - ปัดเศษเป็นจำนวนเต็ม
 - จำกัดผลให้อยู่ในช่วง 0-100
@@ -345,18 +343,18 @@ Requirement Candidates ถูกสกัดจาก:
 **Priority:** Must
 
 **Details:**
-- Safe (สีเขียว): 0-19
-- Low Risk (สีเขียว): 20-39
-- Medium Risk (สีเหลือง): 40-69
-- High Risk (สีแดง): 70-100
+- ระดับความเสี่ยง 3 ระดับ: Low 0-39 / Medium 40-69 / High 70-100
+- Low (สีเขียว): 0-39
+- Medium (สีเหลือง): 40-69
+- High (สีแดง): 70-100
 - **Special Rule:** หาก `visual_score ≥ 80` ให้ระดับเป็น High แม้คะแนนรวมต่ำกว่า 70
 
 ---
 
 ### 2.4 Explainability (RC-XAI)
 
-#### RC-XAI-01: Grad-CAM Heatmap Generation
-**Description:** ระบบต้องสร้างแผนที่ความร้อน (Grad-CAM Heatmap) เพื่ออธิบายผลการตัดสินใจของ AI  
+#### RC-XAI-01: Mask-to-Heatmap Overlay Generation
+**Description:** ระบบต้องสร้างแผนที่ความร้อนแบบ mask-to-heatmap overlay จาก SegFormer mask พร้อมคำอธิบายภาษาธรรมชาติ เพื่ออธิบายผลการตัดสินใจของ AI  
 **Source:** scop.md, Section: SC03 — งานพัฒนาเซอร์วิสประมวลผลและการอธิบายโมเดล; objective.md, OBJ-02, OBJ-04  
 **Related Stakeholder:** ST01, ST03  
 **Related Objective:** OBJ-02, OBJ-04  
@@ -364,7 +362,8 @@ Requirement Candidates ถูกสกัดจาก:
 **Priority:** Must
 
 **Details:**
-- ใช้เทคนิค Gradient-weighted Class Activation Mapping (Grad-CAM)
+- ใช้เทคนิค mask-to-heatmap overlay: แปลง SegFormer segmentation mask เป็นแผนที่ความร้อนแล้ว overlay บนภาพต้นฉบับ
+- คำอธิบายประกอบด้วยโมเดลภาษาขนาดเล็กสำหรับสร้างคำอธิบายภาษาไทย
 - สร้างภาพ Heatmap ที่แสดงจุดพิกเซลที่มีความเสี่ยงสูง
 - ใช้ Color Map: สีแดง (เสี่ยงสูง), สีเหลือง (เสี่ยงปานกลาง), สีเขียว (ปลอดภัย)
 - บันทึก Heatmap เป็นไฟล์ภาพแยก (heatmap.jpg)
@@ -397,7 +396,7 @@ Requirement Candidates ถูกสกัดจาก:
 **Priority:** Must
 
 **Details:**
-- แสดงคะแนนรวม (Weighted Risk Score) ในรูปแบบ Radial Gauge
+- แสดงคะแนนรวม (Risk Score) ในรูปแบบ Radial Gauge
 - แสดงระดับความเสี่ยง (Low/Medium/High) พร้อมสีประกอบ
 - แสดงรายละเอียดคะแนนแต่ละชั้น:
   - Text Risk Score: ผลตรวจสอบ OCR และคำสำคัญหลอกลวง
@@ -595,7 +594,7 @@ Requirement Candidates ถูกสกัดจาก:
 **Details:**
 - ดูรายการผู้ใช้ทั้งหมด (List Users)
 - ค้นหาผู้ใช้ตาม Email, Full Name
-- เปลี่ยนบทบาท (Role): User → Moderator → Admin
+- เปลี่ยนบทบาท (Role): Admin (สิทธิ์เต็ม) / User / Researcher โดย Moderator เป็น Phase 2
 - เปลี่ยนสถานะ (Status): Active ↔ Inactive
 - **Admin ไม่สามารถลบผู้ใช้ได้** — ใช้การเปลี่ยนสถานะเป็น Inactive แทน (Soft Delete)
 - เหตุผล: ต้องเก็บ Audit Trail และข้อมูลสำหรับ Compliance
@@ -674,16 +673,16 @@ Requirement Candidates ถูกสกัดจาก:
 
 **Details:**
 - **Admin:** สิทธิ์เต็มในการจัดการทุกส่วน
-- **Moderator:** สิทธิ์ตรวจสอบรายงานและจัดการผู้ใช้
-- **Viewer:** สิทธิ์ดูสถิติเท่านั้น
+- **User:** ผู้ใช้งานทั่วไป / **Researcher:** นักวิจัย / **Admin:** ผู้ดูแลระบบ
+- **Moderator / Viewer: Phase 2**
 - ตรวจสอบสิทธิ์ทุกครั้งก่อนดำเนินการ (Authorization Middleware)
 
 ---
 
 ### 2.8 Notification (RC-NOTIFY)
 
-#### RC-NOTIFY-01: Push Notification (Analysis Complete)
-**Description:** ระบบต้องส่งการแจ้งเตือนเมื่อการวิเคราะห์เสร็จสิ้น  
+#### RC-NOTIFY-01: Push Notification (Analysis Complete) — DEFERRED (Phase 2)
+**Description:** ระบบต้องส่งการแจ้งเตือนเมื่อการวิเคราะห์เสร็จสิ้น (Phase 2)  
 **Source:** scop.md, Section: SC01 — ระบบรายงานและแจ้งเตือน  
 **Related Stakeholder:** ST01  
 **Related Objective:** OBJ-04  
@@ -701,8 +700,8 @@ Requirement Candidates ถูกสกัดจาก:
 
 ---
 
-#### RC-NOTIFY-02: Push Notification (Report Status Update)
-**Description:** ระบบต้องส่งการแจ้งเตือนเมื่อ Admin อนุมัติ/ปฏิเสธรายงาน  
+#### RC-NOTIFY-02: Push Notification (Report Status Update) — DEFERRED (Phase 2)
+**Description:** ระบบต้องส่งการแจ้งเตือนเมื่อ Admin อนุมัติ/ปฏิเสธรายงาน (Phase 2)  
 **Source:** scop.md, Section: SC01 — ระบบรายงานและแจ้งเตือน  
 **Related Stakeholder:** ST01  
 **Related Objective:** OBJ-04  
@@ -730,7 +729,7 @@ Requirement Candidates ถูกสกัดจาก:
 **Priority:** Must
 
 **Details:**
-- เมื่อ pHash Match ใน Redis Cache
+- เมื่อ SHA-256 Match ใน Redis Cache
 - ระบบต้องส่งผลลัพธ์กลับภายใน ≤ 3 วินาที (P95)
 
 ---
@@ -811,8 +810,8 @@ Requirement Candidates ถูกสกัดจาก:
 
 ---
 
-#### RC-NFR-06: Model Accuracy, Precision & Recall
-**Description:** โมเดล AI ต้องมีความแม่นยำ ≥ 85%  
+#### RC-NFR-06: Model Accuracy & mDice
+**Description:** โมเดล AI ต้องมีความแม่นยำ ≥ 85% (Accuracy และ mDice ≥ 85%)  
 **Source:** objective.md, OBJ-02 — Success Criteria; wiki/concepts/configs.md (Section 5: Evaluation Metrics)  
 **Related Stakeholder:** ST01, ST02, ST03  
 **Related Objective:** OBJ-02  
@@ -821,10 +820,8 @@ Requirement Candidates ถูกสกัดจาก:
 
 **Details:**
 - **Accuracy ≥ 85%** บนชุดข้อมูล Testing Set
-- **F1-Score ≥ 85%** บนชุดข้อมูล Testing Set
-- **Precision Target: ≥ 85%** (ลด False Positive — ภาพจริงแต่ระบบบอกว่าปลอม)
-- **Recall Target: ≥ 85%** (ลด False Negative — ภาพปลอมแต่ระบบบอกว่าจริง)
-- เป้าหมายคือความสมดุลระหว่าง Precision และ Recall เพื่อให้ F1-Score สูง
+- **mDice ≥ 85%** บนชุดข้อมูล Testing Set
+- เป้าหมายคือความสมดุลของการตรวจจับ forgery บน Testing Set
 
 ---
 
@@ -942,8 +939,8 @@ Requirement Candidates ถูกสกัดจาก:
 | **PDPA & Consent** | 4 | Must: 3, Should: 1 |
 | **Admin Portal** | 6 | Must: 6 |
 | **Notification** | 2 | Should: 1, Could: 1 |
-| **Performance & NFR** | 10 | Must: 7, Should: 1 |
-| **TOTAL** | **49** | **Must: 38, Should: 10, Could: 1** |
+| **Performance & NFR** | 10 | Must: 9, Should: 1 |
+| **TOTAL** | **49** | **Must: 40, Should: 8, Could: 1** |
 
 
 **Evidence Sources:**
@@ -958,10 +955,10 @@ Requirement Candidates ถูกสกัดจาก:
 
 เอกสาร Requirement Candidates ฉบับนี้รวบรวมความต้องการทั้งหมด **49 รายการ** จาก Evidence-Based Analysis แบ่งเป็น:
 
-**Priority Breakdown:**
-- **Must:** 38 รายการ (77.6%)
-- **Should:** 10 รายการ (20.4%)
-- **Could:** 1 รายการ (2.0%)
+**Priority Breakdown (นับจริงจาก RC — arithmetic 40+8+1=49):**
+- **Must:** 40 รายการ (81.6%)
+- **Should:** 8 รายการ (16.3%: RC-AUTH-05/06, RC-ANALYSIS-06, RC-HISTORY-02/04, RC-PDPA-04, RC-NOTIFY-01, RC-NFR-07)
+- **Could:** 1 รายการ (2.0%: RC-NOTIFY-02)
 
 **Evidence Quality:**
 - **Complete Coverage:** ครอบคลุมทุก Category (Authentication, Scan, Analysis, XAI, History, PDPA, Admin, Notification, NFR)
@@ -991,7 +988,7 @@ Requirement Candidates ถูกสกัดจาก:
 - Notification: เฉพาะ Approved/Rejected
 
 **AI/ML & Explainability:**
-- Model Metrics: Accuracy/Precision/Recall/F1 ≥ 85%
+- Model Metrics: Accuracy และ mDice ≥ 85%
 - Heatmap UI: Toggle Button + Opacity Slider (Overlay mode)
 - EXIF Metadata: แสดงเท่านั้น (ไม่ใช้คำนวณ Risk Score)
 - Reverse Search Fallback: Neutral Score = 50 เมื่อ API Down

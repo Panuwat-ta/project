@@ -29,9 +29,8 @@
     <h3>การรับภาพ (Image Input)</h3>
     <ul>
     <li><strong>FR-INPUT-01:</strong> ผู้ใช้เลือกรูปจากแกลเลอรีในเครื่องได้</li>
-    <li><strong>FR-INPUT-02:</strong> ผู้ใช้ใช้กล้องถ่ายรูปได้</li>
-    <li><strong>FR-INPUT-03:</strong> ผู้ใช้ปรับขนาดและครอบตัด (Crop) ภาพก่อนส่งได้ เพื่อเน้นจุดสนใจ</li>
-    <li><strong>FR-INPUT-04:</strong> แอปอัปโหลดภาพผ่าน Multipart HTTP เพื่อส่งไปวิเคราะห์</li>
+    <li><strong>FR-INPUT-02:</strong> ผู้ใช้ปรับขนาดและครอบตัด (Crop) ภาพก่อนส่งได้ เพื่อเน้นจุดสนใจ</li>
+    <li><strong>FR-INPUT-03:</strong> แอปอัปโหลดภาพผ่าน Multipart HTTP เพื่อส่งไปวิเคราะห์</li>
     </ul>
     <h3>การแสดงรายงานความเสี่ยง (Risk Report Display)</h3>
     <ul>
@@ -111,7 +110,7 @@
       document.querySelectorAll('.mermaid-container').forEach(container => {
         const btn = document.createElement('button');
         btn.className = 'btn-expand-mermaid';
-        btn.innerHTML = '🔍 Fullscreen';
+        btn.innerHTML = ' Fullscreen';
 
         btn.onclick = () => {
           const originalSvg = container.querySelector('svg');

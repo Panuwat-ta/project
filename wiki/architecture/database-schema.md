@@ -2,8 +2,8 @@
 title: "โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล"
 category: architecture
 tags: [PostgreSQL, Redis, cache, cloud-storage, schema, ACID]
-sources: [design/architecture.md, design/server.md]
-updated: 2026-08-02
+sources: [design/architecture.md, design/server.md, database/ER_Diagram.md]
+updated: 2026-09-06
 ---
 
 # โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล
@@ -16,24 +16,26 @@ updated: 2026-08-02
 
 **หน้าที่:** เก็บข้อมูลเชิงสัมพันธ์ที่มีโครงสร้างทั้งหมดด้วย ACID Transaction
 
-### ตารางหลัก
+### ตารางหลัก (9 ตาราง)
 
 | ตาราง | คำอธิบาย |
 | :--- | :--- |
-| `users` | บัญชีผู้ใช้, Role (user/admin), สถานะ Consent, เวลาสมัคร |
-| `scans` | แต่ละ Scan: อ้างอิงรูปภาพ, Risk Score, คะแนนแต่ละชั้น, สถานะ, เวลาสร้าง |
-| `scan_results` | ผลลัพธ์ละเอียดต่อ Scan: Mask URL, Heatmap URL, Keywords, Source URLs |
-| `reports` | รายงาน Scam จากผู้ใช้: Image ID, Reporter ID, สถานะการตรวจสอบของ Admin |
-| `model_versions` | Registry โมเดลที่ Deploy แล้วพร้อม Timestamp |
-| `audit_log` | บันทึก Append-only ของ Admin Actions ทั้งหมด (Deploy โมเดล, ตัดสิน Report) |
+| users | บัญชีผู้ใช้: email, hashed password, full name, role (user/researcher/admin), is_active, created_at, updated_at |
+| admins | บัญชีผู้ดูแลระบบแยกตาราง, แฟล็ก super_admin (ทุก /admin/* ต้อง super_admin) |
+| scans | รายการ Scan: id UUID, user_id, image_hash SHA-256, raw_image_url, heatmap_image_url, title, text_score, visual_score, source_score, total_risk_score, exif_data, ocr_text, scam_keywords_found, reverse_search_results, ai_gen_probability, xai_explanation, status, progress, created_at, completed_at (ระดับความเสี่ยงคำนวณตอนแสดงผล) |
+| scam_reports | รายงาน Scam จากผู้ใช้: scan_id, category, reason, platform, reference_url, allow_research_use, status (pending/reviewing/approved/rejected), admin_note, moderated_by/at, version |
+| consent_logs | ประวัติการยินยอม PDPA แบบตรวจสอบย้อนหลังได้: user_id, system_consent, research_consent, ip_address, user_agent, created_at (สร้างตอน register) |
+| model_versions | Registry โมเดล: version_tag, file_path, is_active, deployed_at, artifact_checksum, framework_compatibility (onnx), metrics a_acc, m_iou, m_acc, m_dice, dataset_reference, created_by, status, deployment_history |
+| admin_sessions | Session/refresh-token rotation ของ admin |
+| audit_log | บันทึก Append-only ของการกระทำโดย Admin: admin_id, action, entity_type, entity_id, before_state, after_state, reason, ip_address, user_agent, request_id, details, created_at |
+| export_jobs | งาน export dataset: admin_id, status, progress, total_rows, file_size_bytes, file_path, manifest, filter_config, expires_at, created_at, completed_at |
 
 ### Field ที่เกี่ยวกับ PDPA
 
-ตาราง `users` มี:
+consent จะถูกส่งผ่าน body ของ register แล้วบันทึกเป็นแถวใหม่ใน consent_logs:
 
-- `consent_analysis` — ยินยอมให้ประมวลผลรูปภาพ (จำเป็น ถ้าไม่ยินยอมใช้แอปไม่ได้)
-- `consent_research` — ยินยอมให้นำรูปภาพไป Train AI (ไม่บังคับ ถอนได้)
-- `consent_revoked_at` — Timestamp ถ้าผู้ใช้ถอนยินยอมการวิจัย
+- system_consent — ยินยอมให้ประมวลผลรูปภาพ (จำเป็น ถ้าไม่ยินยอมใช้แอปไม่ได้)
+- research_consent — ยินยอมให้นำรูปภาพไป Train AI (ไม่บังคับ ถอนได้)
 
 ---
 
@@ -43,10 +45,10 @@ updated: 2026-08-02
 
 ### การทำงาน
 
-1. เมื่อรับรูปภาพ API คำนวณ **Perceptual Hash (pHash)** ของรูป
-2. ใช้ Hash นั้นเป็น Key ใน Redis
-3. **Cache Hit** — พบ Hash ใน Redis → ดึงผลลัพธ์เต็มจาก PostgreSQL → ส่งคืนทันที (เป้าหมาย < 3 วินาที)
-4. **Cache Miss** — ไม่พบ Hash → รัน Multi-layer Pipeline ครบ → เก็บใน PostgreSQL → เขียน Hash ลง Redis
+1. เมื่อรับรูปภาพ API จะคำนวณ **SHA-256** ของไฟล์รูป
+2. ใช้ Hash นั้นเป็น key ใน Redis (TTL 30 วัน)
+3. **Cache Hit** — พบ Hash ใน Redis → ใช้ผล inference ที่แคชไว้ → ส่งคืนทันที (เป้าหมาย < 3 วินาที)
+4. **Cache Miss** — ไม่พบ Hash → รัน Pipeline ครบ → เก็บใน PostgreSQL → เขียน Hash ลง Redis
 
 ### Cache Invalidation
 
@@ -55,30 +57,24 @@ updated: 2026-08-02
 
 ---
 
-## Cloud Object Storage
+## Local Filesystem Storage
 
-**หน้าที่:** เก็บไฟล์ Binary ที่ไม่เหมาะเก็บในฐานข้อมูล Relational
+**หน้าที่:** เก็บไฟล์รูป (normalize เป็น PNG) ที่ไม่เหมาะเก็บในฐานข้อมูล Relational
 
 ### โครงสร้างการจัดเก็บ
 
 ```
-bucket/
-  uploads/
-    {user_id}/
-      {scan_id}/
-        original.jpg       # รูปที่อัปโหลดมา (เก็บชั่วคราว)
+uploads/
+  รูปต้นฉบับ (normalize lossless PNG)
   heatmaps/
-    {scan_id}/
-      heatmap.png          # Heatmap Overlay
-  models/
-    segformer_v1.0.0.onnx  # Model Weight เวอร์ชัน Production
-    segformer_v1.1.0.onnx
+    Heatmap overlay (mask-to-heatmap)
 ```
+
+DB เก็บเฉพาะ path ของรูปต้นฉบับและ Heatmap
 
 ### Access Control
 
-- Upload Path ใช้ **Presigned URL** — URL จำกัดเวลาต่อ Request ให้ Mobile App อัปโหลดตรงไปยัง Storage โดยไม่เปิดเผย Credential ถาวร
-- ไฟล์ Heatmap ผู้ใช้ดาวน์โหลดผ่าน Presigned URL ชั่วคราวเช่นกัน
+- เสิร์ฟผ่าน /uploads ให้ admin portal preview ได้
 
 ### การเก็บรักษาข้อมูล
 
@@ -90,17 +86,20 @@ bucket/
 
 ## ประเด็นสำคัญ
 
-- PostgreSQL คือ Source of Truth สำหรับข้อมูลที่มีโครงสร้างทั้งหมด
-- Redis คือ Performance Optimization ไม่ใช่ Data Store — ล้างและสร้างใหม่ได้
-- Cloud Storage รับผิดชอบไฟล์ Binary ทั้งหมด ฐานข้อมูล Relational เก็บแค่ Path/URL
-- PDPA Compliance บังคับที่ระดับ Storage: เก็บน้อยที่สุด, ต้องยินยอมชัดเจน, ถอนได้
+- PostgreSQL คือ Source of Truth สำหรับข้อมูลที่มีโครงสร้างทั้งหมด (9 ตาราง)
+- Redis คือ Performance Optimization — ล้างและสร้างใหม่ได้ (TTL 30 วัน)
+- Local filesystem รับผิดชอบไฟล์รูปทั้งหมด ฐานข้อมูล Relational เก็บแค่ Path/URL
+- PDPA Compliance บังคับที่ระดับ Storage: เก็บน้อยที่สุด, consent ผ่าน register body ไปยัง consent logs, ถอนได้
 
 ---
 
 ## หน้าที่เกี่ยวข้อง
 
-- [[architecture/backend-api]]
-- [[architecture/ai-inference-service]]
-- [[architecture/system-architecture]]
-- [[requirements/non-functional-requirements]]
-- [[concepts/risk-scoring]]
+- [[architecture/database-er-diagram|แผนผังความสัมพันธ์ฐานข้อมูล (ER Diagram)]]
+- [[architecture/database-migrations|การจัดการการย้ายฐานข้อมูล (Database Migrations)]]
+- [[architecture/backend-api|Backend API — FastAPI Orchestrator]]
+- [[architecture/admin-portal|สถาปัตยกรรม Admin Portal]]
+- [[architecture/ai-inference-service|AI Inference Service]]
+- [[architecture/system-architecture|สถาปัตยกรรมระบบรวม]]
+- [[requirements/non-functional-requirements|ข้อกำหนดความต้องการที่ไม่ใช่ฟังก์ชัน]]
+- [[concepts/risk-scoring|การคำนวณคะแนนความเสี่ยง]]

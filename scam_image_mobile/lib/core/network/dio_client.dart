@@ -9,7 +9,7 @@ class DioClient {
 
   static Dio createDio({
     required SecureStorage secureStorage,
-    String baseUrl = 'http://localhost:8000',
+    required String baseUrl,
   }) {
     final dio = Dio(
       BaseOptions(

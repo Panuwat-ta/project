@@ -16,12 +16,12 @@ updated: 2026-08-02
 
 โครงการนี้ถูกแบ่งการพัฒนาออกเป็น **4 Development Containers** บวกกับ **1 Integration Layer**:
 
-| Container | เทคโนโลยีหลัก | ความรับผิดชอบหลัก (Lead) |
+| Container | เทคโนโลยีหลัก | ความรับผิดชอบหลัก (Lead: ภานุวัฒน์ 70% / เอกพันธ์ 30%) |
 | :--- | :--- | :--- |
-| Mobile App | Flutter | ภานุวัฒน์ + เอกพันธ์ |
+| Mobile App | Flutter (cross-platform: android/ + ios/ + web/) | ภานุวัฒน์ (Lead) + เอกพันธ์ (ร่วมพัฒนาหน้าจอ/ทดสอบ) |
 | API Backend | Python FastAPI | ภานุวัฒน์ |
-| AI Inference Engine | PyTorch / ONNX | ภานุวัฒน์ |
-| Admin Portal | React.js | ภานุวัฒน์ |
+| AI Inference Engine | PyTorch / ONNX (SegFormer ตัวเดียว) | ภานุวัฒน์ |
+| Admin Portal | React.js | เอกพันธ์ (Lead) + ภานุวัฒน์ (ร่วมพัฒนา/เชื่อม Backend API) |
 | External Integrations | Google Vision, FCM | ภานุวัฒน์ (ออกแบบ) |
 
 ---
@@ -30,8 +30,8 @@ updated: 2026-08-02
 
 | กลุ่มงาน (Task Group) | รายละเอียด (Tasks) |
 | :--- | :--- |
-| Authentication | สมัครและล็อกอินด้วยอีเมล/รหัสผ่าน, Google OAuth, และระบบ Secure Storage |
-| Image Input | ส่วนการเลือกรูปภาพ, การถ่ายภาพ, และโหมด Crop ตัดรูปภาพก่อนส่งให้ระบบ |
+| Authentication | สมัครและล็อกอินด้วยอีเมล/รหัสผ่าน (Google OAuth = Phase 2 deferred), และระบบ Secure Storage |
+| Image Input | ส่วนการเลือกรูปภาพจาก Gallery และโหมด Crop ตัดรูปภาพก่อนส่งให้ระบบ |
 | Risk Visualization | ส่วนแสดงผล Risk Score (เกจสี เขียว/เหลือง/แดง), ภาพ Heatmap ทับซ้อน, พร้อมรายละเอียดผลสแกน |
 | History & PDPA | แสดงหน้าต่างประวัติการตรวจสอบย้อนหลัง, หน้าต่างยอมรับข้อตกลง PDPA และการยกเลิกอนุญาตข้อมูล |
 | Scam Report | แบบฟอร์มกดแจ้งเตือนภาพ Scam ให้ตรวจสอบเพิ่มเติม พร้อมคุณสมบัติ Share ข้อมูล |
@@ -54,10 +54,10 @@ updated: 2026-08-02
 
 | กลุ่มงาน (Task Group) | รายละเอียด (Tasks) |
 | :--- | :--- |
-| Semantic Segmentation | พัฒนาระบบ Preprocessing ตัดภาพ Semantic Segmentation ออกมา |
-| GenAI Detection | พัฒนาและเชื่อมต่อระบบจำแนกและคัดกรองรูปภาพที่มาจากคำสั่ง AI อัตโนมัติ |
+| Semantic Segmentation | พัฒนาโมเดล SegFormer (ONNX) ตัวเดียวสำหรับตรวจร่องรอยดัดแปลงระดับพิกเซล |
+| GenAI Detection | พัฒนาและเชื่อมต่อระบบจำแนกและคัดกรองรูปภาพที่สร้างจาก AI อัตโนมัติ |
 | PyTorch to ONNX | ขั้นตอนส่งออกตัว Model ให้อยู่ในมาตรฐานเปิด ONNX สำหรับการโหลดเข้าระบบในตอนรันจริง (Inference) |
-| Heatmap | แปลงผลลัพธ์จาก Segmentation Mask เพื่อผลิตภาพ Heatmap คาดทับในขั้นสุดท้าย |
+| Heatmap | แปลงผลลัพธ์จาก Segmentation Mask เพื่อผลิตภาพ Heatmap แบบ mask-to-heatmap overlay ในขั้นสุดท้าย + คำอธิบาย Qwen2.5-1.5B |
 
 ---
 
@@ -66,7 +66,7 @@ updated: 2026-08-02
 | กลุ่มงาน (Task Group) | รายละเอียด (Tasks) |
 | :--- | :--- |
 | RBAC + Dashboard | ตรวจสอบ Role ของ Admin แดชบอร์ดสรุปผลภาพรวม |
-| User Management | โค้ดที่ต้องบริหารข้อมูล (CRUD) ผู้ใช้งานในระบบต่างๆ |
+| User Management | บริหารข้อมูลผู้ใช้งานในระบบ |
 | Scam Report Queue | ลำดับการอนุมัติ (Approve) หรือปฏิเสธ (Dismiss) เมื่อได้รับ Scam Report |
 | Model Update Console | หน้าต่างสำหรับกดปุ่มรันเพื่อเปลี่ยนน้ำหนัก Model ไฟล์ตัวใหม่เข้าสู่ระบบ |
 
@@ -76,12 +76,13 @@ updated: 2026-08-02
 
 | คุณสมบัติ (Feature) | สถานะ |
 | :--- | :--- |
-| ระบบ iOS (iOS Support) | เก็บไว้ทำในอนาคต (ณ ตอนนี้รองรับเฉพาะ Android) |
+| Mobile cross-platform | **ในขอบเขต** — Flutter cross-platform |
 | วิเคราะห์วิดีโอ (Video Analysis) | เก็บไว้ทำในอนาคต โดยการใช้ Keyframe Extraction |
 | บนมือถือล้วนๆ (On-device Inference) | เก็บไว้ทำในอนาคต — ต้องผ่านกระบวนการทำ Model Quantization (INT8/FP16) เป็นหลักเสียก่อน |
 | การแชร์และตัดสินใจรีวิวแบบ Real-time | ไม่ได้ระบุไว้ในแผน (Not Planned) |
 | ระบบของ Google SynthID | ระบุไว้ว่าน่าสนใจแต่ยังไม่มีกระบวนการดีไซน์ในเวลาปัจจุบัน |
 | บริการ Google Gemini LLM | ระบุไว้ว่าน่าสนใจแต่ยังไม่มีกระบวนการดีไซน์ในเวลาปัจจุบัน |
+| Google OAuth / Social Login | เลื่อนไป Phase 2 (RC-AUTH-06 deferred) |
 
 ---
 

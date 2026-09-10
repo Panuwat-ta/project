@@ -14,10 +14,10 @@
 
 1. **Separation of Concerns:** แยก UI, Business Logic และ AI Processing ออกจากกันอย่างชัดเจน
 2. **Scalability:** แต่ละ Container สามารถ Scale ได้อิสระตามความต้องการ
-3. **Asynchronous Processing:** การประมวลผล AI ใช้ Queue-based Architecture เพื่อไม่ Block UI
+3. **Asynchronous Processing:** การประมวลผล AI รันใน ONNX Worker แยกโปรเซสผ่าน BackgroundTasks เพื่อไม่ Block event loop/UI
 4. **Caching Strategy:** ใช้ Redis Cache เพื่อลดการประมวลผลซ้ำและเพิ่มความเร็วตอบสนอง
 5. **Security by Design:** HTTPS, JWT Authentication, Rate Limiting, และ RBAC ตั้งแต่เริ่มต้น
-6. **Explainability (XAI):** ระบบสร้าง Grad-CAM Heatmap เพื่ออธิบายผลการตัดสินใจของ AI
+6. **Explainability (XAI):** ระบบสร้างแผนที่ความร้อนแบบ mask-to-heatmap overlay เพื่ออธิบายผลการตัดสินใจของ AI
 
 **Evidence:**
 - File: project/design/architecture.md
@@ -98,7 +98,7 @@ flowchart TD
 
 #### **Backend & API Layer**
 3. **API Application (Python FastAPI)** — API Gateway และ Orchestrator หลัก
-4. **AI Inference Service (PyTorch / ONNX)** — บริการประมวลผล AI แยกอิสระ
+4. **ONNX Worker** — ประมวลผล AI ในโปรเซสแยกจาก API หลัก
 
 #### **Storage & Cache Layer**
 5. **Cache Store (Redis)** — แคชข้อมูลภาพที่สแกนแล้ว (Image Hash)
@@ -133,7 +133,7 @@ flowchart TB
 
         subgraph Backends [Backend Layer]
             APIGateway("API Application<br>[FastAPI]<br>Orchestrator, EXIF, OCR")
-            AIInference("AI Inference<br>[PyTorch/ONNX]<br>Forgery Detection, Heatmap")
+            AIInference("ONNX Worker<br>[Subprocess/IPC]<br>SegFormer ONNX, mask-heatmap")
         end
 
         subgraph Storages [Storage Layer]
@@ -205,7 +205,7 @@ flowchart TB
 **Architecture Pattern:** Component-based Architecture
 
 **Key Features:**
-- Role-Based Access Control (RBAC): Admin, Moderator, Viewer
+- Role-Based Access Control (RBAC): Admin, User, Researcher (Moderator/Viewer เป็น Phase 2)
 - Statistical Dashboard (Charts, Metrics, KPIs)
 - Report Queue Management (Approve/Reject Reports)
 - Model Management (Upload/Activate/Deactivate Models)
@@ -234,18 +234,20 @@ flowchart TB
 1. **API Gateway** — Routing, Authentication (JWT), Rate Limiting
 2. **Orchestration** — ประสานงานระหว่าง Cache, AI Service, Storage, External APIs
 3. **Metadata Extraction** — สกัดข้อมูล EXIF/GPS จากรูปภาพ
-4. **OCR & NLP** — สกัดข้อความด้วย Surya-OCR (GGUF/Qwen2.5-VL) และตรวจจับ Scam Keywords
+4. **OCR & NLP** — สกัดข้อความด้วย Surya OCR v0.5.0 (Native PyTorch) และตรวจจับ Scam Keywords
 5. **Reverse Image Search** — เชื่อมต่อ Google Vision API
 6. **Risk Score Calculation** — คำนวณคะแนนรวมด้วยแนวทาง Hybrid Worst-Case (Max-Impact & Multi-Factor Compounding) ร่วมกับการแจกแจงความเสี่ยง 3 มิติอิสระเต็ม 100%
 
-**API Endpoints (Examples):**
-- `POST /auth/register` — สมัครสมาชิก
-- `POST /auth/login` — เข้าสู่ระบบ (รับ JWT Token)
-- `POST /scans/upload` — อัปโหลดรูปภาพเพื่อตรวจสอบ
-- `GET /scans/{scan_id}` — ดึงผลการตรวจสอบ
-- `GET /scans/history` — ดูประวัติการสแกน
-- `POST /reports` — รายงานภาพหลอกลวง
-- `GET /admin/dashboard` — สถิติระบบ (Admin only)
+**API Endpoints (prefix `/api/v1`):**
+- `POST /api/v1/auth/register` — สมัครสมาชิก
+- `POST /api/v1/auth/login` — เข้าสู่ระบบ
+- `POST /api/v1/auth/refresh` / `POST /api/v1/auth/logout` / `GET /api/v1/auth/me`
+- `POST /api/v1/scan/` — อัปโหลดรูปภาพเพื่อตรวจสอบ
+- `GET /api/v1/scan/{scan_id}` — ดึงผลการตรวจสอบ
+- `GET /api/v1/history`, `GET /api/v1/history/{scan_id}`, `DELETE /api/v1/history/{scan_id}`
+- `POST /api/v1/reports`, `GET /api/v1/reports/categories`, `GET /api/v1/reports/my`
+- กลุ่ม Admin (`/api/v1/admin/*` ต้องเป็น Admin เท่านั้น)
+- `WS /api/v1/ws/admin/dashboard` สำหรับ Dashboard realtime
 
 **Evidence:**
 - File: project/Document/scop.md
@@ -255,27 +257,26 @@ flowchart TB
 
 ---
 
-### 4.4 AI Inference Service (PyTorch/ONNX)
+### 4.4 AI Inference (ONNX Worker Subprocess)
 
-**Technology:** PyTorch (Training), ONNX Runtime (Inference)  
+**Technology:** PyTorch (Training), ONNX Runtime (Inference)
+**Topology:** ONNX Worker แยกโปรเซสจาก API หลัก
 **GPU:** NVIDIA GPU with CUDA support (Optional: CPU fallback)
 
 **Key Responsibilities:**
-1. **Image Forgery Detection** — ตรวจจับการตัดต่อระดับพิกเซล
-   - Error Level Analysis (ELA) Preprocessing
-   - PSCC-Net + SegFormer Model
+1. **Image Forgery Detection** — ตรวจจับการตัดต่อระดับพิกเซลด้วย SegFormer ONNX
    - ตรวจจับ Splicing, Copy-Move, Inpainting
-2. **AI-Generated Image Detection** — ตรวจจับภาพที่สร้างจาก Generative AI
+2. **AI-Generated Image Detection** — คำนวณคะแนนภาพ AI-Generated ควบคู่คะแนนความเสี่ยงทางภาพ
    - ตรวจจับ Artifacts จาก Stable Diffusion, Midjourney, DALL-E
    - วิเคราะห์ความผิดปกติทางฟิสิกส์ (ใบหน้า, มือ, พื้นหลัง)
-3. **Explainability (XAI)** — สร้างแผนที่ความร้อน Grad-CAM
-   - Gradient-weighted Class Activation Mapping
-   - ระบุจุดพิกเซลที่มีความเสี่ยงสูง
-4. **Visual Risk Score Calculation** — คำนวณคะแนน 0-100 จากผลทั้ง 2 โมเดล
+3. **Explainability (XAI)** — สร้างแผนที่ความร้อนแบบ mask-to-heatmap overlay
+    - ระบุจุดพิกเซลที่มีความเสี่ยงสูง
+4. **Visual Risk Score Calculation** — คะแนน 0–100
+5. **XAI reasoning** — โมเดลภาษาขนาดเล็กสำหรับสร้างคำอธิบายภาษาไทย (แยกจากโมดูล OCR ที่ใช้ Surya)
 
 **Model Performance Target:**
 - Accuracy ≥ 85%
-- F1-Score ≥ 85%
+- mDice ≥ 85%
 - Inference Time ≤ 10 วินาที/ภาพ (GPU)
 
 **Evidence:**
@@ -292,12 +293,12 @@ flowchart TB
 
 **Purpose:**
 - เก็บแคชผลการวิเคราะห์ของรูปภาพที่เคยตรวจสอบแล้ว
-- ใช้ Perceptual Hash (pHash) เป็น Key
+- ใช้ SHA-256 เป็น Key ใน Redis
 - ลดเวลาตอบสนองจาก 10-15 วินาที เหลือ ≤ 3 วินาที (Cache Hit)
 - ลดการใช้ GPU/CPU จากการรัน AI ซ้ำ
 
 **Cache Strategy:**
-- TTL (Time To Live): 30 วัน
+- TTL (Time To Live): 30 วัน (`setex` 2592000 วินาที)
 - Eviction Policy: LRU (Least Recently Used)
 
 **Evidence:**
@@ -308,20 +309,19 @@ flowchart TB
 
 ---
 
-### 4.6 Object Storage (Cloud Storage)
+### 4.6 Object Storage (Local Filesystem)
 
-**Technology:** Cloud Storage (AWS S3, Google Cloud Storage, หรือ MinIO)
+**Technology:** Local filesystem เสิร์ฟผ่าน static mount
 
 **Purpose:**
 - จัดเก็บไฟล์รูปภาพต้นฉบับที่ผู้ใช้อัปโหลด
 - จัดเก็บภาพ Heatmap ที่สร้างโดย AI
-- ใช้ Presigned URL สำหรับการเข้าถึงที่ปลอดภัย
-- รองรับ CDN สำหรับการโหลดภาพที่เร็วขึ้น
+- เก็บเฉพาะ path ใน DB
 
 **File Structure:**
 ```
-/uploads/{user_id}/{scan_id}/original.jpg
-/uploads/{user_id}/{scan_id}/heatmap.jpg
+{UPLOAD_DIR}/{image_hash}.png
+{UPLOAD_DIR}/heatmaps/{image_hash}_heatmap.jpg
 ```
 
 **Evidence:**
@@ -341,13 +341,16 @@ flowchart TB
 - รองรับ ACID Transactions สำหรับความสมบูรณ์ของข้อมูล
 - จัดเก็บข้อมูล PDPA Consent Logs
 
-**Main Tables:**
-1. **users** — ข้อมูลผู้ใช้ (id, email, password_hash, role, status, created_at)
-2. **scans** — ประวัติการสแกน (id, user_id, image_url, risk_score, text_score, visual_score, source_score, status, created_at)
-3. **reports** — รายงานภาพหลอกลวง (id, scan_id, user_id, category, description, status, admin_note, created_at)
-4. **models** — ข้อมูลโมเดล AI (id, version, file_path, status, accuracy, created_at)
-5. **consent_logs** — บันทึกความยินยอม PDPA (id, user_id, consent_type, is_granted, created_at)
-6. **audit_logs** — บันทึกการดำเนินการของ Admin (id, admin_id, action, details, created_at) [Immutable]
+**Main Tables (9 ตาราง):**
+1. **users** — id, email, hashed_password, full_name, role, is_active, created_at, updated_at
+2. **admins** — ตารางแยกสำหรับผู้ดูแลระบบ
+3. **scans** — id, user_id, image_hash (SHA-256), raw_image_url, heatmap_image_url, title, text/visual/source/total_risk_score, exif_data, ocr_text, scam_keywords_found, reverse_search_results, ai_gen_probability, xai_explanation, status, progress, created_at, completed_at
+4. **consent_logs** — user_id, system_consent, research_consent, ip_address, user_agent, created_at
+5. **scam_reports** — user_id, scan_id, category, reason, platform, reference_url, allow_research_use, status, admin_note, moderated_by/at, created_at, version
+6. **model_versions** — version_tag, file_path, is_active, deployed_at, artifact_checksum, framework_compatibility, a_acc, m_iou, m_acc, m_dice, dataset_reference, created_by, status, deployment_history
+7. **admin_sessions** — session/refresh-token rotation
+8. **audit_log** — admin_id, action, entity_type/id, before/after_state, reason, ip, user_agent, request_id, details, created_at
+9. **export_jobs** — admin_id, status, progress, file_path, manifest, filter_config, expires_at, created/completed_at
 
 **Evidence:**
 - File: project/database/init.sql
@@ -423,7 +426,7 @@ flowchart TB
 ### 5.2 Layer 1: Textual Analysis (S_text)
 
 **Process:**
-1. สกัดข้อความจากรูปภาพด้วย Surya-OCR (GGUF/Qwen2.5-VL)
+1. สกัดข้อความจากรูปภาพด้วย Surya OCR v0.5.0
 2. ตรวจจับ Scam Keywords ด้วย RegEx และ NLP
    - กู้เงินด่วน, ถอนยอด, โบนัสพิเศษ, ด่วน, รับเงิน, ลงทุน, แจกเงิน, รวยเร็ว
 3. คำนวณ Text Risk Score (0-100) จากจำนวนและความรุนแรงของคำหลอกลวง
@@ -442,16 +445,16 @@ S_text = (keyword_count × severity_weight) / max_possible_score × 100
 ### 5.3 Layer 2: Visual Analysis (S_visual)
 
 **Process:**
-1. ประมวลผล Error Level Analysis (ELA) Preprocessing
-2. รันโมเดล PSCC-Net + SegFormer เพื่อตรวจจับการตัดต่อ
-3. รันโมเดล AI-Generated Detection
-4. สร้าง Grad-CAM Heatmap เพื่ออธิบายผล
-5. คำนวณ Visual Risk Score (0-100)
+1. รัน SegFormer ONNX ผ่าน worker แยกโปรเซส
+2. คำนวณ visual_risk_score และ ai_gen_probability (0–100)
+3. สร้าง mask-to-heatmap overlay เพื่ออธิบายผล
+4. คำนวณ Visual Risk Score (0-100)
 
 **Formula:**
 ```
-S_visual = (forgery_confidence × 0.6) + (ai_gen_confidence × 0.4)
+S_visual = Normalize(Confidence × Coverage)
 ```
+(สเกล confidence/coverage เป็น 0–100 ก่อนนำไปคำนวณรวม)
 
 **Evidence:**
 - File: project/Document/scop.md
@@ -493,11 +496,10 @@ S_base = max(S_visual, S_textual, S_source)
 Risk Score = min(100, S_base + compounding_bonus)
 ```
 
-**Risk Grade Mapping:**
-- **Safe (สีเขียว):** 0-19
-- **Low Risk (สีเขียว):** 20-39
-- **Medium Risk (สีเหลือง):** 40-69
-- **High Risk (สีแดง):** 70-100
+**Risk Grade Mapping (3 ระดับ: Low 0-39 / Medium 40-69 / High 70-100):**
+- **Low (สีเขียว):** 0-39
+- **Medium (สีเหลือง):** 40-69
+- **High (สีแดง):** 70-100
 - **Special Rule:** หาก `visual_score ≥ 80` → High ทันที
 
 **Rationale:**
@@ -517,14 +519,14 @@ Risk Score = min(100, S_base + compounding_bonus)
 
 ### 6.1 Component Overview
 
-แผนภาพ C3 นี้นำเสนอโครงสร้างภายในของ **API Application Container (FastAPI)** ซึ่งเป็นศูนย์กลาง (Orchestrator) ของระบบ Scam Image Detection โดยแสดงให้เห็นถึงการแบ่งเลเยอร์ตามโครงสร้างซอร์สโค้ดในโฟลเดอร์ `server/app/`
+แผนภาพ C3 นี้นำเสนอโครงสร้างภายในของ **API Application Container (FastAPI)** ซึ่งเป็นศูนย์กลาง (Orchestrator) ของระบบ Scam Image Detection โดยแสดงให้เห็นถึงการแบ่งเลเยอร์ตามหน้าที่
 
-สถาปัตยกรรมภายในของ Backend ยึดหลักการ **Layered Architecture** เพื่อแยกส่วนหน้าที่ (Separation of Concerns) ทำให้โค้ดอ่านง่าย ทดสอบง่าย (Testable) และดูแลรักษาง่าย โดยแบ่งเป็น 3 เลเยอร์หลัก:
+สถาปัตยกรรมภายในของ Backend ยึดหลักการ **Layered Architecture** เพื่อแยกส่วนหน้าที่ (Separation of Concerns) ทำให้ระบบดูแลรักษาง่าย โดยแบ่งเป็น 3 เลเยอร์หลัก:
 
 **Layered Architecture:**
-1. **API Layer (Controllers)** — โฟลเดอร์ `server/app/api/v1/`
-2. **Business Logic Layer (Services)** — โฟลเดอร์ `server/app/services/`
-3. **Data Access Layer (Repositories)** — โฟลเดอร์ `server/app/repositories/`
+1. **API Layer (Controllers)**
+2. **Business Logic Layer (Services)**
+3. **Data Access Layer (Repositories)**
 
 ### 6.2 Component Diagram
 
@@ -546,26 +548,26 @@ flowchart TB
         
         %% API Layer
         subgraph APILayer ["API Layer (Controllers)"]
-            AuthRouter("Auth Router<br>[api/v1/auth.py]<br>รับข้อมูล Login/Register")
-            AdminRouter("Admin Router<br>[api/v1/admin.py]<br>จัดการระบบสำหรับ Admin")
-            ScanRouter("Scan Router<br>[api/v1/scan.py]<br>รับรูปภาพเพื่อตรวจสอบ")
-            ReportRouter("Report Router<br>[api/v1/report.py]<br>รับรายงานภาพสแกม")
+            AuthRouter("Auth Router<br>รับข้อมูล Login/Register")
+            AdminRouter("Admin Router<br>จัดการระบบสำหรับ Admin")
+            ScanRouter("Scan Router<br>รับรูปภาพเพื่อตรวจสอบ")
+            ReportRouter("Report Router<br>รับรายงานภาพสแกม")
         end
 
         %% Business Logic Layer
         subgraph ServiceLayer ["Business Logic Layer (Services)"]
-            AuthService("Auth Service<br>[core/security.py]<br>ออก Token และตรวจสอบสิทธิ์")
-            AdminService("Admin Service<br>[services/admin_service.py]<br>ประมวลผลคำสั่ง Admin")
-            ScanService("Scan Service<br>[services/scan_service.py]<br>Core Logic คำนวณความเสี่ยง")
-            InferenceClient("Inference Coordinator<br>[services/inference_service.py]<br>จัดการคิวและการเรียก AI")
-            ReportService("Report Service<br>[services/report_service.py]<br>ประมวลผลการรายงาน")
+            AuthService("Auth Service<br>ออก Token และตรวจสอบสิทธิ์")
+            AdminService("Admin Service<br>ประมวลผลคำสั่ง Admin")
+            ScanService("Scan Service<br>Core Logic คำนวณความเสี่ยง")
+            InferenceClient("Inference Coordinator<br>จัดการคิวและการเรียก AI")
+            ReportService("Report Service<br>ประมวลผลการรายงาน")
         end
 
         %% Data Access Layer
         subgraph RepoLayer ["Data Access Layer (Repositories)"]
-            UserRepo("User Repository<br>[repositories/user.py]")
-            ScanRepo("Scan Repository<br>[repositories/scan.py]")
-            ReportRepo("Report Repository<br>[repositories/report.py]")
+            UserRepo("User Repository")
+            ScanRepo("Scan Repository")
+            ReportRepo("Report Repository")
         end
     end
 
@@ -573,7 +575,7 @@ flowchart TB
     Cache("Redis Cache")
     MainDB[("PostgreSQL Database")]
     ObjectStore("Cloud Storage (Local / S3)")
-    AIWorker("ONNX Worker (Subprocess)<br>[services/onnx_worker.py]")
+    AIWorker("ONNX Worker (Subprocess)")
 
     %% Relationships - External to API
     MobileApp --->|HTTPS / JSON| AuthRouter
@@ -606,9 +608,9 @@ flowchart TB
     AdminService --->|จัดการบัญชีผู้ใช้| UserRepo
 
     %% Repositories to DB
-    UserRepo --->|SQLAlchemy| MainDB
-    ScanRepo --->|SQLAlchemy| MainDB
-    ReportRepo --->|SQLAlchemy| MainDB
+    UserRepo --->|ORM| MainDB
+    ScanRepo --->|ORM| MainDB
+    ReportRepo --->|ORM| MainDB
 
     %% Apply Styles
     class MobileApp,AdminPortal clientFill
@@ -622,9 +624,8 @@ flowchart TB
 ### 6.3 Component Details
 
 #### 6.3.1 API Layer (Controllers)
-โฟลเดอร์ `server/app/api/v1/`
 
-ทำหน้าที่เป็นด่านหน้าในการรับ HTTP Request, ตรวจสอบความถูกต้องของข้อมูลเบื้องต้น (Data Validation) ผ่าน Pydantic Schemas และส่งต่อ (Route) งานไปยัง Service ที่เกี่ยวข้อง
+ทำหน้าที่เป็นด่านหน้าในการรับ HTTP Request, ตรวจสอบความถูกต้องของข้อมูลเบื้องต้น (Data Validation) และส่งต่องานไปยัง Service ที่เกี่ยวข้อง
 
 **Components:**
 - **Auth Router:** จัดการ Endpoint สำหรับ Login และ Register
@@ -633,21 +634,19 @@ flowchart TB
 - **Admin Router:** เปิด Endpoint ให้นักวิจัยและ Admin จัดการข้อมูลโมเดลและระบบ
 
 #### 6.3.2 Business Logic Layer (Services)
-โฟลเดอร์ `server/app/services/`
 
 เป็นหัวใจหลักของแอปพลิเคชัน ทำหน้าที่ประมวลผลตามกฎทางธุรกิจ (Business Rules)
 
 **Components:**
-- **Scan Service:** ควบคุมขั้นตอนการตรวจสอบภาพทั้งหมด เริ่มตั้งแต่เช็ค Cache, สกัด EXIF, และคำนวณ **Weighted Risk Score**
-- **Inference Coordinator (`inference_service.py`):** ตัวประสานงานระหว่าง Backend กับ AI Model ทำหน้าที่จัดคิวรูปภาพและส่งคำสั่งข้าม Process ไปให้ ONNX Worker
+- **Scan Service:** ควบคุมขั้นตอนการตรวจสอบภาพทั้งหมด เริ่มตั้งแต่เช็ค Cache, สกัด EXIF, และคำนวณ Hybrid max+bonus Risk Score
+- **Inference Coordinator:** ตัวประสานงานระหว่าง Backend กับ AI Model ทำหน้าที่จัดคิวรูปภาพและส่งคำสั่งไปให้ ONNX Worker
 - **Auth Service:** จัดการการเข้ารหัสผ่าน (Hashing) และออก JWT Token
 - **Admin Service:** ประมวลผลคำสั่ง Admin (User Management, Model Management)
 - **Report Service:** ประมวลผลการรายงานภาพหลอกลวงจากผู้ใช้
 
 #### 6.3.3 Data Access Layer (Repositories)
-โฟลเดอร์ `server/app/repositories/`
 
-ทำหน้าที่ติดต่อกับฐานข้อมูลหลักผ่าน **SQLAlchemy ORM** ช่วยให้ Business Logic Layer ไม่ต้องเขียนคำสั่ง SQL (หรือยึดติดกับ Database มากเกินไป)
+ทำหน้าที่ติดต่อกับฐานข้อมูลหลัก ช่วยให้ Business Logic Layer ไม่ต้องเขียนคำสั่ง SQL โดยตรง
 
 **Components:**
 - **User Repository:** Query ข้อมูลบัญชีและสิทธิ์ของผู้ใช้งาน
@@ -656,7 +655,7 @@ flowchart TB
 
 #### 6.3.4 AI Integration (ONNX Worker)
 
-โมเดล AI ถูกออกแบบให้ทำงานแยกส่วน (Isolation) จาก Web Server หลัก โดยรันผ่าน Subprocess (`onnx_worker.py`) เพื่อแยกภาระงานประมวลผลที่กินทรัพยากรสูง (Heavy Computation Workload) ออกจาก Thread หลักของ FastAPI ทำให้ API ยังคงสามารถตอบสนอง Request อื่นๆ ได้อย่างรวดเร็วและไม่สะดุด
+โมเดล AI ถูกออกแบบให้ทำงานแยกส่วน (Isolation) จาก Web Server หลัก โดยรันผ่าน worker แยกโปรเซส เพื่อแยกภาระงานประมวลผลที่กินทรัพยากรสูงออกจาก Thread หลักของ API ทำให้ API ยังคงสามารถตอบสนอง Request อื่นๆ ได้อย่างรวดเร็วและไม่สะดุด
 
 **Evidence:**
 - File: project/Document/Software Architecture/C3-Component-Diagram.md
@@ -666,9 +665,9 @@ flowchart TB
 
 ## 7. C4: Code Diagram (Image Scanning Flow)
 
-### 7.1 Code-Level Overview
+### 7.1 Overview
 
-แผนภาพ C4 (ระดับ Code) นี้แสดงลำดับขั้นตอน (Sequence Diagram) การทำงานเชิงลึกของกระบวนการวิเคราะห์รูปภาพ (Image Scanning) ภายใน Backend ของระบบ Scam Image Detection ซึ่งครอบคลุมตั้งแต่การรับ Request จากผู้ใช้ ไปจนถึงการจัดเก็บผลลัพธ์ลงฐานข้อมูล โดยอ้างอิงจากคลาสและฟังก์ชันจริงในซอร์สโค้ด
+แผนภาพ C4 นี้แสดงลำดับขั้นตอนการทำงานของกระบวนการวิเคราะห์รูปภาพ (Image Scanning) ภายใน Backend ของระบบ Scam Image Detection ซึ่งครอบคลุมตั้งแต่การรับ Request จากผู้ใช้ ไปจนถึงการจัดเก็บผลลัพธ์ลงฐานข้อมูล
 
 ### 7.2 Sequence Diagram
 
@@ -677,47 +676,47 @@ sequenceDiagram
     autonumber
     
     actor Client as Mobile App
-    participant Router as ScanRouter<br>(api/v1/scan.py)
-    participant Service as ScanService<br>(services/scan_service.py)
-    participant Utils as ImageUtils<br>(utils/image_utils.py)
-    participant FS as Local Storage<br>(File System)
-    participant Inference as InferenceService<br>(services/inference_service.py)
-    participant ONNX as ONNX Worker<br>(onnx_worker.py)
-    participant OCR as Surya OCR<br>(HuggingFace)
-    participant RiskCalc as RiskCalculator<br>(utils/risk_calculator.py)
-    participant DB as PostgreSQL<br>(SQLAlchemy)
+    participant Router as ScanRouter
+    participant Service as ScanService
+    participant Utils as ImageUtils
+    participant FS as Local Storage
+    participant Inference as InferenceService
+    participant ONNX as ONNX Worker
+    participant OCR as Surya OCR
+    participant RiskCalc as RiskCalculator
+    participant DB as PostgreSQL
 
-    Client->>Router: POST /api/v1/scan<br>(Multipart: UploadFile)
+    Client->>Router: POST /api/v1/scan (Multipart)
     
     activate Router
-    Router->>Service: await analyze_image(file, user_id, db)
+    Router->>Service: analyze_image(file, user_id, db)
     
     activate Service
     Note over Service: 1. อ่านไฟล์เป็น Bytes<br>และเช็คขนาดไฟล์ (Max MB)
     
-    Service->>Utils: await run_in_threadpool(load_image_verified)
+    Service->>Utils: load_image_verified
     Utils-->>Service: PIL Image, EXIF Data
     
-    Service->>Utils: await run_in_threadpool(encode_lossless_png)
+    Service->>Utils: encode_lossless_png
     Utils-->>Service: PNG Bytes
     
     Service->>FS: Save {hash}.png (เป็นหลักฐานรูปต้นฉบับ)
     FS-->>Service: Success
     
-    Note over Service: ส่งงานให้ AI แบบ Threadpool<br>เพื่อไม่บล็อก Event Loop
-    Service->>Inference: await run_in_threadpool(predict, png_bytes)
+    Note over Service: ส่งงานให้ AI แบบแยกโปรเซส<br>เพื่อไม่บล็อก Event Loop
+    Service->>Inference: predict(png_bytes)
     
     activate Inference
     
     %% SegFormer Processing
-    Inference->>ONNX: subprocess.Popen()<br>ส่งภาพผ่าน STDIN (Base64)
+    Inference->>ONNX: ส่งภาพเพื่อประมวลผล
     activate ONNX
     Note over ONNX: ประมวลผล Semantic Segmentation<br>ด้วยโมเดล ONNX
-    ONNX-->>Inference: STDOUT: JSON (visual_risk, heatmap_b64)
+    ONNX-->>Inference: JSON (visual_risk, heatmap)
     deactivate ONNX
     
     %% OCR Processing
-    Inference->>OCR: run_ocr([image], [["th", "en"]])
+    Inference->>OCR: สกัดข้อความไทย/อังกฤษ
     activate OCR
     Note over OCR: สกัดข้อความภาษาไทย/อังกฤษ<br>ด้วย Surya OCR
     OCR-->>Inference: ocr_text (ข้อความที่สกัดได้)
@@ -738,60 +737,54 @@ sequenceDiagram
     deactivate RiskCalc
     
     %% DB Persistence
-    Service->>DB: db.add(Scan Model)<br>db.commit()<br>db.refresh()
+    Service->>DB: บันทึกผลการสแกน
     activate DB
     DB-->>Service: new_scan_record
     deactivate DB
     
-    Service-->>Router: return new_scan (Scan Object)
+    Service-->>Router: return new_scan
     deactivate Service
     
-    Router-->>Client: 200 OK<br>ScanResponse (JSON)
+    Router-->>Client: 200 OK (ScanResponse JSON)
     deactivate Router
 ```
 
-### 7.3 Code-Level Details
+### 7.3 Details
 
-#### 7.3.1 API Layer (`ScanRouter`)
-**ฟังก์ชัน:** `create_scan(file: UploadFile, db: AsyncSession, current_user: User)`
+#### 7.3.1 API Layer (ScanRouter)
 
 **หน้าที่:** 
-- ตรวจสอบสิทธิ์ผู้ใช้งาน (`Depends(get_current_user)`) 
+- ตรวจสอบสิทธิ์ผู้ใช้งาน
 - รับไฟล์รูปแบบ Multipart Form Data 
 - ส่งต่อให้ Service ประมวลผล
 
-#### 7.3.2 Business Logic Layer (`ScanService`)
-**ฟังก์ชัน:** `analyze_image(file: UploadFile, user_id: int, db: AsyncSession)`
+#### 7.3.2 Business Logic Layer (ScanService)
 
 **หน้าที่:**
 1. ตรวจสอบความปลอดภัยของไฟล์ (ขนาดไฟล์ และการแปลงเป็นภาพ Lossless PNG ป้องกันมัลแวร์แฝง)
 2. สร้าง Hash จากไฟล์ต้นฉบับเพื่อใช้ตั้งชื่อไฟล์ (Deduplication)
-3. ครอบการเรียกฟังก์ชันประมวลผลหนักๆ เช่น AI และ Image Processing ด้วย `run_in_threadpool()` เพื่อไม่ให้ Event Loop ของ FastAPI ถูกบล็อก (Block)
-4. วิเคราะห์คำหลอกลวงเบื้องต้นจากผลลัพธ์ OCR ด้วย `scam_keywords`
-5. บันทึกออบเจกต์ (Model) สู่ฐานข้อมูลผ่าน `db.commit()`
+3. เรียกงานประมวลผลหนัก (AI และ Image Processing) ใน worker แยก เพื่อไม่ให้ Event Loop ของ API ถูกบล็อก
+4. วิเคราะห์คำหลอกลวงเบื้องต้นจากผลลัพธ์ OCR ด้วย scam keywords
+5. บันทึกผลสู่ฐานข้อมูล
 
-#### 7.3.3 AI Integration Layer (`InferenceService`)
-**ฟังก์ชัน:** `predict(image_bytes: bytes)`
+#### 7.3.3 AI Integration Layer (InferenceService)
 
 **หน้าที่:** ทำงานประสาน AI โมเดลทั้ง 2 ตัว
 
 **ONNX Worker (SegFormer):**
-- ออกแบบให้รันสคริปต์ `onnx_worker.py` ใน **Subprocess** แยกต่างหาก (AI Workload Isolation)
-- ส่งรูปผ่าน Pipe (STDIN) รูปแบบ Base64
-- รับผลลัพธ์กลับมาทาง STDOUT
-- แยกการจัดการทรัพยากรและหน่วยความจำของฝั่ง AI ออกจาก Web Server หลักอย่างเด็ดขาด
+- รันในโปรเซสแยกต่างหาก (AI Workload Isolation)
+- แยกการจัดการทรัพยากรและหน่วยความจำของฝั่ง AI ออกจาก Web Server หลัก
 
 **Surya OCR:**
-- โมเดลถูกเตรียมพร้อมไว้ในหน่วยความจำหลัก (RAM-resident) ตั้งแต่ระบบเริ่มทำงาน
+- โมเดลถูกเตรียมพร้อมไว้ในหน่วยความจำหลักตั้งแต่ระบบเริ่มทำงาน
 - ประมวลผลข้อความจากรูปภาพได้ทันทีโดยไม่ต้องเสียเวลาโหลดโมเดลใหม่
 - ช่วยลดความหน่วง (Latency) ในการตอบสนอง
 
 #### 7.3.4 Utility & Calculation
-**คลาส/โมดูล:** `RiskCalculator`  
-**ฟังก์ชัน:** `calculate_risk_score(text, visual, source)`
+**โมดูล:** RiskCalculator
 
 **หน้าที่:** 
-- เป็นเพียวฟังก์ชัน (Pure Function) ที่รับค่าตัวเลขคะแนนดิบเข้าไปคำนวณตามสูตรน้ำหนักคณิตศาสตร์
+- รับค่าตัวเลขคะแนนดิบเข้าไปคำนวณตามสูตร Hybrid max+bonus
 - ส่งค่าความเสี่ยงรวม (Total Risk) กลับมา
 
 **Evidence:**
@@ -833,9 +826,8 @@ sequenceDiagram
 **Authorization:**
 - Role-Based Access Control (RBAC)
   - General User: Read own data, Create scans, Report images
-  - Admin: Full CRUD, Review reports, Manage users
-  - Moderator: Review reports, Manage datasets
-  - Viewer: Read-only dashboard access
+  - Researcher: เข้าถึงข้อมูลเพื่อการวิจัย
+  - Admin: Full CRUD, Review reports, Manage users (Phase 2 สำหรับ Moderator/Viewer)
 
 **Evidence:**
 - File: project/Document/srs-doc.md
@@ -869,7 +861,7 @@ sequenceDiagram
 ### 9.3 API Security
 
 **Rate Limiting:**
-- Default: 60 requests/hour ต่อ IP/ผู้ใช้ (config ผ่าน `RATE_LIMIT_PER_HOUR`, ตาม implementation ด้วย slowapi)
+- Default: 60 requests/hour ต่อ IP/ผู้ใช้
 - การแบ่ง tier (Guest/Admin) เป็นแผนพัฒนาเพิ่มเติมในอนาคต
 
 **Input Validation:**
@@ -907,7 +899,7 @@ sequenceDiagram
 
 **Horizontal Scaling:**
 - API Application: Multiple instances behind Load Balancer
-- AI Inference Service: Queue-based workers (Celery + RabbitMQ)
+- ONNX Worker: แยกโปรเซสต่อรอบการประมวลผล
 - Database: Read Replicas for heavy read operations
 
 **Vertical Scaling:**
@@ -996,8 +988,7 @@ sequenceDiagram
 - Request Count, Response Time
 - Error Rate (4xx, 5xx)
 - Cache Hit Rate
-- AI Inference Time
-- Queue Length (Celery)
+- AI Inference Time (ONNX subprocess)
 
 **Business Metrics:**
 - Total Scans
@@ -1043,7 +1034,7 @@ sequenceDiagram
 | **Availability** | ≥ 99.5% uptime | Health Checks, Auto-restart, Monitoring |
 | **Security** | HTTPS, JWT, RBAC, PDPA | Authentication, Authorization, Encryption |
 | **Maintainability** | Clean Architecture, Separation of Concerns | Flutter Clean Arch, FastAPI modular design |
-| **Explainability** | ≥ 80% users understand Heatmap | Grad-CAM visualization, Risk breakdown |
+| **Explainability** | ≥ 80% users understand Heatmap | Mask-to-heatmap overlay, Risk breakdown |
 | **Testability** | Unit Test Coverage ≥ 80% | Clean Architecture, Dependency Injection |
 
 **Evidence:**
@@ -1059,7 +1050,7 @@ sequenceDiagram
 | Risk | Impact | Likelihood | Mitigation |
 |------|--------|------------|------------|
 | AI Inference Timeout (> 15s) | High | Medium | Queue-based processing, Async notifications, ONNX optimization |
-| Google Vision API Downtime | Medium | Low | Bing Visual Search as fallback, Source score = 50 (neutral) |
+| Google Vision API Downtime | Medium | Low | ใช้ `DEFAULT_SOURCE_SCORE` และคำนวณ max จากมิติที่สำเร็จ (ตัดมิติที่ล้มเหลวทิ้ง ไม่ใช้ neutral 50) |
 | Redis Cache Failure | Medium | Low | Fallback to Database, Auto-restart, Monitoring |
 | GPU Resource Exhaustion | High | Medium | Queue management, Auto-scaling, Batch processing |
 | False Positive (ภาพจริงแต่ระบบบอกว่าปลอม) | High | Medium | Threshold tuning, Human-in-the-loop (Admin review) |
@@ -1118,9 +1109,9 @@ sequenceDiagram
 - Storage: Redis Cache, Cloud Storage, PostgreSQL
 
 **Analysis Pipeline:**
-- Multi-layer Analysis: Independent 3-Factor (Visual 0-100%, Text 0-100%, Source 0-100%) with Hybrid Worst-Case Trigger
-- Weighted Risk Score Calculation
-- Explainable AI (Grad-CAM Heatmap)
+- Multi-layer Analysis: Independent 3-Factor (Visual 0-100%, Text 0-100%, Source 0-100%) with Hybrid max+bonus Trigger
+- Hybrid max+bonus Risk Score Calculation
+- Explainable AI (mask-to-heatmap overlay)
 
 **Quality Attributes:**
 - Performance, Scalability, Security, Availability, Explainability

@@ -45,13 +45,15 @@ updated: 2026-08-02
 
 | ส่วน | เทคโนโลยี | หมายเหตุ |
 | :--- | :--- | :--- |
-| Core Model | SegFormer | Transformer-based Semantic Segmentation |
+| Core Model | SegFormer (ONNX เดียว) | Transformer-based Semantic Segmentation, tiling 512/overlap 64 |
 | Training Framework | PyTorch | มาตรฐาน; Ecosystem ใหญ่ |
-| Serving Format | ONNX | แปลงจาก PyTorch หลัง Train เสร็จ |
+| Serving Format | ONNX | รันผ่าน ONNX Worker subprocess ภายใน Backend เดียวกัน |
 | Inference Runtime | ONNX Runtime | Engine สำหรับ Serving ที่ Optimized แล้ว |
-| XAI | Heatmap | คำนวณจาก Segmentation Mask หลัง Inference |
-| OCR | Surya-OCR | ดึงข้อความภาษาไทย + อังกฤษ |
-| ฟีเจอร์ AI อนาคต | SynthID, Gemini | ตรวจจับ Watermark, วิเคราะห์ด้วย LLM (ยังไม่ได้ออกแบบ) |
+| AI-Gen classifier | ค่าความน่าจะเป็นภาพสังเคราะห์จาก AI (0–1) | คู่กับคะแนนความเสี่ยงด้านภาพ |
+| XAI | แผนที่ความร้อนแบบ mask-to-heatmap overlay | แปลง Segmentation Mask เป็นภาพสีซ้อนทับบนภาพต้นฉบับ |
+| XAI reasoning | Qwen2.5-1.5B | สำหรับสร้างคำอธิบายภาษาไทย |
+| OCR | Surya OCR v0.5.0 (Native PyTorch) | ดึงข้อความภาษาไทย + อังกฤษ |
+| Risk | Hybrid max+bonus 3 ระดับ: Low 0-39 / Medium 40-69 / High 70-100 | คะแนนฐานจากมิติสูงสุด บวกเพิ่มมิติรอง สูงสุดไม่เกิน 100 |
 
 ---
 

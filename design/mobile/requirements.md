@@ -47,7 +47,7 @@ ScamGuard Mobile App เป็นแอปพลิเคชัน Flutter ส�
 ### REQ-005: Home / Scan Screen
 - ระบบต้องแสดงหน้าหลักพร้อม Header ทักทายผู้ใช้
 - ต้องมีปุ่มอัปโหลดรูปภาพ (Card หลัก) เปิด File Picker
-- รองรับไฟล์ jpg, jpeg, png, webp ขนาดไม่เกิน 10 MB (Hard Limit)
+- รองรับไฟล์ jpg, jpeg, png, webp; ฝั่ง client บีบอัดเมื่อไฟล์ > 10 MB ส่วน server ปฏิเสธไฟล์เกิน 20 MB (413, MAX_UPLOAD_SIZE_MB)
 - ต้องแสดงแถบ Safety Tips (Bento Grid)
 - ต้องแสดงรายการประวัติการสแกนล่าสุด 3-5 รายการ
 - เมื่อเลือกไฟล์สำเร็จ → นำทางไป Image Crop Screen
@@ -72,7 +72,7 @@ ScamGuard Mobile App เป็นแอปพลิเคชัน Flutter ส�
 
 ### REQ-008: Analysis Result Screen
 - ระบบต้องแสดง Radial Risk Gauge (SVG semicircle) พร้อมคะแนน 0-100
-- ต้องแสดง Risk Badge: ปลอดภัย (เขียว 0-19), ต่ำ (เขียว 20-39), ปานกลาง (เหลือง 40-69), สูง (แดง 70-100) — กรณี $S_{visual} \ge 80$ จะเป็น สูง ทันที
+- ต้องแสดง Risk Badge: ต่ำ (เขียว 0-39), ปานกลาง (เหลือง 40-69), สูง (แดง 70-100) — กรณี $S_{visual} \ge 80$ จะเป็น สูง ทันที
 - ต้องแสดง Summary Card อธิบายผลภาษาธรรมดา
 - ต้องแสดง Analysis Bento Grid (2 คอลัมน์)
 - ต้องมีปุ่ม: ดูรายละเอียด, ดู Heatmap, รายงานภาพต้องสงสัย, แชร์ผลลัพธ์
