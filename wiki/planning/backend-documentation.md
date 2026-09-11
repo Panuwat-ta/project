@@ -694,7 +694,7 @@ Presigned URL มีอายุ 15 นาที (เพื่อ PDPA Complianc
 
 ### 8.5 Graceful Degradation
 
-หาก AI Inference หรือ Google Vision API Timeout ให้คำนวณ Risk Score จากข้อมูลที่มี (EXIF + OCR) และบันทึก Error Log
+หาก AI Inference หรือ Google Vision API Timeout ให้คำนวณ Risk Score จากมิติที่สำเร็จ (ตัดมิติที่ล้มเหลวทิ้ง — EXIF มีไว้แสดงผลเท่านั้น ไม่ร่วมคำนวณ) และบันทึก Error Log
 
 ---
 

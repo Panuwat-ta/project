@@ -115,7 +115,7 @@ flowchart TB
 
 ### 2. Business Logic Layer (Services)
 เป็นหัวใจหลักของแอปพลิเคชัน ทำหน้าที่ประมวลผลตามกฎทางธุรกิจ (Business Rules)
-- **Scan Service:** ควบคุมขั้นตอนการตรวจสอบภาพทั้งหมด เริ่มตั้งแต่เช็ค Cache, สกัด EXIF, และคำนวณ Hybrid max+bonus Risk Score
+- **Scan Service:** ควบคุมขั้นตอนการตรวจสอบภาพทั้งหมด เริ่มตั้งแต่เช็ค Cache, สกัด EXIF (แสดงผลเท่านั้น ไม่ร่วมคำนวณคะแนน), และคำนวณ Hybrid max+bonus Risk Score
 - **Inference Coordinator:** ตัวประสานงานระหว่าง Backend กับ AI Model ทำหน้าที่จัดคิวรูปภาพและส่งคำสั่งไปให้ ONNX Worker
 - **Auth Service:** จัดการการเข้ารหัสผ่าน (Hashing) และออก JWT Token 
 
