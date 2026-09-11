@@ -116,3 +116,5 @@ grep "^## \[" wiki/log.md | tail -5
 - โครงสร้างฐานข้อมูลใน Wiki สอดคล้องกับ PostgreSQL และ `database/ER_Diagram.md` ล่าสุด
 - เอกสารทั้งหมดไม่มีสัญลักษณ์ Emoji และรันคอมไพล์เว็บ `web-ScamGuard` ผ่านสมบูรณ์
 
+## [2026-09-11] fix | DOC-04: v1 Android-only (iOS/Web future) — overview.md, planning/project-scope.md
+## [2026-09-11] fix | DOC-05: gallery-only — PRODUCT.md
