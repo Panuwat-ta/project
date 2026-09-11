@@ -30,16 +30,16 @@
   2. กรอก Password และ Confirm Password ให้ตรงกัน
   3. กดปุ่ม "สมัครสมาชิก" (Register)
 - **Expected Results**:
-  1. แอปแสดงสถานะ Loading ขณะส่งข้อมูลไปยัง Backend
-  2. ได้รับข้อความยืนยันการลงทะเบียนสำเร็จ
-  3. ระบบนำทางผู้ใช้ไปยังหน้าลงชื่อเข้าใช้ (Login Screen) อัตโนมัติ
+  1. `POST /api/v1/auth/register` ตอบ `201 Created` ภายใน 5 วินาที (P95, เน็ตปกติ RTT ≤50ms)
+  2. Response มี `id email full_name role` ตรงตัวอักษร โดยไม่มีรหัสผ่าน plain text
+  3. แอปแสดงข้อความยืนยันการลงทะเบียนสำเร็จตรงตัวอักษรตามสเปก UI แล้วนำทางไปหน้า Login อัตโนมัติภายใน 2 วินาที
 - **Automation Mapping**: `tests_all/automate_tests/tests/api/test_auth_flow.py`
 
 ---
 
 ### TC-MOB-AUTH-02: การเข้าสู่ระบบสำเร็จและการบันทึก Token (Login Flow)
 - **Module / Feature**: Authentication / User Login
-- **Requirement ID**: FR-AUTH-02, FR-AUTH-04
+- **Requirement ID**: FR-AUTH-02
 - **Test Type**: Functional
 - **Priority**: P0 (Blocker)
 - **Pre-conditions**:

@@ -8,7 +8,13 @@ updated: 2026-08-02
 
 # ขอบเขตโครงการ (Project Scope)
 
+> **ชื่อผลิตภัณฑ์:** ScamGuard (ชื่อเต็ม: Scam Image Detection — แอปตรวจสอบรูปภาพตัดต่อเพื่อป้องกันการหลอกลวง)
+
 กำหนดสิ่งที่จะพัฒนา กรอบการทำงานของ 4 Containers หลัก และการแบ่งกลุ่มงานสำหรับสมาชิกทีม
+
+> **Canonical requirement catalog:** `Document/docs/04_Requirement_Candidates.md`, `05_Software_Requirement_Specification.md` (FR/NFR/AC), `06_Requirement_Traceability.md`, `07_Appendix_A_Full_Traceability_Matrix.md` — เลข FR/NFR ที่อ้างในไฟล์นี้ใช้ชุดเดียวกับ Document
+
+**เวอร์ชันปัจจุบัน: v1 Android เท่านั้น** (Flutter codebase เดียวกัน; ios/ + web/ เป็น future)
 
 ---
 
@@ -18,11 +24,11 @@ updated: 2026-08-02
 
 | Container | เทคโนโลยีหลัก | ความรับผิดชอบหลัก (Lead: ภานุวัฒน์ 70% / เอกพันธ์ 30%) |
 | :--- | :--- | :--- |
-| Mobile App | Flutter (v1: android/; ios/ + web/ เป็น future) | ภานุวัฒน์ (Lead) + เอกพันธ์ (ร่วมพัฒนาหน้าจอ/ทดสอบ) |
+| Mobile App | Flutter (v1: Android เท่านั้น; ios/ + web/ เป็น future) | ภานุวัฒน์ (Lead) + เอกพันธ์ (ร่วมพัฒนาหน้าจอ/ทดสอบ) |
 | API Backend | Python FastAPI | ภานุวัฒน์ |
 | AI Inference Engine | PyTorch / ONNX (SegFormer ตัวเดียว) | ภานุวัฒน์ |
 | Admin Portal | React.js | เอกพันธ์ (Lead) + ภานุวัฒน์ (ร่วมพัฒนา/เชื่อม Backend API) |
-| External Integrations | Google Vision, FCM | ภานุวัฒน์ (ออกแบบ) |
+| External Integrations | Google Vision (optional), FCM (Phase 2; v1 = in-app/polling) | ภานุวัฒน์ (ออกแบบ) |
 
 ---
 
@@ -76,10 +82,11 @@ updated: 2026-08-02
 
 | คุณสมบัติ (Feature) | สถานะ |
 | :--- | :--- |
-| Mobile cross-platform | **ในขอบเขต** — Flutter cross-platform |
+| Mobile cross-platform (iOS/Web) | **นอกขอบเขต v1** — v1 Android เท่านั้น (Flutter codebase เดียวกัน) |
 | วิเคราะห์วิดีโอ (Video Analysis) | เก็บไว้ทำในอนาคต โดยการใช้ Keyframe Extraction |
 | บนมือถือล้วนๆ (On-device Inference) | เก็บไว้ทำในอนาคต — ต้องผ่านกระบวนการทำ Model Quantization (INT8/FP16) เป็นหลักเสียก่อน |
-| การแชร์และตัดสินใจรีวิวแบบ Real-time | ไม่ได้ระบุไว้ในแผน (Not Planned) |
+| การแชร์ผลลัพธ์ (Share) | **ในขอบเขต** — แชร์ภาพเตือนภัยไปแอปภายนอก (Document FR-HISTORY-02; wiki test-scheme FR-SHARE-01, GAP ยังไม่มี TC) |
+| การรีวิว/ตัดสินใจแบบ Real-time | นอกขอบเขต v1 (Not Planned) |
 | ระบบของ Google SynthID | ระบุไว้ว่าน่าสนใจแต่ยังไม่มีกระบวนการดีไซน์ในเวลาปัจจุบัน |
 | บริการ Google Gemini LLM | ระบุไว้ว่าน่าสนใจแต่ยังไม่มีกระบวนการดีไซน์ในเวลาปัจจุบัน |
 | Google OAuth / Social Login | เลื่อนไป Phase 2 (RC-AUTH-06 deferred) |

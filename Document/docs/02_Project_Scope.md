@@ -1,8 +1,8 @@
 # Project Scope 
 
 **Project Name:** แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง (Scam Image Detection)  
-**Version:** 1.0  
-**Date:** August 23, 2026
+**Version:** 1.1  
+**Date:** September 12, 2026
 
 ---
 
@@ -15,7 +15,7 @@
 2. **Visual Analysis** — ตรวจสอบการตัดต่อระดับพิกเซลและภาพที่สร้างด้วย AI
 3. **Source Analysis** — ค้นหาแหล่งที่มาของภาพผ่าน Reverse Image Search
 
-ผลลัพธ์สุดท้ายเป็น **คะแนนความเสี่ยงรวม (Hybrid max+bonus: S_base คือค่าสูงสุดของ 3 มิติ +5 ต่อมิติรองที่มีคะแนน ≥40, cap 100)** ในช่วง 0-100 พร้อมระดับความเสี่ยง 3 ระดับ: Low 0-39 / Medium 40-69 / High 70-100 และแผนที่ความร้อนแบบ mask-to-heatmap overlay เพื่ออธิบายผลการตัดสินใจของ AI
+ผลลัพธ์สุดท้ายเป็น **คะแนนความเสี่ยงรวม** (สูตร/เกณฑ์ตาม `05_Software_Requirement_Specification.md` FR-ANALYSIS-04 — ดูนิยามที่ Document ที่เดียว) พร้อมแผนที่ความร้อนแบบ mask-to-heatmap overlay เพื่ออธิบายผลการตัดสินใจของ AI
 
 **Evidence:**
 - File: project/Document/scop.md
@@ -57,8 +57,8 @@
    - ระบบตรวจสอบขนาดไฟล์และความละเอียดของภาพก่อนอัปโหลด
 
 3. **ระบบแสดงผลความเสี่ยง (Risk Visualization Dashboard)**
-    - แสดงคะแนนความเสี่ยงรวม (Hybrid max+bonus 0-100) ในรูปแบบ Radial Gauge
-    - แสดงระดับความเสี่ยง (Risk Grade): Low (สีเขียว), Medium (สีเหลือง), High (สีแดง)
+    - แสดงคะแนนความเสี่ยงรวม (สูตร/เกณฑ์ตาม `05_Software_Requirement_Specification.md` FR-ANALYSIS-04 — ดูนิยามที่ Document ที่เดียว) ในรูปแบบ Radial Gauge
+    - แสดงระดับความเสี่ยง (Risk Grade) ตาม FR-ANALYSIS-04: Low (สีเขียว), Medium (สีเหลือง), High (สีแดง)
    - แสดงรายละเอียดผลวิเคราะห์แบบหลายชั้น:
      - Text Risk Score: ผลตรวจสอบ OCR และคำสำคัญหลอกลวง
      - Visual Risk Score: ผลตรวจสอบการตัดต่อและภาพ AI-Generated
@@ -81,7 +81,7 @@
    - รับการแจ้งเตือนในแอปเมื่อระบบประมวลผลเสร็จสิ้น (v1 ใช้ polling + in-app notification; Push ผ่าน FCM เป็น Phase 2 — มติ DOC-06)
 
 **Expected Outcome:**
-- แอปพลิเคชันบนมือถือที่ใช้งานง่าย สะดวก และให้ผลลัพธ์ที่เข้าใจได้
+- ระบบ shall ให้ผู้ใช้ใหม่สแกนแรกสำเร็จภายใน 3 ขั้นตอน และผู้ใช้ ≥ 80% (n=100) shall ทำ UAT สำเร็จโดยไม่ต้องมีผู้ช่วยเหลือ
 - ผู้ใช้สามารถตรวจสอบรูปภาพที่น่าสงสัยได้ภายในเวลาไม่เกิน 15 วินาที (กรณีวิเคราะห์ใหม่)
 - ผู้ใช้เข้าใจผลการวิเคราะห์ผ่าน Heatmap โดยไม่ต้องมีความรู้ทางเทคนิค
 
@@ -137,7 +137,7 @@
    - จัดเก็บไฟล์รูปภาพและ Heatmap บน Cloud Storage พร้อม URL แบบ Presigned
 
 **Expected Outcome:**
-- ระบบ API ที่มีประสิทธิภาพสูง รองรับการทำงานแบบ Concurrent
+- ระบบ API shall ตอบ Cache Hit ภายใน P95 ≤ 3 วินาที และวิเคราะห์ใหม่ P50 ≤ 15 วินาที ที่ 100 concurrent users
 - การตอบสนองเร็ว (Cache Hit ≤ 3 วินาที, New Analysis ≤ 15 วินาที)
 - ความปลอดภัยสูง (HTTPS, JWT, Rate Limiting)
 - ระบบจัดเก็บข้อมูลที่มีความสมบูรณ์และตรวจสอบย้อนกลับได้

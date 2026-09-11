@@ -67,7 +67,7 @@ updated: 2026-08-02
 
 **เหตุผล:**
 
-- Inference เร็วกว่า Native PyTorch 2–5 เท่า
+- Inference เป้าหมายเร็วกว่า PyTorch baseline รุ่นเดียวกัน ≥ 2 เท่า (ภาพ 1080p เฉลี่ย 100 ภาพ บน T4; ยืนยันด้วย benchmark ก่อนอ้างภายนอก)
 - ONNX ทำงานแยกจาก Framework — สามารถรัน Model ได้โดยไม่ต้องลง PyTorch ในฝั่ง Inference
 - ลด Dependency และขนาด Container ของฝั่ง Serving
 - Flow มาตรฐาน: Train ใน PyTorch → Export เป็น ONNX → Serve ด้วย ONNX Runtime
@@ -99,7 +99,7 @@ updated: 2026-08-02
 - เรียก API ครั้งเดียวสามารถค้นหาครอบคลุมอินเทอร์เน็ตส่วนใหญ่
 - เสถียรและมี Document อธิบาย API ดีเยี่ยม
 
-**ความเสี่ยง:** ยึดติดกับบริการภายนอก — หาก Google Vision ล่ม ระบบตรวจสอบความเสี่ยงจะคืนค่าคะแนนกลางสำหรับส่วนนี้ (Source Verification) โดยมี Bing เป็นแผนสำรอง
+**ความเสี่ยง:** ยึดติดกับบริการภายนอก — หาก Google Vision ล่ม ระบบจะคืนค่า Source score = 50 (neutral) พร้อมธง partial-result สำหรับมิตินี้ โดยมี Bing เป็นแผนสำรอง — ห้ามสรุปว่าภาพปลอดภัยจากมิตินี้เพียงอย่างเดียว
 
 ## การตัดสินใจ 7: ใช้ Surya OCR Native PyTorch แทน Tesseract สำหรับอ่านตัวอักษร
 

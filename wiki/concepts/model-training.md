@@ -23,7 +23,7 @@ updated: 2026-08-04
 
 * **การทำความสะอาดข้อมูล**: การจัดระเบียบโครงสร้างโฟลเดอร์ให้สอดคล้องกับ Dataloader
 * **Data Augmentation**: ใช้เทคนิคต่างๆ เช่น `RandomResize`, `RandomCrop`, `RandomFlip` และที่สำคัญคือ `PhotoMetricDistortion` (ปรับแต่งแสง/สี) เพื่อให้โมเดลทนทานต่อการแต่งแสงหลอก
-* การแบ่งชุดข้อมูลเป็น Train, Validation, และ Test Set อย่างเหมาะสม (เช่น 80:10:10)
+* การแบ่งชุดข้อมูลเป็น Train / Validation / Test Set แบบ **stratified 80:10:10** (คงสัดส่วน class แท้/ปลอม และแหล่งข้อมูลทุกชุด, กำหนด seed คงที่, test set ถูก freeze ห้ามนำมา tune)
 
 ## 4. Initial Training
 
@@ -37,8 +37,7 @@ updated: 2026-08-04
 
 ## 6. Incremental Fine-tuning
 
-* การอัปเดตโมเดลเป็นระยะ (เช่น ทุกสัปดาห์หรือทุกเดือน) เมื่อมีภาพกลโกงชนิดใหม่ถูกรายงานเข้ามาในระบบ
-* เป็นการเรียนรู้ต่อเนื่องโดยไม่ต้องเริ่มต้นเทรนใหม่ทั้งหมดจากศูนย์
+* การอัปเดตโมเดลตามรอบทบทวน retrain: ทุก 30 วัน หรือเมื่อมีภาพกลโกงชนิดใหม่ที่ approved + research-consented สะสม ≥ 500 ภาพ (แล้วแต่เงื่อนไขใดถึงก่อน) — เป็นการเรียนรู้ต่อเนื่องโดยไม่ต้องเริ่มต้นเทรนใหม่ทั้งหมดจากศูนย์
 
 ## 7. Parameter-wise Fine-tuning
 
@@ -67,7 +66,7 @@ updated: 2026-08-04
 
 * **VRAM Optimization**: ใช้ `AmpOptimWrapper` (Mixed Precision) เพื่อลดการใช้หน่วยความจำ ทำให้เทรนบนอุปกรณ์ที่มี VRAM จำกัดได้อย่างเต็มประสิทธิภาพ
 * **Optimizer & Scheduler**: ใช้ AdamW ร่วมกับ LinearLR (Warmup) และ PolyLR
-* **Loss Function**: ใช้ `CrossEntropyLoss` ควบคู่กับ `DiceLoss` เพื่อแก้ปัญหา Class Imbalance (พื้นที่รอยปลอมแปลงเล็กมากเมื่อเทียบกับพื้นหลัง)
+* **Loss Function**: ใช้ `Binary Cross-Entropy Loss (BCE)` ควบคู่กับ `DiceLoss` (`use_sigmoid=True`) เพื่อแก้ปัญหา Class Imbalance (พื้นที่รอยปลอมแปลงเล็กมากเมื่อเทียบกับพื้นหลัง — canonical ตรงกับ `design/training.md` และ `Document/model/training.md`)
 
 ## 12. Checkpoint & Version Management
 

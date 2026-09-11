@@ -5,7 +5,6 @@
 - อ้างอิงแผนหลัก: Document/tests_doc/test_plan/README.md ส่วนที่ 7 กระบวนการจัดการข้อบกพร่อง (Defect Management Lifecycle) และส่วนที่ 5 เกณฑ์การระงับและเริ่มใหม่
 - อ้างอิงชุดทดสอบ: tests_all/manual_tests/test_cases_mobile.md, test_cases_backend.md, test_cases_ai_model.md, test_cases_admin.md, test_cases_e2e.md, test_cases_nfr.md
 - อ้างอิงผลรัน: tests_all/tests_report/manual_tests/execution_log.md และ tests_all/tests_report/automate_tests
-- สถานะก่อนสร้างไฟล์: ไม่พบไฟล์ bug report template ใน tests_all และ Document/tests_doc (ค้น severity, priority, Jira แล้วพบเฉพาะนิยามในแผนหลัก ยังไม่มีแบบฟอร์มให้กรอกจริง)
 
 ---
 

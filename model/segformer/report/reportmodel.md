@@ -24,7 +24,7 @@
 
 ## 2. ผลการทดสอบบนภาพจริง (Real-World Image Verification)
 
-ผลลัพธ์การทดสอบเปรียบเทียบด้วยภาพทดสอบจริงผ่านตัวประมวลผล 2-Class Softmax (Forgery Channel 1):
+ผลลัพธ์การทดสอบเปรียบเทียบด้วยภาพทดสอบจริงผ่านตัวประมวลผล 2-Class Softmax (Forgery Channel 1) — ตารางนี้คือ Real-World Benchmark ทางการ; ตัวเลข Max-Prob ดิบใน `server/tests/tests_model/README.md` (98.99%/82.90%) มาจาก pipeline รุ่นก่อนหน้า ให้ยึดค่าตารางนี้:
 
 | ภาพทดสอบ (Test Image) | ลักษณะการตัดต่อ (Type) | ผลลัพธ์โมเดล `v1.0.0` (Production) | ผลลัพธ์โมเดล `v1.0.4` | ผลสรุปความแม่นยำ |
 |:---|:---|:---:|:---:|:---|
@@ -36,7 +36,7 @@
 
 ## 3. การวิเคราะห์ชุดข้อมูลจริง และสาเหตุปัญหาของ `v1.0.4` (Root Cause Analysis)
 
-จากการตรวจสอบชุดข้อมูลจริงใน `/run/media/panuwat/USB/dataset` ที่ใช้เทรน `v1.0.4` จำนวนรวมทั้งสิ้น **540,987 รูป** (ขนาดรวม 77.5 GB):
+จากการตรวจสอบชุดข้อมูลจริงใน `/run/media/panuwat/USB/data` (source root ตาม `--src` 默认ใน `prepare_dataset/README.md`) ที่ใช้เทรน `v1.0.4` จำนวนรวมทั้งสิ้น **540,987 รูป** (ขนาดรวม 77.5 GB):
 
 | ชุดข้อมูล (Dataset) | ภาพที่ใช้ Train | ภาพที่ใช้ Val | รวมภาพทั้งหมด | ขนาดในดิสก์ | สัดส่วนใน Train Set (%) |
 |:---|:---:|:---:|:---:|:---:|:---:|
@@ -51,7 +51,7 @@
 ### สาเหตุที่ทำให้ `v1.0.4` ด้อยกว่า `v1.0.0`
 1. **สัดส่วนภาพตัดต่อของมนุษย์น้อยเกินไป (Imbalanced Sampling):**
    - CASIA 2.0 มีสัดส่วนเพียง **2.33%** ของชุดข้อมูลทั้งหมด ทำให้โมเดลเห็นภาพตัดต่อแบบของจริงน้อยมาก
-2. **การเทรนยาวนานเกินจุดอิ่มตัว (500,000 Iterations):**
+2. **การเทรนยาวนานเกินจุดอิ่มตัว (495,000 iterations — checkpoint `best_mIoU_iter_495000.pth`; เลข 500,000 เดิมคือจำนวนรอบโดยประมาณ):**
    - ส่งผลให้เกิด **Catastrophic Forgetting** โมเดลถูกเขียนทับด้วย Noise รูปแบบสังเคราะห์ของ Defacto จนกลายเป็นโมเดลที่ Conservative เกินไป ไม่กล้าทายคลาส Forgery
 3. **การขาด Class Weights ใน Loss Function:**
    - ใช้ CrossEntropy แบบปกติ ทำให้โมเดลเลือกทายพื้นหลังเป็นหลักเพื่อลด Loss
@@ -68,7 +68,7 @@
 | `v1.0.1` | `segformer_mit-b2-v3.py` | Defacto Inpainting | Fine-tune ต่อจาก v1.0.0 เพื่อเรียนรู้ Inpainting |
 | `v1.0.2` | `segformer_mit-b2-v5.py` | CASIA 2.0 + Defacto | Fine-tune ต่อจาก v1.0.0 (ชุดโฟลเดอร์เดิม) |
 | `v1.0.3` | `segformer_mit-b2-v5.py` | CASIA 2.0 + Defacto | Fine-tune ต่อจาก v1.0.0 (ปรับปรุงโครงสร้างโฟลเดอร์) |
-| `v1.0.4` | `segformer_mit-b2-v7.py` | รวม 6 ชุดข้อมูล (540k รูป) | เทรนยาว 500,000 iters แต่สัดส่วน CASIA น้อยเกินไปจนเกิด Forgetting |
+| `v1.0.4` | `segformer_mit-b2-v7.py` | รวม 6 ชุดข้อมูล (540k รูป) | เทรนยาว 495,000 iters แต่สัดส่วน CASIA น้อยเกินไปจนเกิด Forgetting |
 | **`v1.0.5 (v8)`** | `segformer_mit-b2-v8.py` | Balanced Multi-Dataset | **[พร้อมเทรน]** Fine-tune จาก v1.0.0, CASIA x5, Class Weight `[1.0, 2.5]`, 100k iters |
 | **`v2.0.0 (v9)`** | `segformer_mit-b2-v9.py` | Balanced Multi-Dataset | **[พร้อมเทรน]** ปรับแต่งสำหรับ VRAM 8 GB, Batch Size 16, Linear LR 2e-5, 120k iters |
 

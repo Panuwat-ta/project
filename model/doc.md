@@ -22,7 +22,7 @@
 │   │       └── *_dynamic.onnx (+ .data)
 │   ├── report/               # รายงาน + สคริปต์พล็อต
 │   │   ├── reportmodel.md    # สรุปผล/benchmark/root-cause ทุกรุ่น
-│   │   ├── plot_training.py  # พล็อต log v1.0.0-v1.0.4 (รันด้วย /tmp/plotvenv)
+│   │   ├── plot_training.py  # พล็อต log v1.0.0-v1.0.4 (รันด้วย `model/segformer/.venv/bin/python`)
 │   │   └── figs/             # PNG ที่ส่งออก
 │   ├── tests_model/img/      # ภาพตัวอย่างทดสอบ (test.jpg) + test.sh
 │   ├── prepare_dataset/          # pipeline เดียว: clean_dataset.py + README
@@ -48,5 +48,5 @@
 2. **จัดการข้อมูล:** รัน `prepare_dataset/clean_dataset.py` (ดู `prepare_dataset/README.md`) แปลงดิบจาก USB เป็น clean ใน `~/Pictures/dataset`
 3. **ปรับแต่ง:** แก้ไฟล์ใน `configs/` (num_classes=2, dataloader paths, LR แยก backbone/head)
 4. **สอนโมเดล (Train):** รัน `./train.sh [--load-from <pth> | --no-load]` (auto-versioning ไป `work_dirs/vX.Y.Z/`)
-5. **ทดสอบ:** รัน `./tests_model/test.sh` หรือ `python predict_test.py --checkpoint ... --image ...` ดู heatmap
+5. **ทดสอบ:** (เมื่อ cwd คือ `model/segformer/`) รัน `./tests_model/test.sh` หรือ `python predict_test.py --checkpoint ... --image ...` ดู heatmap
 6. **นำไปใช้งาน (Deploy):** export ด้วย `export_onnx_dynamic.py` แล้วชี้ `ONNX_MODEL_PATH` ใน `server/.env` ไปที่ `.onnx` ตัวใหม่

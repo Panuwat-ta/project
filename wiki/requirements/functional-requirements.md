@@ -10,85 +10,90 @@ updated: 2026-08-02
 
 ความสามารถหลักที่ระบบต้องทำได้ จัดกลุ่มตามผู้ใช้และระบบย่อย
 
+> **ชื่อผลิตภัณฑ์:** ScamGuard (ชื่อเต็ม: Scam Image Detection — แอปตรวจสอบรูปภาพตัดต่อเพื่อป้องกันการหลอกลวง)
+
+> **Canonical catalog:** `Document/docs/05_Software_Requirement_Specification.md` (FR/NFR/AC), `06_Requirement_Traceability.md`, `07_Appendix_A_Full_Traceability_Matrix.md`, `04_Requirement_Candidates.md` (RC) — ไฟล์นี้ใช้เลขชุดเดียวกับ Document; ID กลุ่ม `FR-INPUT/FR-SYS/FR-REPORT/FR-HIST/FR-RPT/FR-ADM/FR-AUDIT/FR-SHARE/FR-SET` เป็น test-scheme ฝั่ง wiki (baseline งานทดสอบใน `tests_all/rtm.md`) โดยแต่ละข้อมี canonical mapping กำกับไว้
+
 ---
 
 ## ฟังก์ชันฝั่งผู้ใช้ (Mobile App)
 
-### การยืนยันตัวตน (Authentication)
+### การยืนยันตัวตน (Authentication) — canonical: FR-AUTH-01..04 (Document 05 §2.1)
 
-- **FR-AUTH-01:** ผู้ใช้สมัครสมาชิกด้วย Email/Password ได้
-- **FR-AUTH-02:** ผู้ใช้เข้าสู่ระบบด้วย Email/Password + JWT ได้
-- **FR-AUTH-03:** (Phase 2) ผู้ใช้เข้าสู่ระบบด้วย Google OAuth
-- **FR-AUTH-04:** โทเค็นเซสชั่นเก็บอย่างปลอดภัยในเครื่อง (Secure Storage)
-- **FR-AUTH-05:** ผู้ใช้ออกจากระบบ (Logout) เพื่อล้างค่าเซสชั่นได้
+- **FR-AUTH-01:** ผู้ใช้สมัครสมาชิกด้วย Email/Password ได้ (→ Document FR-AUTH-01)
+- **FR-AUTH-02:** ผู้ใช้เข้าสู่ระบบด้วย Email/Password + JWT ได้; โทเค็นเก็บใน Secure Storage ของเครื่อง (Secure Storage = Document FR-AUTH-02 AC-4)
+- **FR-AUTH-03:** ผู้ใช้ต่ออายุ Access Token ด้วย Refresh Token ได้ (→ Document FR-AUTH-03)
+- **FR-AUTH-04:** ผู้ใช้ออกจากระบบ (Logout) เพื่อล้างค่าเซสชั่นได้ (→ Document FR-AUTH-04; รวมเพิกถอน Refresh Token ฝั่ง server ภายใน 60 วินาที)
+- **FR-AUTH-06:** (Phase 2 backlog, RC-AUTH-06 deferred — ไม่ใช่ baseline v1) ผู้ใช้เข้าสู่ระบบด้วย Google OAuth (canonical FR-AUTH-03 = ต่ออายุ Token ตาม Document/docs/05)
 
-### การรับภาพ (Image Input)
+> Alias ประวัติ: test-scheme เดิมเรียก Secure Storage+Refresh ว่า FR-AUTH-04 และ Logout ว่า FR-AUTH-05 — ยุบ/ย้ายเป็น FR-AUTH-02/03/04 ตาม Document แล้ว (TC ที่เคยอ้างเลขเก่าอัปเดตตามใน `tests_all/rtm.md` และ `tests_all/manual_tests/`)
 
-- **FR-INPUT-01:** ผู้ใช้เลือกรูปจากคลังภาพ (Gallery) ในเครื่องได้
-- **FR-INPUT-02:** ผู้ใช้ปรับขนาดและครอบตัด (Crop) ภาพก่อนส่งได้ เพื่อเน้นจุดสนใจ
-- **FR-INPUT-03:** แอปอัปโหลดภาพผ่าน Multipart HTTP เพื่อส่งไปวิเคราะห์
-- **FR-INPUT-04:** แอปตรวจสอบประเภท/ขนาดไฟล์ก่อนอัปโหลด (jpg/jpeg/png/webp; Mobile ≤ 10MB / API Server ≤ 20MB; decode แล้ว ≤ 100M พิกเซล)
-- **FR-INPUT-05:** ระบบคำนวณ SHA-256 Hash และค้นหาผลจาก Redis Cache (Cache Hit ตอบกลับ ≤ 3 วินาที; Miss เข้า Full inference P50 ≤ 15s)
+### การรับภาพ (Image Input) — test-scheme (canonical: Document FR-SCAN-01/02/03)
 
-### การแสดงรายงานความเสี่ยง (Risk Report Display)
+- **FR-INPUT-01:** ผู้ใช้เลือกรูปจากคลังภาพ (Gallery) ในเครื่องได้ (→ FR-SCAN-01)
+- **FR-INPUT-02:** ผู้ใช้ปรับขนาดและครอบตัด (Crop) ภาพก่อนส่งได้ เพื่อเน้นจุดสนใจ (→ FR-SCAN-01)
+- **FR-INPUT-03:** แอปอัปโหลดภาพผ่าน Multipart HTTP เพื่อส่งไปวิเคราะห์ (→ FR-SCAN-02)
+- **FR-INPUT-04:** แอปตรวจสอบประเภท/ขนาดไฟล์ก่อนอัปโหลด (jpg/jpeg/png/webp; Mobile ≤ 10MB / API Server ≤ 20MB; decode แล้ว ≤ 100M พิกเซล; trace → SRS FR-02) (→ FR-SCAN-02)
 
-- **FR-REPORT-01:** แอปแสดงคะแนนความเสี่ยงรวม Overall Risk Score (0-100) พร้อม Color Badge 3 ระดับ (Low/Medium/High)
-- **FR-REPORT-02:** แอปแสดงภาพ Heatmap ซ้อนทับรูปจริง
-- **FR-REPORT-03:** ผู้ใช้กดเปิด/ปิด (Toggle) ภาพ Heatmap ซ้อนทับได้
-- **FR-REPORT-04:** แอปแสดงคะแนนความเสี่ยงแยกย่อยแต่ละชั้น (Textual, Source, Visual)
-- **FR-REPORT-05:** แอปแสดงคำที่เข้าข่ายน่าสงสัย/หลอกลวง (ถ้าพบโดยโมดูล OCR/NLP)
-- **FR-REPORT-06:** แอปแสดงผล Source Verification (จำนวนเว็บไซต์ที่พบภาพเดียวกัน)
+### การแสดงรายงานความเสี่ยง (Risk Report Display) — test-scheme (canonical: Document FR-XAI-01 + FR-ANALYSIS-04)
 
-### ประวัติการสแกน (Scan History)
+- **FR-REPORT-01:** แอปแสดงคะแนนความเสี่ยงรวม Overall Risk Score (0-100) พร้อม Color Badge 3 ระดับ (Low/Medium/High; เกณฑ์ตาม Document FR-ANALYSIS-04 — ดูนิยามที่ Document ที่เดียว)
+- **FR-REPORT-02:** แอปแสดงภาพ Heatmap ซ้อนทับรูปจริง (→ FR-XAI-01)
+- **FR-REPORT-03:** ผู้ใช้กดเปิด/ปิด (Toggle) ภาพ Heatmap ซ้อนทับได้ (→ FR-XAI-01)
+- **FR-REPORT-04:** แอปแสดงคะแนนความเสี่ยงแยกย่อยแต่ละชั้น (Textual, Source, Visual) (→ FR-XAI-01 AC-5)
+- **FR-REPORT-05:** แอปแสดงคำที่เข้าข่ายน่าสงสัย/หลอกลวง (ถ้าพบโดยโมดูล OCR/NLP) (→ FR-ANALYSIS-01)
+- **FR-REPORT-06:** แอปแสดงผล Source Verification (จำนวนเว็บไซต์ที่พบภาพเดียวกัน) (→ FR-ANALYSIS-03)
 
-- **FR-HIST-01:** ผู้ใช้ดูประวัติผลการสแกนย้อนหลังตามลำดับเวลาได้
-- **FR-HIST-02:** ผู้ใช้กดเปิดดูรายงานแบบละเอียดของการสแกนเก่าได้
-- **FR-HIST-03:** ผู้ใช้ลบประวัติการสแกนได้ (ทีละรายการ + ลบทั้งหมด; ลบไฟล์ original/heatmap ใน Object Storage ด้วย — ตาม PDPA Right to Delete)
+### ประวัติการสแกน (Scan History) — test-scheme (canonical: Document FR-HISTORY-01)
 
-### แจ้งรายงานหลอกลวง (Scam Reporting)
+- **FR-HIST-01:** ผู้ใช้ดูประวัติผลการสแกนย้อนหลังตามลำดับเวลาได้ (→ FR-HISTORY-01)
+- **FR-HIST-02:** ผู้ใช้กดเปิดดูรายงานแบบละเอียดของการสแกนเก่าได้ (→ FR-HISTORY-01)
+- **FR-HIST-03:** ผู้ใช้ลบประวัติการสแกนได้ (ทีละรายการ + ลบทั้งหมด; ลบไฟล์ original/heatmap ใน Object Storage ด้วย — ตาม PDPA Right to Delete) (→ FR-HISTORY-01)
 
-- **FR-RPT-01:** ผู้ใช้แจ้งยืนยันว่าผลสแกนคือการหลอกลวงจริง เพื่อส่งให้แอดมินตรวจสอบได้
+### แจ้งรายงานหลอกลวง (Scam Reporting) — test-scheme (canonical: Document FR-HISTORY-02)
 
-### การจัดการข้อมูลส่วนบุคคล (PDPA Controls)
+- **FR-RPT-01:** ผู้ใช้แจ้งยืนยันว่าผลสแกนคือการหลอกลวงจริง เพื่อส่งให้แอดมินตรวจสอบได้ (→ FR-HISTORY-02)
 
-- **FR-PDPA-01:** แสดงหน้าความยินยอม (Consent Screen) การประมวลผลข้อมูลในครั้งแรกที่เปิดแอป
-- **FR-PDPA-02:** ผู้ใช้สามารถถอนความยินยอมในการเข้าร่วมวิจัยได้จากหน้าการตั้งค่าตลอดเวลา
-- **FR-PDPA-03:** หากถอนความยินยอม ระบบต้องลบภาพของผู้ใช้ออกจาก Dataset ของงานวิจัย
+### การแชร์ผลลัพธ์ (Result Sharing) — test-scheme ฝั่ง wiki (ไม่มี FR แยกใน Document; อยู่ใต้ FR-HISTORY-02/FR-08 มุมมอง coarse)
 
----
+- **FR-SHARE-01:** ผู้ใช้แชร์ภาพผลลัพธ์/คำเตือนความเสี่ยงไปยังแอปพลิเคชันภายนอกได้ (trace → SRS BR-07/FR-08; หลักฐาน 02 SC01 §5; GAP: ยังไม่มี TC)
 
-## ฟังก์ชันฝั่งแอดมิน (Admin Portal)
+### การจัดการข้อมูลส่วนบุคคล (PDPA Controls) — test-scheme (canonical: Document FR-PDPA-01)
 
-- **FR-ADM-01:** แอดมินดูสถิติภาพรวมระบบ (จำนวนการสแกน, สถิติความแม่นยำ, ยอดใช้งาน) ได้
-- **FR-ADM-02:** แอดมินตรวจสอบรายการ Scam Report จากผู้ใช้ และอนุมัติ/ปัดตก ได้
-- **FR-ADM-03:** แอดมิน Export ภาพ Scam ที่ถูกยืนยันแล้ว ไปทำ Dataset ได้
-- **FR-ADM-04:** แอดมินอัปโหลดไฟล์น้ำหนัก AI Model ล่าสุด และสั่ง Deploy ได้
-- **FR-ADM-05:** แอดมินจัดการบัญชีผู้ใช้งาน (ดูข้อมูล, แบนผู้ใช้) ได้
-- **FR-ADM-06:** แอดมินดู Audit Logs ได้ (append-only; ทุก action สำคัญของผู้ดูแลระบบถูกบันทึกเพื่อตรวจสอบย้อนหลัง)
-
-### การตรวจสอบย้อนหลัง (Audit)
-
-- **FR-AUDIT-01:** ระบบบันทึกกิจกรรมของผู้ดูแลระบบลง Audit Log แบบ Append-only (แยกจาก FR-SYS-10 ซึ่งคือ FCM Push Notification)
+- **FR-PDPA-01:** แสดงหน้าความยินยอม (Consent Screen) การประมวลผลข้อมูลในครั้งแรกที่เปิดแอป (→ Document FR-PDPA-01)
+- **FR-PDPA-02:** ผู้ใช้สามารถถอนความยินยอมในการเข้าร่วมวิจัยได้จากหน้าการตั้งค่าตลอดเวลา (→ Document FR-PDPA-01 AC-3)
+- **FR-PDPA-03:** หากถอนความยินยอม ระบบต้องลบภาพ/ข้อมูลของผู้ใช้ออกจาก Research Dataset ภายใน 72 ชม. (→ Document FR-PDPA-01; retention 1 ปี = RC-PDPA-04 deferred Phase 2)
 
 ---
 
-## ฟังก์ชันระบบอัตโนมัติ (Backend / AI)
+## ฟังก์ชันฝั่งแอดมิน (Admin Portal) — test-scheme (canonical: Document FR-ADMIN-01..04)
 
-- **FR-SYS-01:** ระบบดึงข้อมูล EXIF Metadata ออกจากรูปที่อัปโหลด
-- **FR-SYS-02:** ระบบสกัดข้อความ (OCR) รองรับภาษาไทยและอังกฤษ
-- **FR-SYS-03:** ระบบตรวจจับคำหลอกลวงหรือคีย์เวิร์ดเฝ้าระวังด้วย NLP
-- **FR-SYS-04:** ระบบสแกนหาที่มาภาพย้อนกลับด้วย Google Vision API
-- **FR-SYS-05:** ระบบตรวจสอบร่องรอยการดัดแปลงภาพระดับพิกเซลด้วย Deep Learning (SegFormer)
-- **FR-SYS-06:** ระบบคัดกรองรูปภาพที่สร้างจาก AI ด้วย Classifier
-- **FR-SYS-07:** ระบบประมวลผลคะแนนความเสี่ยงรวม Overall Risk Score ด้วยสูตร Hybrid Worst-Case Trigger พร้อม Multi-Factor Breakdown
-- **FR-SYS-08:** ระบบจำลองภาพ Heatmap
-- **FR-SYS-09:** ระบบเก็บผลสแกนลง Cache (Redis) เพื่อตอบกลับคำขอที่ซ้ำกันให้เร็วขึ้น
-- **FR-SYS-10:** ระบบยิง FCM Push Notification แจ้งเตือนเมื่อประมวลผลแบบเบื้องหลัง (Async) เสร็จ
+- **FR-ADM-01:** แอดมินดูสถิติภาพรวมระบบ (จำนวนการสแกน, สถิติความแม่นยำ, ยอดใช้งาน) ได้ (→ FR-ADMIN-01)
+- **FR-ADM-02:** แอดมินตรวจสอบรายการ Scam Report จากผู้ใช้ และอนุมัติ/ปัดตก ได้ (→ FR-ADMIN-02)
+- **FR-ADM-03:** แอดมิน Export ภาพ Scam ที่ถูกยืนยันแล้ว ไปทำ Dataset ได้ (→ FR-ADMIN-02 AC-3)
+- **FR-ADM-04:** แอดมินอัปโหลดไฟล์น้ำหนัก AI Model ล่าสุด และสั่ง Deploy ได้ (→ FR-ADMIN-03; อัปโหลดไฟล์ = Phase 2, v1 วางไฟล์บน server แล้ว deploy ผ่าน API)
+- **FR-ADM-05:** แอดมินจัดการบัญชีผู้ใช้งาน (ดูข้อมูล, แบนผู้ใช้) ได้ (→ FR-ADMIN-01; เปลี่ยนสถานะเท่านั้น ห้าม hard-delete)
+- **FR-ADM-06:** → ดู **FR-AUDIT-01** (ID เดียวสำหรับ Audit Log; ยุบรวมกันแล้ว ไม่นิยามซ้ำ) (→ FR-ADMIN-04)
+
+### การตรวจสอบย้อนหลัง (Audit) — test-scheme (canonical: Document FR-ADMIN-04)
+
+- **FR-AUDIT-01:** ระบบบันทึกกิจกรรมของผู้ดูแลระบบลง Audit Log แบบ Append-only (แยกจาก FR-SYS-10 ซึ่งคือการแจ้งเตือน; FCM push = Phase 2) (→ FR-ADMIN-04)
 
 ---
 
-> [!NOTE]
-> หน้านี้มาจากการนำเข้า (Ingest) ข้อมูลเบื้องต้นจาก `Document/srs.md` และ `Document/Use-Case-Diagram.md` แหล่งข้อมูล SRS ฉบับเต็มมีความยาวถึง 571 บรรทัด มีข้อมูล FR และ Priority ที่ละเอียดกว่า การนำเข้าให้ครบทุกส่วนจะทำให้หน้านี้สมบูรณ์มากขึ้น
+## ฟังก์ชันระบบอัตโนมัติ (Backend / AI) — test-scheme (canonical: Document FR-SCAN/FR-ANALYSIS/FR-XAI)
+
+- **FR-SYS-01:** ระบบดึงข้อมูล EXIF Metadata ออกจากรูปที่อัปโหลด (→ RC-ANALYSIS-06 แสดงผลเท่านั้น ไม่ใช้คำนวณ Risk; ไม่มี FR แยกใน Document)
+- **FR-SYS-02:** ระบบสกัดข้อความ (OCR) รองรับภาษาไทยและอังกฤษ (→ FR-ANALYSIS-01)
+- **FR-SYS-03:** ระบบตรวจจับคำหลอกลวงหรือคีย์เวิร์ดเฝ้าระวังด้วย NLP (→ FR-ANALYSIS-01)
+- **FR-SYS-04:** ระบบสแกนหาที่มาภาพย้อนกลับด้วย Google Vision API (→ FR-ANALYSIS-03)
+- **FR-SYS-05:** ระบบตรวจสอบร่องรอยการดัดแปลงภาพระดับพิกเซลด้วย Deep Learning (SegFormer) (→ FR-ANALYSIS-02)
+- **FR-SYS-06:** ระบบคัดกรองรูปภาพที่สร้างจาก AI ด้วย Classifier (→ FR-ANALYSIS-02)
+- **FR-SYS-07:** ระบบประมวลผลคะแนนความเสี่ยงรวม Overall Risk Score พร้อม Multi-Factor Breakdown (สูตร/เกณฑ์ตาม Document FR-ANALYSIS-04 — ดูนิยามที่ Document ที่เดียว)
+- **FR-SYS-08:** ระบบสร้างภาพ Heatmap แบบ mask-to-heatmap overlay (→ FR-XAI-01)
+- **FR-SYS-09:** ระบบคำนวณ SHA-256 Hash ของภาพและเก็บผลสแกนลง Cache (Redis, TTL 30 วัน) เพื่อตอบกลับคำขอที่ซ้ำกันให้เร็วขึ้น (เป้าหมายเวลา: NFR-01; ยุบรวม FR-INPUT-05 แล้ว — ไม่นิยามซ้ำ) (→ FR-SCAN-03)
+- **FR-SYS-10:** ระบบแจ้งเตือนแบบ in-app/polling ภายใน 60 วินาทีเมื่อประมวลผลเบื้องหลัง (Async) เสร็จ (FCM push = Phase 2, RC-NOTIFY deferred; ไม่มี FR แยกใน Document)
+- **FR-SYS-11:** ระบบสร้างคำอธิบายภาษาไทยประกอบ Heatmap ด้วย Qwen2.5-1.5B (XAI; trace → Document FR-XAI-01 AC-1)
 
 ---
 
