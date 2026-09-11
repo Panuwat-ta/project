@@ -333,9 +333,9 @@ $$
 | :--- | :--- | :--- |
 | `/auth/register` | POST | สมัครสมาชิก |
 | `/auth/login` | POST | เข้าสู่ระบบ (รับ JWT Token) |
-| `/scans/upload` | POST | อัปโหลดรูปภาพเพื่อตรวจสอบ |
-| `/scans/{id}` | GET | ดึงผลการตรวจสอบ |
-| `/scans/history` | GET | ดูประวัติการสแกน |
+| `/scan/` | POST | อัปโหลดรูปภาพเพื่อตรวจสอบ |
+| `/scan/{id}` | GET | ดึงผลการตรวจสอบ |
+| `/history` | GET | ดูประวัติการสแกน |
 | `/reports` | POST | รายงานภาพหลอกลวง |
 | `/admin/dashboard` | GET | สถิติระบบ (Admin only) |
 

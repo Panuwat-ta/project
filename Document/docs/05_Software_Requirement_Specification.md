@@ -478,7 +478,7 @@ Acceptance Criteria:
 **Acceptance Criteria:**
 
 **AC-1: แสดงประวัติการสแกน**
-- **Input:** GET /scans/history?user_id={user_id}
+- **Input:** GET /history?user_id={user_id}
 - **Processing:** 
   - ดึงข้อมูลจากฐานข้อมูล
   - เรียงตามวันที่ล่าสุดก่อน (DESC)
@@ -486,26 +486,26 @@ Acceptance Criteria:
 - **Expected Output:** HTTP 200, Response Body: `{scans: [{scan_id, thumbnail_url, created_at, risk_score, risk_grade}, ...], total, page, limit}`
 
 **AC-2: ค้นหาตามช่วงวันที่**
-- **Input:** GET /scans/history?start_date=2026-01-01&end_date=2026-01-31
+- **Input:** GET /history?start_date=2026-01-01&end_date=2026-01-31
 - **Processing:** กรองข้อมูลตาม created_at
 - **Expected Output:** HTTP 200, เฉพาะ scans ที่อยู่ในช่วงวันที่
 
 **AC-3: กรองตามระดับความเสี่ยง**
-- **Input:** GET /scans/history?risk_grade=High
+- **Input:** GET /history?risk_grade=High
 - **Processing:** กรองข้อมูลตาม risk_grade
 - **Expected Output:** HTTP 200, เฉพาะ scans ที่ risk_grade = "High"
 
 **AC-4: ลบประวัติทีละรายการ**
-- **Input:** DELETE /scans/{scan_id}
+- **Input:** DELETE /history/{scan_id}
 - **Processing:** 
   - แสดง Confirmation Dialog
   - ผู้ใช้ยืนยัน
   - ลบข้อมูลจาก Database
   - ลบไฟล์จาก Object Storage (original.jpg, heatmap.jpg)
-- **Expected Output:** HTTP 204 (No Content)
+- **Expected Output:** HTTP 200, `{message: "Scan deleted successfully"}` (ตรงกับ code)
 
 **AC-5: ลบประวัติทั้งหมด**
-- **Input:** DELETE /scans/all?user_id={user_id}
+- **Input:** DELETE /history (implement แล้ว มติ DOC-07/1B — ตรงกับที่ mobile เรียกอยู่)
 - **Processing:** 
   - แสดง Confirmation Dialog 2 ครั้ง
   - ผู้ใช้ยืนยัน
@@ -622,8 +622,8 @@ Acceptance Criteria:
 - **Processing:** ค้นหาตาม email หรือ full_name
 - **Expected Output:** HTTP 200, รายการผู้ใช้ที่ตรงกัน
 
-**AC-4: เปลี่ยนบทบาทผู้ใช้**
-- **Input:** PUT /admin/users/{user_id}/role, Body: `{role: "researcher"}`
+**AC-4: เปลี่ยนบทบาทผู้ใช้ — GAP ยังไม่ implement (เจอตอน DOC-07)**
+- **สถานะ:** code ปัจจุบันมีแค่ `PATCH /admin/users/{user_id}` สำหรับเปิด/ปิดบัญชี (is_active + reason) ยังไม่มี endpoint เปลี่ยน role — ต้องเปิดงาน follow-up (implement หรือตัดเป็น Phase 2)
 - **Processing:** 
   - ตรวจสอบสิทธิ์ Admin
   - อัปเดต role (อนุญาตเฉพาะ user / researcher / admin; ถ้าส่งบทบาทอื่นต้อง HTTP 400)
@@ -631,7 +631,7 @@ Acceptance Criteria:
 - **Expected Output:** HTTP 200, `{user_id, role: "researcher"}`
 
 **AC-5: เปลี่ยนสถานะผู้ใช้**
-- **Input:** PUT /admin/users/{user_id}/status, Body: `{status: "inactive"}`
+- **Input:** PATCH /admin/users/{user_id}, Body: `{is_active: false, reason: "..."}`
 - **Processing:** 
   - อัปเดต status
   - บันทึก Audit Log
@@ -658,14 +658,14 @@ Acceptance Criteria:
 - **Expected Output:** HTTP 200, Response Body: `{reports: [{report_id, scan_id, user_id, category, description, status, created_at}, ...], total}`
 
 **AC-2: เปลี่ยนสถานะเป็น Reviewing**
-- **Input:** PUT /admin/reports/{report_id}/status, Body: `{status: "reviewing"}`
+- **Input:** POST /admin/reports/{report_id}/review, Body: `{version: 1}`
 - **Processing:** 
   - อัปเดต status = "reviewing"
   - บันทึก Audit Log
 - **Expected Output:** HTTP 200, `{report_id, status: "reviewing"}`
 
 **AC-3: อนุมัติรายงาน (Approve)**
-- **Input:** PUT /admin/reports/{report_id}/approve
+- **Input:** PATCH /admin/reports/{report_id}, Body: `{status: "approved", version: 2}`
 - **Processing:** 
   - อัปเดต status = "approved"
   - นำเข้า Dataset: คัดลอกไฟล์ภาพจาก Object Storage ไปยัง Dataset Storage พร้อมเพิ่ม Label
@@ -673,7 +673,7 @@ Acceptance Criteria:
 - **Expected Output:** HTTP 200, `{report_id, status: "approved"}`
 
 **AC-4: ปฏิเสธรายงาน (Reject) พร้อมเหตุผล**
-- **Input:** PUT /admin/reports/{report_id}/reject, Body: `{admin_note: "ภาพนี้ไม่ใช่ภาพหลอกลวง"}`
+- **Input:** PATCH /admin/reports/{report_id}, Body: `{status: "rejected", version: 2, admin_note: "ภาพนี้ไม่ใช่ภาพหลอกลวง"}`
 - **Processing:** 
   - อัปเดต status = "rejected"
   - บันทึก admin_note
@@ -681,7 +681,7 @@ Acceptance Criteria:
 - **Expected Output:** HTTP 200, `{report_id, status: "rejected", admin_note: "..."}`
 
 **AC-5: ปฏิเสธการ Reject โดยไม่มีเหตุผล**
-- **Input:** PUT /admin/reports/{report_id}/reject, Body: `{admin_note: ""}`
+- **Input:** PATCH /admin/reports/{report_id}, Body: `{status: "rejected", version: 2, admin_note: ""}`
 - **Processing:** Validate admin_note
 - **Expected Output:** HTTP 400, Error Message: "Admin note is required for rejection"
 
@@ -700,16 +700,16 @@ Acceptance Criteria:
 - **Processing:** ดึงรายการโมเดลทั้งหมด
 - **Expected Output:** HTTP 200, Response Body: `{models: [{model_id, version, file_path, status, accuracy, created_at}, ...], total}`
 
-**AC-2: อัปโหลดโมเดลใหม่**
-- **Input:** POST /admin/models, Multipart: model_file (*.onnx), Body: `{version: "2.0", accuracy: 87.5}`
+**AC-2: อัปโหลดโมเดลใหม่ — Phase 2 (มติ DOC-07/2A)**
+- **สถานะ v1:** ยังไม่มี endpoint อัปโหลด ให้วางไฟล์ .onnx บน server เองแล้วสั่ง deploy ผ่าน API (AC-3) — endpoint อัปโหลดเลื่อนไป Phase 2
 - **Processing:** 
   - บันทึกไฟล์ไปยัง Object Storage
   - บันทึกข้อมูลโมเดล (status = "inactive")
   - บันทึก Audit Log
 - **Expected Output:** HTTP 201, `{model_id, version: "2.0", status: "inactive"}`
 
-**AC-3: เปิดใช้งานโมเดล (Activate)**
-- **Input:** PUT /admin/models/{model_id}/activate
+**AC-3: เปิดใช้งานโมเดล (Deploy)**
+- **Input:** POST /admin/models/{model_id}/deploy
 - **Processing:** 
   - ปิดโมเดลเก่าทั้งหมด (status = "inactive")
   - เปิดโมเดลใหม่ (status = "active")

@@ -82,7 +82,7 @@ sequenceDiagram
     participant JWT as JWT Middleware
 
     Admin->>Portal: เข้าสู่ระบบด้วย Email/Password
-    Portal->>API: POST /api/v1/auth/login
+    Portal->>API: POST /api/v1/admin/login
     API->>JWT: สร้าง JWT Token (claims: role=admin)
     JWT-->>API: access_token
     API-->>Portal: {access_token, user: {role: "admin"}}
