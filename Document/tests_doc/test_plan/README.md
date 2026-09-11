@@ -48,7 +48,7 @@
   - Image Scan Endpoint (`POST /api/v1/scan/`, GET /api/v1/scan/{id}) พร้อม Multipart Upload
   - Magic Bytes Validation และ Image File Sanitization
   - Redis Caching Mechanism (SHA-256 image hash TTL 30 วัน)
-  - Slowapi Rate Limiting (default 60/hour, admin login/refresh 5/minute) และ CORS Origin Filtering
+  - Slowapi Rate Limiting แบบ tier ต่อนาที (guest 10 / user 60 / admin 300 / POST scan 5; admin login/refresh 5/minute) และ CORS Origin Filtering
   - Admin Endpoints (`/api/v1/admin/*` ทุกเส้นบังคับ is_superadmin) พร้อมการแยกสิทธิ์ Role-Based Access Control
   - Model Version Registry (Deploy, Rollback พร้อม Database Row Lock)
   - Audit Logging ลงตารางเอกพจน์ audit_log พร้อม Structured JSON

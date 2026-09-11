@@ -714,7 +714,7 @@ Panel ผูกกับ `export_id` เดียว ดึงสถานะจ
 ### 4.8 หน้า Admin Login
 
 **Path:** `/admin/login`
-**API:** `POST /api/v1/auth/login`
+**API:** `POST /api/v1/admin/login`
 
 หน้าแรกก่อนเข้าสู่ระบบ (อ้างอิง Navigation Flow ข้อ 9) แยกจาก Layout Structure หลัก — ไม่มี Sidebar / Top Bar:
 

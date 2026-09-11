@@ -134,7 +134,7 @@ server/
 | `MAX_IMAGE_PIXELS` | จำนวนพิกเซลรูปภาพสูงสุดที่ยอมรับ (ป้องกัน Decompression Bomb) |
 | `ONNX_MODEL_PATH` | Path ไฟล์โมเดล ONNX ที่ Worker โหลดใช้งาน |
 | `ONNX_TILE_OVERLAP` | ค่า Overlap (พิกเซล) ระหว่าง Tile ใน Tiled Inference |
-| `RATE_LIMIT_PER_HOUR` | จำนวนครั้งสูงสุดที่เรียก API ได้ต่อชั่วโมง (60) |
+| `RATE_LIMIT_GUEST_PER_MINUTE` / `RATE_LIMIT_USER_PER_MINUTE` / `RATE_LIMIT_ADMIN_PER_MINUTE` / `RATE_LIMIT_SCAN_CREATE_PER_MINUTE` | tier ต่อนาทีแยกตาม role: guest 10 / user 60 / admin 300 / POST scan 5 (มติ DOC-02) |
 
 ---
 
@@ -343,7 +343,7 @@ CREATE INDEX idx_scam_reports_created_at ON scam_reports(created_at);
 
 ### 5.3 หมวดการรายงานสแกมเมอร์ (Report Endpoints)
 
-#### 5.3.1 POST /api/v1/report
+#### 5.3.1 POST /api/v1/reports
 แจ้งรายงานภาพหลอกลวงเข้าสู่คลิปประวัติกลางของระบบ
 * **Auth:** ต้องแนบ User JWT (Bearer Token)
 * **Request Body (JSON):**
@@ -404,6 +404,6 @@ CREATE INDEX idx_scam_reports_created_at ON scam_reports(created_at);
 
 ## 6. แนวทางปฏิบัติด้านความมั่นคงปลอดภัยและการจัดการข้อผิดพลาด (Security & Error Handling)
 
-* **การจำกัดการเรียกใช้งาน API (Rate Limiting):** กำหนดสิทธิ์ให้ผู้ใช้ทั่วไปเรียก API ในการสแกนได้สูงสุด 60 ครั้งต่อชั่วโมง เพื่อป้องกันทราฟฟิกบอทและควบคุมค่าใช้จ่ายในการ Inference บน GPU เซิร์ฟเวอร์
-* **การจัดการข้อผิดพลาดภาพเข้า (Robust Input Validation):** ตรวจเช็กขนาดและชนิดไฟล์ (Allowed: `image/jpeg`, `image/png`) หากไม่ใช่ไฟล์รูปภาพ หรือขนาดใหญ่เกิน 10MB ระบบจะปฏิเสธไฟล์ในทันทีโดยส่ง HTTP 400 Bad Request
-* **การป้องกันความเสียหายบางส่วน (Graceful Degradation):** ในกรณีที่ API เชื่อมโยงกับ Google Vision API หรือ AI Inference Node เกิดปัญหาขัดข้อง (Timeout) API Application จะยังสามารถคืนค่าสแกนโดยคำนวณคะแนนเท่าที่มีข้อมูล (เช่น อ่านข้อมูลจาก EXIF และสกัดข้อความด้วย Surya-OCR) พร้อมบันทึกสถานะข้อผิดพลาดใน Log เพื่อให้นักพัฒนาดำเนินการตรวจสอบต่อไป
+* **การจำกัดการเรียกใช้งาน API (Rate Limiting):** แบบ tier ต่อนาทีแยกตาม role (guest 10 / user 60 / admin 300 / POST scan 5 ต่อนาที, key ตาม IP) เพื่อป้องกันทราฟฟิกบอทและควบคุมค่าใช้จ่ายในการ Inference บน GPU เซิร์ฟเวอร์ (มติ DOC-02)
+* **การจัดการข้อผิดพลาดภาพเข้า (Robust Input Validation):** ตรวจเช็กขนาดและชนิดไฟล์ (Allowed: `image/jpeg`, `image/png`) หากไม่ใช่ไฟล์รูปภาพ หรือขนาดใหญ่เกิน 20MB ระบบจะปฏิเสธไฟล์ในทันทีโดยส่ง HTTP 413 (mobile ตรวจ 10MB ฝั่ง client — มติ DOC-03)
+* **การป้องกันความเสียหายบางส่วน (Graceful Degradation):** ในกรณีที่ API เชื่อมโยงกับ Google Vision API หรือ AI Inference Node เกิดปัญหาขัดข้อง (Timeout) API Application จะยังสามารถคืนค่าสแกนโดยคำนวณคะแนนจากมิติที่สำเร็จ (ตัดมิติที่ล้มเหลวทิ้ง — EXIF สกัดไว้แสดงผลเท่านั้น ไม่ร่วมคำนวณคะแนน) พร้อมบันทึกสถานะข้อผิดพลาดใน Log เพื่อให้นักพัฒนาดำเนินการตรวจสอบต่อไป

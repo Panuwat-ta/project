@@ -65,7 +65,7 @@
 * `POST /api/v1/auth/login` - ล็อกอินเพื่อรับ JWT Token
 * `POST /api/v1/scan` - อัปโหลดรูปภาพเพื่อตรวจหาการหลอกลวง
 * `GET /api/v1/scan/{id}` - ดูผลลัพธ์การสแกนย้อนหลัง
-* `POST /api/v1/report` - ส่งรายงานรูปภาพหลอกลวง
+* `POST /api/v1/reports` - ส่งรายงานรูปภาพหลอกลวง
 * `POST /api/v1/admin/train` - แอดมินสั่งเทรนโมเดลเพิ่มเติม (Incremental Training)
 
 ---

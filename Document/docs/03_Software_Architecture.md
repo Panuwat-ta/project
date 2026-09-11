@@ -41,7 +41,7 @@
 
 **External Systems:**
 - **Reverse Image Search Provider** — Google Vision API / Bing Visual Search สำหรับค้นหาแหล่งที่มาของภาพ
-- **Push Notification Service** — Firebase Cloud Messaging (FCM) สำหรับส่งการแจ้งเตือนแบบ Async
+- **Push Notification Service** — Firebase Cloud Messaging (FCM) สำหรับส่งการแจ้งเตือนแบบ Async (Phase 2; v1 ใช้ polling + in-app)
 
 ### 2.2 System Context Diagram
 
@@ -64,7 +64,7 @@ flowchart TD
         
         ExtSearch("Reverse Image Search<br>[External System]<br>Google Vision API")
         
-        ExtNotify("Push Notification<br>[External System]<br>Firebase FCM")
+        ExtNotify("Push Notification (Phase 2)<br>[External System]<br>Firebase FCM")
 
         %% Relationships
         User -- "1. อัปโหลดรูปภาพ<br>2. เรียกดูผลวิเคราะห์" --> System
@@ -106,7 +106,7 @@ flowchart TD
 7. **Main Database (PostgreSQL)** — ฐานข้อมูลหลักเชิงสัมพันธ์
 
 #### **External Services**
-8. **Push Notification Service (FCM)** — ส่งการแจ้งเตือน
+8. **Push Notification Service (FCM, Phase 2)** — ส่งการแจ้งเตือน
 9. **Reverse Image Search (Google Vision API)** — ค้นหาแหล่งที่มาของภาพ
 
 ### 3.2 Container Diagram
@@ -144,7 +144,7 @@ flowchart TB
     end
 
     subgraph Externals [External Services]
-        PushService("FCM<br>[External]")
+        PushService("FCM (Phase 2)<br>[External]")
         ReverseSearch("Google Vision<br>[External]")
     end
 
@@ -214,7 +214,7 @@ flowchart TB
 **Main Modules:**
 1. Authentication & Authorization
 2. Dashboard & Analytics
-3. User Management (CRUD)
+3. User Management (Read/Update — ดู + เปิด/ปิดบัญชี, ไม่มีสร้าง/ลบบัญชี)
 4. Report Management
 5. Model Management
 6. Audit Logs Viewer
@@ -362,10 +362,10 @@ flowchart TB
 
 ### 4.8 External Services
 
-#### 4.8.1 Push Notification Service (FCM)
+#### 4.8.1 Push Notification Service (FCM) — Phase 2 (v1 ใช้ polling + in-app)
 
 **Service:** Firebase Cloud Messaging  
-**Purpose:** ส่งการแจ้งเตือนไปยังแอปมือถือเมื่อการประมวลผลเสร็จสิ้น
+**Purpose:** ส่งการแจ้งเตือนไปยังแอปมือถือเมื่อการประมวลผลเสร็จสิ้น (เริ่ม Phase 2; มติ DOC-06, 2026-09-11)
 
 **Use Cases:**
 - การวิเคราะห์เสร็จสิ้น (Analysis Complete)
@@ -418,7 +418,7 @@ flowchart TB
         ↓
 [Store Results (PostgreSQL + Object Storage)]
         ↓
-[Send Notification (FCM)]
+[Send Notification (in-app/polling; FCM Phase 2)]
         ↓
 [User Views Result]
 ```
@@ -470,7 +470,7 @@ S_visual = Normalize(Confidence × Coverage)
 1. ส่งรูปภาพไป Google Vision API (Web Detection)
 2. รับรายการแหล่งที่มาที่คล้ายกัน (Similar URLs)
 3. วิเคราะห์บริบทของแหล่งที่มา:
-   - จำนวนแหล่งที่พบ (พบ ≥ 3 แหล่ง = เสี่ยงสูง, พบ ≤ 1 แหล่ง = เสี่ยงต่ำ)
+   - จำนวนแหล่งที่พบ (พบ ≥ 3 แหล่ง = เสี่ยงสูง, พบ = 2 แหล่ง = เสี่ยงปานกลาง, พบ ≤ 1 แหล่ง = เสี่ยงต่ำ)
    - ประเภทเว็บไซต์ (สื่อสังคมออนไลน์, เว็บข่าว, เว็บหลอกลวง)
    - ความเก่าของภาพ (ภาพเก่า > 1 ปี = เสี่ยง)
 4. คำนวณ Source Risk Score (0-100)
@@ -638,7 +638,7 @@ flowchart TB
 เป็นหัวใจหลักของแอปพลิเคชัน ทำหน้าที่ประมวลผลตามกฎทางธุรกิจ (Business Rules)
 
 **Components:**
-- **Scan Service:** ควบคุมขั้นตอนการตรวจสอบภาพทั้งหมด เริ่มตั้งแต่เช็ค Cache, สกัด EXIF, และคำนวณ Hybrid max+bonus Risk Score
+- **Scan Service:** ควบคุมขั้นตอนการตรวจสอบภาพทั้งหมด เริ่มตั้งแต่เช็ค Cache, สกัด EXIF (แสดงผลเท่านั้น), และคำนวณ Hybrid max+bonus Risk Score
 - **Inference Coordinator:** ตัวประสานงานระหว่าง Backend กับ AI Model ทำหน้าที่จัดคิวรูปภาพและส่งคำสั่งไปให้ ONNX Worker
 - **Auth Service:** จัดการการเข้ารหัสผ่าน (Hashing) และออก JWT Token
 - **Admin Service:** ประมวลผลคำสั่ง Admin (User Management, Model Management)
@@ -804,7 +804,7 @@ sequenceDiagram
 | **Storage** | Cache | Redis | Image hash caching |
 | **Storage** | Object Storage | Cloud Storage (S3/GCS) | Image & heatmap files |
 | **Storage** | Database | PostgreSQL | Relational data |
-| **External** | Notification | Firebase Cloud Messaging | Push notifications |
+| **External** | Notification | Firebase Cloud Messaging (Phase 2) | Push notifications |
 | **External** | Image Search | Google Vision API | Reverse image search |
 
 **Evidence:**
@@ -827,7 +827,7 @@ sequenceDiagram
 - Role-Based Access Control (RBAC)
   - General User: Read own data, Create scans, Report images
   - Researcher: เข้าถึงข้อมูลเพื่อการวิจัย
-  - Admin: Full CRUD, Review reports, Manage users (Phase 2 สำหรับ Moderator/Viewer)
+  - Admin: Read/Update users (ดู + เปิด/ปิดบัญชี), Review reports, Manage users (Phase 2 สำหรับ Moderator/Viewer)
 
 **Evidence:**
 - File: project/Document/srs-doc.md
@@ -860,14 +860,18 @@ sequenceDiagram
 
 ### 9.3 API Security
 
-**Rate Limiting:**
-- Default: 60 requests/hour ต่อ IP/ผู้ใช้
-- การแบ่ง tier (Guest/Admin) เป็นแผนพัฒนาเพิ่มเติมในอนาคต
+**Rate Limiting (tiered ต่อนาที แยกตาม role — มติ DOC-02, 2026-09-11, implement แล้วใน `server/app/core/rate_limit.py`):**
+- Guest (public endpoints: register/login/refresh): 10 requests/minute ต่อ IP
+- Authenticated User (scan/history/reports/me/logout): 60 requests/minute ต่อ IP
+- Admin (`/admin/*`): 300 requests/minute ต่อ IP
+- `POST /api/v1/scan/`: 5 requests/minute (อัปโหลดภาพต้นทุนสูง)
+- Login/Refresh ฝั่ง user: 10 requests/minute (อยู่ใน guest tier); ฝั่ง admin (`/admin/login`, `/admin/refresh`): 5 requests/minute (กัน brute-force)
+- Key: IP address (`get_remote_address`); ตอบ HTTP 429 เมื่อเกิน
 
 **Input Validation:**
 - File Type Check (MIME type validation)
-- File Size Limit (Max 10 MB)
-- Image Dimension Limit (Max 4096×4096)
+- File Size Limit (Mobile 10 MB client-side / API Server Max 20 MB → 413)
+- Image Pixel Limit (Max 100M pixels หลัง decode → error)
 - SQL Injection Prevention (Parameterized Queries)
 - XSS Prevention (Input Sanitization)
 
@@ -1050,7 +1054,7 @@ sequenceDiagram
 | Risk | Impact | Likelihood | Mitigation |
 |------|--------|------------|------------|
 | AI Inference Timeout (> 15s) | High | Medium | Queue-based processing, Async notifications, ONNX optimization |
-| Google Vision API Downtime | Medium | Low | ใช้ `DEFAULT_SOURCE_SCORE` และคำนวณ max จากมิติที่สำเร็จ (ตัดมิติที่ล้มเหลวทิ้ง ไม่ใช้ neutral 50) |
+| Google Vision API Downtime | Medium | Low | ตั้ง `source_status="unavailable"` แจ้งผู้ใช้ว่าฟังก์ชันยังไม่พร้อมใช้งาน คำนวณคะแนนจากมิติที่สำเร็จเท่านั้น ไม่ใช้ Neutral 50 (มติ DOC-01; ปัจจุบันยังไม่เชื่อมจริง code ใช้ค่าคงที่ชั่วคราว) |
 | Redis Cache Failure | Medium | Low | Fallback to Database, Auto-restart, Monitoring |
 | GPU Resource Exhaustion | High | Medium | Queue management, Auto-scaling, Batch processing |
 | False Positive (ภาพจริงแต่ระบบบอกว่าปลอม) | High | Medium | Threshold tuning, Human-in-the-loop (Admin review) |

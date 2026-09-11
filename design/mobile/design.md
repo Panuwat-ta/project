@@ -457,10 +457,9 @@ POST   /auth/refresh
 POST   /auth/logout
 GET    /auth/me
 
-POST   /scans           (multipart/form-data: image, source, consentForResearch, clientRequestId)
-GET    /scans/{taskId}
-GET    /scans/{taskId}/result
-DELETE /scans/{taskId}
+POST   /scan/           (multipart/form-data: file, title)
+GET    /scan/{scanId}    (poll ผล + result ใน response เดียวกัน)
+DELETE /history/{scanId}
 
 GET    /history?page&limit&riskLevel&fromDate&toDate&keyword
 GET    /history/{scanId}
@@ -476,9 +475,9 @@ DELETE /privacy/account
 ```
 
 ### Polling Strategy (ScanBloc)
-1. POST /scans → receive taskId
-2. Poll GET /scans/{taskId} every 3 seconds
-3. When status = "completed" → fetch GET /scans/{taskId}/result
+1. POST /scan/ → ได้ scan_id
+2. Poll GET /scan/{scanId} every 3 seconds (ผลอยู่ใน response เดียวกัน)
+3. When status = "completed" → แสดงผลได้ทันที
 4. Timeout after 120 seconds → show timeout error
 
 ---

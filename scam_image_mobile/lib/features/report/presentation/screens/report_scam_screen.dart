@@ -35,15 +35,16 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
   // ── BLoC ──────────────────────────────────────────────────────────────────
   late final ReportBloc _bloc;
 
-  // ── Categories ────────────────────────────────────────────────────────────
-  List<String> get _categories => [
-    'cat_romance'.tr(context),
-    'cat_ecommerce'.tr(context),
-    'cat_fake_slip'.tr(context),
-    'cat_investment'.tr(context),
-    'cat_impersonation'.tr(context),
-    'cat_ai'.tr(context),
-    'cat_other'.tr(context),
+  // ── Categories: backend canonical keys (DOC-08) + i18n labels ──
+  // ส่ง key ภาษาอังกฤษคงที่ไป backend เสมอ ห้ามส่ง label ที่แปลแล้ว
+  List<({String key, String label})> get _categories => [
+    (key: 'romance_scam', label: 'cat_romance'.tr(context)),
+    (key: 'online_shopping', label: 'cat_ecommerce'.tr(context)),
+    (key: 'fake_slip', label: 'cat_fake_slip'.tr(context)),
+    (key: 'investment', label: 'cat_investment'.tr(context)),
+    (key: 'identity_theft', label: 'cat_impersonation'.tr(context)),
+    (key: 'ai_deepfake', label: 'cat_ai'.tr(context)),
+    (key: 'other', label: 'cat_other'.tr(context)),
   ];
 
   List<String> get _platforms => [
@@ -86,9 +87,13 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
       return;
     }
 
-    final finalCategory = _selectedCategory == 'cat_other'.tr(context)
-        ? _otherCategoryController.text.trim()
-        : _selectedCategory!;
+    final customCat = _otherCategoryController.text.trim();
+    // category ส่ง key มาตรฐานเสมอ; ข้อความ custom ของ Other ย้ายไปนำหน้า description
+    final finalCategory = _selectedCategory!;
+    final details = _detailsController.text.trim();
+    final finalDescription = (_selectedCategory == 'other' && customCat.isNotEmpty)
+        ? '[$customCat] $details'
+        : details;
     
     final finalPlatform = _selectedPlatform == 'cat_other'.tr(context)
         ? _platformController.text.trim()
@@ -99,7 +104,7 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
         ScamReport(
           scanId: widget.scanId,
           category: finalCategory,
-          description: _detailsController.text.trim(),
+          description: finalDescription,
           platform: (finalPlatform == null || finalPlatform.isEmpty)
               ? null
               : finalPlatform,
@@ -328,8 +333,8 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                         },
                         dropdownMenuEntries: _categories.map((cat) {
                           return DropdownMenuEntry<String>(
-                            value: cat,
-                            label: cat,
+                            value: cat.key,
+                            label: cat.label,
                             style: MenuItemButton.styleFrom(
                               textStyle: AppTypography.bodyBase(
                                 color: Theme.of(context).colorScheme.onSurface,
@@ -340,7 +345,7 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                       );
                     },
                   ),
-                  if (_selectedCategory == 'cat_other'.tr(context)) ...[
+                  if (_selectedCategory == 'other') ...[
                     const SizedBox(height: AppSpacing.sm),
                     TextFormField(
                       controller: _otherCategoryController,
@@ -507,7 +512,7 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                       );
                     },
                   ),
-                  if (_selectedCategory == 'cat_other'.tr(context)) ...[
+                  if (_selectedCategory == 'other') ...[
                     const SizedBox(height: AppSpacing.sm),
                     TextFormField(
                       controller: _otherCategoryController,

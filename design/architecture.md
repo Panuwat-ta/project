@@ -268,7 +268,7 @@ graph TD
 ### 5.1 ขั้นตอนและเกณฑ์การคำนวณ Risk Score (Hybrid Worst-Case Approach)
 ระบบจะทำการแปลงสัญญาณการตรวจจับออกมาเป็นตัวเลขแยกอิสระเต็ม **0 ถึง 100%** ในแต่ละเลเยอร์:
 
-1. **Visual Anomaly Risk Score ($S_{visual}$ - 0–100%):** ความเสี่ยงจากโมเดล SegFormer ตรวจสอบการแก้ไขตัดแต่งพิกเซล ($S_{forgery}$) ร่วมกับความเสี่ยงจากการถูกสร้างด้วย AI ($S_{aigen}$)
+1. **Visual Anomaly Risk Score ($S_{visual}$ - 0–100%):** ความเสี่ยงจากโมเดล SegFormer ตรวจสอบการแก้ไขตัดแต่งพิกเซล ($S_{forgery}$) ร่วมกับความเสี่ยงจากการถูกสร้างด้วย AI ($S_{aigen}$) — หมายเหตุ implementation v1: มาจาก tamper map เดียวกัน (visual = max prob × 100, ai_gen_prob = max เดียวกัน) ยังไม่มีการถ่วงน้ำหนักแยกสองโมเดล
 2. **Textual Risk Score ($S_{text}$ - 0–100%):** คะแนนจากการวิเคราะห์คำหลอกลวง (เช่น ชักจูงโอนเงิน, ชื่อบัญชีแบล็กลิสต์, ปันผลเร็ว)
 3. **Source Verification Risk Score ($S_{source}$ - 0–100%):** ผลวิเคราะห์ความน่าสงสัยของการใช้ภาพผิดบริบทหรือภาพที่ถูกก๊อปปี้มาใช้งานหลายเว็บไซต์
 
@@ -333,9 +333,9 @@ $$
 | :--- | :--- | :--- |
 | `/auth/register` | POST | สมัครสมาชิก |
 | `/auth/login` | POST | เข้าสู่ระบบ (รับ JWT Token) |
-| `/scans/upload` | POST | อัปโหลดรูปภาพเพื่อตรวจสอบ |
-| `/scans/{id}` | GET | ดึงผลการตรวจสอบ |
-| `/scans/history` | GET | ดูประวัติการสแกน |
+| `/scan/` | POST | อัปโหลดรูปภาพเพื่อตรวจสอบ |
+| `/scan/{id}` | GET | ดึงผลการตรวจสอบ |
+| `/history` | GET | ดูประวัติการสแกน |
 | `/reports` | POST | รายงานภาพหลอกลวง |
 | `/admin/dashboard` | GET | สถิติระบบ (Admin only) |
 
@@ -345,8 +345,8 @@ $$
 
 * Access Token TTL **15 นาที** / Refresh Token TTL **7 วัน**; เข้ารหัสรหัสผ่านด้วย bcrypt cost factor **12**
 * TLS **1.3** + Certificate Pinning บนแอปมือถือ
-* Rate Limiting **60 req/hour** (Implement ด้วย slowapi; Tier Guest/Admin อยู่ในแผนพัฒนา)
-* จำกัดไฟล์ภาพ **≤ 10 MB**, ขนาด **≤ 4096×4096 px**, รองรับเฉพาะ **JPG/PNG**
+* Rate Limiting แบบ tier ต่อนาที (guest 10 / user 60 / admin 300 / POST scan 5, key ตาม IP — มติ DOC-02)
+* จำกัดไฟล์ภาพ **server ≤ 20 MB (413), mobile 10 MB**, decode **≤ 100M px**, รองรับเฉพาะ **JPG/PNG/WebP** (มติ DOC-03)
 * Data Retention: Auto-delete ข้อมูลเมื่อครบอายุ **1 ปี**
 
 ### A.3 เป้าหมายประสิทธิภาพ (Performance Targets)
@@ -365,8 +365,8 @@ $$
 
 ### A.5 ตารางฐานข้อมูลเพิ่มเติม (PostgreSQL)
 
-* `models` — Model Registry: เก็บเวอร์ชันโมเดล AI (id, version, file_path, status, accuracy)
-* `audit_logs` — บันทึกการดำเนินการของ Admin แบบ Immutable (id, admin_id, action, details)
+* `model_versions` — Model Registry: เก็บเวอร์ชันโมเดล AI (id, version, file_path, status, accuracy)
+* `audit_log` — บันทึกการดำเนินการของ Admin แบบ Immutable (id, admin_id, action, details)
 
 ### A.6 Use-Case Index (UC-01 – UC-10)
 
@@ -388,5 +388,5 @@ Actors: General User, Admin และ **System (Automated)** (Actor ที่ส
 
 ### A.8 ไฮไลต์ Risk Register
 
-* Google Vision API Downtime → Fallback ไป Bing Visual Search พร้อมกำหนด Source Score = 50 (Neutral)
+* Google Vision API Downtime → ตั้ง `source_status="unavailable"` แจ้งผู้ใช้ว่าฟังก์ชันยังไม่พร้อมใช้งาน คำนวณคะแนนจากมิติที่สำเร็จเท่านั้น ไม่ใช้ Neutral 50 (มติ DOC-01)
 * False Positive (ภาพจริงถูกตั้งธงว่าปลอม) → Human-in-the-loop ให้ Admin ตรวจสอบทบทวนผลลัพธ์

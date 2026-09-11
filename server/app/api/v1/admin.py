@@ -28,7 +28,7 @@ from app.core.security import (
 from app.models.admin import Admin
 from app.schemas.auth import TokenResponse, RefreshTokenRequest
 from app.core.config import TH_TIMEZONE, settings
-from app.core.rate_limit import limiter
+from app.core.rate_limit import limiter, GUEST_LIMIT, USER_LIMIT, ADMIN_LIMIT, SCAN_CREATE_LIMIT
 
 router = APIRouter()
 
@@ -154,6 +154,7 @@ async def admin_refresh_token(
 
 
 @router.post("/logout")
+@limiter.limit(ADMIN_LIMIT)
 async def admin_logout(
     request: Request,
     response: Response,
@@ -173,14 +174,16 @@ async def admin_logout(
 
 
 @router.get("/me", response_model=AdminProfileResponse)
-async def get_me(
+@limiter.limit(ADMIN_LIMIT)
+async def get_me(request: Request, 
     current_admin: AdminModel = Depends(require_super_admin),
 ):
     return _user_payload(current_admin)
 
 
 @router.patch("/me", response_model=AdminProfileResponse)
-async def update_me(
+@limiter.limit(ADMIN_LIMIT)
+async def update_me(request: Request, 
     body: AdminProfileUpdateRequest,
     db: AsyncSession = Depends(get_db),
     current_admin: AdminModel = Depends(require_super_admin),
@@ -200,6 +203,7 @@ async def update_me(
 
 
 @router.get("/sessions", response_model=AdminSessionListResponse)
+@limiter.limit(ADMIN_LIMIT)
 async def get_sessions(
     request: Request,
     db: AsyncSession = Depends(get_db),
@@ -235,7 +239,8 @@ async def get_sessions(
 
 
 @router.post("/sessions/{session_id}/revoke")
-async def revoke_session(
+@limiter.limit(ADMIN_LIMIT)
+async def revoke_session(request: Request, 
     session_id: str,
     db: AsyncSession = Depends(get_db),
     current_admin: AdminModel = Depends(require_super_admin),
@@ -250,7 +255,8 @@ async def revoke_session(
 
 
 @router.get("/dashboard", response_model=DashboardResponse)
-async def get_dashboard(
+@limiter.limit(ADMIN_LIMIT)
+async def get_dashboard(request: Request, 
     db: AsyncSession = Depends(get_db),
     current_admin: AdminModel = Depends(require_super_admin),
 ):
@@ -258,7 +264,8 @@ async def get_dashboard(
     return await admin_service.get_dashboard_stats(db)
 
 @router.get("/health", response_model=HealthStatus)
-async def get_health(
+@limiter.limit(ADMIN_LIMIT)
+async def get_health(request: Request, 
     db: AsyncSession = Depends(get_db),
     current_admin: AdminModel = Depends(require_super_admin),
 ):
@@ -266,7 +273,8 @@ async def get_health(
     return await admin_service.get_health_status(db)
 
 @router.get("/search", response_model=GlobalSearchResponse)
-async def search_global(
+@limiter.limit(ADMIN_LIMIT)
+async def search_global(request: Request, 
     q: str,
     db: AsyncSession = Depends(get_db),
     current_admin: AdminModel = Depends(require_super_admin),
@@ -276,7 +284,8 @@ async def search_global(
 
 
 @router.get("/reports", response_model=AdminReportListResponse)
-async def get_reports(
+@limiter.limit(ADMIN_LIMIT)
+async def get_reports(request: Request, 
     page: int = 1,
     limit: int = 20,
     status: str = None,
@@ -303,7 +312,8 @@ async def get_reports(
 from app.services import export_service
 
 @router.post("/dataset/export-jobs", response_model=ExportJobResponse)
-async def create_export_job(
+@limiter.limit(ADMIN_LIMIT)
+async def create_export_job(request: Request, 
     req: ExportRequest,
     background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db),
@@ -315,7 +325,8 @@ async def create_export_job(
     return job
 
 @router.get("/dataset/export-jobs", response_model=ExportJobListResponse)
-async def list_export_jobs(
+@limiter.limit(ADMIN_LIMIT)
+async def list_export_jobs(request: Request, 
     page: int = 1,
     limit: int = 20,
     db: AsyncSession = Depends(get_db),
@@ -336,7 +347,8 @@ async def list_export_jobs(
     return {"items": items, "total": total, "page": page, "limit": limit}
 
 @router.get("/dataset/export-jobs/{job_id}", response_model=ExportJobResponse)
-async def get_export_job(
+@limiter.limit(ADMIN_LIMIT)
+async def get_export_job(request: Request, 
     job_id: str,
     db: AsyncSession = Depends(get_db),
     current_admin: AdminModel = Depends(require_super_admin),
@@ -351,7 +363,8 @@ async def get_export_job(
     return job
 
 @router.post("/dataset/export-jobs/{job_id}/cancel")
-async def cancel_export_job(
+@limiter.limit(ADMIN_LIMIT)
+async def cancel_export_job(request: Request, 
     job_id: str,
     db: AsyncSession = Depends(get_db),
     current_admin: AdminModel = Depends(require_super_admin),
@@ -371,7 +384,8 @@ async def cancel_export_job(
     return {"message": "Job canceled"}
 
 @router.get("/dataset/export-jobs/{job_id}/download")
-async def download_export_job(
+@limiter.limit(ADMIN_LIMIT)
+async def download_export_job(request: Request, 
     job_id: str,
     db: AsyncSession = Depends(get_db),
     current_admin: AdminModel = Depends(require_super_admin),
@@ -397,7 +411,8 @@ async def download_export_job(
     )
 
 @router.get("/reports/{report_id}", response_model=AdminReportDetailResponse)
-async def get_report_detail(
+@limiter.limit(ADMIN_LIMIT)
+async def get_report_detail(request: Request, 
     report_id: int,
     db: AsyncSession = Depends(get_db),
     current_admin: AdminModel = Depends(require_super_admin),
@@ -407,6 +422,7 @@ async def get_report_detail(
 
 
 @router.post("/reports/{report_id}/review")
+@limiter.limit(ADMIN_LIMIT)
 async def start_review(
     report_id: int,
     request: Request,
@@ -432,6 +448,7 @@ async def start_review(
 
 
 @router.patch("/reports/{report_id}")
+@limiter.limit(ADMIN_LIMIT)
 async def review_report(
     report_id: int,
     decision: ReportDecisionRequest,
@@ -457,7 +474,8 @@ async def review_report(
 
 
 @router.get("/users", response_model=UserAdminListResponse)
-async def get_users(
+@limiter.limit(ADMIN_LIMIT)
+async def get_users(request: Request, 
     page: int = 1,
     limit: int = 20,
     search: str = None,
@@ -480,7 +498,8 @@ async def get_users(
     }
     
 @router.get("/users/{user_id}", response_model=UserAdminDetailResponse)
-async def get_user(
+@limiter.limit(ADMIN_LIMIT)
+async def get_user(request: Request, 
     user_id: int,
     db: AsyncSession = Depends(get_db),
     current_admin: AdminModel = Depends(require_super_admin),
@@ -490,6 +509,7 @@ async def get_user(
 
 
 @router.patch("/users/{user_id}")
+@limiter.limit(ADMIN_LIMIT)
 async def update_user(
     user_id: int,
     update_req: UserUpdateRequest,
@@ -513,7 +533,8 @@ async def update_user(
 
 
 @router.get("/models", response_model=ModelVersionListResponse)
-async def get_models(
+@limiter.limit(ADMIN_LIMIT)
+async def get_models(request: Request, 
     db: AsyncSession = Depends(get_db),
     current_admin: AdminModel = Depends(require_super_admin),
 ):
@@ -523,7 +544,8 @@ async def get_models(
 
 
 @router.post("/models/{model_id}/deploy")
-async def deploy_model(
+@limiter.limit(ADMIN_LIMIT)
+async def deploy_model(request: Request, 
     model_id: int,
     req: ModelDeployRequest,
     db: AsyncSession = Depends(get_db),
@@ -542,7 +564,8 @@ async def deploy_model(
     }
 
 @router.post("/models/{model_id}/dry-run", response_model=ModelDryRunResponse)
-async def dry_run_model(
+@limiter.limit(ADMIN_LIMIT)
+async def dry_run_model(request: Request, 
     model_id: int,
     db: AsyncSession = Depends(get_db),
     current_admin: AdminModel = Depends(require_super_admin),
@@ -552,7 +575,8 @@ async def dry_run_model(
 
 
 @router.get("/audit-logs", response_model=AuditLogListResponse)
-async def get_audit_logs(
+@limiter.limit(ADMIN_LIMIT)
+async def get_audit_logs(request: Request, 
     page: int = 1,
     limit: int = 50,
     search: str = None,

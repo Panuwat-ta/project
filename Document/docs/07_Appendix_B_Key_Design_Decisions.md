@@ -41,7 +41,7 @@
 |---------------|---------------|-----------|-----------------|
 | **Primary Auth Method** | Email + Password only | ลดความซับซ้อนในการพัฒนา | Project Decision |
 | **Password Policy** | ≥ 8 ตัวอักษร (ไม่มี complexity requirements) | สมดุลระหว่างความปลอดภัยและ UX | Project Decision |
-| **Password Hashing** | bcrypt (cost factor: 12) | Standard practice สำหรับ Django | Tech Stack Analysis |
+| **Password Hashing** | bcrypt (cost factor: 12) via passlib | Standard practice สำหรับ FastAPI/SQLAlchemy stack | Tech Stack Analysis |
 
 ---
 
@@ -92,8 +92,8 @@
 
 | Decision Area | Specification | Rationale | Evidence Source |
 |---------------|---------------|-----------|-----------------|
-| **Max File Size** | 10 MB | สมดุลระหว่างคุณภาพและเวลาอัปโหลด | Project Decision |
-| **Max Resolution** | 10,000 × 10,000 พิกเซล | ป้องกัน Memory Overflow และ DoS Attack | Project Decision |
+| **Max File Size** | Mobile 10 MB (client-side check) / API Server 20 MB (413 ถ้าเกิน) | สมดุลระหว่างคุณภาพและเวลาอัปโหลด (มติ DOC-03, 2026-09-11 — ตรงกับ code + SRS) | Project Decision |
+| **Max Resolution** | ภาพหลัง decode ≤ 100 ล้านพิกเซล (PIL `MAX_IMAGE_PIXELS`) | ป้องกัน Memory Overflow และ DoS Attack | Project Decision |
 | **Min Resolution** | ไม่จำกัด (แนะนำ ≥ 512×512) | ให้ผู้ใช้ตัดสินใจเอง แต่แจ้งเตือนว่าความแม่นยำลดลง | Project Decision |
 
 ---
@@ -137,8 +137,9 @@
 
 | Decision Area | Specification | Rationale | Evidence Source |
 |---------------|---------------|-----------|-----------------|
-| **API Down Handling** | ตัดมิตินั้นทิ้ง คำนวณค่าสูงสุดจากมิติที่สำเร็จ | ไม่ควร Bias ด้วยค่ากลางปลอม | Project Decision |
-| **Status Field** | `source_status: "unavailable"` | แจ้งผู้ใช้ให้ทราบว่าข้อมูลนี้ไม่พร้อมใช้งาน | Project Decision |
+| **API Down Handling** | ตัดมิตินั้นทิ้ง คำนวณค่าสูงสุดจากมิติที่สำเร็จ ไม่ใช้ค่ากลางปลอม (มติ DOC-01, 2026-09-11) | ไม่ควร Bias ด้วยค่ากลางปลอม | Project Decision |
+| **Status Field** | `source_status: "unavailable"` + แจ้งผู้ใช้ว่าฟังก์ชันค้นหาแหล่งที่มาของภาพยังไม่พร้อมใช้งาน | แจ้งผู้ใช้ให้ทราบว่าข้อมูลนี้ไม่พร้อมใช้งาน | Project Decision |
+| **Interim Note** | ปัจจุบัน reverse search ยังไม่เชื่อมจริง code ใช้ค่าคงที่ชั่วคราว เมื่อเชื่อม Vision API จริงแล้วผลจะแสดงภายหลัง | ตรงไปตรงมากับผู้ใช้ระหว่างรอ integration | Project Decision |
 | **Retry Logic** | ไม่มี Auto-Retry | หาก API Down ผู้ใช้สามารถ Scan ใหม่ภายหลัง | Project Decision |
 
 ---
@@ -337,8 +338,8 @@
 
 | Decision Area | Specification | Rationale | Evidence Source |
 |---------------|---------------|-----------|-----------------|
-| **SQL Injection** | Django ORM (ป้องกันอัตโนมัติ) | ORM Parameterized Queries | Tech Stack Analysis |
-| **XSS Prevention** | Django Template Escaping (ป้องกันอัตโนมัติ) | Template Engine Auto-Escape | Tech Stack Analysis |
+| **SQL Injection** | SQLAlchemy ORM (ป้องกันอัตโนมัติ) | ORM Parameterized Queries | Tech Stack Analysis |
+| **XSS Prevention** | Pydantic validation + React auto-escape (ป้องกันอัตโนมัติ) | Input Validation + Template Engine Auto-Escape | Tech Stack Analysis |
 | **File Upload Validation** | MIME Type Check (Magic Bytes) + File Size + Resolution | ป้องกัน Malicious Files | Project Decision |
 
 ---
@@ -427,7 +428,7 @@
 |---|---------------|---------------|-----------------|
 | 1 | **Authentication** | Email OTP (6 หลัก, TTL: 10 นาที) | Project Decision |
 | 2 | **Social Login** | Google OAuth 2.0 only | Project Decision |
-| 3 | **Reverse Search Fallback** | Neutral Score = 50, status="unavailable" | Project Decision |
+| 3 | **Reverse Search Fallback** | source_status="unavailable" + แจ้งผู้ใช้ว่ายังไม่พร้อมใช้งาน (มติ DOC-01) | Project Decision |
 | 4 | **EXIF Metadata** | Display only, no risk calculation | Project Decision |
 | 5 | **OCR Text Search** | Not supported | Project Decision |
 | 6 | **Heatmap Deletion** | Delete with scan (Cascade) | Project Decision |

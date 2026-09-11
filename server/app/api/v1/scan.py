@@ -1,7 +1,8 @@
-from fastapi import APIRouter, UploadFile, File, Form, Depends, HTTPException, BackgroundTasks
+from fastapi import Request, APIRouter, UploadFile, File, Form, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from uuid import UUID
+from app.core.rate_limit import limiter, GUEST_LIMIT, USER_LIMIT, ADMIN_LIMIT, SCAN_CREATE_LIMIT
 from app.core.database import get_db
 from app.schemas.scan import ScanResponse
 from app.services.scan_service import create_scan_task, process_image_background
@@ -13,7 +14,8 @@ from app.utils.risk_calculator import calculate_risk_score
 router = APIRouter()
 
 @router.post("/", response_model=ScanResponse)
-async def create_scan(
+@limiter.limit(SCAN_CREATE_LIMIT)
+async def create_scan(request: Request, 
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
     title: str | None = Form(None),
@@ -30,7 +32,8 @@ async def create_scan(
     return scan_record
 
 @router.get("/{scan_id}", response_model=ScanResponse)
-async def get_scan(
+@limiter.limit(USER_LIMIT)
+async def get_scan(request: Request, 
     scan_id: UUID,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)

@@ -27,7 +27,7 @@ flowchart TB
 
         subgraph Frontends [Frontend Layer]
             MobileApp("Mobile App<br>[Container: Flutter]<br>อัปโหลดและเลือกรูปภาพ,<br>แสดงผลคะแนนความเสี่ยง (Risk Score)")
-            AdminPortal("Admin Web Portal<br>[Container: React + Admin UI]<br>จัดการผู้ใช้ (CRUD), ตรวจสอบสแกมที่รายงาน,<br>จัดการชุดข้อมูล, อัปเดตโมเดล")
+            AdminPortal("Admin Web Portal<br>[Container: React + Admin UI]<br>จัดการผู้ใช้ (ดู+เปิด/ปิดบัญชี), ตรวจสอบสแกมที่รายงาน,<br>จัดการชุดข้อมูล, อัปเดตโมเดล")
         end
 
         subgraph Backends [Backend & API Layer]
@@ -86,7 +86,7 @@ flowchart TB
 
 * **Admin Web Portal (React + Admin UI):**
   * **บทบาท:** เว็บแอปพลิเคชันสำหรับผู้ดูแลระบบและนักวิจัย (Admin / Researcher)
-  * **หน้าที่:** ใช้เป็นหน้าจอควบคุมและตรวจสอบสถานะระบบหลังบ้าน (Dashboard) การจัดการสิทธิ์ของผู้ใช้ (CRUD), ตรวจสอบรูปภาพสแกมที่ผู้ใช้ส่งรายงานเข้ามา (Scam Reports), จัดการคลังชุดข้อมูล (Dataset) และการอัปโหลดไฟล์น้ำหนักโมเดล AI (Model Weights)
+  * **หน้าที่:** ใช้เป็นหน้าจอควบคุมและตรวจสอบสถานะระบบหลังบ้าน (Dashboard) การจัดการสิทธิ์ของผู้ใช้ (ดู + เปิด/ปิดบัญชี), ตรวจสอบรูปภาพสแกมที่ผู้ใช้ส่งรายงานเข้ามา (Scam Reports), จัดการคลังชุดข้อมูล (Dataset) และการอัปโหลดไฟล์น้ำหนักโมเดล AI (Model Weights)
   * **เทคโนโลยี:** React.js + TailwindCSS (หรือ Admin Template สำเร็จรูป)
 
 ### 2. ส่วนประมวลผลหลัก (Backend Containers)

@@ -360,13 +360,13 @@ Acceptance Criteria:
 - **Processing:** Google Vision API ไม่พบ Similar URLs
 - **Expected Output:** `source_urls: []`, `source_count: 0`, `source_score: 0`
 
-**AC-4: Fallback เมื่อ API Down**
-- **Input:** Google Vision API Down (HTTP 503)
+**AC-4: Fallback เมื่อ API Down (มติ DOC-01, 2026-09-11: ไม่ใช้ค่ากลางปลอม)**
+- **Input:** Google Vision API Down (HTTP 503) หรือยังไม่เชื่อมต่อจริง
 - **Processing:** 
   - ตรวจจับ Error
-  - คืนค่า Neutral Score = 50
-  - ตั้ง source_status = "unavailable"
-- **Expected Output:** `source_score: 50`, `source_status: "unavailable"`, `source_urls: []`
+  - ตั้ง source_status = "unavailable" และแจ้งผู้ใช้ว่าฟังก์ชันค้นหาแหล่งที่มาของภาพยังไม่พร้อมใช้งาน
+  - คำนวณคะแนนรวมจากมิติที่สำเร็จเท่านั้น (ตัดมิติ source ออก)
+- **Expected Output:** `source_status: "unavailable"`, ข้อความแจ้งผู้ใช้, `source_urls: []`
 
 ---
 
@@ -429,7 +429,7 @@ Acceptance Criteria:
 - **Input:** รูปภาพ, SegFormer Model Output (segmentation mask)
 - **Processing:** 
   - แปลง mask เป็นแผนที่ความร้อนแล้ว overlay บนภาพต้นฉบับ
-  - คำอธิบายประกอบด้วยโมเดลภาษาขนาดเล็กสำหรับสร้างคำอธิบายภาษาไทย
+  - คำอธิบายประกอบด้วย Qwen2.5-1.5B สำหรับสร้างคำอธิบายภาษาไทย (มติ DOC-12: ระบุรุ่นให้ชัด)
   - สร้างภาพ Heatmap พร้อม Color Map (แดง=เสี่ยงสูง, เหลือง=ปานกลาง, เขียว=ปลอดภัย)
   - สร้างภาพ Heatmap พร้อม Color Map (แดง=เสี่ยงสูง, เหลือง=ปานกลาง, เขียว=ปลอดภัย)
   - บันทึก Heatmap เป็น heatmap.jpg
@@ -478,7 +478,7 @@ Acceptance Criteria:
 **Acceptance Criteria:**
 
 **AC-1: แสดงประวัติการสแกน**
-- **Input:** GET /scans/history?user_id={user_id}
+- **Input:** GET /history?user_id={user_id}
 - **Processing:** 
   - ดึงข้อมูลจากฐานข้อมูล
   - เรียงตามวันที่ล่าสุดก่อน (DESC)
@@ -486,26 +486,26 @@ Acceptance Criteria:
 - **Expected Output:** HTTP 200, Response Body: `{scans: [{scan_id, thumbnail_url, created_at, risk_score, risk_grade}, ...], total, page, limit}`
 
 **AC-2: ค้นหาตามช่วงวันที่**
-- **Input:** GET /scans/history?start_date=2026-01-01&end_date=2026-01-31
+- **Input:** GET /history?start_date=2026-01-01&end_date=2026-01-31
 - **Processing:** กรองข้อมูลตาม created_at
 - **Expected Output:** HTTP 200, เฉพาะ scans ที่อยู่ในช่วงวันที่
 
 **AC-3: กรองตามระดับความเสี่ยง**
-- **Input:** GET /scans/history?risk_grade=High
+- **Input:** GET /history?risk_grade=High
 - **Processing:** กรองข้อมูลตาม risk_grade
 - **Expected Output:** HTTP 200, เฉพาะ scans ที่ risk_grade = "High"
 
 **AC-4: ลบประวัติทีละรายการ**
-- **Input:** DELETE /scans/{scan_id}
+- **Input:** DELETE /history/{scan_id}
 - **Processing:** 
   - แสดง Confirmation Dialog
   - ผู้ใช้ยืนยัน
   - ลบข้อมูลจาก Database
   - ลบไฟล์จาก Object Storage (original.jpg, heatmap.jpg)
-- **Expected Output:** HTTP 204 (No Content)
+- **Expected Output:** HTTP 200, `{message: "Scan deleted successfully"}` (ตรงกับ code)
 
 **AC-5: ลบประวัติทั้งหมด**
-- **Input:** DELETE /scans/all?user_id={user_id}
+- **Input:** DELETE /history (implement แล้ว มติ DOC-07/1B — ตรงกับที่ mobile เรียกอยู่)
 - **Processing:** 
   - แสดง Confirmation Dialog 2 ครั้ง
   - ผู้ใช้ยืนยัน
@@ -524,7 +524,7 @@ Acceptance Criteria:
 **Acceptance Criteria:**
 
 **AC-1: รายงานสำเร็จ**
-- **Input:** POST /reports, Body: `{scan_id, category: "slip_fraud", description: "สลิปโอนเงินปลอม จำนวนเงินถูกแก้ไข"}`
+- **Input:** POST /reports, Body: `{scan_id, category: "fake_slip", description: "สลิปโอนเงินปลอม จำนวนเงินถูกแก้ไข"}`
 - **Processing:** 
   - ตรวจสอบ scan_id เป็นของผู้ใช้
   - ตรวจสอบไม่เคยรายงาน scan นี้แล้ว
@@ -535,7 +535,7 @@ Acceptance Criteria:
 **AC-2: ปฏิเสธการรายงานซ้ำ**
 - **Input:** scan_id ที่เคยรายงานแล้ว
 - **Processing:** ตรวจสอบ report_id ที่มี scan_id นี้แล้ว
-- **Expected Output:** HTTP 400, Error Message: "You have already reported this scan"
+- **Expected Output:** HTTP 409, Error Message: "You have already reported this scan" (ตรงกับ code + overview)
 
 **AC-3: ปฏิเสธคำอธิบายสั้นเกินไป**
 - **Input:** description = "ปลอม" (< 10 ตัวอักษร)
@@ -543,9 +543,9 @@ Acceptance Criteria:
 - **Expected Output:** HTTP 400, Error Message: "Description must be at least 10 characters"
 
 **AC-4: หมวดหมู่รายงาน**
-- **Input:** category ∈ {slip_fraud, profile_scam, ad_scam, other}
-- **Processing:** Validate category
-- **Expected Output:** ถูกต้อง หรือ HTTP 400 ถ้า category ไม่ถูกต้อง
+- **Input:** category ∈ {romance_scam, online_shopping, fake_slip, investment, identity_theft, ai_deepfake, other} (7 keys มาตรฐาน backend — มติ DOC-08)
+- **Processing:** Validate category (นอกเซ็ต → 422)
+- **Expected Output:** ถูกต้อง หรือ HTTP 422 ถ้า category ไม่ถูกต้อง
 
 ---
 
@@ -622,8 +622,8 @@ Acceptance Criteria:
 - **Processing:** ค้นหาตาม email หรือ full_name
 - **Expected Output:** HTTP 200, รายการผู้ใช้ที่ตรงกัน
 
-**AC-4: เปลี่ยนบทบาทผู้ใช้**
-- **Input:** PUT /admin/users/{user_id}/role, Body: `{role: "researcher"}`
+**AC-4: เปลี่ยนบทบาทผู้ใช้ — GAP ยังไม่ implement (เจอตอน DOC-07)**
+- **สถานะ:** code ปัจจุบันมีแค่ `PATCH /admin/users/{user_id}` สำหรับเปิด/ปิดบัญชี (is_active + reason) ยังไม่มี endpoint เปลี่ยน role — ต้องเปิดงาน follow-up (implement หรือตัดเป็น Phase 2)
 - **Processing:** 
   - ตรวจสอบสิทธิ์ Admin
   - อัปเดต role (อนุญาตเฉพาะ user / researcher / admin; ถ้าส่งบทบาทอื่นต้อง HTTP 400)
@@ -631,7 +631,7 @@ Acceptance Criteria:
 - **Expected Output:** HTTP 200, `{user_id, role: "researcher"}`
 
 **AC-5: เปลี่ยนสถานะผู้ใช้**
-- **Input:** PUT /admin/users/{user_id}/status, Body: `{status: "inactive"}`
+- **Input:** PATCH /admin/users/{user_id}, Body: `{is_active: false, reason: "..."}`
 - **Processing:** 
   - อัปเดต status
   - บันทึก Audit Log
@@ -658,14 +658,14 @@ Acceptance Criteria:
 - **Expected Output:** HTTP 200, Response Body: `{reports: [{report_id, scan_id, user_id, category, description, status, created_at}, ...], total}`
 
 **AC-2: เปลี่ยนสถานะเป็น Reviewing**
-- **Input:** PUT /admin/reports/{report_id}/status, Body: `{status: "reviewing"}`
+- **Input:** POST /admin/reports/{report_id}/review, Body: `{version: 1}`
 - **Processing:** 
   - อัปเดต status = "reviewing"
   - บันทึก Audit Log
 - **Expected Output:** HTTP 200, `{report_id, status: "reviewing"}`
 
 **AC-3: อนุมัติรายงาน (Approve)**
-- **Input:** PUT /admin/reports/{report_id}/approve
+- **Input:** PATCH /admin/reports/{report_id}, Body: `{status: "approved", version: 2}`
 - **Processing:** 
   - อัปเดต status = "approved"
   - นำเข้า Dataset: คัดลอกไฟล์ภาพจาก Object Storage ไปยัง Dataset Storage พร้อมเพิ่ม Label
@@ -673,7 +673,7 @@ Acceptance Criteria:
 - **Expected Output:** HTTP 200, `{report_id, status: "approved"}`
 
 **AC-4: ปฏิเสธรายงาน (Reject) พร้อมเหตุผล**
-- **Input:** PUT /admin/reports/{report_id}/reject, Body: `{admin_note: "ภาพนี้ไม่ใช่ภาพหลอกลวง"}`
+- **Input:** PATCH /admin/reports/{report_id}, Body: `{status: "rejected", version: 2, admin_note: "ภาพนี้ไม่ใช่ภาพหลอกลวง"}`
 - **Processing:** 
   - อัปเดต status = "rejected"
   - บันทึก admin_note
@@ -681,7 +681,7 @@ Acceptance Criteria:
 - **Expected Output:** HTTP 200, `{report_id, status: "rejected", admin_note: "..."}`
 
 **AC-5: ปฏิเสธการ Reject โดยไม่มีเหตุผล**
-- **Input:** PUT /admin/reports/{report_id}/reject, Body: `{admin_note: ""}`
+- **Input:** PATCH /admin/reports/{report_id}, Body: `{status: "rejected", version: 2, admin_note: ""}`
 - **Processing:** Validate admin_note
 - **Expected Output:** HTTP 400, Error Message: "Admin note is required for rejection"
 
@@ -700,16 +700,16 @@ Acceptance Criteria:
 - **Processing:** ดึงรายการโมเดลทั้งหมด
 - **Expected Output:** HTTP 200, Response Body: `{models: [{model_id, version, file_path, status, accuracy, created_at}, ...], total}`
 
-**AC-2: อัปโหลดโมเดลใหม่**
-- **Input:** POST /admin/models, Multipart: model_file (*.onnx), Body: `{version: "2.0", accuracy: 87.5}`
+**AC-2: อัปโหลดโมเดลใหม่ — Phase 2 (มติ DOC-07/2A)**
+- **สถานะ v1:** ยังไม่มี endpoint อัปโหลด ให้วางไฟล์ .onnx บน server เองแล้วสั่ง deploy ผ่าน API (AC-3) — endpoint อัปโหลดเลื่อนไป Phase 2
 - **Processing:** 
   - บันทึกไฟล์ไปยัง Object Storage
   - บันทึกข้อมูลโมเดล (status = "inactive")
   - บันทึก Audit Log
 - **Expected Output:** HTTP 201, `{model_id, version: "2.0", status: "inactive"}`
 
-**AC-3: เปิดใช้งานโมเดล (Activate)**
-- **Input:** PUT /admin/models/{model_id}/activate
+**AC-3: เปิดใช้งานโมเดล (Deploy)**
+- **Input:** POST /admin/models/{model_id}/deploy
 - **Processing:** 
   - ปิดโมเดลเก่าทั้งหมด (status = "inactive")
   - เปิดโมเดลใหม่ (status = "active")
@@ -993,17 +993,18 @@ Acceptance Criteria:
 - **Total Requirements:** 26 (19 FR + 7 NFR)
 - **Must:** 25 (96.2%)
 - **Should:** 1 (3.8%)
-- **Total Acceptance Criteria:** 98 (75 FR + 23 NFR)
+- **Total Acceptance Criteria:** 104 (83 FR + 21 NFR)
   - Increased from 92 due to:
     - XAI Controls: +2 AC (Toggle Button, Opacity Slider)
     - Monitoring & Alerting: +2 AC
     - Precision & Recall: +2 AC
+  - Increased from 98 to 104 by subsequent AC additions (e.g. FR-ANALYSIS-04 AC-7) — recount verified 2026-09-11 (DOC-13)
 
 ---
 
 ## 5. Document Summary
 
-เอกสาร Software Requirement Specification ฉบับนี้แปลง **49 Requirement Candidates** เป็น **26 Formal Requirements** (19 FR + 7 NFR) พร้อม **98 Acceptance Criteria** ที่สามารถทดสอบได้
+เอกสาร Software Requirement Specification ฉบับนี้แปลง **49 Requirement Candidates** เป็น **26 Formal Requirements** (19 FR + 7 NFR) พร้อม **104 Acceptance Criteria** ที่สามารถทดสอบได้
 
 **Key Highlights:**
 - ✅ **Complete Traceability:** ST → OBJ → SC → RC → FR/NFR → AC

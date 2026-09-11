@@ -822,13 +822,12 @@ GET /auth/me
 ### 10.2 Image Scan
 
 ```http
-POST /scans
-GET /scans/{taskId}
-GET /scans/{taskId}/result
-DELETE /scans/{taskId}
+POST /scan/
+GET /scan/{scanId}
+DELETE /history/{scanId}
 ```
 
-`POST /scans` ใช้ `multipart/form-data`
+`POST /scan/` ใช้ `multipart/form-data`
 
 Field ที่แนะนำ:
 

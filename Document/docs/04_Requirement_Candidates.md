@@ -299,7 +299,7 @@ Requirement Candidates ถูกสกัดจาก:
   - ความเก่าของภาพ (ภาพเก่า > 1 ปี = เสี่ยง)
 - คำนวณ Source Risk Score (0-100)
 - สูตร: `S_source = (source_count_factor × 0.5) + (context_risk_factor × 0.5)`
-- **Fallback Strategy:** เมื่อ Google Vision API Down → คืนค่า Neutral Score = 50, source_status = "unavailable"
+- **Fallback Strategy:** เมื่อ Google Vision API Down หรือยังไม่เชื่อมต่อ → ไม่ใช้ค่ากลางปลอม ตั้ง source_status = "unavailable" แจ้งผู้ใช้ว่าฟังก์ชันค้นหาแหล่งที่มาของภาพยังไม่พร้อมใช้งาน คำนวณคะแนนรวมจากมิติที่สำเร็จเท่านั้น (มติ DOC-01, 2026-09-11)
 
 ---
 
@@ -363,7 +363,7 @@ Requirement Candidates ถูกสกัดจาก:
 
 **Details:**
 - ใช้เทคนิค mask-to-heatmap overlay: แปลง SegFormer segmentation mask เป็นแผนที่ความร้อนแล้ว overlay บนภาพต้นฉบับ
-- คำอธิบายประกอบด้วยโมเดลภาษาขนาดเล็กสำหรับสร้างคำอธิบายภาษาไทย
+- คำอธิบายประกอบด้วย Qwen2.5-1.5B สำหรับสร้างคำอธิบายภาษาไทย (มติ DOC-12: ระบุรุ่นให้ชัด)
 - สร้างภาพ Heatmap ที่แสดงจุดพิกเซลที่มีความเสี่ยงสูง
 - ใช้ Color Map: สีแดง (เสี่ยงสูง), สีเหลือง (เสี่ยงปานกลาง), สีเขียว (ปลอดภัย)
 - บันทึก Heatmap เป็นไฟล์ภาพแยก (heatmap.jpg)
@@ -583,7 +583,7 @@ Requirement Candidates ถูกสกัดจาก:
 
 ---
 
-#### RC-ADMIN-02: User Management (CRUD)
+#### RC-ADMIN-02: User Management (Read/Update — ไม่มีสร้าง/ลบบัญชี)
 **Description:** Admin ต้องสามารถจัดการผู้ใช้งาน (Read, Update Operations)  
 **Source:** scop.md, Section: SC04 — งานพัฒนาระบบควบคุมสิทธิ์ผู้ดูแลระบบ  
 **Related Stakeholder:** ST02  
@@ -991,7 +991,7 @@ Requirement Candidates ถูกสกัดจาก:
 - Model Metrics: Accuracy และ mDice ≥ 85%
 - Heatmap UI: Toggle Button + Opacity Slider (Overlay mode)
 - EXIF Metadata: แสดงเท่านั้น (ไม่ใช้คำนวณ Risk Score)
-- Reverse Search Fallback: Neutral Score = 50 เมื่อ API Down
+- Reverse Search Fallback: source_status = "unavailable" + แจ้งผู้ใช้ว่ายังไม่พร้อมใช้งาน (ไม่ใช้ Neutral 50; มติ DOC-01)
 - UAT: 100 testers, 4 Scenario-based Questions
 
 **Monitoring & DevOps:**

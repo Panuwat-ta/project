@@ -51,7 +51,7 @@ flowchart TD
 
     %% Admin Portal Details
     AdminPortal --> AD1("RBAC & Dashboard")
-    AdminPortal --> AD2("User Management CRUD")
+    AdminPortal --> AD2("User Management Read/Update")
     AdminPortal --> AD3("Scam Report Queue")
     AdminPortal --> AD4("Model Update Console")
 
@@ -160,4 +160,4 @@ flowchart TD
 - **Google SynthID / Gemini LLM:** น่าสนใจแต่ยังไม่มีดีไซน์ใน v1
 - **Google OAuth / Social Login:** เลื่อนไป Phase 2 (RC-AUTH-06)
 - **Real-time Camera Analysis:** ไม่มีการวิเคราะห์แบบ real-time ต้องบันทึกภาพก่อนส่งตรวจสอบ
-- หมายเหตุ: **iOS อยู่ในขอบเขต** — Mobile เป็น Flutter cross-platform
+- หมายเหตุ: **v1 รองรับ Android เท่านั้น** — Mobile เป็น Flutter codebase เดียวกันพร้อม build iOS ในอนาคต (มติ DOC-04, 2026-09-11)

@@ -138,7 +138,7 @@ graph TD
    - **Hit**: เคยตรวจแล้ว ให้ดึงผลเก่าจาก Database ส่งคืนทันที
    - **Miss**: ไม่เคยตรวจ ให้เข้าสู่ Pipeline การตรวจสอบ
 5. **Analysis Tasks**:
-   - **Task 1 Metadata**: ดึงข้อมูล EXIF/GPS
+   - **Task 1 Metadata**: ดึงข้อมูล EXIF/GPS (สกัด+แสดงผลเท่านั้น ไม่นำไปคำนวณ Risk Score — มติ DOC-10)
    - **Task 2 OCR**: อ่านข้อความในภาพ
    - **Task 3 Forgery**: ตรวจสอบการตัดต่อ (Semantic Segmentation)
    - **Partial Failure**: ดักจับกรณี Timeout
