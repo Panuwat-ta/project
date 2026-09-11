@@ -41,7 +41,7 @@
 |---------------|---------------|-----------|-----------------|
 | **Primary Auth Method** | Email + Password only | ลดความซับซ้อนในการพัฒนา | Project Decision |
 | **Password Policy** | ≥ 8 ตัวอักษร (ไม่มี complexity requirements) | สมดุลระหว่างความปลอดภัยและ UX | Project Decision |
-| **Password Hashing** | bcrypt (cost factor: 12) | Standard practice สำหรับ Django | Tech Stack Analysis |
+| **Password Hashing** | bcrypt (cost factor: 12) via passlib | Standard practice สำหรับ FastAPI/SQLAlchemy stack | Tech Stack Analysis |
 
 ---
 
@@ -338,8 +338,8 @@
 
 | Decision Area | Specification | Rationale | Evidence Source |
 |---------------|---------------|-----------|-----------------|
-| **SQL Injection** | Django ORM (ป้องกันอัตโนมัติ) | ORM Parameterized Queries | Tech Stack Analysis |
-| **XSS Prevention** | Django Template Escaping (ป้องกันอัตโนมัติ) | Template Engine Auto-Escape | Tech Stack Analysis |
+| **SQL Injection** | SQLAlchemy ORM (ป้องกันอัตโนมัติ) | ORM Parameterized Queries | Tech Stack Analysis |
+| **XSS Prevention** | Pydantic validation + React auto-escape (ป้องกันอัตโนมัติ) | Input Validation + Template Engine Auto-Escape | Tech Stack Analysis |
 | **File Upload Validation** | MIME Type Check (Magic Bytes) + File Size + Resolution | ป้องกัน Malicious Files | Project Decision |
 
 ---
