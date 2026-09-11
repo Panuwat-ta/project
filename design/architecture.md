@@ -345,8 +345,8 @@ $$
 
 * Access Token TTL **15 นาที** / Refresh Token TTL **7 วัน**; เข้ารหัสรหัสผ่านด้วย bcrypt cost factor **12**
 * TLS **1.3** + Certificate Pinning บนแอปมือถือ
-* Rate Limiting **60 req/hour** (Implement ด้วย slowapi; Tier Guest/Admin อยู่ในแผนพัฒนา)
-* จำกัดไฟล์ภาพ **≤ 10 MB**, ขนาด **≤ 4096×4096 px**, รองรับเฉพาะ **JPG/PNG**
+* Rate Limiting แบบ tier ต่อนาที (guest 10 / user 60 / admin 300 / POST scan 5, key ตาม IP — มติ DOC-02)
+* จำกัดไฟล์ภาพ **server ≤ 20 MB (413), mobile 10 MB**, decode **≤ 100M px**, รองรับเฉพาะ **JPG/PNG/WebP** (มติ DOC-03)
 * Data Retention: Auto-delete ข้อมูลเมื่อครบอายุ **1 ปี**
 
 ### A.3 เป้าหมายประสิทธิภาพ (Performance Targets)

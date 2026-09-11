@@ -157,7 +157,7 @@ flowchart TB
 
         subgraph Frontends [Frontend Layer]
             MobileApp("Mobile App<br>[Container: Flutter]<br>อัปโหลดและเลือกรูปภาพ,<br>แสดงผลคะแนนความเสี่ยง (Risk Score)")
-            AdminPortal("Admin Web Portal<br>[Container: React + Admin UI]<br>จัดการผู้ใช้ (CRUD), ตรวจสอบสแกมที่รายงาน,<br>จัดการชุดข้อมูล, อัปเดตโมเดล")
+            AdminPortal("Admin Web Portal<br>[Container: React + Admin UI]<br>จัดการผู้ใช้ (ดู+เปิด/ปิดบัญชี), ตรวจสอบสแกมที่รายงาน,<br>จัดการชุดข้อมูล, อัปเดตโมเดล")
         end
 
         subgraph Backends [Backend & API Layer]
@@ -207,7 +207,7 @@ flowchart TB
 
 * **1. ส่วนติดต่อผู้ใช้งาน (Frontend Containers):**
   * **Mobile App (Flutter):** แอปพลิเคชันบนสมาร์ทโฟนสำหรับผู้ใช้งานทั่วไป (General User) ทำหน้าที่รับส่งไฟล์ภาพและแสดงผลคะแนนความเสี่ยง (Risk Score) พร้อมแผนที่ความร้อน (Heatmap)
-  * **Admin Web Portal (React + Admin UI):** เว็บแอปสำหรับแอดมินใช้ตรวจสอบสถิติระบบ บริหารจัดการบัญชีผู้ใช้งาน (CRUD) ตรวจสอบรูปภาพสแกมที่รายงาน และอัปเดตโมเดล AI
+  * **Admin Web Portal (React + Admin UI):** เว็บแอปสำหรับแอดมินใช้ตรวจสอบสถิติระบบ บริหารจัดการบัญชีผู้ใช้งาน (ดู + เปิด/ปิดบัญชี) ตรวจสอบรูปภาพสแกมที่รายงาน และอัปเดตโมเดล AI
 * **2. ส่วนประมวลผลหลัก (Backend Containers):**
   * **API Application (FastAPI):** ทำหน้าที่เป็น API Gateway รับส่งข้อมูล และประมวลผลตรรกะทางธุรกิจ เช่น การยืนยันตัวตน ดึงข้อมูลแฝง (Metadata) และตรวจสอบ OCR เบื้องต้น
   * **AI Inference Service (PyTorch / ONNX):** เซอร์วิสวิเคราะห์โมเดล AI โดยเฉพาะ ทำการตรวจสอบรูปภาพว่าถูกตัดต่อ (Semantic Segmentation) หรือสร้างจากปัญญาประดิษฐ์ (AI-Generated Image) หรือไม่

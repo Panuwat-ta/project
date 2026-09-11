@@ -35,7 +35,7 @@
    - การจัดการ Timezone ต้องเป็น UTC+7 (Asia/Bangkok)
    - การบันทึกทุกการกระทำสำคัญของ Admin ลงตารางเอกพจน์ audit_log พร้อม Structured JSON before_state และ after_state
 6. **Security & Rate Limiting**:
-    - การป้องกัน Brute Force ด้วย Slowapi Rate Limiting (ค่า default 60/hour; Admin Login/Refresh 5/minute ส่ง HTTP 429)
+    - การป้องกัน Brute Force ด้วย Slowapi Rate Limiting แบบ tier ต่อนาที (guest 10 / user 60 / admin 300 / POST scan 5; Admin Login/Refresh 5/minute ส่ง HTTP 429)
    - การบังคับ is_superadmin ทุกเส้น /api/v1/admin/* ผู้ใช้ทั่วไปเรียกต้องได้ HTTP 403
    - การตั้งค่า CORS Header และ Security Headers
 

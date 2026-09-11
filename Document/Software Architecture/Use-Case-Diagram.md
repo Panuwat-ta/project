@@ -23,7 +23,7 @@ flowchart LR
         UC03("UC-03: ประมวลผลภาพขั้นต้น<br>(Primary Analysis)")
         UC04("UC-04: วิเคราะห์ด้วย AI<br>(AI Inference)")
         UC05("UC-05: ตรวจสอบผลลัพธ์และแผนที่ความร้อน<br>(View Result & Heatmap)")
-        UC06("UC-06: รับการแจ้งเตือน<br>(Receive Push Notification)")
+        UC06("UC-06: รับการแจ้งเตือน (Phase 2)<br>(Receive Push Notification)")
         UC07("UC-07: จัดการประวัติการสแกน<br>(History Management)")
         UC08("UC-08: รายงานและแชร์ผลลัพธ์<br>(Report & Share)")
         UC09("UC-09: จัดการผู้ใช้และแดชบอร์ด<br>(Admin Dashboard & RBAC)")
@@ -33,7 +33,7 @@ flowchart LR
     %% External Services
     subgraph ExternalServices [External Services]
         GoogleVision("Google Vision API<br>[Reverse Search]")
-        FCM("Firebase Cloud Messaging<br>[FCM]")
+        FCM("Firebase Cloud Messaging (Phase 2)<br>[FCM]")
     end
 
     %% Relationships / Associations
@@ -90,10 +90,10 @@ flowchart LR
   * **รายละเอียด:** หน้าจอแสดงค่าคะแนนความเสี่ยงรวมพร้อมแสดงผลสรุปเหตุผลความผิดปกติ และแสดงแผนที่ความร้อนแบบ mask-to-heatmap overlay บนจุดที่น่าสงสัยของภาพ เพื่อตอบโจทย์ความโปร่งใสของปัญญาประดิษฐ์ (XAI)
   * **ความต้องการทางระบบ (FR):** FR-05 - ระบบแสดงผลลัพธ์ (Result & Visualization): ระบบคำนวณคะแนนความเสี่ยงรวมและสร้างแผนที่ความร้อนแบบ mask-to-heatmap overlay เพื่ออธิบายผลลัพธ์ให้ผู้ใช้เข้าใจ
 
-* **UC-06: รับการแจ้งเตือน (Receive Push Notification):**
+* **UC-06: รับการแจ้งเตือน (Receive Push Notification) — Phase 2:**
   * **ผู้เกี่ยวข้อง (Actors):** General User
-  * **รายละเอียด:** การรับข้อความการแจ้งเตือนแบบพุช (Push Notification) ผ่านระบบ Firebase Cloud Messaging (FCM) เมื่อระบบทำการตรวจสอบวิเคราะห์รูปภาพบนเซิร์ฟเวอร์เบื้องหลัง (Background Task) เสร็จสิ้นสมบูรณ์
-  * **ความต้องการทางระบบ (FR):** FR-06 - ระบบแจ้งเตือน (Push Notification): ระบบสามารถส่งข้อความแจ้งเตือนผู้ใช้งานผ่าน Firebase Cloud Messaging (FCM) เมื่อการวิเคราะห์ภาพเบื้องหลัง (Background Task) เสร็จสิ้น
+  * **รายละเอียด:** การรับข้อความการแจ้งเตือนแบบพุช (Push Notification) ผ่านระบบ Firebase Cloud Messaging (FCM) เมื่อระบบทำการตรวจสอบวิเคราะห์รูปภาพบนเซิร์ฟเวอร์เบื้องหลัง (Background Task) เสร็จสิ้นสมบูรณ์ (เริ่ม Phase 2; v1 ใช้ polling + in-app — มติ DOC-06)
+  * **ความต้องการทางระบบ (FR):** FR-06 - ระบบแจ้งเตือน (Push Notification, Phase 2): ระบบสามารถส่งข้อความแจ้งเตือนผู้ใช้งานผ่าน Firebase Cloud Messaging (FCM) เมื่อการวิเคราะห์ภาพเบื้องหลัง (Background Task) เสร็จสิ้น
 
 * **UC-07: จัดการประวัติการสแกน (History Management):**
   * **ผู้เกี่ยวข้อง (Actors):** General User

@@ -24,8 +24,8 @@
 
 ### 1.2 Total Rows
 
-- **Total AC:** 98 (75 FR + 23 NFR)
-- **Total Rows:** 98 rows (one per AC)
+- **Total AC:** 104 (83 FR + 21 NFR)
+- **Total Rows:** 104 rows (one per AC)
 
 ---
 
@@ -198,10 +198,10 @@ Row,ST,OBJ,SC,RC,FR/NFR,AC,AC Description,Priority,Status,Evidence
 
 | Priority | AC Count | Percentage |
 |----------|----------|------------|
-| Must | 96 | 97.0% |
-| Should | 2 | 2.0% |
+| Must | 102 | 98.1% |
+| Should | 2 | 1.9% |
 | Could | 0 | 0% |
-| **Total** | **98** | **100%** |
+| **Total** | **104** | **100%** |
 
 ---
 
@@ -209,9 +209,9 @@ Row,ST,OBJ,SC,RC,FR/NFR,AC,AC Description,Priority,Status,Evidence
 
 | Type | FR/NFR Count | AC Count | Avg AC per Requirement |
 |------|--------------|----------|------------------------|
-| Functional (FR) | 19 | 75 | 3.95 |
-| Non-Functional (NFR) | 7 | 23 | 3.29 |
-| **Total** | **26** | **98** | **3.77** |
+| Functional (FR) | 19 | 83 | 4.37 |
+| Non-Functional (NFR) | 7 | 21 | 3.00 |
+| **Total** | **26** | **104** | **4.00** |
 
 ---
 
@@ -219,7 +219,7 @@ Row,ST,OBJ,SC,RC,FR/NFR,AC,AC Description,Priority,Status,Evidence
 
 ### 5.1 Complete Chain (ST → OBJ → SC → RC → FR/NFR → AC)
 
-✅ **All 98 AC have complete traceability chain**
+✅ **All 104 AC have complete traceability chain**
 
 - ทุก AC สามารถตรวจสอบย้อนกลับถึง Stakeholder ได้
 - ไม่มี Orphan AC (AC ที่ไม่มี FR/NFR)

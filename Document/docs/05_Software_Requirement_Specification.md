@@ -535,7 +535,7 @@ Acceptance Criteria:
 **AC-2: ปฏิเสธการรายงานซ้ำ**
 - **Input:** scan_id ที่เคยรายงานแล้ว
 - **Processing:** ตรวจสอบ report_id ที่มี scan_id นี้แล้ว
-- **Expected Output:** HTTP 400, Error Message: "You have already reported this scan"
+- **Expected Output:** HTTP 409, Error Message: "You have already reported this scan" (ตรงกับ code + overview)
 
 **AC-3: ปฏิเสธคำอธิบายสั้นเกินไป**
 - **Input:** description = "ปลอม" (< 10 ตัวอักษร)
@@ -993,17 +993,18 @@ Acceptance Criteria:
 - **Total Requirements:** 26 (19 FR + 7 NFR)
 - **Must:** 25 (96.2%)
 - **Should:** 1 (3.8%)
-- **Total Acceptance Criteria:** 98 (75 FR + 23 NFR)
+- **Total Acceptance Criteria:** 104 (83 FR + 21 NFR)
   - Increased from 92 due to:
     - XAI Controls: +2 AC (Toggle Button, Opacity Slider)
     - Monitoring & Alerting: +2 AC
     - Precision & Recall: +2 AC
+  - Increased from 98 to 104 by subsequent AC additions (e.g. FR-ANALYSIS-04 AC-7) — recount verified 2026-09-11 (DOC-13)
 
 ---
 
 ## 5. Document Summary
 
-เอกสาร Software Requirement Specification ฉบับนี้แปลง **49 Requirement Candidates** เป็น **26 Formal Requirements** (19 FR + 7 NFR) พร้อม **98 Acceptance Criteria** ที่สามารถทดสอบได้
+เอกสาร Software Requirement Specification ฉบับนี้แปลง **49 Requirement Candidates** เป็น **26 Formal Requirements** (19 FR + 7 NFR) พร้อม **104 Acceptance Criteria** ที่สามารถทดสอบได้
 
 **Key Highlights:**
 - ✅ **Complete Traceability:** ST → OBJ → SC → RC → FR/NFR → AC

@@ -206,7 +206,7 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 | RC-ANALYSIS-01 | Textual Analysis | FR-ANALYSIS-01 | Textual Analysis (OCR + NLP) | 5 |
 | RC-ANALYSIS-02, 03, 04 | Visual Analysis | FR-ANALYSIS-02 | Visual Analysis (Forgery + AI-Gen) | 5 |
 | RC-ANALYSIS-05 | Source Analysis | FR-ANALYSIS-03 | Source Analysis (Reverse Search) | 4 |
-| RC-ANALYSIS-07, 08 | Risk Calculation | FR-ANALYSIS-04 | Risk Score Calculation | 6 |
+| RC-ANALYSIS-07, 08 | Risk Calculation | FR-ANALYSIS-04 | Risk Score Calculation | 7 |
 
 **Note:** RC-ANALYSIS-06 (EXIF Extraction) ถูกจัดเป็น Priority: Should และยังไม่ได้สร้าง FR แยก (รวมอยู่ใน FR-ANALYSIS-03)
 
@@ -252,7 +252,7 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 | ST01 | OBJ-01 | SC01 | RC-SCAN-01 | FR-SCAN-01 | 3 ACs | ✅ Complete |
 | ST01 | OBJ-01 | SC01 | RC-SCAN-02 | FR-SCAN-01 | (merged) | ✅ Complete |
 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-01 | FR-ANALYSIS-01 | 5 ACs | ✅ Complete |
-| ST01 | OBJ-03 | SC02 | RC-ANALYSIS-07 | FR-ANALYSIS-04 | 6 ACs | ✅ Complete |
+| ST01 | OBJ-03 | SC02 | RC-ANALYSIS-07 | FR-ANALYSIS-04 | 7 ACs | ✅ Complete |
 | ST01 | OBJ-04 | SC01 | RC-XAI-02 | FR-XAI-01 | 4 ACs | ✅ Complete |
 | ST01 | OBJ-04 | SC01 | RC-NFR-09 | NFR-06 | 2 ACs | ✅ Complete |
 
@@ -340,9 +340,9 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 **Result:** ✅ **No Orphan AC Detected**
 
 ทุก AC ถูกกำหนดภายใต้ FR/NFR:
-- Total AC: 98 (increased from 92)
-- FR AC: 75 (3.95 per FR average)
-- NFR AC: 23 (3.29 per NFR average)
+- Total AC: 104 (increased from 92; recount DOC-13)
+- FR AC: 83 (4.37 per FR average)
+- NFR AC: 21 (3.00 per NFR average)
 
 ---
 
@@ -447,7 +447,7 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 
 | Affected Item | Impact | Mitigation |
 |--------------|--------|------------|
-| FR-ANALYSIS-04 | AC-1 to AC-6 ต้องคำนวณใหม่ | Update test data |
+| FR-ANALYSIS-04 | AC-1 to AC-7 ต้องคำนวณใหม่ | Update test data |
 | 03_Architecture | Update Pipeline diagram | Revise documentation |
 | Database Schema | scans.risk_score ไม่ต้องเปลี่ยน | No schema change |
 
@@ -509,7 +509,7 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 | Non-Functional (NFR) | 23 | 1-2 | 23-46 TCs |
 | Integration Tests | — | — | 20-30 TCs |
 | E2E Tests | — | — | 10-15 TCs |
-| **Total** | **98** | | **203-316 TCs** |
+| **Total** | **104** | | **203-316 TCs** |
 
 **Updated:** Total AC increased from 85 to 98 (+13 AC)
 
@@ -528,7 +528,7 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 | **Must RC Coverage** | 62.5% (25/40 Must RCs) | ✅ Good |
 | **Should RC Coverage** | 12.5% (1/8 Should RCs) | ⚠️ Deferred |
 | **Orphan Requirements** | 0 (0/26 FR/NFR) | ✅ Excellent |
-| **Orphan AC** | 0 (0/98 ACs) | ✅ Excellent |
+| **Orphan AC** | 0 (0/104 ACs) | ✅ Excellent |
 
 ---
 
@@ -537,9 +537,9 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 | Metric | Value | Status |
 |--------|-------|--------|
 | **Total Requirements** | 26 (19 FR + 7 NFR) | ✅ Appropriate |
-| **Total Acceptance Criteria** | 98 | ✅ Comprehensive |
-| **Average AC per FR** | 3.95 | ✅ Good |
-| **Average AC per NFR** | 3.29 | ✅ Adequate |
+| **Total Acceptance Criteria** | 104 | ✅ Comprehensive |
+| **Average AC per FR** | 4.37 | ✅ Good |
+| **Average AC per NFR** | 3.00 | ✅ Adequate |
 | **Consistency Check Pass Rate** | 100% (11/11 checks) | ✅ Excellent |
 | **Completeness** | 100% | ✅ All Requirements Specified |
 | **Deferred RC Count** | 9 (Should + Could) | ✅ Planned |
@@ -565,7 +565,7 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 
 ✅ **All Requirements Complete:**
 - 26 FR/NFR (19 FR + 7 NFR) ครบถ้วน
-- 98 Acceptance Criteria ครบถ้วน
+- 104 Acceptance Criteria ครบถ้วน
 - 100% Traceability Chain (ST → OBJ → SC → RC → FR/NFR → AC)
 - Evidence-Based with Wiki/Documentation References
 - Ready for Implementation และ Testing
@@ -580,7 +580,7 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 3. **Data Retention Automation (RC-PDPA-04)** — Cron Job implementation
 
 **Test Development:**
-- สร้าง 203-316 Test Cases จาก 98 Acceptance Criteria
+- สร้าง 203-316 Test Cases จาก 104 Acceptance Criteria
 - Integration Testing: 20-30 Test Cases
 - End-to-End Testing: 10-15 Test Cases
 
@@ -610,13 +610,13 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 เอกสาร Requirement Traceability Matrix ฉบับนี้แสดงความสัมพันธ์แบบ End-to-End ของทุก Requirements ใน ScamGuard Project:
 
 **Traceability Chain:**
-- **Stakeholders (3)** → **Objectives (4)** → **Scopes (4)** → **Requirement Candidates (49)** → **FR/NFR (26)** → **Acceptance Criteria (98)**
+- **Stakeholders (3)** → **Objectives (4)** → **Scopes (4)** → **Requirement Candidates (49)** → **FR/NFR (26)** → **Acceptance Criteria (104)**
 
 **Key Findings:**
 - ✅ **100% Stakeholder Coverage** — ทุก Stakeholder Need ถูกแปลงเป็น Objectives
 - ✅ **100% Objective Coverage** — ทุก Objective ถูกแปลงเป็น Scope และ Requirements
 - ✅ **0 Orphan Requirements** — ทุก FR/NFR มี Traceability ครบถ้วน
-- ✅ **98 Testable AC** — ทุก Requirement มี Acceptance Criteria ที่ทดสอบได้ (เพิ่มจาก 92)
+- ✅ **104 Testable AC** — ทุก Requirement มี Acceptance Criteria ที่ทดสอบได้ (เพิ่มจาก 92)
 - ✅ **All TODOs Resolved** — 20/20 TODOs (100%)
 - ✅ **100% RC Addressed** — 49/49 RCs (Converted, Merged, or Clarified)
 
@@ -631,7 +631,7 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 - ✅ 20 TODOs Resolved (100%)
 - ✅ 49 RCs Addressed (100%)
 - ✅ 26 FR/NFR Defined (100%)
-- ✅ 98 AC Specified (100%)
+- ✅ 104 AC Specified (100%)
 - ✅ Monitoring Strategy Complete
 - ✅ UAT Plan Complete
 - ✅ Performance Tuning Strategy Complete

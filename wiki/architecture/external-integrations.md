@@ -33,11 +33,11 @@ updated: 2026-08-02
 
 ---
 
-## Firebase Cloud Messaging (FCM)
+## Firebase Cloud Messaging (FCM) — Phase 2 (v1 ใช้ polling + in-app)
 
 **ผู้ให้บริการ:** Google Firebase
 
-**หน้าที่:** Push Notification สำหรับการวิเคราะห์แบบ Asynchronous
+**หน้าที่:** Push Notification สำหรับการวิเคราะห์แบบ Asynchronous (เริ่ม Phase 2 — มติ DOC-06)
 
 **การทำงาน:**
 

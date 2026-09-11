@@ -51,7 +51,7 @@ flowchart TD
 
     %% Admin Portal Details
     AdminPortal --> AD1("RBAC & Dashboard")
-    AdminPortal --> AD2("User Management CRUD")
+    AdminPortal --> AD2("User Management Read/Update")
     AdminPortal --> AD3("Scam Report Queue")
     AdminPortal --> AD4("Model Update Console")
 

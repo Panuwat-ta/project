@@ -583,7 +583,7 @@ Requirement Candidates ถูกสกัดจาก:
 
 ---
 
-#### RC-ADMIN-02: User Management (CRUD)
+#### RC-ADMIN-02: User Management (Read/Update — ไม่มีสร้าง/ลบบัญชี)
 **Description:** Admin ต้องสามารถจัดการผู้ใช้งาน (Read, Update Operations)  
 **Source:** scop.md, Section: SC04 — งานพัฒนาระบบควบคุมสิทธิ์ผู้ดูแลระบบ  
 **Related Stakeholder:** ST02  

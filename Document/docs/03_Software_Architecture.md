@@ -214,7 +214,7 @@ flowchart TB
 **Main Modules:**
 1. Authentication & Authorization
 2. Dashboard & Analytics
-3. User Management (CRUD)
+3. User Management (Read/Update — ดู + เปิด/ปิดบัญชี, ไม่มีสร้าง/ลบบัญชี)
 4. Report Management
 5. Model Management
 6. Audit Logs Viewer
@@ -804,7 +804,7 @@ sequenceDiagram
 | **Storage** | Cache | Redis | Image hash caching |
 | **Storage** | Object Storage | Cloud Storage (S3/GCS) | Image & heatmap files |
 | **Storage** | Database | PostgreSQL | Relational data |
-| **External** | Notification | Firebase Cloud Messaging | Push notifications |
+| **External** | Notification | Firebase Cloud Messaging (Phase 2) | Push notifications |
 | **External** | Image Search | Google Vision API | Reverse image search |
 
 **Evidence:**
@@ -827,7 +827,7 @@ sequenceDiagram
 - Role-Based Access Control (RBAC)
   - General User: Read own data, Create scans, Report images
   - Researcher: เข้าถึงข้อมูลเพื่อการวิจัย
-  - Admin: Full CRUD, Review reports, Manage users (Phase 2 สำหรับ Moderator/Viewer)
+  - Admin: Read/Update users (ดู + เปิด/ปิดบัญชี), Review reports, Manage users (Phase 2 สำหรับ Moderator/Viewer)
 
 **Evidence:**
 - File: project/Document/srs-doc.md

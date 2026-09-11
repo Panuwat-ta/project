@@ -20,7 +20,7 @@
    - ตรวจวัดเวลาประมวลผลการวิเคราะห์เต็มรูปแบบของ AI Pipeline (<= 15 วินาที)
    - ความสามารถในการรองรับโหลดพร้อมกัน (Concurrency) ตั้งแต่ 50 ถึง 200 ผู้ใช้เสมือน (Virtual Users)
 2. **ความมั่นคงปลอดภัย (Security & Hardening)**:
-   - การตรวจสอบความถูกต้องของไฟล์อัปโหลด (Magic Bytes & Content-Type Validation Server ปฏิเสธเกิน 20MB ด้วย HTTP 413 และปฏิเสธภาพเกิน 100M px อัตรา default 60/hour)
+   - การตรวจสอบความถูกต้องของไฟล์อัปโหลด (Magic Bytes & Content-Type Validation Server ปฏิเสธเกิน 20MB ด้วย HTTP 413 และปฏิเสธภาพเกิน 100M px; rate limit แบบ tier ต่อนาที)
    - การป้องกันช่องโหว่ OWASP Top 10 (Injection, Broken Access Control, Security Misconfiguration)
    - การจัดการความลับ (Zero Hardcoded Secrets) และการบังคับใช้ HTTPS/TLS
 3. **การคุ้มครองข้อมูลส่วนบุคคล (Data Privacy & PDPA)**:

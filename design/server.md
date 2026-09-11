@@ -134,7 +134,7 @@ server/
 | `MAX_IMAGE_PIXELS` | จำนวนพิกเซลรูปภาพสูงสุดที่ยอมรับ (ป้องกัน Decompression Bomb) |
 | `ONNX_MODEL_PATH` | Path ไฟล์โมเดล ONNX ที่ Worker โหลดใช้งาน |
 | `ONNX_TILE_OVERLAP` | ค่า Overlap (พิกเซล) ระหว่าง Tile ใน Tiled Inference |
-| `RATE_LIMIT_PER_HOUR` | จำนวนครั้งสูงสุดที่เรียก API ได้ต่อชั่วโมง (60) |
+| `RATE_LIMIT_GUEST_PER_MINUTE` / `RATE_LIMIT_USER_PER_MINUTE` / `RATE_LIMIT_ADMIN_PER_MINUTE` / `RATE_LIMIT_SCAN_CREATE_PER_MINUTE` | tier ต่อนาทีแยกตาม role: guest 10 / user 60 / admin 300 / POST scan 5 (มติ DOC-02) |
 
 ---
 
@@ -343,7 +343,7 @@ CREATE INDEX idx_scam_reports_created_at ON scam_reports(created_at);
 
 ### 5.3 หมวดการรายงานสแกมเมอร์ (Report Endpoints)
 
-#### 5.3.1 POST /api/v1/report
+#### 5.3.1 POST /api/v1/reports
 แจ้งรายงานภาพหลอกลวงเข้าสู่คลิปประวัติกลางของระบบ
 * **Auth:** ต้องแนบ User JWT (Bearer Token)
 * **Request Body (JSON):**

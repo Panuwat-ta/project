@@ -322,7 +322,7 @@
 ### 4.3 External System Responsibilities (สิ่งที่ระบบภายนอกทำ)
 
 1. **Google Vision API:** ค้นหาแหล่งที่มาของภาพบนอินเทอร์เน็ต
-2. **Firebase Cloud Messaging:** ส่งการแจ้งเตือนไปยังอุปกรณ์ของผู้ใช้
+2. **Firebase Cloud Messaging:** ส่งการแจ้งเตือนไปยังอุปกรณ์ของผู้ใช้ (Phase 2 — มติ DOC-06)
 3. **Cloud Storage Provider:** จัดเก็บไฟล์รูปภาพและ Heatmap อย่างปลอดภัย
 
 **Evidence:**

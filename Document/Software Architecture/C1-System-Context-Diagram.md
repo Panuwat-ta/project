@@ -21,7 +21,7 @@ flowchart TD
         
         ExtSearch("Reverse Image Search Provider<br>[External System]<br>Google Vision API / Bing Visual Search<br>(Used to find similar images on the web)")
         
-        ExtNotify("Push Notification Service<br>[External System]<br>Firebase Cloud Messaging (FCM)<br>(Sends alerts/results to mobile)")
+        ExtNotify("Push Notification Service (Phase 2)<br>[External System]<br>Firebase Cloud Messaging (FCM)<br>(Sends alerts/results to mobile)")
 
         %% Relationships (เส้นเชื่อมโยง)
         User -- "1. อัปโหลดรูปเพื่อตรวจสอบ<br>2. ดูรายงานความเสี่ยง" --> System
@@ -73,8 +73,8 @@ flowchart TD
 * **สิ่งที่ได้กลับมา:** แหล่งที่มาของภาพ (Similar URLs) เช่น ถ้าเป็นรูปโปรไฟล์สาวสวย แต่ไปเจอว่าเป็นดาราเกาหลี ก็แสดงว่าปลอมแน่นอน
 
 
-* **Push Notification Service :**
-* **คืออะไร:** บริการส่งการแจ้งเตือน 
+* **Push Notification Service (Phase 2 — v1 ใช้ polling + in-app):**
+* **คืออะไร:** บริการส่งการแจ้งเตือน (เริ่ม Phase 2)
 * **ทำไมต้องใช้:** การวิเคราะห์รูปภาพอาจใช้เวลา (2-10 วินาที หรือมากกว่า) เราจึงไม่ให้ผู้ใช้รอนิ่งๆ หน้าจอ แต่เมื่อระบบประมวลผลเสร็จ จะส่งข้อมูล (Payload) ไปที่ FCM เพื่อเด้งแจ้งเตือนที่มือถือผู้ใช้ว่า "ตรวจสอบเสร็จแล้ว!"
 
 
@@ -86,6 +86,6 @@ flowchart TD
 1. **User** อัปโหลดรูปสลิปโอนเงินที่สงสัยเข้ามาใน **App**
 2. **App** ส่งรูปนั้นไปเช็คกับ **Google/Bing (External)** ว่ารูปนี้ไปก๊อปมาจากเว็บไหนไหม
 3. **App** ประมวลผลภายใน (เช็คการตัดต่อ/AI)
-4. เมื่อได้ผลลัพธ์ครบ **App** สั่งงาน **FCM (External)** ให้แจ้งเตือนผู้ใช้
+4. เมื่อได้ผลลัพธ์ครบ **App** แจ้งเตือนผู้ใช้ในแอป (v1 polling; FCM เป็น Phase 2)
 5. **User** เปิดดูผลลัพธ์คะแนนความเสี่ยง
 6. (Optional) หากเป็นเคสใหม่ **Admin** จะเข้ามาตรวจสอบข้อมูลเพื่อปรับปรุงระบบในภายหลัง
