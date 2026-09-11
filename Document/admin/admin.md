@@ -72,6 +72,8 @@ flowchart TD
 | `researcher` | นักวิจัย/ทีมพัฒนา | สิทธิ์ `user` ทั้งหมด + เข้าถึง Anonymized Dataset สำหรับพัฒนาโมเดล AI |
 | `admin` | ผู้ดูแลระบบ | สิทธิ์ทั้งหมด + Dashboard, ตรวจสอบรายงานสแกม, จัดการผู้ใช้, อัปเดตโมเดล AI, Export Dataset |
 
+> **หมายเหตุความจริงของ code (มติ DOC-09):** บัญชีแอดมินพอร์ทัลอยู่ในตาราง `admins` แยกต่างหาก (มี `is_superadmin`, session ใน `admin_sessions`, login ผ่าน `POST /api/v1/admin/login`) ไม่ใช่ `users.role = admin` — ค่า `admin` ใน `users.role` เป็น legacy ที่ code ใช้อ่านแค่จุดเดียว (`GET /scan/{id}` ให้ดูสแกนของคนอื่นได้) ส่วน `scam_reports.moderated_by` อ้างอิง `admins(id)` ไม่ใช่ `users(id)`
+
 ### 2.1 การตรวจสอบสิทธิ์ (Authorization Flow)
 
 ```mermaid
@@ -164,7 +166,7 @@ CREATE TABLE scam_reports (
     allow_research_use BOOLEAN NOT NULL DEFAULT FALSE,
     status VARCHAR(20) NOT NULL DEFAULT 'pending',  -- pending, reviewing, approved, rejected
     admin_note TEXT,
-    moderated_by INTEGER REFERENCES users(id),
+    moderated_by INTEGER REFERENCES admins(id),
     moderated_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -837,7 +839,7 @@ dataset_20260806.zip
 ```sql
 CREATE TABLE audit_log (
     id SERIAL PRIMARY KEY,
-    admin_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    admin_id INTEGER REFERENCES admins(id) ON DELETE SET NULL,
     action VARCHAR(100) NOT NULL,
     details TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -1222,7 +1224,7 @@ async def deploy_model(db: AsyncSession, model_id: int, admin_id: int):
 | FR-ADMIN-01 | Admin ดูสถิติภาพรวมระบบ และจัดการบัญชีผู้ใช้ (ดูข้อมูล, Ban) | `GET /api/v1/admin/dashboard`, `GET/PATCH /api/v1/admin/users/{id}` |
 | FR-ADMIN-02 | Admin ตรวจสอบ Scam Report และอนุมัติ/ปัดตก (รวมถึง Export Dataset) | `GET/PATCH /api/v1/admin/reports/{id}`, `POST /api/v1/admin/dataset/export` |
 | FR-ADMIN-03 | Admin อัปโหลดและ Deploy โมเดล AI | `POST /api/v1/admin/models`, `POST .../deploy` |
-| FR-ADMIN-04 | Admin ดู Audit Logs (ประวัติการกระทำของผู้ดูแลระบบ) | `GET /api/v1/admin/audit_logs` |
+| FR-ADMIN-04 | Admin ดู Audit Logs (ประวัติการกระทำของผู้ดูแลระบบ) | `GET /api/v1/admin/audit-logs` |
 
 ---
 

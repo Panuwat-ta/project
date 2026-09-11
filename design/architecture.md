@@ -365,8 +365,8 @@ $$
 
 ### A.5 ตารางฐานข้อมูลเพิ่มเติม (PostgreSQL)
 
-* `models` — Model Registry: เก็บเวอร์ชันโมเดล AI (id, version, file_path, status, accuracy)
-* `audit_logs` — บันทึกการดำเนินการของ Admin แบบ Immutable (id, admin_id, action, details)
+* `model_versions` — Model Registry: เก็บเวอร์ชันโมเดล AI (id, version, file_path, status, accuracy)
+* `audit_log` — บันทึกการดำเนินการของ Admin แบบ Immutable (id, admin_id, action, details)
 
 ### A.6 Use-Case Index (UC-01 – UC-10)
 
