@@ -12,12 +12,13 @@ router = APIRouter()
 @router.post("", response_model=ReportSubmitResponse, status_code=201)
 @limiter.limit(USER_LIMIT)
 async def create_report(
-    request: ReportCreateRequest,
+    request: Request,
+    body: ReportCreateRequest,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     """POST /api/v1/reports - ผู้ใช้รายงานภาพหลอกลวง"""
-    report = await report_service.create_report(db, current_user.id, request)
+    report = await report_service.create_report(db, current_user.id, body)
     return {
         "id": report.id,
         "scan_id": report.scan_id,
