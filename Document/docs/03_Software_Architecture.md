@@ -41,7 +41,7 @@
 
 **External Systems:**
 - **Reverse Image Search Provider** — Google Vision API / Bing Visual Search สำหรับค้นหาแหล่งที่มาของภาพ
-- **Push Notification Service** — Firebase Cloud Messaging (FCM) สำหรับส่งการแจ้งเตือนแบบ Async
+- **Push Notification Service** — Firebase Cloud Messaging (FCM) สำหรับส่งการแจ้งเตือนแบบ Async (Phase 2; v1 ใช้ polling + in-app)
 
 ### 2.2 System Context Diagram
 
@@ -64,7 +64,7 @@ flowchart TD
         
         ExtSearch("Reverse Image Search<br>[External System]<br>Google Vision API")
         
-        ExtNotify("Push Notification<br>[External System]<br>Firebase FCM")
+        ExtNotify("Push Notification (Phase 2)<br>[External System]<br>Firebase FCM")
 
         %% Relationships
         User -- "1. อัปโหลดรูปภาพ<br>2. เรียกดูผลวิเคราะห์" --> System
@@ -106,7 +106,7 @@ flowchart TD
 7. **Main Database (PostgreSQL)** — ฐานข้อมูลหลักเชิงสัมพันธ์
 
 #### **External Services**
-8. **Push Notification Service (FCM)** — ส่งการแจ้งเตือน
+8. **Push Notification Service (FCM, Phase 2)** — ส่งการแจ้งเตือน
 9. **Reverse Image Search (Google Vision API)** — ค้นหาแหล่งที่มาของภาพ
 
 ### 3.2 Container Diagram
@@ -144,7 +144,7 @@ flowchart TB
     end
 
     subgraph Externals [External Services]
-        PushService("FCM<br>[External]")
+        PushService("FCM (Phase 2)<br>[External]")
         ReverseSearch("Google Vision<br>[External]")
     end
 
@@ -362,10 +362,10 @@ flowchart TB
 
 ### 4.8 External Services
 
-#### 4.8.1 Push Notification Service (FCM)
+#### 4.8.1 Push Notification Service (FCM) — Phase 2 (v1 ใช้ polling + in-app)
 
 **Service:** Firebase Cloud Messaging  
-**Purpose:** ส่งการแจ้งเตือนไปยังแอปมือถือเมื่อการประมวลผลเสร็จสิ้น
+**Purpose:** ส่งการแจ้งเตือนไปยังแอปมือถือเมื่อการประมวลผลเสร็จสิ้น (เริ่ม Phase 2; มติ DOC-06, 2026-09-11)
 
 **Use Cases:**
 - การวิเคราะห์เสร็จสิ้น (Analysis Complete)
@@ -418,7 +418,7 @@ flowchart TB
         ↓
 [Store Results (PostgreSQL + Object Storage)]
         ↓
-[Send Notification (FCM)]
+[Send Notification (in-app/polling; FCM Phase 2)]
         ↓
 [User Views Result]
 ```
