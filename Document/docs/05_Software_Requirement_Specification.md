@@ -524,7 +524,7 @@ Acceptance Criteria:
 **Acceptance Criteria:**
 
 **AC-1: รายงานสำเร็จ**
-- **Input:** POST /reports, Body: `{scan_id, category: "slip_fraud", description: "สลิปโอนเงินปลอม จำนวนเงินถูกแก้ไข"}`
+- **Input:** POST /reports, Body: `{scan_id, category: "fake_slip", description: "สลิปโอนเงินปลอม จำนวนเงินถูกแก้ไข"}`
 - **Processing:** 
   - ตรวจสอบ scan_id เป็นของผู้ใช้
   - ตรวจสอบไม่เคยรายงาน scan นี้แล้ว
@@ -543,9 +543,9 @@ Acceptance Criteria:
 - **Expected Output:** HTTP 400, Error Message: "Description must be at least 10 characters"
 
 **AC-4: หมวดหมู่รายงาน**
-- **Input:** category ∈ {slip_fraud, profile_scam, ad_scam, other}
-- **Processing:** Validate category
-- **Expected Output:** ถูกต้อง หรือ HTTP 400 ถ้า category ไม่ถูกต้อง
+- **Input:** category ∈ {romance_scam, online_shopping, fake_slip, investment, identity_theft, ai_deepfake, other} (7 keys มาตรฐาน backend — มติ DOC-08)
+- **Processing:** Validate category (นอกเซ็ต → 422)
+- **Expected Output:** ถูกต้อง หรือ HTTP 422 ถ้า category ไม่ถูกต้อง
 
 ---
 
