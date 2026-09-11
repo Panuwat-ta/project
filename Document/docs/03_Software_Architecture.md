@@ -870,8 +870,8 @@ sequenceDiagram
 
 **Input Validation:**
 - File Type Check (MIME type validation)
-- File Size Limit (Max 10 MB)
-- Image Dimension Limit (Max 4096×4096)
+- File Size Limit (Mobile 10 MB client-side / API Server Max 20 MB → 413)
+- Image Pixel Limit (Max 100M pixels หลัง decode → error)
 - SQL Injection Prevention (Parameterized Queries)
 - XSS Prevention (Input Sanitization)
 

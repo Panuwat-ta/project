@@ -92,8 +92,8 @@
 
 | Decision Area | Specification | Rationale | Evidence Source |
 |---------------|---------------|-----------|-----------------|
-| **Max File Size** | 10 MB | สมดุลระหว่างคุณภาพและเวลาอัปโหลด | Project Decision |
-| **Max Resolution** | 10,000 × 10,000 พิกเซล | ป้องกัน Memory Overflow และ DoS Attack | Project Decision |
+| **Max File Size** | Mobile 10 MB (client-side check) / API Server 20 MB (413 ถ้าเกิน) | สมดุลระหว่างคุณภาพและเวลาอัปโหลด (มติ DOC-03, 2026-09-11 — ตรงกับ code + SRS) | Project Decision |
+| **Max Resolution** | ภาพหลัง decode ≤ 100 ล้านพิกเซล (PIL `MAX_IMAGE_PIXELS`) | ป้องกัน Memory Overflow และ DoS Attack | Project Decision |
 | **Min Resolution** | ไม่จำกัด (แนะนำ ≥ 512×512) | ให้ผู้ใช้ตัดสินใจเอง แต่แจ้งเตือนว่าความแม่นยำลดลง | Project Decision |
 
 ---
