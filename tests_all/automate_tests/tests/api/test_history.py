@@ -1,4 +1,5 @@
 """History & report"""
+import uuid
 import pytest
 from helpers.api_client import get_client, api_url
 from helpers.auth_helper import register_and_login, auth_header
@@ -39,7 +40,7 @@ async def test_report_create():
 
         r = await client.post(api_url("/reports"), headers=headers, json={
             "scan_id": str(scan_id),
-            "category": "fake_image",
+            "category": "fake_slip",
             "description": "test report from automate suite - scam image detected",
             "allow_research_use": False,
         })
@@ -50,6 +51,21 @@ async def test_report_create():
         # ตรวจ /reports/my ด้วย
         r2 = await client.get(api_url("/reports/my"), headers=headers)
         assert r2.status_code == 200, r2.text
+
+@pytest.mark.api
+@pytest.mark.asyncio
+async def test_report_invalid_category():
+    # DOC-08: category นอก 7 keys มาตรฐานต้องถูกปัดด้วย 422 (validate ที่ schema ก่อนถึง DB)
+    user = await register_and_login()
+    headers = auth_header(user["token"])
+    async with get_client() as client:
+        r = await client.post(api_url("/reports"), headers=headers, json={
+            "scan_id": str(uuid.uuid4()),
+            "category": "fake_image",
+            "description": "test report from automate suite - scam image detected",
+            "allow_research_use": False,
+        })
+        assert r.status_code == 422, r.text
 
 @pytest.mark.api
 @pytest.mark.asyncio
