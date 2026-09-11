@@ -18,7 +18,7 @@ updated: 2026-08-02
 
 | Container | เทคโนโลยีหลัก | ความรับผิดชอบหลัก (Lead: ภานุวัฒน์ 70% / เอกพันธ์ 30%) |
 | :--- | :--- | :--- |
-| Mobile App | Flutter (cross-platform: android/ + ios/ + web/) | ภานุวัฒน์ (Lead) + เอกพันธ์ (ร่วมพัฒนาหน้าจอ/ทดสอบ) |
+| Mobile App | Flutter (v1: android/; ios/ + web/ เป็น future) | ภานุวัฒน์ (Lead) + เอกพันธ์ (ร่วมพัฒนาหน้าจอ/ทดสอบ) |
 | API Backend | Python FastAPI | ภานุวัฒน์ |
 | AI Inference Engine | PyTorch / ONNX (SegFormer ตัวเดียว) | ภานุวัฒน์ |
 | Admin Portal | React.js | เอกพันธ์ (Lead) + ภานุวัฒน์ (ร่วมพัฒนา/เชื่อม Backend API) |
