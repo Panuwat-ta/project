@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import Request, APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import func, desc, or_
 from uuid import UUID
 import os
 
+from app.core.rate_limit import limiter, GUEST_LIMIT, USER_LIMIT, ADMIN_LIMIT, SCAN_CREATE_LIMIT
 from app.core.database import get_db
 from app.api.deps import get_current_user
 from app.models.user import User
@@ -15,7 +16,8 @@ from app.utils.risk_calculator import calculate_risk_score
 router = APIRouter()
 
 @router.get("", response_model=HistoryListResponse)
-async def get_history(
+@limiter.limit(USER_LIMIT)
+async def get_history(request: Request, 
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
     keyword: str = Query(None),
@@ -89,7 +91,8 @@ async def get_history(
     )
 
 @router.get("/{scan_id}", response_model=HistoryItemResponse)
-async def get_history_item(
+@limiter.limit(USER_LIMIT)
+async def get_history_item(request: Request, 
     scan_id: UUID,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
@@ -114,7 +117,8 @@ async def get_history_item(
     )
 
 @router.delete("/{scan_id}")
-async def delete_history_item(
+@limiter.limit(USER_LIMIT)
+async def delete_history_item(request: Request, 
     scan_id: UUID,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)

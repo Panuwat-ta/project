@@ -668,7 +668,7 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 |---------------|---------------|-----------------|
 | **Authentication** | Email OTP (6 หลัก, TTL: 10 นาที) | Project Decision |
 | **Social Login** | Google OAuth 2.0 only | Project Decision |
-| **Reverse Search Fallback** | Neutral Score = 50, status="unavailable" | Project Decision |
+| **Reverse Search Fallback** | source_status="unavailable" + แจ้งผู้ใช้ว่ายังไม่พร้อมใช้งาน (ไม่ใช้ Neutral 50; มติ DOC-01) | Project Decision |
 | **EXIF Metadata** | Display only, no risk calculation | Project Decision |
 | **OCR Text Search** | Not supported | Project Decision |
 | **Heatmap Deletion** | Delete with scan | Project Decision |

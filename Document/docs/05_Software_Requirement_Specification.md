@@ -360,13 +360,13 @@ Acceptance Criteria:
 - **Processing:** Google Vision API ไม่พบ Similar URLs
 - **Expected Output:** `source_urls: []`, `source_count: 0`, `source_score: 0`
 
-**AC-4: Fallback เมื่อ API Down**
-- **Input:** Google Vision API Down (HTTP 503)
+**AC-4: Fallback เมื่อ API Down (มติ DOC-01, 2026-09-11: ไม่ใช้ค่ากลางปลอม)**
+- **Input:** Google Vision API Down (HTTP 503) หรือยังไม่เชื่อมต่อจริง
 - **Processing:** 
   - ตรวจจับ Error
-  - คืนค่า Neutral Score = 50
-  - ตั้ง source_status = "unavailable"
-- **Expected Output:** `source_score: 50`, `source_status: "unavailable"`, `source_urls: []`
+  - ตั้ง source_status = "unavailable" และแจ้งผู้ใช้ว่าฟังก์ชันค้นหาแหล่งที่มาของภาพยังไม่พร้อมใช้งาน
+  - คำนวณคะแนนรวมจากมิติที่สำเร็จเท่านั้น (ตัดมิติ source ออก)
+- **Expected Output:** `source_status: "unavailable"`, ข้อความแจ้งผู้ใช้, `source_urls: []`
 
 ---
 

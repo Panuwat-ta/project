@@ -137,8 +137,9 @@
 
 | Decision Area | Specification | Rationale | Evidence Source |
 |---------------|---------------|-----------|-----------------|
-| **API Down Handling** | ตัดมิตินั้นทิ้ง คำนวณค่าสูงสุดจากมิติที่สำเร็จ | ไม่ควร Bias ด้วยค่ากลางปลอม | Project Decision |
-| **Status Field** | `source_status: "unavailable"` | แจ้งผู้ใช้ให้ทราบว่าข้อมูลนี้ไม่พร้อมใช้งาน | Project Decision |
+| **API Down Handling** | ตัดมิตินั้นทิ้ง คำนวณค่าสูงสุดจากมิติที่สำเร็จ ไม่ใช้ค่ากลางปลอม (มติ DOC-01, 2026-09-11) | ไม่ควร Bias ด้วยค่ากลางปลอม | Project Decision |
+| **Status Field** | `source_status: "unavailable"` + แจ้งผู้ใช้ว่าฟังก์ชันค้นหาแหล่งที่มาของภาพยังไม่พร้อมใช้งาน | แจ้งผู้ใช้ให้ทราบว่าข้อมูลนี้ไม่พร้อมใช้งาน | Project Decision |
+| **Interim Note** | ปัจจุบัน reverse search ยังไม่เชื่อมจริง code ใช้ค่าคงที่ชั่วคราว เมื่อเชื่อม Vision API จริงแล้วผลจะแสดงภายหลัง | ตรงไปตรงมากับผู้ใช้ระหว่างรอ integration | Project Decision |
 | **Retry Logic** | ไม่มี Auto-Retry | หาก API Down ผู้ใช้สามารถ Scan ใหม่ภายหลัง | Project Decision |
 
 ---
@@ -427,7 +428,7 @@
 |---|---------------|---------------|-----------------|
 | 1 | **Authentication** | Email OTP (6 หลัก, TTL: 10 นาที) | Project Decision |
 | 2 | **Social Login** | Google OAuth 2.0 only | Project Decision |
-| 3 | **Reverse Search Fallback** | Neutral Score = 50, status="unavailable" | Project Decision |
+| 3 | **Reverse Search Fallback** | source_status="unavailable" + แจ้งผู้ใช้ว่ายังไม่พร้อมใช้งาน (มติ DOC-01) | Project Decision |
 | 4 | **EXIF Metadata** | Display only, no risk calculation | Project Decision |
 | 5 | **OCR Text Search** | Not supported | Project Decision |
 | 6 | **Heatmap Deletion** | Delete with scan (Cascade) | Project Decision |

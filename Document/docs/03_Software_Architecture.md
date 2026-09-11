@@ -860,9 +860,13 @@ sequenceDiagram
 
 ### 9.3 API Security
 
-**Rate Limiting:**
-- Default: 60 requests/hour ต่อ IP/ผู้ใช้
-- การแบ่ง tier (Guest/Admin) เป็นแผนพัฒนาเพิ่มเติมในอนาคต
+**Rate Limiting (tiered ต่อนาที แยกตาม role — มติ DOC-02, 2026-09-11, implement แล้วใน `server/app/core/rate_limit.py`):**
+- Guest (public endpoints: register/login/refresh): 10 requests/minute ต่อ IP
+- Authenticated User (scan/history/reports/me/logout): 60 requests/minute ต่อ IP
+- Admin (`/admin/*`): 300 requests/minute ต่อ IP
+- `POST /api/v1/scan/`: 5 requests/minute (อัปโหลดภาพต้นทุนสูง)
+- Login/Refresh ฝั่ง user: 10 requests/minute (อยู่ใน guest tier); ฝั่ง admin (`/admin/login`, `/admin/refresh`): 5 requests/minute (กัน brute-force)
+- Key: IP address (`get_remote_address`); ตอบ HTTP 429 เมื่อเกิน
 
 **Input Validation:**
 - File Type Check (MIME type validation)
@@ -1050,7 +1054,7 @@ sequenceDiagram
 | Risk | Impact | Likelihood | Mitigation |
 |------|--------|------------|------------|
 | AI Inference Timeout (> 15s) | High | Medium | Queue-based processing, Async notifications, ONNX optimization |
-| Google Vision API Downtime | Medium | Low | ใช้ `DEFAULT_SOURCE_SCORE` และคำนวณ max จากมิติที่สำเร็จ (ตัดมิติที่ล้มเหลวทิ้ง ไม่ใช้ neutral 50) |
+| Google Vision API Downtime | Medium | Low | ตั้ง `source_status="unavailable"` แจ้งผู้ใช้ว่าฟังก์ชันยังไม่พร้อมใช้งาน คำนวณคะแนนจากมิติที่สำเร็จเท่านั้น ไม่ใช้ Neutral 50 (มติ DOC-01; ปัจจุบันยังไม่เชื่อมจริง code ใช้ค่าคงที่ชั่วคราว) |
 | Redis Cache Failure | Medium | Low | Fallback to Database, Auto-restart, Monitoring |
 | GPU Resource Exhaustion | High | Medium | Queue management, Auto-scaling, Batch processing |
 | False Positive (ภาพจริงแต่ระบบบอกว่าปลอม) | High | Medium | Threshold tuning, Human-in-the-loop (Admin review) |

@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import Request, APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from app.core.rate_limit import limiter, GUEST_LIMIT, USER_LIMIT, ADMIN_LIMIT, SCAN_CREATE_LIMIT
 from app.core.database import get_db
 from app.schemas.auth import (
     RegisterRequest, TokenResponse, UserResponse, RefreshTokenRequest
@@ -16,7 +17,8 @@ from app.api.deps import get_current_user
 router = APIRouter()
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-async def register(body: RegisterRequest, db: AsyncSession = Depends(get_db)):
+@limiter.limit(GUEST_LIMIT)
+async def register(request: Request, body: RegisterRequest, db: AsyncSession = Depends(get_db)):
     # 1. Check if email exists
     result = await db.execute(select(User).where(User.email == body.email))
     existing_user = result.scalars().first()
@@ -67,7 +69,8 @@ def _build_token_response(user) -> TokenResponse:
 
 
 @router.post("/login", response_model=TokenResponse)
-async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
+@limiter.limit(GUEST_LIMIT)
+async def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
     # 1. Find user by email
     result = await db.execute(select(User).where(User.email == form_data.username))
     user = result.scalars().first()
@@ -87,7 +90,8 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSessi
 
 
 @router.post("/refresh", response_model=TokenResponse)
-async def refresh_token(body: RefreshTokenRequest, db: AsyncSession = Depends(get_db)):
+@limiter.limit(GUEST_LIMIT)
+async def refresh_token(request: Request, body: RefreshTokenRequest, db: AsyncSession = Depends(get_db)):
     payload = decode_refresh_token(body.refresh_token)
     if payload is None:
         raise HTTPException(
@@ -115,7 +119,8 @@ async def refresh_token(body: RefreshTokenRequest, db: AsyncSession = Depends(ge
 
 
 @router.get("/me", response_model=UserResponse)
-async def get_me(current_user: User = Depends(get_current_user)):
+@limiter.limit(USER_LIMIT)
+async def get_me(request: Request, current_user: User = Depends(get_current_user)):
     return UserResponse(
         id=current_user.id,
         email=current_user.email,
@@ -126,7 +131,8 @@ async def get_me(current_user: User = Depends(get_current_user)):
 
 
 @router.post("/logout")
-async def logout(current_user: User = Depends(get_current_user)):
+@limiter.limit(USER_LIMIT)
+async def logout(request: Request, current_user: User = Depends(get_current_user)):
     # With stateless JWTs, logout is primarily handled client-side.
     # To implement server-side logout, we would need to maintain a token blocklist
     # or use stateful sessions like we do for the Admin portal.
