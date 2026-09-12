@@ -136,21 +136,21 @@ sequenceDiagram
     participant Push as FCM Service
 
     User->>App: เลือก/อัปโหลดรูปภาพ
-    App->>API: ส่งรูปภาพดิบ (POST Multipart/form-data)
+    App->>API: ส่งรูปภาพดิบ (POST /api/v1/scan Multipart/form-data: file บังคับ + title ไม่บังคับ)
     Note over API: ดึงค่า Metadata & รัน OCR ค้นหาคำอันตราย
-    API-->>App: ส่งรหัสติดตามงานสแกน (Scan Task ID)
-    Note over App: แสดงหน้า Loading ประมวลผลเบื้องหลัง
+    API-->>App: ส่งรหัสติดตามงานสแกน (scan_id + status เริ่มต้น; async — poll GET ต่อ)
+    Note over App: แสดงหน้า Loading ประมวลผลเบื้องหลัง (poll ทุก 3 วินาที, timeout 120 วินาที)
     
     API->>AI: ส่งรูปภาพไปตรวจสอบระดับพิกเซล (Semantic Segmentation)
     Note over AI: ประมวลผลรูปภาพสร้างแผนที่ความร้อน (Heatmap)
     AI-->>API: ส่งผลการคำนวณและรูปภาพ heatmap
     
     Note over API: คำนวณ Hybrid Risk Score สรุปผลภาพรวม
-    API->>Push: ส่งคำสั่งแจ้งเตือนพร้อมสแกนเสร็จสิ้น (Push Payload)
-    Push-->>App: เด้งหน้าต่างแจ้งเตือนที่เครื่องผู้ใช้ (Scan Completed)
+    API->>Push: ส่งคำสั่งแจ้งเตือนพร้อมสแกนเสร็จสิ้น (Push Payload — Phase 2; v1 ใช้ polling + in-app notification)
+    Push-->>App: เด้งหน้าต่างแจ้งเตือนที่เครื่องผู้ใช้ (Scan Completed — Phase 2)
     
     User->>App: กดดูการแจ้งเตือน
-    App->>API: เรียกข้อมูลผลลัพธ์ผ่าน Task ID
+    App->>API: เรียกข้อมูลผลลัพธ์ผ่าน scan_id
     API-->>App: ส่งกลับข้อมูล Risk Score, Heatmap URL, และรายละเอียดวิเคราะห์
     App->>User: แสดงรายงานระดับความเสี่ยงบนหน้าจอ
 ```

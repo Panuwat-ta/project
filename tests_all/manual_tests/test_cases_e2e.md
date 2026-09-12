@@ -56,6 +56,7 @@
   3. แสดงผลคะแนนแยก 3 ปัจจัย: Text Analysis, Source Verification, Visual Anomaly
   4. แสดงบทวิเคราะห์สรุปจาก Qwen2.5 ภาษาไทยสอดคล้องกับข้อความ Surya OCR และพิกัด Heatmap
   5. ประวัติการสแกนปรากฏในหน้า History ทันที
+  6. เวลาประมวลผลภาพใหม่เต็มรูปแบบ (Cache Miss, ภาพ 1920x1080) P50 ≤ 15 วินาที และ P95 ≤ 25 วินาที ตรงตาม NFR-PERF-02 (วัดแบบ End-to-End ตั้งแต่กดสแกนถึงหน้า Result)
 - **Automation Mapping**: `tests_all/automate_tests/tests/e2e/test_e2e_scam_flow.py`
 
 ---
@@ -79,7 +80,7 @@
   5. ส่งผลลัพธ์เดิมกลับมายัง Client ทันที
 - **Expected Results**:
   1. ระบบคืนผลลัพธ์เดิมโดยไม่เรียก GPU Model Inference ซ้ำ
-  2. เวลาในการประมวลผล (Response Time) ต้องน้อยกว่าหรือเท่ากับ 3 วินาที (E2E Latency <= 3.0s)
+  2. เวลาในการประมวลผล (Response Time) P95 ต้องน้อยกว่าหรือเท่ากับ 3 วินาทีแบบ End-to-End (P95 ≤ 3.0s ตรงตาม NFR-PERF-01; ภาพ 1MB, RTT ≤50ms)
   3. ผลลัพธ์ Risk Score, Visual Anomaly, และ Heatmap URL ตรงกับผลการสแกนรอบแรก 100%
   4. ระบบไม่เกิดการคำนวณ GPU ซ้ำซ้อน ซึ่งช่วยลดภาระของ Inference Worker
 - **Automation Mapping**: `tests_all/automate_tests/tests/api/test_scan_workflow.py`

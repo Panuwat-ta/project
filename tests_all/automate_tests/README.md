@@ -98,3 +98,10 @@ pytest tests/e2e -v
 - `reports/coverage/` — coverage html
 - ดู log แบบ verbose: `pytest -s -vv`
 
+---
+
+## GAP ที่ทราบ (Known Gaps)
+
+- `tests_all/tests_report/automate_tests/admin/` และ `.../model/` ยังไม่มีรายงานผลรัน (มีแค่ `.gitkeep`) — ต้องรันสคริปต์จริงของ Admin Portal / Model pipeline ก่อนจึงบันทึกเป็นรายงาน 4 มิติภาษาไทย ห้ามบันทึก review ด้วยสายตา
+- เกณฑ์เวลากลางของโครงการ (unify ทุกเอกสาร): Cache Hit P95 ≤ 3s (E2E), Full Inference P50 ≤ 15s / P95 ≤ 25s / P99 ≤ 35s (ภาพ 1920x1080 JPG 3MB) — สคริปต์ perf ต้องเก็บ percentile แยกกลุ่ม Cache Hit / Cache Miss (GAP ปัจจุบันของ `locustfile.py` ดู `test_cases_nfr.md` TC-NFR-PERF-05)
+

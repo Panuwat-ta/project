@@ -35,7 +35,7 @@ updated: 2026-08-02
 | มิติการวิเคราะห์ (Independent Factors) | วิธีการ | ช่วงคะแนนเดี่ยว |
 | :--- | :--- | :--- |
 | วิเคราะห์ข้อความ (Textual Analysis) | OCR + Keyword/Pattern Matching ตรวจจับคำหลอกลวง | 0–100% |
-| ตรวจสอบแหล่งที่มา (Source Verification) | Reverse Image Search ผ่าน Google Vision API | 0–100% |
+| ตรวจสอบแหล่งที่มา (Source Verification) | Reverse Image Search ผ่าน Google Vision API (external แบบ optional — เมื่อใช้ไม่ได้ต้องคืนผลบางส่วนพร้อมสถานะตาม FR-ANALYSIS-03 fallback และห้ามสรุปว่าภาพปลอดภัย) | 0–100% |
 | ตรวจจับความผิดปกติทางภาพ (Visual Anomaly) | Deep Learning (SegFormer) + Heatmap Output | 0–100% |
 
 - **สูตรคำนวณคะแนนรวม**: ยึดมิติที่มีความเสี่ยงสูงสุดเป็นฐานหลัก $S_{base} = \max(S_{visual}, S_{textual}, S_{source})$ ร่วมกับ Multi-factor Compounding (+5 คะแนนต่อมิติรองที่มีความเสี่ยง $\ge 40$)
@@ -67,7 +67,7 @@ updated: 2026-08-02
 | Cache | Redis |
 | เก็บไฟล์ | Cloud Object Storage |
 | ค้นหาภาพย้อนกลับ | Google Vision API |
-| Push Notification | Firebase Cloud Messaging (FCM) |
+| Push Notification | Firebase Cloud Messaging (FCM) — **Phase 2** (v1 ใช้ polling + in-app notification) |
 
 ดูรายละเอียดที่ [[entities/tech-stack]] และ [[decisions/technology-choices]]
 
@@ -87,9 +87,9 @@ Heatmap เป็นหัวใจของการออกแบบ **Explai
 ## ข้อจำกัดของโปรเจค
 
 - **PDPA** — ผู้ใช้ต้องยินยอมก่อนที่รูปภาพจะถูกเก็บหรือใช้เพื่อ training โมเดล ยินยอมแบบแยกส่วนและถอนได้ ดูที่ [[requirements/non-functional-requirements]]
-- **เป้าหมายประสิทธิภาพ** — Cache hit < 3 วินาที; Full AI inference < 15 วินาทีต่อรูป
-- **เป้าหมายความแม่นยำ** — โมเดล AI ต้องได้ >= 85% accuracy และ mDice บน test set
-- **เป้าหมาย Availability** — API และ AI Inference Service uptime >= 99.5%
+- **เป้าหมายประสิทธิภาพ** — Cache Hit P95 ≤ 3 วินาที (ภาพ 1080p, เครือข่าย 4G/Wi-Fi, หน้าต่างวัด 7 วัน); Full AI inference P50 ≤ 15 วินาที / P95 ≤ 25 วินาทีต่อรูป (ภาพ 1080p, GPU T4)
+- **เป้าหมายความแม่นยำ** — โมเดล AI ต้องได้ Accuracy ≥ 85% และ mDice ≥ 85% บน frozen test set 1,000 ภาพ (ดูวิธีวัดใน requirements)
+- **เป้าหมาย Availability** — API และ AI Inference Service uptime ≥ 99.5% ต่อรอบ 30 วัน (ไม่รวม maintenance ที่ประกาศล่วงหน้า)
 
 ---
 

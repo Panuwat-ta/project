@@ -47,7 +47,7 @@ ScamGuard Mobile App เป็นแอปพลิเคชัน Flutter ส�
 ### REQ-005: Home / Scan Screen
 - ระบบต้องแสดงหน้าหลักพร้อม Header ทักทายผู้ใช้
 - ต้องมีปุ่มอัปโหลดรูปภาพ (Card หลัก) เปิด File Picker
-- รองรับไฟล์ jpg, jpeg, png, webp; ฝั่ง client บีบอัดเมื่อไฟล์ > 10 MB ส่วน server ปฏิเสธไฟล์เกิน 20 MB (413, MAX_UPLOAD_SIZE_MB)
+- รองรับไฟล์ jpg, jpeg, png, webp; ฝั่ง client บีบอัดเมื่อไฟล์ > 10 MB (รักษา quality ≥ 85, ด้านสั้น ≥ 720px) ส่วน server ปฏิเสธไฟล์เกิน 20 MB ด้วย 413 (ค่าขีดจำกัดจริงดู `design/server.md` มติ DOC-03)
 - ต้องแสดงแถบ Safety Tips (Bento Grid)
 - ต้องแสดงรายการประวัติการสแกนล่าสุด 3-5 รายการ
 - เมื่อเลือกไฟล์สำเร็จ → นำทางไป Image Crop Screen
@@ -58,8 +58,7 @@ ScamGuard Mobile App เป็นแอปพลิเคชัน Flutter ส�
 - ต้องมีปุ่มหมุนภาพ, ปุ่มเปลี่ยนรูป
 - ต้องมีปุ่ม "เริ่มวิเคราะห์" ที่ชัดเจน
 - เมื่อกด Back หลังแก้ไขแล้ว ต้องถามยืนยันก่อนยกเลิก
-- เมื่อยืนยัน → ส่งรูปไป Analysis Loading Screen
-- การส่งรูปเพื่อวิเคราะห์ต้องแนบ clientRequestId (UUID) เพื่อป้องกันการส่งซ้ำ
+- เมื่อยืนยัน → ส่งรูปไป Analysis Loading Screen (กันส่งซ้ำด้วย SHA-256 + Redis cache ฝั่ง server — canonical ดู `design/server.md` §5.2.1)
 
 ### REQ-007: Analysis Loading Screen
 - ระบบต้องแสดง Circular Progress Indicator พร้อม % ที่อัปเดตได้
@@ -134,9 +133,9 @@ ScamGuard Mobile App เป็นแอปพลิเคชัน Flutter ส�
 
 ## 3. Non-Functional Requirements
 
-### REQ-NF-001: Performance
-- แอปเปิดถึงหน้าแรกภายใน 3 วินาที
-- เลือกไฟล์และเข้า Preview ภายใน 1 วินาที
+### REQ-NF-001: Performance (เงื่อนไขวัด: อุปกรณ์อ้างอิง Android 10+ RAM ≥ 4GB, ภาพทดสอบ ≤ 10MB, เครือข่าย 4G ขึ้นไป)
+- แอปเปิดถึงหน้าแรกภายใน 3 วินาที (cold start, P95)
+- เลือกไฟล์และเข้า Preview ภายใน 1 วินาที (P95)
 - บีบอัดภาพอัตโนมัติเมื่อไฟล์ > 10 MB
 
 ### REQ-NF-002: Security
@@ -149,7 +148,7 @@ ScamGuard Mobile App เป็นแอปพลิเคชัน Flutter ส�
 - ปุ่มต้องมีพื้นที่แตะอย่างน้อย 44×44 px
 - สีสถานะต้องมีข้อความประกอบเสมอ
 - ปุ่ม Icon ต้องมี Semantic Label
-- รองรับ Dynamic Font Size เท่าที่ Layout ยังไม่พัง
+- รองรับ Dynamic Font Size (text scale 0.85–1.3×) โดยไม่มีข้อความตัดตก ทับซ้อน หรือหลุดขอบจอ
 
 ### REQ-NF-004: Theme & Localization
 - รองรับ Dark Mode (ค่าเริ่มต้น) และ Light Mode
@@ -163,7 +162,7 @@ ScamGuard Mobile App เป็นแอปพลิเคชัน Flutter ส�
 
 ---
 
-## 4. Design Constraints
+## 4. Design Constraints (ค่าคงที่และชื่อ env/const ที่เป็นฉบับจริงดูที่ `design/mobile/design.md` และ `design/server.md` — หัวข้อนี้กำหนดเฉพาะกรอบที่ requirement ต้องยึด)
 
 ### 4.1 Design System (จาก HTML Design)
 - **Primary Dark Background:** `#0F1720` (bg-dark)

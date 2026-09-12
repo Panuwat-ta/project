@@ -1,8 +1,8 @@
 # Requirement Traceability Matrix
 
-**Project Name:** แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง (Scam Image Detection)  
-**Version:** 1.0  
-**Date:** August 23, 2026
+**Project Name:** แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง (Scam Image Detection — ชื่อผลิตภัณฑ์: ScamGuard)  
+**Version:** 1.1 (audit §A fixes, 2026-09-12)  
+**Date:** September 12, 2026
 
 ---
 
@@ -185,7 +185,7 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 | RC-AUTH-03 | การต่ออายุ Token | FR-AUTH-03 | การต่ออายุ Token | 3 |
 | RC-AUTH-04 | การออกจากระบบ | FR-AUTH-04 | การออกจากระบบ | 2 |
 
-**Note:** RC-AUTH-05 (Forgot Password) และ RC-AUTH-06 (Social Login) ถูกจัดเป็น Priority: Should และยังไม่ได้สร้าง FR ในเวอร์ชันนี้
+**Note:** RC-AUTH-05 (Forgot Password) ยังไม่ได้สร้าง FR ในเวอร์ชันนี้; RC-AUTH-06 (Social Login) → wiki **FR-AUTH-06** (Phase 2 backlog; Document FR-AUTH-03 คือการต่ออายุ Token ห้ามใช้เลขซ้ำ)
 
 ---
 
@@ -216,7 +216,7 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 
 | RC ID | RC Title | FR ID | FR Title | AC Count |
 |-------|----------|-------|----------|----------|
-| RC-XAI-01, 02, 03 | Heatmap & Display | FR-XAI-01 | Mask-to-Heatmap Overlay Generation & Display | 4 |
+| RC-XAI-01, 02, 03 | Heatmap & Display | FR-XAI-01 | Mask-to-Heatmap Overlay Generation & Display | 5 |
 | RC-HISTORY-01, 02, 03, 04 | History Management | FR-HISTORY-01 | จัดการประวัติการสแกน | 5 |
 | RC-HISTORY-05 | Report Scam | FR-HISTORY-02 | รายงานภาพหลอกลวง | 4 |
 | RC-PDPA-01, 02, 03 | Consent & Rights | FR-PDPA-01 | Consent Management | 5 |
@@ -238,6 +238,8 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 | RC-NFR-06 | Model Accuracy | NFR-05 | Accuracy — Model Performance (Accuracy + mDice) | 4 |
 | RC-NFR-09, 10 | Satisfaction & XAI | NFR-06 | Usability — Satisfaction & Explainability | 2 |
 | RC-NFR-07 | Cache Hit Rate | NFR-07 | Cache Efficiency | 2 |
+| 25010 gap-fill (audit §A) | Compatibility | NFR-08 | Compatibility — Platform & Interop | 2 |
+| 25010 gap-fill (audit §A) | Maintainability | NFR-09 | Maintainability — Testability | 2 |
 
 ---
 
@@ -253,7 +255,7 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 | ST01 | OBJ-01 | SC01 | RC-SCAN-02 | FR-SCAN-01 | (merged) | ✅ Complete |
 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-01 | FR-ANALYSIS-01 | 5 ACs | ✅ Complete |
 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-07 | FR-ANALYSIS-04 | 7 ACs | ✅ Complete |
-| ST01 | OBJ-04 | SC01 | RC-XAI-02 | FR-XAI-01 | 4 ACs | ✅ Complete |
+| ST01 | OBJ-04 | SC01 | RC-XAI-02 | FR-XAI-01 | 5 ACs | ✅ Complete |
 | ST01 | OBJ-04 | SC01 | RC-NFR-09 | NFR-06 | 2 ACs | ✅ Complete |
 
 **Full Matrix:** เนื่องจากมีความยาวมาก ตารางเต็มแสดงใน Appendix A
@@ -314,7 +316,7 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 
 **Analysis (นับจริงจาก 04 — arithmetic 40+8+1=49):**
 - **Focus:** Must Requirements (40 RCs → 25 FR/NFR)
-- **Deferred:** Should/Could Requirements (9 RCs: RC-AUTH-05/06, RC-ANALYSIS-06, RC-HISTORY-02/04, RC-PDPA-04, RC-NOTIFY-01/02, RC-NFR-07)
+- **Deferred:** Should/Could Requirements (6 RCs: RC-AUTH-05/06, RC-ANALYSIS-06, RC-PDPA-04, RC-NOTIFY-01/02 — RC-HISTORY-02/04 และ RC-NFR-07 ถูก implement แล้วใน FR-HISTORY-01/NFR-07 จึงถอดจากรายการนี้)
 - **15 Must RCs were merged** into existing FR/NFR (e.g., RC-SCAN-01 + RC-SCAN-02 → FR-SCAN-01)
 
 ---
@@ -323,15 +325,15 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 
 ### 8.1 Orphan Requirements (FR/NFR without Traceability)
 
-**Result:** ✅ **No Orphan FR/NFR — มี 4 RC ที่เป็น Deferred/Phase 2:**
-- RC-NOTIFY-01 (Push Analysis Complete, Should) — Phase 2
-- RC-NOTIFY-02 (Push Report Status, Could) — Phase 2
-- RC-PDPA-04 (Data Retention Cron, Should) — Phase 2
+**Result:** ✅ **No Orphan in v1 baseline — มี 4 RC ที่ติดตามแยกเป็น Deferred/Phase 2 (ไม่ใช่ orphan — มีเหตุผลและแผน Phase ชัดเจน):**
+- RC-NOTIFY-01 (Push Analysis Complete, Should) — Phase 2 (รอ FCM; v1 ใช้ polling + in-app)
+- RC-NOTIFY-02 (Push Report Status, Could) — Phase 2 (รอ FCM; v1 แจ้งเฉพาะ Approved/Rejected ในแอป)
+- RC-PDPA-04 (Data Retention Cron, Should) — Phase 2 (cron ลบข้อมูล > 1 ปี รัน daily 02:00)
 - RC-ANALYSIS-06 (EXIF Extraction, Should) — แสดงผลเท่านั้น ไม่ใช้คำนวณ Risk
 
 ทุก FR/NFR มี Traceability Chain ครบถ้วน:
 - ✅ All 19 FR have: ST → OBJ → SC → RC → FR → AC
-- ✅ All 7 NFR have: ST → OBJ → SC → RC → NFR → AC
+- ✅ All 9 NFR have: ST → OBJ → SC → (RC | 25010 gap-fill) → NFR → AC
 
 ---
 
@@ -340,9 +342,9 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 **Result:** ✅ **No Orphan AC Detected**
 
 ทุก AC ถูกกำหนดภายใต้ FR/NFR:
-- Total AC: 104 (increased from 92; recount DOC-13)
+- Total AC: 108 (recount 2026-09-12)
 - FR AC: 83 (4.37 per FR average)
-- NFR AC: 21 (3.00 per NFR average)
+- NFR AC: 25 (2.78 per NFR average)
 
 ---
 
@@ -350,8 +352,8 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 
 **All 49 RCs Addressed:**
 
-**Converted to FR/NFR (26 RCs):**
-- Must Priority: 25 FR/NFR
+**Converted to FR/NFR (26 RCs → 28 requirements):**
+- Must Priority: 27 (25 จาก RC + NFR-08/09 จาก 25010 gap-fill)
 - Should Priority: 1 NFR (Cache Efficiency)
 
 **Resolved & Integrated (23 RCs):**
@@ -394,7 +396,7 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 | OBJ-01 to OBJ-04 Consistency | ✅ Pass | Objectives consistent |
 | SC01 to SC04 Consistency | ✅ Pass | Scope Areas consistent |
 | Technology Stack Consistency | ✅ Pass | Flutter (not React Native) everywhere |
-| Risk Score Formula Consistency | ✅ Pass | `Hybrid Worst-Case: max(S_visual, S_text, S_source) + Compounding` |
+| Risk Score Formula Consistency | ✅ Pass | `Hybrid max+bonus: max(S_visual, S_text, S_source) + 5 ต่อมิติรองที่ ≥40 (cap 100)` |
 | Risk Grade Mapping Consistency | ✅ Pass | **3 ระดับ: Low 0-39 / Medium 40-69 / High 70-100 (visual ≥80 → High)** |
 
 ---
@@ -412,7 +414,7 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 | FR-HISTORY Sequence | ✅ Pass | FR-HISTORY-01 to 02 sequential |
 | FR-PDPA Sequence | ✅ Pass | FR-PDPA-01 only (consistent) |
 | FR-ADMIN Sequence | ✅ Pass | FR-ADMIN-01 to 04 sequential |
-| NFR Sequence | ✅ Pass | NFR-01 to 07 sequential |
+| NFR Sequence | ✅ Pass | NFR-01 to 09 sequential |
 
 ---
 
@@ -455,11 +457,11 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 
 ### 10.3 Low-Impact Changes
 
-**หากเพิ่ม Social Login (RC-AUTH-06 → FR):**
+**Social Login (RC-AUTH-06 → wiki FR-AUTH-06, Phase 2 backlog — ไม่เพิ่ม FR ใหม่ใน Document scheme):**
 
 | Affected Item | Impact | Mitigation |
 |--------------|--------|------------|
-| FR-AUTH | เพิ่ม FR-AUTH-05 | Create new requirement |
+| FR-AUTH (wiki) | RC-AUTH-06 มี FR-AUTH-06 แล้ว (Phase 2) | ไม่สร้าง FR ใหม่; Document FR-AUTH-03 คือต่ออายุ Token ห้ามชน |
 | SC01 | ไม่กระทบ Scope เดิม | Already in scope (mentioned) |
 | Database Schema | เพิ่ม oauth_provider column | Minor migration |
 | 06_Traceability | เพิ่ม row ใน RTM | Update traceability |
@@ -474,14 +476,14 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 |-------------|----------|----------|---------------|---------------|
 | Authentication | 4 | 14 | 3.5 |  Critical |
 | Image & Scan | 3 | 9 | 3.0 |  Critical |
-| Analysis | 4 | 20 | 5.0 |  Critical |
+| Analysis | 4 | 21 | 5.25 |  Critical |
 | XAI | 1 | 5 | 5.0 |  High |
 | History | 2 | 9 | 4.5 |  High |
 | PDPA | 1 | 5 | 5.0 |  Critical |
 | Admin | 4 | 20 | 5.0 |  High |
-| **Total** | **19** | **75** | **3.95** | |
+| **Total** | **19** | **83** | **4.37** | |
 
-**Updated:** AC count increased from 70 to 75 (+5 AC for XAI Controls)
+**Updated:** นับจริงจาก 05-SRS (AUTH 14 + SCAN 9 + ANALYSIS 21 + XAI 5 + HISTORY 9 + PDPA 5 + ADMIN 20 = 83) ตรงกับ §8.2/§11.3/07A §4.5
 
 ---
 
@@ -493,11 +495,13 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 | Availability & Monitoring | 1 | 3 | Uptime Monitor, Alerting |  Critical |
 | Security | 1 | 5 | Penetration Test, Code Review |  Critical |
 | Accuracy | 1 | 4 | Model Evaluation |  Critical |
-| Usability & XAI | 1 | 4 | UAT, User Interview |  High |
+| Usability & XAI | 1 | 2 | UAT, User Interview |  High |
 | Cache Efficiency | 1 | 2 | Performance Monitoring |  Medium |
-| **Total** | **7** | **23** | | |
+| Compatibility | 1 | 2 | Device Matrix, Schema Validation |  Medium |
+| Maintainability | 1 | 2 | Coverage Gate, Static Analysis |  Medium |
+| **Total** | **9** | **25** | | |
 
-**Updated:** AC count increased from 15 to 23 (+8 AC for Monitoring, Performance Percentiles, UAT Questions, Cache Strategy)
+**Updated:** นับจริงจาก 05-SRS (NFR-01 4 + NFR-02 1 + NFR-03 3 + NFR-04 5 + NFR-05 4 + NFR-06 2 + NFR-07 2 + NFR-08 2 + NFR-09 2 = 25) ตรงกับ §8.2/§11.3/07A §6.2
 
 ---
 
@@ -505,13 +509,13 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 
 | Category | AC Count | Estimated TC per AC | Total TC Estimate |
 |----------|----------|---------------------|-------------------|
-| Functional (FR) | 75 | 2-3 | 150-225 TCs |
-| Non-Functional (NFR) | 23 | 1-2 | 23-46 TCs |
+| Functional (FR) | 83 | 2-3 | 166-249 TCs |
+| Non-Functional (NFR) | 25 | 1-2 | 25-50 TCs |
 | Integration Tests | — | — | 20-30 TCs |
 | E2E Tests | — | — | 10-15 TCs |
-| **Total** | **104** | | **203-316 TCs** |
+| **Total** | **108** | | **221-344 TCs** |
 
-**Updated:** Total AC increased from 85 to 98 (+13 AC)
+**Updated:** Total AC increased from 85 to 98 (+13 AC), 98 to 104 (DOC-13), 104 to 108 by NFR-08/09 (audit §A, 2026-09-12)
 
 ---
 
@@ -524,11 +528,11 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 | **Stakeholder Coverage** | 100% (3/3 STs covered) | ✅ Excellent |
 | **Objective Coverage** | 100% (4/4 OBJs covered) | ✅ Excellent |
 | **Scope Coverage** | 100% (4/4 SCs covered) | ✅ Excellent |
-| **RC → FR/NFR Conversion** | 53.1% (26/49 RCs) | ✅ Good (Must priority focus) |
+| **RC → FR/NFR Conversion** | 57.1% (28/49 RCs) | ✅ Good (Must priority focus) |
 | **Must RC Coverage** | 62.5% (25/40 Must RCs) | ✅ Good |
 | **Should RC Coverage** | 12.5% (1/8 Should RCs) | ⚠️ Deferred |
-| **Orphan Requirements** | 0 (0/26 FR/NFR) | ✅ Excellent |
-| **Orphan AC** | 0 (0/104 ACs) | ✅ Excellent |
+| **Orphan Requirements** | 0 (0/28 FR/NFR) | ✅ Excellent |
+| **Orphan AC** | 0 (0/108 ACs) | ✅ Excellent |
 
 ---
 
@@ -536,13 +540,13 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 
 | Metric | Value | Status |
 |--------|-------|--------|
-| **Total Requirements** | 26 (19 FR + 7 NFR) | ✅ Appropriate |
-| **Total Acceptance Criteria** | 104 | ✅ Comprehensive |
+| **Total Requirements** | 28 (19 FR + 9 NFR) | ✅ Appropriate |
+| **Total Acceptance Criteria** | 108 | ✅ Comprehensive |
 | **Average AC per FR** | 4.37 | ✅ Good |
-| **Average AC per NFR** | 3.00 | ✅ Adequate |
+| **Average AC per NFR** | 2.78 | ✅ Adequate |
 | **Consistency Check Pass Rate** | 100% (11/11 checks) | ✅ Excellent |
 | **Completeness** | 100% | ✅ All Requirements Specified |
-| **Deferred RC Count** | 9 (Should + Could) | ✅ Planned |
+| **Deferred RC Count** | 6 (Should + Could; RC-HISTORY-02/04 และ RC-NFR-07 ถูก implement แล้ว) | ✅ Planned |
 
 ---
 
@@ -564,8 +568,8 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 ### 13.1 Completion Status
 
 ✅ **All Requirements Complete:**
-- 26 FR/NFR (19 FR + 7 NFR) ครบถ้วน
-- 104 Acceptance Criteria ครบถ้วน
+- 28 FR/NFR (19 FR + 9 NFR) ครบถ้วน
+- 108 Acceptance Criteria ครบถ้วน
 - 100% Traceability Chain (ST → OBJ → SC → RC → FR/NFR → AC)
 - Evidence-Based with Wiki/Documentation References
 - Ready for Implementation และ Testing
@@ -580,7 +584,7 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 3. **Data Retention Automation (RC-PDPA-04)** — Cron Job implementation
 
 **Test Development:**
-- สร้าง 203-316 Test Cases จาก 104 Acceptance Criteria
+- สร้าง 221-344 Test Cases จาก 108 Acceptance Criteria
 - Integration Testing: 20-30 Test Cases
 - End-to-End Testing: 10-15 Test Cases
 
@@ -610,13 +614,13 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 เอกสาร Requirement Traceability Matrix ฉบับนี้แสดงความสัมพันธ์แบบ End-to-End ของทุก Requirements ใน ScamGuard Project:
 
 **Traceability Chain:**
-- **Stakeholders (3)** → **Objectives (4)** → **Scopes (4)** → **Requirement Candidates (49)** → **FR/NFR (26)** → **Acceptance Criteria (104)**
+- **Stakeholders (3)** → **Objectives (4)** → **Scopes (4)** → **Requirement Candidates (49)** → **FR/NFR (28)** → **Acceptance Criteria (108)**
 
 **Key Findings:**
 - ✅ **100% Stakeholder Coverage** — ทุก Stakeholder Need ถูกแปลงเป็น Objectives
 - ✅ **100% Objective Coverage** — ทุก Objective ถูกแปลงเป็น Scope และ Requirements
 - ✅ **0 Orphan Requirements** — ทุก FR/NFR มี Traceability ครบถ้วน
-- ✅ **104 Testable AC** — ทุก Requirement มี Acceptance Criteria ที่ทดสอบได้ (เพิ่มจาก 92)
+- ✅ **108 Testable AC** — ทุก Requirement มี Acceptance Criteria ที่ทดสอบได้ (เพิ่มจาก 104; เดิม 92)
 - ✅ **All TODOs Resolved** — 20/20 TODOs (100%)
 - ✅ **100% RC Addressed** — 49/49 RCs (Converted, Merged, or Clarified)
 
@@ -630,16 +634,16 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 **Achievements:**
 - ✅ 20 TODOs Resolved (100%)
 - ✅ 49 RCs Addressed (100%)
-- ✅ 26 FR/NFR Defined (100%)
-- ✅ 104 AC Specified (100%)
+- ✅ 28 FR/NFR Defined (100%)
+- ✅ 108 AC Specified (100%)
 - ✅ Monitoring Strategy Complete
 - ✅ UAT Plan Complete
 - ✅ Performance Tuning Strategy Complete
 
 **Test Coverage:**
-- Estimated Test Cases: 203-316 TCs (increased from 185-285)
-- FR Test Cases: 150-225 TCs
-- NFR Test Cases: 23-46 TCs
+- Estimated Test Cases: 221-344 TCs (increased from 185-285)
+- FR Test Cases: 166-249 TCs
+- NFR Test Cases: 25-50 TCs
 - Integration: 20-30 TCs
 - E2E: 10-15 TCs
 
@@ -658,7 +662,7 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 | ST01 | OBJ-01 | SC01 | RC-AUTH-01 | FR-AUTH-01 | 5 | Must | ✅ | srs-doc.md |
 | ... | ... | ... | ... | ... | ... | ... | ... | ... |
 
-**Total Rows:** ~92 rows (one per AC)
+**Total Rows:** 108 rows (one per AC: 83 FR + 25 NFR)
 
 ---
 
@@ -679,6 +683,8 @@ TC (Test Case) — จะจัดทำในระยะต่อไป
 | **Report Notification** | Approved/Rejected only | Project Decision |
 | **Heatmap UI** | Toggle Button + Opacity Slider | wiki/architecture/mobile-design.md |
 | **Response Time Targets** | P50: ≤ 15s, P95: ≤ 25s, P99: ≤ 35s | Project Decision |
+| **Compatibility Matrix** | Android 10–15 key flows ผ่าน 100% + API schema validation (NFR-08) | Project Decision |
+| **Coverage Gate** | Branch coverage ≥ 80% + lint 0 errors บน CI (NFR-09) | Project Decision |
 | **CPU Inference** | ≤ 60 วินาที | Project Decision |
 | **Monitoring Stack** | Prometheus + Grafana + Sentry | Tech Stack Analysis |
 | **Concurrent Users** | Cache Hit: ≤ 5s, Cache Miss: ≤ 20s | Project Decision |

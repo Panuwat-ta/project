@@ -1,8 +1,8 @@
 # Software Architecture 
 
 **Project Name:** แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง (Scam Image Detection)  
-**Version:** 1.0  
-**Date:** August 23, 2026
+**Version:** 1.1  
+**Date:** September 12, 2026
 
 ---
 
@@ -183,7 +183,7 @@ flowchart TB
 **Key Features:**
 - การจัดการ State ด้วย BLoC (Business Logic Component)
 - Dark Mode และ Light Mode support
-- Offline-first approach สำหรับประวัติการสแกน
+- ประวัติการสแกนเรียกจาก server แบบ online-first (ต้องมีการเชื่อมต่ออินเทอร์เน็ต; full offline mode เป็น Phase 2 — ไม่มี FR รองรับใน v1)
 - Secure Storage สำหรับ JWT Token
 
 **Layers:**
@@ -309,14 +309,16 @@ flowchart TB
 
 ---
 
-### 4.6 Object Storage (Local Filesystem)
+### 4.6 Object Storage (S3/GCS-compatible)
 
-**Technology:** Local filesystem เสิร์ฟผ่าน static mount
+**Technology:** S3/GCS-compatible Object Storage (MinIO ได้สำหรับ on-premise)
 
 **Purpose:**
 - จัดเก็บไฟล์รูปภาพต้นฉบับที่ผู้ใช้อัปโหลด
 - จัดเก็บภาพ Heatmap ที่สร้างโดย AI
-- เก็บเฉพาะ path ใน DB
+- เก็บเฉพาะ path/URL ใน DB (ห้ามเก็บ binary ใน DB)
+
+**Requirement:** ระบบ shall เก็บไฟล์รูปต้นฉบับและ Heatmap บน S3/GCS-compatible storage เท่านั้น
 
 **File Structure:**
 ```
@@ -433,7 +435,7 @@ flowchart TB
 
 **Formula:**
 ```
-S_text = (keyword_count × severity_weight) / max_possible_score × 100
+S_text = min(100, (Σw_found / max_possible_score) × 100), max_possible_score = 5.80 (Σ น้ำหนักพจนานุกรม v1 ทั้ง 8 คำ; นิยามหลักดู 05-SRS FR-ANALYSIS-01)
 ```
 
 **Evidence:**
@@ -477,7 +479,7 @@ S_visual = Normalize(Confidence × Coverage)
 
 **Formula:**
 ```
-S_source = (source_count_factor × 0.5) + (context_risk_factor × 0.5)
+S_source = ((source_count_factor × 0.5) + (context_risk × 0.5)) × 100, source_count_factor = min(1, count/10), context_risk ∈ [0,1] (นิยามหลักดู 05-SRS FR-ANALYSIS-03)
 ```
 
 **Evidence:**
@@ -574,7 +576,7 @@ flowchart TB
     %% Storage & Externals (จาก C2)
     Cache("Redis Cache")
     MainDB[("PostgreSQL Database")]
-    ObjectStore("Cloud Storage (Local / S3)")
+    ObjectStore("Cloud Storage (S3/GCS)")
     AIWorker("ONNX Worker (Subprocess)")
 
     %% Relationships - External to API
@@ -679,7 +681,7 @@ sequenceDiagram
     participant Router as ScanRouter
     participant Service as ScanService
     participant Utils as ImageUtils
-    participant FS as Local Storage
+    participant FS as Object Storage
     participant Inference as InferenceService
     participant ONNX as ONNX Worker
     participant OCR as Surya OCR
@@ -700,7 +702,7 @@ sequenceDiagram
     Service->>Utils: encode_lossless_png
     Utils-->>Service: PNG Bytes
     
-    Service->>FS: Save {hash}.png (เป็นหลักฐานรูปต้นฉบับ)
+    Service->>FS: Save {hash}.png บน Object Storage (เป็นหลักฐานรูปต้นฉบับ)
     FS-->>Service: Success
     
     Note over Service: ส่งงานให้ AI แบบแยกโปรเซส<br>เพื่อไม่บล็อก Event Loop
@@ -725,7 +727,7 @@ sequenceDiagram
     Inference-->>Service: return {visual_risk_score, ai_gen_prob, heatmap_bytes, ocr_text}
     deactivate Inference
     
-    Service->>FS: Save {hash}_heatmap.jpg
+    Service->>FS: Save {hash}_heatmap.jpg บน Object Storage
     
     Note over Service: วิเคราะห์ข้อความแบบ Rule-based<br>ค้นหา Scam Keywords
     
@@ -853,8 +855,8 @@ sequenceDiagram
 - Data Retention Policy (เก็บข้อมูล 1 ปี หลังจากนั้นลบอัตโนมัติ)
 
 **Evidence:**
-- File: project/Document/srs-doc.md
-- Section: NFR-06 — ระบบต้องปฏิบัติตามข้อกำหนดความเป็นส่วนตัว (PDPA)
+- File: project/Document/docs/05_Software_Requirement_Specification.md
+- Section: FR-PDPA-01 (Consent Management) + NFR-04 (Security) — หมายเหตุ: NFR-06 ตาม 05 คือ Usability ไม่ใช่ PDPA
 
 ---
 
@@ -1018,7 +1020,7 @@ sequenceDiagram
 **Warning Alerts:**
 - High Response Time (> 20 seconds)
 - High Error Rate (> 5%)
-- Low Cache Hit Rate (< 30%)
+- Low Cache Hit Rate (< 35% รอบ 7 วัน)
 - High GPU Usage (> 90%)
 
 **Tools:**
@@ -1039,7 +1041,7 @@ sequenceDiagram
 | **Security** | HTTPS, JWT, RBAC, PDPA | Authentication, Authorization, Encryption |
 | **Maintainability** | Clean Architecture, Separation of Concerns | Flutter Clean Arch, FastAPI modular design |
 | **Explainability** | ≥ 80% users understand Heatmap | Mask-to-heatmap overlay, Risk breakdown |
-| **Testability** | Unit Test Coverage ≥ 80% | Clean Architecture, Dependency Injection |
+| **Testability** | Branch coverage ≥ 80% วัดบน CI (ดู NFR-09) | Clean Architecture, Dependency Injection |
 
 **Evidence:**
 - File: project/Document/srs-doc.md
@@ -1080,7 +1082,7 @@ sequenceDiagram
 
 ### ADR-03: ใช้ ONNX Runtime สำหรับ Inference
 **Decision:** แปลงโมเดล PyTorch เป็น ONNX สำหรับ Production  
-**Rationale:** Inference เร็วกว่า 2-5 เท่า, ลด Dependency  
+**Rationale:** Inference เร็วกว่า PyTorch baseline รุ่นเดียวกัน ≥ 2 เท่า (ค่าเฉลี่ย 100 ภาพบน NVIDIA T4), ลด Dependency  
 **Status:** Accepted
 
 ### ADR-04: ใช้ PostgreSQL แทน MongoDB

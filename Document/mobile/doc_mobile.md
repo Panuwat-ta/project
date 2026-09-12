@@ -106,7 +106,7 @@ Base URL ของ API ถูกอ่านจาก ตัวแปรสภ�
 | GET | /api/v1/reports/my | ดึงรายงานที่ตนเองเคยส่ง |
 | POST | /api/v1/admin/login | เข้าสู่ระบบ admin |
 | GET | /api/v1/admin/dashboard | สถิติภาพรวม |
-| WS | /api/v1/ws/admin/dashboard | Dashboard realtime |
+| WS | /api/v1/ws/admin/dashboard | Dashboard realtime (Admin Portal เท่านั้น — ไม่ใช่ Mobile API; ดู `Document/admin/admin.md`) |
 
 > หมายเหตุ: consent จะส่งผ่าน body ของ register
 
@@ -307,7 +307,6 @@ avatarUrl    ข้อความ (string)? (optional)
 ### AnalysisResult
 ```
 scanId       ข้อความ (string)
-taskId       ข้อความ (string)
 status       String ("completed" | "failed")
 riskScore    int (0-100)
 riskLevel    RiskLevel (enum: low, medium, high)
@@ -367,9 +366,9 @@ States: `AuthInitial`, `AuthLoading`, `AuthAuthenticated(User)`, `AuthUnauthenti
 - Login/Register ผ่าน `AuthRepository`
 - แปลง exception เป็นข้อความภาษาไทยที่เป็นมิตร
 
-### ConsentCubit
+### ConsentCubit (2 ระดับ: system บังคับ + research ไม่บังคับ — ตรงกับ `consent_logs`)
 จัดการสถานะ checkbox ในหน้า Onboarding
-- `toggleTerms()` / `toggleResearch()`
+- `toggleSystem()` / `toggleResearch()`
 - บันทึก ความยินยอม (consent) สถานะ (state) ก่อน เปลี่ยนหน้า (navigate) ไป login
 
 ### ScanBloc
@@ -380,7 +379,7 @@ States: `ScanInitial`, `ImagePicked`, `ImageCropped`, `Uploading`, `Polling(prog
 - เมื่อ status = "completed" fetch result แล้ว เปลี่ยนหน้า (navigate) ไป `/result/:scanId`
 
 ### ResultBloc
-Events: `ResultRequested(taskId)`
+Events: `ResultRequested(scanId)`
 States: `ResultInitial`, `ResultLoading`, `ResultLoaded(AnalysisResult)`, `ResultError`
 
 ### HistoryBloc
@@ -519,7 +518,7 @@ Requirement: FR-SCAN-03 (การตรวจสอบ Cache และประ
 
 ### 10.8 AnalysisResultScreen (`/result/:scanId`)
 
-รับ `taskId` จาก เส้นทาง (path) พารามิเตอร์ (parameter)
+รับ `scanId` จาก เส้นทาง (path) พารามิเตอร์ (parameter)
 
 - `AppTopBar`
 - Risk Gauge Section:
@@ -540,7 +539,7 @@ Requirement: FR-ANALYSIS-01 ถึง FR-ANALYSIS-04
 
 ### 10.9 HeatmapViewerScreen (`/heatmap/:scanId`)
 
-รับ `taskId`, `imageUrl`, `heatmapUrl` จาก เส้นทาง (path) + extra
+รับ `scanId`, `imageUrl`, `heatmapUrl` จาก เส้นทาง (path) + extra
 
 - Full screen dark พื้นหลัง (background)
 - `InteractiveViewer` รองรับ zoom/pan ด้วยนิ้ว
@@ -670,7 +669,7 @@ Requirement: FR-PDPA-01 (Consent Management)
 | Auto ต่ออายุ (refresh) | `AuthInterceptor` จัดการ 401 โดยอัตโนมัติ ไม่ต้องให้ผู้ใช้ login ใหม่ทันที |
 | ข้อผิดพลาด (error) messages | ไม่แสดง stack trace หรือข้อความ technical ข้อผิดพลาด (error) ต่อผู้ใช้ แปลงเป็นภาษาไทยที่เข้าใจง่าย |
 | Image upload | ตรวจสอบ format (jpg/jpeg/png/webp) และขนาด (mobile ≤ 10MB, server ≤ 20MB, จำกัดจำนวนพิกเซลสูงสุด 100M) ก่อน upload |
-| clientRequestId | ทุก scan คำขอ (request) ส่ง UUID เพื่อป้องกัน duplicate submission |
+| Idempotency | กันส่งซ้ำฝั่ง server ด้วย SHA-256 + Redis cache (canonical: POST fields มีแค่ `file` บังคับ + `title` ไม่บังคับ — ดู `design/server.md` §5.2.1) |
 
 ---
 
@@ -678,10 +677,10 @@ Requirement: FR-PDPA-01 (Consent Management)
 
 | เงื่อนไข | เป้าหมาย |
 |---------|---------|
-| เปิดแอปถึงหน้าแรก | ภายใน 3 วินาที |
-| เลือกไฟล์เข้า preview | ภายใน 1 วินาที |
-| วิเคราะห์ใหม่ (median) | ≤ 15 วินาทีต่อภาพ |
-| Cache Hit | ≤ 3 วินาที |
+| เปิดแอปถึงหน้าแรก | ภายใน 3 วินาที (cold start, P95, อุปกรณ์อ้างอิง Android 10+ RAM ≥ 4GB) |
+| เลือกไฟล์เข้า preview | ภายใน 1 วินาที (P95, ภาพ ≤ 10MB) |
+| วิเคราะห์ใหม่ (median) | ≤ 15 วินาทีต่อภาพ (P50; P95 ≤ 25s, ภาพ 1080p, GPU T4) |
+| Cache Hit | ≤ 3 วินาที (P95) |
 | AI inference (GPU) | ≤ 10 วินาที |
 | Image compression | บีบอัดอัตโนมัติเมื่อไฟล์ > 10MB โดยใช้ image_picker quality พารามิเตอร์ (parameter) |
 | Network หมดเวลา (timeout) | 30 วินาทีต่อ คำขอ (request) |
@@ -696,7 +695,7 @@ Requirement: FR-PDPA-01 (Consent Management)
 - ปุ่มทุกปุ่มมีพื้นที่แตะอย่างน้อย 44x44 px
 - ทุก ไอคอน (icon) ปุ่ม (button) มี `tooltip` หรือ Semantic Label
 - สีสถานะทุกสีมีข้อความประกอบเสมอ (ไม่ใช้สีอย่างเดียว)
-- รองรับ dynamic แบบอักษร (font) size เท่าที่ layout ยังรับได้
+- รองรับ dynamic แบบอักษร (font) size (text scale 0.85–1.3×) โดยไม่มีข้อความตัดตก ทับซ้อน หรือหลุดขอบจอ
 - `ConsentCheckboxTile` ทั้ง row tap ได้ ไม่จำกัดให้แตะที่ checkbox เท่านั้น
 
 ---
@@ -726,7 +725,7 @@ Requirement: FR-PDPA-01 (Consent Management)
 | image_cropper | ^12.2.1 | crop และ rotate รูป |
 | cached_network_image | ^3.4.1 | แสดงรูปจาก URL พร้อม แคช (cache) |
 | google_fonts | ^8.1.0 | Sarabun + Inter fonts |
-| uuid | ^4.5.1 | สร้าง clientRequestId |
+| uuid | ^4.5.1 | สร้าง correlation ID ฝั่ง client (optional; ไม่ใช่ฟิลด์ของ POST /scan — กันซ้ำทำด้วย SHA-256 ฝั่ง server) |
 | intl | ^0.20.2 | date formatting |
 | cupertino_icons | ^1.0.8 | iOS-style icons |
 | share_plus | ^13.2.0 | share ผลลัพธ์ผ่านแอปอื่น |

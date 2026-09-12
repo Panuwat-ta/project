@@ -81,7 +81,7 @@ $$ S_{total} = \min\left(100, S_{base} + \sum_{i \neq \text{dominant}, S_i \ge 4
 
 โดยที่:
 * $S_{total}$ คือคะแนนความเสี่ยงรวมภาพรวม มีค่าตั้งแต่ 0 ถึง 100
-* $S_{visual}$ คือคะแนนความเสี่ยงจากการถูกดัดแปลงภาพจาก SegFormer (0–100%)
+* $S_{visual}$ คือคะแนนความเสี่ยงจากการถูกดัดแปลงภาพจาก SegFormer (0–100%; สูตร canonical $S_{visual} = \text{Normalize}(\text{Confidence} \times \text{Coverage})$ ดู `configs.md` §3)
 * $S_{textual}$ คือคะแนนความเสี่ยงด้านข้อความหลอกลวงจาก OCR + NLP (0–100%)
 * $S_{source}$ คือคะแนนความเสี่ยงจากแหล่งที่มาของภาพจาก Reverse Image Search (0–100%)
 
@@ -105,12 +105,12 @@ $$
 ## 5. ประสิทธิภาพและเป้าหมายตัวชี้วัด (Target Metrics)
 
 เพื่อให้แอปพลิเคชันทำงานได้อย่างมีประสิทธิภาพในการใช้งานจริง (Production):
-* **ความแม่นยำรวมของ AI (Accuracy และ mDice):** ตั้งเป้าหมายที่ความแม่นยำ $\ge 85\%$ สำหรับการตรวจจับจุดที่ถูกตัดต่อ
-* **เวลาในการประมวลผล:** วิเคราะห์ใหม่ (median) $\le 15$ วินาทีต่อภาพ, Cache Hit $\le 3$ วินาที, AI inference $\le 10$ วินาทีบน GPU (รันผ่าน ONNX Runtime subprocess)
+* **ความแม่นยำรวมของ AI (Accuracy และ mDice):** ตั้งเป้าหมายที่ความแม่นยำ $\ge 85\%$ สำหรับการตรวจจับจุดที่ถูกตัดต่อ — วัดบน held-out test set ที่ไม่ซ้ำ train/val (stratified 80:10:10, test freeze — ดู `training.md` §2)
+* **เวลาในการประมวลผล:** วิเคราะห์ใหม่ P50 $\le 15$ วินาที (P95 ≤ 25s) ต่อภาพ, Cache Hit P95 $\le 3$ วินาที, AI inference $\le 10$ วินาทีบน GPU (รันผ่าน ONNX Runtime subprocess; เงื่อนไขวัด: ภาพ 1080p, GPU T4)
 
 ---
 
-## 5. การอ้างอิง (References & Related Documents)
+## 6. การอ้างอิง (References & Related Documents)
 
 เอกสารฉบับนี้อธิบายถึงคุณลักษณะของตัวโมเดลเท่านั้น สำหรับรายละเอียดอื่นๆ สามารถดูเพิ่มเติมได้ที่:
 * **กลยุทธ์การฝึกสอนโมเดล:** ดูรายละเอียดเชิงลึกเกี่ยวกับ Incremental Learning, การ Freeze Backbone, และการอัปเดตโมเดลได้ที่ [training.md](./training.md)

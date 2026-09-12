@@ -1,8 +1,8 @@
 # Requirement Candidates
 
 **Project Name:** แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง (Scam Image Detection)  
-**Version:** 1.0  
-**Date:** August 23, 2026
+**Version:** 1.1 (audit §A fixes, 2026-09-12)  
+**Date:** September 12, 2026
 
 ---
 
@@ -175,7 +175,7 @@ Requirement Candidates ถูกสกัดจาก:
 - รองรับไฟล์: JPG/JPEG, PNG, WebP (ตรวจ Magic Bytes ไม่เชื่อ Content-Type)
 - ขนาดไฟล์สูงสุดแยกชัด: **Mobile App 10 MB / API Server 20 MB**
 - ขนาดภาพหลังถอดรหัส: สูงสุด 100 ล้านพิกเซล
-- หากเกินขนาด ให้แจ้งเตือนผู้ใช้หรือบีบอัดอัตโนมัติ
+- หากไฟล์เกินขนาด ระบบ shall ปฏิเสธไฟล์ (Mobile > 10 MB / API Server > 20 MB → HTTP 413) และ v1 shall ไม่บีบอัดภาพอัตโนมัติ
 
 ---
 
@@ -228,7 +228,7 @@ Requirement Candidates ถูกสกัดจาก:
 - ตรวจจับ Scam Keywords ด้วย RegEx และ NLP:
   - คำหลอกลวง: กู้เงินด่วน, ถอนยอด, โบนัสพิเศษ, ด่วน, รับเงิน, ลงทุน, แจกเงิน, รวยเร็ว
 - คำนวณ Text Risk Score (0-100) จากจำนวนและความรุนแรงของคำหลอกลวง
-- สูตร: `S_text = (keyword_count × severity_weight) / max_possible_score × 100`
+- สูตร: `S_text = min(100, (Σw_found / max_possible_score) × 100)` โดย `max_possible_score = Σ weight พจนานุกรม v1 = 5.80` (กู้เงินด่วน 0.9, ถอนยอด 0.85, โบนัสพิเศษ 0.8, ด่วน 0.7, ลงทุน 0.7, แจกเงิน 0.65, รับเงิน 0.6, รวยเร็ว 0.6) — ตัวอย่าง: พบ 3 คำ (0.9+0.8+0.7=2.40) → S_text = 2.40/5.80×100 = 41.4 → 41
 
 ---
 
@@ -327,7 +327,7 @@ Requirement Candidates ถูกสกัดจาก:
 **Priority:** Must
 
 **Details:**
-- สูตร: Hybrid Worst-Case: S_base คือค่าสูงสุดของ 3 มิติ, Risk Score = ค่าต่ำสุดระหว่าง 100 กับ S_base + compounding_bonus โดย +5 ต่อมิติรองที่มีคะแนน ≥40 (cap 100)
+- สูตร: Hybrid max+bonus: S_base คือค่าสูงสุดของ 3 มิติ, Risk Score = ค่าต่ำสุดระหว่าง 100 กับ S_base + compounding_bonus โดย +5 ต่อมิติรองที่มีคะแนน ≥40 (cap 100)
 - แจกแจงผลคะแนนแยก 3 มิติอิสระเต็ม 100% (Visual, Text, Source)
 - ปัดเศษเป็นจำนวนเต็ม
 - จำกัดผลให้อยู่ในช่วง 0-100
@@ -422,7 +422,7 @@ Requirement Candidates ถูกสกัดจาก:
 - แสดงรายการประวัติการสแกน (List View)
 - แสดง Thumbnail, วันที่, คะแนนความเสี่ยง, ระดับความเสี่ยง
 - เรียงตามวันที่ล่าสุดก่อน (Descending Order)
-- รองรับ Pagination หรือ Infinite Scroll
+- v1 ใช้ Pagination เท่านั้น (default page size 20, เรียง created_at DESC); Infinite Scroll เป็น future
 
 ---
 
@@ -802,7 +802,7 @@ Requirement Candidates ถูกสกัดจาก:
 
 **Details:**
 - ทดสอบด้วย Load Testing (e.g., JMeter, Locust)
-- ระบบต้องรองรับ 100 Concurrent Users โดยไม่มีการตอบสนองช้าหรือ Error
+- ระบบ shall รองรับ 100 Concurrent Users โดย Cache Hit avg ≤ 5 วินาที, Cache Miss avg ≤ 20 วินาที, Error Rate < 1%
 - **Performance Target:**
   - Average Response Time: ≤ 20 วินาที (Cache Miss)
   - Average Response Time: ≤ 5 วินาที (Cache Hit)

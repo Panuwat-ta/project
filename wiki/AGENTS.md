@@ -23,7 +23,7 @@ wiki/
     risk-scoring.md
     explainable-ai.md
     ai-model-segformer.md
-    Semantic Segmentation-technique.md
+    semantic-segmentation.md
 
   architecture/      <- System design and structural components
     system-architecture.md

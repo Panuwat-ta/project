@@ -6,10 +6,11 @@
 
 ```bash
 # smoke test (30 ไฟล์/แหล่ง ลง /tmp)
-/tmp/plotvenv/bin/python prepare_dataset/clean_dataset.py --out /tmp/dataset_smoke --limit 30
+./.venv/bin/python prepare_dataset/clean_dataset.py --out /tmp/dataset_smoke --limit 30
 
-# รันจริง (USB -> Pictures, นานเป็นชั่วโมง รันเบื้องหลัง)
-nohup /tmp/plotvenv/bin/python prepare_dataset/clean_dataset.py > /tmp/clean_full.log 2>&1 &
+# เตรียม venv ภายในโปรเจกต์ก่อน (`python -m venv .venv && source .venv/bin/activate`)
+# รันจริง (USB -> Pictures; โดยทั่วไป 1–4 ชม. สำหรับ ~540k รูป ขึ้นกับ I/O ของ USB/disk — รันเบื้องหลังและติดตามใน /tmp/clean_full.log)
+nohup ./.venv/bin/python prepare_dataset/clean_dataset.py > /tmp/clean_full.log 2>&1 &
 ```
 
 ## ตัวเลือก
