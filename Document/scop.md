@@ -45,13 +45,13 @@ flowchart TD
 
     %% AI Engine Details
     AIEngine --> AI1("SegFormer ONNX (subprocess)")
-    AIEngine --> AI2("GenAI Image Detection (max prob)")
+    AIEngine --> AI2("GenAI Image Detection (classifier S_ai>=50)")
     AIEngine --> AI3("PyTorch to ONNX Pipeline")
     AIEngine --> AI4("Mask-to-Heatmap Overlay")
 
     %% Admin Portal Details
     AdminPortal --> AD1("RBAC & Dashboard")
-    AdminPortal --> AD2("User Management CRUD")
+    AdminPortal --> AD2("User Management Read/Update")
     AdminPortal --> AD3("Scam Report Queue")
     AdminPortal --> AD4("Model Update Console")
 
@@ -66,7 +66,7 @@ flowchart TD
 ## รายละเอียดขอบเขตงานแยกตามส่วนประกอบ (Detailed Work Packages)
 
 ### 1. ระบบแอปพลิเคชันสำหรับผู้ใช้ทั่วไป (General User Mobile App)
-พัฒนาด้วย Flutter แบบ Cross-Platform เพื่ออำนวยความสะดวกในการใช้งานบนอุปกรณ์เคลื่อนที่
+พัฒนาด้วย Flutter เพื่อใช้งานบนอุปกรณ์เคลื่อนที่ โดย v1 รองรับ Android เท่านั้น
 
 * **งานพัฒนาระบบลงทะเบียนและยืนยันตัวตน (Authentication):**
   * พัฒนาหน้าลงทะเบียน (Register) และเข้าสู่ระบบ (Login) ด้วยอีเมลและรหัสผ่าน
@@ -76,7 +76,7 @@ flowchart TD
   * พัฒนาหน้าการเลือกและอัปโหลดรูปภาพเพื่อส่งประมวลผล รองรับคลังภาพ (Gallery)
   * เพิ่มระบบครอปตัดรูปภาพ (Image Cropper) ก่อนส่งประมวลผล
 * **งานพัฒนาการแสดงผลรายงานระดับความเสี่ยง (Risk Visualization Dashboard):**
-  * หน้าแสดงคะแนนความเสี่ยงโดยรวม (Hybrid max+bonus Risk Score: S_base คือค่าสูงสุดของ 3 มิติ +5 ต่อมิติรองที่มีคะแนน ≥40, 3 ระดับ Low/Medium/High) ในรูปของเกจสี (เขียว-เหลือง-แดง)
+  * หน้าแสดงคะแนนความเสี่ยงโดยรวม (สูตร/เกณฑ์ตาม `Document/docs/05_Software_Requirement_Specification.md` FR-ANALYSIS-04 — ดูนิยามที่ Document ที่เดียว) ในรูปของเกจสี (เขียว-เหลือง-แดง)
   * แสดงข้อมูลเหตุผลที่เสี่ยง (เช่น จุดพิกเซลผิดปกติจาก mask overlay หรือคำ scam ที่ OCR พบ)
   * หน้าแสดงภาพผลลัพธ์แผนที่ความร้อนแบบ mask-to-heatmap overlay เพื่อระบุจุดผิดปกติ
 * **งานพัฒนาระบบจัดการประวัติและนโยบายความเป็นส่วนตัว (History & PDPA Control):**
@@ -85,7 +85,7 @@ flowchart TD
   * หน้ายินยอมการเข้าถึงข้อมูลและการเก็บรวบรวมไฟล์ภาพ (Consent Screen)
 * **งานพัฒนาระบบรายงานและแจ้งเตือน (Community Report & Notification):**
   * ปุ่มรายงานภาพหลอกลวง (Scam Report Button) เพื่อส่งข้อมูลภาพเข้าคลังฐานข้อมูลกลาง
-  * ระบบรับการแจ้งเตือนพุช (Push Notification FCM Integration) เมื่อระบบหลังบ้านสแกนรูปเสร็จสมบูรณ์
+  * ระบบรับการแจ้งเตือนแบบ in-app/polling ภายใน 60 วินาทีเมื่อระบบหลังบ้านสแกนรูปเสร็จสมบูรณ์ (FCM push = Phase 2)
 
 ---
 
@@ -118,7 +118,7 @@ flowchart TD
 * **งานพัฒนาโมดูลตรวจสอบร่องรอยการดัดแปลงภาพ (Image Forgery Detection):**
   * พัฒนาโมเดล Deep Learning SegFormer ตัวเดียว (ONNX) เพื่อหาค่าคะแนนความผิดปกติของภาพที่ผ่านการแต่งรูป (Copy-Move, Splice, Inpainting)
 * **งานพัฒนาโมดูลตรวจสอบภาพสังเคราะห์จากปัญญาประดิษฐ์ (AI-Generated Image Detection):**
-  * ใช้ค่าความน่าจะเป็นสูงสุดจากแผนที่ความน่าจะเป็นของโมเดลเป็นคะแนนภาพ AI-Generated ควบคู่กับคะแนนความเสี่ยงทางภาพ ในการตรวจหาเศษซากลักษณะทางฟิสิกส์ผิดปกติ (Artifacts) ที่หลงเหลือจากการรันโมเดล Generative AI (เช่น DALL-E, Midjourney, Stable Diffusion)
+  * คำนวณคะแนนภาพ AI-Generated (S_ai, 0–100) จาก AI-Gen classifier แยกอิสระ: S_ai = 100 × P(ai) โดยเกณฑ์ S_ai ≥50 ถือว่าเข้าข่าย AI-Generated; ประเมินด้วย Accuracy ≥85% และ AUROC ≥0.90 บน frozen test set (mDice ใช้เฉพาะงาน segmentation) ควบคู่กับคะแนนความเสี่ยงทางภาพ ในการตรวจหาเศษซากลักษณะทางฟิสิกส์ผิดปกติ (Artifacts) ที่หลงเหลือจากการรันโมเดล Generative AI (เช่น DALL-E, Midjourney, Stable Diffusion)
 * **งานพัฒนาเซอร์วิสประมวลผลและการอธิบายโมเดล (AI Inference & Explainability):**
   * พัฒนาส่วนควบคุมการรับไฟล์ส่งประมวลผล (ONNX Worker) และแปลงโมเดลให้อยู่ในรูปของ ONNX format เพื่อให้ Inference ได้เร็วที่สุด
   * พัฒนาระบบส่งคืนแผนภาพอธิบายเหตุผลของปัญญาประดิษฐ์ (Explainable AI) ในรูปแบบแผนที่ความร้อนแบบ mask-to-heatmap overlay ซ้อนทับลงบนรูปภาพผลลัพธ์
@@ -160,4 +160,4 @@ flowchart TD
 - **Google SynthID / Gemini LLM:** น่าสนใจแต่ยังไม่มีดีไซน์ใน v1
 - **Google OAuth / Social Login:** เลื่อนไป Phase 2 (RC-AUTH-06)
 - **Real-time Camera Analysis:** ไม่มีการวิเคราะห์แบบ real-time ต้องบันทึกภาพก่อนส่งตรวจสอบ
-- หมายเหตุ: **iOS อยู่ในขอบเขต** — Mobile เป็น Flutter cross-platform
+- หมายเหตุ: **v1 รองรับ Android เท่านั้น** — Mobile เป็น Flutter codebase เดียวกันพร้อม build iOS ในอนาคต (มติ DOC-04, 2026-09-11)

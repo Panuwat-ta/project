@@ -16,11 +16,11 @@
 
 ### 1.1 มิติคุณภาพที่ครอบคลุม (Quality Dimensions)
 1. **ประสิทธิภาพและอัตราการรองรับ (Performance & Scalability)**:
-   - ตรวจวัดเวลาตอบสนอง (Latency) ในสถานะ Cache Hit (<= 3 วินาที)
-   - ตรวจวัดเวลาประมวลผลการวิเคราะห์เต็มรูปแบบของ AI Pipeline (<= 15 วินาที)
+   - ตรวจวัดเวลาตอบสนอง (Latency) ในสถานะ Cache Hit (P50 <= 1.5s, P95 <= 3.0s แบบ End-to-End ภาพ 1MB RTT ≤50ms)
+   - ตรวจวัดเวลาประมวลผลการวิเคราะห์เต็มรูปแบบของ AI Pipeline (Cache Miss: P50 <= 15s, P95 <= 25s, P99 <= 35s ภาพ 1920x1080 JPG 3MB)
    - ความสามารถในการรองรับโหลดพร้อมกัน (Concurrency) ตั้งแต่ 50 ถึง 200 ผู้ใช้เสมือน (Virtual Users)
 2. **ความมั่นคงปลอดภัย (Security & Hardening)**:
-   - การตรวจสอบความถูกต้องของไฟล์อัปโหลด (Magic Bytes & Content-Type Validation Server ปฏิเสธเกิน 20MB ด้วย HTTP 413 และปฏิเสธภาพเกิน 100M px อัตรา default 60/hour)
+   - การตรวจสอบความถูกต้องของไฟล์อัปโหลด (Magic Bytes & Content-Type Validation Server ปฏิเสธเกิน 20MB ด้วย HTTP 413 และปฏิเสธภาพเกิน 100M px; rate limit แบบ tier ต่อนาที)
    - การป้องกันช่องโหว่ OWASP Top 10 (Injection, Broken Access Control, Security Misconfiguration)
    - การจัดการความลับ (Zero Hardcoded Secrets) และการบังคับใช้ HTTPS/TLS
 3. **การคุ้มครองข้อมูลส่วนบุคคล (Data Privacy & PDPA)**:
@@ -51,7 +51,7 @@
 
 1. **Performance**:
    - Cache Hit Latency: ค่ามัธยฐาน <= 1.5s, ค่า p95 <= 3.0s ที่โหลด 50 RPS
-   - Full Inference Latency: ค่า p90 <= 15.0s สำหรับภาพความละเอียดสูง
+   - Full Inference Latency (Cache Miss ภาพ 1920x1080 JPG 3MB): P50 <= 15.0s, P95 <= 25.0s (unify ตรงกับ NFR-PERF-02 และ test_cases_nfr.md)
    - Error Rate ในช่วงทดสอบโหลดปกติต้องเท่ากับ 0.0%
 2. **Security**:
    - ไม่พบช่องโหว่ระดับ High หรือ Critical ตามเกณฑ์ OWASP

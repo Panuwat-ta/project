@@ -50,8 +50,11 @@ class Settings(BaseSettings):
     XAI_GPU_LAYERS: int = -1  # -1 = offload all layers to GPU
     XAI_CONTEXT_SIZE: int = 1024
 
-    # Rate Limit
-    RATE_LIMIT_PER_HOUR: int = 60
+    # Rate Limit — tiered per minute (มติ DOC-02, 2026-09-11)
+    RATE_LIMIT_GUEST_PER_MINUTE: int = 10
+    RATE_LIMIT_USER_PER_MINUTE: int = 60
+    RATE_LIMIT_ADMIN_PER_MINUTE: int = 300
+    RATE_LIMIT_SCAN_CREATE_PER_MINUTE: int = 5
 
     model_config = SettingsConfigDict(
         env_file=(

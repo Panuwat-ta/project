@@ -593,6 +593,7 @@ Admin Portal ใช้ Dark Theme เป็นหลัก สอดคล้อ
 - Modal ยืนยัน:
   - หัวข้อ: "ยืนยันการ Deploy โมเดล v2.2.0"
   - ข้อความเตือน: "การ Deploy จะล้าง Cache ทั้งหมดและทำให้ผลสแกนใหม่ใช้โมเดลเวอร์ชันนี้" (สี `status-warning`)
+  - ข้อความ downtime: "API ไม่หยุดทำงาน (hot-reload zero-downtime) — งานที่กำลังรันจบด้วยโมเดลเดิม" (พฤติกรรม canonical ดู `Document/admin/admin.md` §deploy)
   - ปุ่ม "ยืนยัน Deploy" สี `accent-primary`
   - ปุ่ม "ยกเลิก" สี Ghost
 - ผลลัพธ์ในตาราง: เวอร์ชันเป้าหมายเปลี่ยนสถานะเป็น "Active", เวอร์ชันเดิมเปลี่ยนเป็น "Inactive" (Active/Inactive Swap)
@@ -714,7 +715,7 @@ Panel ผูกกับ `export_id` เดียว ดึงสถานะจ
 ### 4.8 หน้า Admin Login
 
 **Path:** `/admin/login`
-**API:** `POST /api/v1/auth/login`
+**API:** `POST /api/v1/admin/login`
 
 หน้าแรกก่อนเข้าสู่ระบบ (อ้างอิง Navigation Flow ข้อ 9) แยกจาก Layout Structure หลัก — ไม่มี Sidebar / Top Bar:
 
@@ -724,6 +725,7 @@ Panel ผูกกับ `export_id` เดียว ดึงสถานะจ
   - ปุ่ม "เข้าสู่ระบบ": Primary Button เต็มความกว้าง พร้อม Loading State เมื่อรอ Response
 - Error State: ข้อมูลไม่ถูกต้อง → Inline Error ใต้ Form: "Email หรือ Password ไม่ถูกต้อง" (ข้อความ `status-danger`)
 - Login สำเร็จ: Redirect ไป `/admin/dashboard`
+- Rate Limit: Admin endpoints จำกัด 300 requests/minute (canonical ตรงกับ `server/app/core/config.py` และ `Document/admin/admin.md` §11.2) — เมื่อโดน 429 ให้แสดง Toast Warning "คำขอถี่เกินไป โปรดรอแล้วลองใหม่"
 
 ---
 

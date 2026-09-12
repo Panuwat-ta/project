@@ -24,8 +24,8 @@
 2. **การจำแนกระดับความเสี่ยง (Risk Scoring Integrity)**:
    - จำแนกคะแนนความเสี่ยงอย่างเที่ยงตรงตามเกณฑ์ 3 ระดับ: Low (0-39), Medium (40-69), High (70-100)
 3. **ประสิทธิภาพและความพร้อมใช้งาน (Performance & Latency)**:
-   - ตอบกลับคำขอภาพซ้ำจาก Redis Cache ภายในเวลาไม่เกิน 3 วินาทีแบบ End-to-End (Cache Hit ≤ 3s)
-   - ประมวลผลภาพใหม่เต็มรูปแบบ (Cache Miss) ภายในเวลาไม่เกิน 15 วินาที (Full Inference ≤ 15s)
+   - ตอบกลับคำขอภาพซ้ำจาก Redis Cache ภายในเวลา P95 ไม่เกิน 3 วินาทีแบบ End-to-End (Cache Hit P95 ≤ 3s; ภาพ 1MB RTT ≤50ms)
+   - ประมวลผลภาพใหม่เต็มรูปแบบ (Cache Miss) ค่ามัธยฐานไม่เกิน 15 วินาที และ P95 ไม่เกิน 25 วินาที (Full Inference P50 ≤ 15s / P95 ≤ 25s; ภาพ 1920x1080 JPG 3MB)
 4. **ความปลอดภัยและการปกป้องข้อมูล (Security & PDPA)**:
    - ปราศจากฮาร์ดโค้ด Credentials/Keys โดยโหลดจาก Environment Variables ทั้งหมด
    - ป้องกันช่องโหว่ OWASP Top 10 และตรวจสอบความถูกต้องของไฟล์รูปภาพอย่างเข้มงวด
@@ -48,7 +48,7 @@
   - Image Scan Endpoint (`POST /api/v1/scan/`, GET /api/v1/scan/{id}) พร้อม Multipart Upload
   - Magic Bytes Validation และ Image File Sanitization
   - Redis Caching Mechanism (SHA-256 image hash TTL 30 วัน)
-  - Slowapi Rate Limiting (default 60/hour, admin login/refresh 5/minute) และ CORS Origin Filtering
+  - Slowapi Rate Limiting แบบ tier ต่อนาที (guest 10 / user 60 / admin 300 / POST scan 5; admin login/refresh 5/minute) และ CORS Origin Filtering
   - Admin Endpoints (`/api/v1/admin/*` ทุกเส้นบังคับ is_superadmin) พร้อมการแยกสิทธิ์ Role-Based Access Control
   - Model Version Registry (Deploy, Rollback พร้อม Database Row Lock)
   - Audit Logging ลงตารางเอกพจน์ audit_log พร้อม Structured JSON
@@ -155,7 +155,7 @@
 1. 100% ของ Test Cases ระดับ P0 (Blocker) และ P1 (High) ผ่านการทดสอบทั้งหมด (Pass Rate = 100%)
 2. อัตราการผ่านของ Test Cases ระดับ P2 (Medium) ไม่ต่ำกว่า 95%
 3. ไม่มีข้อบกพร่องระดับ Critical หรือ Major ที่ยังค้างอยู่ในระบบ (0 Open Critical Bugs)
-4. การทดสอบโหลดด้วย Locust ยืนยันว่า Response Time ของ Cache Hit ไม่เกิน 3 วินาที (p95 ≤ 3.0s) และของ Full Inference ไม่เกิน 15 วินาที (p90 ≤ 15.0s)
+4. การทดสอบโหลดด้วย Locust ยืนยันว่า Response Time ของ Cache Hit P95 ไม่เกิน 3 วินาที (P95 ≤ 3.0s) และของ Full Inference P50 ไม่เกิน 15 วินาที / P95 ไม่เกิน 25 วินาที (P50 ≤ 15.0s / P95 ≤ 25.0s)
 5. เอกสารตารางสอบย้อนกลับครอบคลุม FR และ NFR ทั้งหมด — FR ใดยังไม่มี TC ให้ระบุ GAP/Deferred ชัดเจน
 
 ---

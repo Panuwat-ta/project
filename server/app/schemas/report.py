@@ -1,10 +1,21 @@
-from typing import Optional, List
+from typing import Optional, List, Literal
 from pydantic import BaseModel, UUID4, Field
 from datetime import datetime
 
+# Canonical report categories (มติ DOC-08) — ตรงกับ GET /reports/categories
+ReportCategory = Literal[
+    "romance_scam",
+    "online_shopping",
+    "fake_slip",
+    "investment",
+    "identity_theft",
+    "ai_deepfake",
+    "other",
+]
+
 class ReportCreateRequest(BaseModel):
     scan_id: UUID4
-    category: str
+    category: ReportCategory
     description: str = Field(..., min_length=10)
     platform: Optional[str] = None
     reference_url: Optional[str] = None

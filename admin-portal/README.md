@@ -3,7 +3,7 @@
 > ระบบคอนโซลส่วนกลางสำหรับผู้ดูแลระบบระดับสูง (Super Admin) ในการสืบสวน ตรวจสอบนิติวิทยาศาสตร์ดิจิทัล วิเคราะห์โมเดล AI และควบคุมความปลอดภัยของแพลตฟอร์ม ScamGuard
 
 **Path:** `/home/panuwat/project/admin-portal`  
-**สถานะ:** Production-Ready (Operate Mode Architecture)  
+**สถานะ (2026-09-12):** พร้อมใช้ภายใน (internal hardening, Operate Mode Architecture) — ยังไม่ประกาศ Production SLA; เกณฑ์ก่อนประกาศ: `npm run lint` + `npm run build` ผ่าน, smoke E2E ผ่าน, เชื่อมต่อ Real Backend สำเร็จ  
 **สเกลความเสี่ยง:** 3 ระดับ (Low: 0-39, Medium: 40-69, High: 70-100) — ปราศจากระดับ Safe ตามข้อกำหนดระบบ
 
 ---
@@ -141,7 +141,7 @@ admin-portal/
 | `VITE_APP_VERSION` | `1.0.0` | เวอร์ชันของแอปพลิเคชัน |
 | `VITE_BACKEND_TARGET` | `http://127.0.0.1:8000` | ปลายทางของ FastAPI Backend สำหรับ Vite Dev Proxy |
 | `VITE_API_BASE_URL` | `/api/v1` | เส้นทางหลักของ API (เรียกผ่าน Proxy หรือ Domain หลัก) |
-| `VITE_WS_URL` | *(ค่าว่าง)* | WebSocket URL สำหรับ Live Telemetry (หากเว้นว่างจะคำนวณจากโฮสต์อัตโนมัติ) |
+| `VITE_WS_URL` | *(ค่าว่าง)* | WebSocket URL สำหรับ Live Telemetry; หากเว้นว่างจะคำนวณอัตโนมัติเป็น `ws(s)://<host>/api/v1/ws/admin/dashboard` โดยสืบทอด protocol+host จากหน้าเว็บ (`https`→`wss`, `http`→`ws`) |
 | `VITE_STORAGE_URL` | `/uploads` | เส้นทางสำหรับดาวน์โหลดและเปิดดูไฟล์ภาพหลักฐานและ Heatmap |
 | `VITE_REFRESH_LEEWAY_SECONDS` | `10` | ระยะเวลาสำรอง (วินาที) สำหรับ Silent Refresh ก่อน Token หมดอายุ |
 | `VITE_SESSION_TIMEOUT_MINUTES` | `60` | ขีดจำกัดเวลาเซสชันก่อนแจ้งเตือนผู้ดูแลระบบ |
@@ -157,7 +157,7 @@ admin-portal/
 
 - **Node.js**: เวอร์ชัน LTS (รองรับ Node.js 20 หรือใหม่กว่า)
 - **npm**: เวอร์ชัน 10 ขึ้นไป
-- **FastAPI Backend**: รันอยู่ที่พอร์ต `8000` (ตรวจสอบผ่าน `curl http://127.0.0.1:8000/api/v1/health`)
+- **FastAPI Backend**: รันอยู่ที่พอร์ต `8000` (ตรวจสอบผ่าน `curl http://127.0.0.1:8000/health` — public; ส่วน `GET /api/v1/admin/health` ต้องใช้ Token Super Admin)
 
 ### บัญชีผู้ดูแลระบบสำหรับโหมดพัฒนา (Default Credentials)
 
@@ -211,7 +211,7 @@ admin-portal/
 1. **การทดสอบความถูกต้องผ่าน Chrome DevTools MCP:**
    - ทดสอบโฟลว์การเข้าสู่ระบบ (Login) การจัดการเซสชัน JWT และการเชื่อมต่อ Real Backend ผ่านเครือข่ายจำลอง
    - ทดสอบการสลับธีมทั้ง Dark Mode และ Light Mode อย่างสมบูรณ์
-   - ตรวจสอบ Console Messages: ไม่พบข้อผิดพลาดหรือคำเตือนในรันไทม์ (0 errors, 0 warnings)
+   - ตรวจสอบ Console Messages: ไม่พบข้อผิดพลาดหรือคำเตือนในรันไทม์ (0 errors, 0 warnings) — สภาพแวดล้อมการตรวจ: Chrome DevTools + Vite dev proxy → Real Backend; ผู้รันต้องบันทึกวันที่/เวอร์ชันเบราว์เซอร์ไว้ในรายงานผลทุกครั้ง
 
 2. **การตรวจสอบ UX/UI ด้วย Impeccable Design Standards:**
    - รันสคริปต์ตรวจจับอัตโนมัติ `node .agents/skills/impeccable/scripts/detect.mjs --json admin-portal` ผลลัพธ์: 0 Anti-patterns

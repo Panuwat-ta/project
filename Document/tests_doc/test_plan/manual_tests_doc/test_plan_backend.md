@@ -35,7 +35,7 @@
    - การจัดการ Timezone ต้องเป็น UTC+7 (Asia/Bangkok)
    - การบันทึกทุกการกระทำสำคัญของ Admin ลงตารางเอกพจน์ audit_log พร้อม Structured JSON before_state และ after_state
 6. **Security & Rate Limiting**:
-    - การป้องกัน Brute Force ด้วย Slowapi Rate Limiting (ค่า default 60/hour; Admin Login/Refresh 5/minute ส่ง HTTP 429)
+    - การป้องกัน Brute Force ด้วย Slowapi Rate Limiting แบบ tier ต่อนาที (guest 10 / user 60 / admin 300 / POST scan 5; Admin Login/Refresh 5/minute ส่ง HTTP 429)
    - การบังคับ is_superadmin ทุกเส้น /api/v1/admin/* ผู้ใช้ทั่วไปเรียกต้องได้ HTTP 403
    - การตั้งค่า CORS Header และ Security Headers
 
@@ -70,7 +70,7 @@
 ### 3.1 เกณฑ์การเริ่มต้นทดสอบ (Entry Criteria)
 - ฐานข้อมูล PostgreSQL และ Redis พร้อมเชื่อมต่อ และ Migration อยู่ในสถานะ Head ล่าสุด
 - Environment Variables ถูกกำหนดผ่านไฟล์ `.env` ครบถ้วนโดยไม่มี Missing Config
-- รันคำสั่งตรวจสอบการเชื่อมต่อผ่าน GET /health ที่รากเซิร์ฟเวอร์ ให้ผลลัพธ์สถานะ OK
+- รันคำสั่งตรวจสอบการเชื่อมต่อผ่าน GET /health ที่รากเซิร์ฟเวอร์ ให้ผลลัพธ์ `200 OK` พร้อมฟิลด์สถานะ `healthy` ภายใน 2 วินาที
 
 ### 3.2 เกณฑ์การสิ้นสุดการทดสอบ (Exit Criteria)
 - ชุดทดสอบ Automated API Suite ใน `tests_all/automate_tests/tests/api/` ผ่าน 100% (อ้างอิงจำนวนปัจจุบัน)

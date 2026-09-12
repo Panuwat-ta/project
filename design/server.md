@@ -89,7 +89,7 @@ server/
 
 #### 2.2.2 การนำเข้าและจัดเก็บข้อมูลรูปภาพ (Image Storage Architecture)
 * จัดเก็บรูปภาพต้นฉบับและรูปภาพแผนที่ความร้อน (Heatmap) บนคลาวด์สตอเรจ (Cloud Storage)
-* เพื่อความปลอดภัยของข้อมูลและความเป็นส่วนตัว (PDPA Compliance) การเรียกอ่านภาพจะเข้าถึงผ่าน Presigned URLs ที่มีอายุการใช้งานจำกัด (เช่น 15 นาที) เท่านั้น
+* เพื่อความปลอดภัยของข้อมูลและความเป็นส่วนตัว (PDPA Compliance) การเรียกอ่านภาพจะเข้าถึงผ่าน Presigned URLs ที่มีอายุการใช้งานคงที่ **15 นาที** เท่านั้น
 * โครงสร้างโฟลเดอร์บนระบบจัดเก็บข้อมูล:
   * `/uploads/{user_id}/{scan_id}/original.jpg` - ไฟล์ภาพต้นฉบับดิบที่ส่งเข้ามาตรวจสอบ
   * `/uploads/{user_id}/{scan_id}/heatmap.jpg` - ไฟล์ภาพประมวลผลวิเคราะห์การดัดแปลงและขอบเขตพิกเซล
@@ -134,7 +134,7 @@ server/
 | `MAX_IMAGE_PIXELS` | จำนวนพิกเซลรูปภาพสูงสุดที่ยอมรับ (ป้องกัน Decompression Bomb) |
 | `ONNX_MODEL_PATH` | Path ไฟล์โมเดล ONNX ที่ Worker โหลดใช้งาน |
 | `ONNX_TILE_OVERLAP` | ค่า Overlap (พิกเซล) ระหว่าง Tile ใน Tiled Inference |
-| `RATE_LIMIT_PER_HOUR` | จำนวนครั้งสูงสุดที่เรียก API ได้ต่อชั่วโมง (60) |
+| `RATE_LIMIT_GUEST_PER_MINUTE` / `RATE_LIMIT_USER_PER_MINUTE` / `RATE_LIMIT_ADMIN_PER_MINUTE` / `RATE_LIMIT_SCAN_CREATE_PER_MINUTE` | tier ต่อนาทีแยกตาม role: guest 10 / user 60 / admin 300 / POST scan 5 (มติ DOC-02) |
 
 ---
 
@@ -289,11 +289,13 @@ CREATE INDEX idx_scam_reports_created_at ON scam_reports(created_at);
 
 ### 5.2 หมวดการตรวจวิเคราะห์รูปภาพ (Scan & Analysis Endpoints)
 
-#### 5.2.1 POST /api/v1/scan
-ส่งรูปภาพอัปโหลดเพื่อตรวจวิเคราะห์ความเสี่ยง
+#### 5.2.1 POST /api/v1/scan (canonical spec — เอกสารฉบับอื่นห้ามนิยามฟิลด์ซ้ำ ให้อ้างหัวข้อนี้)
+ส่งรูปภาพอัปโหลดเพื่อตรวจวิเคราะห์ความเสี่ยงแบบ **async** (รับงานผ่าน `BackgroundTasks` แล้วประมวลผลเบื้องหลัง; client ต้อง poll `GET /api/v1/scan/{id}` ทุก 3 วินาทีจน `status = "completed"` หรือ timeout 120 วินาที — `status`: `pending` → `processing` → `completed`/`failed`)
 * **Request (Multipart/Form-Data):**
-  * `file`: (Binary File - JPG/PNG)
-* **Response (JSON - Status 200):**
+  * `file`: (Binary File บังคับ — client ประกาศ JPG/PNG/WebP; server ไม่เชื่อ content-type แต่ verify ด้วยการ decode จริง, ปฏิเสธไฟล์ > 20MB ด้วย 413, decode ≤ 100M px — มติ DOC-03)
+  * `title`: (string ไม่บังคับ — Form field)
+* ป้องกันส่งซ้ำ: server คำนวณ SHA-256 ของไฟล์แล้วคืนผล cache เดิม (Redis TTL 30 วัน) หากเป็นภาพเดียวกัน
+* **Response (JSON - Status 200):** คืน record การสแกนทันที (มี `scan_id`/`id` + `status` เริ่มต้น) ตัวอย่างด้านล่างคือรูปหลังประมวลผลเสร็จ (`status = "completed"`):
 ```json
 {
   "scan_id": "8f8b8a5d-4f10-4cd9-bf7b-84a83e05ea01",
@@ -343,7 +345,7 @@ CREATE INDEX idx_scam_reports_created_at ON scam_reports(created_at);
 
 ### 5.3 หมวดการรายงานสแกมเมอร์ (Report Endpoints)
 
-#### 5.3.1 POST /api/v1/report
+#### 5.3.1 POST /api/v1/reports
 แจ้งรายงานภาพหลอกลวงเข้าสู่คลิปประวัติกลางของระบบ
 * **Auth:** ต้องแนบ User JWT (Bearer Token)
 * **Request Body (JSON):**
@@ -404,6 +406,6 @@ CREATE INDEX idx_scam_reports_created_at ON scam_reports(created_at);
 
 ## 6. แนวทางปฏิบัติด้านความมั่นคงปลอดภัยและการจัดการข้อผิดพลาด (Security & Error Handling)
 
-* **การจำกัดการเรียกใช้งาน API (Rate Limiting):** กำหนดสิทธิ์ให้ผู้ใช้ทั่วไปเรียก API ในการสแกนได้สูงสุด 60 ครั้งต่อชั่วโมง เพื่อป้องกันทราฟฟิกบอทและควบคุมค่าใช้จ่ายในการ Inference บน GPU เซิร์ฟเวอร์
-* **การจัดการข้อผิดพลาดภาพเข้า (Robust Input Validation):** ตรวจเช็กขนาดและชนิดไฟล์ (Allowed: `image/jpeg`, `image/png`) หากไม่ใช่ไฟล์รูปภาพ หรือขนาดใหญ่เกิน 10MB ระบบจะปฏิเสธไฟล์ในทันทีโดยส่ง HTTP 400 Bad Request
-* **การป้องกันความเสียหายบางส่วน (Graceful Degradation):** ในกรณีที่ API เชื่อมโยงกับ Google Vision API หรือ AI Inference Node เกิดปัญหาขัดข้อง (Timeout) API Application จะยังสามารถคืนค่าสแกนโดยคำนวณคะแนนเท่าที่มีข้อมูล (เช่น อ่านข้อมูลจาก EXIF และสกัดข้อความด้วย Surya-OCR) พร้อมบันทึกสถานะข้อผิดพลาดใน Log เพื่อให้นักพัฒนาดำเนินการตรวจสอบต่อไป
+* **การจำกัดการเรียกใช้งาน API (Rate Limiting):** แบบ tier ต่อนาทีแยกตาม role (guest 10 / user 60 / admin 300 / POST scan 5 ต่อนาที, key ตาม IP) เพื่อป้องกันทราฟฟิกบอทและควบคุมค่าใช้จ่ายในการ Inference บน GPU เซิร์ฟเวอร์ (มติ DOC-02)
+* **การจัดการข้อผิดพลาดภาพเข้า (Robust Input Validation):** ตรวจเช็กขนาดและชนิดไฟล์ (client ประกาศ `image/jpeg`, `image/png`, `image/webp`; server verify ด้วยการ decode จริงไม่เชื่อ content-type) หากไม่ใช่ไฟล์รูปภาพ หรือขนาดใหญ่เกิน 20MB ระบบจะปฏิเสธไฟล์ในทันทีโดยส่ง HTTP 413 (mobile ตรวจ 10MB ฝั่ง client — มติ DOC-03)
+* **การป้องกันความเสียหายบางส่วน (Graceful Degradation):** ในกรณีที่ API เชื่อมโยงกับ Google Vision API หรือ AI Inference Node เกิดปัญหาขัดข้อง (Timeout) API Application จะยังสามารถคืนค่าสแกนโดยคำนวณคะแนนจากมิติที่สำเร็จ (ตัดมิติที่ล้มเหลวทิ้ง — EXIF สกัดไว้แสดงผลเท่านั้น ไม่ร่วมคำนวณคะแนน) พร้อมบันทึกสถานะข้อผิดพลาดใน Log เพื่อให้นักพัฒนาดำเนินการตรวจสอบต่อไป

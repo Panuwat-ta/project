@@ -184,7 +184,7 @@ class AppRadius {
 
 ### AuthBloc
 ```
-Events: LoginRequested, RegisterRequested, LogoutRequested, GoogleLoginRequested
+Events: LoginRequested, RegisterRequested, LogoutRequested, GoogleLoginRequested (Phase 2 — RC-AUTH-06)
 States: AuthInitial, AuthLoading, Authenticated(User), Unauthenticated, AuthError(message)
 ```
 
@@ -202,7 +202,7 @@ States: ScanInitial, ImagePicked(File), ImageCropped(File), Uploading, Polling(p
 
 ### ResultBloc
 ```
-Events: ResultRequested(taskId)
+Events: ResultRequested(scanId)
 States: ResultInitial, ResultLoading, ResultLoaded(AnalysisResult), ResultError
 ```
 
@@ -218,10 +218,10 @@ Events: ReportSubmitted(data)
 States: ReportInitial, ReportSubmitting, ReportSuccess, ReportError
 ```
 
-### ConsentCubit
+### ConsentCubit (2 ระดับ: system บังคับ + research ไม่บังคับ)
 ```
-States: ConsentState(terms, research)
-Methods: toggleTerms(), toggleResearch(), submit()
+States: ConsentState(system, research)
+Methods: toggleSystem(), toggleResearch(), submit()
 ```
 
 ### SettingsCubit
@@ -251,7 +251,7 @@ States: NotificationsState(items, unreadCount)
 **Layout:** Scrollable, centered, `bg-dark`
 - Header with shield icon
 - Onboarding text: purpose, disclaimer (ผลการประเมิน ไม่ใช่คำตัดสินทางกฎหมาย)
-- ConsentCheckboxTile ×2 (terms required, research optional)
+- ConsentCheckboxTile ×2 (system required, research optional)
 - PrimaryButton "ดำเนินการต่อ" (disabled until terms accepted)
 
 ### 6.3 LoginScreen
@@ -377,7 +377,7 @@ States: NotificationsState(items, unreadCount)
 
 ### 6.16 PrivacyConsentScreen
 **Layout:** Scrollable settings
-- Consent toggles (3 types)
+- Consent toggles 2 ระดับ (Two-level Consent — canonical ตรงกับ `consent_logs`: System บังคับ + Research ไม่บังคับ)
 - Export data button
 - Delete account button → confirmation dialog (2-step)
 
@@ -389,7 +389,6 @@ States: NotificationsState(items, unreadCount)
 ```dart
 class AnalysisResult {
   final String scanId;
-  final String taskId;
   final String status;
   final int riskScore;
   final String riskLevel;   // "low" | "medium" | "high"
@@ -431,12 +430,11 @@ class User {
 }
 ```
 
-### ConsentSetting (domain entity)
+### ConsentSetting (domain entity — 2 ระดับตรงกับตาราง `consent_logs`: `system_consent` + `research_consent`)
 ```dart
 class ConsentSetting {
-  final bool processingConsent;
-  final bool historyConsent;
-  final bool researchConsent;
+  final bool systemConsent;    // บังคับ: ยินยอมให้ประมวลผลภาพเพื่อสแกน (ถอน = ใช้แอปไม่ได้)
+  final bool researchConsent;  // ไม่บังคับ: ยินยอมให้นำภาพไป Train AI (ถอนได้ตลอด)
 }
 ```
 
@@ -451,34 +449,33 @@ class ConsentSetting {
 
 ### Endpoints
 ```
-POST   /auth/login
-POST   /auth/register  
-POST   /auth/refresh
-POST   /auth/logout
-GET    /auth/me
+POST   /api/v1/auth/login
+POST   /api/v1/auth/register  
+POST   /api/v1/auth/refresh
+POST   /api/v1/auth/logout
+GET    /api/v1/auth/me
 
-POST   /scans           (multipart/form-data: image, source, consentForResearch, clientRequestId)
-GET    /scans/{taskId}
-GET    /scans/{taskId}/result
-DELETE /scans/{taskId}
+POST   /api/v1/scan     (multipart/form-data: `file` บังคับ + `title` ไม่บังคับ — canonical ดู design/server.md §5.2.1; async: poll ต่อ)
+GET    /api/v1/scan/{scanId} (poll ผล + result ใน response เดียวกัน; ทุก 3 วินาที, timeout 120 วินาที)
+DELETE /api/v1/history/{scanId}
 
-GET    /history?page&limit&riskLevel&fromDate&toDate&keyword
-GET    /history/{scanId}
-DELETE /history/{scanId}
+GET    /api/v1/history?page&limit&riskLevel&fromDate&toDate&keyword
+GET    /api/v1/history/{scanId}
+DELETE /api/v1/history/{scanId}
 
-POST   /reports
-GET    /reports/categories
+POST   /api/v1/reports
+GET    /api/v1/reports/categories
 
-GET    /consents/me
-PUT    /consents/me
-POST   /privacy/export
-DELETE /privacy/account
+GET    /api/v1/consents/me
+PUT    /api/v1/consents/me
+POST   /api/v1/privacy/export
+DELETE /api/v1/privacy/account
 ```
 
 ### Polling Strategy (ScanBloc)
-1. POST /scans → receive taskId
-2. Poll GET /scans/{taskId} every 3 seconds
-3. When status = "completed" → fetch GET /scans/{taskId}/result
+1. POST /api/v1/scan → ได้ scan_id (+ status เริ่มต้น; async)
+2. Poll GET /api/v1/scan/{scanId} every 3 seconds (ผลอยู่ใน response เดียวกัน)
+3. When status = "completed" → แสดงผลได้ทันที
 4. Timeout after 120 seconds → show timeout error
 
 ---

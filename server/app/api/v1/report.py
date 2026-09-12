@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends
+from fastapi import Request, APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.core.rate_limit import limiter, GUEST_LIMIT, USER_LIMIT, ADMIN_LIMIT, SCAN_CREATE_LIMIT
 from app.core.database import get_db
 from app.api.deps import get_current_user
 from app.models.user import User
@@ -9,13 +10,15 @@ from app.services import report_service
 router = APIRouter()
 
 @router.post("", response_model=ReportSubmitResponse, status_code=201)
+@limiter.limit(USER_LIMIT)
 async def create_report(
-    request: ReportCreateRequest,
+    request: Request,
+    body: ReportCreateRequest,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     """POST /api/v1/reports - ผู้ใช้รายงานภาพหลอกลวง"""
-    report = await report_service.create_report(db, current_user.id, request)
+    report = await report_service.create_report(db, current_user.id, body)
     return {
         "id": report.id,
         "scan_id": report.scan_id,
@@ -26,13 +29,15 @@ async def create_report(
     }
 
 @router.get("/categories", response_model=CategoryListResponse)
-async def get_categories():
+@limiter.limit(GUEST_LIMIT)
+async def get_categories(request: Request, ):
     """GET /api/v1/reports/categories - ดึงรายการประเภทรายงาน"""
     categories = report_service.get_report_categories()
     return {"categories": categories}
 
 @router.get("/my", response_model=ReportListResponse)
-async def get_my_reports(
+@limiter.limit(USER_LIMIT)
+async def get_my_reports(request: Request, 
     page: int = 1,
     limit: int = 20,
     status: str = None,

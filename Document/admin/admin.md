@@ -72,6 +72,8 @@ flowchart TD
 | `researcher` | นักวิจัย/ทีมพัฒนา | สิทธิ์ `user` ทั้งหมด + เข้าถึง Anonymized Dataset สำหรับพัฒนาโมเดล AI |
 | `admin` | ผู้ดูแลระบบ | สิทธิ์ทั้งหมด + Dashboard, ตรวจสอบรายงานสแกม, จัดการผู้ใช้, อัปเดตโมเดล AI, Export Dataset |
 
+> **หมายเหตุความจริงของ code (มติ DOC-09):** บัญชีแอดมินพอร์ทัลอยู่ในตาราง `admins` แยกต่างหาก (มี `is_superadmin`, session ใน `admin_sessions`, login ผ่าน `POST /api/v1/admin/login`) ไม่ใช่ `users.role = admin` — ค่า `admin` ใน `users.role` เป็น legacy ที่ code ใช้อ่านแค่จุดเดียว (`GET /scan/{id}` ให้ดูสแกนของคนอื่นได้) ส่วน `scam_reports.moderated_by` อ้างอิง `admins(id)` ไม่ใช่ `users(id)`
+
 ### 2.1 การตรวจสอบสิทธิ์ (Authorization Flow)
 
 ```mermaid
@@ -82,7 +84,7 @@ sequenceDiagram
     participant JWT as JWT Middleware
 
     Admin->>Portal: เข้าสู่ระบบด้วย Email/Password
-    Portal->>API: POST /api/v1/auth/login
+    Portal->>API: POST /api/v1/admin/login
     API->>JWT: สร้าง JWT Token (claims: role=admin)
     JWT-->>API: access_token
     API-->>Portal: {access_token, user: {role: "admin"}}
@@ -164,7 +166,7 @@ CREATE TABLE scam_reports (
     allow_research_use BOOLEAN NOT NULL DEFAULT FALSE,
     status VARCHAR(20) NOT NULL DEFAULT 'pending',  -- pending, reviewing, approved, rejected
     admin_note TEXT,
-    moderated_by INTEGER REFERENCES users(id),
+    moderated_by INTEGER REFERENCES admins(id),
     moderated_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -636,7 +638,7 @@ Admin ตรวจสอบรายงานแล้วตัดสินใ�
 |:---|:---|:---:|:---|
 | `file` | Binary | ใช่ | ไฟล์ .onnx |
 | `version_tag` | string | ใช่ | ชื่อเวอร์ชัน เช่น `v2.2.0` |
-| `auto_deploy` | boolean | ไม่ | หาก `true` จะ Deploy ทันทีหลังอัปโหลดสำเร็จ (ค่าเริ่มต้น: `false`) |
+| `auto_deploy` | boolean | ไม่ | หาก `true` จะสั่ง Deploy ตามขั้นตอน deploy ทันทีหลังอัปโหลดสำเร็จ (hot-reload ไม่หยุด API service — ดูหัวข้อ deploy; ค่าเริ่มต้น: `false`) |
 
 **Response (JSON - Status 201):**
 
@@ -654,13 +656,13 @@ Admin ตรวจสอบรายงานแล้วตัดสินใ�
 **Validation:**
 - ไฟล์ต้องมีนามสกุล `.onnx`
 - `version_tag` ต้องไม่ซ้ำกับเวอร์ชันที่มีอยู่แล้ว
-- ขนาดไฟล์สูงสุด 500 MB
+- ขนาดไฟล์สูงสุด 500 MB (ขีดจำกัดเชิงปฏิบัติ v1 สำหรับ ONNX artifact ผ่าน object-storage upload; ปรับได้เมื่อมี release ใหญ่กว่า)
 
 **Side Effects:**
 1. บันทึกไฟล์ลง Cloud Storage ที่ path `models/{version_tag}.onnx`
 2. สร้างแถวใหม่ในตาราง `model_versions`
 3. เขียน Audit Log: `action = "model_uploaded"`, `details = "Model v2.2.0 uploaded"`
-4. หาก `auto_deploy = true` จะทำ Deploy ทันที (ดูหัวข้อถัดไป)
+4. หาก `auto_deploy = true` จะสั่ง Deploy ตามขั้นตอน deploy ทันที (ดูหัวข้อถัดไป)
 
 #### POST /api/v1/admin/models/{model_id}/deploy -- สั่ง Deploy โมเดล
 
@@ -682,7 +684,7 @@ Admin ตรวจสอบรายงานแล้วตัดสินใ�
 1. ตั้งค่า `is_active = false` ให้โมเดลเวอร์ชันเดิมที่เคย Active
 2. ตั้งค่า `is_active = true` ให้โมเดลเวอร์ชันใหม่
 3. ล้าง Redis Cache ทั้งหมด (`scan:hash:*`) เพื่อให้ผลสแกนใหม่ใช้โมเดลเวอร์ชันล่าสุด
-4. แจ้ง AI Inference Service ให้โหลดน้ำหนักโมเดลใหม่ (Hot-reload หรือ Restart)
+4. แจ้ง AI Inference Service ให้โหลดน้ำหนักโมเดลใหม่ด้วย hot-reload signal (`notify_ai_service_reload`) — API service ไม่หยุดทำงาน (zero-downtime); งานสแกนที่กำลังรันอยู่จบด้วยน้ำหนักเดิม ส่วนงานใหม่ใช้โมเดลใหม่ หาก hot-reload ล้มเหลวให้ restart worker พร้อม drain คิว (ดู `Document/admin/runbook.md` Recovery Path)
 5. เขียน Audit Log: `action = "model_deployed"`, `details = "Model v2.2.0 deployed, replacing v2.1.0"`
 
 ---
@@ -837,7 +839,7 @@ dataset_20260806.zip
 ```sql
 CREATE TABLE audit_log (
     id SERIAL PRIMARY KEY,
-    admin_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    admin_id INTEGER REFERENCES admins(id) ON DELETE SET NULL,
     action VARCHAR(100) NOT NULL,
     details TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -1194,9 +1196,9 @@ async def deploy_model(db: AsyncSession, model_id: int, admin_id: int):
 - ใช้ FastAPI Dependency Injection (`Depends(get_current_admin)`) เป็นกลไกบังคับ
 - Admin ไม่สามารถ Ban ตัวเอง หรือลดสิทธิ์ Admin คนสุดท้ายในระบบ
 
-### 11.2 Rate Limiting
+### 11.2 Rate Limiting (canonical ตรงกับ `server/app/core/config.py` — guest 10 / user 60 / admin 300 / POST scan 5 ต่อนาที, key ตาม IP)
 
-- Admin Endpoints: 120 requests/minute (สูงกว่า User endpoints เนื่องจากต้องทำงานหลายอย่าง)
+- Admin Endpoints: 300 requests/minute (สูงกว่า User endpoints เนื่องจากต้องทำงานหลายอย่าง)
 - Report Submission: 10 reports/hour/user (ป้องกัน Spam)
 
 ### 11.3 PDPA Compliance
@@ -1222,7 +1224,7 @@ async def deploy_model(db: AsyncSession, model_id: int, admin_id: int):
 | FR-ADMIN-01 | Admin ดูสถิติภาพรวมระบบ และจัดการบัญชีผู้ใช้ (ดูข้อมูล, Ban) | `GET /api/v1/admin/dashboard`, `GET/PATCH /api/v1/admin/users/{id}` |
 | FR-ADMIN-02 | Admin ตรวจสอบ Scam Report และอนุมัติ/ปัดตก (รวมถึง Export Dataset) | `GET/PATCH /api/v1/admin/reports/{id}`, `POST /api/v1/admin/dataset/export` |
 | FR-ADMIN-03 | Admin อัปโหลดและ Deploy โมเดล AI | `POST /api/v1/admin/models`, `POST .../deploy` |
-| FR-ADMIN-04 | Admin ดู Audit Logs (ประวัติการกระทำของผู้ดูแลระบบ) | `GET /api/v1/admin/audit_logs` |
+| FR-ADMIN-04 | Admin ดู Audit Logs (ประวัติการกระทำของผู้ดูแลระบบ) | `GET /api/v1/admin/audit-logs` |
 
 ---
 

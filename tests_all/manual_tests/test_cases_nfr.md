@@ -20,14 +20,14 @@
 - **Test Data**:
   - Request: `POST /api/v1/scan/` พร้อมภาพที่มี SHA-256 ซ้ำกับในแคช
   - ปริมาณ Concurrent Users: 100 Virtual Users
-  - เกณฑ์โหลด: Cache Hit avg ไม่เกิน 3 วินาที (ตรงตาม NFR-PERF-01), Error Rate ต่ำกว่า 1 เปอร์เซ็นต์
+  - เกณฑ์โหลด: Cache Hit P50 ≤1.5s / P95 ≤3.0s แบบ End-to-End (ตรงตาม NFR-PERF-01), Error Rate ต่ำกว่า 1 เปอร์เซ็นต์
 - **Test Steps**:
   1. ใช้เครื่องมือ Locust (`tests_all/automate_tests/tests/performance/locustfile.py` ต้องยิง `POST /api/v1/scan/` และ `GET /health`) ยิงคำขออัปโหลดภาพซ้ำแบบต่อเนื่องเป็นเวลา 5 นาที
   2. บันทึกและวัดผลค่ามัธยฐาน (Median), 95th Percentile (p95), และ 99th Percentile (p99)
 - **Expected Results**:
-  1. Response Time กรณี Cache Hit ไม่เกิน 3.0 วินาทีแบบ End-to-End
+  1. Response Time กรณี Cache Hit: P50 ≤1.5s และ P95 ≤3.0s แบบ End-to-End (ภาพ 1MB, RTT ≤50ms, 100 VUs ต่อเนื่อง 5 นาที)
   2. อัตราความผิดพลาดรวมต่ำกว่า 1 เปอร์เซ็นต์
-  3. ทรัพยากร CPU ของ Worker ไม่เกิด Spike เนื่องจากไม่ผ่านขั้นตอน GPU Model Inference
+  3. ทรัพยากร CPU ของ Worker p95 ≤70% ตลอด 5 นาทีของการทดสอบ (วัดด้วย Resource Monitor ทุก 10s) เนื่องจากไม่ผ่านขั้นตอน GPU Model Inference
 - **Automation Mapping**: `tests_all/automate_tests/tests/performance/locustfile.py`
 
 ---
@@ -43,7 +43,7 @@
 - **Test Data**:
   - Image: ภาพความละเอียดสูง 1920x1080 พิกเซล นามสกุล JPG ขนาด 3MB
   - โหลดการทดสอบ: 10 คำขอพร้อมกัน (10 Concurrent Pipeline Executions)
-  - เกณฑ์โหลด: Cache Miss avg ไม่เกิน 20 วินาทีที่ 100 Concurrent Users, Error Rate ต่ำกว่า 1 เปอร์เซ็นต์
+  - เกณฑ์โหลด: Full Inference P50 ≤15s / P95 ≤25s / P99 ≤35s (ภาพ 1920x1080 JPG 3MB, 10 concurrent), Error Rate ต่ำกว่า 1 เปอร์เซ็นต์
 - **Test Steps**:
   1. ยิงคำขออัปโหลดภาพแบบ Cache Miss เข้าสู่ `POST /api/v1/scan/`
   2. จับเวลาตั้งแต่ช่วงส่งคำขอ (HTTP Request Sent) จนกระทั่งได้ Payload ผลลัพธ์สุดท้าย
@@ -116,7 +116,7 @@
   1. อัปโหลด File 1, 2 และ 3 ผ่าน Endpoint `POST /api/v1/scan/`
   2. สังเกตพฤติกรรมการตรวจสอบส่วนหัวของไฟล์ (Magic Bytes Inspection) ของ Backend
 - **Expected Results**:
-1. สถานะนี้เป็น GAP บางส่วนด้านจังหวะการตอบ: `POST /api/v1/scan/` ตอบ `200 OK` พร้อมสถานะ `uploading` ก่อน ไฟล์ที่ไม่มี Magic Bytes รูปภาพจะทำให้งานเบื้องหลังจบสถานะ `failed` (ตรวจซ้ำด้วย `GET /api/v1/scan/{scan_id}`) ไม่ได้ตอบ `400/422` ทันทีตอนอัปโหลด
+1. สถานะนี้เป็น GAP บางส่วนด้านจังหวะการตอบ: `POST /api/v1/scan/` ตอบ `200 OK` พร้อมสถานะ `uploading` ก่อน ไฟล์ที่ไม่มี Magic Bytes รูปภาพจะทำให้งานเบื้องหลังจบสถานะ `failed` (ตรวจซ้ำด้วย `GET /api/v1/scan/{scan_id}`) ไม่ได้ตอบ `400/422` ทันทีตอนอัปโหลด — งานเบื้องหลังต้องจบสถานะ `failed` ภายใน 60 วินาทีหลังอัปโหลด (เกิน 60s ถือว่า FAIL)
 2. ฝั่งบริการไม่มีบัญชีขาวนามสกุลไฟล์ (รับทุกไฟล์ที่ PIL ถอดรหัสได้ เช่น BMP และ HEIC ตาม `server/tests/api/test_scan.py`) การตรวจใช้ Magic Bytes ผ่านการถอดรหัสจริง ไม่เชื่อ `content_type` หรือนามสกุล
 3. ไฟล์ที่ไม่ผ่านการตรวจไม่ถูกบันทึกลงดิสก์และไม่ถูกส่งต่อเข้า AI Pipeline ส่วนไฟล์ที่ผ่านการถอดรหัสจะถูกเข้ารหัสใหม่เป็น PNG ผ่าน `encode_lossless_png` ก่อนเก็บเป็นหลักฐาน
 - **Automation Mapping**: `server/tests/api/test_scan.py`
@@ -419,7 +419,7 @@
   4. เรียก `POST /api/v1/admin/logout` แล้วนำ Access Token เดิมไปเรียก `GET /api/v1/admin/me` และนำคุกกี้เดิมไปเรียก `POST /api/v1/admin/refresh` ซ้ำ
   5. ทดสอบการตรึงเซสชันโดยนำ Token เก่าก่อนล็อกอินใหม่กลับมาใช้ซ้ำหลังล็อกอินรอบใหม่
 - **Expected Results**:
-  1. ฝั่งผู้ใช้ `POST /api/v1/auth/logout` ตอบ `200 OK` พร้อม `{"message": "Successfully logged out"}` โดยการล้าง Token หลักทำที่ฝั่ง Client และ Refresh Token เดิมยังต่ออายุได้จนกว่าจะหมดอายุหรือบัญชีถูกระงับ จึงต้องล้าง Secure Storage ทุกครั้งหลังออกจากระบบ
+  1. ฝั่งผู้ใช้ `POST /api/v1/auth/logout` ตอบ `200 OK` พร้อม `{"message": "Successfully logged out"}` โดยการล้าง Token หลักทำที่ฝั่ง Client และ Refresh Token เดิมยังต่ออายุได้จนกว่าจะหมดอายุหรือบัญชีถูกระงับ จึงต้องล้าง Secure Storage ทุกครั้งหลังออกจากระบบ — **การยอมรับความเสี่ยงอย่างเป็นทางการ**: ฝั่งผู้ใช้ไม่มี server-side denylist ใน v1 (ต่างจากฝั่งแอดมินที่เพิกถอนเซสชันได้) มาตรการชดเชยคือล้าง Secure Storage ทุกครั้ง + บัญชีถูกระงับตัดสิทธิ์ทันที (403); PM ต้องรับทราบใน release_signoff.md §5 ก่อนปล่อย แผน Phase ถัดไปคือทำ server-side denylist ให้ `POST /api/v1/auth/refresh` ตอบ 401 หลัง logout
   2. ฝั่งแอดมินหลัง `POST /api/v1/admin/logout` เซสชันปัจจุบันถูกเพิกถอน Access Token เดิมเรียก `GET /api/v1/admin/me` ไม่สำเร็จ และคุกกี้เดิมเรียก `POST /api/v1/admin/refresh` ตอบ `401 Unauthorized`
   3. Token ก่อนล็อกอินใหม่ไม่สามารถสวมสิทธิ์เซสชันใหม่ได้ ระบบยึดตัวตนจาก Token ชุดปัจจุบันเท่านั้น
   4. บัญชีที่ถูกระงับเรียกเส้นทางที่ต้องยืนยันตัวตนถูกปฏิเสธด้วย `403 Forbidden`
@@ -457,21 +457,21 @@
 
 ## 10. หมวดหมู่ความเข้ากันได้ (Compatibility)
 
-### TC-NFR-COMP-01: การใช้งาน Mobile บน Android หลายรุ่นและ iOS (Android 10 to 14 and iOS)
+### TC-NFR-COMP-01: การใช้งาน Mobile บน Android หลายรุ่น (Android 10 to 14; iOS = future นอก v1)
 - **Module / Feature**: Compatibility / Mobile OS Coverage
 - **Requirement ID**: NFR-COMP-01
 - **Test Type**: Compatibility
 - **Priority**: P2 (Major)
 - **Pre-conditions**:
-  1. เตรียมอุปกรณ์หรือโปรแกรมจำลอง Android 10 11 12 13 14 และอุปกรณ์ iOS ที่มีโครงสร้าง Runner พร้อมติดตั้ง
+  1. เตรียมอุปกรณ์หรือโปรแกรมจำลอง Android 10 11 12 13 14 พร้อมติดตั้ง (v1 Android เท่านั้น)
   2. ติดตั้งแอปจากชุดซอร์ส Flutter ชุดเดียวกัน ไม่แยกโค้ดรายรุ่น
   3. Backend พร้อมใช้งานและมีบัญชีทดสอบที่ล็อกอินได้
 - **Test Data**:
-  - อุปกรณ์ Android 10 11 12 13 14 และ iOS อย่างน้อย 1 รุ่น
+  - อุปกรณ์ Android 10 11 12 13 14
   - เส้นทางใช้งานคือสมัครด้วย `POST /api/v1/auth/register` ล็อกอิน สแกนด้วย `POST /api/v1/scan/` ดูประวัติด้วย `GET /api/v1/history` และส่งรายงานด้วย `POST /api/v1/reports`
   - การตั้งค่ากำหนดรุ่นขั้นต่ำและรุ่นเป้าหมายอ้างอิงไฟล์ `android/app/build.gradle.kts` ผ่านค่า `flutter.minSdkVersion` และ `flutter.targetSdkVersion`
 - **Test Steps**:
-  1. ติดตั้งและเปิดแอปบน Android ครบทุกรุ่นและบน iOS
+  1. ติดตั้งและเปิดแอปบน Android ครบทุกรุ่น
   2. สมัครหรือล็อกอิน เลือกรูป สแกน รอผล เปิดประวัติ และส่งรายงาน 1 รอบบนแต่ละอุปกรณ์
   3. ตรวจการแสดงผลปุ่ม ตัวอักษร ภาพตัวอย่าง และ Heatmap บนขนาดจอต่างกัน
   4. ตรวจการขอสิทธิ์แกลเลอรีและการจัดการเมื่อผู้ใช้ปฏิเสธสิทธิ์บนแต่ละรุ่น
@@ -519,7 +519,7 @@
 - **Test Type**: Usability
 - **Priority**: P2 (Major)
 - **Pre-conditions**:
-  1. เตรียมอุปกรณ์ Android หรือ iOS ที่ปรับขนาดฟอนต์ระบบ เปิดโหมดประหยัดแบต และทดสอบกลางแจ้งได้
+  1. เตรียมอุปกรณ์ Android ที่ปรับขนาดฟอนต์ระบบ เปิดโหมดประหยัดแบต และทดสอบกลางแจ้งได้
   2. แอปรองรับโหมดสว่างและโหมดมืดผ่านการตั้งค่าธีมและใช้ Material Design
   3. มีบัญชีทดสอบ ภาพทดสอบ และประวัติเดิมสำหรับเปิดดู
 - **Test Data**:

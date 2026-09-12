@@ -16,9 +16,9 @@ updated: 2026-08-02
 
 | มิติการวิเคราะห์ | ตัวแปร | ช่วงคะแนน | บทบาทและการวัดผล |
 | :--- | :--- | :--- | :--- |
-| **Visual Anomaly** | $S_{visual}$ | 0–100% | วัดระดับการตัดต่อ/สังเคราะห์ภาพโดยตรง (Splicing, Copy-Move, AI Diffusion) ด้วย SegFormer และ Heatmap |
+| **Visual Anomaly** | $S_{visual}$ | 0–100% | วัดระดับการตัดต่อ/สังเคราะห์ภาพโดยตรง (Splicing, Copy-Move, AI Diffusion) ด้วย SegFormer และ Heatmap (สูตร canonical ดู `Document/model/configs.md` §3) |
 | **Textual Analysis** | $S_{textual}$ | 0–100% | วัดความอันตรายของข้อความ/คีย์เวิร์ดหลอกลวง (Blacklist, คำเร่งโอนเงิน, สัญญาผลตอบแทนสูง) ด้วย Surya-OCR |
-| **Source Verification** | $S_{source}$ | 0–100% | วัดประวัติการถูกนำไปใช้ซ้ำบนอินเทอร์เน็ต (Reverse Image Search) ผ่าน Google Vision API (พบ ≥3 แหล่ง = สูง, =2 = ปานกลาง/ไม่แน่ชัด, ≤1 = ต่ำ) |
+| **Source Verification** | $S_{source}$ | 0–100% | วัดประวัติการถูกนำไปใช้ซ้ำบนอินเทอร์เน็ต (Reverse Image Search) ผ่าน Google Vision API (ที่มา: นโยบาย heuristic v1 — พบ ≥3 แหล่ง = สูง, =2 = ปานกลาง/ไม่แน่ชัด, ≤1 = ต่ำ) |
 
 ---
 

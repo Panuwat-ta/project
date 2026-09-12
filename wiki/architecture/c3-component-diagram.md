@@ -115,7 +115,7 @@ flowchart TB
 
 ### 2. Business Logic Layer (Services)
 เป็นหัวใจหลักของแอปพลิเคชัน ทำหน้าที่ประมวลผลตามกฎทางธุรกิจ
-- **Scan Service:** ควบคุมขั้นตอนการตรวจสอบภาพทั้งหมด เริ่มตั้งแต่เช็ค Cache, สกัด EXIF, และคำนวณ **Overall Risk Score** ตามสูตร Hybrid Worst-Case
+- **Scan Service:** ควบคุมขั้นตอนการตรวจสอบภาพทั้งหมด เริ่มตั้งแต่เช็ค Cache, สกัด EXIF (แสดงผลเท่านั้น ไม่ร่วมคำนวณ), และคำนวณ **Overall Risk Score** ตามสูตร Hybrid Worst-Case
 - **Inference Coordinator:** ตัวประสานงานระหว่าง Backend กับ AI Model ทำหน้าที่จัดคิวรูปภาพและส่งคำสั่งข้าม Process ไปให้ Worker
 - **Auth Service:** จัดการการเข้ารหัสผ่าน (Hashing) และออก JWT Token 
 

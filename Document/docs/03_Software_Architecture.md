@@ -1,8 +1,8 @@
 # Software Architecture 
 
 **Project Name:** แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง (Scam Image Detection)  
-**Version:** 1.0  
-**Date:** August 23, 2026
+**Version:** 1.1  
+**Date:** September 12, 2026
 
 ---
 
@@ -41,7 +41,7 @@
 
 **External Systems:**
 - **Reverse Image Search Provider** — Google Vision API / Bing Visual Search สำหรับค้นหาแหล่งที่มาของภาพ
-- **Push Notification Service** — Firebase Cloud Messaging (FCM) สำหรับส่งการแจ้งเตือนแบบ Async
+- **Push Notification Service** — Firebase Cloud Messaging (FCM) สำหรับส่งการแจ้งเตือนแบบ Async (Phase 2; v1 ใช้ polling + in-app)
 
 ### 2.2 System Context Diagram
 
@@ -64,7 +64,7 @@ flowchart TD
         
         ExtSearch("Reverse Image Search<br>[External System]<br>Google Vision API")
         
-        ExtNotify("Push Notification<br>[External System]<br>Firebase FCM")
+        ExtNotify("Push Notification (Phase 2)<br>[External System]<br>Firebase FCM")
 
         %% Relationships
         User -- "1. อัปโหลดรูปภาพ<br>2. เรียกดูผลวิเคราะห์" --> System
@@ -106,7 +106,7 @@ flowchart TD
 7. **Main Database (PostgreSQL)** — ฐานข้อมูลหลักเชิงสัมพันธ์
 
 #### **External Services**
-8. **Push Notification Service (FCM)** — ส่งการแจ้งเตือน
+8. **Push Notification Service (FCM, Phase 2)** — ส่งการแจ้งเตือน
 9. **Reverse Image Search (Google Vision API)** — ค้นหาแหล่งที่มาของภาพ
 
 ### 3.2 Container Diagram
@@ -144,7 +144,7 @@ flowchart TB
     end
 
     subgraph Externals [External Services]
-        PushService("FCM<br>[External]")
+        PushService("FCM (Phase 2)<br>[External]")
         ReverseSearch("Google Vision<br>[External]")
     end
 
@@ -183,7 +183,7 @@ flowchart TB
 **Key Features:**
 - การจัดการ State ด้วย BLoC (Business Logic Component)
 - Dark Mode และ Light Mode support
-- Offline-first approach สำหรับประวัติการสแกน
+- ประวัติการสแกนเรียกจาก server แบบ online-first (ต้องมีการเชื่อมต่ออินเทอร์เน็ต; full offline mode เป็น Phase 2 — ไม่มี FR รองรับใน v1)
 - Secure Storage สำหรับ JWT Token
 
 **Layers:**
@@ -214,7 +214,7 @@ flowchart TB
 **Main Modules:**
 1. Authentication & Authorization
 2. Dashboard & Analytics
-3. User Management (CRUD)
+3. User Management (Read/Update — ดู + เปิด/ปิดบัญชี, ไม่มีสร้าง/ลบบัญชี)
 4. Report Management
 5. Model Management
 6. Audit Logs Viewer
@@ -309,14 +309,16 @@ flowchart TB
 
 ---
 
-### 4.6 Object Storage (Local Filesystem)
+### 4.6 Object Storage (S3/GCS-compatible)
 
-**Technology:** Local filesystem เสิร์ฟผ่าน static mount
+**Technology:** S3/GCS-compatible Object Storage (MinIO ได้สำหรับ on-premise)
 
 **Purpose:**
 - จัดเก็บไฟล์รูปภาพต้นฉบับที่ผู้ใช้อัปโหลด
 - จัดเก็บภาพ Heatmap ที่สร้างโดย AI
-- เก็บเฉพาะ path ใน DB
+- เก็บเฉพาะ path/URL ใน DB (ห้ามเก็บ binary ใน DB)
+
+**Requirement:** ระบบ shall เก็บไฟล์รูปต้นฉบับและ Heatmap บน S3/GCS-compatible storage เท่านั้น
 
 **File Structure:**
 ```
@@ -362,10 +364,10 @@ flowchart TB
 
 ### 4.8 External Services
 
-#### 4.8.1 Push Notification Service (FCM)
+#### 4.8.1 Push Notification Service (FCM) — Phase 2 (v1 ใช้ polling + in-app)
 
 **Service:** Firebase Cloud Messaging  
-**Purpose:** ส่งการแจ้งเตือนไปยังแอปมือถือเมื่อการประมวลผลเสร็จสิ้น
+**Purpose:** ส่งการแจ้งเตือนไปยังแอปมือถือเมื่อการประมวลผลเสร็จสิ้น (เริ่ม Phase 2; มติ DOC-06, 2026-09-11)
 
 **Use Cases:**
 - การวิเคราะห์เสร็จสิ้น (Analysis Complete)
@@ -418,7 +420,7 @@ flowchart TB
         ↓
 [Store Results (PostgreSQL + Object Storage)]
         ↓
-[Send Notification (FCM)]
+[Send Notification (in-app/polling; FCM Phase 2)]
         ↓
 [User Views Result]
 ```
@@ -433,7 +435,7 @@ flowchart TB
 
 **Formula:**
 ```
-S_text = (keyword_count × severity_weight) / max_possible_score × 100
+S_text = min(100, (Σw_found / max_possible_score) × 100), max_possible_score = 5.80 (Σ น้ำหนักพจนานุกรม v1 ทั้ง 8 คำ; นิยามหลักดู 05-SRS FR-ANALYSIS-01)
 ```
 
 **Evidence:**
@@ -470,14 +472,14 @@ S_visual = Normalize(Confidence × Coverage)
 1. ส่งรูปภาพไป Google Vision API (Web Detection)
 2. รับรายการแหล่งที่มาที่คล้ายกัน (Similar URLs)
 3. วิเคราะห์บริบทของแหล่งที่มา:
-   - จำนวนแหล่งที่พบ (พบ ≥ 3 แหล่ง = เสี่ยงสูง, พบ ≤ 1 แหล่ง = เสี่ยงต่ำ)
+   - จำนวนแหล่งที่พบ (พบ ≥ 3 แหล่ง = เสี่ยงสูง, พบ = 2 แหล่ง = เสี่ยงปานกลาง, พบ ≤ 1 แหล่ง = เสี่ยงต่ำ)
    - ประเภทเว็บไซต์ (สื่อสังคมออนไลน์, เว็บข่าว, เว็บหลอกลวง)
    - ความเก่าของภาพ (ภาพเก่า > 1 ปี = เสี่ยง)
 4. คำนวณ Source Risk Score (0-100)
 
 **Formula:**
 ```
-S_source = (source_count_factor × 0.5) + (context_risk_factor × 0.5)
+S_source = ((source_count_factor × 0.5) + (context_risk × 0.5)) × 100, source_count_factor = min(1, count/10), context_risk ∈ [0,1] (นิยามหลักดู 05-SRS FR-ANALYSIS-03)
 ```
 
 **Evidence:**
@@ -574,7 +576,7 @@ flowchart TB
     %% Storage & Externals (จาก C2)
     Cache("Redis Cache")
     MainDB[("PostgreSQL Database")]
-    ObjectStore("Cloud Storage (Local / S3)")
+    ObjectStore("Cloud Storage (S3/GCS)")
     AIWorker("ONNX Worker (Subprocess)")
 
     %% Relationships - External to API
@@ -638,7 +640,7 @@ flowchart TB
 เป็นหัวใจหลักของแอปพลิเคชัน ทำหน้าที่ประมวลผลตามกฎทางธุรกิจ (Business Rules)
 
 **Components:**
-- **Scan Service:** ควบคุมขั้นตอนการตรวจสอบภาพทั้งหมด เริ่มตั้งแต่เช็ค Cache, สกัด EXIF, และคำนวณ Hybrid max+bonus Risk Score
+- **Scan Service:** ควบคุมขั้นตอนการตรวจสอบภาพทั้งหมด เริ่มตั้งแต่เช็ค Cache, สกัด EXIF (แสดงผลเท่านั้น), และคำนวณ Hybrid max+bonus Risk Score
 - **Inference Coordinator:** ตัวประสานงานระหว่าง Backend กับ AI Model ทำหน้าที่จัดคิวรูปภาพและส่งคำสั่งไปให้ ONNX Worker
 - **Auth Service:** จัดการการเข้ารหัสผ่าน (Hashing) และออก JWT Token
 - **Admin Service:** ประมวลผลคำสั่ง Admin (User Management, Model Management)
@@ -679,7 +681,7 @@ sequenceDiagram
     participant Router as ScanRouter
     participant Service as ScanService
     participant Utils as ImageUtils
-    participant FS as Local Storage
+    participant FS as Object Storage
     participant Inference as InferenceService
     participant ONNX as ONNX Worker
     participant OCR as Surya OCR
@@ -700,7 +702,7 @@ sequenceDiagram
     Service->>Utils: encode_lossless_png
     Utils-->>Service: PNG Bytes
     
-    Service->>FS: Save {hash}.png (เป็นหลักฐานรูปต้นฉบับ)
+    Service->>FS: Save {hash}.png บน Object Storage (เป็นหลักฐานรูปต้นฉบับ)
     FS-->>Service: Success
     
     Note over Service: ส่งงานให้ AI แบบแยกโปรเซส<br>เพื่อไม่บล็อก Event Loop
@@ -725,7 +727,7 @@ sequenceDiagram
     Inference-->>Service: return {visual_risk_score, ai_gen_prob, heatmap_bytes, ocr_text}
     deactivate Inference
     
-    Service->>FS: Save {hash}_heatmap.jpg
+    Service->>FS: Save {hash}_heatmap.jpg บน Object Storage
     
     Note over Service: วิเคราะห์ข้อความแบบ Rule-based<br>ค้นหา Scam Keywords
     
@@ -804,7 +806,7 @@ sequenceDiagram
 | **Storage** | Cache | Redis | Image hash caching |
 | **Storage** | Object Storage | Cloud Storage (S3/GCS) | Image & heatmap files |
 | **Storage** | Database | PostgreSQL | Relational data |
-| **External** | Notification | Firebase Cloud Messaging | Push notifications |
+| **External** | Notification | Firebase Cloud Messaging (Phase 2) | Push notifications |
 | **External** | Image Search | Google Vision API | Reverse image search |
 
 **Evidence:**
@@ -827,7 +829,7 @@ sequenceDiagram
 - Role-Based Access Control (RBAC)
   - General User: Read own data, Create scans, Report images
   - Researcher: เข้าถึงข้อมูลเพื่อการวิจัย
-  - Admin: Full CRUD, Review reports, Manage users (Phase 2 สำหรับ Moderator/Viewer)
+  - Admin: Read/Update users (ดู + เปิด/ปิดบัญชี), Review reports, Manage users (Phase 2 สำหรับ Moderator/Viewer)
 
 **Evidence:**
 - File: project/Document/srs-doc.md
@@ -853,21 +855,25 @@ sequenceDiagram
 - Data Retention Policy (เก็บข้อมูล 1 ปี หลังจากนั้นลบอัตโนมัติ)
 
 **Evidence:**
-- File: project/Document/srs-doc.md
-- Section: NFR-06 — ระบบต้องปฏิบัติตามข้อกำหนดความเป็นส่วนตัว (PDPA)
+- File: project/Document/docs/05_Software_Requirement_Specification.md
+- Section: FR-PDPA-01 (Consent Management) + NFR-04 (Security) — หมายเหตุ: NFR-06 ตาม 05 คือ Usability ไม่ใช่ PDPA
 
 ---
 
 ### 9.3 API Security
 
-**Rate Limiting:**
-- Default: 60 requests/hour ต่อ IP/ผู้ใช้
-- การแบ่ง tier (Guest/Admin) เป็นแผนพัฒนาเพิ่มเติมในอนาคต
+**Rate Limiting (tiered ต่อนาที แยกตาม role — มติ DOC-02, 2026-09-11, implement แล้วใน `server/app/core/rate_limit.py`):**
+- Guest (public endpoints: register/login/refresh): 10 requests/minute ต่อ IP
+- Authenticated User (scan/history/reports/me/logout): 60 requests/minute ต่อ IP
+- Admin (`/admin/*`): 300 requests/minute ต่อ IP
+- `POST /api/v1/scan/`: 5 requests/minute (อัปโหลดภาพต้นทุนสูง)
+- Login/Refresh ฝั่ง user: 10 requests/minute (อยู่ใน guest tier); ฝั่ง admin (`/admin/login`, `/admin/refresh`): 5 requests/minute (กัน brute-force)
+- Key: IP address (`get_remote_address`); ตอบ HTTP 429 เมื่อเกิน
 
 **Input Validation:**
 - File Type Check (MIME type validation)
-- File Size Limit (Max 10 MB)
-- Image Dimension Limit (Max 4096×4096)
+- File Size Limit (Mobile 10 MB client-side / API Server Max 20 MB → 413)
+- Image Pixel Limit (Max 100M pixels หลัง decode → error)
 - SQL Injection Prevention (Parameterized Queries)
 - XSS Prevention (Input Sanitization)
 
@@ -1014,7 +1020,7 @@ sequenceDiagram
 **Warning Alerts:**
 - High Response Time (> 20 seconds)
 - High Error Rate (> 5%)
-- Low Cache Hit Rate (< 30%)
+- Low Cache Hit Rate (< 35% รอบ 7 วัน)
 - High GPU Usage (> 90%)
 
 **Tools:**
@@ -1035,7 +1041,7 @@ sequenceDiagram
 | **Security** | HTTPS, JWT, RBAC, PDPA | Authentication, Authorization, Encryption |
 | **Maintainability** | Clean Architecture, Separation of Concerns | Flutter Clean Arch, FastAPI modular design |
 | **Explainability** | ≥ 80% users understand Heatmap | Mask-to-heatmap overlay, Risk breakdown |
-| **Testability** | Unit Test Coverage ≥ 80% | Clean Architecture, Dependency Injection |
+| **Testability** | Branch coverage ≥ 80% วัดบน CI (ดู NFR-09) | Clean Architecture, Dependency Injection |
 
 **Evidence:**
 - File: project/Document/srs-doc.md
@@ -1050,7 +1056,7 @@ sequenceDiagram
 | Risk | Impact | Likelihood | Mitigation |
 |------|--------|------------|------------|
 | AI Inference Timeout (> 15s) | High | Medium | Queue-based processing, Async notifications, ONNX optimization |
-| Google Vision API Downtime | Medium | Low | ใช้ `DEFAULT_SOURCE_SCORE` และคำนวณ max จากมิติที่สำเร็จ (ตัดมิติที่ล้มเหลวทิ้ง ไม่ใช้ neutral 50) |
+| Google Vision API Downtime | Medium | Low | ตั้ง `source_status="unavailable"` แจ้งผู้ใช้ว่าฟังก์ชันยังไม่พร้อมใช้งาน คำนวณคะแนนจากมิติที่สำเร็จเท่านั้น ไม่ใช้ Neutral 50 (มติ DOC-01; ปัจจุบันยังไม่เชื่อมจริง code ใช้ค่าคงที่ชั่วคราว) |
 | Redis Cache Failure | Medium | Low | Fallback to Database, Auto-restart, Monitoring |
 | GPU Resource Exhaustion | High | Medium | Queue management, Auto-scaling, Batch processing |
 | False Positive (ภาพจริงแต่ระบบบอกว่าปลอม) | High | Medium | Threshold tuning, Human-in-the-loop (Admin review) |
@@ -1076,7 +1082,7 @@ sequenceDiagram
 
 ### ADR-03: ใช้ ONNX Runtime สำหรับ Inference
 **Decision:** แปลงโมเดล PyTorch เป็น ONNX สำหรับ Production  
-**Rationale:** Inference เร็วกว่า 2-5 เท่า, ลด Dependency  
+**Rationale:** Inference เร็วกว่า PyTorch baseline รุ่นเดียวกัน ≥ 2 เท่า (ค่าเฉลี่ย 100 ภาพบน NVIDIA T4), ลด Dependency  
 **Status:** Accepted
 
 ### ADR-04: ใช้ PostgreSQL แทน MongoDB

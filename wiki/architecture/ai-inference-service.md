@@ -82,7 +82,7 @@ scan_service เรียก inference_service
 | :--- | :--- |
 | Framework (Training) | PyTorch |
 | Framework (Inference) | ONNX Runtime |
-| ความเร็วที่เพิ่มขึ้นจาก ONNX | 2–5 เท่าเทียบ Native PyTorch |
+| ความเร็วที่เพิ่มขึ้นจาก ONNX | เป้าหมาย ≥2 เท่าเทียบ Native PyTorch รุ่นเดียวกัน (วิธีวัด: GPU T4 เฉลี่ย 100 ภาพ; ตัวเลขจริงต้องบันทึกจาก benchmark) |
 | รูปแบบโมเดล | ไฟล์ ONNX (tile 512 / overlap 64) |
 | Input Tensor | ภาพ RGB ขนาด 512x512 ต่อ tile |
 | Output Tensor | 2 classes ต่อ tile (authentic / tampered) |
@@ -96,7 +96,7 @@ scan_service เรียก inference_service
 ## การจัดการโมเดล
 
 - Model Weight แบบ ONNX; ตาราง model_versions เก็บ registry พร้อม metrics
-- Admin deploy ผ่าน endpoint deploy/dry-run — worker โหลดโมเดลใหม่เมื่อ subprocess ถัดไปเริ่ม
+- Admin deploy ผ่าน endpoint deploy/dry-run — worker โหลดโมเดลใหม่ผ่าน hot-reload signal โดยไม่ restart API service (zero-downtime; งานที่กำลังรันจบด้วยโมเดลเดิม — รายละเอียดดู `Document/admin/admin.md` §deploy)
 - Semantic Versioning: `segformer_v1.0.0`, `segformer_v1.1.0` เป็นต้น
 
 ---

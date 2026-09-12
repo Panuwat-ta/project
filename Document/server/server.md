@@ -34,9 +34,9 @@
   3. **Admin (ผู้ดูแลระบบ):** ควบคุมบัญชีผู้ใช้ อนุมัติรายงาน และกดสั่งเทรน/อัปเดตโมเดล AI เพิ่มเติม
 
 ### 3.2 การจัดการและตรวจสอบรูปภาพ (Image Processing & Validation)
-* ตรวจสอบชนิดไฟล์ (Allowed: JPG, PNG) และขนาดไฟล์
+* ตรวจสอบชนิดไฟล์ (client ประกาศ JPG/PNG/WebP; server verify ด้วยการ decode จริง ไม่เชื่อ content-type), ขนาดไฟล์ (server ปฏิเสธ > 20MB ด้วย 413, decode ≤ 100M px — รายละเอียดดู `design/server.md` มติ DOC-03)
 * แปลงไฟล์รูปภาพเป็นค่า Hash (SHA-256) เพื่อใช้ค้นหาในแคช (Redis)
-* สร้าง URL ชั่วคราว (Presigned URL) ในการดึงรูปภาพกลับไปแสดงผล ป้องกันการเข้าถึงไฟล์โดยตรง
+* สร้าง URL ชั่วคราว (Presigned URL อายุคงที่ 15 นาที) ในการดึงรูปภาพกลับไปแสดงผล ป้องกันการเข้าถึงไฟล์โดยตรง
 
 ### 3.3 การประสานงานกับ AI Inference Pipeline
 * ทำการดึงข้อมูล EXIF จากภาพ เช่น รุ่นกล้อง, ซอฟต์แวร์ที่แต่งภาพ, พิกัด 
@@ -63,9 +63,9 @@
 
 * `POST /api/v1/auth/register` - ลงทะเบียนผู้ใช้
 * `POST /api/v1/auth/login` - ล็อกอินเพื่อรับ JWT Token
-* `POST /api/v1/scan` - อัปโหลดรูปภาพเพื่อตรวจหาการหลอกลวง
-* `GET /api/v1/scan/{id}` - ดูผลลัพธ์การสแกนย้อนหลัง
-* `POST /api/v1/report` - ส่งรายงานรูปภาพหลอกลวง
+* `POST /api/v1/scan` - อัปโหลดรูปภาพเพื่อตรวจหาการหลอกลวง (multipart: `file` บังคับ + `title` ไม่บังคับ; async — POST คืน record พร้อม `status` แล้ว poll `GET` จน `completed`; spec ฉบับเต็มดู `design/server.md` §5.2.1)
+* `GET /api/v1/scan/{id}` - ดูผลลัพธ์การสแกนย้อนหลัง / poll สถานะ (`pending` → `processing` → `completed`/`failed`; poll ทุก 3 วินาที, timeout 120 วินาที)
+* `POST /api/v1/reports` - ส่งรายงานรูปภาพหลอกลวง
 * `POST /api/v1/admin/train` - แอดมินสั่งเทรนโมเดลเพิ่มเติม (Incremental Training)
 
 ---

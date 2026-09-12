@@ -20,7 +20,7 @@ updated: 2026-08-02
 | **Admin Portal** | React.js + Tailwind CSS | โหลดข้อมูล Dynamic รวดเร็ว; จัดการ State สำหรับ Dashboard ได้ดี; เขียนแบบ Component-based |
 | **API Backend** | Python FastAPI | Async I/O ประสิทธิภาพเทียบเท่า Go/Node.js; ตรวจสอบ Pydantic อัตโนมัติ; Auto-generated OpenAPI Docs |
 | **AI Training** | PyTorch | Framework มาตรฐานอุตสาหกรรมสำหรับ Deep Learning; มี Ecosystem ของ SegFormer รองรับดี |
-| **AI Inference** | ONNX Runtime | เร็วกว่า Native PyTorch 2–5 เท่าตอน Serving; ไม่ยึดติดกับ Framework |
+| **AI Inference** | ONNX Runtime | เป้าหมายเร็วกว่า PyTorch baseline รุ่นเดียวกัน ≥ 2 เท่า (ภาพ 1080p เฉลี่ย 100 ภาพ บน T4; ยืนยันด้วย benchmark ก่อนอ้างภายนอก); ไม่ยึดติดกับ Framework |
 | **Primary Database** | PostgreSQL | ACID Transactions; ความถูกต้องของ Relational Data; รองรับ PostGIS สำหรับฟีเจอร์พิกัดในอนาคต |
 | **Cache** | Redis | ค้นหา Image Hash ไวระดับ Sub-millisecond; ลดโหลด AI Inference สำหรับรูปซ้ำได้มหาศาล |
 | **File Storage** | Cloud Object Storage | ขยายได้ไม่จำกัด; ใช้ Presigned URL เพื่อความปลอดภัยของ Client |
@@ -49,7 +49,7 @@ updated: 2026-08-02
 | Training Framework | PyTorch | มาตรฐาน; Ecosystem ใหญ่ |
 | Serving Format | ONNX | รันผ่าน ONNX Worker subprocess ภายใน Backend เดียวกัน |
 | Inference Runtime | ONNX Runtime | Engine สำหรับ Serving ที่ Optimized แล้ว |
-| AI-Gen classifier | ค่าความน่าจะเป็นภาพสังเคราะห์จาก AI (0–1) | คู่กับคะแนนความเสี่ยงด้านภาพ |
+| AI-Gen classifier | ค่าความน่าจะเป็นภาพสังเคราะห์จาก AI (0–1, informative ประกอบการตัดสิน — เกณฑ์ตัดสินหลักใช้ Visual/Textual/Source + Risk Grade ดู [[concepts/risk-scoring]]) | ยังไม่ตรึงโมเดล/threshold ทางการ — ห้ามอ้างเป็นเกณฑ์ตัดสินจนกว่าจะนิยามใน SRS |
 | XAI | แผนที่ความร้อนแบบ mask-to-heatmap overlay | แปลง Segmentation Mask เป็นภาพสีซ้อนทับบนภาพต้นฉบับ |
 | XAI reasoning | Qwen2.5-1.5B | สำหรับสร้างคำอธิบายภาษาไทย |
 | OCR | Surya OCR v0.5.0 (Native PyTorch) | ดึงข้อความภาษาไทย + อังกฤษ |

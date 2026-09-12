@@ -19,7 +19,7 @@ flowchart TB
 
         subgraph Frontends [Frontend Layer]
             MobileApp("Mobile App<br>[Container: Flutter]<br>อัปโหลดและเลือกรูปภาพ,<br>แสดงผลคะแนนความเสี่ยง (Risk Score)")
-            AdminPortal("Admin Web Portal<br>[Container: React + Admin UI]<br>จัดการผู้ใช้ (CRUD), ตรวจสอบสแกมที่รายงาน,<br>จัดการชุดข้อมูล, อัปเดตโมเดล")
+            AdminPortal("Admin Web Portal<br>[Container: React + Admin UI]<br>จัดการผู้ใช้ (ดู+เปิด/ปิดบัญชี), ตรวจสอบสแกมที่รายงาน,<br>จัดการชุดข้อมูล, อัปเดตโมเดล")
         end
 
         subgraph Backends [Backend & API Layer]
@@ -36,7 +36,7 @@ flowchart TB
 
     %% External Systems Boundary
     subgraph Externals [External Services]
-        PushService("Push Notification Service<br>[External System: FCM]<br>แจ้งเตือนผลลัพธ์กลับไปยังแอป")
+        PushService("Push Notification Service (Phase 2)<br>[External System: FCM]<br>แจ้งเตือนผลลัพธ์กลับไปยังแอป")
         ReverseSearch("Reverse Image Search<br>[External System: Google Vision API]<br>ระบบค้นหาแหล่งที่มาของรูปภาพ")
     end
 
@@ -78,7 +78,7 @@ flowchart TB
 
 * **Admin Web Portal (React + Admin UI):**
   * **บทบาท:** เว็บแอปพลิเคชันสำหรับผู้ดูแลระบบและนักวิจัย (Admin / Researcher)
-  * **หน้าที่:** ใช้เป็นหน้าจอควบคุมและตรวจสอบสถานะระบบหลังบ้าน (Dashboard) การจัดการสิทธิ์ของผู้ใช้ (CRUD), ตรวจสอบรูปภาพสแกมที่ผู้ใช้ส่งรายงานเข้ามา (Scam Reports), จัดการคลังชุดข้อมูล (Dataset) และการอัปโหลดไฟล์น้ำหนักโมเดล AI (Model Weights)
+  * **หน้าที่:** ใช้เป็นหน้าจอควบคุมและตรวจสอบสถานะระบบหลังบ้าน (Dashboard) การจัดการสิทธิ์ของผู้ใช้ (ดู + เปิด/ปิดบัญชี), ตรวจสอบรูปภาพสแกมที่ผู้ใช้ส่งรายงานเข้ามา (Scam Reports), จัดการคลังชุดข้อมูล (Dataset) และการอัปโหลดไฟล์น้ำหนักโมเดล AI (Model Weights)
   * **เทคโนโลยี:** React.js + TailwindCSS (หรือ Admin Template สำเร็จรูป)
 
 ### 2. ส่วนประมวลผลหลัก (Backend Containers)
@@ -117,7 +117,7 @@ flowchart TB
   * **หน้าที่:** API Application จะส่งคำขอเพื่อตรวจสอบว่ารูปภาพที่ผู้ใช้อัปโหลดมานั้น เคยถูกเผยแพร่ในอินเทอร์เน็ตที่เว็บไซต์ใดมาก่อนหน้านี้หรือไม่ เพื่อตรวจสอบบริบทความสอดคล้อง (เช่น รูปโปรไฟล์จริง หรือรูปดาราที่มิจฉาชีพนำมาแอบอ้าง)
   * **เทคโนโลยี:** Google Vision API / Bing Visual Search
 
-* **Push Notification Service (Firebase Cloud Messaging - FCM):**
+* **Push Notification Service (Firebase Cloud Messaging - FCM) — Phase 2 (v1 ใช้ polling + in-app):**
   * **บทบาท:** ระบบส่งการแจ้งเตือนพุชไปยังผู้ใช้
   * **หน้าที่:** ในกรณีที่การสแกนตรวจสอบภาพในฝั่ง AI Inference Service ใช้เวลาประมวลผลนานกว่าปกติ หรือเกิดปัญหารอคิว ระบบจะทำงานเป็นแบบ Asynchronous โดย API Application จะส่ง Payload ไปยัง FCM เพื่อแจ้งเตือนกลับไปยัง Mobile App ของผู้ใช้งานเมื่อประมวลผลวิเคราะห์เสร็จสมบูรณ์
   * **เทคโนโลยี:** Firebase Cloud Messaging

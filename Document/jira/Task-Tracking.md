@@ -43,7 +43,7 @@
 - [ ] **TASK-3.2** (SCM-20): รวบรวมชุดภาพถ่ายที่สร้างโดยปัญญาประดิษฐ์ (Generative AI) จากหลายค่าย เช่น Midjourney, DALL-E 3, Stable Diffusion
 - [ ] **TASK-3.3** (SCM-21): ทำการเขียนโปรแกรมทำฉลากและจุดพิกเซลผิดปกติบนภาพถ่าย (Image Masking & Annotations) เพื่อสร้าง Ground Truth
 - [x] **TASK-3.4** (SCM-22): วิจัยและทดสอบเขียนโมดูลคำนวณและแสดงผล Error Level Analysis (ELA) ของพิกเซลรูปภาพ
-- [ ] **TASK-3.5** (SCM-23): ฝึกสอน (Train) และปรับแต่งพารามิเตอร์โมเดล Deep Learning (เช่น PSCC-Net และ SegFormer) สำหรับตรวจจับความผิดปกติของภาพ (Image Forgery Detector)
+- [ ] **TASK-3.5** (SCM-23): ฝึกสอน (Train) และปรับแต่งพารามิเตอร์โมเดล Deep Learning (เช่น SegFormer เป็นโมเดลหลัก; PSCC-Net เป็นตัวเลือกช่วงวิจัยเท่านั้น) สำหรับตรวจจับความผิดปกติของภาพ (Image Forgery Detector)
 - [ ] **TASK-3.6** (SCM-24): ฝึกสอนโมเดลปัญญาประดิษฐ์เพื่อจำแนกภาพถ่ายที่สร้างจาก AI (AI-Generated Image Detector)
 - [ ] **TASK-3.7** (SCM-25): แปลงน้ำหนักและบันทึกโมเดลให้อยู่ในฟอร์แมต ONNX (.onnx) เพื่อประสิทธิภาพในการประมวลผลของ Inference Service
 - [ ] **TASK-3.8** (SCM-26): ทดสอบเขียนฟังก์ชันสร้างแผนที่ความร้อนแบบ mask-to-heatmap overlay เพื่อพล็อตรอยต่อพิกเซลที่มีระดับความเสี่ยงสูงสุดออกมาเป็นแผนภาพความร้อน (Heatmap)
@@ -52,7 +52,7 @@
 - [x] **TASK-4.1** (SCM-27): ติดตั้งสภาพแวดล้อม Python FastAPI และวางโครงสร้างโปรเจกต์
 - [x] **TASK-4.2** (SCM-28): พัฒนาโครงสร้างข้อมูลหลักด้วย SQL และเตรียม Migration Script บน PostgreSQL
 - [x] **TASK-4.3** (SCM-29): พัฒนาระบบยืนยันตัวตน (Authentication JWT Tokens) และระบบความปลอดภัยระดับสิทธิ์ผู้ใช้ (RBAC)
-- [ ] **TASK-4.4** (SCM-30): พัฒนาโมดูลสกัดข้อความในภาพภาษาไทยและภาษาอังกฤษด้วย Surya OCR v0.5.0 (Native PyTorch)
+- [ ] **TASK-4.4** (SCM-30): พัฒนาโมดูลสกัดข้อความในภาพภาษาไทยและภาษาอังกฤษด้วย Surya OCR v0.5.0 (Native PyTorch) *(คืบหน้า: ติดตั้ง/จูนเบื้องต้นแล้ว 2026-08-04 ดู `wiki/log.md` หัวข้อ `## [2026-08-04] update | Phase 4 OCR Integration & Qwen2.5-VL Fix`; เหลือ hardening ให้ผ่าน AC — อัปเดตช่องนี้เมื่อปิดงาน)*
 - [ ] **TASK-4.5** (SCM-31): พัฒนาตัววิเคราะห์ NLP เพื่อคัดกรอง Scam Keywords จากข้อความที่อ่านได้
 - [ ] **TASK-4.6** (SCM-32): เขียนโมดูลสกัดค่า EXIF Metadata แฝง และพิกัด GPS ของรูปภาพ
 - [ ] **TASK-4.7** (SCM-33): บูรณาการ API ภายนอก (Google Vision API) สำหรับการสืบค้นประวัติการนำไปใช้ของรูปภาพ (Reverse Image Search)
@@ -60,7 +60,7 @@
 - [ ] **TASK-4.9** (SCM-35): พัฒนาระบบอัปโหลดไฟล์ไปจัดเก็บอย่างถาวรใน Cloud Storage และเชื่อมต่อระบบสั่ง Push Alert ผ่าน Firebase Cloud Messaging (FCM)
 
 ###  เฟส 5: การพัฒนาแอปพลิเคชันมือถือ (Mobile Application - Flutter)
-- [x] **TASK-5.1** (SCM-36): ตั้งค่าแอปพลิเคชัน Flutter และสร้างโครงสร้างโฟลเดอร์ตามรูปแบบ MVVM และ BLoC State Management
+- [x] **TASK-5.1** (SCM-36): ตั้งค่าแอปพลิเคชัน Flutter และสร้างโครงสร้างโฟลเดอร์ตามรูปแบบ Clean Architecture (Presentation/Domain/Data) + BLoC State Management
 - [x] **TASK-5.2** (SCM-37): พัฒนาหน้าจอลงทะเบียน (Register), เข้าสู่ระบบ (Login) และเชื่อมต่อ JWT Storage
 - [x] **TASK-5.3** (SCM-38): พัฒนาหน้าแรก (Home Screen) แถบข่าวสารสแกม และระบบอัปโหลดเลือกรูปภาพจากเครื่อง
 - [x] **TASK-5.4** (SCM-39): บูรณาการ SDK สำหรับครอปตัดรูปภาพ (Image Cropper Widget) ปรับสเกลก่อนส่งขึ้น API

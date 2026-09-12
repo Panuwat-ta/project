@@ -188,8 +188,11 @@ class Settings(BaseSettings):
     # AI Inference
     ONNX_MODEL_PATH: str = "../model/segformer/work_dirs/latest.onnx"
 
-    # Rate Limit
-    RATE_LIMIT_PER_HOUR: int = 60
+    # Rate Limit (tiered per minute — มติ DOC-02)
+    RATE_LIMIT_GUEST_PER_MINUTE: int = 10
+    RATE_LIMIT_USER_PER_MINUTE: int = 60
+    RATE_LIMIT_ADMIN_PER_MINUTE: int = 300
+    RATE_LIMIT_SCAN_CREATE_PER_MINUTE: int = 5
 
     class Config:
         env_file = ".env"
@@ -618,7 +621,7 @@ class ScamReport(Base):
     scan_id = Column(UUID(as_uuid=True), ForeignKey("scans.id", ondelete="SET NULL"))
     reason = Column(Text, nullable=False)
     status = Column(String(20), nullable=False, default="pending")  # pending, approved, rejected
-    moderated_by = Column(Integer, ForeignKey("users.id"))
+    moderated_by = Column(Integer, ForeignKey("admins.id"))
     moderated_at = Column(DateTime(timezone=True))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 ```
@@ -629,7 +632,7 @@ class ScamReport(Base):
 # app/api/v1/report.py
 @router.post("/")
 async def create_report(body: ReportCreateRequest, ...):
-    """POST /api/v1/report - ผู้ใช้รายงานภาพหลอกลวง"""
+    """POST /api/v1/reports - ผู้ใช้รายงานภาพหลอกลวง"""
     ...
 
 # app/api/v1/admin.py (มีเฉพาะ deploy/dry-run สำหรับจัดการโมเดล)
@@ -694,7 +697,7 @@ Presigned URL มีอายุ 15 นาที (เพื่อ PDPA Complianc
 
 ### 8.5 Graceful Degradation
 
-หาก AI Inference หรือ Google Vision API Timeout ให้คำนวณ Risk Score จากข้อมูลที่มี (EXIF + OCR) และบันทึก Error Log
+หาก AI Inference หรือ Google Vision API Timeout ให้คำนวณ Risk Score จากมิติที่สำเร็จ (ตัดมิติที่ล้มเหลวทิ้ง — EXIF มีไว้แสดงผลเท่านั้น ไม่ร่วมคำนวณ) และบันทึก Error Log
 
 ---
 
@@ -817,8 +820,11 @@ LOCAL_UPLOAD_DIR=./uploads
 # AI Model
 ONNX_MODEL_PATH=../model/segformer/work_dirs/latest.onnx
 
-# Rate Limit
-RATE_LIMIT_PER_HOUR=60
+# Rate Limit (tiered per minute — มติ DOC-02)
+RATE_LIMIT_GUEST_PER_MINUTE=10
+RATE_LIMIT_USER_PER_MINUTE=60
+RATE_LIMIT_ADMIN_PER_MINUTE=300
+RATE_LIMIT_SCAN_CREATE_PER_MINUTE=5
 ```
 
 ---
