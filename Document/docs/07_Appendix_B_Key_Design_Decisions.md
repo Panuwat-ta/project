@@ -1,8 +1,8 @@
 # Appendix B: Key Design Decisions
 
 **Project Name:** แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง (Scam Image Detection)  
-**Version:** 1.0  
-**Date:** August 23, 2026
+**Version:** 1.1 (audit §A fixes, 2026-09-12)  
+**Date:** September 12, 2026
 
 ---
 
@@ -94,7 +94,7 @@
 |---------------|---------------|-----------|-----------------|
 | **Max File Size** | Mobile 10 MB (client-side check) / API Server 20 MB (413 ถ้าเกิน) | สมดุลระหว่างคุณภาพและเวลาอัปโหลด (มติ DOC-03, 2026-09-11 — ตรงกับ code + SRS) | Project Decision |
 | **Max Resolution** | ภาพหลัง decode ≤ 100 ล้านพิกเซล (PIL `MAX_IMAGE_PIXELS`) | ป้องกัน Memory Overflow และ DoS Attack | Project Decision |
-| **Min Resolution** | ไม่จำกัด (แนะนำ ≥ 512×512) | ให้ผู้ใช้ตัดสินใจเอง แต่แจ้งเตือนว่าความแม่นยำลดลง | Project Decision |
+| **Min Resolution** | รับทุกขนาด (shall); แสดงคำเตือนเมื่อภาพ < 512×512 ว่าความแม่นยำอาจลดลง | ให้ผู้ใช้ตัดสินใจเอง แต่แจ้งเตือนว่าความแม่นยำลดลง | Project Decision |
 
 ---
 
@@ -244,7 +244,7 @@
 |---------------|---------------|-----------|-----------------|
 | **Notification Trigger** | เฉพาะ Approved/Rejected | ผู้ใช้ไม่จำเป็นต้องรู้ว่า Admin กำลัง Reviewing | Project Decision |
 | **Notification Channel** | In-App + Email | ผู้ใช้ได้รับการแจ้งเตือนทั้ง 2 ช่องทาง | Project Decision |
-| **Push Notification** | ไม่รองรับ | ลด Complexity (ต้องใช้ FCM/APNs) | Project Decision |
+| **Push Notification** | v1 = Polling + In-App + Email; FCM/APNs = Phase 2 (v1 ยังไม่รองรับ Push) | ลด Complexity (ต้องใช้ FCM/APNs) | Project Decision |
 
 ---
 

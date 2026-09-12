@@ -328,8 +328,8 @@ State:
 
 - ข้อความอธิบายว่าแอปช่วยตรวจสอบภาพต้องสงสัย
 - ข้อความแจ้งว่าผลวิเคราะห์เป็นการประเมินความเสี่ยง ไม่ใช่คำตัดสินทางกฎหมาย
-- Checkbox สำหรับยอมรับเงื่อนไขการใช้งาน
-- Checkbox แยกสำหรับยินยอมให้นำข้อมูลไปใช้ปรับปรุงโมเดล
+- Checkbox สำหรับยอมรับเงื่อนไขการใช้งาน (System — บังคับ)
+- Checkbox แยกสำหรับยินยอมให้นำข้อมูลไปใช้ปรับปรุงโมเดล (Research — ไม่บังคับ)
 - ปุ่มดำเนินการต่อ
 
 Validation:
@@ -408,7 +408,7 @@ Validation:
 
 - รองรับ `jpg`, `jpeg`, `png`, `webp`
 - ขนาดไฟล์ฝั่ง server ไม่เกิน 20 MB (Hard Limit, MAX_UPLOAD_SIZE_MB)
-- หากไฟล์ใหญ่เกิน ให้บีบอัดก่อนอัปโหลดโดยยังรักษาความชัดพอสำหรับ OCR
+- หากไฟล์ใหญ่เกิน ให้บีบอัดก่อนอัปโหลดโดยยังรักษาเกณฑ์ OCR: quality ≥ 85 และด้านสั้นของภาพ ≥ 720px
 
 ### 7.6 Image Preview และ Crop Screen
 
@@ -442,8 +442,8 @@ Validation:
 
 Logic:
 
-- หลังอัปโหลดสำเร็จ Backend ส่ง `taskId`
-- แอป Polling สถานะงานทุก 3 วินาที (คงที่)
+- หลังอัปโหลดสำเร็จ Backend ส่ง `scanId`
+- แอป Polling สถานะงานทุก 3 วินาที (canonical; อยู่ในกรอบ 2–5 วินาที) จนได้ผลหรือ Timeout 120 วินาที
 - หากใช้ Polling ต้องมี Timeout
 - หากผู้ใช้ออกจากหน้า ให้บันทึก Task ที่ยังประมวลผลไว้และแจ้งเตือนเมื่อเสร็จ
 
@@ -648,11 +648,10 @@ Validation:
 
 หน้าจัดการความยินยอมของผู้ใช้
 
-ตัวเลือก:
+ตัวเลือก (2 ระดับ — canonical ตรงกับ `consent_logs`):
 
-- ยินยอมให้ระบบประมวลผลรูปภาพเพื่อวิเคราะห์
-- ยินยอมให้เก็บประวัติการสแกน
-- ยินยอมให้นำข้อมูลไปใช้ปรับปรุงโมเดล
+- ยินยอมให้ระบบประมวลผลรูปภาพเพื่อวิเคราะห์และเก็บประวัติการสแกน (System — บังคับ ถอน = ใช้แอปไม่ได้)
+- ยินยอมให้นำข้อมูลไปใช้ปรับปรุงโมเดล (Research — ไม่บังคับ ถอนได้ตลอด)
 - ขอรับสำเนาข้อมูลส่วนตัว
 - ลบข้อมูลบัญชี
 
@@ -822,26 +821,28 @@ GET /auth/me
 ### 10.2 Image Scan
 
 ```http
-POST /scan/
-GET /scan/{scanId}
-DELETE /history/{scanId}
+POST /api/v1/scan
+GET /api/v1/scan/{scanId}
+DELETE /api/v1/history/{scanId}
 ```
+(ทุก path ขึ้นต้น `/api/v1` — base URL ของแอปลงท้ายด้วย `/api/v1`)
 
-`POST /scan/` ใช้ `multipart/form-data`
+`POST /api/v1/scan` ใช้ `multipart/form-data` (canonical spec ดู `design/server.md` §5.2.1 — ห้ามนิยามฟิลด์ซ้ำที่นี่)
 
-Field ที่แนะนำ:
+Field ตาม canonical (ตรงกับ code `server/app/api/v1/scan.py`):
 
-- `image`: ไฟล์ภาพ
-- `source`: `upload`
-- `consentForResearch`: `true` หรือ `false`
-- `clientRequestId`: UUID จากแอปเพื่อกันการส่งซ้ำ
+- `file`: ไฟล์ภาพ (บังคับ)
+- `title`: ชื่อ/หัวข้อภาพ (ไม่บังคับ)
+- การกันส่งซ้ำทำฝั่ง server ด้วย SHA-256 + Redis cache (ไม่ส่ง `clientRequestId`/`source`/`consentForResearch` ต่อครั้ง — consent จัดการผ่าน register body และ `PUT /consents/me` แบบ 2 ระดับ: System บังคับ + Research ไม่บังคับ)
+
+Response เป็น async: POST คืน record พร้อม `status` ทันที แล้ว poll `GET /api/v1/scan/{scanId}` ทุก 3 วินาทีจน `status = "completed"` หรือ timeout 120 วินาที
 
 ### 10.3 History
 
 ```http
-GET /history
-GET /history/{scanId}
-DELETE /history/{scanId}
+GET /api/v1/history
+GET /api/v1/history/{scanId}
+DELETE /api/v1/history/{scanId}
 ```
 
 Query ที่แนะนำ:
@@ -856,8 +857,8 @@ Query ที่แนะนำ:
 ### 10.4 Report
 
 ```http
-POST /reports
-GET /reports/categories
+POST /api/v1/reports
+GET /api/v1/reports/categories
 ```
 
 Field ที่แนะนำ:
@@ -872,10 +873,10 @@ Field ที่แนะนำ:
 ### 10.5 Consent
 
 ```http
-GET /consents/me
-PUT /consents/me
-POST /privacy/export
-DELETE /privacy/account
+GET /api/v1/consents/me
+PUT /api/v1/consents/me
+POST /api/v1/privacy/export
+DELETE /api/v1/privacy/account
 ```
 
 ---
@@ -887,7 +888,6 @@ DELETE /privacy/account
 ```json
 {
   "scanId": "scan_001",
-  "taskId": "task_001",
   "status": "completed",
   "riskScore": 82,
   "riskLevel": "high",
@@ -947,7 +947,7 @@ DELETE /privacy/account
 
 - ใช้ HTTPS ทุกครั้ง
 - ตรวจสอบขนาดและชนิดไฟล์ก่อนอัปโหลด
-- ใช้ `clientRequestId` เพื่อป้องกันการส่งซ้ำ
+- กันส่งซ้ำด้วย SHA-256 + Redis cache ฝั่ง server (canonical — ดู `design/server.md` §5.2.1)
 - ไม่ส่งข้อมูลส่วนตัวที่ไม่จำเป็น
 
 ### 12.3 PDPA
@@ -1041,7 +1041,7 @@ DELETE /privacy/account
 1. ผู้ใช้สมัครสมาชิกและเข้าสู่ระบบได้
 2. ผู้ใช้อัปโหลดไฟล์รูปจากอุปกรณ์ได้
 3. ผู้ใช้ Crop และยืนยันรูปก่อนส่งวิเคราะห์ได้
-4. แอปอัปโหลดรูปไปยัง API และรับ `taskId` ได้
+4. แอปอัปโหลดรูปไปยัง API และรับ `scanId` ได้
 5. แอปแสดงสถานะระหว่างรอผลได้
 6. แอปแสดงคะแนนความเสี่ยงและระดับความเสี่ยงได้ถูกต้อง
 7. แอปแสดงรายละเอียดผลวิเคราะห์อย่างน้อย 3 ส่วนหลักได้

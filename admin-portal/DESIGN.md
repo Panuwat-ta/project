@@ -34,3 +34,4 @@ Strict adherence to the 3-level severity scale:
 ## Responsive Architecture
 - Desktop (1440px): Two-column layout with fixed high-density navigation sidebar and sticky top telemetry bar
 - Mobile / Tablet (390px - 768px): Collapsible slide-out drawer with backdrop blur, stacked data cards, fluid tables
+- Tablet / Small Laptop (769px - 1439px): Single-column content with condensed sidebar (icon rail), tables scroll horizontally, telemetry bar wraps to two rows

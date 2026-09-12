@@ -85,7 +85,7 @@ updated: 2026-08-02
 
 - Version โมเดลใช้ Semantic Versioning เช่น `segformer_v1.0.0`
 - Train ใน PyTorch แล้ว export เป็น **ONNX format** สำหรับ Production Inference
-- ONNX Runtime ให้ความเร็ว Inference 2–5 เท่าเทียบกับ Native PyTorch
+- ONNX Runtime เป็นเป้าหมายเพิ่มความเร็ว Inference ≥2 เท่าเทียบ Native PyTorch รุ่นเดียวกัน (วิธีวัด: GPU T4 เฉลี่ย 100 ภาพ; ตัวเลขจริงต้องบันทึกจาก benchmark ก่อนอ้างเป็นผล)
 - น้ำหนักโมเดลเก็บใน **Model Registry** (Version-controlled file store)
 - Admin สามารถ deploy โมเดลเวอร์ชันใหม่ผ่าน Admin Portal โดยไม่ต้อง Redeploy service
 

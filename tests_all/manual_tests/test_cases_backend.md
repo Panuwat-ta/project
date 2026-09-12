@@ -281,7 +281,7 @@
 
 ---
 
-### TC-BE-CACHE-02: การตอบกลับทันทีเมื่อตรวจพบภาพซ้ำเดิม (Cache Hit Acceleration)
+### TC-BE-CACHE-02: การตอบกลับเร็วเมื่อตรวจพบภาพซ้ำเดิม (Cache Hit Acceleration)
 - **Module / Feature**: Cache / Performance Optimization
 - **Requirement ID**: FR-SYS-09, NFR-PERF-01
 - **Test Type**: Performance / Integration
@@ -295,7 +295,7 @@
 - **Expected Results**:
   1. ตรวจพบคีย์แฮชใน Redis ทันที (Cache Hit)
   2. ได้รับ HTTP 200 พร้อมผลลัพธ์การสแกนเดิม
-  3. เวลาในการตอบกลับไม่เกิน 3 วินาทีแบบ End-to-End (≤ 3s ตรงตาม NFR-PERF-01) โดยไม่มีการเรียกใช้งานโมเดล AI ใน Subprocess ซ้ำ
+  3. เวลาในการตอบกลับ P95 ไม่เกิน 3 วินาทีแบบ End-to-End (P95 ≤ 3s ตรงตาม NFR-PERF-01; ภาพ 1MB, RTT ≤50ms) โดยไม่มีการเรียกใช้งานโมเดล AI ใน Subprocess ซ้ำ
 - **Automation Mapping**: `tests_all/automate_tests/tests/api/test_scan_workflow.py`
 
 ---
@@ -313,7 +313,7 @@
 - **Test Steps**:
   1. ใช้ลูปยิงคำขอล็อกอิน Admin รัวเกินโควตา
 - **Expected Results**:
-  1. คำขอภายในโควตาตอบกลับตามปกติ
+  1. คำขอภายในโควตา (5 ครั้งแรกต่อนาที) ไม่ถูกปฏิเสธด้วย 429 — ตอบตามผลข้อมูลจริง (`200 OK` หรือ `401` กรณีข้อมูลผิด) ภายใน 5 วินาที
   2. คำขอเกินโควตาถูกปฏิเสธด้วย HTTP Status Code: `429 Too Many Requests`
   3. มี Header `Retry-After` แจ้งเวลาที่ต้องรอก่อนยิงใหม่อีกครั้ง
   4. โควตาทั่ว 60 ครั้งต่อชั่วโมงมีผลกับทุกคำขอ ส่วนโควตา Admin 5 ครั้งต่อนาทีมีผลเฉพาะเส้นล็อกอินและต่ออายุ Token ฝั่ง Admin

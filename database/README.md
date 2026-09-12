@@ -12,14 +12,15 @@
 ## ข้อมูลการเข้าสู่ระบบ (Default Credentials)
 
 **PostgreSQL:**
-- **User:** `scamguard` (หรือตามไฟล์ `.env`)
-- **Password:** `password` (หรือตามไฟล์ `.env`)
-- **Database:** `scamguard_db` (หรือตามไฟล์ `.env`)
+- **User / Password / Database:** ตั้งค่าผ่านไฟล์ `database/.env` (`POSTGRES_USER` / `POSTGRES_PASSWORD` / `POSTGRES_DB`) — ห้ามใส่รหัสผ่านจริงในเอกสาร
 
 **pgAdmin:**
 - **URL:** `http://localhost:5050`
-- **Email:** `admin@scamguard.com`
-- **Password:** `admin123`
+- **Email/Password:** ตั้งค่าผ่านไฟล์ `database/.env` (`PGADMIN_DEFAULT_EMAIL` / `PGADMIN_DEFAULT_PASSWORD`) — ห้ามใส่รหัสผ่านจริงในเอกสาร
+
+> [!NOTE]
+> การตั้งรหัสครั้งแรก: คัดลอก `.env.example` (ถ้ามี) เป็น `.env` แล้วกำหนด `PGADMIN_DEFAULT_EMAIL` กับ `PGADMIN_DEFAULT_PASSWORD`
+> ที่คาดเดายาก (≥12 ตัวอักษร) ก่อนรัน `podman compose up -d` ครั้งแรก ห้าม commit ไฟล์ `.env` ขึ้นgit (ถูก ignore ไว้แล้ว)
 
 ---
 

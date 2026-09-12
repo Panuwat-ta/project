@@ -32,9 +32,11 @@ updated: 2026-09-06
 | :--- | :--- | :--- | :--- |
 | **เฟส 1: ข้อกำหนดและการวางแผน** | รวบรวม Requirement Candidates (RC), วิเคราะห์ SRS, กำหนด KPI และขอบเขตงาน | เสร็จสิ้น | 100% |
 | **เฟส 2: การออกแบบระบบและสถาปัตยกรรม** | ออกแบบ C1-C4 Diagrams, ER Diagram, UI/UX บน Figma และ Design System | เสร็จสิ้น | 100% |
-| **เฟส 3: การพัฒนาส่วนประกอบหลัก** | พัฒนา Mobile App, FastAPI Backend, AI SegFormer Model, Surya OCR และ Admin Portal | กำลังดำเนินการ | 90% |
-| **เฟส 4: การทดสอบและการผสานระบบ** | Automated Test Suites (Unit/Integration/E2E), Performance Load Test และ NFR Validation | กำลังดำเนินการ | 85% |
-| **เฟส 5: การส่งมอบและเอกสารสมบูรณ์** | รวบรวมเอกสารคู่มือ บันทึกการดำเนินงาน และรายงานผลการตรวจรับโครงงานวิศวกรรม | กำลังดำเนินการ | 80% |
+| **เฟส 3: การพัฒนาส่วนประกอบหลัก** | พัฒนา Mobile App, FastAPI Backend, AI SegFormer Model, Surya OCR และ Admin Portal | กำลังดำเนินการ | ~90%* |
+| **เฟส 4: การทดสอบและการผสานระบบ** | Automated Test Suites (Unit/Integration/E2E), Performance Load Test และ NFR Validation | กำลังดำเนินการ | ~85%* |
+| **เฟส 5: การส่งมอบและเอกสารสมบูรณ์** | รวบรวมเอกสารคู่มือ บันทึกการดำเนินงาน และรายงานผลการตรวจรับโครงงานวิศวกรรม | กำลังดำเนินการ | ~80%* |
+
+> \* ตัวเลขเป็นค่าประมาณจากสัดส่วนงาน Done/ทั้งหมดบนบอร์ด Jira SCM ณ 2026-09-06 — อัปเดตพร้อมวันที่ทุกครั้ง ไม่ใช้เป็นเกณฑ์ตัดสิน
 
 ---
 
@@ -48,7 +50,7 @@ updated: 2026-09-06
 
 ### 3.2 Backend API & Database (FastAPI & PostgreSQL)
 - ออกแบบ RESTful API Endpoints สำหรับ Authentication, Scan Processing และ Admin Operations
-- วางระบบ Caching บน Redis ด้วย SHA-256 Hash ตอบกลับในเวลาไม่เกิน 3 วินาที
+- วางระบบ Caching บน Redis ด้วย SHA-256 Hash ตอบกลับ Cache Hit ภายใน P95 ≤ 3 วินาที (ภาพ 1080p, 4G/Wi-Fi)
 - แยกสคีมาตาราง `admins` ออกจาก `users` เพื่อความปลอดภัยขั้นสูงสุด
 - ติดตั้งระบบ Database Migration ด้วย Alembic เพื่อควบคุมการเปลี่ยนแปลงของสคีมา
 

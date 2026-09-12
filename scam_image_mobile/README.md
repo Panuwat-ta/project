@@ -51,9 +51,9 @@ lib/
 ## การติดตั้งและการใช้งาน (Getting Started)
 
 ### ความต้องการของระบบ (Prerequisites)
-- Flutter SDK `^3.12.2` (หรือเวอร์ชันที่รองรับ)
+- Flutter SDK `^3.12.2` (ขั้นต่ำ 3.12.2; ตรวจด้วย `flutter --version`; เวอร์ชันใหม่กว่าถือว่าใช้ได้เมื่อ `flutter pub get` และ `flutter test` ผ่าน)
 - Dart SDK
-- Android Studio / Xcode (สำหรับทดสอบบน Emulator / Simulator)
+- Android Studio สำหรับ Android Emulator (v1 รองรับ **Android เท่านั้น** ไม่ต้องใช้ Xcode/Simulator)
 
 ### ขั้นตอนการติดตั้ง
 
@@ -71,9 +71,9 @@ lib/
 3. **รันแอปพลิเคชัน (Development)**
    รันแอปพลิเคชันโดยสามารถกำหนด URL ของ API Backend ผ่าน Environment Variable ได้:
    ```bash
-   flutter run --dart-define=API_BASE_URL=http://localhost:8000
+   flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000
    ```
-   *(หมายเหตุ: ค่าเริ่มต้นหากไม่ได้กำหนด `API_BASE_URL` คือ `http://localhost:8000`)*
+   *(หมายเหตุ: `localhost` ใช้ได้เฉพาะรันบนเบราว์เซอร์/desktop เท่านั้น; บน **Android Emulator** ต้องใช้ `http://10.0.2.2:8000`, บนอุปกรณ์จริงต้องใช้ IP LAN ของเครื่อง Backend; ค่าเริ่มต้นหากไม่ได้กำหนด `API_BASE_URL` คือ `http://10.0.2.2:8000`)*
 
 ### การ Build สำหรับ Production
 

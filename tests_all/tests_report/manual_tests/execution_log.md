@@ -5,7 +5,6 @@
 - อ้างอิงชุดทดสอบ: tests_all/manual_tests/test_cases_mobile.md, test_cases_backend.md, test_cases_ai_model.md, test_cases_admin.md, test_cases_e2e.md, test_cases_nfr.md
 - อ้างอิงแผนหลัก: Document/tests_doc/test_plan/README.md ส่วนที่ 5 เกณฑ์การเริ่ม ระงับ และสิ้นสุดการทดสอบ
 - อ้างอิงความครอบคลุม: tests_all/rtm.md
-- สถานะโฟลเดอร์นี้ก่อนสร้างไฟล์: ว่าง ไม่มีบันทึกผล manual ใดใด มีเฉพาะผล automate ใน tests_all/tests_report/automate_tests/server และ mobile
 
 ---
 
@@ -31,11 +30,10 @@
 
 | TC ID | วันที่ (ปปปป-ดด-วว) | ผู้ทดสอบ | อุปกรณ์และสภาพแวดล้อม | ผล (Pass Fail Blocked Skipped) | หมายเหตุ (Bug ID / รอบ Retest / GAP) |
 |---|---|---|---|---|---|
-| ตัวอย่าง TC-MOB-AUTH-01 | 2026-09-06 | ชื่อผู้ทดสอบ | Pixel 6 Android 14 แอปบิลด์ staging ต่อ Backend staging | Pass | รอบ Smoke ครั้งที่ 1 |
-| ตัวอย่าง TC-BE-SCAN-01 | 2026-09-06 | ชื่อผู้ทดสอบ | Backend Port 8000 ต่อ PostgreSQL 5432 และ Redis 6379 | Fail | เปิด BUG-001 แล้ว รอแก้ |
-|  |  |  |  |  |  |
-|  |  |  |  |  |  |
-|  |  |  |  |  |  |
+| (แถวแม่แบบ — ลบแถวนี้เมื่อมีผลรันจริงแถวแรก) TC-MOB-AUTH-01 | ปปปป-ดด-วว | ชื่อผู้ทดสอบ | Pixel 6 Android 14 แอปบิลด์ทดสอบ ต่อ Backend ทดสอบ | Pass | รอบ Smoke ครั้งที่ 1 |
+| (แถวแม่แบบ — ลบแถวนี้เมื่อมีผลรันจริงแถวแรก) TC-BE-SCAN-01 | ปปปป-ดด-วว | ชื่อผู้ทดสอบ | Backend Port 8000 ต่อ PostgreSQL 5432 และ Redis 6379 | Fail | เปิด BUG-001 แล้ว รอแก้ |
+
+> **สถานะผลรันจริง (2026-09-12)**: ยังไม่มีผลรัน manual จริงในไฟล์นี้ (มีเฉพาะแถวแม่แบบข้างต้น) — **Pass Rate คำนวณไม่ได้จนกว่าจะมีรอบรันจริง** ห้ามนำแถวแม่แบบไปคิด Pass Rate หรืออ้างใน release_signoff.md
 
 ---
 
@@ -54,10 +52,14 @@
 
 - รอบที่: ระบุครั้งที่และช่วงวันที่
 - ขอบเขตรอบนี้: ระบุโมดูลและรายการ TC ที่รัน เช่น Mobile Auth 10 TC, Backend Scan 8 TC, Regression 4 TC
-- สรุปจำนวน: ทั้งหมดกี่ TC, Pass กี่ TC, Fail กี่ TC, Blocked กี่ TC, Skipped กี่ TC พร้อมคิด Pass Rate แยก P0 P1 P2
+- สรุปจำนวน: ทั้งหมดกี่ TC, Pass กี่ TC, Fail กี่ TC, Blocked กี่ TC, Skipped กี่ TC พร้อมคิด Pass Rate แยก P0 P1 P2 ตามสูตร (เกณฑ์ตามแผนหลัก Document/tests_doc/test_plan/README.md บรรทัด 155-156 — ไม่ใช่ข้อเสนอใหม่):
+  - P0 Pass Rate = Pass(P0) ÷ (รันทั้งหมด(P0) − Blocked(P0)) × 100 — เกณฑ์ปล่อย: 100%
+  - P1 Pass Rate = Pass(P1) ÷ (รันทั้งหมด(P1) − Blocked(P1)) × 100 — เกณฑ์ปล่อย: 100%
+  - P2 Pass Rate = Pass(P2) ÷ (รันทั้งหมด(P2) − Blocked(P2)) × 100 — เกณฑ์ปล่อย: ≥95%
+  - Skipped นับเฉพาะ TC ที่เป็น GAP/Deferred ตาม rtm.md พร้อมเหตุผลเท่านั้น ห้ามใช้ Skipped เพื่อเลี่ยงเกณฑ์
 - รายการ Fail และ Bug ที่เปิด: ระบุ TC ID คู่กับ Bug ID ทุกรายการ
 - รายการ Blocked และสาเหตุ: อ้างอิง Suspension Criteria ในแผนหลัก
-- ข้อสังเกต GAP/Deferred ที่พบในรอบนี้: เช่น FR-SYS-01 EXIF ไม่มี TC, FR-AUTH-03 OAuth เป็น Deferred
+- ข้อสังเกต GAP/Deferred ที่พบในรอบนี้: เช่น FR-SYS-01 EXIF ไม่มี TC, FR-AUTH-06 OAuth เป็น Deferred
 - ผู้สรุปและวันที่สรุป: ชื่อและวันที่
 
 ---
@@ -66,6 +68,6 @@
 
 1. เก็บเฉพาะผลรันจริงเท่านั้น ห้ามบันทึกการอ่านเอกสารหรือการตรวจด้วยสายตาเป็นผล Pass
 2. ภาษาไทยเป็นหลัก คงชื่อฟังก์ชัน เส้น API ชื่อตาราง ชื่อคอลัมน์ และศัพท์เทคนิคเป็นภาษาอังกฤษตามเดิม
-3. ห้ามใช้ Emoji ในไฟล์นี้และไฟล์รายงานทั้งหมด
+3. ข้อเสนอ (ไม่บังคับ — ยังไม่มีมติทีม): หลีกเลี่ยง Emoji ในไฟล์รายงานเพื่อให้ค้นหาและ diff ง่ายขึ้น
 4. หนึ่ง TC ต่อหนึ่งแถวต่อหนึ่งรอบ รันซ้ำต้องเพิ่มแถวใหม่พร้อมวันที่ใหม่
 5. ผล Fail ทุกแถวต้องมี Bug ID กำกับ ผล Blocked ต้องมีสาเหตุอ้างอิงเกณฑ์ระงับในแผนหลัก

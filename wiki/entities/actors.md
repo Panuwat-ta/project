@@ -66,7 +66,7 @@ updated: 2026-08-02
 ไม่ใช่คน แต่เป็น Actor ที่ควรบันทึกไว้:
 
 - **Redis Cache** — ส่งคืนผลลัพธ์จาก Cache อัตโนมัติ โดยไม่มีคนเข้ามาเกี่ยวข้อง
-- **FCM** — ส่ง Push Notification อัตโนมัติเมื่องานสแกนเสร็จสิ้น
+- **FCM** — (Phase 2 — ยังไม่ทำใน v1; v1 ใช้ polling + in-app notification) เมื่อพร้อมจะส่ง Push Notification อัตโนมัติเมื่องานสแกนเสร็จสิ้น
 - **Scheduled Model Retraining** — ระบบอัตโนมัติที่วางแผนไว้ในอนาคต เมื่อมี Scam Report ที่ยืนยันแล้ว ระบบจะกระตุ้นให้เทรนโมเดลใหม่แบบ Incremental
 
 ---

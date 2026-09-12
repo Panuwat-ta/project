@@ -15,11 +15,10 @@ flowchart LR
     classDef ucFill fill:#dae8fc,stroke:#6c8ebf,color:black
     classDef extFill fill:#f5f5f5,stroke:#666666,color:black
 
-    %% Actors Boundary
+    %% Actors Boundary (มีเฉพาะ human actors; ขั้นตอนอัตโนมัติใช้ <<include>>)
     subgraph Actors [ผู้เกี่ยวข้อง / Actors]
         User("General User<br>[Actor]")
         Admin("Admin<br>[Actor]")
-        SystemActor("System (Automated)<br>[Actor]")
     end
 
     %% System Boundary
@@ -31,7 +30,7 @@ flowchart LR
         UC03("UC-03: ประมวลผลภาพขั้นต้น<br>(Primary Analysis)")
         UC04("UC-04: วิเคราะห์ด้วย AI<br>(AI Inference)")
         UC05("UC-05: ตรวจสอบผลลัพธ์และแผนที่ความร้อน<br>(View Result & Heatmap)")
-        UC06("UC-06: รับการแจ้งเตือน<br>(Receive Push Notification)")
+        UC06("UC-06: รับการแจ้งเตือน<br>(Receive Notification; FCM = Phase 2)")
         UC07("UC-07: จัดการประวัติการสแกน<br>(History Management)")
         UC08("UC-08: รายงานและแชร์ผลลัพธ์<br>(Report & Share)")
         UC09("UC-09: จัดการผู้ใช้และแดชบอร์ด<br>(Admin Dashboard & RBAC)")
@@ -41,7 +40,7 @@ flowchart LR
     %% External Services
     subgraph ExternalServices [External Services]
         GoogleVision("Google Vision API<br>[Reverse Search]")
-        FCM("Firebase Cloud Messaging<br>[FCM]")
+        FCM("Firebase Cloud Messaging<br>[FCM, Phase 2]")
     end
 
     %% Relationships / Associations
@@ -56,15 +55,18 @@ flowchart LR
     Admin --> UC09
     Admin --> UC10
 
-    SystemActor --> UC03
-    SystemActor --> UC04
+    %% ขั้นตอนอัตโนมัติเป็น <<include>> ใต้ General User (ไม่มี System Actor)
+    UC02 -. " <<include>> " .-> UC03
+    UC03 -. " <<include>> " .-> UC04
+    UC05 -. " <<include>> " .-> UC03
+    UC05 -. " <<include>> " .-> UC04
 
-    %% External Connections
+    %% External Connections (optional; ล้มเหลวให้คืนผลบางส่วน ไม่สรุปว่าปลอดภัย)
     UC03 --> GoogleVision
     UC06 --> FCM
 
     %% Apply Styles
-    class User,Admin,SystemActor actorFill
+    class User,Admin actorFill
     class UC01,UC02,UC03,UC04,UC05,UC06,UC07,UC08,UC09,UC10 ucFill
     class GoogleVision,FCM extFill
 ```
@@ -84,12 +86,12 @@ flowchart LR
   * **ความต้องการทางระบบ (FR):** FR-02 - ระบบนำเข้ารูปภาพ (Image Input): ผู้ใช้เลือกรูปจากคลังภาพ แล้วอัปโหลดไฟล์ภาพเข้าสู่ระบบ
 
 * **UC-03: ประมวลผลภาพขั้นต้น (Primary Analysis):**
-  * **ผู้เกี่ยวข้อง (Actors):** System (Automated)
+  * **ผู้เกี่ยวข้อง (Actors):** General User (ผ่าน <<include>> จาก UC-02)
   * **รายละเอียด:** การดึงข้อมูลเมทาดาตา (Metadata/EXIF) ของภาพ, การสกัดตัวอักษรด้วยเทคนิค OCR เพื่อวิเคราะห์ Keyword อันตรายร่วมกับเทคนิค NLP และการส่งข้อมูลรูปภาพไปสืบค้นหาแหล่งที่มาดั้งเดิมด้วย Google Vision API
   * **ความต้องการทางระบบ (FR):** FR-03 - ระบบวิเคราะห์ข้อมูลชั้นต้น (Primary Analysis): ระบบสามารถดึงข้อมูลแฝง (Metadata/EXIF), สกัดข้อความในภาพ (OCR), และค้นหาแหล่งที่มาของภาพ (Reverse Image Search) ได้โดยอัตโนมัติ
 
 * **UC-04: วิเคราะห์ด้วย AI (AI Inference):**
-  * **ผู้เกี่ยวข้อง (Actors):** System (Automated)
+  * **ผู้เกี่ยวข้อง (Actors):** General User (ผ่าน <<include>> จาก UC-03)
   * **รายละเอียด:** ส่งรูปภาพเพื่อนำเข้าโมเดลปัญญาประดิษฐ์เชิงลึก (Deep Learning) ในการตรวจสอบการแก้ไขระดับพิกเซล (Semantic Segmentation) เพื่อหาร่องรอยการตัดต่อ (Image Forgery) และตรวจสอบลักษณะว่าภาพถูกสังเคราะห์ด้วย Generative AI หรือไม่
   * **ความต้องการทางระบบ (FR):** FR-04 - ระบบวิเคราะห์ด้วยปัญญาประดิษฐ์ (AI Inference): ระบบส่งภาพเข้าสู่โมเดล Deep Learning เพื่อตรวจสอบร่องรอยการตัดต่อ (Image Forgery/Semantic Segmentation) และตรวจสอบภาพที่สร้างด้วยปัญญาประดิษฐ์ (AI-Generated)
 
@@ -98,10 +100,10 @@ flowchart LR
   * **รายละเอียด:** หน้าจอแสดงค่าคะแนนความเสี่ยงรวม (Overall Risk Score) พร้อมแสดงผลสรุปเหตุผลความผิดปกติ และแสดงแผนที่ความร้อน (Heatmap) บนจุดที่น่าสงสัยของภาพ เพื่อตอบโจทย์ความโปร่งใสของปัญญาประดิษฐ์ (XAI)
   * **ความต้องการทางระบบ (FR):** FR-05 - ระบบแสดงผลลัพธ์ (Result & Visualization): ระบบคำนวณคะแนนความเสี่ยงรวม (Overall Risk Score) และสร้างแผนที่ความร้อน (Heatmap) เพื่ออธิบายผลลัพธ์ให้ผู้ใช้เข้าใจ
 
-* **UC-06: รับการแจ้งเตือน (Receive Push Notification):**
+* **UC-06: รับการแจ้งเตือน (Receive Notification; FCM = Phase 2):**
   * **ผู้เกี่ยวข้อง (Actors):** General User
-  * **รายละเอียด:** การรับข้อความการแจ้งเตือนแบบพุช (Push Notification) ผ่านระบบ Firebase Cloud Messaging (FCM) เมื่อระบบทำการตรวจสอบวิเคราะห์รูปภาพบนเซิร์ฟเวอร์เบื้องหลัง (Background Task) เสร็จสิ้นสมบูรณ์
-  * **ความต้องการทางระบบ (FR):** FR-06 - ระบบแจ้งเตือน (Push Notification): ระบบสามารถส่งข้อความแจ้งเตือนผู้ใช้งานผ่าน Firebase Cloud Messaging (FCM) เมื่อการวิเคราะห์ภาพเบื้องหลัง (Background Task) เสร็จสิ้น
+  * **รายละเอียด:** การรับการแจ้งเตือนแบบ in-app/polling ภายใน 60 วินาทีเมื่อระบบตรวจสอบวิเคราะห์รูปภาพบนเซิร์ฟเวอร์เบื้องหลัง (Background Task) เสร็จสิ้นสมบูรณ์ (FCM push = Phase 2)
+  * **ความต้องการทางระบบ (FR):** FR-06 - ระบบแจ้งเตือน: v1 ใช้ polling + in-app notification ภายใน 60 วินาทีหลังงานเบื้องหลังเสร็จ (FCM push = Phase 2)
 
 * **UC-07: จัดการประวัติการสแกน (History Management):**
   * **ผู้เกี่ยวข้อง (Actors):** General User
@@ -115,10 +117,16 @@ flowchart LR
 
 * **UC-09: จัดการผู้ใช้และแดชบอร์ด (Admin Dashboard & RBAC):**
   * **ผู้เกี่ยวข้อง (Actors):** Admin
-  * **รายละเอียด:** แอดมินเข้าใช้งานหน้าเว็บแผงควบคุมระบบ (Admin Panel) เพื่อติดตามกราฟสถิติการใช้งาน, จัดการข้อมูลของผู้ใช้งาน, ตรวจสอบสิทธิ์การเข้าถึง และการอนุมัติจัดการรายงานต่าง ๆ
+  * **รายละเอียด:** แอดมินเข้าใช้งานหน้าเว็บแผงควบคุมระบบ (Admin Panel) เพื่อติดตามกราฟสถิติการใช้งาน, จัดการข้อมูลของผู้ใช้งาน (เปลี่ยนสถานะเท่านั้น ห้าม hard-delete), ตรวจสอบสิทธิ์การเข้าถึง และการอนุมัติจัดการรายงานต่าง ๆ
   * **ความต้องการทางระบบ (FR):** FR-09 - ระบบผู้ดูแลและการจัดการสิทธิ์ (Admin & RBAC): มีหน้าแดชบอร์ดให้ผู้ดูแลระบบตรวจสอบสถิติการใช้งาน, จัดการข้อมูลผู้ใช้, และกำหนดสิทธิ์การเข้าถึงระบบตามบทบาท
 
 * **UC-10: จัดการชุดข้อมูลและอัปเดตโมเดล (Dataset & Model Management):**
   * **ผู้เกี่ยวข้อง (Actors):** Admin
   * **รายละเอียด:** แอดมินทำหน้าที่ตรวจสอบรูปภาพสแกมที่ผู้ใช้รายงาน ตรวจจัดหมวดหมู่เพื่อส่งเข้าชุดข้อมูล (Scam Dataset) สำหรับนำไปเทรนและวิเคราะห์เพิ่มเติม พร้อมทำการอัปโหลดไฟล์น้ำหนักโมเดล (Model Weights) เวอร์ชันใหม่ขึ้นระบบ
   * **ความต้องการทางระบบ (FR):** FR-10 - ระบบจัดการข้อมูลและโมเดล (Dataset & Model Management): ผู้ดูแลระบบสามารถตรวจสอบรูปภาพที่ถูกผู้ใช้รายงาน นำไปจัดหมวดหมู่ชุดข้อมูล และอัปโหลดโมเดล AI (Weights) เวอร์ชันใหม่เข้าสู่ระบบได้
+
+### Exception flows (ทุก UC)
+* ไฟล์ผิดชนิด/เกินขนาด (FR-02) → ปฏิเสธพร้อมข้อความ ไม่บีบอัดใน v1
+* OCR/โมเดล/External ล้มเหลว → คืนผลบางส่วนพร้อม confidence + สถานะชัดเจน
+* Reverse search/FCM ไม่พร้อม → แจ้ง "ไม่มีข้อมูล" (optional) ไม่สรุปว่าภาพปลอดภัย
+* Token หมดอายุ/สิทธิ์ไม่พอ → 401 + ต่ออายุหรือล็อกอินใหม่; ตรวจ ownership เสมอ

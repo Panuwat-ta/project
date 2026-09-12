@@ -1,7 +1,7 @@
 # Appendix A: Full Traceability Matrix (Detailed) 
-**Project Name:** แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง (Scam Image Detection)  
-**Version:** 1.0  
-**Date:** August 23, 2026
+**Project Name:** แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง (Scam Image Detection — ชื่อผลิตภัณฑ์: ScamGuard)  
+**Version:** 1.1 (audit §A fixes, 2026-09-12)  
+**Date:** September 12, 2026
 
 ---
 
@@ -19,13 +19,13 @@
 - **FR/NFR**: Functional/Non-Functional Requirement ID
 - **AC**: Acceptance Criterion Number
 - **Priority**: Must / Should / Could
-- **Status**: ✅ Complete / ⏸️ Deferred / ⚠️ In Progress
+- **Status**: ✅ Complete / ⏸️ Deferred / ⚠️ In Progress (⚠️ ที่ Row 34–37 = AC ครบแต่ยังไม่มี TC — ตรงกับ `tests_all/rtm.md` FR-SYS-04 GAP)
 - **Evidence**: แหล่งที่มาของข้อมูล
 
 ### 1.2 Total Rows
 
-- **Total AC:** 104 (83 FR + 21 NFR)
-- **Total Rows:** 104 rows (one per AC)
+- **Total AC:** 108 (83 FR + 25 NFR)
+- **Total Rows:** 108 rows (one per AC)
 
 ---
 
@@ -66,14 +66,14 @@
 | 31 | ST01, ST02, ST03 | OBJ-02 | SC03 | RC-ANALYSIS-02 | FR-ANALYSIS-02 | 3 | คำนวณ Visual Risk Score | Must | ✅ | srs-doc.md |
 | 32 | ST01, ST02, ST03 | OBJ-02 | SC03 | RC-ANALYSIS-02 | FR-ANALYSIS-02 | 4 | ภาพจริงไม่ถูกตัดต่อ | Must | ✅ | srs-doc.md |
 | 33 | ST01, ST02, ST03 | OBJ-02 | SC03 | RC-ANALYSIS-02 | FR-ANALYSIS-02 | 5 | เวลา Inference ≤ 10 วินาที (GPU) | Must | ✅ | srs-doc.md |
-| 34 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-05 | FR-ANALYSIS-03 | 1 | ค้นหาแหล่งที่มาสำเร็จ | Must | ✅ | srs-doc.md |
-| 35 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-05 | FR-ANALYSIS-03 | 2 | คำนวณ Source Risk Score | Must | ✅ | srs-doc.md |
-| 36 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-05 | FR-ANALYSIS-03 | 3 | ไม่พบแหล่งที่มา | Must | ✅ | srs-doc.md |
-| 37 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-05 | FR-ANALYSIS-03 | 4 | Fallback เมื่อ API Down | Must | ✅ | srs-doc.md |
+| 34 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-05 | FR-ANALYSIS-03 | 1 | ค้นหาแหล่งที่มาสำเร็จ | Must | ⚠️ | srs-doc.md |
+| 35 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-05 | FR-ANALYSIS-03 | 2 | คำนวณ Source Risk Score | Must | ⚠️ | srs-doc.md |
+| 36 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-05 | FR-ANALYSIS-03 | 3 | ไม่พบแหล่งที่มา | Must | ⚠️ | srs-doc.md |
+| 37 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-05 | FR-ANALYSIS-03 | 4 | Fallback เมื่อ API Down | Must | ⚠️ | srs-doc.md |
 | 38 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-07 | FR-ANALYSIS-04 | 1 | คำนวณคะแนนรวมสำเร็จ | Must | ✅ | srs-doc.md |
 | 39 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-07 | FR-ANALYSIS-04 | 2 | จำกัดคะแนนในช่วง 0-100 | Must | ✅ | srs-doc.md |
-| 40 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-08 | FR-ANALYSIS-04 | 3 | แปลงเป็น Risk Grade (Low 0-39) | Must | ✅ | srs-doc.md |
-| 41 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-08 | FR-ANALYSIS-04 | 4 | แปลงเป็น Risk Grade (Low) | Must | ✅ | srs-doc.md |
+| 40 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-08 | FR-ANALYSIS-04 | 3 | แปลงเป็น Risk Grade (Low ค่ากลางช่วง เช่น 20) | Must | ✅ | srs-doc.md |
+| 41 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-08 | FR-ANALYSIS-04 | 4 | แปลงเป็น Risk Grade (Low ค่าขอบเขตบน 39 — boundary-value test คู่กับ Row 40 ที่ทดสอบค่ากลางช่วง; ไม่ใช่แถวซ้ำ ตรงกับ 05-SRS AC-3/AC-4) | Must | ✅ | srs-doc.md |
 | 42 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-08 | FR-ANALYSIS-04 | 5 | แปลงเป็น Risk Grade (Medium) | Must | ✅ | srs-doc.md |
 | 43 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-08 | FR-ANALYSIS-04 | 6 | แปลงเป็น Risk Grade (High) | Must | ✅ | srs-doc.md |
 | 44 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-08 | FR-ANALYSIS-04 | 7 | Special Rule — Visual Score ≥ 80 | Must | ✅ | srs-doc.md |
@@ -83,9 +83,9 @@
 | 48 | ST01, ST03 | OBJ-02, OBJ-04 | SC01, SC03 | RC-XAI-02 | FR-XAI-01 | 4 | ปรับความโปร่งใส Heatmap | Must | ✅ | srs-doc.md |
 | 49 | ST01, ST03 | OBJ-02, OBJ-04 | SC01, SC03 | RC-XAI-03 | FR-XAI-01 | 5 | แสดง Risk Breakdown | Must | ✅ | srs-doc.md |
 | 50 | ST01 | OBJ-01 | SC01 | RC-HISTORY-01 | FR-HISTORY-01 | 1 | แสดงประวัติการสแกน | Must | ✅ | srs-doc.md |
-| 51 | ST01 | OBJ-01 | SC01 | RC-HISTORY-01 | FR-HISTORY-01 | 2 | ค้นหาตามช่วงวันที่ | Must | ✅ | srs-doc.md |
-| 52 | ST01 | OBJ-01 | SC01 | RC-HISTORY-01 | FR-HISTORY-01 | 3 | กรองตามระดับความเสี่ยง | Must | ✅ | srs-doc.md |
-| 53 | ST01 | OBJ-01 | SC01 | RC-HISTORY-04 | FR-HISTORY-01 | 4 | ลบประวัติทีละรายการ | Must | ✅ | srs-doc.md |
+| 51 | ST01 | OBJ-01 | SC01 | RC-HISTORY-02 | FR-HISTORY-01 | 2 | ค้นหาตามช่วงวันที่ | Must | ✅ | srs-doc.md |
+| 52 | ST01 | OBJ-01 | SC01 | RC-HISTORY-02 | FR-HISTORY-01 | 3 | กรองตามระดับความเสี่ยง | Must | ✅ | srs-doc.md |
+| 53 | ST01 | OBJ-01 | SC01 | RC-HISTORY-03 | FR-HISTORY-01 | 4 | ลบประวัติทีละรายการ | Must | ✅ | srs-doc.md |
 | 54 | ST01 | OBJ-01 | SC01 | RC-HISTORY-04 | FR-HISTORY-01 | 5 | ลบประวัติทั้งหมด | Must | ✅ | srs-doc.md |
 | 55 | ST01, ST02 | OBJ-01 | SC01 | RC-HISTORY-05 | FR-HISTORY-02 | 1 | รายงานสำเร็จ | Must | ✅ | srs-doc.md |
 | 56 | ST01, ST02 | OBJ-01 | SC01 | RC-HISTORY-05 | FR-HISTORY-02 | 2 | ปฏิเสธการรายงานซ้ำ | Must | ✅ | srs-doc.md |
@@ -93,13 +93,13 @@
 | 58 | ST01, ST02 | OBJ-01 | SC01 | RC-HISTORY-05 | FR-HISTORY-02 | 4 | หมวดหมู่รายงาน | Must | ✅ | srs-doc.md |
 | 59 | ST01 | OBJ-01 | SC01 | RC-PDPA-01 | FR-PDPA-01 | 1 | แสดงหน้า Consent Screen | Must | ✅ | srs-doc.md |
 | 60 | ST01 | OBJ-01 | SC01 | RC-PDPA-01 | FR-PDPA-01 | 2 | บันทึก Consent Logs | Must | ✅ | srs-doc.md |
-| 61 | ST01 | OBJ-01 | SC01 | RC-PDPA-02 | FR-PDPA-01 | 3 | ถอน Research Consent | Must | ✅ | srs-doc.md |
+| 61 | ST01 | OBJ-01 | SC01 | RC-PDPA-01 | FR-PDPA-01 | 3 | ถอน Research Consent | Must | ✅ | srs-doc.md |
 | 62 | ST01 | OBJ-01 | SC01 | RC-PDPA-03 | FR-PDPA-01 | 4 | Right to Access — ดูข้อมูลส่วนตัว | Must | ✅ | srs-doc.md |
 | 63 | ST01 | OBJ-01 | SC01 | RC-PDPA-03 | FR-PDPA-01 | 5 | Right to Access — ดู Consent Logs | Must | ✅ | srs-doc.md |
 | 64 | ST02, ST03 | OBJ-04 | SC04 | RC-ADMIN-01 | FR-ADMIN-01 | 1 | แสดง Dashboard Statistics | Must | ✅ | srs-doc.md |
 | 65 | ST02, ST03 | OBJ-04 | SC04 | RC-ADMIN-01 | FR-ADMIN-01 | 2 | แสดงรายการผู้ใช้ | Must | ✅ | srs-doc.md |
 | 66 | ST02, ST03 | OBJ-04 | SC04 | RC-ADMIN-01 | FR-ADMIN-01 | 3 | ค้นหาผู้ใช้ | Must | ✅ | srs-doc.md |
-| 67 | ST02, ST03 | OBJ-04 | SC04 | RC-ADMIN-06 | FR-ADMIN-01 | 4 | เปลี่ยนบทบาทผู้ใช้ | Must | ✅ | srs-doc.md |
+| 67 | ST02, ST03 | OBJ-04 | SC04 | RC-ADMIN-06 | FR-ADMIN-01 | 4 | เปลี่ยนบทบาทผู้ใช้ | Must | ⏸️ | srs-doc.md (DEFERRED Phase 2) |
 | 68 | ST02, ST03 | OBJ-04 | SC04 | RC-ADMIN-02 | FR-ADMIN-01 | 5 | เปลี่ยนสถานะผู้ใช้ | Must | ✅ | srs-doc.md |
 | 69 | ST02, ST03 | OBJ-04 | SC04 | RC-ADMIN-06 | FR-ADMIN-01 | 6 | RBAC — ปฏิเสธ Non-Admin | Must | ✅ | srs-doc.md |
 | 70 | ST02 | OBJ-04 | SC04 | RC-ADMIN-03 | FR-ADMIN-02 | 1 | แสดง Report Queue | Must | ✅ | srs-doc.md |
@@ -118,7 +118,7 @@
 | 83 | ST02, ST03 | OBJ-04 | SC04 | RC-ADMIN-05 | FR-ADMIN-04 | 5 | Audit Logs เป็น Immutable | Must | ✅ | srs-doc.md |
 | 84 | ST01 | OBJ-04 | SC02, SC03 | RC-NFR-01 | NFR-01 | 1 | Cache Hit Response Time ≤ 3 วินาที | Must | ✅ | srs-doc.md |
 | 85 | ST01 | OBJ-04 | SC02, SC03 | RC-NFR-02 | NFR-01 | 2 | New Analysis Response Time Percentiles | Must | ✅ | srs-doc.md |
-| 86 | ST01 | OBJ-04 | SC02, SC03 | RC-NFR-01 | NFR-01 | 3 | AI Inference Time ≤ 10 วินาที (GPU) | Must | ✅ | srs-doc.md |
+| 86 | ST01 | OBJ-04 | SC02, SC03 | RC-NFR-03 | NFR-01 | 3 | AI Inference Time ≤ 10 วินาที (GPU) | Must | ✅ | srs-doc.md |
 | 87 | ST01 | OBJ-04 | SC02, SC03 | RC-NFR-03 | NFR-01 | 4 | AI Inference Time ≤ 60 วินาที (CPU Fallback) | Must | ✅ | srs-doc.md |
 | 88 | ST01 | OBJ-04 | SC02 | RC-NFR-05 | NFR-02 | 1 | รองรับ 100 Concurrent Users | Must | ✅ | srs-doc.md |
 | 89 | ST01, ST02 | OBJ-04 | SC02 | RC-NFR-04 | NFR-03 | 1 | Uptime ≥ 99.5% | Must | ✅ | srs-doc.md |
@@ -137,6 +137,10 @@
 | 102 | ST01, ST03 | OBJ-04 | SC01, SC03 | RC-NFR-10 | NFR-06 | 2 | ผู้ใช้เข้าใจ Heatmap ≥ 80% | Must | ✅ | srs-doc.md |
 | 103 | ST01 | OBJ-04 | SC02 | RC-NFR-07 | NFR-07 | 1 | Cache Hit Rate ≥ 40% | Should | ✅ | srs-doc.md |
 | 104 | ST01 | OBJ-04 | SC02 | RC-NFR-07 | NFR-07 | 2 | Performance Tuning Strategy | Should | ✅ | srs-doc.md |
+| 105 | ST01 | OBJ-04 | SC01 | 25010 gap-fill (audit §A) | NFR-08 | 1 | Android Compatibility Matrix | Must | ✅ | audit §A 2026-09-12 |
+| 106 | ST01 | OBJ-04 | SC01 | 25010 gap-fill (audit §A) | NFR-08 | 2 | API Interoperability | Must | ✅ | audit §A 2026-09-12 |
+| 107 | ST02, ST03 | OBJ-04 | SC02 | 25010 gap-fill (audit §A) | NFR-09 | 1 | Branch Coverage Gate บน CI | Must | ✅ | audit §A 2026-09-12 |
+| 108 | ST02, ST03 | OBJ-04 | SC02 | 25010 gap-fill (audit §A) | NFR-09 | 2 | Static Analysis Clean | Must | ✅ | audit §A 2026-09-12 |
 
 ---
 
@@ -160,9 +164,9 @@ Row,ST,OBJ,SC,RC,FR/NFR,AC,AC Description,Priority,Status,Evidence
 
 | Stakeholder | AC Count | Percentage |
 |-------------|----------|------------|
-| ST01 (ผู้ใช้งานทั่วไป) | 75 | 75.8% |
-| ST02 (ผู้ดูแลระบบ) | 45 | 45.5% |
-| ST03 (อาจารย์ที่ปรึกษา) | 18 | 18.2% |
+| ST01 (ผู้ใช้งานทั่วไป) | 77 | 71.3% |
+| ST02 (ผู้ดูแลระบบ) | 47 | 43.5% |
+| ST03 (อาจารย์ที่ปรึกษา) | 20 | 18.5% |
 
 **Note:** ตัวเลขรวมอาจเกิน 100% เพราะบาง AC มีหลาย Stakeholder
 
@@ -172,10 +176,10 @@ Row,ST,OBJ,SC,RC,FR/NFR,AC,AC Description,Priority,Status,Evidence
 
 | Objective | AC Count | Percentage |
 |-----------|----------|------------|
-| OBJ-01 (Mobile App) | 40 | 40.4% |
-| OBJ-02 (Deep Learning) | 14 | 14.1% |
-| OBJ-03 (Multi-layer Analysis) | 24 | 24.2% |
-| OBJ-04 (Performance & Testing) | 37 | 37.4% |
+| OBJ-01 (Mobile App) | 40 | 37.0% |
+| OBJ-02 (Deep Learning) | 14 | 13.0% |
+| OBJ-03 (Multi-layer Analysis) | 24 | 22.2% |
+| OBJ-04 (Performance & Testing) | 41 | 38.0% |
 
 **Note:** ตัวเลขรวมอาจเกิน 100% เพราะบาง AC มีหลาย Objective
 
@@ -185,10 +189,10 @@ Row,ST,OBJ,SC,RC,FR/NFR,AC,AC Description,Priority,Status,Evidence
 
 | Scope | AC Count | Percentage |
 |-------|----------|------------|
-| SC01 (Mobile App) | 40 | 40.4% |
-| SC02 (API Backend) | 41 | 41.4% |
-| SC03 (AI Inference) | 23 | 23.2% |
-| SC04 (Admin Portal) | 20 | 20.2% |
+| SC01 (Mobile App) | 42 | 38.9% |
+| SC02 (API Backend) | 43 | 39.8% |
+| SC03 (AI Inference) | 23 | 21.3% |
+| SC04 (Admin Portal) | 20 | 18.5% |
 
 **Note:** ตัวเลขรวมอาจเกิน 100% เพราะบาง AC มีหลาย Scope
 
@@ -198,10 +202,10 @@ Row,ST,OBJ,SC,RC,FR/NFR,AC,AC Description,Priority,Status,Evidence
 
 | Priority | AC Count | Percentage |
 |----------|----------|------------|
-| Must | 102 | 98.1% |
+| Must | 106 | 98.1% |
 | Should | 2 | 1.9% |
 | Could | 0 | 0% |
-| **Total** | **104** | **100%** |
+| **Total** | **108** | **100%** |
 
 ---
 
@@ -210,8 +214,8 @@ Row,ST,OBJ,SC,RC,FR/NFR,AC,AC Description,Priority,Status,Evidence
 | Type | FR/NFR Count | AC Count | Avg AC per Requirement |
 |------|--------------|----------|------------------------|
 | Functional (FR) | 19 | 83 | 4.37 |
-| Non-Functional (NFR) | 7 | 21 | 3.00 |
-| **Total** | **26** | **104** | **4.00** |
+| Non-Functional (NFR) | 9 | 25 | 2.78 |
+| **Total** | **28** | **108** | **3.86** |
 
 ---
 
@@ -219,7 +223,7 @@ Row,ST,OBJ,SC,RC,FR/NFR,AC,AC Description,Priority,Status,Evidence
 
 ### 5.1 Complete Chain (ST → OBJ → SC → RC → FR/NFR → AC)
 
-✅ **All 104 AC have complete traceability chain**
+✅ **All 108 AC have complete traceability chain**
 
 - ทุก AC สามารถตรวจสอบย้อนกลับถึง Stakeholder ได้
 - ไม่มี Orphan AC (AC ที่ไม่มี FR/NFR)
@@ -232,11 +236,12 @@ Row,ST,OBJ,SC,RC,FR/NFR,AC,AC Description,Priority,Status,Evidence
 
 | Evidence Source | AC Count | Percentage |
 |-----------------|----------|------------|
-| srs-doc.md | 98 | 100% |
-| wiki/architecture/mobile-design.md | 4 | 4.1% |
-| wiki/concepts/configs.md | 4 | 4.1% |
-| wiki/architecture/database-schema.md | 2 | 2.0% |
-| wiki/requirements/objectives-kpis.md | 4 | 4.1% |
+| srs-doc.md | 104 | 96.3% |
+| audit §A 2026-09-12 (25010 gap-fill) | 4 | 3.7% |
+| wiki/architecture/mobile-design.md | 4 | 3.7% |
+| wiki/concepts/configs.md | 4 | 3.7% |
+| wiki/architecture/database-schema.md | 2 | 1.9% |
+| wiki/requirements/objectives-kpis.md | 4 | 3.7% |
 
 **Note:** srs-doc.md เป็นแหล่งหลัก แหล่งอื่นเป็น Evidence เสริม
 
@@ -248,8 +253,8 @@ Row,ST,OBJ,SC,RC,FR/NFR,AC,AC Description,Priority,Status,Evidence
 
 | Metric | Value | Status |
 |--------|-------|--------|
-| **AC with complete chain** | 98/98 | ✅ 100% |
-| **FR/NFR with AC** | 26/26 | ✅ 100% |
+| **AC with complete chain** | 108/108 | ✅ 100% |
+| **FR/NFR with AC** | 28/28 | ✅ 100% |
 | **RC addressed** | 49/49 | ✅ 100% |
 | **Objective covered** | 4/4 | ✅ 100% |
 | **Stakeholder covered** | 3/3 | ✅ 100% |
@@ -260,14 +265,16 @@ Row,ST,OBJ,SC,RC,FR/NFR,AC,AC Description,Priority,Status,Evidence
 
 | Category | AC Count | Test Type | Status |
 |----------|----------|-----------|--------|
-| **Functional Testing** | 75 | Unit, Integration, E2E | ✅ Testable |
+| **Functional Testing** | 83 | Unit, Integration, E2E | ✅ Testable |
 | **Performance Testing** | 5 | Load, Benchmark | ✅ Testable |
 | **Security Testing** | 5 | Penetration, Code Review | ✅ Testable |
 | **Accuracy Testing** | 4 | Model Evaluation | ✅ Testable |
 | **Usability Testing** | 2 | UAT, User Interview | ✅ Testable |
 | **Availability Testing** | 3 | Uptime Monitor | ✅ Testable |
 | **Cache Testing** | 2 | Performance Monitor | ✅ Testable |
-| **Total** | **98** | | **✅ 100% Testable** |
+| **Compatibility Testing** | 2 | Device Matrix, Schema Validation | ✅ Testable |
+| **Maintainability Testing** | 2 | Coverage Gate, Static Analysis | ✅ Testable |
+| **Total** | **108** | | **✅ 100% Testable** |
 
 ---
 

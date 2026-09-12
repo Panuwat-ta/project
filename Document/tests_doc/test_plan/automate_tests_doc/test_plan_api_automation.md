@@ -54,7 +54,7 @@ tests_all/automate_tests/
 - สร้างไฟล์ภาพจำลองในหน่วยความจำผ่าน `image_factory.py` (RGB 512x512)
 - ส่งคำขอ `POST /api/v1/scan/` แบบ Multipart พารามิเตอร์ file+title
 - ตรวจสอบการส่งคืน `scan_id`, `risk_score`, และ `risk_level` ตรง 3 ระดับ Low 0-39 Medium 40-69 High 70-100
-- ทดสอบ Cache Hit ด้วย SHA-256 TTL 30 วัน โดยการส่งภาพเดิมซ้ำ ตรวจสอบว่า `cached: true` และตอบกลับทันที
+- ทดสอบ Cache Hit ด้วย SHA-256 TTL 30 วัน โดยการส่งภาพเดิมซ้ำ ตรวจสอบว่า `cached: true` และตอบกลับภายใน P95 ≤ 3 วินาทีแบบ End-to-End (ภาพ 1MB RTT ≤50ms ตรงตาม NFR-PERF-01)
 - ทดสอบส่งไฟล์ที่ไม่ใช่รูปภาพ (Text file หรือ Corrupted file) เพื่อยืนยันการปฏิเสธของระบบ และไฟล์เกิน 20MB ต้องได้ HTTP 413
 
 ### 2.4 History Management (`test_history.py`)

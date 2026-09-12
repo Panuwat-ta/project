@@ -18,7 +18,7 @@
 | ตัวชี้วัด (Metric) | เกณฑ์ที่ยอมรับได้ (Target KPI) | วิธีการวัด |
 |---|---|---|
 | **Cache Hit Latency** | Median <= 1.5s, 95th Percentile (p95) <= 3.0s | Locust Task: Repeat Image Scan Upload |
-| **Full Inference Latency** | 90th Percentile (p90) <= 15.0s | Locust Task: Unique High-Res Image Upload |
+| **Full Inference Latency** | P50 <= 15.0s, P95 <= 25.0s, P99 <= 35.0s (Cache Miss ภาพ 1920x1080 JPG 3MB) | Locust Task: Unique High-Res Image Upload |
 | **Error Rate** | 0.0% ที่โหลดปกติ (<= 50 CCU) | สัดส่วน HTTP Non-2xx Responses |
 | **System Throughput** | >= 30 คำขอต่อวินาที (RPS) สำหรับงานผสม | Locust Aggregate Statistics |
 | **Worker Resource Limit** | RAM <= 80%, GPU Memory ไม่เกิด OOM Crash | ระบบติดตามสถานะ Resource Monitor |

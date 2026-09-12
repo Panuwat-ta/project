@@ -364,6 +364,7 @@
     </tbody>
     </table>
     <h3>3.3 ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements - NFR)</h3>
+    <p><strong>หมายเหตุ:</strong> Canonical NFR catalog อยู่ที่ <code>Document/docs/05_Software_Requirement_Specification.md</code> §3 (NFR-01..09) ที่เดียว — ตารางนี้ใช้เลขชุดเดียวกับ Document</p>
     <table>
     <thead>
     <tr>
@@ -374,43 +375,39 @@
     <tbody>
     <tr>
     <td style="text-align: left;"><strong>NFR-01</strong></td>
-    <td style="text-align: left;"><strong>ประสิทธิภาพความเร็ว (Performance):</strong> ระบบต้องดึงผลลัพธ์จาก Cache ได้ภายใน 1 วินาที และหากต้องประมวลผลผ่าน AI ใหม่ทั้งหมด ต้องใช้เวลาไม่เกิน 15 วินาทีต่อภาพ</td>
+    <td style="text-align: left;"><strong>เวลาตอบสนอง (Performance — Response Time):</strong> Cache Hit ≤ 3 วินาที (P95); วิเคราะห์ใหม่ P50 ≤ 15 วินาที (P95 ≤ 25s, P99 ≤ 35s); AI Inference GPU ≤ 10 วินาที/ภาพ, CPU fallback ≤ 60 วินาที/ภาพ</td>
     </tr>
     <tr>
     <td style="text-align: left;"><strong>NFR-02</strong></td>
-    <td style="text-align: left;"><strong>สถาปัตยกรรมระบบ (Architecture):</strong> ระบบต้องออกแบบเป็น Microservices โดยแยกส่วน API Gateway ออกจาก AI Inference Service เพื่อป้องกันปัญหาคอขวด (Resource Isolation)</td>
+    <td style="text-align: left;"><strong>การรองรับผู้ใช้พร้อมกัน (Performance — Scalability):</strong> รองรับ 100 concurrent users (Cache Hit avg ≤ 5 วินาที, Cache Miss avg ≤ 20 วินาที, Error Rate &lt; 1%)</td>
     </tr>
     <tr>
     <td style="text-align: left;"><strong>NFR-03</strong></td>
-    <td style="text-align: left;"><strong>การคุ้มครองข้อมูลส่วนบุคคล (PDPA Compliance):</strong> ระบบต้องมีการขอความยินยอม (Consent) และจัดเก็บข้อมูลประวัติการสแกนของผู้ใช้ด้วยความรัดกุม ป้องกันการเข้าถึงโดยไม่ได้รับอนุญาต</td>
+    <td style="text-align: left;"><strong>ความพร้อมใช้งาน (Availability):</strong> Uptime ≥ 99.5% ต่อรอบ 30 วัน (ไม่นับ Planned Maintenance); Monitoring ด้วย Prometheus + Grafana; แจ้งเตือนผ่าน Slack/LINE/Email</td>
     </tr>
     <tr>
     <td style="text-align: left;"><strong>NFR-04</strong></td>
-    <td style="text-align: left;"><strong>ความมั่นคงปลอดภัยของข้อมูล (Security):</strong> ข้อมูลที่มีการรับส่งระหว่างแอปพลิเคชันและเซิร์ฟเวอร์ต้องเข้ารหัสผ่านโปรโตคอล TLS 1.3 และรหัสผ่านต้องถูกเข้ารหัสแบบ Hashing ไว้ในฐานข้อมูลเสมอ</td>
+    <td style="text-align: left;"><strong>ความมั่นคงปลอดภัย (Security):</strong> TLS 1.3 ทุก endpoint; JWT (Access 15 นาที); bcrypt cost 12; Rate Limit Guest 10 / User 60 / Admin 300 ต่อนาที; Input validation</td>
     </tr>
     <tr>
     <td style="text-align: left;"><strong>NFR-05</strong></td>
-    <td style="text-align: left;"><strong>การรองรับการใช้งาน:</strong> แอปพลิเคชันฝั่งผู้ใช้ (Mobile App) ต้องรองรับการทำงานได้อย่างสมบูรณ์บนระบบปฏิบัติการ Android</td>
+    <td style="text-align: left;"><strong>ความแม่นยำโมเดล (Accuracy):</strong> Accuracy ≥ 85% และ mDice ≥ 85% บน frozen test set 1,000 ภาพ</td>
     </tr>
     <tr>
     <td style="text-align: left;"><strong>NFR-06</strong></td>
-    <td style="text-align: left;"><strong>การเพิ่มขยายของระบบ (Scalability):</strong> สถาปัตยกรรมฝั่งเซิร์ฟเวอร์ต้องรองรับการขยายตัว (Scale-out) ของคอนเทนเนอร์ AI Inference ได้อย่างอิสระ เมื่อมีปริมาณผู้ใช้งานเพิ่มสูงขึ้น</td>
+    <td style="text-align: left;"><strong>ความง่ายในการใช้งาน (Usability):</strong> ผู้ใช้ทั่วไป ≥ 80% (n=100) เข้าใจบริเวณต้องสงสัยจาก Heatmap; คะแนนความพึงพอใจเฉลี่ย ≥ 4.00/5.00</td>
     </tr>
     <tr>
     <td style="text-align: left;"><strong>NFR-07</strong></td>
-    <td style="text-align: left;"><strong>ความเสถียรภาพ (Availability):</strong> ระบบต้องมีเสถียรภาพสูง (Uptime) พร้อมใช้งาน และมีระบบจัดการข้อผิดพลาด (Error Handling) ที่ไม่ทำให้แอปพลิเคชันปิดตัวลงกะทันหัน (Crash)</td>
+    <td style="text-align: left;"><strong>ประสิทธิภาพแคช (Cache Efficiency):</strong> Redis Cache Hit ≤ 3 วินาที (P95); hit-rate ≥ 40% ต่อสัปดาห์ (alert เมื่อ &lt; 35%)</td>
     </tr>
     <tr>
     <td style="text-align: left;"><strong>NFR-08</strong></td>
-    <td style="text-align: left;"><strong>การเพิ่มประสิทธิภาพด้วยแคช (Caching Optimization):</strong> ระบบต้องนำ Redis มาใช้จัดเก็บผลลัพธ์ชั่วคราว เพื่อลดภาระการทำงานซ้ำซ้อนของ AI และลดค่าใช้จ่ายในการเรียกใช้ External API</td>
+    <td style="text-align: left;"><strong>ความเข้ากันได้ (Compatibility):</strong> key flows ผ่าน 100% บน Android 10–15 (API 29–35); API round-trip SHA-256 ตรง 100% + ตรง OpenAPI schema</td>
     </tr>
     <tr>
     <td style="text-align: left;"><strong>NFR-09</strong></td>
-    <td style="text-align: left;"><strong>ความง่ายในการใช้งาน (Usability):</strong> ส่วนติดต่อผู้ใช้งาน (UI) ต้องออกแบบให้ใช้งานง่าย (Intuitive) ผู้ใช้งานทั่วไปสามารถเข้าใจผลลัพธ์ Heatmap ได้โดยไม่ต้องมีพื้นฐานด้านเทคนิคคอมพิวเตอร์</td>
-    </tr>
-    <tr>
-    <td style="text-align: left;"><strong>NFR-10</strong></td>
-    <td style="text-align: left;"><strong>การตรวจสอบย้อนหลัง (Auditability):</strong> ทุกการทำงานที่สำคัญของผู้ดูแลระบบ (เช่น การลบผู้ใช้, การอัปเดตโมเดล) จะต้องถูกเก็บบันทึก Log ไว้เพื่อการตรวจสอบด้านความปลอดภัยย้อนหลัง</td>
+    <td style="text-align: left;"><strong>ความบำรุงรักษา (Maintainability):</strong> branch coverage ≥ 80% ทั้ง backend/mobile บน CI ทุก PR; static analysis 0 errors</td>
     </tr>
     </tbody>
     </table>
@@ -431,7 +428,7 @@
     <td style="text-align: left;"><strong>BR-01</strong></td>
     <td style="text-align: left;">อัปโหลดและตรวจสอบรูปภาพผ่านสมาร์ทโฟน</td>
     <td style="text-align: left;">FR-02</td>
-    <td style="text-align: left;">NFR-05</td>
+    <td style="text-align: left;">NFR-08</td>
     <td style="text-align: left;">ฟังก์ชันหลักฝั่ง Mobile App (Cross-Platform)</td>
     </tr>
     <tr>
@@ -445,28 +442,28 @@
     <td style="text-align: left;"><strong>BR-03</strong></td>
     <td style="text-align: left;">แสดงแผนที่ความร้อน (Heatmap) อธิบายผล</td>
     <td style="text-align: left;">FR-05</td>
-    <td style="text-align: left;">NFR-09</td>
+    <td style="text-align: left;">NFR-06</td>
     <td style="text-align: left;">แสดงผลภาพ XAI เพื่อเพิ่มความเข้าใจ (Usability)</td>
     </tr>
     <tr>
     <td style="text-align: left;"><strong>BR-04</strong></td>
     <td style="text-align: left;">ประมวลผลรวดเร็ว / แจ้งเตือนเมื่อเสร็จสิ้น</td>
     <td style="text-align: left;">FR-06</td>
-    <td style="text-align: left;">NFR-01, NFR-08</td>
-    <td style="text-align: left;">ใช้ Redis Cache และ Firebase Push Notification</td>
+    <td style="text-align: left;">NFR-01, NFR-07</td>
+    <td style="text-align: left;">ใช้ Redis Cache และ in-app notification (FCM = Phase 2)</td>
     </tr>
     <tr>
     <td style="text-align: left;"><strong>BR-05</strong></td>
     <td style="text-align: left;">จัดเก็บประวัติการสแกนย้อนหลัง</td>
     <td style="text-align: left;">FR-07</td>
-    <td style="text-align: left;">NFR-03</td>
+    <td style="text-align: left;">NFR-04</td>
     <td style="text-align: left;">เรียกดูประวัติโดยอิงตามข้อกำหนด PDPA</td>
     </tr>
     <tr>
     <td style="text-align: left;"><strong>BR-06</strong></td>
     <td style="text-align: left;">ส่งรายงาน (Report) รูปภาพหลอกลวง</td>
     <td style="text-align: left;">FR-08</td>
-    <td style="text-align: left;">NFR-09</td>
+    <td style="text-align: left;">NFR-06</td>
     <td style="text-align: left;">ผู้ใช้ช่วยแจ้งเบาะแสเพื่อให้แอดมินตรวจสอบ</td>
     </tr>
     <tr>
@@ -480,21 +477,21 @@
     <td style="text-align: left;"><strong>BR-08</strong></td>
     <td style="text-align: left;">รักษาความปลอดภัยตามมาตรการ (PDPA)</td>
     <td style="text-align: left;">FR-01</td>
-    <td style="text-align: left;">NFR-03, NFR-04</td>
+    <td style="text-align: left;">NFR-04</td>
     <td style="text-align: left;">การเข้ารหัสข้อมูล (TLS 1.3/Hashing) และ Auth</td>
     </tr>
     <tr>
     <td style="text-align: left;"><strong>BR-09</strong></td>
     <td style="text-align: left;">หน้าแดชบอร์ดจัดการผู้ดูแลระบบ (RBAC)</td>
     <td style="text-align: left;">FR-09</td>
-    <td style="text-align: left;">NFR-10</td>
-    <td style="text-align: left;">แอดมินตรวจสอบข้อมูลและมีการเก็บ Log</td>
+    <td style="text-align: left;">FR-ADMIN-04</td>
+    <td style="text-align: left;">แอดมินตรวจสอบข้อมูลและมีการเก็บ Audit Log แบบ append-only</td>
     </tr>
     <tr>
     <td style="text-align: left;"><strong>BR-10</strong></td>
     <td style="text-align: left;">จัดการชุดข้อมูลและอัปเดตโมเดล AI</td>
     <td style="text-align: left;">FR-10</td>
-    <td style="text-align: left;">NFR-06, NFR-07</td>
+    <td style="text-align: left;">NFR-02, NFR-03</td>
     <td style="text-align: left;">รองรับการขยายตัว (Scalability) โดยระบบไม่ขัดข้อง</td>
     </tr>
     </tbody>
@@ -515,28 +512,28 @@
     <td style="text-align: center;"><strong>OBJ-01</strong></td>
     <td style="text-align: left;">เพื่อพัฒนาแอปพลิเคชันบนอุปกรณ์เคลื่อนที่สำหรับคัดกรองรูปภาพที่มีความเสี่ยง</td>
     <td style="text-align: left;">FR-01, FR-02, FR-05, FR-07</td>
-    <td style="text-align: left;">NFR-05, NFR-09</td>
+    <td style="text-align: left;">NFR-06, NFR-08</td>
     <td style="text-align: left;">ครอบคลุมการทำงานตั้งแต่ล็อกอิน อัปโหลด แสดงผล และดูประวัติ บน Android</td>
     </tr>
     <tr>
     <td style="text-align: center;"><strong>OBJ-02</strong></td>
     <td style="text-align: left;">เพื่อประยุกต์ใช้เทคโนโลยี Deep Learning ตรวจสอบ Image Forgery และ AI-Generated</td>
     <td style="text-align: left;">FR-04, FR-10</td>
-    <td style="text-align: left;">NFR-02, NFR-06</td>
+    <td style="text-align: left;">NFR-05, NFR-02</td>
     <td style="text-align: left;">ระบบ AI Inference แยกการทำงานอิสระ และแอดมินสามารถอัปเดตโมเดลได้</td>
     </tr>
     <tr>
     <td style="text-align: center;"><strong>OBJ-03</strong></td>
     <td style="text-align: left;">เพื่อพัฒนาระบบวิเคราะห์ความเสี่ยงแบบบูรณาการ (Multi-layer Analysis)</td>
     <td style="text-align: left;">FR-03, FR-04</td>
-    <td style="text-align: left;">NFR-01, NFR-08</td>
+    <td style="text-align: left;">NFR-01, NFR-07</td>
     <td style="text-align: left;">วิเคราะห์ Metadata, OCR และ Source ควบคู่กับการประมวลผลให้รวดเร็วด้วย Cache</td>
     </tr>
     <tr>
     <td style="text-align: center;"><strong>OBJ-04</strong></td>
     <td style="text-align: left;">เพื่อทดสอบและประเมินประสิทธิภาพของระบบ รวมถึงความพึงพอใจของผู้ใช้งาน</td>
     <td style="text-align: left;">FR-06, FR-08, FR-09</td>
-    <td style="text-align: left;">NFR-07, NFR-10</td>
+    <td style="text-align: left;">NFR-03, NFR-06</td>
     <td style="text-align: left;">มีการแจ้งเตือนเพื่อรักษา UX การแชร์เพื่อทดสอบการใช้งานจริง และระบบเก็บ Log</td>
     </tr>
     </tbody>

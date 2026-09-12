@@ -129,7 +129,7 @@ project/
 - Node.js 18+ และ npm
 - Flutter SDK 3.x และ Android SDK
 - Podman หรือ Docker พร้อม Docker Compose
-- การ์ดจอ NVIDIA พร้อมไดรเวอร์ CUDA (สำหรับการรัน AI Model และ GPU-accelerated Inference)
+- การ์ดจอ NVIDIA พร้อมไดรเวอร์ CUDA — **จำเป็นฝั่งเซิร์ฟเวอร์**สำหรับ SegFormer/Surya OCR ให้ได้ตาม SLA (Full inference P50 ≤ 15s); กรณีไม่มี GPU รันบน CPU ได้แต่**ไม่รับรอง SLA** (ทางเลือกสำหรับ dev/test เท่านั้น)
 
 ---
 
@@ -145,7 +145,7 @@ podman compose up -d
 บริการที่จะพร้อมใช้งาน:
 - **PostgreSQL:** Port `5432` (User: `scamguard`, DB: `scamguard_db`)
 - **Redis:** Port `6379`
-- **pgAdmin:** `http://localhost:5050` (Email: `admin@scamguard.com`, Password: `admin123`)
+- **pgAdmin:** `http://localhost:5050` (ตั้ง Email/Password ครั้งแรกผ่านตัวแปร `PGADMIN_DEFAULT_EMAIL` / `PGADMIN_DEFAULT_PASSWORD` ในไฟล์ `.env` ห้ามใช้ค่าดีฟอลต์ใน production)
 
 ---
 
@@ -166,7 +166,8 @@ alembic upgrade head
 
 - API Server จะเปิดให้บริการที่: `http://localhost:8000`
 - เอกสาร Interactive API Docs (Swagger UI): `http://localhost:8000/docs`
-- Health Check Endpoint: `http://localhost:8000/health`
+- Health Check สาธารณะ (public, ไม่ต้องใช้ Token): `http://localhost:8000/health`
+- Health Check เชิงลึกฝั่งแอดมิน (ต้องใช้ Token Super Admin): `GET /api/v1/admin/health`
 
 ---
 

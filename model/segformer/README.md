@@ -37,13 +37,16 @@ AI จะไม่รู้ว่า "รอยตัดต่อ" คืออ�
 
 Google Drive: [dataset](https://drive.google.com/file/d/1jxQS3HwH0DHHHaCtf_prKPj6fMUpZ5jp/view?usp=sharing)
 
+> หลังดาวน์โหลด รัน `sha256sum <ไฟล์>` และบันทึกค่า checksum ลง manifest ของชุดข้อมูลก่อนรัน pipeline (เอกสารนี้ไม่มีค่า checksum ตายตัว — ค่าที่เชื่อถือได้คือค่าที่บันทึกหลังดาวน์โหลดจริง)
+
 3. **รันสคริปต์เตรียมข้อมูล**: ดูวิธีใช้ใน `prepare_dataset/README.md` แล้วรัน:
 ```bash
 # smoke test ก่อน
-/tmp/plotvenv/bin/python prepare_dataset/clean_dataset.py --out /tmp/dataset_smoke --limit 30
+`./.venv/bin/python prepare_dataset/clean_dataset.py --out /tmp/dataset_smoke --limit 30`
 
+# เตรียม venv ภายในโปรเจกต์ก่อน (`python -m venv .venv && source .venv/bin/activate` — ห้ามอ้าง path `/tmp/plotvenv` เฉพาะเครื่อง)
 # รันจริง (USB -> ~/Pictures/dataset)
-nohup /tmp/plotvenv/bin/python prepare_dataset/clean_dataset.py > /tmp/clean_full.log 2>&1 &
+`nohup ./.venv/bin/python prepare_dataset/clean_dataset.py > /tmp/clean_full.log 2>&1 &`
 ```
 
 สคริปต์จะ:

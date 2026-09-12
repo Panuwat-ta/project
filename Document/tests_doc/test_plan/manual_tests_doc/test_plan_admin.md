@@ -54,7 +54,7 @@
 
 ### 2.2 ระดับและประเภทการทดสอบ (Test Levels & Types)
 1. **Component & State Testing**: ตรวจสอบการ Render ของคอมโพเนนต์, Theme Provider, และ Error Boundaries
-2. **WebSocket Integration Testing**: ยิงข้อมูลจำลองผ่านช่องทาง WebSocket เพื่อทดสอบการอัปเดตกราฟแบบทันทีโดยไม่เกิด Memory Leak
+2. **WebSocket Integration Testing**: ยิงข้อมูลจำลองผ่านช่องทาง WebSocket เพื่อทดสอบการอัปเดตกราฟภายใน 1 วินาทีหลังข้อความถึง (oracle: frame ล่าสุด render บนกราฟ ≤1s) โดยไม่เกิด Memory Leak
 3. **Optimistic Locking Conflict Testing**: เปิดเบราว์เซอร์ 2 หน้าต่างพร้อมกัน และกดแก้ไขสถานะ Report รายการเดียวกัน เพื่อยืนยันว่าระบบตรวจจับ Version Mismatch ได้ถูกต้อง
 4. **Automated Accessibility Testing**: ใช้เครื่องมือ Lighthouse และ Axe Core เพื่อตรวจจับการละเมิดเกณฑ์ความเปรียบต่างสี
 
@@ -69,11 +69,11 @@
 ### 3.2 เกณฑ์การสิ้นสุดการทดสอบ (Exit Criteria)
 - กรณีทดสอบใน `tests_all/manual_tests/test_cases_admin.md` ผ่าน 100%
 - คะแนนการเข้าถึง (Lighthouse Accessibility Score) บนทุกหน้าจอหลักต้องไม่ต่ำกว่า 95 คะแนน
-- การสลับธีม Dark/Light Mode ทำงานได้เรียบเนียนโดยไม่มีอาการ Flash of unstyled content (FOUC)
+- การสลับธีม Dark/Light Mode ต้องจบภายใน 500ms โดยไม่มีอาการ Flash of unstyled content (FOUC) และคอนทราสต์ยังผ่าน 4.5:1 ทุกคอมโพเนนต์
 - ระบบปฏิเสธการระงับผู้ใช้หากไม่ระบุเหตุผลในทุกกรณี
 
 ---
 
 ## 4. ความเชื่อมโยงไปยังชุดกรณีทดสอบจริง
 - **เอกสารกรณีทดสอบละเอียด**: `tests_all/manual_tests/test_cases_admin.md`
-- **ตารางความสอดคล้องความต้องการ**: `tests_all/rtm.md` (หมวดหมู่ FR-ADM-01 ถึง FR-ADM-07, หมวด NFR-01..10 ของ SRS)
+- **ตารางความสอดคล้องความต้องการ**: `tests_all/rtm.md` (หมวดหมู่ FR-ADM-01 ถึง FR-ADM-05 + FR-AUDIT-01, หมวด NFR-01..09 ของ SRS ตาม Document 05 §3)

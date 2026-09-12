@@ -1,8 +1,8 @@
 # Software Requirement Specification 
 
-**Project Name:** แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง (Scam Image Detection)  
-**Version:** 1.0  
-**Date:** August 23, 2026
+**Project Name:** แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง (Scam Image Detection — ชื่อผลิตภัณฑ์: ScamGuard)  
+**Version:** 1.1 (audit §A fixes, 2026-09-12)  
+**Date:** September 12, 2026
 
 ---
 
@@ -142,7 +142,7 @@ Acceptance Criteria:
 ---
 
 #### FR-AUTH-04: การออกจากระบบ
-**Description:** ระบบต้องให้ผู้ใช้ออกจากระบบและลบ Token ที่เก็บไว้  
+**Description:** ระบบต้องให้ผู้ใช้ออกจากระบบ ลบ Token ที่เก็บไว้ และเพิกถอน Refresh Token ฝั่ง server ภายใน 60 วินาที  
 **Source:** RC-AUTH-04  
 **Traceability:** ST01 → OBJ-01 → SC01 → RC-AUTH-04 → FR-AUTH-04  
 **Priority:** Must
@@ -157,10 +157,12 @@ Acceptance Criteria:
   - Navigate to Login Screen
 - **Expected Output:** Token ถูกลบ, หน้าจอ Login แสดงขึ้น
 
-**AC-2: Token ไม่สามารถใช้งานได้หลังออกจากระบบ**
-- **Input:** Access Token ที่ถูกลบแล้ว
-- **Processing:** เรียก API ด้วย Token เก่า
-- **Expected Output:** HTTP 401 (เนื่องจาก Token ไม่มีในอุปกรณ์)
+**AC-2: Token ถูกเพิกถอนฝั่ง Server ภายใน 60 วินาที**
+- **Input:** Refresh Token / Access Token ที่ออกก่อนออกจากระบบ
+- **Processing:**
+  - Server shall เพิกถอน Refresh Token ฝั่ง server (denylist) ภายใน 60 วินาทีหลัง logout
+  - Server shall ปฏิเสธ Access Token เก่าด้วย HTTP 401
+- **Expected Output:** ใช้ Refresh Token เก่า → HTTP 401 ("revoked"); เรียก API ด้วย Access Token เก่า → HTTP 401
 
 ---
 
@@ -273,7 +275,7 @@ Acceptance Criteria:
 
 **AC-2: สกัดข้อความสำเร็จ (ภาษาอังกฤษ)**
 - **Input:** รูปภาพมีข้อความภาษาอังกฤษ
-- **Processing:** รัน Surya-OCR native
+- **Processing:** รัน Surya OCR v0.5.0 (Native PyTorch)
 - **Expected Output:** OCR Text ถูกสกัดได้ (ความแม่นยำ ≥ 85%)
 
 **AC-3: ตรวจจับคำสำคัญหลอกลวง**
@@ -284,9 +286,9 @@ Acceptance Criteria:
 - **Expected Output:** `scam_keywords: ["กู้เงินด่วน", "โบนัสพิเศษ", "ด่วน"]`, keyword_count = 3
 
 **AC-4: คำนวณ Text Risk Score**
-- **Input:** keyword_count = 3, severity_weight = [0.9, 0.8, 0.7]
-- **Processing:** `S_text = (3 × avg_weight) / max_score × 100`
-- **Expected Output:** `text_score: 75` (ช่วง 0-100)
+- **Input:** keyword_count = 3, severity_weight = [0.9, 0.8, 0.7] (กู้เงินด่วน, โบนัสพิเศษ, ด่วน)
+- **Processing:** `S_text = min(100, (Σw_found / max_possible_score) × 100)` โดย `max_possible_score = Σ weight พจนานุกรม v1 = 5.80` (กู้เงินด่วน 0.9, ถอนยอด 0.85, โบนัสพิเศษ 0.8, ด่วน 0.7, ลงทุน 0.7, แจกเงิน 0.65, รับเงิน 0.6, รวยเร็ว 0.6)
+- **Expected Output:** `text_score: 41` (2.40/5.80×100 = 41.4 → ปัดลง, ช่วง 0-100)
 
 **AC-5: ไม่มีข้อความในภาพ**
 - **Input:** รูปภาพไม่มีข้อความ
@@ -352,8 +354,8 @@ Acceptance Criteria:
 
 **AC-2: คำนวณ Source Risk Score**
 - **Input:** source_count = 15 (> 10), context = "social media + 2 years old"
-- **Processing:** `S_source = (source_count_factor × 0.5) + (context_risk × 0.5)`
-- **Expected Output:** `source_score: 75`
+- **Processing:** `S_source = ((source_count_factor × 0.5) + (context_risk × 0.5)) × 100` (ช่วง 0-100) โดย `source_count_factor = min(1, count/10)` และ `context_risk ∈ [0,1]` ตามตาราง: ไม่พบแหล่งที่มา 0.0 / เว็บข่าวหรือหน่วยงานทางการ 0.2 / ฟอรัมทั่วไป 0.4 / social media 0.5 / บวก 0.1 ถ้าภาพเก่าเกิน 1 ปี (cap 1.0)
+- **Expected Output:** `source_score: 75` (factor = min(1, 15/10) = 1.0; context = 0.5 → ((1.0×0.5)+(0.5×0.5))×100 = 75)
 
 **AC-3: ไม่พบแหล่งที่มา**
 - **Input:** รูปภาพใหม่ที่ไม่เคยปรากฏบนอินเทอร์เน็ต
@@ -378,7 +380,7 @@ Acceptance Criteria:
 
 **Acceptance Criteria:**
 
-**AC-1: คำนวณคะแนนรวมสำเร็จตามหลัก Worst-Case Hybrid**
+**AC-1: คำนวณคะแนนรวมสำเร็จตามหลัก Hybrid max+bonus**
 - **Input:** text_score = 50, visual_score = 85, source_score = 0
 - **Processing:** `S_base = max(85, 50, 0) = 85`, `compounding = 5 (เนื่องจาก text_score >= 40)`, `Risk Score = min(100, 85 + 5) = 90`
 - **Expected Output:** `risk_score: 90`, `risk_grade: "High"`, `primary_factor: "visual"`
@@ -430,8 +432,7 @@ Acceptance Criteria:
 - **Processing:** 
   - แปลง mask เป็นแผนที่ความร้อนแล้ว overlay บนภาพต้นฉบับ
   - คำอธิบายประกอบด้วย Qwen2.5-1.5B สำหรับสร้างคำอธิบายภาษาไทย (มติ DOC-12: ระบุรุ่นให้ชัด)
-  - สร้างภาพ Heatmap พร้อม Color Map (แดง=เสี่ยงสูง, เหลือง=ปานกลาง, เขียว=ปลอดภัย)
-  - สร้างภาพ Heatmap พร้อม Color Map (แดง=เสี่ยงสูง, เหลือง=ปานกลาง, เขียว=ปลอดภัย)
+  - สร้างภาพ Heatmap พร้อม Color Map (แดง=เสี่ยงสูง, เหลือง=ปานกลาง, เขียว=ปลอดภัย) ที่ opacity 50%
   - บันทึก Heatmap เป็น heatmap.jpg
   - อัปโหลดไปยัง Object Storage
 - **Expected Output:** `heatmap_url: "https://storage/scan_id/heatmap.jpg"`
@@ -622,13 +623,10 @@ Acceptance Criteria:
 - **Processing:** ค้นหาตาม email หรือ full_name
 - **Expected Output:** HTTP 200, รายการผู้ใช้ที่ตรงกัน
 
-**AC-4: เปลี่ยนบทบาทผู้ใช้ — GAP ยังไม่ implement (เจอตอน DOC-07)**
-- **สถานะ:** code ปัจจุบันมีแค่ `PATCH /admin/users/{user_id}` สำหรับเปิด/ปิดบัญชี (is_active + reason) ยังไม่มี endpoint เปลี่ยน role — ต้องเปิดงาน follow-up (implement หรือตัดเป็น Phase 2)
-- **Processing:** 
-  - ตรวจสอบสิทธิ์ Admin
-  - อัปเดต role (อนุญาตเฉพาะ user / researcher / admin; ถ้าส่งบทบาทอื่นต้อง HTTP 400)
-  - บันทึก Audit Log
-- **Expected Output:** HTTP 200, `{user_id, role: "researcher"}`
+**AC-4: เปลี่ยนบทบาทผู้ใช้ — DEFERRED (Phase 2 backlog, candidate FR-ADMIN-05)**
+- **สถานะ:** code v1 มีแค่ `PATCH /admin/users/{user_id}` สำหรับเปิด/ปิดบัญชี (is_active + reason) ยังไม่มี endpoint เปลี่ยน role — AC นี้ย้ายไป Phase 2
+- **Requirement (Phase 2):** ระบบ shall ให้ Admin เปลี่ยน role ได้ (อนุญาตเฉพาะ user / researcher / admin; บทบาทอื่นต้อง HTTP 400) และ shall บันทึก Audit Log ทุกครั้ง
+- **Expected Output (Phase 2):** HTTP 200, `{user_id, role: "researcher"}`
 
 **AC-5: เปลี่ยนสถานะผู้ใช้**
 - **Input:** PATCH /admin/users/{user_id}, Body: `{is_active: false, reason: "..."}`
@@ -957,6 +955,46 @@ Acceptance Criteria:
 
 ---
 
+### NFR-08: Compatibility — Platform & Interoperability (ISO/IEC 25010)
+**Description:** ระบบต้องทำงานร่วมกับ Android หลายรุ่นและแลกเปลี่ยนข้อมูลผ่าน API มาตรฐานได้  
+**Source:** ISO/IEC 25010 gap-fill (audit §A, 2026-09-12)  
+**Traceability:** ST01 → OBJ-04 → SC01 → (gap-fill, ไม่มี RC) → NFR-08  
+**Priority:** Must
+
+**Acceptance Criteria:**
+
+**AC-1: Android Compatibility Matrix**
+- **Test:** ติดตั้งและรัน key flows (สมัคร → สแกน → ดูผล) บน Android 10–15 (API 29–35) ด้วย emulator/device farm บน CI
+- **Measurement:** ผ่านทุกเวอร์ชัน 100% ของ key flows
+- **Expected:** ติดตั้งได้และ key flows ผ่านบน Android 10, 12, 14, 15 อย่างน้อย
+
+**AC-2: API Interoperability**
+- **Test:** Mobile เรียก backend ผ่าน versioned REST (OpenAPI) JSON; round-trip อัปโหลด/ดาวน์โหลดภาพผ่าน presigned URL
+- **Measurement:** SHA-256 ของไฟล์ที่ round-trip ต้องตรงต้นฉบับ 100%; response ตรง OpenAPI schema
+- **Expected:** Integrity match 100% และ schema validation ผ่านทุก endpoint ที่ใช้ใน v1
+
+---
+
+### NFR-09: Maintainability — Testability & Modularity (ISO/IEC 25010)
+**Description:** ระบบต้องมี coverage และ quality gate ที่วัดได้เพื่อการบำรุงรักษา  
+**Source:** ISO/IEC 25010 gap-fill (audit §A, 2026-09-12)  
+**Traceability:** ST02, ST03 → OBJ-04 → SC02 → (gap-fill, ไม่มี RC) → NFR-09  
+**Priority:** Must
+
+**Acceptance Criteria:**
+
+**AC-1: Branch Coverage Gate บน CI**
+- **Test:** รัน `pytest --cov` (backend) และ `flutter test --coverage` (mobile) บน CI ทุก PR
+- **Measurement:** Branch coverage รวม
+- **Expected:** ≥ 80% ทั้ง backend และ mobile; ต่ำกว่าเกณฑ์ merge ไม่ได้
+
+**AC-2: Static Analysis Clean**
+- **Test:** รัน linter/type-checker ที่กำหนดบน CI (backend: ruff + mypy; mobile: flutter analyze)
+- **Measurement:** จำนวน error
+- **Expected:** 0 errors; warning ใหม่ต้องเป็น 0 ก่อน merge
+
+---
+
 ## 4. Requirements Summary
 
 ### 4.1 Functional Requirements Summary
@@ -972,7 +1010,7 @@ Acceptance Criteria:
 | **Admin Portal** | 4 | 4 | 0 | 0 |
 | **TOTAL FR** | **19** | **19** | **0** | **0** |
 
-**Updated AC Count:** 75 (increased from 70 due to new XAI controls)
+**Updated AC Count:** 83 (นับจริงด้วย grep `^\*\*AC-` — ตรงกับ Total ด้านล่าง)
 
 ### 4.2 Non-Functional Requirements Summary
 
@@ -984,35 +1022,39 @@ Acceptance Criteria:
 | **Accuracy** | 1 | 1 | 0 |
 | **Usability & XAI** | 1 | 1 | 0 |
 | **Cache Efficiency** | 1 | 0 | 1 |
-| **TOTAL NFR** | **7** | **6** | **1** |
+| **Compatibility** | 1 | 1 | 0 |
+| **Maintainability** | 1 | 1 | 0 |
+| **TOTAL NFR** | **9** | **8** | **1** |
 
-**Updated AC Count:** 23 (increased from 22 due to new monitoring/alerting/precision/recall)
+**Updated AC Count:** 25 (21 เดิม + 4 จาก NFR-08/09 — นับจริงด้วย grep ตรงกับ Total ด้านล่าง)
 
 ### 4.3 Total Requirements
 
-- **Total Requirements:** 26 (19 FR + 7 NFR)
-- **Must:** 25 (96.2%)
-- **Should:** 1 (3.8%)
-- **Total Acceptance Criteria:** 104 (83 FR + 21 NFR)
+- **Total Requirements:** 28 (19 FR + 9 NFR)
+- **Must:** 27 (96.4%)
+- **Should:** 1 (3.6%)
+- **Total Acceptance Criteria:** 108 (83 FR + 25 NFR)
   - Increased from 92 due to:
     - XAI Controls: +2 AC (Toggle Button, Opacity Slider)
     - Monitoring & Alerting: +2 AC
     - Precision & Recall: +2 AC
   - Increased from 98 to 104 by subsequent AC additions (e.g. FR-ANALYSIS-04 AC-7) — recount verified 2026-09-11 (DOC-13)
+  - Increased from 104 to 108 by NFR-08/09 (Compatibility + Maintainability, audit §A 2026-09-12)
 
 ---
 
 ## 5. Document Summary
 
-เอกสาร Software Requirement Specification ฉบับนี้แปลง **49 Requirement Candidates** เป็น **26 Formal Requirements** (19 FR + 7 NFR) พร้อม **104 Acceptance Criteria** ที่สามารถทดสอบได้
+เอกสาร Software Requirement Specification ฉบับนี้แปลง **49 Requirement Candidates** เป็น **28 Formal Requirements** (19 FR + 9 NFR) พร้อม **108 Acceptance Criteria** ที่สามารถทดสอบได้
 
 **Key Highlights:**
-- ✅ **Complete Traceability:** ST → OBJ → SC → RC → FR/NFR → AC
-- ✅ **Testable AC:** ทุก AC มีโครงสร้าง Input → Processing → Expected Output
-- ✅ **Priority Distribution:** 96.2% Must, 3.8% Should
-- ✅ **Comprehensive Coverage:** Functional + Non-Functional + Monitoring + UAT
-- ✅ **Evidence-Based:** ทุก Requirement มี Source Reference
-- ✅ **Implementation Ready:** พร้อมสำหรับ Development และ Testing
+- ✓ **Complete Traceability:** ST → OBJ → SC → RC → FR/NFR → AC
+- ✓ **Testable AC:** ทุก AC มีโครงสร้าง Input → Processing → Expected Output
+- ✓ **Priority Distribution:** 96.4% Must, 3.6% Should
+- ✓ **25010 Coverage:** ครบ 9 หมวด (Performance, Scalability, Availability, Security, Accuracy, Usability, Cache Efficiency, Compatibility, Maintainability)
+- ✓ **Comprehensive Coverage:** Functional + Non-Functional + Monitoring + UAT
+- ✓ **Evidence-Based:** ทุก Requirement มี Source Reference
+- ✓ **Implementation Ready:** พร้อมสำหรับ Development และ Testing
 
 **Detailed Specifications:**
 - XAI Controls: Toggle Button + Opacity Slider สำหรับ Heatmap Overlay
