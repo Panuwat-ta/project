@@ -72,3 +72,8 @@
 
 ## 5. หมายเหตุ GAP
 - ชุดค่า category keys ฝั่ง Mobile กับ Backend ไม่ตรงกัน ให้ mark เป็น GAP ห้ามสมมติว่าตรงกันในการตรวจ Contract
+
+## 6. เกณฑ์การยอมรับ E2E (Exit — ที่กำหนดได้จริง)
+- Full journey (`test_e2e_scam_flow.py` 5 ขั้น register→scan→poll→history→me) ผ่าน 100% ไม่มีขั้นข้าม
+- Mobile bridge (`test_mobile_bridge.py`): endpoint/payload/risk-scale ตรง backend 100% ส่วน category keys ที่เป็น GAP ให้บันทึกเป็น known-GAP ไม่นับตกทั้ง suite แต่ห้ามเคลมว่าตรง
+- งบเวลา: E2E journey จบภายใน 120s/รอบ (cache-miss เต็มรูป, วัดจาก CI log) bridge ภายใน 60s/รอบ

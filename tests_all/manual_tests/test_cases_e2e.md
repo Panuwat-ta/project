@@ -13,50 +13,75 @@
 |---|---|---|---|---|---|
 | `TC-E2E-SCAN-01` | Full User Scam Detection Journey | Mobile (Flutter) | FastAPI, Redis, SegFormer, Surya OCR, Qwen2.5 | Mobile Result Screen | P0 (Blocker) |
 | `TC-E2E-CACHE-02` | High-Speed Cache Hit Workflow | Mobile / API Client | FastAPI, Redis (SHA-256 Hash Cache) | Client (Bypass AI) | P0 (Blocker) |
-| `TC-E2E-REPORT-03` | User Incident Reporting to Admin Review | Mobile (User) | FastAPI, PostgreSQL (`scam_reports` table) | Admin Forensic Console | P1 (Critical) |
-| `TC-E2E-MODEL-04` | AI Model Deployment to Live Inference | Admin Portal | FastAPI, Model Versions, AI Worker | Mobile Scan Engine | P1 (Critical) |
-| `TC-E2E-BAN-05` | Malicious Actor Ban and Session Revocation | Admin Portal | FastAPI, DB Users, Mobile Dio Interceptor | Mobile Client Screen | P1 (Critical) |
-| `TC-E2E-OFFLINE-06` | Offline Storage and Reconnection Sync | Mobile Client | Local Cache (History/Result Local DataSource) | FastAPI Backend | P2 (Major) |
-| `TC-E2E-FULL-07` | Full Lifecycle Register to Audit Verification | Mobile (Flutter) | FastAPI, PostgreSQL (`scans`, `scam_reports`, `audit_log`), Admin Portal | Audit Logs Screen | P1 (Critical) |
-| `TC-E2E-AUTH-08` | Mid Journey Access Expiry With Refresh Resume | Mobile (Flutter) | FastAPI, Dio AuthInterceptor, Secure Storage | Mobile History and Scan Screen | P1 (Critical) |
-| `TC-E2E-REG-09` | Post Deploy Scan Regression Stability | Admin Portal | FastAPI, Model Versions, AI Worker | Mobile Scan Engine | P1 (Critical) |
-| `TC-E2E-HIST-10` | History Delete Then Detail Not Found | Mobile (Flutter) | FastAPI, PostgreSQL (`scans`), Local Uploads | Mobile History Screen | P2 (Major) |
+| `TC-E2E-REPORT-03` | User Incident Reporting to Admin Review | Mobile (User) | FastAPI, PostgreSQL (`scam_reports` table) | Admin Forensic Console | P1 (High) |
+| `TC-E2E-MODEL-04` | AI Model Deployment to Live Inference | Admin Portal | FastAPI, Model Versions, AI Worker | Mobile Scan Engine | P1 (High) |
+| `TC-E2E-BAN-05` | Malicious Actor Ban and Session Revocation | Admin Portal | FastAPI, DB Users, Mobile Dio Interceptor | Mobile Client Screen | P1 (High) |
+| `TC-E2E-OFFLINE-06` | Offline Storage and Reconnection Sync | Mobile Client | Local Cache (History/Result Local DataSource) | FastAPI Backend | P2 (Medium) |
+| `TC-E2E-FULL-07` | Full Lifecycle Register to Audit Verification | Mobile (Flutter) | FastAPI, PostgreSQL (`scans`, `scam_reports`, `audit_log`), Admin Portal | Audit Logs Screen | P1 (High) |
+| `TC-E2E-AUTH-08` | Mid Journey Access Expiry With Refresh Resume | Mobile (Flutter) | FastAPI, Dio AuthInterceptor, Secure Storage | Mobile History and Scan Screen | P1 (High) |
+| `TC-E2E-REG-09` | Post Deploy Scan Regression Stability | Admin Portal | FastAPI, Model Versions, AI Worker | Mobile Scan Engine | P1 (High) |
+| `TC-E2E-HIST-10` | History Delete Then Detail Not Found | Mobile (Flutter) | FastAPI, PostgreSQL (`scans`), Local Uploads | Mobile History Screen | P2 (Medium) |
 
 ---
 
 ## 2. รายละเอียดกรณีทดสอบ E2E (Detailed Test Cases)
 
-### TC-E2E-SCAN-01: การตรวจสอบภาพต้องสงสัยแบบครบวงจร (Full Detection Workflow)
+### TC-E2E-SCAN-01: การตรวจสอบภาพต้องสงสัยแบบครบวงจร (Full Detection Workflow — แยก 4 กลุ่มย่อย)
 - **Module / Feature**: Cross-System / End-to-End Scan Journey
-- **Requirement ID**: FR-INPUT-01, FR-INPUT-03, FR-INPUT-05, FR-SYS-01, FR-SYS-02, FR-SYS-03, FR-SYS-05, FR-SYS-07, FR-SYS-08, FR-SYS-09, FR-SYS-11, FR-REPORT-01, FR-REPORT-02, FR-REPORT-03, FR-REPORT-04, FR-REPORT-05, FR-HIST-01, NFR-PERF-02
 - **Test Type**: End-to-End Integration
 - **Priority**: P0 (Blocker)
+- **Requirement Trace (18 requirements แยกตามกลุ่ม)**:
+| กลุ่ม | TC ย่อย | Requirement ID |
+|---|---|---|
+| A อัปโหลด+ตรวจไฟล์ | TC-E2E-SCAN-01A | FR-INPUT-01, FR-INPUT-03, FR-INPUT-05, FR-SYS-09 |
+| B ประมวลผล AI | TC-E2E-SCAN-01B | FR-SYS-01, FR-SYS-02, FR-SYS-03, FR-SYS-05, FR-SYS-11 |
+| C แสดงผลลัพธ์ | TC-E2E-SCAN-01C | FR-SYS-07, FR-SYS-08, FR-REPORT-01, FR-REPORT-02, FR-REPORT-03, FR-REPORT-04, FR-REPORT-05 |
+| D บันทึกประวัติ+เวลา | TC-E2E-SCAN-01D | FR-HIST-01, NFR-PERF-02 |
+- **Fixture ร่วม**: ภาพ `slip_tampered_high_res.jpg` (1920x1080) + Title "ตรวจสอบสลิปโอนเงินต้องสงสัย" — แต่ละ TC ย่อยรันเดี่ยวได้ด้วยการสแกน fixture ใหม่ จด `scan_id` เอง (ไม่บังคับอ้างผลข้าม TC)
 - **Pre-conditions**:
   1. Backend FastAPI Service และ AI Inference Pipeline พร้อมใช้งานบน Environment
   2. Redis Cache และ PostgreSQL Database เชื่อมต่อปกติ
   3. ผู้ใช้เข้าสู่ระบบผ่าน Mobile App เรียบร้อยแล้ว
-- **Test Data**:
-  - Image: `slip_tampered_high_res.jpg` (ภาพสลิปหรือเอกสารที่มีการตัดต่อตัวเลขและข้อความ ขนาด 1920x1080)
-  - Title: "ตรวจสอบสลิปโอนเงินต้องสงสัย"
+
+#### TC-E2E-SCAN-01A: อัปโหลดและรับงานสแกน (Upload)
+- **Requirement ID**: FR-INPUT-01, FR-INPUT-03, FR-INPUT-05, FR-SYS-09
 - **Test Steps**:
-  1. เปิดแอป ScamGuard บนสมาร์ตโฟน แล้วเลือกภาพ `slip_tampered_high_res.jpg` จากแกลเลอรี
-  2. กดปุ่ม "เริ่มสแกน" (Start Scan)
-  3. สังเกตหน้าจอ Mobile เปลี่ยน State จาก `ScanInitial` เป็น `ScanUploading` แล้วเป็น `ScanPolling`
-  4. Backend รับไฟล์ผ่าน `POST /api/v1/scan/` ตรวจสอบ Magic Bytes และสร้าง SHA-256 Hash
-  5. AI Inference Pipeline รับงานและประมวลผล:
-     - Tiling 512x512 with 64px overlap ส่งเข้า SegFormer Model
-     - Surya OCR สกัดข้อความภาษาไทยและภาษาอังกฤษ
-     - Qwen2.5-1.5B วิเคราะห์บริบทความน่าสงสัยและสร้างคำอธิบาย XAI
-     - คำนวณความเสี่ยงด้วย Hybrid Worst-Case Formula
-  6. Backend บันทึกผลลัพธ์ลง PostgreSQL และบันทึกแคชลง Redis
-  7. Mobile รับ Response และเปลี่ยนเส้นทางไปยังหน้า Result Screen
+  1. เปิดแอป เลือกภาพ fixture จากแกลเลอรี กดปุ่ม "เริ่มสแกน"
+  2. สังเกต State `ScanInitial` → `ScanUploading` → `ScanPolling`
+  3. ตรวจว่า Backend รับไฟล์ผ่าน `POST /api/v1/scan/` ตรวจ Magic Bytes สร้าง SHA-256 Hash จด `scan_id`
 - **Expected Results**:
-  1. Mobile แสดง Risk Score พร้อมระดับตัวพิมพ์เล็กถูกต้อง (low: 0-39, medium: 40-69, high: 70-100) ไม่พบคำว่าระดับ Safe
-  2. Heatmap ซ้อนทับภาพต้นฉบับตรงตำแหน่งที่มีการตัดต่อ พร้อมสไลเดอร์ปรับ Opacity ได้
-  3. แสดงผลคะแนนแยก 3 ปัจจัย: Text Analysis, Source Verification, Visual Anomaly
-  4. แสดงบทวิเคราะห์สรุปจาก Qwen2.5 ภาษาไทยสอดคล้องกับข้อความ Surya OCR และพิกัด Heatmap
-  5. ประวัติการสแกนปรากฏในหน้า History ทันที
-  6. เวลาประมวลผลภาพใหม่เต็มรูปแบบ (Cache Miss, ภาพ 1920x1080) P50 ≤ 15 วินาที และ P95 ≤ 25 วินาที ตรงตาม NFR-PERF-02 (วัดแบบ End-to-End ตั้งแต่กดสแกนถึงหน้า Result)
+  1. ได้ `scan_id` (UUID v4) กลับมา สถานะเริ่มต้น `uploading`
+  2. ไฟล์ซ้ำมี SHA-256 เดิม (ใช้เป็น cache key ฝั่ง FR-SYS-09)
+
+#### TC-E2E-SCAN-01B: ประมวลผล AI (AI Pipeline)
+- **Requirement ID**: FR-SYS-01, FR-SYS-02, FR-SYS-03, FR-SYS-05, FR-SYS-11
+- **Test Steps**:
+  1. สแกน fixture (หรือใช้ `scan_id` จาก 01A) แล้ว Poll `GET /api/v1/scan/{scan_id}` ทุก 5 วินาที สูงสุด 60 วินาทีจน `completed`
+  2. ตรวจ pipeline: Tiling 512x512 with 64px overlap → SegFormer → Surya OCR (ไทย+อังกฤษ) → Qwen2.5-1.5B วิเคราะห์บริบท+XAI → Hybrid Worst-Case Formula
+  3. ตรวจว่า Backend บันทึกผลลง PostgreSQL และแคชลง Redis
+- **Expected Results**:
+  1. สถานะจบ `completed` มี `text_score`, `visual_score`, `source_score`, `total_risk_score` (0-100), `risk_grade` ตัวพิมพ์เล็ก
+  2. ไม่พบคำว่าระดับ Safe
+
+#### TC-E2E-SCAN-01C: แสดงผลลัพธ์ (Result Display)
+- **Requirement ID**: FR-SYS-07, FR-SYS-08, FR-REPORT-01, FR-REPORT-02, FR-REPORT-03, FR-REPORT-04, FR-REPORT-05
+- **Test Steps**:
+  1. เปิดหน้า Result ของงานที่ `completed` แล้ว
+  2. สลับสวิตช์ Heatmap เลื่อนสไลเดอร์ Opacity 0-100% เลื่อนดูการ์ดวิเคราะห์
+- **Expected Results**:
+  1. Risk Score + ระดับตัวพิมพ์เล็กถูกต้อง (low: 0-39, medium: 40-69, high: 70-100)
+  2. Heatmap ซ้อนทับภาพต้นฉบับตรงตำแหน่งตัดต่อ พร้อมสไลเดอร์ปรับ Opacity ได้
+  3. แสดงคะแนนแยก 3 ปัจจัย: Text Analysis, Source Verification, Visual Anomaly
+  4. บทวิเคราะห์ Qwen2.5 ภาษาไทยสอดคล้องกับข้อความ Surya OCR และพิกัด Heatmap
+
+#### TC-E2E-SCAN-01D: ประวัติและเวลาประมวลผล (History Plus Perf)
+- **Requirement ID**: FR-HIST-01, NFR-PERF-02
+- **Test Steps**:
+  1. สแกน fixture ใหม่ที่ไม่เคยสแกน (Cache Miss) จับเวลาตั้งแต่กดสแกนถึงหน้า Result
+  2. เปิดหน้า History ตรวจรายการใหม่
+- **Expected Results**:
+  1. ประวัติการสแกนปรากฏในหน้า History ทันที
+  2. เวลาประมวลผลภาพใหม่เต็มรูปแบบ (Cache Miss, ภาพ 1920x1080) P50 ≤ 15 วินาที และ P95 ≤ 25 วินาที ตรงตาม NFR-PERF-02 (วัด End-to-End; บันทึกตัวเลขจริงในผลรัน)
 - **Automation Mapping**: `tests_all/automate_tests/tests/e2e/test_e2e_scam_flow.py`
 
 ---
@@ -78,11 +103,12 @@
   3. Backend ตรวจสอบคีย์ใน Redis Cache
   4. ตรวจสอบว่าระบบข้ามขั้นตอนการเรียก GPU Model Inference หรือไม่
   5. ส่งผลลัพธ์เดิมกลับมายัง Client ทันที
+  6. ตรวจ backend/worker log ว่าไม่มี GPU inference job ใหม่สำหรับ SHA-256 นี้ (cache-hit) และจดค่า latency จริง
 - **Expected Results**:
   1. ระบบคืนผลลัพธ์เดิมโดยไม่เรียก GPU Model Inference ซ้ำ
   2. เวลาในการประมวลผล (Response Time) P95 ต้องน้อยกว่าหรือเท่ากับ 3 วินาทีแบบ End-to-End (P95 ≤ 3.0s ตรงตาม NFR-PERF-01; ภาพ 1MB, RTT ≤50ms)
   3. ผลลัพธ์ Risk Score, Visual Anomaly, และ Heatmap URL ตรงกับผลการสแกนรอบแรก 100%
-  4. ระบบไม่เกิดการคำนวณ GPU ซ้ำซ้อน ซึ่งช่วยลดภาระของ Inference Worker
+  4. Oracle การข้าม GPU (ต้องครบ 3 ข้อ): (ก) backend log ระบุ cache-hit สำหรับ SHA-256 นี้ (ข) ไม่มี GPU inference job ใหม่ถูกสร้าง (ตรวจจาก worker log/คิวงาน) (ค) latency P95 ≤ 3.0s End-to-End (ภาพ 1MB, RTT ≤50ms) — บันทึกตัวเลขจริงในผลรัน
 - **Automation Mapping**: `tests_all/automate_tests/tests/api/test_scan_workflow.py`
 
 ---
@@ -91,7 +117,7 @@
 - **Module / Feature**: Cross-System / User Report to Admin Resolution
 - **Requirement ID**: FR-RPT-01, FR-ADM-02, FR-ADM-06
 - **Test Type**: End-to-End Integration
-- **Priority**: P1 (Critical)
+- **Priority**: P1 (High)
 - **Pre-conditions**:
   1. มีรายการประวัติการสแกน (Scan ID) ที่ผู้ใช้ต้องการรายงาน
   2. บัญชี Admin มีสิทธิ์จัดการรายงานบน Admin Portal
@@ -122,7 +148,7 @@
 - **Module / Feature**: Cross-System / AI Model Registry & Worker Hot-Swap
 - **Requirement ID**: FR-ADM-04, NFR-PERF-03
 - **Test Type**: End-to-End Integration
-- **Priority**: P1 (Critical)
+- **Priority**: P1 (High)
 - **Pre-conditions**:
   1. ตาราง `model_versions` มีโมเดล SegFormer อย่างน้อย 2 เวอร์ชัน (เช่น `v1.0.0` สถานะ `active` และ `v1.0.1` สถานะ `inactive`)
   2. แอดมินเข้าสู่ระบบ Admin Portal
@@ -150,7 +176,7 @@
 - **Module / Feature**: Cross-System / Security & User Session Revocation
 - **Requirement ID**: FR-ADM-05, NFR-SEC-03
 - **Test Type**: End-to-End Security & Functional
-- **Priority**: P1 (Critical)
+- **Priority**: P1 (High)
 - **Pre-conditions**:
   1. มีบัญชีผู้ใช้ `abusive_user@scamguard.local` กำลังใช้งานอยู่ในระบบ Mobile
   2. ผู้ใช้มี Access Token ที่ยังไม่หมดอายุ
@@ -162,12 +188,13 @@
   2. กดปุ่ม "Ban User" ระบบแสดง Modal บังคับกรอกเหตุผล
   3. กรอกเหตุผลและกดยืนยันด้วย `PATCH /api/v1/admin/users/{user_id}` พร้อม `is_active` เป็น `false` และ `reason` Backend บันทึกประวัติลง `audit_log`
   4. บน Mobile App ผู้ใช้ที่ถูกระงับพยายามกดปุ่ม "เริ่มสแกน" หรือดึงข้อมูลหน้า "ประวัติ"
-  5. ตรวจสอบว่า Dio Interceptor ส่งต่อ 403 ให้ชั้น BLoC แสดงข้อความผิดพลาด (ปัจจุบันไม่มีการล้าง Token อัตโนมัติสำหรับ 403 ซึ่งเป็น GAP ตามผลข้อ 2)
-- **Expected Results**:
+  5. ตรวจสอบว่าแอปล้าง Token อัตโนมัติและนำทางกลับหน้า Login พร้อมข้อความแจ้งสาเหตุว่าบัญชีถูกระงับ
+- **Expected Results (พฤติกรรมที่ต้องเป็นจริงตามสเปก 403: auto-logout + message)**:
   1. Backend ปฏิเสธคำขอทันทีด้วย HTTP 403 Forbidden พร้อม Message แจ้งว่าบัญชีถูกระงับ
-2. สถานะนี้เป็น GAP ฝั่ง Client: `AuthInterceptor` ใน `dio_client.dart` จัดการเฉพาะ `401` (ต่ออายุ Token อัตโนมัติหรือล้าง Token เมื่อต่ออายุไม่สำเร็จ) ไม่มีการล้าง Token หรือนำทางกลับหน้า Login อัตโนมัติเมื่อได้ `403` บัญชีถูกระงับ ผู้ใช้จะเห็นเพียงข้อความผิดพลาด (เช่น `ReportBloc` แสดง `เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่`) จนกว่าจะออกจากระบบเองหรือ Token หมดอายุ
-3. การออกจากระบบเองเรียก `POST /api/v1/auth/logout` แล้วล้าง Token ผ่าน `clearTokens()` (`deleteAll()`) และ `AuthBloc` เปลี่ยนเป็น `AuthUnauthenticated` จึงกลับหน้า Login (โค้ดจริงไม่มี Dialog แจ้งสาเหตุการระงับบัญชีโดยเฉพาะ)
-  4. ผู้ใช้ไม่สามารถเข้าสู่ระบบซ้ำได้จนกว่าแอดมินจะเปิดใช้งานใหม่
+  2. เมื่อ Mobile ได้รับ `403` บัญชีถูกระงับ แอปต้องล้าง Token ใน Secure Storage อัตโนมัติ นำทางกลับหน้า Login พร้อมข้อความแจ้งสาเหตุว่าบัญชีถูกระงับ
+  3. ผู้ใช้ไม่สามารถเข้าสู่ระบบซ้ำได้จนกว่าแอดมินจะเปิดใช้งานใหม่
+- **Defect Log (ยังไม่ผ่าน — ห้ามรับรองเป็น pass)**:
+  - `DEFECT-E2E-BAN-05`: `AuthInterceptor` ใน `dio_client.dart` จัดการเฉพาะ `401` (ต่ออายุ Token อัตโนมัติหรือล้าง Token เมื่อต่ออายุไม่สำเร็จ) ไม่มีการล้าง Token/นำทางกลับ Login อัตโนมัติเมื่อได้ `403` — ปัจจุบันผู้ใช้เห็นเพียงข้อความผิดพลาดทั่วไป (เช่น `ReportBloc` แสดง `เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่`) จนกว่าจะออกจากระบบเองหรือ Token หมดอายุ TC ข้อนี้คงสถานะ FAIL จนกว่า defect จะถูกแก้
 - **Automation Mapping**: `tests_all/automate_tests/tests/api/test_admin.py` (partial: ตรวจสิทธิ์เข้าถึง) + Manual Console Test + Manual Device Test
 
 ---
@@ -176,7 +203,7 @@
 - **Module / Feature**: Mobile / Local Persistence & Network Interruption
 - **Requirement ID**: NFR-PERF-03 (Offline, เดิม FR-HIST-03)
 - **Test Type**: End-to-End Resilience
-- **Priority**: P2 (Major)
+- **Priority**: P2 (Medium)
 - **Pre-conditions**:
   1. ผู้ใช้ล็อกอินและเคยสแกนภาพสำเร็จมาแล้วอย่างน้อย 5 รายการ
   2. ข้อมูลประวัติถูกบันทึกลงแคชในเครื่อง (Local Storage)
@@ -190,8 +217,9 @@
   5. ปิดโหมดเครื่องบินเพื่อกู้คืนการเชื่อมต่ออินเทอร์เน็ต แล้วกด Pull-to-Refresh
 - **Expected Results**:
   1. ในขณะออฟไลน์ แอปสามารถแสดงผลรายการประวัติและภาพ Thumbnail ที่แคชไว้ได้โดยไม่เกิด Crash
-  2. สถานะนี้เป็น GAP ส่วนย่อยฝั่งหน้าจอ: ไม่พบแถบแจ้งเตือนโหมดออฟไลน์ในโค้ดปัจจุบัน (มีแคชประวัติใน `history_repository_impl` และแคชผลวิเคราะห์ใน `result_repository_impl` สำหรับดูออฟไลน์ แต่ไม่มีวิดเจ็ตแบนเนอร์แจ้งสถานะ) การยืนยันทำได้เพียงว่าไม่มี Crash และข้อมูลแคชยังเปิดดูได้
-  3. เมื่อเชื่อมต่ออินเทอร์เน็ตสำเร็จ แถบแจ้งเตือนหายไป และข้อมูลถูกซิงก์อัปเดตล่าสุดจาก Backend
+  2. (oracle เดียวตามสเปกจริง) ขณะออฟไลน์ไม่มีแถบแจ้งเตือนโหมดออฟไลน์ — เกณฑ์ผ่านคือแอปไม่ Crash และรายการประวัติ + Thumbnail ที่แคชไว้ (`history_repository_impl`/`result_repository_impl`) ยังเปิดดูได้
+  3. เมื่อเชื่อมต่ออินเทอร์เน็ตสำเร็จและกด Pull-to-Refresh ข้อมูลประวัติถูกซิงก์เป็นเวอร์ชันล่าสุดจาก Backend โดยไม่ซ้ำ/ไม่หาย
+- **Change Request (แยกออกจากเกณฑ์ pass)**: `CR-E2E-OFFLINE-06` — แถบแบนเนอร์แจ้งสถานะออฟไลน์ยังไม่มีในโค้ดปัจจุบัน หากสเปกต้องการแบนเนอร์ให้เปิดเป็นงาน Phase ถัดไป ไม่นับเป็น FAIL ของ TC นี้
 - **Automation Mapping**: `scam_image_mobile/test/features/history/presentation/bloc/history_bloc_test.dart`
 
 ---
@@ -200,7 +228,7 @@
 - **Module / Feature**: Cross-System / Register Scan History Report Admin Audit Journey
 - **Requirement ID**: FR-AUTH-01, FR-INPUT-03, FR-HIST-01, FR-RPT-01, FR-ADM-02, FR-ADM-06
 - **Test Type**: End-to-End Integration
-- **Priority**: P1 (Critical)
+- **Priority**: P1 (High)
 - **Pre-conditions**:
   1. Backend FastAPI PostgreSQL และ Redis พร้อมใช้งาน
   2. มีบัญชีแอดมินที่มีสิทธิ์ Super Admin สำหรับตัดสินรายงาน
@@ -232,7 +260,7 @@
 - **Module / Feature**: Cross-System / Token Expiry During Journey With Auto Refresh
 - **Requirement ID**: FR-AUTH-04, FR-HIST-01, FR-INPUT-03, NFR-SEC-02
 - **Test Type**: End-to-End Integration and Security
-- **Priority**: P1 (Critical)
+- **Priority**: P1 (High)
 - **Pre-conditions**:
   1. ผู้ใช้ล็อกอินค้างไว้ มี Access Token และ Refresh Token ที่ถูกต้อง
   2. แอป Mobile เก็บ Token ใน Secure Storage และเปิดใช้งานตัวดักจับการยืนยันตัวตนที่ลองใหม่หลังต่ออายุ
@@ -261,7 +289,7 @@
 - **Module / Feature**: Cross-System / Model Deploy Regression Guard
 - **Requirement ID**: FR-ADM-04, FR-INPUT-03, NFR-PERF-03
 - **Test Type**: End-to-End Regression
-- **Priority**: P1 (Critical)
+- **Priority**: P1 (High)
 - **Pre-conditions**:
   1. ตาราง `model_versions` มีเวอร์ชัน `v1.0.0` สถานะ `active` และ `v1.0.1` สถานะ `inactive`
   2. แอดมินเข้าสู่ระบบด้วยสิทธิ์ Super Admin
@@ -291,7 +319,7 @@
 - **Module / Feature**: Cross-System / History Delete Consistency Across Mobile Backend Storage
 - **Requirement ID**: FR-HIST-02, FR-HIST-03, NFR-PDPA-02
 - **Test Type**: End-to-End Integration and Database
-- **Priority**: P2 (Major)
+- **Priority**: P2 (Medium)
 - **Pre-conditions**:
   1. ผู้ใช้ล็อกอินและมีประวัติการสแกนที่เป็นของตนเองอย่างน้อย 1 รายการ
   2. ทราบค่า `scan_id` รูปแบบ UUID ของรายการที่จะลบ

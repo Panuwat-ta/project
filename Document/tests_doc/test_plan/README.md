@@ -119,6 +119,15 @@
 - **Performance**: ยิงโหลดทดสอบ Throughput และ Latency ด้วย Locust
 - **Security**: ทดสอบ Payload อันตราย, MIME Spoofing, Magic Byte Tampering, SQL Injection และ Broken Object Level Auth
 
+### 3.5 การทดสอบยอมรับผู้ใช้ (UAT — ตัวเลือกพร้อมข้อเสนอ ไม่ตัดสินใจแทน)
+- ทางเลือก A (เสนอ): UAT แบบเบต้าภายใน (internal beta) — เจ้าของผลิตภัณฑ์ + ทีมทดสอบ ตรวจ journey หลัก (สมัคร→สแกน→ผล→ประวัติ→รายงาน) บน staging เกณฑ์ผ่าน: journey หลักสำเร็จ 100% ไม่มี P0/P1 ค้าง
+- ทางเลือก B: UAT ภายนอกกับผู้ใช้จริงกลุ่มเล็ก — ต้องมี consent + แผน PDPA รองรับก่อน
+- สถานะรอบนี้: ถ้ายังไม่เลือก ให้ถือว่า UAT อยู่นอก exit gate รอบนี้ และระบุเป็น GAP ใน signoff
+
+### 3.6 วิธีทดสอบ Usability (ที่กำหนดได้จริง)
+- วิธี (usability method): task-based check 5 งานหลัก (สแกน, อ่านผล+heatmap, ประวัติ, รายงาน, สลับภาษา/ธีม) วัด task success rate + เวลาทำงานจบ + SUS เฉพาะรอบที่มีผู้ใช้จริง
+- รอบที่ไม่มีผู้ใช้จริง: ใช้ heuristic check ด้วยมือ (touch target ≥48dp, contrast ≥4.5:1, ไม่ตัดคำ) แทนคะแนน SUS ห้ามอ้าง SUS ลอยโดยไม่มีกลุ่มตัวอย่าง
+
 ---
 
 ## 4. สภาพแวดล้อมการทดสอบ (Test Environment)
@@ -155,8 +164,10 @@
 1. 100% ของ Test Cases ระดับ P0 (Blocker) และ P1 (High) ผ่านการทดสอบทั้งหมด (Pass Rate = 100%)
 2. อัตราการผ่านของ Test Cases ระดับ P2 (Medium) ไม่ต่ำกว่า 95%
 3. ไม่มีข้อบกพร่องระดับ Critical หรือ Major ที่ยังค้างอยู่ในระบบ (0 Open Critical Bugs)
-4. การทดสอบโหลดด้วย Locust ยืนยันว่า Response Time ของ Cache Hit P95 ไม่เกิน 3 วินาที (P95 ≤ 3.0s) และของ Full Inference P50 ไม่เกิน 15 วินาที / P95 ไม่เกิน 25 วินาที (P50 ≤ 15.0s / P95 ≤ 25.0s)
-5. เอกสารตารางสอบย้อนกลับครอบคลุม FR และ NFR ทั้งหมด — FR ใดยังไม่มี TC ให้ระบุ GAP/Deferred ชัดเจน
+4. การทดสอบโหลดด้วย Locust ยืนยันว่า Response Time ของ Cache Hit P95 ไม่เกิน 3 วินาที (P95 ≤ 3.0s) และของ Full Inference P50 ไม่เกิน 15 วินาที / P95 ไม่เกิน 25 วินาที / P99 ไม่เกิน 35 วินาที (P50 ≤ 15.0s / P95 ≤ 25.0s / P99 ≤ 35.0s; ภาพอ้างอิง 1920x1080 JPG 3MB) — P99 เป็น exit เต็มเฉพาะรอบที่มี N ≥ 100 samples ต่อ endpoint มิฉะนั้นรายงานเป็นข้อมูลประกอบ
+5. Throughput (unify): ยึดเกณฑ์เดียวคือ ≥ 30 RPS สำหรับงานผสม (mixed workload ตาม test_plan_performance) ส่วน rate limit แบบ tier ต่อนาที (guest 10 / user 60 / admin 300 / POST scan 5) เป็นเกณฑ์ security คนละมิติ ห้ามนำมาปนกัน
+6. เอกสารตารางสอบย้อนกลับครอบคลุม FR และ NFR ทั้งหมด — FR ใดยังไม่มี TC ให้ระบุ GAP/Deferred ชัดเจน
+7. Release gate ชั่วคราว (interim): ข้อที่ชุดทดสอบมาตรฐานยังไม่พร้อม (TC-AI-ACC-01/02 dataset, PERF ที่ยังติด 401) ไม่ block การปล่อย แต่ต้องมี (ก) รายงานค่าที่วัดได้จริง (ข) แผนปิด GAP ผูก milestone สัมพัทธ์ (ค) บันทึก risk acceptance โดยเจ้าของผลิตภัณฑ์ใน signoff ห้ามลงนามบนแม่แบบเปล่า
 
 ---
 
@@ -169,6 +180,15 @@
 | **การอัปโหลดไฟล์ขนาดใหญ่ทำให้เน็ตเวิร์กตัน** | ปานกลาง | สูง | มีการจำกัดขนาดไฟล์ที่ Client (10MB) ก่อนอัปโหลด และมี Stream Reading บน FastAPI พร้อม Timeout |
 | **Admin แย่งกันแก้ไขสถานะรายงานพร้อมกัน** | ปานกลาง | ปานกลาง | ใช้ Optimistic Concurrency Control ในตาราง scam_reports เพื่อป้องกัน Race Condition |
 | **ความไม่สอดคล้องของเวลาใน Audit Log** | ปานกลาง | ต่ำ | บังคับเขตเวลาเป็น `Asia/Bangkok` (UTC+7) ทั้งใน Docker Database, Server App และ Client UI |
+
+### 6.1 การผูก Risk → P0/Suspension (ที่กำหนดได้จริง)
+| ความเสี่ยง | เงื่อนไขที่ยกระดับเป็น P0 + ระงับการทดสอบ (§5.2) |
+|---|---|
+| AI Subprocess Crash / Memory Leak (OOM, worker ตาย) | เกิดซ้ำจน journey สแกนหลักไปต่อไม่ได้ → P0 + suspend ตาม §5.2 แล้ว resume หลัง hotfix ผ่าน smoke |
+| False Positive/Negative สูง | ยังไม่เป็น P0 อัตโนมัติ ให้เป็น P1 + บันทึก risk acceptance จนกว่าชุดทดสอบมาตรฐานจะพร้อม (gate ชั่วคราว §5.3 ข้อ 7) |
+| อัปโหลดไฟล์ใหญ่ทำเน็ตเวิร์กตัน | เป็น P0 เฉพาะเมื่อทำให้ service ล่ม/ค้างทั้งระบบ มิฉะนั้นเป็น P1/P2 ตามผลกระทบ |
+| Admin แย่งกันแก้สถานะ (race) | เป็น P0 เฉพาะเมื่อข้อมูลสูญ/ทับกันโดยไม่มี version conflict มิฉะนั้นเป็น P1 |
+| เวลา Audit Log ไม่สอดคล้อง | เป็น P1 (ความน่าเชื่อถือหลักฐาน) ไม่ suspend เว้นแต่กระทบการตรวจรับ PDPA |
 
 ---
 
@@ -237,7 +257,18 @@
 
 ---
 
-## 10. ตารางประเมินเวลาและทรัพยากรสำหรับทีมกรอก
+## 10. Milestone สัมพัทธ์ + RACI (ตามบทบาท ไม่ระบุชื่อบุคคล ไม่แต่งวันที่จริง)
+
+| Milestone (สัมพัทธ์) | ขอบเขต | Exit ที่ผูก |
+|---|---|---|
+| M1: T+0 สัปดาห์ (พร้อมก่อนเริ่ม) | Env healthy + migration head + seed/fixture พร้อม + ชุดภาพอ้างอิงที่มารวมที่เดียว | Entry §5.1 ครบทุกข้อ |
+| M2: T+2 สัปดาห์ (functional หลัก) | Mobile/Backend/Admin/AI journey หลัก + P0/P1 100% | Exit §5.3 ข้อ 1–3 |
+| M3: T+3 สัปดาห์ (NFR) | Load/security/privacy/accessibility ตาม test_plan_nfr + P99 (N≥100) | Exit §5.3 ข้อ 4–5 |
+| M4: T+4 สัปดาห์ (ปิด GAP/ปล่อย) | ปิด GAP หรือยกระดับเป็น risk acceptance + signoff | Exit §5.3 ข้อ 6–7 |
+
+RACI (บทบาท): R=QA Lead (แผน+exit), A=Product Owner (signoff/risk acceptance), C=BE Lead/Mobile Lead/AI Lead/Admin Lead (ยืนยันสเปก–ข้อ 8), I=ที่ปรึกษาโครงงาน งานที่ยังเป็น GAP เลื่อนไป M4 ไม่ใส่คนวันรอบ M2/M3
+
+## 10.1 ตารางประเมินเวลาและทรัพยากรสำหรับทีมกรอก (เดิม — คงไว้ให้ทีมเติมจำนวนจริง)
 
 แผนเดิมยังไม่มีส่วนประเมินเวลาและทรัพยากร ส่วนนี้ให้ทีมกรอกร่วมกันหลังการปรับขนาดงาน ห้ามใช้ตัวเลขสำเร็จรูป ให้ประเมินจากจำนวนกรณีทดสอบจริงและความยากของแต่ละโมดูล
 

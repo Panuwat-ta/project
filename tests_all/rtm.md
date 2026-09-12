@@ -17,6 +17,7 @@
 - **Wiki scheme (`FR-AUTH` / `FR-INPUT` / `FR-SYS` / `FR-REPORT` / `FR-HIST` / `FR-RPT` / `FR-ADM` / `FR-AUDIT` / `FR-SHARE` / `FR-PDPA`) คือ baseline สำหรับงานทดสอบ** (OAuth = `FR-AUTH-06`; `FR-INPUT-05` ยุบรวมเข้า `FR-SYS-09`, `FR-ADM-06` ยุบรวมเข้า `FR-AUDIT-01` แล้ว — ไม่นับซ้ำ; กลุ่ม AUTH ใช้เลขชุดเดียวกับ Document แล้ว: `FR-AUTH-01..04` = สมัคร/ล็อกอิน(+Secure Storage)/ต่ออายุ/ออกจากระบบ)
 - **Document scheme (`FR-SCAN` / `FR-ANALYSIS` / `FR-XAI` / `FR-HISTORY` / `FR-ADMIN`, NFR-01..09) เป็น canonical** ให้ map มาหา wiki scheme ผ่าน mapping table ใน §2.9–§2.10
 - **กฎการอ้างอิง**: ทุก `Test Case ID` ที่ RTM อ้างถึงต้องมีอยู่ใน `tests_all/manual_tests/*.md` — FR ใดที่ยังไม่มี TC ให้ระบุเป็น GAP / Deferred และไม่นับเป็น Covered
+- **Freeze**: baseline ชุดเดียวคือ wiki scheme ตามประกาศข้างต้น (v1.3.1, 2026-09-12) ห้ามย้ายเลข/เปลี่ยนชื่อ Req โดยไม่ bump เวอร์ชัน RTM และอัปเดต mapping table §2.9–§2.10 พร้อมกัน
 
 ### 1.2 Baseline ทางเทคนิค
 
@@ -176,7 +177,7 @@ Document scheme ให้ map มาหา wiki scheme ดังนี้:
 | NFR-05 (Accuracy: Acc+mDice) | NFR-AI-01 / NFR-AI-02 (Partial) | ≥85% — มี TC แล้วแต่ขาด test set มาตรฐาน |
 | NFR-06 (Usability: UAT/Likert/heatmap) | NFR-A11Y-01 (+ `TC-ADM-UI-01/02/03`) / NFR-A11Y-02 (+ `TC-NFR-USE-01`) | WCAG AA + UAT ≥80%/Likert ≥4.00 |
 | NFR-07 (Cache efficiency) | NFR-PERF-01 (hit ≤3s) | hit-rate ≥40%/สัปดาห์ ยังไม่มี TC วัดเฉพาะ |
-| NFR-08 (Compatibility: Document NFR-08) | NFR-COMP-01 / NFR-COMP-02 | key flows Android 10–15 + API schema validation (§3) |
+| NFR-08 (Compatibility: Document NFR-08) | NFR-COMP-01 / NFR-COMP-02 | key flows Android 10–14 (v1 Android เท่านั้น — ตรงกับ §3) + API schema validation (§3) |
 | NFR-09 (Maintainability: Document NFR-09) | — (ไม่มี TC) | GAP: ยังไม่มี TC วัด branch coverage/static analysis |
 | ex-NFR-10 wiki-local (ยกเลิกเลขนี้แล้ว → Document FR-PDPA-01 + NFR-04 + RC-PDPA-04) | NFR-PDPA-01 / NFR-PDPA-02 + FR-AUDIT-01 (`TC-BE-AUDIT-01`, `TC-ADM-AUD-01`) | Consent/retention tiers/audit append-only |
 | ex-NFR-11 wiki-local (ยกเลิกเลขนี้แล้ว → Document FR-ANALYSIS-03 AC-4 fallback, มติ DOC-01) | FR-SYS-04 (GAP: ยังไม่มี integration/TC) | ไม่สรุปว่าปลอดภัยเมื่อวิเคราะห์ไม่ครบ — ตั้ง `source_status = "unavailable"` คำนวณเฉพาะมิติที่สำเร็จ |
@@ -242,6 +243,12 @@ Document scheme ให้ map มาหา wiki scheme ดังนี้:
 | `TC-NFR-PERF-05` | NFR-PERF-01/02/03 | P2 | Covered (ขยาย) |
 | `TC-NFR-USE-01` | NFR-A11Y-01/02, FR-SET-02 | P2 | Covered (ขยาย) |
 
+### 2.12 ตารางย้อนกลับ TC-to-Req ถาวร + orphan-scan อัตโนมัติ
+
+- ตาราง §2.11 คือ TC-to-Req แบบถาวร: ทุก TC ใน `manual_tests/` ต้องมีแถว map กลับไป Req เดิม ห้ามมี orphan ค้าง
+- คำสั่งตรวจ orphan ทุกรอบปล่อย (ต้องได้ 0 ก่อน sign-off): `comm -23 <(grep -hoE 'TC-[A-Z0-9]+(-[A-Z0-9]+)+-[0-9]+' tests_all/manual_tests/*.md | sort -u) <(grep -hoE 'TC-[A-Z0-9]+(-[A-Z0-9]+)+-[0-9]+' tests_all/rtm.md | sort -u)`
+- ถ้าพบ TC ใหม่: เพิ่มแถวใน §2.11 (map เข้าแถว Req เดิมที่ TC อ้างถึง) แล้ว recount จำนวน TC รวมใน §4 พร้อมกัน
+
 ---
 
 ## 3. เมทริกซ์การสืบย้อนความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements Traceability)
@@ -272,10 +279,19 @@ Document scheme ให้ map มาหา wiki scheme ดังนี้:
 
 ## 4. สรุปภาพรวมความครอบคลุม (Coverage Summary)
 
-- **ขอบเขตการครอบคลุม: FR 26/39 Covered (33/39 รวม Partial), NFR 15/17 Covered (17/17 รวม Partial)**
+- **ขอบเขตการครอบคลุม: FR 26/39 Covered (33/39 รวม Partial), NFR 15/17 Covered (17/17 รวม Partial)** — สูตรเดียวทั้งเล่ม: ฐานนับ = wiki scheme 39 รายการ (ตัด pointer ยุบรวม `FR-INPUT-05`/`FR-ADM-06` ไม่นับซ้ำ; `FR-SET-01/02` นอก baseline นับแยก) — ห้ามใช้ฐาน 28/41
 - **Functional Requirements (wiki scheme) 39 รายการ** (`FR-SYS-11` เข้า baseline §2.3 แล้ว; `FR-INPUT-05`/`FR-ADM-06` เป็น pointer ยุบรวม ไม่นับซ้ำ): Covered เต็ม **26** รายการ (**66.7%**) — ตัด `FR-INPUT-05` + `FR-ADM-06` ที่ยุบรวม (recount §F 2026-09-12), Partial **7** รายการ (`FR-INPUT-03` cancelScan ไม่มี endpoint, `FR-INPUT-04` Mobile ไม่ปฏิเสธเกิน 10MB, `FR-SYS-08`, `FR-REPORT-01` key safe ตกค้าง, `FR-REPORT-06`, `FR-RPT-01` category keys ไม่ตรง, `FR-AUDIT-01` ขาด JSON Diff ครบ), GAP **4** รายการ (`FR-SYS-01`, `FR-SYS-04`, `FR-SYS-06`, `FR-SHARE-01` ใหม่) + Deferred **2** รายการ (`FR-AUTH-06` OAuth, `FR-SYS-10` FCM) — รวม mapped 33/39 (**84.6%** นับ Partial)
 - **FR เพิ่มเติมนอก wiki baseline 2 รายการ** (`FR-SET-01`, `FR-SET-02`): Covered 2/2 (100%)
 - **Non-Functional Requirements 17 รายการ** (15 เดิม + `NFR-COMP-01/02` จาก TC จริง): Covered **15** รายการ (**88.2%**), Partial **2** รายการ (`NFR-AI-01`, `NFR-AI-02` มี TC แล้วแต่ขาดชุดทดสอบมาตรฐาน), GAP **0** รายการ — รวม mapped 17/17 (**100%** นับ Partial)
 - **Cross-System Journeys (E2E) 10 กระบวนการ** (6 เดิม + `E2E-07..10` จาก TC จริง `TC-E2E-FULL-07/AUTH-08/REG-09/HIST-10`): Covered 10/10 (**100%**)
 - **Manual TCs ทั้งหมด 150 TCs** (recount 2026-09-12: mobile 37, backend 31, ai 24, admin 25, e2e 10, nfr 23): orphan-scan พบ 52 TCs ที่ v1.3.0 ยังไม่ map — map ครบแล้วใน §2.11 (รวม `E2E-07..10`, `NFR-COMP-01/02`, `FR-ADM-03`) **orphan ค้าง = 0** (Offline `TC-MOB-HIST-03`/`TC-E2E-OFFLINE-06` map กับ `NFR-PERF-03` ตามเดิม)
+### 4.1 ดัชนีหลักฐาน (Evidence link — กรอกไฟล์รายงาน+วันที่+pass/fail เมื่อมีผลรันจริง ห้ามแต่งตัวเลข)
+
+| Requirement ID | ไฟล์รายงาน | วันที่รัน | Pass/Fail |
+| :--- | :--- | :--- | :--- |
+| (ตัวอย่าง) FR-AUTH-01 | `tests_report/automate_tests/server/auth_api.md` | ปปปป-ดด-วว | — |
+| ...ทุกรายการ Covered/Partial... | | | |
+
+กฎ: ทุกรายการ Covered/Partial ต้องมีแถวหลักฐานก่อน sign-off; GAP/Deferred ใส่ `—` พร้อมอ้างหัวข้อที่ 5 ของ release_signoff.md
+
 - **รูปแบบการทดสอบ** (63 rows ที่มี TC, strict): Hybrid 23 รายการ / Automated 10 รายการ / Manual 25 รายการ (+7: `FR-ADM-03`, `E2E-07..10`, `NFR-COMP-01/02`) + 5 NFR กำกวมแยกหมวด (`NFR-PERF-03`, `NFR-SEC-01`, `NFR-SEC-05`, `NFR-PDPA-02`, `NFR-SYS-01` นิยามชัดด้านบน); เพิ่มจาก 58 rows ใน v1.3.0 หลัง map orphan 52 TCs โดย `FR-AUTH-04` (Logout; เดิมเรียก FR-AUTH-05) Manual→Hybrid, `FR-HIST-02` Manual→Hybrid, `FR-HIST-03` Automated→Hybrid, `FR-ADM-01` Manual→Hybrid, `NFR-A11Y-01` เพิ่ม TC แบบ Manual, `FR-SYS-10` กับ `NFR-AI-01` `NFR-AI-02` `FR-AUDIT-01` เพิ่ม TC แบบ Manual Partial/Deferred

@@ -52,6 +52,11 @@
    - จำนวนผู้ใช้เสมือน: 30 Virtual Users คงที่
    - ระยะเวลา: 1 ชั่วโมง
    - วัตถุประสงค์: ตรวจสอบ Memory Leak ของกระบวนการ Tiling และความเสถียรของ Database Connection Pool
+4. **Peak 200 VU (ตัวเลือกพร้อมข้อเสนอ ไม่ตัดสินใจแทน — ปิดช่อง scope 50–200 VU ที่ไม่มี scenario รองรับ)**:
+   - A (เสนอ): รอบนี้ประกาศชัดว่าเคลมสูงสุด 100 VU (scenario 2) ส่วน 200 VU เลื่อนไป M4
+   - B: รัน 200 VU / spawn 5/s / 10 นาที เป็น exit รอบนี้ — ต้องมีคิวงาน + GPU/CPU สำรองก่อน มิฉะนั้นไม่รัน
+   - หมายเหตุ RPS (unify): เป้า throughput เดียวคือ ≥30 RPS งานผสม ส่วน error-rate วัดที่โหลดปกติ ≤50 CCU ตาม KPI ตาราง §1
+   - P99 (unify): Full inference P99 ≤35.0s เป็น exit เต็มเฉพาะรอบ N≥100/endpoint ตรงกับ test_plan_nfr §3 และ master §5.3
 
 ---
 

@@ -70,12 +70,12 @@
 ### 3.1 เกณฑ์การเริ่มต้นทดสอบ (Entry Criteria)
 - ฐานข้อมูล PostgreSQL และ Redis พร้อมเชื่อมต่อ และ Migration อยู่ในสถานะ Head ล่าสุด
 - Environment Variables ถูกกำหนดผ่านไฟล์ `.env` ครบถ้วนโดยไม่มี Missing Config
-- รันคำสั่งตรวจสอบการเชื่อมต่อผ่าน GET /health ที่รากเซิร์ฟเวอร์ ให้ผลลัพธ์ `200 OK` พร้อมฟิลด์สถานะ `healthy` ภายใน 2 วินาที
+- รันคำสั่งตรวจสอบการเชื่อมต่อผ่าน GET /health ที่รากเซิร์ฟเวอร์ (ที่มา: สัญญาใน `test_health.py` + เกณฑ์ §2.1 ของ test_plan_api_automation) ให้ผลลัพธ์ `200 OK` พร้อมฟิลด์สถานะ `healthy` ภายใน 2 วินาที
 
 ### 3.2 เกณฑ์การสิ้นสุดการทดสอบ (Exit Criteria)
-- ชุดทดสอบ Automated API Suite ใน `tests_all/automate_tests/tests/api/` ผ่าน 100% (อ้างอิงจำนวนปัจจุบัน)
+- ชุดทดสอบ Automated API Suite ตรึง scope ที่ 5 ไฟล์ (`test_health/test_auth_flow/test_scan_workflow/test_history/test_admin.py`) ผ่าน 100% นับจำนวนด้วย `pytest tests/api --collect-only -q` แล้วบันทึกจำนวนจริงใน execution log (เลิกอ้าง "จำนวนปัจจุบัน" ลอย)
+- ความครอบคลุมของโค้ด Code Coverage (ขอบเขตตรึง): วัดเฉพาะ `server/app/routers/**` + `server/app/services/**` ด้วย `pytest --cov` ไม่ต่ำกว่า 80% ไม่นับ tests/migrations/seed
 - กรณีทดสอบระดับ P0 และ P1 ใน `tests_all/manual_tests/test_cases_backend.md` ผ่าน 100%
-- ความครอบคลุมของโค้ด (Code Coverage) บนโมดูล Router และ Core Services ไม่น้อยกว่า 80%
 - ไม่มีข้อผิดพลาดประเภท Unhandled Exception (HTTP 500) เกิดขึ้นระหว่างการทดสอบ
 
 ---

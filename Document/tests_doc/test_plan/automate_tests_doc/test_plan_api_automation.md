@@ -40,7 +40,7 @@ tests_all/automate_tests/
 ## 2. รายละเอียดโมดูลการทดสอบ (Test Modules Breakdown)
 
 ### 2.1 Health & Service Readiness (`test_health.py`)
-- ตรวจสอบ `GET /health` ที่รากเซิร์ฟเวอร์ และ `GET /api/v1/admin/health` แบบบังคับ is_superadmin
+- ตรวจสอบ `GET /health` ที่รากเซิร์ฟเวอร์ (ที่มาสัญญา: backend entry §3.1 ของ test_plan_backend + สคริปต์ `test_health.py`) และ `GET /api/v1/admin/health` แบบบังคับ is_superadmin
 - ยืนยันการเชื่อมต่อของ Database Driver และ Redis Client
 - เกณฑ์ผ่าน: HTTP 200 OK พร้อมฟิลด์สถานะ `healthy`
 
@@ -93,5 +93,5 @@ pytest tests/api -v --tb=short
 ---
 
 ## 4. เกณฑ์การยอมรับ (Acceptance Criteria)
-- ชุดทดสอบ API ทั้งหมดต้องผ่าน 100% (Zero Failure)
-- เวลาในการรันชุดทดสอบทั้งหมดต้องไม่เกิน 30 วินาที เพื่อรองรับการทำงานใน CI/CD Pipeline
+- ชุดทดสอบ API ตรึง scope 5 ไฟล์ (§2.1–2.5) ทั้งหมดต้องผ่าน 100% (Zero Failure) นับจำนวนด้วย `pytest tests/api --collect-only -q` บันทึกจำนวนจริงใน execution log
+- งบเวลา suite (ที่กำหนดได้จริง): วัดจาก CI log 3 รอบติด งบ 300s/รอบ (เลิกอ้าง 30s ลอย) ถ้าเกินให้เปิด P1 แยก ไม่ตีตกทั้ง suite อัตโนมัติ

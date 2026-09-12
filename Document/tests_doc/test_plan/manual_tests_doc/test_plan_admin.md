@@ -69,7 +69,7 @@
 ### 3.2 เกณฑ์การสิ้นสุดการทดสอบ (Exit Criteria)
 - กรณีทดสอบใน `tests_all/manual_tests/test_cases_admin.md` ผ่าน 100%
 - คะแนนการเข้าถึง (Lighthouse Accessibility Score) บนทุกหน้าจอหลักต้องไม่ต่ำกว่า 95 คะแนน
-- การสลับธีม Dark/Light Mode ต้องจบภายใน 500ms โดยไม่มีอาการ Flash of unstyled content (FOUC) และคอนทราสต์ยังผ่าน 4.5:1 ทุกคอมโพเนนต์
+- การสลับธีม Dark/Light Mode เป็นของ NFR plan (test_plan_nfr §3 ข้อ 5: ≤500ms ไม่ FOUC คอนทราสต์ 4.5:1) แผนนี้เหลือแค่ functional check ว่าสลับได้ทุกหน้าหลัก
 - ระบบปฏิเสธการระงับผู้ใช้หากไม่ระบุเหตุผลในทุกกรณี
 
 ---

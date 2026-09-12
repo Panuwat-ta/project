@@ -35,7 +35,7 @@
 - **Expected Results**:
   1. ได้รับ HTTP Status Code: `201 Created`
   2. Response Body มี `id`, `email`, `full_name`, `role` (ไม่มี Plaintext Password คืนกลับมา)
-  3. ในตาราง `users` คอลัมน์ `hashed_password` ต้องถูกเข้ารหัส โดยมีความยาวแฮชมาตรฐาน
+  3. ในตาราง `users` คอลัมน์ `hashed_password` ต้องเป็นแฮช bcrypt (ขึ้นต้น `$2b$` ยาว 60 ตัวอักษร ไม่ใช่ plaintext) — วิธีตรวจ: `SELECT hashed_password FROM users WHERE email='...';` แล้วตรวจ prefix/ความยาวด้วย `python3 -c "print(len(h))"` (ต้องได้ 60) และยืนยันว่าไม่ตรงกับรหัสผ่านต้นฉบับ
   4. มีบันทึกความยินยอมในตาราง `consent_logs` ตรงกับค่าที่ส่งมา
 - **Automation Mapping**: `tests_all/automate_tests/tests/api/test_auth_flow.py`
 
@@ -61,8 +61,8 @@
   2. Response Body ส่งคืนโครงสร้าง DTO:
   ```json
       {
-        "access_token": "eyJhbGciOiJIUzI1...",
-        "refresh_token": "eyJhbGciOiJIUzI1...",
+        "access_token": "***...",
+        "refresh_token": "***...",
         "token_type": "bearer",
         "user": {
           "id": 1,
@@ -112,7 +112,7 @@
   1. เตรียม Expired Token หรือ Invalid Token
 - **Test Data**:
   - Endpoint: `GET /api/v1/auth/me`
-  - Headers: `Authorization: Bearer invalid_or_expired_token`
+  - Headers: `Authorization: Bearer invali...ken`
 - **Test Steps**:
   1. ยิงคำขอไปยัง Protected Endpoint
 - **Expected Results**:
@@ -133,7 +133,7 @@
 - **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
   - Endpoint: `GET /api/v1/auth/me`
   - Endpoint: `POST /api/v1/auth/logout`
-  - Headers: `Authorization: Bearer <valid_access_token>`
+  - Headers: `Authorization: Bearer <valid...en>`
 - **Test Steps (ขั้นตอนการทดสอบ)**:
   1. เรียก `GET /api/v1/auth/me` พร้อม Token ที่ถูกต้อง
   2. เรียก `POST /api/v1/auth/logout` พร้อม Token เดียวกัน
@@ -230,7 +230,8 @@
 - **Test Data**:
   - Filename: `fake_image.png` (เนื้อหาภายในไม่มี Magic Bytes ของ PNG: `89 50 4E 47`)
 - **Test Steps**:
-  1. พยายามอัปโหลดไฟล์ดังกล่าวเข้าสู่ API สแกนภาพ
+  1. อัปโหลดไฟล์ดังกล่าวเข้าสู่ API สแกนภาพ จดค่า `scan_id` (หรือ `id`) จาก Response (`200 OK` + สถานะ `uploading`)
+  2. Poll `GET /api/v1/scan/{scan_id}` ทุก 5 วินาที นานสูงสุด 60 วินาที จนกว่าสถานะเป็น `failed` (วิธีทำซ้ำ: รัน 3 รอบ ต้องได้ `failed` ทั้ง 3 รอบ; ครบ 60 วินาทีแล้วยังไม่ failed ถือว่า FAIL)
 - **Expected Results**:
 1. `POST /api/v1/scan/` ตอบ `200 OK` พร้อมสถานะ `uploading` ก่อน ไม่ตรวจ Magic Bytes ทันทีตอนอัปโหลด (การตรวจอยู่ในงานเบื้องหลังผ่าน `load_image_verified` ซึ่งตรวจ Magic Bytes โดยไม่เชื่อ `content_type`)
 2. งานเบื้องหลังตรวจพบว่าเนื้อหาไม่ใช่รูปภาพจริง สถานะงานเป็น `failed` เมื่อเรียกดูด้วย `GET /api/v1/scan/{scan_id}` ฝั่งแอปรับเป็น `ScanError` พร้อมข้อความทั่วไป (ข้อความรายละเอียด `File is not a valid image.` มีอยู่ใน `image_utils.py` แต่ไม่ถูกส่งกลับถึง Client ในโฟลว์ปัจจุบัน)
@@ -251,7 +252,8 @@
   - Endpoint: `POST /api/v1/scan/`
   - File: `corrupt.jpg` (ข้อมูลไบต์ไม่สมบูรณ์)
 - **Test Steps (ขั้นตอนการทดสอบ)**:
-  1. อัปโหลดไฟล์เสียหายเข้าสู่ Endpoint สแกน
+  1. อัปโหลดไฟล์เสียหายเข้าสู่ Endpoint สแกน จดค่า `scan_id` จาก Response (`200 OK` + สถานะ `uploading`)
+  2. Poll `GET /api/v1/scan/{scan_id}` ทุก 5 วินาที นานสูงสุด 60 วินาที จนกว่าสถานะเป็น `failed` (วิธีทำซ้ำ: รัน 3 รอบ ต้องได้ `failed` ทั้ง 3 รอบ; ครบ 60 วินาทีแล้วยังไม่ failed ถือว่า FAIL)
 - **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
   1. `POST /api/v1/scan/` ตอบ `200 OK` พร้อมสถานะ `uploading` ก่อนเช่นเดียวกับ TC-BE-SCAN-03 งานเบื้องหลังตรวจพบว่าไฟล์เสียหาย สถานะงานเป็น `failed` เมื่อเรียกดูด้วย `GET /api/v1/scan/{scan_id}` (ไม่มีการตอบ `400/422` ทันทีตอนอัปโหลดในโฟลว์ปัจจุบัน ข้อความ `Image is corrupted or unsupported.` มีอยู่ใน `image_utils.py` ฝั่งงานเบื้องหลัง)
   2. ไฟล์ไม่ถูกส่งต่อเข้า AI Pipeline
@@ -287,11 +289,12 @@
 - **Test Type**: Performance / Integration
 - **Priority**: P0 (Blocker)
 - **Pre-conditions**:
-  1. เพิ่งสแกนภาพ A สำเร็จใน TC-BE-CACHE-01 ข้อมูลถูกแคชอยู่ใน Redis เรียบร้อยแล้ว
+  1. เตรียมภาพ A ที่ไม่ซ้ำกับงานอื่น (ตรวจว่าไม่มีคีย์ SHA-256 ของภาพ A ใน Redis ก่อนเริ่ม — วิธีล้าง/เตรียม: `redis-cli DEL <sha256ของภาพA>` หรือใช้ภาพใหม่ที่คำนวณแฮชแล้วไม่พบคีย์)
 - **Test Data**: ภาพ A ไฟล์เดิมเป๊ะ
 - **Test Steps**:
-  1. ส่งคำขอสแกนภาพ A ซ้ำอีกครั้ง
-  2. วัดเวลาตอบสนอง (Response Latency)
+  1. (warm cache ใน TC เอง — ห้ามอ้างผลจาก TC-BE-CACHE-01) อัปโหลดภาพ A ครั้งที่ 1 รอจนได้ผลสำเร็จ
+  2. ส่งคำขอสแกนภาพ A ซ้ำอีกครั้ง (ไฟล์เดิมเป๊ะ)
+  3. วัดเวลาตอบสนอง (Response Latency) ของครั้งที่ 2
 - **Expected Results**:
   1. ตรวจพบคีย์แฮชใน Redis ทันที (Cache Hit)
   2. ได้รับ HTTP 200 พร้อมผลลัพธ์การสแกนเดิม
@@ -311,7 +314,8 @@
   1. Server กำหนดโควตาทั่วไว้ที่ 60 ครั้งต่อชั่วโมงต่อ IP และกำหนด Limit ของ `POST /api/v1/admin/login` กับ `POST /api/v1/admin/refresh` ไว้ที่ 5 ครั้งต่อนาที
 - **Test Data**: ยิงคำขอ `POST /api/v1/admin/login` เกิน 5 ครั้งภายใน 1 นาทีจาก IP เดียวกัน
 - **Test Steps**:
-  1. ใช้ลูปยิงคำขอล็อกอิน Admin รัวเกินโควตา
+  1. (โควตา Admin) ใช้ลูปยิง `POST /api/v1/admin/login` เกิน 5 ครั้งภายใน 1 นาทีจาก IP เดียวกัน จดรหัสสถานะและ Header `Retry-After` ของคำขอที่ 6 เป็นต้นไป
+  2. (โควตาทั่ว) ยิงคำขอทั่วไป (เช่น `GET /api/v1/auth/me` ด้วย Token ถูกต้อง) เกิน 60 ครั้งภายใน 1 ชั่วโมงจาก IP เดียวกัน แล้วตรวจว่าคำขอที่ 61+ ได้ `429` พร้อม Header `Retry-After` (หมายเหตุ: หากรันเต็ม 60 ครั้งใช้เวลานาน อนุญาตให้ตรวจด้วย counter/stub ของ middleware ใน env ทดสอบ แล้วบันทึกวิธีไว้ในผลรัน)
 - **Expected Results**:
   1. คำขอภายในโควตา (5 ครั้งแรกต่อนาที) ไม่ถูกปฏิเสธด้วย 429 — ตอบตามผลข้อมูลจริง (`200 OK` หรือ `401` กรณีข้อมูลผิด) ภายใน 5 วินาที
   2. คำขอเกินโควตาถูกปฏิเสธด้วย HTTP Status Code: `429 Too Many Requests`
@@ -351,7 +355,7 @@
   1. มี Token ของผู้ใช้ทั่วไป (Normal User จากตาราง `users`)
 - **Test Data**:
   - Endpoint: `GET /api/v1/admin/users` หรือ `GET /api/v1/admin/models`
-  - Headers: `Authorization: Bearer <normal_user_token>`
+  - Headers: `Authorization: Bearer <norma...en>`
 - **Test Steps**:
   1. ใช้ Token ของผู้ใช้ธรรมดาเรียก Endpoint ของ Admin
 - **Expected Results**:
@@ -420,7 +424,7 @@
   1. ผู้ใช้มีประวัติการสแกนอย่างน้อย 2 รายการ
 - **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
   - Endpoint: `GET /api/v1/history?page=1&limit=20`
-  - Headers: `Authorization: Bearer <valid_access_token>`
+  - Headers: `Authorization: Bearer <valid...en>`
 - **Test Steps (ขั้นตอนการทดสอบ)**:
   1. เรียกดูรายการประวัติพร้อม Token ที่ถูกต้อง
   2. ตรวจสอบการเรียงลำดับและฟิลด์ที่ได้
@@ -432,24 +436,42 @@
 
 ---
 
-### TC-BE-HIST-02: การดูรายละเอียดประวัติรายฉบับและการลบประวัติ (History Detail Plus Delete)
-- **Module / Feature**: History / Detail and Delete
-- **Requirement ID**: FR-HIST-02, FR-HIST-03
+### TC-BE-HIST-02A: การดูรายละเอียดประวัติรายฉบับ (History Detail)
+- **Module / Feature**: History / Detail
+- **Requirement ID**: FR-HIST-02
 - **Test Type**: Functional
 - **Priority**: P1 (High)
 - **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
   1. มี scan_id ที่เป็นของผู้ใช้เอง
 - **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
   - Endpoint: `GET /api/v1/history/{scan_id}`
-  - Endpoint: `DELETE /api/v1/history/{scan_id}`
 - **Test Steps (ขั้นตอนการทดสอบ)**:
   1. เรียกดูรายละเอียดด้วย `GET /api/v1/history/{scan_id}`
-  2. ลบด้วย `DELETE /api/v1/history/{scan_id}`
-  3. เรียกดูซ้ำด้วย `GET` เดิม
+  2. ตรวจฟิลด์และเจ้าของงาน
 - **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
-1. `GET` ครั้งแรกตอบ `200 OK` พร้อมข้อมูลตรงกับเจ้าของงาน
-2. `DELETE` ตอบสำเร็จและลบไฟล์ภาพเมื่อไม่มีงานอื่นใช้ `image_hash` เดียวกัน
-3. `GET` ซ้ำตอบ `404 Not Found` พร้อม `{"detail": "Scan not found"}`
+  1. ตอบ `200 OK` พร้อมข้อมูลตรงกับเจ้าของงาน (`scan_id`, `risk_score`, `risk_level` ตัวพิมพ์เล็ก, `status`, `created_at`, `title`)
+  2. เปิดงานของผู้อื่นได้ `403 Forbidden` พร้อม `{"detail": "Not authorized to view this scan"}`
+- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_history.py`
+
+---
+
+### TC-BE-HIST-02B: การลบประวัติและการยืนยันว่าไม่พบ (History Delete Verify)
+- **Module / Feature**: History / Delete
+- **Requirement ID**: FR-HIST-03
+- **Test Type**: Functional
+- **Priority**: P1 (High)
+- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
+  1. reseed ใน TC เอง: อัปโหลดภาพทดสอบ 1 ไฟล์ รอจน `completed` จด `scan_id` และ `image_hash` (ห้ามอ้าง scan_id จาก TC-BE-HIST-02A)
+- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
+  - Endpoint: `DELETE /api/v1/history/{scan_id}`
+  - Endpoint: `GET /api/v1/history/{scan_id}`
+- **Test Steps (ขั้นตอนการทดสอบ)**:
+  1. ลบด้วย `DELETE /api/v1/history/{scan_id}`
+  2. เรียกดูซ้ำด้วย `GET` เดิม
+  3. ตรวจไฟล์ภาพต้นฉบับและ Heatmap บนดิสก์ตามเงื่อนไข `image_hash` ร่วม
+- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
+  1. `DELETE` ตอบสำเร็จ และลบไฟล์ภาพเมื่อไม่มีงานอื่นใช้ `image_hash` เดียวกัน (หากมีงานอื่นใช้ร่วม ไฟล์ต้องคงอยู่)
+  2. `GET` ซ้ำตอบ `404 Not Found` พร้อม `{"detail": "Scan not found"}`
 - **Automation Mapping**: `tests_all/automate_tests/tests/api/test_history.py`
 
 ---
@@ -591,8 +613,10 @@
   1. body ว่าง อีเมลผิดรูปแบบ และไม่ส่ง `full_name` ได้ `422 Unprocessable Entity` และไม่มีแถวใหม่ในตาราง `users`
   2. อีเมลซ้ำได้ `400 Bad Request` พร้อม `{"detail": "Email already registered"}` (หมายเหตุ: ปลายทางนี้ใช้ 400 ไม่ใช่ 409)
   3. ฟิลด์ `role` ที่ส่งมาเพิ่มถูกเพิกเฉย บัญชีใหม่มี `role` เป็น `user` เสมอ และไม่มี Plaintext Password ใน Response
-  4. รหัสผ่านสั้นยังสร้างบัญชีสำเร็จ (`201 Created`) เนื่องจากฝั่งบริการไม่มีเกณฑ์ความยาวขั้นต่ำ การตรวจความยาวทำที่ฝั่งแอปเท่านั้น
+  4. รหัสผ่านสั้น (เช่น `abc` ต่ำกว่า 8 ตัวอักษร) ต้องถูกปฏิเสธด้วย `422 Unprocessable Entity` ตามเกณฑ์ความยาวขั้นต่ำฝั่ง Server (min-length 8) และไม่มีแถวใหม่ในตาราง `users`
   5. ไม่ส่ง `system_consent` และ `research_consent` ระบบบันทึกค่าเริ่มต้น (`system_consent` เป็นจริง `research_consent` เป็นเท็จ) ลงตาราง `consent_logs`
+- **Defect Log (ยังไม่ผ่าน — ห้ามรับรองเป็น pass)**:
+  - `DEFECT-BE-AUTH-07`: พฤติกรรมปัจจุบันยังสร้างบัญชีสำเร็จ (`201 Created`) เพราะฝั่งบริการไม่มีเกณฑ์ความยาวขั้นต่ำ (ตรวจเฉพาะฝั่งแอป) — เป็น normalization of deviance ฝั่งความปลอดภัย TC ข้อนี้คงสถานะ FAIL จนกว่าจะเพิ่ม min-length ฝั่ง Server
 - **Automation Mapping**: `tests_all/automate_tests/tests/api/test_auth_flow.py`
 
 ---
@@ -607,7 +631,7 @@
   2. มี `scan_id` ของผู้ใช้อีกคนหนึ่งราย
 - **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
   - Endpoint: `GET /api/v1/history`, `GET /api/v1/scan/{scan_id}`, `POST /api/v1/reports`, `GET /api/v1/admin/users`
-  - Header: `Authorization: Bearer <expired_or_malformed_token>` และ `Bearer <normal_user_token>`
+  - Header: `Authorization: Bearer <expir...en>` และ `Bearer <normal_user_token>`
 - **Test Steps (ขั้นตอนการทดสอบ)**:
   1. เรียก `GET /api/v1/history` ด้วย Token หมดอายุและด้วย Token รูปแบบผิด
   2. เรียก `GET /api/v1/scan/{scan_id}` ของผู้ใช้คนอื่นด้วย Token ผู้ใช้ทั่วไป
@@ -624,7 +648,7 @@
 
 ## 10. หมวดหมู่การป้องกันข้อมูลอันตราย (Injection Safety)
 
-### TC-BE-SEC-01: การรับข้อความ SQLi และ XSS ในชื่อเรื่อง คำค้น และรายละเอียดรายงาน (SQLi Plus XSS Payloads)
+### TC-BE-SEC-01: การรับข้อความ SQLi และ XSS ในชื่อเรื่อง คำค้น รายงาน และฟิลด์สมัคร/ล็อกอิน (SQLi Plus XSS incl. Auth Fields)
 - **Module / Feature**: Security / Untrusted Text in Title Keyword and Description
 - **Requirement ID**: NFR-SEC-04
 - **Test Type**: Security
@@ -636,14 +660,18 @@
   - Endpoint: `POST /api/v1/scan/` ฟิลด์ฟอร์ม `title` เป็น `' OR '1'='1` และ `<script>alert(1)</script>`
   - Endpoint: `GET /api/v1/history?keyword=<script>alert(1)</script>`
   - Endpoint: `POST /api/v1/reports` ฟิลด์ `description` (ยาวเกิน 10 ตัวอักษร) เป็น `<img src=x onerror=alert(1)> สลิปปลอมยอดเงิน`
+  - Endpoint: `POST /api/v1/auth/register` ฟิลด์ `full_name` เป็น `<script>alert(1)</script>` และฟิลด์ `email` เป็น `x'OR'1'='1@e.com` (รูปแบบผ่าน validation ได้) ควบคู่กับเคส `' OR '1'='1`
+  - Endpoint: `POST /api/v1/auth/login` ฟิลด์ฟอร์ม `username`/`password` เป็น `' OR '1'='1` และ `<script>alert(1)</script>`
 - **Test Steps (ขั้นตอนการทดสอบ)**:
   1. อัปโหลดภาพพร้อม `title` ที่เป็นข้อความโจมตี แล้วเปิดดูประวัติ
   2. ค้นหาประวัติด้วย `keyword` ที่เป็นข้อความโจมตี
   3. ส่งรายงานด้วย `description` ที่ฝังแท็ก แล้วดึงรายงานของตนเองด้วย `GET /api/v1/reports/my`
+  4. ยิง `POST /api/v1/auth/register` ด้วย payload โจมตี แล้วตรวจว่าไม่มีบัญชีผิดปกติและไม่มี error 500 จากนั้นยิง `POST /api/v1/auth/login` ด้วยข้อความโจมตี ตรวจว่าไม่หลุดล็อกอิน
 - **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
   1. ทุกคำขอผ่านตามปกติ (`200 OK` หรือ `201 Created`) โดยข้อความโจมตีถูกเก็บและแสดงเป็นตัวอักษรธรรมดา ไม่รันสคริปต์
   2. การค้นหาไม่เกิดข้อผิดพลาดฐานข้อมูล ไม่คืนข้อมูลของผู้อื่น ไม่หลุดโครงสร้างตาราง
   3. ไม่มีไฟล์อันตรายถูกเขียนลงดิสก์เพิ่มนอกเหนือภาพหลักฐานปกติ และไม่มีบันทึกผิดปกติในตาราง `audit_log`
+  4. ฟิลด์สมัคร/ล็อกอิน: payload โจมตีต้องไม่ทำให้เกิด SQL error/500 และไม่หลุดล็อกอินโดยไม่ใช้รหัสผ่านที่ถูกต้อง (login ผิดตอบ `401` หรือ `422` ตามปกติ) ข้อความที่เก็บต้องแสดงเป็นตัวอักษรธรรมดา ไม่รันสคริปต์
 - **Automation Mapping**: `tests_all/automate_tests/tests/api/test_scan_workflow.py`
 
 ---
