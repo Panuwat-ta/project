@@ -1,26 +1,12 @@
-# ============================================================
-# SegFormer MiT-B2 - Forgery Localization Training Config (v10)
-# Lessons applied from v1.0.0-v1.0.4 + dataset audits (2026-09):
-#  1. Data comes ONLY from the new clean tree (PNG lossless + manifest +
-#     stem-grouped train/val/test, no recompressed duplicates). Set DATA_ROOT
-#     to the machine's copy of ~/Pictures/dataset before training.
-#  2. Val covers ALL sources (v8/v9 validated on casia+imd2020 only -> blind).
-#  3. Dedicated TEST dataloader on locked test/ splits (never for tuning).
-#  4. Pure-authentic source included (old configs had none standalone).
-# Optimized for 8 GB VRAM GPU | ImageNet-pretrained backbone (not scratch)
-# ============================================================
-
-# >>> แก้ path นี้บนเครื่องเทรนให้ชี้โฟลเดอร์ dataset ที่ clean แล้ว <<<
-DATA_ROOT = '/home/panuwat/Pictures/dataset'
+# SegFormer MiT-B2 Forgery Localization (v10) — 8GB VRAM, ImageNet-pretrained backbone.
+# Data: clean tree only (PNG lossless, stem-grouped train/val/test).
+# Set DATA_ROOT on the training machine before running.
+DATA_ROOT = '/run/media/panuwat/USB/dataset'
 
 _base_ = [
     '../library/mmsegmentation/configs/segformer/'
     'segformer_mit-b0_8xb2-160k_ade20k-512x512.py'
 ]
-
-# ============================================================
-# Model Settings
-# ============================================================
 
 checkpoint = (
     'https://download.openmmlab.com/mmsegmentation/v0.5/'
@@ -31,44 +17,32 @@ checkpoint = (
 model = dict(
     backbone=dict(
         type='MixVisionTransformer',
-        init_cfg=dict(
-            type='Pretrained',
-            checkpoint=checkpoint
-        ),
+        init_cfg=dict(type='Pretrained', checkpoint=checkpoint),
         embed_dims=64,
         num_heads=[1, 2, 5, 8],
         num_layers=[3, 4, 6, 3]
     ),
-
     decode_head=dict(
         type='SegformerHead',
         in_channels=[64, 128, 320, 512],
         channels=256,
         num_classes=2,
         ignore_index=255,
-
-        # ------------------------------------------------------------
-        # Loss Function: ถ่วงน้ำหนักคลาส Forgery ป้องกันปัญหาทายแต่ Background
-        # ------------------------------------------------------------
         loss_decode=[
             dict(
                 type='CrossEntropyLoss',
                 use_sigmoid=False,
                 loss_weight=1.0,
-                class_weight=[1.0, 2.5]  # [0: Background=1.0, 1: Forgery=2.5]
+                class_weight=[1.0, 2.5]
             ),
             dict(
                 type='DiceLoss',
-                loss_weight=1.5,         # เน้นความคมชัดของขอบรอยต่อ
+                loss_weight=1.5,
                 ignore_index=255
             )
         ]
     )
 )
-
-# ============================================================
-# Dataset Settings
-# ============================================================
 
 dataset_type = 'BaseSegDataset'
 
@@ -85,14 +59,10 @@ metainfo = dict(
     palette=[[0, 0, 0], [255, 0, 0]]
 )
 
-# ============================================================
-# Data Pipeline with Realistic Augmentations
-# ============================================================
-
 albu_train_transforms = [
-    dict(type='ImageCompression', quality_lower=40, quality_upper=95, p=0.5),
+    dict(type='ImageCompression', quality_range=(40, 95), p=0.5),
     dict(type='GaussianBlur', blur_limit=(3, 7), p=0.3),
-    dict(type='GaussNoise', var_limit=(10.0, 50.0), p=0.3),
+    dict(type='GaussNoise', std_range=(0.01, 0.03), p=0.3),
     dict(type='ColorJitter', brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1, p=0.5),
 ]
 
@@ -114,162 +84,43 @@ test_pipeline = [
     dict(type='PackSegInputs')
 ]
 
-# ============================================================
-# Sub-Datasets Definition
-# ============================================================
 
-dataset_casia_train = dict(
-    type=dataset_type,
-    data_root=casia_root,
-    metainfo=metainfo,
-    data_prefix=dict(
-        img_path='images/train',
-        seg_map_path='annotations/train'
-    ),
-    pipeline=train_pipeline
-)
+def _ds(root, split, pipeline):
+    # img_suffix must be .png: mmseg defaults to .jpg which finds 0 files here.
+    return dict(
+        type=dataset_type,
+        img_suffix='.png',
+        data_root=root,
+        metainfo=metainfo,
+        data_prefix=dict(
+            img_path=f'images/{split}',
+            seg_map_path=f'annotations/{split}'
+        ),
+        pipeline=pipeline
+    )
 
-dataset_defacto_inpaint_train = dict(
-    type=dataset_type,
-    data_root=defacto_inpaint_root,
-    metainfo=metainfo,
-    data_prefix=dict(
-        img_path='images/train',
-        seg_map_path='annotations/train'
-    ),
-    pipeline=train_pipeline
-)
 
-dataset_defacto_copymove_train = dict(
-    type=dataset_type,
-    data_root=defacto_copymove_root,
-    metainfo=metainfo,
-    data_prefix=dict(
-        img_path='images/train',
-        seg_map_path='annotations/train'
-    ),
-    pipeline=train_pipeline
-)
+_TRAIN_ROOTS = [casia_root, authentic_root, defacto_splicing_root,
+                defacto_inpaint_root, defacto_copymove_root,
+                defacto_face_root, imd2020_root]
 
-dataset_defacto_splicing_train = dict(
-    type=dataset_type,
-    data_root=defacto_splicing_root,
-    metainfo=metainfo,
-    data_prefix=dict(
-        img_path='images/train',
-        seg_map_path='annotations/train'
-    ),
-    pipeline=train_pipeline
-)
-
-dataset_defacto_face_train = dict(
-    type=dataset_type,
-    data_root=defacto_face_root,
-    metainfo=metainfo,
-    data_prefix=dict(
-        img_path='images/train',
-        seg_map_path='annotations/train'
-    ),
-    pipeline=train_pipeline
-)
-
-dataset_imd2020_train = dict(
-    type=dataset_type,
-    data_root=imd2020_root,
-    metainfo=metainfo,
-    data_prefix=dict(
-        img_path='images/train',
-        seg_map_path='annotations/train'
-    ),
-    pipeline=train_pipeline
-)
-
-dataset_authentic_train = dict(
-    type=dataset_type,
-    data_root=authentic_root,
-    metainfo=metainfo,
-    data_prefix=dict(
-        img_path='images/train',
-        seg_map_path='annotations/train'
-    ),
-    pipeline=train_pipeline
-)
-
-# Balanced Sampling: สุ่มซ้ำ CASIA 2.0 (5 เท่า) ป้องกันภาพตัดต่อฝีมือมนุษย์ถูกกลืน
+dataset_casia_train = _ds(casia_root, 'train', train_pipeline)
 dataset_casia_train_oversampled = dict(
     type='RepeatDataset',
     times=5,
     dataset=dataset_casia_train
 )
 
-# Validation Datasets — v10: ครบทุกแหล่ง (v8/v9 ดูแค่ casia+imd = บอดแหล่งอื่น)
-def _val_ds(root):
-    return dict(
-        type=dataset_type,
-        data_root=root,
-        metainfo=metainfo,
-        data_prefix=dict(
-            img_path='images/val',
-            seg_map_path='annotations/val'
-        ),
-        pipeline=test_pipeline
-    )
-
-
-def _test_ds(root):
-    d = _val_ds(root)
-    d = dict(d)
-    d['data_prefix'] = dict(img_path='images/test', seg_map_path='annotations/test')
-    return d
-
-
-_VAL_ROOTS = [casia_root, authentic_root, defacto_splicing_root,
-              defacto_inpaint_root, defacto_copymove_root,
-              defacto_face_root, imd2020_root]
-
-dataset_casia_val = dict(
-    type=dataset_type,
-    data_root=casia_root,
-    metainfo=metainfo,
-    data_prefix=dict(
-        img_path='images/val',
-        seg_map_path='annotations/val'
-    ),
-    pipeline=test_pipeline
-)
-
-dataset_imd2020_val = dict(
-    type=dataset_type,
-    data_root=imd2020_root,
-    metainfo=metainfo,
-    data_prefix=dict(
-        img_path='images/val',
-        seg_map_path='annotations/val'
-    ),
-    pipeline=test_pipeline
-)
-
-# ============================================================
-# Dataloaders (Optimized for 8 GB VRAM: Batch Size = 16)
-# ============================================================
-
 train_dataloader = dict(
-    batch_size=16,          # การ์ด 8 GB; ถ้า OOM ลดเหลือ 8 (เท่ากับ v8 ตรงๆ)
+    # batch 16 OOMs on 8GB (proven 2026-09-10): 8 + accumulate 2 = effective 16.
+    batch_size=8,
     num_workers=8,
     persistent_workers=True,
-
     dataset=dict(
         _delete_=True,
         type='ConcatDataset',
-        datasets=[
-            dataset_casia_train_oversampled,
-            dataset_authentic_train,
-            dataset_defacto_splicing_train,
-            dataset_defacto_inpaint_train,
-            dataset_defacto_copymove_train,
-            dataset_defacto_face_train,
-            dataset_imd2020_train
-        ]
+        datasets=[dataset_casia_train_oversampled] +
+                 [_ds(r, 'train', train_pipeline) for r in _TRAIN_ROOTS[1:]]
     )
 )
 
@@ -277,30 +128,24 @@ val_dataloader = dict(
     batch_size=16,
     num_workers=8,
     persistent_workers=True,
-
     dataset=dict(
         _delete_=True,
         type='ConcatDataset',
-        datasets=[_val_ds(r) for r in _VAL_ROOTS]
+        datasets=[_ds(r, 'val', test_pipeline) for r in _TRAIN_ROOTS]
     )
 )
 
-# Locked TEST set — ใช้ตัดสินครั้งเดียวตอนจบ ห้าม tune ด้วยชุดนี้
+# Locked TEST set: judge once at the end, never tune on it.
 test_dataloader = dict(
     batch_size=16,
     num_workers=8,
     persistent_workers=True,
-
     dataset=dict(
         _delete_=True,
         type='ConcatDataset',
-        datasets=[_test_ds(r) for r in _VAL_ROOTS]
+        datasets=[_ds(r, 'test', test_pipeline) for r in _TRAIN_ROOTS]
     )
 )
-
-# ============================================================
-# Evaluation Metrics
-# ============================================================
 
 val_evaluator = dict(
     type='IoUMetric',
@@ -309,19 +154,15 @@ val_evaluator = dict(
 
 test_evaluator = val_evaluator
 
-# ============================================================
-# Optimizer & Differential Learning Rate (Linear Scaled for Batch 16)
-# ============================================================
-
 optim_wrapper = dict(
     type='AmpOptimWrapper',
+    accumulative_counts=2,
     optimizer=dict(
         type='AdamW',
-        lr=2e-5,            # ปรับเพิ่มเป็น 2e-5 ตาม Linear Scaling Rule สำหรับ Batch Size 16
+        lr=2e-5,
         betas=(0.9, 0.999),
         weight_decay=0.01
     ),
-
     paramwise_cfg=dict(
         custom_keys={
             'backbone': dict(lr_mult=0.1, decay_mult=1.0),
@@ -330,11 +171,7 @@ optim_wrapper = dict(
     )
 )
 
-# ============================================================
-# Scheduler & Training Iterations (200,000 iters budget)
-# ============================================================
-
-max_iters = 200000  # กันงบไว้ 200k (save_best ตัดสินเอง อาจหยุดก่อนถ้า val นิ่ง)
+max_iters = 200000
 
 param_scheduler = [
     dict(
@@ -357,12 +194,8 @@ param_scheduler = [
 train_cfg = dict(
     type='IterBasedTrainLoop',
     max_iters=max_iters,
-    val_interval=2500  # ประเมินผลทุกๆ 2,500 รอบ
+    val_interval=2500
 )
-
-# ============================================================
-# Checkpoint Saving Hook
-# ============================================================
 
 default_hooks = dict(
     checkpoint=dict(
