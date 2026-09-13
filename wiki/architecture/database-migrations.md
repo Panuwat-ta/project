@@ -3,7 +3,7 @@ title: "การจัดการการย้ายฐานข้อมู
 category: architecture
 tags: [database, postgresql, alembic, sqlalchemy, migration, schema]
 sources: [Document/database/alembic.md]
-updated: 2026-09-06
+updated: 2026-09-13
 ---
 
 # การจัดการการย้ายฐานข้อมูล (Database Migrations)
@@ -28,7 +28,7 @@ server/
 ├── migrations/
 │   ├── env.py                     # สคริปต์เชื่อมต่อ SQLAlchemy Models กับฐานข้อมูล
 │   ├── script.py.mako             # Template สำหรับสร้างไฟล์ Migration ใหม่
-│   └── versions/                  # ไฟล์ประวัติการเปลี่ยนแปลงทั้งหมด 13 ไฟล์ (เรียงตามสายโซ่ down_revision)
+│   └── versions/                  # ไฟล์ประวัติการเปลี่ยนแปลงทั้งหมด 16 ไฟล์ (เรียงตามสายโซ่ down_revision)
 │       ├── c5d636f20434_initial_migration.py
 │       ├── 45368bf51fde_update_scam_reports_table.py
 │       ├── 62cb9477cf84_add_admin_table.py
@@ -41,9 +41,12 @@ server/
 │       ├── 042de00eee1b_rename_metrics_to_segformer_metrics.py
 │       ├── 8bb2e7d0af3c_add_title_to_scan.py
 │       ├── 9a0123c45678_add_progress_to_scan.py
-│       └── efdfc08f2155_add_xai_explanation_to_scans.py   # head ล่าสุด
+│       ├── efdfc08f2155_add_xai_explanation_to_scans.py
+│       ├── d4e5f6a7b8c9_design_review_fixes.py
+│       ├── b7c8d9e0f1a2_anonymize_consent_on_user_delete.py
+│       └── c8d9e0f1a2b3_log_retention_archive.py   # head ล่าสุด
 └── app/
-    └── models/                    # นิยาม SQLAlchemy ORM Models (9 ตาราง)
+    └── models/                    # นิยาม SQLAlchemy ORM Models (11 ตาราง)
         ├── user.py                # Model ตาราง users
         ├── admin.py               # Model ตาราง admins
         ├── scan.py                # Model ตาราง scans
@@ -52,12 +55,13 @@ server/
         ├── model_version.py       # Model ตาราง model_versions
         ├── admin_session.py       # Model ตาราง admin_sessions
         ├── audit_log.py           # Model ตาราง audit_log
-        └── export_job.py          # Model ตาราง export_jobs
+        ├── export_job.py          # Model ตาราง export_jobs
+        └── log_archive.py         # Model ตาราง audit_log_archive + consent_logs_archive
 ```
 
 > [!NOTE]
 > ไฟล์ `database/init.sql` มีแค่ `CREATE EXTENSION IF NOT EXISTS "uuid-ossp";` เท่านั้น —
-> ไม่ได้สร้างตารางใด ๆ ตารางทั้ง 9 สร้างผ่าน Alembic migrations ข้างต้นทั้งหมด
+> ไม่ได้สร้างตารางใด ๆ ตารางทั้ง 11 สร้างผ่าน Alembic migrations ข้างต้นทั้งหมด
 
 ---
 
@@ -104,7 +108,7 @@ alembic downgrade -1
 
 ---
 
-## 3.6 ประวัติ Migration รายไฟล์ (13 ไฟล์ ตามลำดับสายโซ่)
+## 3.6 ประวัติ Migration รายไฟล์ (16 ไฟล์ ตามลำดับสายโซ่)
 
 | ลำดับ | ไฟล์ (revision) | ต่อจาก | สรุปการเปลี่ยนแปลง |
 | :--- | :--- | :--- | :--- |
@@ -120,7 +124,10 @@ alembic downgrade -1
 | 10 | `042de00eee1b_rename_metrics_to_segformer_metrics.py` | e3844dc4110e | ลบ accuracy/precision/recall แล้วเพิ่ม a_acc/m_iou/m_acc/m_dice แทน (ดู 3.8) — downgrade สร้างคอลัมน์เดิมกลับ |
 | 11 | `8bb2e7d0af3c_add_title_to_scan.py` | 042de00eee1b | เพิ่มคอลัมน์ title (nullable) ให้ scans |
 | 12 | `9a0123c45678_add_progress_to_scan.py` | 8bb2e7d0af3c | เพิ่มคอลัมน์ progress (NOT NULL, default 0) ให้ scans |
-| 13 | `efdfc08f2155_add_xai_explanation_to_scans.py` | 9a0123c45678 | เพิ่มคอลัมน์ xai_explanation (nullable) ให้ scans — head ล่าสุด |
+| 13 | `efdfc08f2155_add_xai_explanation_to_scans.py` | 9a0123c45678 | เพิ่มคอลัมน์ xai_explanation (nullable) ให้ scans |
+| 14 | `d4e5f6a7b8c9_design_review_fixes.py` | efdfc08f2155 | CHECK constraints (role/status/category/score) + index FK ที่ขาด + FK เป็น SET NULL ทั้งหมด + consent/export admin_id เป็น nullable + data migration `fake_image`→`other` 3 แถว (ดู 3.9) |
+| 15 | `b7c8d9e0f1a2_anonymize_consent_on_user_delete.py` | d4e5f6a7b8c9 | trigger `trg_anonymize_consent_on_user_delete` ล้าง ip/user_agent ใน consent_logs เมื่อลบ user |
+| 16 | `c8d9e0f1a2b3_log_retention_archive.py` | b7c8d9e0f1a2 | ตาราง `audit_log_archive`/`consent_logs_archive` + เปิดช่อง archive ให้ trigger audit ผ่าน `SET LOCAL` (ดู 3.10) — head ล่าสุด |
 
 ### 3.7 Trigger append-only ของ audit_log (`e3844dc4110e`)
 
@@ -135,6 +142,19 @@ alembic downgrade -1
 - migration `cd0116a8d7bc` เคยเพิ่ม `accuracy / precision / recall` ให้ `model_versions`
 - migration `042de00eee1b` ลบคอลัมน์ทั้งสามทิ้ง แล้วเพิ่ม `a_acc / m_iou / m_acc / m_dice`
   (SegFormer-style metrics, Float, nullable) แทน — โค้ดปัจจุบัน (`model_version.py`) ใช้ชื่อใหม่นี้
+
+### 3.9 Design review fixes (`d4e5f6a7b8c9`)
+
+- ที่มา: รีวิว schema เทียบหลักการออกแบบ — enum คุมแค่โค้ด, FK ขาด index, ondelete ไม่สม่ำเสมอ,
+  consent CASCADE ลบหลักฐาน PDPA
+- เพิ่ม CHECK ระดับ DB ตรงกับค่าที่โค้ดใช้จริง (สแกน status 8 ค่า, category 7 ค่า canonical ตาม `ReportCategory`)
+- Upgrade บนข้อมูลจริงเจอ `category='fake_image'` (legacy ก่อน DOC-08) 3 แถว → data migration เป็น `'other'` ก่อนสร้าง CHECK
+
+### 3.10 Log retention archive (`c8d9e0f1a2b3`)
+
+- สร้างตาราง archive 2 ตาราง (+`archived_at`, ไม่มี FK/trigger) คู่กับสคริปต์ `scripts/archive_old_logs.py` (retention 1 ปี)
+- เปิดช่องให้ trigger audit ยอม DELETE เฉพาะ transaction ที่ตั้ง `SET LOCAL app.allow_audit_archive='on'`
+  (transaction-scoped — session อื่นไม่ได้รับสิทธิ์, app ไม่เคยตั้งค่านี้)
 
 ---
 
