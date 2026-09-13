@@ -49,7 +49,7 @@ Acceptance Criteria:
 **Acceptance Criteria:**
 
 **AC-1: สมัครสมาชิกสำเร็จ**
-- **Input:** Full Name, Valid Email (ไม่ซ้ำ), Password (≥8 ตัวอักษร), System Consent = true, Research Consent = true/false
+- **Input:** Full Name `bas test`, Email `new.user01@example.com` (ไม่ซ้ำในระบบ), Password `Test1234!` (≥8 ตัวอักษร), System Consent = true, Research Consent = true/false
 - **Processing:** 
   - ตรวจสอบรูปแบบ Email (RFC 5322)
   - ตรวจสอบ Email ไม่ซ้ำในฐานข้อมูล
@@ -89,7 +89,7 @@ Acceptance Criteria:
 **Acceptance Criteria:**
 
 **AC-1: เข้าสู่ระบบสำเร็จ**
-- **Input:** Valid Email, Correct Password
+- **Input:** Email `user01@example.com` (มีในระบบ, status = active), Password ตรงกับ seed (`Test1234!`)
 - **Processing:** 
   - ตรวจสอบ Email และ Password
   - ตรวจสอบ status = active
@@ -98,12 +98,12 @@ Acceptance Criteria:
 - **Expected Output:** HTTP 200, Response Body: `{access_token, refresh_token, token_type: "bearer", expires_in: 900}`
 
 **AC-2: ปฏิเสธรหัสผ่านผิด**
-- **Input:** Valid Email, Wrong Password
+- **Input:** Email `user01@example.com`, Password ผิด (`Wrong1234!`)
 - **Processing:** ตรวจสอบรหัสผ่าน (bcrypt verify)
 - **Expected Output:** HTTP 401, Error Message: "Invalid email or password"
 
 **AC-3: ปฏิเสธบัญชีที่ถูกปิด**
-- **Input:** Valid Email, Correct Password, status = inactive
+- **Input:** Email `inactive01@example.com` (status = inactive), Password ตรงกับ seed (`Test1234!`)
 - **Processing:** ตรวจสอบ status
 - **Expected Output:** HTTP 403, Error Message: "Account is inactive"
 
@@ -123,7 +123,7 @@ Acceptance Criteria:
 **Acceptance Criteria:**
 
 **AC-1: ต่ออายุสำเร็จ**
-- **Input:** Valid Refresh Token (ยังไม่หมดอายุ)
+- **Input:** Refresh Token ของ `user01@example.com` (ยังไม่หมดอายุ, ออกให้ตอน login สำเร็จ)
 - **Processing:** 
   - ตรวจสอบ Refresh Token (signature, expiration)
   - สร้าง Access Token ใหม่

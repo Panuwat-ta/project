@@ -21,7 +21,7 @@ export default function App() {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>("splash");
   
   // User Profiling state
-  const [userName, setUserName] = useState("สมชาย รักความปลอดภัย");
+  const [userName, setUserName] = useState("bas test");
   const [userEmail, setUserEmail] = useState("somchai.s@email.com");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 

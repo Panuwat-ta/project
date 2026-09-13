@@ -241,6 +241,20 @@ erDiagram
   (+`archived_at`) แล้วลบจากตารางจริงเป็น batch; audit ใช้ `SET LOCAL app.allow_audit_archive='on'
   (transaction-scoped, app ไม่เคยตั้ง); DELETE ปกติยังโดน trigger กันเหมือนเดิม; มี `--dry-run`
 
+## System context (DB อยู่ตรงไหนในระบบ)
+```mermaid
+flowchart LR
+    Mobile[Mobile App] --> API[FastAPI Orchestrator]
+    Portal[Admin Portal] --> API
+    API --> PG[(PostgreSQL<br/>11 ตารางในไฟล์นี้)]
+    API --> Redis[(Redis<br/>cache + queue)]
+    API --> Files[File Storage<br/>local ./uploads / GCS]
+    Archive[archive_*.py + cron] --> PG
+```
+- C1/C2/C3 เต็มดู `Document/docs/03_Software_Architecture.md` (§2–§4) — ไฟล์นี้ลงลึกเฉพาะ Postgres
+- Redis ไม่เก็บข้อมูลถาวร (cache ผล inference ตาม `image_hash` + queue) จึงไม่มีใน ER
+- pgAdmin มีแค่ dev (`database/docker-compose.yml`) ไม่เกี่ยว production
+
 ## Version เอกสาร
 - อัปเดตล่าสุด: 2026-09-13, migration head `c8d9e0f1a2b3`
 - ทุกครั้งที่เปลี่ยน schema: แก้ `server/app/models/` + เพิ่ม migration + อัปเดตไฟล์นี้ให้ตรงกัน

@@ -292,7 +292,7 @@ Admin Portal ใช้ Dark Theme เป็นหลัก สอดคล้อ
 +----------------------------------------------------------+
 | [Reports Table]                                           |
 | # | Thumbnail | Category | Reporter | Risk | Status | Date|
-| 42| [img]     | สลิปปลอม | สมชาย    | 82   | Pending| ... |
+| 42| [img]     | สลิปปลอม | bas    | 82   | Pending| ... |
 | 41| [img]     | ซื้อขาย  | สมหญิง   | 65   | Approved|... |
 +----------------------------------------------------------+
 | [Pagination]                         Showing 1-20 of 28   |
@@ -385,7 +385,7 @@ Admin Portal ใช้ Dark Theme เป็นหลัก สอดคล้อ
 | ยินยอมวิจัย: ใช่                   | === คะแนนเสี่ยง ===   |
 |                                    | Total: 82 [HIGH]     |
 | === ข้อมูลผู้รายงาน ===            | Text: 80 | Visual: 90|
-| ชื่อ: สมชาย ใจดี                   | Source: 50           |
+| ชื่อ: bas test                   | Source: 50           |
 | Email: reporter@...                |                      |
 | รายงานที่เคยส่ง: 3                 | === ผลวิเคราะห์ ===   |
 |                                    | OCR: "ยินดีด้วย..."   |
@@ -485,7 +485,7 @@ Admin Portal ใช้ Dark Theme เป็นหลัก สอดคล้อ
 +----------------------------------------------------------+
 | [Users Table]                                             |
 | # | Avatar | Name/Email | Role | Scans | Reports |Status |
-| 101| [A]   | สมชาย/...  | User | 15    | 3       |Active |
+| 101| [A]   | bas/...  | User | 15    | 3       |Active |
 | 102| [A]   | สมหญิง/... | Res. | 8     | 1       |Active |
 +----------------------------------------------------------+
 | [Pagination]                       Showing 1-20 of 1,250 |
