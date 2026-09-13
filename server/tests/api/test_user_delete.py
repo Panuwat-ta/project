@@ -12,8 +12,8 @@ user_service.verify_password = lambda pw, hsh: pw == "password123" and hsh == "m
 
 
 def _user(active=True):
-    return User(id=7, email="del@test.local", hashed_password="mocked_hash",
-                role="user", full_name="Del", is_active=active)
+    return User(id=7, email="bastest@test.local", hashed_password="mocked_hash",
+                role="user", full_name="bastest", is_active=active)
 
 
 def _session():
