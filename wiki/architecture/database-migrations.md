@@ -28,7 +28,7 @@ server/
 ├── migrations/
 │   ├── env.py                     # สคริปต์เชื่อมต่อ SQLAlchemy Models กับฐานข้อมูล
 │   ├── script.py.mako             # Template สำหรับสร้างไฟล์ Migration ใหม่
-│   └── versions/                  # ไฟล์ประวัติการเปลี่ยนแปลงทั้งหมด 17 ไฟล์ (เรียงตามสายโซ่ down_revision)
+│   └── versions/                  # ไฟล์ประวัติการเปลี่ยนแปลงทั้งหมด 18 ไฟล์ (เรียงตามสายโซ่ down_revision)
 │       ├── c5d636f20434_initial_migration.py
 │       ├── 45368bf51fde_update_scam_reports_table.py
 │       ├── 62cb9477cf84_add_admin_table.py
@@ -45,7 +45,8 @@ server/
 │       ├── d4e5f6a7b8c9_design_review_fixes.py
 │       ├── b7c8d9e0f1a2_anonymize_consent_on_user_delete.py
 │       ├── c8d9e0f1a2b3_log_retention_archive.py
-│       └── d9e0f1a2b3c4_add_updated_at_to_scans.py   # head ล่าสุด
+│       ├── d9e0f1a2b3c4_add_updated_at_to_scans.py
+│       └── e0f1a2b3c4d5_app_role_least_privilege.py   # head ล่าสุด
 └── app/
     └── models/                    # นิยาม SQLAlchemy ORM Models (11 ตาราง)
         ├── user.py                # Model ตาราง users
@@ -109,7 +110,7 @@ alembic downgrade -1
 
 ---
 
-## 3.6 ประวัติ Migration รายไฟล์ (17 ไฟล์ ตามลำดับสายโซ่)
+## 3.6 ประวัติ Migration รายไฟล์ (18 ไฟล์ ตามลำดับสายโซ่)
 
 | ลำดับ | ไฟล์ (revision) | ต่อจาก | สรุปการเปลี่ยนแปลง |
 | :--- | :--- | :--- | :--- |
@@ -129,7 +130,8 @@ alembic downgrade -1
 | 14 | `d4e5f6a7b8c9_design_review_fixes.py` | efdfc08f2155 | CHECK constraints (role/status/category/score) + index FK ที่ขาด + FK เป็น SET NULL ทั้งหมด + consent/export admin_id เป็น nullable + data migration `fake_image`→`other` 3 แถว (ดู 3.9) |
 | 15 | `b7c8d9e0f1a2_anonymize_consent_on_user_delete.py` | d4e5f6a7b8c9 | trigger `trg_anonymize_consent_on_user_delete` ล้าง ip/user_agent ใน consent_logs เมื่อลบ user |
 | 16 | `c8d9e0f1a2b3_log_retention_archive.py` | b7c8d9e0f1a2 | ตาราง `audit_log_archive`/`consent_logs_archive` + เปิดช่อง archive ให้ trigger audit ผ่าน `SET LOCAL` (ดู 3.10) |
-| 17 | `d9e0f1a2b3c4_add_updated_at_to_scans.py` | c8d9e0f1a2b3 | เพิ่มคอลัมน์ `updated_at` (nullable, server_default now, onupdate) ให้ scans — head ล่าสุด |
+| 17 | `d9e0f1a2b3c4_add_updated_at_to_scans.py` | c8d9e0f1a2b3 | เพิ่มคอลัมน์ `updated_at` (nullable, server_default now, onupdate) ให้ scans |
+| 18 | `e0f1a2b3c4d5_app_role_least_privilege.py` | d9e0f1a2b3c4 | role `scamguard_app` (NOLOGIN): CONNECT + DML บนตารางปัจจุบันและอนาคต (DEFAULT PRIVILEGES), ไม่มี DDL — head ล่าสุด |
 
 ### 3.7 Trigger append-only ของ audit_log (`e3844dc4110e`)
 

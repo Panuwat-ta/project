@@ -227,6 +227,12 @@ erDiagram
 ## Security
 - รหัสผ่านเก็บแบบ bcrypt hash (`passlib`, `server/app/core/security.py`) ไม่เก็บ plain text
 - refresh token ของ admin เก็บแบบ sha256 hash (`admin_sessions.refresh_hash`) เพิกถอนได้จริง
+- **DB roles (least-privilege, migration `e0f1a2b3c4d5`)**: owner `scamguard` รัน migration อย่างเดียว;
+  app ใช้ role `scamguard_app` (NOLOGIN ตั้งต้น) มีแค่ CONNECT + USAGE schema + DML
+  (SELECT/INSERT/UPDATE/DELETE) บนตารางปัจจุบันและอนาคต (DEFAULT PRIVILEGES) — ไม่มี DDL
+- เปิดใช้งาน app role (ops, รหัสห้ามเข้า git):
+  `ALTER ROLE scamguard_app WITH LOGIN PASSWORD '<strong-password>';`
+  แล้วชี้ `DATABASE_URL` ของ app มาที่ user นี้
 
 ## Backup / Restore
 - `server/scripts/backup.sh` / `restore.sh`: dump เข้ารหัส AES-256-CBC (openssl, รหัสใน `BACKUP_PASSWORD`)
@@ -257,5 +263,5 @@ flowchart LR
 - pgAdmin มีแค่ dev (`database/docker-compose.yml`) ไม่เกี่ยว production
 
 ## Version เอกสาร
-- อัปเดตล่าสุด: 2026-09-13, migration head `d9e0f1a2b3c4`
+- อัปเดตล่าสุด: 2026-09-13, migration head `e0f1a2b3c4d5`
 - ทุกครั้งที่เปลี่ยน schema: แก้ `server/app/models/` + เพิ่ม migration + อัปเดตไฟล์นี้ให้ตรงกัน
