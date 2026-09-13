@@ -57,6 +57,7 @@ erDiagram
         string status "NOT NULL, default pending; CHECK 8 ค่า (ดูหัวข้อ constraints)"
         int progress "NOT NULL, default 0; CHECK 0-100"
         datetime created_at "server_default now(), index"
+        datetime updated_at "server_default now(), onupdate now()"
         datetime completed_at "nullable"
     }
 

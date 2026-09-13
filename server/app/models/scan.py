@@ -43,5 +43,6 @@ class Scan(Base):
     status = Column(String(20), nullable=False, default="pending")
     progress = Column(Integer, nullable=False, default=0)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     completed_at = Column(DateTime(timezone=True))
 

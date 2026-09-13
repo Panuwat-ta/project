@@ -47,6 +47,7 @@ erDiagram
         string status "NOT NULL, default pending; CHECK 8 ค่า (ดูหัวข้อ constraints)"
         int progress "NOT NULL, default 0; CHECK 0-100"
         datetime created_at "server_default now(), index"
+        datetime updated_at "server_default now(), onupdate now()"
         datetime completed_at "nullable"
     }
 
@@ -256,5 +257,5 @@ flowchart LR
 - pgAdmin มีแค่ dev (`database/docker-compose.yml`) ไม่เกี่ยว production
 
 ## Version เอกสาร
-- อัปเดตล่าสุด: 2026-09-13, migration head `c8d9e0f1a2b3`
+- อัปเดตล่าสุด: 2026-09-13, migration head `d9e0f1a2b3c4`
 - ทุกครั้งที่เปลี่ยน schema: แก้ `server/app/models/` + เพิ่ม migration + อัปเดตไฟล์นี้ให้ตรงกัน
