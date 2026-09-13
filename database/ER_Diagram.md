@@ -295,6 +295,19 @@ erDiagram
   แล้วชี้ `DATABASE_URL` ของ app มาที่ user นี้
 - **ระดับแอป**: รหัสผ่าน bcrypt hash (`passlib`), refresh token ของ admin เก็บแบบ sha256 hash เพิกถอนได้จริง
 - **Backup encryption**: dump เข้ารหัส AES-256-CBC (รหัสใน `BACKUP_PASSWORD`)
+
+### OWASP Top 10 (2021) — backend/DB โดยย่อ (รายงานเต็มระดับโปรเจกต์: `Document/docs/10_OWASP_Audit_2026-09-13.md`)
+
+| # | หมวด | ผล | หลักฐาน |
+| :--- | :--- | :--- | :--- |
+| A01 | Broken Access Control | ผ่าน | ownership check ทุก endpoint; `/admin/*` ต้อง superadmin; ลบบัญชีแล้ว `is_active=False` บล็อกทันที |
+| A02/A07 | ผ่าน | bcrypt, JWT มี exp (60m/7d), admin rotation/revoke, password ขั้นต่ำ 8 ตัว (`RegisterRequest`) |
+| A03 | Injection | ผ่าน | ORM ทั้งหมด; raw SQL มีแค่ `text("SELECT 1")` ค่าคงที่ |
+| A04 | Insecure Design | ผ่าน | rate limit, ยืนรหัสผ่านก่อนลบบัญชี, CHECK ระดับ DB, validate รูป + กัน decompression bomb |
+| A05 | Misconfiguration | ผ่าน (ยืนค่า deploy) | CORS origins จาก env; ไม่ leak stack trace |
+| A08 | Integrity | ผ่านบางส่วน | backup เข้ารหัสแต่ไม่มี MAC (ควรมี sha256 checksum) |
+| A09 | Logging | ผ่าน | audit_log append-only ระดับ trigger |
+| A10 | SSRF | ผ่าน | ไม่ fetch URL จาก input (`reference_url` เก็บอย่างเดียว) |
 - > [!NOTE]
 > ข้อมูล at-rest บน volume ยังไม่เข้ารหัส (พึ่งพา host security) — ถ้าขึ้น production จริงควรเปิด
 > full-disk encryption หรือ pgcrypto สำหรับฟิลด์อ่อนไหว
