@@ -120,3 +120,4 @@ grep "^## \[" wiki/log.md | tail -5
 ## [2026-09-11] fix | DOC-05: gallery-only — PRODUCT.md
 ## [2026-09-11] fix | DOC-06: FCM Phase 2 — 02 + 03
 ## [2026-09-11] fix | DOC-13: 409, AC 104, CRUD→Read/Update — 05/06/AppA + wiki
+## [2026-09-13] sync | database wiki ตรง schema ปัจจุบัน (er-diagram, schema, migrations)

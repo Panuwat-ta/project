@@ -54,7 +54,7 @@ server/
         scan.py       # /scan (เอกพจน์): POST /, GET /{scan_id}
         report.py     # /reports (พหูพจน์): POST "", GET /categories, GET /my
         history.py    # /history: GET "", GET/DELETE /{scan_id}
-        admin.py      # /admin/* (super_admin): login/refresh/logout/me/sessions/dashboard/health/search/reports/users/models/audit-logs/export-jobs
+        admin.py      # /admin/* (is_superadmin): login/refresh/logout/me/sessions/dashboard/health/search/reports/users/models/audit-logs/export-jobs
         ws.py         # /ws/admin/dashboard (WS เดียว)
       router.py       # รวม routers (prefix /api/v1)
     main.py           # FastAPI Initialization
@@ -71,7 +71,7 @@ server/
 
 - ลงทะเบียนและ Login ด้วย Email/Password — consent ส่งมาใน body ของ register แล้วบันทึกเป็น consent logs
 - JWT + refresh/logout/me; Google/Apple OAuth เป็น Phase 2
-- แยกบทบาท user/researcher/admin ออกจากบัญชี admins; ทุก /admin/* ต้องเป็น super_admin
+- แยกบทบาท user/researcher/admin ออกจากบัญชี admins; ทุก /admin/* ต้องเป็น is_superadmin
 - ตรวจสอบทุก Protected Endpoint ด้วยการยืนยันตัวตนและสิทธิ์
 
 ### 2. การดึง EXIF Metadata
@@ -127,7 +127,7 @@ server/
 | GET | `/api/v1/history/{scan_id}` | รายละเอียดประวัติ |
 | DELETE | `/api/v1/history/{scan_id}` | ลบประวัติ (ลบไฟล์จริงถ้าไม่มี scan อื่นใช้ hash เดียวกัน) |
 
-### Admin (/api/v1/admin/* — ต้อง super_admin ทั้งหมด)
+### Admin (/api/v1/admin/* — ต้อง is_superadmin ทั้งหมด)
 | Method | Path | คำอธิบาย |
 | :--- | :--- | :--- |
 | POST | `/api/v1/admin/login` | Login admin |

@@ -39,6 +39,8 @@
 - Command: `<คำสั่งที่ใช้รัน เช่น pytest server/tests/api/test_auth.py -v หรือ flutter test test/...>`
 - Result: PASS หรือ FAIL
 - Summary: Total: <จำนวน> | Passed: <ผ่าน> | Failed: <ตก> | Skipped: <ข้าม> | Duration: <เวลาที่ใช้>
+- Requirement/TC mapping (บังคับ): TC IDs: <เช่น TC-BE-AUTH-01> | Requirement IDs: <เช่น FR-AUTH-01 อ้างอิง tests_all/rtm.md; ถ้าเป็น GAP ระบุว่าเป็น GAP>
+- Commit/Build/Env (บังคับ): commit `<hash>` | build `<Mobile build>` | model `<เวอร์ชันโมเดล>` | env `dev/staging/prod` + ports (8000/5432/6379/5173)
 
 ### 1. Passed Tests and Runtime Behavior (How it Passed)
 - **[Passed Test Case / Function Name 1]**:
@@ -56,3 +58,13 @@
     <Attach failure runner output / assertion error stack trace>
     ```
 ```
+
+---
+
+## รอบสรุปรวมและ flaky tracking (Trend — ต่อท้ายไฟล์นี้ทุกรอบ ห้ามแต่งตัวเลข)
+
+| รอบ (วันที่) | Suite | Pass/Fail/Skip | Flaky (ผ่านบ้างตกบ้าง) | หมายเหตุ |
+| :--- | :--- | :--- | :--- | :--- |
+| (กรอกเมื่อมีผลรันจริง) | | | ไม่มี / มี: <ชื่อเทสต์ + จำนวนครั้ง> | |
+
+กฎ: เทสต์ที่ flaky ≥2 รอบติด ให้เปิด Bug (Priority P2 ขึ้นไป) และ tag `flaky` ในรายงานรอบถัดไปจนกว่าจะนิ่ง 3 รอบติด

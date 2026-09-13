@@ -6,7 +6,8 @@ class ConsentLog(Base):
     __tablename__ = "consent_logs"
     
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    # เก็บ log ไว้เป็นหลักฐาน PDPA แม้ลบ user: ตัด link (SET NULL) แทน CASCADE
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
     system_consent = Column(Boolean, nullable=False, default=True)
     research_consent = Column(Boolean, nullable=False, default=False)
     ip_address = Column(String(45))
