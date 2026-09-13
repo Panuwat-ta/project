@@ -1,10 +1,16 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, Float, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Float, ForeignKey, CheckConstraint
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.sql import func
 from app.core.database import Base
 
 class ModelVersion(Base):
     __tablename__ = "model_versions"
+    __table_args__ = (
+        CheckConstraint(
+            "status IN ('pending', 'active', 'inactive', 'failed')",
+            name="ck_model_versions_status",
+        ),
+    )
     
     id = Column(Integer, primary_key=True)
     version_tag = Column(String(50), nullable=False, unique=True)
@@ -20,6 +26,6 @@ class ModelVersion(Base):
     m_acc = Column(Float, nullable=True)
     m_dice = Column(Float, nullable=True)
     dataset_reference = Column(String(256), nullable=True)
-    created_by = Column(Integer, ForeignKey("admins.id"), nullable=True)
+    created_by = Column(Integer, ForeignKey("admins.id", ondelete="SET NULL"), nullable=True, index=True)
     status = Column(String(50), nullable=False, default="inactive") # pending, active, inactive, failed
     deployment_history = Column(JSONB, nullable=True)

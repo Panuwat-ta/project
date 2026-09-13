@@ -375,7 +375,7 @@ CREATE INDEX idx_scam_reports_created ON scam_reports(created_at DESC);
       "user": {
         "id": 101,
         "email": "reporter@example.com",
-        "full_name": "สมชาย ใจดี"
+        "full_name": "bas test"
       },
       "scan": {
         "id": "8f8b8a5d-4f10-4cd9-bf7b-84a83e05ea01",
@@ -413,7 +413,7 @@ CREATE INDEX idx_scam_reports_created ON scam_reports(created_at DESC);
   "user": {
     "id": 101,
     "email": "reporter@example.com",
-    "full_name": "สมชาย ใจดี",
+    "full_name": "bas test",
     "total_reports_submitted": 3
   },
   "scan": {
@@ -514,7 +514,7 @@ Admin ตรวจสอบรายงานแล้วตัดสินใ�
     {
       "id": 101,
       "email": "user@example.com",
-      "full_name": "สมชาย ใจดี",
+      "full_name": "bas test",
       "role": "user",
       "is_active": true,
       "total_scans": 15,
@@ -537,7 +537,7 @@ Admin ตรวจสอบรายงานแล้วตัดสินใ�
 {
   "id": 101,
   "email": "user@example.com",
-  "full_name": "สมชาย ใจดี",
+  "full_name": "bas test",
   "role": "user",
   "is_active": true,
   "created_at": "2026-06-15T08:00:00+07:00",

@@ -720,7 +720,7 @@ export default function Dashboard({
                 </div>
                 <div>
                   <h3 className="text-sm font-extrabold text-[#121c26] tracking-tight">
-                    {userName || "สมชาย รักความปลอดภัย"}
+                    {userName || "bas test"}
                   </h3>
                   <span className="text-[10px] text-gray-500 mt-0.5 block font-medium">
                     การป้องกันระดับพื้นฐาน • v1.0.0

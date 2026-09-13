@@ -8,6 +8,7 @@ from app.models.report import ScamReport
 from app.models.model_version import ModelVersion
 from app.models.audit_log import AuditLog
 from app.models.export_job import ExportJob
+from app.models.log_archive import AuditLogArchive, ConsentLogArchive
 
 __all__ = [
     "User",
@@ -19,5 +20,7 @@ __all__ = [
     "AdminSession",
     "AuditLog",
     "ExportJob",
+    "AuditLogArchive",
+    "ConsentLogArchive",
     "Base",
 ]
