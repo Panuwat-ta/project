@@ -26,3 +26,9 @@ class UserResponse(BaseModel):
     full_name: str
     role: str
     message: str = "User registered successfully"
+
+class DeleteAccountRequest(BaseModel):
+    password: str  # ยืนยันตัวตนซ้ำก่อนลบบัญชี
+
+class DeleteAccountResponse(BaseModel):
+    message: str = "Account deleted successfully"

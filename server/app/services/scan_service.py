@@ -26,6 +26,9 @@ async def create_scan_task(file: UploadFile, user_id: int, db: AsyncSession, tit
             detail=f"File too large. Maximum allowed size is {settings.MAX_UPLOAD_SIZE_MB} MB.",
         )
 
+    # Validate ว่าเป็นรูปจริงก่อนสร้าง record — ได้ 400 ทันที ไม่ต้องรอ background task
+    await run_in_threadpool(load_image_verified, file_bytes)
+
     image_hash = calculate_image_hash(file_bytes)
 
     # Initial Scan record

@@ -1,4 +1,4 @@
-# ER Diagram for ScamGuard (9 ตาราง)
+# ER Diagram for ScamGuard (11 ตาราง: 9 หลัก + 2 archive)
 
 > หมายเหตุ: constraints ตรงกับ `server/app/models/*.py` — ข้อความใน `"..."` ของแต่ละฟิลด์
 > ระบุ nullable / default / unique / index / FK ondelete
@@ -150,6 +150,20 @@ erDiagram
     admins |o--o{ model_versions : "deploys"
     admins |o--o{ export_jobs : "creates"
     scans |o--o{ scam_reports : "is reported in"
+
+    audit_log_archive {
+        int id PK
+        string action "index"
+        datetime created_at "index"
+        datetime archived_at "server_default now()"
+    }
+
+    consent_logs_archive {
+        int id PK
+        int user_id "nullable, index"
+        datetime created_at
+        datetime archived_at "server_default now()"
+    }
 ```
 
 ## รายละเอียดแต่ละตาราง
@@ -163,6 +177,8 @@ erDiagram
 - **admin_sessions**: session/refresh-token ของ admin (replaced_by ไม่มี FK)
 - **audit_log**: บันทึกกิจกรรมสำคัญที่กระทำโดย Admin (Append-only ผ่าน trigger `trg_prevent_audit_log_modification` ห้าม UPDATE/DELETE)
 - **export_jobs**: งาน export dataset ของ admin
+- **audit_log_archive / consent_logs_archive**: ที่เก็บ log เกิน retention 1 ปี (schema เดียวกับตัวจริง
+  + `archived_at`, ไม่มี FK/trigger; ย้ายโดย `scripts/archive_old_logs.py` รายเดือน)
 
 ## สรุป constraints (ตรงกับ `server/app/models/*.py` + migration `d4e5f6a7b8c9`)
 - **Unique**: users.email, admins.email, model_versions.version_tag, admin_sessions.refresh_hash
@@ -220,8 +236,11 @@ erDiagram
   รันด้วย cron ทุกวัน 03:00 (`crontab -l`); ลบทั้ง row + ไฟล์ raw/heatmap (เฉพาะไฟล์ใต้ `LOCAL_UPLOAD_DIR`);
   `scam_reports` ที่อ้าง scan นั้นอยู่ต่อแบบ `scan_id NULL`; มี `--dry-run` ไว้เช็คก่อน
 - ไฟล์ export เก็บ 7 วัน (`expires_at`) ลบไฟล์ + mark `expired` แบบ opportunistic ตอนสร้าง job ใหม่
-- audit_log/consent_logs: append-only + เก็บถาวร — TBD อายุ (เช่น 1–2 ปีตาม PDPA)
+- **audit_log/consent_logs: archive เมื่ออายุเกิน 1 ปี** — `server/scripts/archive_old_logs.py --days 365`
+  รันด้วย cron ทุกวันที่ 1 เวลา 04:00; ย้าย row เก่า -> `audit_log_archive`/`consent_logs_archive`
+  (+`archived_at`) แล้วลบจากตารางจริงเป็น batch; audit ใช้ `SET LOCAL app.allow_audit_archive='on'
+  (transaction-scoped, app ไม่เคยตั้ง); DELETE ปกติยังโดน trigger กันเหมือนเดิม; มี `--dry-run`
 
 ## Version เอกสาร
-- อัปเดตล่าสุด: 2026-09-13, migration head `b7c8d9e0f1a2`
+- อัปเดตล่าสุด: 2026-09-13, migration head `c8d9e0f1a2b3`
 - ทุกครั้งที่เปลี่ยน schema: แก้ `server/app/models/` + เพิ่ม migration + อัปเดตไฟล์นี้ให้ตรงกัน

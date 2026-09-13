@@ -4,6 +4,21 @@ from app.core.rate_limit import limiter
 
 
 @pytest.fixture(autouse=True)
+def mock_redis_client():
+    """TestClient ไม่รัน lifespan -> redis_client เป็น None -> /health degraded.
+
+    mock ping() ให้ตอบ ok ทุกเทส (เทสสโคป DB/schema ไม่เกี่ยวกับ redis ตัวจริง).
+    """
+    from unittest.mock import AsyncMock
+    import app.core.redis as redis_core
+    fake = AsyncMock()
+    fake.ping = AsyncMock(return_value=True)
+    prev, redis_core.redis_client = redis_core.redis_client, fake
+    yield
+    redis_core.redis_client = prev
+
+
+@pytest.fixture(autouse=True)
 def clear_dependency_overrides():
     app.dependency_overrides.clear()
     yield
