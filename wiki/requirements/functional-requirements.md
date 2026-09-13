@@ -12,7 +12,7 @@ updated: 2026-08-02
 
 > **ชื่อผลิตภัณฑ์:** ScamGuard (ชื่อเต็ม: Scam Image Detection — แอปตรวจสอบรูปภาพตัดต่อเพื่อป้องกันการหลอกลวง)
 
-> **Canonical catalog:** `Document/docs/05_Software_Requirement_Specification.md` (FR/NFR/AC), `06_Requirement_Traceability.md`, `07_Appendix_A_Full_Traceability_Matrix.md`, `04_Requirement_Candidates.md` (RC) — ไฟล์นี้ใช้เลขชุดเดียวกับ Document; ID กลุ่ม `FR-INPUT/FR-SYS/FR-REPORT/FR-HIST/FR-RPT/FR-ADM/FR-AUDIT/FR-SHARE/FR-SET` เป็น test-scheme ฝั่ง wiki (baseline งานทดสอบใน `tests_all/rtm.md`) โดยแต่ละข้อมี canonical mapping กำกับไว้
+> **Canonical catalog:** `Document/srs/05_Software_Requirement_Specification.md` (FR/NFR/AC), `06_Requirement_Traceability.md`, `07_Appendix_A_Full_Traceability_Matrix.md`, `04_Requirement_Candidates.md` (RC) — ไฟล์นี้ใช้เลขชุดเดียวกับ Document; ID กลุ่ม `FR-INPUT/FR-SYS/FR-REPORT/FR-HIST/FR-RPT/FR-ADM/FR-AUDIT/FR-SHARE/FR-SET` เป็น test-scheme ฝั่ง wiki (baseline งานทดสอบใน `tests_all/rtm.md`) โดยแต่ละข้อมี canonical mapping กำกับไว้
 
 ---
 
@@ -24,7 +24,7 @@ updated: 2026-08-02
 - **FR-AUTH-02:** ผู้ใช้เข้าสู่ระบบด้วย Email/Password + JWT ได้; โทเค็นเก็บใน Secure Storage ของเครื่อง (Secure Storage = Document FR-AUTH-02 AC-4)
 - **FR-AUTH-03:** ผู้ใช้ต่ออายุ Access Token ด้วย Refresh Token ได้ (→ Document FR-AUTH-03)
 - **FR-AUTH-04:** ผู้ใช้ออกจากระบบ (Logout) เพื่อล้างค่าเซสชั่นได้ (→ Document FR-AUTH-04; รวมเพิกถอน Refresh Token ฝั่ง server ภายใน 60 วินาที)
-- **FR-AUTH-06:** (Phase 2 backlog, RC-AUTH-06 deferred — ไม่ใช่ baseline v1) ผู้ใช้เข้าสู่ระบบด้วย Google OAuth (canonical FR-AUTH-03 = ต่ออายุ Token ตาม Document/docs/05)
+- **FR-AUTH-06:** (Phase 2 backlog, RC-AUTH-06 deferred — ไม่ใช่ baseline v1) ผู้ใช้เข้าสู่ระบบด้วย Google OAuth (canonical FR-AUTH-03 = ต่ออายุ Token ตาม Document/log_docs/05)
 
 > Alias ประวัติ: test-scheme เดิมเรียก Secure Storage+Refresh ว่า FR-AUTH-04 และ Logout ว่า FR-AUTH-05 — ยุบ/ย้ายเป็น FR-AUTH-02/03/04 ตาม Document แล้ว (TC ที่เคยอ้างเลขเก่าอัปเดตตามใน `tests_all/rtm.md` และ `tests_all/manual_tests/`)
 

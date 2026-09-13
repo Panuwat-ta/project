@@ -1,9 +1,11 @@
-## 2026-09-04 09:51 +07 - Mobile Result & Factor Models Verification
+# 2026-09-04 09:51 +07 - Mobile Result & Factor Models Verification
 
 - Target: scam_image_mobile/test/features/result/
 - Command: `flutter test test/features/result/`
 - Result: PASS
 - Summary: Total: 31 | Passed: 31 | Failed: 0 | Skipped: 0 | Duration: 3s
+- Requirement/TC mapping (historical): ไม่ได้บันทึกในผลรันเดิม จึงไม่สามารถย้อนยืนยันได้โดยไม่สร้างข้อมูลสมมติ
+- Commit/Build/Env (historical): ไม่ได้บันทึกในผลรันเดิม จึงไม่สามารถระบุค่าแทนได้อย่างน่าเชื่อถือ
 
 ### 1. รายการที่ผ่าน (Passed Tests) และพฤติกรรมที่ผ่าน (How it Passed)
 - **AnalysisResultModel.fromJson (Server Flat Format & Fallback)**:

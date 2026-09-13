@@ -855,7 +855,7 @@ sequenceDiagram
 - Data Retention Policy (เก็บข้อมูล 1 ปี หลังจากนั้นลบอัตโนมัติ)
 
 **Evidence:**
-- File: project/Document/docs/05_Software_Requirement_Specification.md
+- File: project/Document/log_docs/05_Software_Requirement_Specification.md
 - Section: FR-PDPA-01 (Consent Management) + NFR-04 (Security) — หมายเหตุ: NFR-06 ตาม 05 คือ Usability ไม่ใช่ PDPA
 
 ---

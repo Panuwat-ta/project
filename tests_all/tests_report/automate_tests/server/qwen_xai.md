@@ -1,9 +1,11 @@
-## 2026-09-03 04:27 +07 - Qwen2.5-1.5B XAI Inference Test
+# 2026-09-03 04:27 +07 - Qwen2.5-1.5B XAI Inference Test
 
 - Target: tests/inference/test_qwen_xai.py
 - Command: `pytest tests/inference/test_qwen_xai.py -v`
 - Result: PASS
 - Summary: Total: 2 | Passed: 2 | Failed: 0 | Skipped: 0 | Duration: 11.97s
+- Requirement/TC mapping (historical): ไม่ได้บันทึกในผลรันเดิม จึงไม่สามารถย้อนยืนยันได้โดยไม่สร้างข้อมูลสมมติ
+- Commit/Build/Env (historical): ไม่ได้บันทึกในผลรันเดิม จึงไม่สามารถระบุค่าแทนได้อย่างน่าเชื่อถือ
 
 ### 1. รายการที่ผ่าน (Passed Tests) และพฤติกรรมที่ผ่าน (How it Passed)
 - **test_qwen_xai_model_loaded**:

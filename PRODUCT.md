@@ -23,7 +23,8 @@ ScamGuard เป็นระบบและแอปพลิเคชันต�
 
 ## Capabilities and Constraints
 - ตรวจจับความผิดปกติของภาพและประเมินระดับความเสี่ยงได้ 3 ระดับ: Low, Medium, High (ไม่มีระดับ Safe)
-- ระบบวิเคราะห์ 3 ชั้นอิสระ (0–100% แต่ละชั้น): Textual Analysis (OCR + NLP), Source Verification (Google Vision API), Visual Anomaly Detection (SegFormer AI Heatmap) โดยคำนวณคะแนนภาพรวมด้วยหลักการ Maximum Impact (Worst-Case Dominance) ร่วมกับ Multi-Factor Compounding
+- ระบบวิเคราะห์ 3 ชั้นอิสระตามสถาปัตยกรรมเป้าหมาย (0–100% แต่ละชั้น): Textual Analysis (OCR + NLP), Source Verification (Google Vision API), Visual Anomaly Detection (SegFormer AI Heatmap) โดยคำนวณคะแนนภาพรวมด้วยหลักการ Maximum Impact (Worst-Case Dominance) ร่วมกับ Multi-Factor Compounding
+- **ข้อจำกัด v1:** Source Verification ยังไม่เชื่อมต่อ Google Vision API จริง จึงแสดงสถานะ `source_status = "unavailable"` และคำนวณคะแนนจากมิติที่สำเร็จเท่านั้น
 - มาตรการความเป็นส่วนตัว (PDPA): ผู้ใช้ต้องให้ความยินยอมก่อนจัดเก็บหรือนำภาพไปใช้ในการปรับปรุงโมเดล โดยสามารถจัดการสิทธิ์และความเป็นส่วนตัวได้
 - ห้ามใช้อิโมจิในทุกส่วนติดต่อผู้ใช้ (UI) และข้อความของระบบตามนโยบายของโปรเจกต์
 - Mobile App พัฒนาด้วย Flutter (Clean Architecture, BLoC State Management) รองรับ Android

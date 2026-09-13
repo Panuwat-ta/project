@@ -68,13 +68,13 @@ project/
 เอกสารข้อกำหนดทางวิศวกรรมซอฟต์แวร์และการออกแบบระบบได้รับการจัดระเบียบไว้ในไดเรกทอรี [Document/](Document/) และ [design/](design/):
 
 ### 1. ข้อกำหนดและความต้องการเชิงระบบ (Requirements & Scope)
-* **[เอกสารข้อกำหนดความต้องการซอฟต์แวร์ (SRS)](Document/docs/05_Software_Requirement_Specification.md)** - Software Requirements Specification ฉบับสมบูรณ์
+* **[เอกสารข้อกำหนดความต้องการซอฟต์แวร์ (SRS)](Document/srs/05_Software_Requirement_Specification.md)** - Software Requirements Specification ฉบับสมบูรณ์
 * **[วัตถุประสงค์และตัวชี้วัดโครงงาน (Objectives & KPIs)](Document/objective.md)** - รายละเอียดเป้าหมายหลัก (OBJ-01 ถึง OBJ-04) และเกณฑ์วัดผลเชิงปริมาณ
 * **[ขอบเขตระบบและงานที่พัฒนา (Project Scope & Tasks)](Document/scop.md)** - ตารางแบ่งงาน ขอบเขตงาน และรายละเอียด Work Packages
-* **[ภาพรวมความต้องการของระบบ (Project Overview Doc)](Document/docs/01_Project_Overview.md)** - สรุปที่มา ปัญหา และแนวทางการพัฒนา
-* **[ความต้องการที่ผ่านการคัดเลือก (Requirement Candidates)](Document/docs/04_Requirement_Candidates.md)** - รายการ Functional & Non-Functional Requirements
-* **[เมทริกซ์การตรวจสอบย้อนกลับความต้องการ (Traceability Matrix)](Document/docs/06_Requirement_Traceability.md)** - Traceability Matrix และ [ภาคผนวกฉบับเต็ม](Document/docs/07_Appendix_A_Full_Traceability_Matrix.md)
-* **[การตัดสินใจสำคัญในการออกแบบระบบ (Key Design Decisions)](Document/docs/07_Appendix_B_Key_Design_Decisions.md)** - สรุปเหตุผลเชิงวิศวกรรมในการเลือกสถาปัตยกรรมและเทคโนโลยี
+* **[ภาพรวมความต้องการของระบบ (Project Overview Doc)](Document/log_docs/01_Project_Overview.md)** - สรุปที่มา ปัญหา และแนวทางการพัฒนา
+* **[ความต้องการที่ผ่านการคัดเลือก (Requirement Candidates)](Document/srs/04_Requirement_Candidates.md)** - รายการ Functional & Non-Functional Requirements
+* **[เมทริกซ์การตรวจสอบย้อนกลับความต้องการ (Traceability Matrix)](Document/srs/06_Requirement_Traceability.md)** - Traceability Matrix และ [ภาคผนวกฉบับเต็ม](Document/srs/07_Appendix_A_Full_Traceability_Matrix.md)
+* **[การตัดสินใจสำคัญในการออกแบบระบบ (Key Design Decisions)](Document/log_docs/07_Appendix_B_Key_Design_Decisions.md)** - สรุปเหตุผลเชิงวิศวกรรมในการเลือกสถาปัตยกรรมและเทคโนโลยี
 
 ### 2. แผนภาพสถาปัตยกรรมระบบ (Software Architecture Diagrams)
 * **[C1: แผนภาพบริบทระบบ (System Context Diagram)](Document/Software Architecture/C1-System-Context-Diagram.md)** - ขอบเขตระบบและการเชื่อมต่อระหว่าง Actors กับ External Services
@@ -115,7 +115,7 @@ project/
 | **Explainable AI (XAI)** | Qwen2.5-1.5B (GGUF via llama-cpp) | สรุปวิเคราะห์ผลลัพธ์และอธิบายเหตุผลความผิดปกติที่ตรวจพบในรูปภาพ |
 | **Database** | PostgreSQL 15 | ฐานข้อมูลเชิงสัมพันธ์สำหรับเก็บข้อมูลผู้ใช้, สถิติการสแกน, และรายงานการหลอกลวง |
 | **Cache & Message Store** | Redis | Caching ผลการวิเคราะห์ด้วย `image_hash` เพื่อตอบกลับทันทีเมื่อมีการส่งภาพซ้ำ |
-| **Search Integration** | Google Vision API | บริการค้นหาภาพย้อนกลับ (Reverse Image Search) เพื่อตรวจสอบแหล่งที่มาภายนอก |
+| **Search Integration** | Google Vision API | สถาปัตยกรรมเป้าหมายสำหรับค้นหาภาพย้อนกลับ (Reverse Image Search); v1 ยังไม่เชื่อมต่อจริงและคืน `source_status = "unavailable"` |
 | **Automated Testing** | Pytest, Flutter Test, Locust | ชุดทดสอบครอบคลุม Unit Tests, API Tests, E2E Integration Tests, และ Load Testing |
 | **Container & Dev Environment** | Podman / Docker Compose | จัดการสภาพแวดล้อมฐานข้อมูล PostgreSQL, Redis และ pgAdmin |
 

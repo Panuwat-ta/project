@@ -1,9 +1,11 @@
-## 2026-09-05 07:42 +07 - Mobile Models API_BASE_URL Strict .env Verification
+# 2026-09-05 07:42 +07 - Mobile Models API_BASE_URL Strict .env Verification
 
 - Target: `scam_image_mobile/test/features/result/data/models/analysis_result_model_test.dart`, `scam_image_mobile/test/features/history/data/models/scan_history_item_model_test.dart`
 - Command: `flutter test test/features/result/data/models/analysis_result_model_test.dart test/features/history/data/models/scan_history_item_model_test.dart`
 - Result: PASS
 - Summary: Total: 30 | Passed: 30 | Failed: 0 | Skipped: 0 | Duration: 1s
+- Requirement/TC mapping (historical): ไม่ได้บันทึกในผลรันเดิม จึงไม่สามารถย้อนยืนยันได้โดยไม่สร้างข้อมูลสมมติ
+- Commit/Build/Env (historical): ไม่ได้บันทึกในผลรันเดิม จึงไม่สามารถระบุค่าแทนได้อย่างน่าเชื่อถือ
 
 ### 1. รายการที่ผ่าน (Passed Tests) และพฤติกรรมที่ผ่าน (How it Passed)
 - **AnalysisResultModel URL parsing**:

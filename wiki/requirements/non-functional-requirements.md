@@ -10,7 +10,7 @@ updated: 2026-08-02
 
 ข้อกำหนดด้านประสิทธิภาพ, ความปลอดภัย, ความเป็นส่วนตัว, และกฎระเบียบต่างๆ
 
-> **Canonical catalog:** `Document/docs/05_Software_Requirement_Specification.md` §3 (NFR-01..09), `06_Requirement_Traceability.md` §5.5, `07_Appendix_A_Full_Traceability_Matrix.md` — นิยามตัวเลข/สูตร/เกณฑ์ทั้งหมดดูที่ Document ที่เดียว ไฟล์นี้เหลือแค่ลิงก์อ้าง + รายละเอียดระดับทดสอบที่ Document ไม่มี
+> **Canonical catalog:** `Document/srs/05_Software_Requirement_Specification.md` §3 (NFR-01..09), `06_Requirement_Traceability.md` §5.5, `07_Appendix_A_Full_Traceability_Matrix.md` — นิยามตัวเลข/สูตร/เกณฑ์ทั้งหมดดูที่ Document ที่เดียว ไฟล์นี้เหลือแค่ลิงก์อ้าง + รายละเอียดระดับทดสอบที่ Document ไม่มี
 
 ---
 

@@ -13,7 +13,7 @@
 * รายละเอียดสคีมาฉบับเต็ม (database/ER_Diagram.md)
 * การออกแบบระบบหลังบ้านและเซิร์ฟเวอร์ (design/server.md)
 * เอกสารสถาปัตยกรรมระบบ (design/architecture.md)
-* แผนภาพระดับ C1–C3 (Document/docs/03_Software_Architecture.md §2–§4)
+* แผนภาพระดับ C1–C3 (Document/log_docs/03_Software_Architecture.md §2–§4)
 * ประวัติ migration (wiki/architecture/database-migrations.md)
 
 ---
@@ -250,7 +250,7 @@ schema เดียวกับตารางจริง + `archived_at`, **�
 - **Roles**: owner `scamguard` (migration) / `scamguard_app` (app ใช้แค่ DML) — migration `e0f1a2b3c4d5`;
   เปิดใช้ด้วย `ALTER ROLE ... LOGIN PASSWORD` (ops, ห้ามเข้า git)
 - **App**: bcrypt, refresh sha256, JWT exp 60m/7d, รหัส 8–128 ตัว, rate limit, ownership check —
-  รายงาน OWASP เต็ม `Document/docs/10_OWASP_Audit_2026-09-13.md`
+  รายงาน OWASP เต็ม `Document/log_docs/10_OWASP_Audit_2026-09-13.md`
 - **Retention**: purge scan+ไฟล์ >90 วัน (daily), archive log >1 ปี (monthly), export 7 วัน
 - **Backup**: `backup.sh`/`restore.sh` (AES-256-CBC); ข้อมูลถาวรใน volume `postgres_data`
 - ไฟล์รูป: local `./uploads` (dev, ≤20MB) / GCS (production)

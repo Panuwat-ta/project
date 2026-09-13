@@ -1,9 +1,11 @@
-## 2026-09-03 07:15 +07 - Mobile History Refresh Indicator Fix Test
+# 2026-09-03 07:15 +07 - Mobile History Refresh Indicator Fix Test
 
 - Target: `test/features/history/presentation/bloc/history_bloc_test.dart`, `test/features/history/presentation/screens/history_screen_test.dart`
 - Command: `flutter test test/features/history/`
 - Result: PASS
 - Summary: Total: 37 | Passed: 37 | Failed: 0 | Skipped: 0 | Duration: 1s
+- Requirement/TC mapping (historical): ไม่ได้บันทึกในผลรันเดิม จึงไม่สามารถย้อนยืนยันได้โดยไม่สร้างข้อมูลสมมติ
+- Commit/Build/Env (historical): ไม่ได้บันทึกในผลรันเดิม จึงไม่สามารถระบุค่าแทนได้อย่างน่าเชื่อถือ
 
 ### 1. รายการที่ผ่าน (Passed Tests) และพฤติกรรมที่ผ่าน (How it Passed)
 - **`HistoryRefreshed` — Completes Completer on Refresh Completion**:

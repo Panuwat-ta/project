@@ -1,9 +1,11 @@
-## 2026-09-03 05:08 +07 - Qwen2.5-1.5B GPU Inference & Live Scan Pipeline Test
+# 2026-09-03 05:08 +07 - Qwen2.5-1.5B GPU Inference & Live Scan Pipeline Test
 
 - Target: `server/tests/inference/test_qwen_xai.py`, `server/tests/api/test_scan_xai_live.py`
 - Command: `pytest tests/inference/test_qwen_xai.py tests/api/test_scan_xai_live.py -v`
 - Result: PASS
 - Summary: Total: 3 | Passed: 3 | Failed: 0 | Skipped: 0 | Duration: 2.06s
+- Requirement/TC mapping (historical): ไม่ได้บันทึกในผลรันเดิม จึงไม่สามารถย้อนยืนยันได้โดยไม่สร้างข้อมูลสมมติ
+- Commit/Build/Env (historical): ไม่ได้บันทึกในผลรันเดิม จึงไม่สามารถระบุค่าแทนได้อย่างน่าเชื่อถือ
 
 ### 1. รายการที่ผ่าน (Passed Tests) และพฤติกรรมที่ผ่าน (How it Passed)
 - **`test_qwen_xai_model_loaded` (Model Verification)**:

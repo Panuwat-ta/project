@@ -122,6 +122,8 @@ spacing:
   gutter: 12px
 ---
 
+# ScamGuard Mobile Design System
+
 ## Brand & Style
 
 The design system is engineered for **Scam Image Detection**, a utility where trust and speed are the highest priorities. The brand personality is **reliable, secure, and minimalist**. It avoids decorative flourishes to maintain a "fast-acting" utility feel, ensuring users feel protected rather than overwhelmed.

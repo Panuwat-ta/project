@@ -3,18 +3,20 @@ title: "การเชื่อมต่อบริการภายนอก
 category: architecture
 tags: [Google-Vision-API, FCM, Firebase, reverse-image-search, push-notification]
 sources: [design/architecture.md, Document/C1-System-Context-Diagram.md]
-updated: 2026-08-02
+updated: 2026-09-13
 ---
 
 # การเชื่อมต่อบริการภายนอก (External Integrations)
 
-บริการภายนอก 2 รายการที่เชื่อมต่อในระบบ ทั้งคู่เรียกผ่าน API Application เท่านั้น ไม่ใช่จาก Client โดยตรง
+เอกสารการออกแบบบริการภายนอกที่ API Application เป็นผู้เรียกแทน Client โดยตรง ปัจจุบัน Google Vision API ยังไม่เชื่อมต่อจริง และ FCM อยู่ใน Phase 2
 
 ---
 
 ## Google Vision API — Reverse Image Search
 
 **ผู้ให้บริการ:** Google Cloud Vision API (มี Bing Visual Search เป็น Alternative)
+
+**สถานะ v1:** ยังไม่เชื่อมต่อจริง ระบบต้องส่งกลับ `source_status = "unavailable"` และคำนวณคะแนนจากมิติที่สำเร็จเท่านั้น
 
 **หน้าที่:** ชั้น Source Verification ของ [[concepts/multi-layer-analysis|การวิเคราะห์หลายชั้น]] ตรวจสอบว่ารูปภาพที่อัปโหลดปรากฏในอินเทอร์เน็ตที่อื่นหรือไม่
 
@@ -29,7 +31,7 @@ updated: 2026-08-02
 
 **มีส่วนใน:** คะแนน $S_{source}$ (0–100 หนึ่งมิติในสูตร Hybrid max+bonus)
 
-**กรณี Failure:** ถ้า External API Timeout หรือ Error ระบบจะตัดมิตินั้นทิ้งแล้วคำนวณค่าสูงสุดจากมิติที่สำเร็จ และระบุว่า "Source Verification ไม่พร้อมใช้งาน" ใน Response
+**กรณี Failure:** ถ้า External API Timeout หรือ Error ระบบจะตัดมิตินั้นทิ้งแล้วคำนวณค่าสูงสุดจากมิติที่สำเร็จ และระบุว่า "Source Verification ไม่พร้อมใช้งาน" ใน Response โดยไม่ใช้ค่า neutral 50
 
 ---
 

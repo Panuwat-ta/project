@@ -3,7 +3,7 @@ title: "การตัดสินใจเลือกเทคโนโลย
 category: decisions
 tags: [decisions, tradeoffs, Flutter, SegFormer, FastAPI, ONNX, PostgreSQL]
 sources: [design/architecture.md, design/model.md]
-updated: 2026-08-02
+updated: 2026-09-13
 ---
 
 # การตัดสินใจเลือกเทคโนโลยี
@@ -99,7 +99,9 @@ updated: 2026-08-02
 - เรียก API ครั้งเดียวสามารถค้นหาครอบคลุมอินเทอร์เน็ตส่วนใหญ่
 - เสถียรและมี Document อธิบาย API ดีเยี่ยม
 
-**ความเสี่ยง:** ยึดติดกับบริการภายนอก — หาก Google Vision ล่ม ระบบจะคืนค่า Source score = 50 (neutral) พร้อมธง partial-result สำหรับมิตินี้ โดยมี Bing เป็นแผนสำรอง — ห้ามสรุปว่าภาพปลอดภัยจากมิตินี้เพียงอย่างเดียว
+**สถานะ v1:** ยังไม่เชื่อมต่อ Google Vision API จริง จึงต้องคืน `source_status = "unavailable"`, ไม่ส่ง `source_score` ที่สร้างขึ้นเอง และคำนวณคะแนนรวมจากมิติที่สำเร็จเท่านั้น พร้อมแจ้งผู้ใช้ว่า Source Verification ยังไม่พร้อมใช้งาน
+
+**ความเสี่ยงเมื่อเปิดใช้:** ยึดติดกับบริการภายนอก — หาก Google Vision ล่ม ให้ใช้พฤติกรรมเดียวกับสถานะข้างต้น ไม่ใช้ค่า neutral 50; Bing Visual Search เป็นแผนสำรองที่ยังวางแผนอยู่
 
 ## การตัดสินใจ 7: ใช้ Surya OCR Native PyTorch แทน Tesseract สำหรับอ่านตัวอักษร
 

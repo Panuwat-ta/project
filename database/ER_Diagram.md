@@ -296,7 +296,7 @@ erDiagram
 - **ระดับแอป**: รหัสผ่าน bcrypt hash (`passlib`), refresh token ของ admin เก็บแบบ sha256 hash เพิกถอนได้จริง
 - **Backup encryption**: dump เข้ารหัส AES-256-CBC (รหัสใน `BACKUP_PASSWORD`)
 
-### OWASP Top 10 (2021) — backend/DB โดยย่อ (รายงานเต็มระดับโปรเจกต์: `Document/docs/10_OWASP_Audit_2026-09-13.md`)
+### OWASP Top 10 (2021) — backend/DB โดยย่อ (รายงานเต็มระดับโปรเจกต์: `Document/log_docs/10_OWASP_Audit_2026-09-13.md`)
 
 | # | หมวด | ผล | หลักฐาน |
 | :--- | :--- | :--- | :--- |
@@ -341,7 +341,7 @@ flowchart LR
     Archive[archive_*.py + cron] --> PG
 ```
 
-- C1/C2/C3 และ Data Flow เต็มดู `Document/docs/03_Software_Architecture.md` (§2–§4) —
+- C1/C2/C3 และ Data Flow เต็มดู `Document/log_docs/03_Software_Architecture.md` (§2–§4) —
   ไฟล์นี้ลงลึกเฉพาะ Postgres; Redis ไม่เก็บข้อมูลถาวร (cache ผล inference ตาม `image_hash` + queue)
   จึงไม่มีใน ER; pgAdmin มีแค่ dev ไม่เกี่ยว production
 
