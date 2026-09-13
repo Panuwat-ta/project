@@ -21,14 +21,21 @@ updated: 2026-09-06
 | ตาราง | คำอธิบาย |
 | :--- | :--- |
 | users | บัญชีผู้ใช้: email, hashed password, full name, role (user/researcher/admin), is_active, created_at, updated_at |
-| admins | บัญชีผู้ดูแลระบบแยกตาราง, แฟล็ก super_admin (ทุก /admin/* ต้อง super_admin) |
+| admins | บัญชีผู้ดูแลระบบแยกตาราง, คอลัมน์ is_superadmin (Boolean, default False) |
 | scans | รายการ Scan: id UUID, user_id, image_hash SHA-256, raw_image_url, heatmap_image_url, title, text_score, visual_score, source_score, total_risk_score, exif_data, ocr_text, scam_keywords_found, reverse_search_results, ai_gen_probability, xai_explanation, status, progress, created_at, completed_at (ระดับความเสี่ยงคำนวณตอนแสดงผล) |
 | scam_reports | รายงาน Scam จากผู้ใช้: scan_id, category, reason, platform, reference_url, allow_research_use, status (pending/reviewing/approved/rejected), admin_note, moderated_by/at, version |
 | consent_logs | ประวัติการยินยอม PDPA แบบตรวจสอบย้อนหลังได้: user_id, system_consent, research_consent, ip_address, user_agent, created_at (สร้างตอน register) |
-| model_versions | Registry โมเดล: version_tag, file_path, is_active, deployed_at, artifact_checksum, framework_compatibility (onnx), metrics a_acc, m_iou, m_acc, m_dice, dataset_reference, created_by, status, deployment_history |
+| model_versions | Registry โมเดล: version_tag, file_path, is_active, deployed_at, artifact_checksum, framework_compatibility (onnx), metrics a_acc, m_iou, m_acc, m_dice (เปลี่ยนชื่อจาก accuracy/precision/recall โดย migration 042de00eee1b), dataset_reference, created_by, status, deployment_history |
 | admin_sessions | Session/refresh-token rotation ของ admin |
 | audit_log | บันทึก Append-only ของการกระทำโดย Admin: admin_id, action, entity_type, entity_id, before_state, after_state, reason, ip_address, user_agent, request_id, details, created_at |
-| export_jobs | งาน export dataset: admin_id, status, progress, total_rows, file_size_bytes, file_path, manifest, filter_config, expires_at, created_at, completed_at |
+| export_jobs | งาน export dataset: admin_id, status, progress, total_rows, file_size_bytes, error_message, file_path, manifest, filter_config, expires_at, created_at, completed_at |
+
+### Append-only trigger ของ audit_log
+
+ตาราง audit_log เป็น append-only ที่ระดับฐานข้อมูล: trigger `trg_prevent_audit_log_modification`
+(`BEFORE UPDATE OR DELETE ON audit_log FOR EACH ROW`) เรียกฟังก์ชัน
+`prevent_audit_log_modification()` ซึ่ง `RAISE EXCEPTION` เสมอ จึงห้าม UPDATE และ DELETE
+ทุกแถว (สร้างโดย migration `e3844dc4110e`; downgrade ลบ trigger แล้วลบ function)
 
 ### Field ที่เกี่ยวกับ PDPA
 

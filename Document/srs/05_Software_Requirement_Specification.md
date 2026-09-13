@@ -1,0 +1,1075 @@
+# Software Requirement Specification 
+
+**Project Name:** แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง (Scam Image Detection — ชื่อผลิตภัณฑ์: ScamGuard)  
+**Version:** 1.1 (audit §A fixes, 2026-09-12)  
+**Date:** September 12, 2026
+
+---
+
+## 1. Introduction
+
+เอกสาร Software Requirement Specification (SRS) ฉบับนี้จัดทำขึ้นจากการแปลง **Requirement Candidates (RC)** ที่รวบรวมได้จากหลักฐาน (Evidence-Based) ให้เป็น **Functional Requirements (FR)** และ **Non-Functional Requirements (NFR)** ที่มีโครงสร้างชัดเจน พร้อม **Acceptance Criteria (AC)** ที่สามารถทดสอบได้
+
+### 1.1 Document Purpose
+
+เอกสารนี้ใช้เป็น:
+- **Contract** ระหว่าง Stakeholders และทีมพัฒนา
+- **Baseline** สำหรับการออกแบบและพัฒนาระบบ
+- **Test Specification** สำหรับการทดสอบและ UAT
+- **Traceability Anchor** สำหรับการตรวจสอบย้อนกลับ
+
+### 1.2 Document Structure
+
+แต่ละ Requirement มีโครงสร้างดังนี้:
+
+```
+FR-XXX-YY: [Requirement Title]
+Description: [รายละเอียดความต้องการ]
+Source: [RC-XXX-YY from 04_Requirement_Candidates.md]
+Traceability: ST → OBJ → SC → RC → FR
+Priority: Must / Should / Could
+Acceptance Criteria:
+  AC-1: [Input] → [Processing] → [Expected Output]
+  AC-2: [Input] → [Processing] → [Expected Output]
+  ...
+```
+
+---
+
+## 2. Functional Requirements (FR)
+
+### 2.1 Authentication & Authorization (FR-AUTH)
+
+#### FR-AUTH-01: การสมัครสมาชิก
+**Description:** ระบบต้องให้ผู้ใช้สมัครสมาชิกด้วย Email และ Password พร้อมยืนยันเงื่อนไขการใช้งาน  
+**Source:** RC-AUTH-01  
+**Traceability:** ST01 → OBJ-01 → SC01 → RC-AUTH-01 → FR-AUTH-01  
+**Priority:** Must
+
+**Acceptance Criteria:**
+
+**AC-1: สมัครสมาชิกสำเร็จ**
+- **Input:** Full Name `bas test`, Email `new.user01@example.com` (ไม่ซ้ำในระบบ), Password `Test1234!` (≥8 ตัวอักษร), System Consent = true, Research Consent = true/false
+- **Processing:** 
+  - ตรวจสอบรูปแบบ Email (RFC 5322)
+  - ตรวจสอบ Email ไม่ซ้ำในฐานข้อมูล
+  - Hash Password ด้วย bcrypt (cost: 12)
+  - บันทึกข้อมูลผู้ใช้ (status = active, role = user)
+  - บันทึก Consent Logs พร้อม Timestamp
+- **Expected Output:** HTTP 201, Response Body มีข้อมูลผู้ใช้ (id, full_name, email, role, status, created_at) **ไม่มีรหัสผ่านหรือ hash**
+
+**AC-2: ปฏิเสธ Email ซ้ำ**
+- **Input:** Email ที่มีอยู่ในระบบแล้ว
+- **Processing:** ตรวจสอบ Email ในฐานข้อมูล
+- **Expected Output:** HTTP 400, Error Message: "Email already registered"
+
+**AC-3: ปฏิเสธ Email รูปแบบผิด**
+- **Input:** Email รูปแบบผิด (เช่น "test@", "test.com")
+- **Processing:** Validate Email Format
+- **Expected Output:** HTTP 400, Error Message: "Invalid email format"
+
+**AC-4: ปฏิเสธ Password สั้นเกินไป**
+- **Input:** Password < 8 ตัวอักษร
+- **Processing:** Validate Password Length
+- **Expected Output:** HTTP 400, Error Message: "Password must be at least 8 characters"
+
+**AC-5: ปฏิเสธเมื่อไม่ยอมรับ System Consent**
+- **Input:** System Consent = false
+- **Processing:** Validate System Consent
+- **Expected Output:** HTTP 400, Error Message: "System consent is required"
+
+---
+
+#### FR-AUTH-02: การเข้าสู่ระบบ
+**Description:** ระบบต้องให้ผู้ใช้เข้าสู่ระบบด้วย Email และ Password และรับ JWT Token  
+**Source:** RC-AUTH-02  
+**Traceability:** ST01 → OBJ-01 → SC01 → RC-AUTH-02 → FR-AUTH-02  
+**Priority:** Must
+
+**Acceptance Criteria:**
+
+**AC-1: เข้าสู่ระบบสำเร็จ**
+- **Input:** Email `user01@example.com` (มีในระบบ, status = active), Password ตรงกับ seed (`Test1234!`)
+- **Processing:** 
+  - ตรวจสอบ Email และ Password
+  - ตรวจสอบ status = active
+  - สร้าง Access Token (TTL: 15 นาที)
+  - สร้าง Refresh Token (TTL: 7 วัน)
+- **Expected Output:** HTTP 200, Response Body: `{access_token, refresh_token, token_type: "bearer", expires_in: 900}`
+
+**AC-2: ปฏิเสธรหัสผ่านผิด**
+- **Input:** Email `user01@example.com`, Password ผิด (`Wrong1234!`)
+- **Processing:** ตรวจสอบรหัสผ่าน (bcrypt verify)
+- **Expected Output:** HTTP 401, Error Message: "Invalid email or password"
+
+**AC-3: ปฏิเสธบัญชีที่ถูกปิด**
+- **Input:** Email `inactive01@example.com` (status = inactive), Password ตรงกับ seed (`Test1234!`)
+- **Processing:** ตรวจสอบ status
+- **Expected Output:** HTTP 403, Error Message: "Account is inactive"
+
+**AC-4: เก็บ Token ใน Secure Storage (Mobile)**
+- **Input:** Access Token, Refresh Token
+- **Processing:** Mobile App เก็บ Token ใน Flutter Secure Storage
+- **Expected Output:** Token ถูกเก็บอย่างปลอดภัย, สามารถดึงกลับมาใช้ได้
+
+---
+
+#### FR-AUTH-03: การต่ออายุ Token
+**Description:** ระบบต้องให้ผู้ใช้ต่ออายุ Access Token ด้วย Refresh Token  
+**Source:** RC-AUTH-03  
+**Traceability:** ST01 → OBJ-01 → SC01 → RC-AUTH-03 → FR-AUTH-03  
+**Priority:** Must
+
+**Acceptance Criteria:**
+
+**AC-1: ต่ออายุสำเร็จ**
+- **Input:** Refresh Token ของ `user01@example.com` (ยังไม่หมดอายุ, ออกให้ตอน login สำเร็จ)
+- **Processing:** 
+  - ตรวจสอบ Refresh Token (signature, expiration)
+  - สร้าง Access Token ใหม่
+- **Expected Output:** HTTP 200, Response Body: `{access_token, token_type: "bearer", expires_in: 900}`
+
+**AC-2: ปฏิเสธ Refresh Token หมดอายุ**
+- **Input:** Expired Refresh Token
+- **Processing:** ตรวจสอบ expiration
+- **Expected Output:** HTTP 401, Error Message: "Refresh token expired"
+
+**AC-3: ปฏิเสธ Refresh Token ไม่ถูกต้อง**
+- **Input:** Invalid Refresh Token (signature ผิด)
+- **Processing:** ตรวจสอบ signature
+- **Expected Output:** HTTP 401, Error Message: "Invalid refresh token"
+
+---
+
+#### FR-AUTH-04: การออกจากระบบ
+**Description:** ระบบต้องให้ผู้ใช้ออกจากระบบ ลบ Token ที่เก็บไว้ และเพิกถอน Refresh Token ฝั่ง server ภายใน 60 วินาที  
+**Source:** RC-AUTH-04  
+**Traceability:** ST01 → OBJ-01 → SC01 → RC-AUTH-04 → FR-AUTH-04  
+**Priority:** Must
+
+**Acceptance Criteria:**
+
+**AC-1: ออกจากระบบสำเร็จ (Mobile)**
+- **Input:** ผู้ใช้คลิกปุ่ม "ออกจากระบบ"
+- **Processing:** 
+  - ลบ Access Token และ Refresh Token จาก Secure Storage
+  - ลบ Cache ที่มีข้อมูลส่วนบุคคล (User Profile, Scan History)
+  - Navigate to Login Screen
+- **Expected Output:** Token ถูกลบ, หน้าจอ Login แสดงขึ้น
+
+**AC-2: Token ถูกเพิกถอนฝั่ง Server ภายใน 60 วินาที**
+- **Input:** Refresh Token / Access Token ที่ออกก่อนออกจากระบบ
+- **Processing:**
+  - Server shall เพิกถอน Refresh Token ฝั่ง server (denylist) ภายใน 60 วินาทีหลัง logout
+  - Server shall ปฏิเสธ Access Token เก่าด้วย HTTP 401
+- **Expected Output:** ใช้ Refresh Token เก่า → HTTP 401 ("revoked"); เรียก API ด้วย Access Token เก่า → HTTP 401
+
+---
+
+### 2.2 Image Upload & Scan (FR-SCAN)
+
+#### FR-SCAN-01: การเลือกและครอบตัดรูปภาพ
+**Description:** ระบบต้องให้ผู้ใช้เลือกรูปภาพจาก Gallery และครอบตัดได้  
+**Source:** RC-SCAN-01, RC-SCAN-02  
+**Traceability:** ST01 → OBJ-01 → SC01 → RC-SCAN-01/02 → FR-SCAN-01  
+**Priority:** Must
+
+**Acceptance Criteria:**
+
+**AC-1: เลือกรูปภาพจาก Gallery สำเร็จ**
+- **Input:** ผู้ใช้คลิกปุ่ม "เลือกรูปภาพ"
+- **Processing:** 
+  - เปิด Image Picker (Flutter image_picker)
+  - ผู้ใช้เลือกรูปภาพ
+- **Expected Output:** รูปภาพแสดงใน Preview Screen
+
+**AC-2: ครอบตัดรูปภาพสำเร็จ**
+- **Input:** รูปภาพที่เลือก
+- **Processing:** 
+  - เปิด Image Cropper (Flutter image_cropper)
+  - ผู้ใช้ปรับขอบเขตและยืนยัน
+- **Expected Output:** รูปภาพที่ครอบตัดแล้วแสดงใน Preview Screen
+
+**AC-3: ข้ามการครอบตัดได้**
+- **Input:** ผู้ใช้คลิกปุ่ม "ข้าม" ในหน้าครอบตัด
+- **Processing:** ใช้รูปภาพต้นฉบับโดยไม่ครอบตัด
+- **Expected Output:** รูปภาพต้นฉบับแสดงใน Preview Screen
+
+---
+
+#### FR-SCAN-02: การตรวจสอบและอัปโหลดรูปภาพ
+**Description:** ระบบต้องตรวจสอบประเภทและขนาดไฟล์ก่อนอัปโหลด  
+**Source:** RC-SCAN-03, RC-SCAN-04  
+**Traceability:** ST01 → OBJ-01 → SC01, SC02 → RC-SCAN-03/04 → FR-SCAN-02  
+**Priority:** Must
+
+**Acceptance Criteria:**
+
+**AC-1: อัปโหลดรูปภาพสำเร็จ**
+- **Input:** รูปภาพ JPG/JPEG/PNG/WebP; **Mobile ≤ 10 MB** (client-side check), **API Server ≤ 20 MB**; ขนาดภาพหลัง decode ≤ 100 ล้านพิกเซล
+- **Processing:** 
+  - ตรวจสอบ MIME Type (Magic Bytes)
+  - ตรวจสอบขนาดไฟล์
+  - ตรวจสอบขนาดภาพ (decode และนับพิกเซล)
+  - ส่งรูปภาพไปยัง API (Multipart/form-data)
+  - แสดง Loading Screen
+- **Expected Output:** HTTP 202 (Accepted), scan_id ถูกส่งกลับ
+
+**AC-2: ปฏิเสธไฟล์ประเภทไม่รองรับ**
+- **Input:** ไฟล์ GIF, BMP, TIFF
+- **Processing:** ตรวจสอบ MIME Type
+- **Expected Output:** Error Message: "Unsupported file type. Please upload JPG, PNG, or WebP."
+
+**AC-3: ปฏิเสธไฟล์ขนาดใหญ่เกินไป**
+- **Input:** ไฟล์ขนาด > 10 MB บน Mobile / > 20 MB บน API Server
+- **Processing:** ตรวจสอบขนาดไฟล์ (Mobile ≤ 10MB; Server ≤ 20MB)
+- **Expected Output:** Error Message: "File size exceeds 10 MB (mobile) / Maximum allowed size is 20 MB (server). Please compress or select a smaller image."
+
+**AC-4: ปฏิเสธภาพความละเอียดสูงเกินไป**
+- **Input:** ภาพขนาด > 100 ล้านพิกเซล
+- **Processing:** Decode ภาพและนับพิกเซล
+- **Expected Output:** Error Message: "Image is too large to process (max 100M pixels)."
+
+---
+
+#### FR-SCAN-03: การตรวจสอบ Cache และประมวลผล
+**Description:** ระบบต้องตรวจสอบ Cache ก่อนวิเคราะห์เต็มรูปแบบ  
+**Source:** RC-SCAN-05  
+**Traceability:** ST01 → OBJ-03, OBJ-04 → SC02 → RC-SCAN-05 → FR-SCAN-03  
+**Priority:** Must
+
+**Acceptance Criteria:**
+
+**AC-1: Cache Hit — ส่งผลลัพธ์ทันที**
+- **Input:** scan_id, รูปภาพที่เคยวิเคราะห์แล้ว (SHA-256 match ใน Redis)
+- **Processing:** 
+  - คำนวณ SHA-256 Hash
+  - ค้นหา SHA-256 ใน Redis Cache
+  - Cache Hit → ดึงผลลัพธ์จาก Cache
+- **Expected Output:** HTTP 200, ผลลัพธ์ส่งกลับภายใน ≤ 3 วินาที, Response Body มี: `{scan_id, risk_score, risk_grade, text_score, visual_score, source_score, heatmap_url, cached: true}`
+
+**AC-2: Cache Miss — ประมวลผลเต็มรูปแบบ**
+- **Input:** scan_id, รูปภาพใหม่ (ไม่มี SHA-256 ใน Cache)
+- **Processing:** 
+  - คำนวณ SHA-256
+  - Cache Miss → เข้าสู่ Multi-layer Analysis Pipeline
+  - บันทึกผลลัพธ์ลง Redis Cache (TTL: 30 วัน)
+- **Expected Output:** HTTP 200, ผลลัพธ์ส่งกลับภายใน ≤ 15 วินาที (median), `cached: false`
+
+---
+
+### 2.3 Multi-layer Analysis (FR-ANALYSIS)
+
+#### FR-ANALYSIS-01: Textual Analysis (OCR + NLP)
+**Description:** ระบบต้องสกัดข้อความและตรวจจับคำสำคัญหลอกลวง  
+**Source:** RC-ANALYSIS-01  
+**Traceability:** ST01, ST02 → OBJ-03 → SC02 → RC-ANALYSIS-01 → FR-ANALYSIS-01  
+**Priority:** Must
+
+**Acceptance Criteria:**
+
+**AC-1: สกัดข้อความสำเร็จ (ภาษาไทย)**
+- **Input:** รูปภาพมีข้อความภาษาไทย
+- **Processing:** รัน Surya OCR v0.5.0 (Native PyTorch)
+- **Expected Output:** OCR Text ถูกสกัดได้ (ความแม่นยำ ≥ 80% เมื่อเทียบกับ Ground Truth)
+
+**AC-2: สกัดข้อความสำเร็จ (ภาษาอังกฤษ)**
+- **Input:** รูปภาพมีข้อความภาษาอังกฤษ
+- **Processing:** รัน Surya OCR v0.5.0 (Native PyTorch)
+- **Expected Output:** OCR Text ถูกสกัดได้ (ความแม่นยำ ≥ 85%)
+
+**AC-3: ตรวจจับคำสำคัญหลอกลวง**
+- **Input:** OCR Text มีคำ "กู้เงินด่วน", "โบนัสพิเศษ", "ด่วน"
+- **Processing:** 
+  - ใช้ RegEx และ NLP ตรวจจับคำหลอกลวง
+  - นับจำนวนและคำนวณ severity_weight
+- **Expected Output:** `scam_keywords: ["กู้เงินด่วน", "โบนัสพิเศษ", "ด่วน"]`, keyword_count = 3
+
+**AC-4: คำนวณ Text Risk Score**
+- **Input:** keyword_count = 3, severity_weight = [0.9, 0.8, 0.7] (กู้เงินด่วน, โบนัสพิเศษ, ด่วน)
+- **Processing:** `S_text = min(100, (Σw_found / max_possible_score) × 100)` โดย `max_possible_score = Σ weight พจนานุกรม v1 = 5.80` (กู้เงินด่วน 0.9, ถอนยอด 0.85, โบนัสพิเศษ 0.8, ด่วน 0.7, ลงทุน 0.7, แจกเงิน 0.65, รับเงิน 0.6, รวยเร็ว 0.6)
+- **Expected Output:** `text_score: 41` (2.40/5.80×100 = 41.4 → ปัดลง, ช่วง 0-100)
+
+**AC-5: ไม่มีข้อความในภาพ**
+- **Input:** รูปภาพไม่มีข้อความ
+- **Processing:** OCR ไม่สกัดได้อะไร
+- **Expected Output:** `text_score: 0`, `scam_keywords: []`
+
+---
+
+#### FR-ANALYSIS-02: Visual Analysis (Image Forgery + AI-Gen Detection)
+**Description:** ระบบต้องตรวจจับการตัดต่อและภาพ AI-Generated  
+**Source:** RC-ANALYSIS-02, RC-ANALYSIS-03, RC-ANALYSIS-04  
+**Traceability:** ST01, ST02, ST03 → OBJ-02 → SC03 → RC-ANALYSIS-02/03/04 → FR-ANALYSIS-02  
+**Priority:** Must
+
+**Acceptance Criteria:**
+
+**AC-1: ตรวจจับการตัดต่อสำเร็จ (Splicing)**
+- **Input:** รูปภาพที่มีการสอดแทรก (Splicing)
+- **Processing:** 
+  - รัน SegFormer (ONNX) เพื่อตรวจจับ
+  - คำนวณ Forgery Confidence ด้วย Normalize(Confidence×Coverage)
+- **Expected Output:** `forgery_confidence: 85` (ช่วง 0-100), ความแม่นยำ ≥ 85% (Accuracy และ mDice)
+
+**AC-2: ตรวจจับภาพ AI-Generated สำเร็จ**
+- **Input:** รูปภาพที่สร้างจาก Stable Diffusion
+- **Processing:** 
+  - รัน AI-Gen Detection Model
+  - ตรวจจับ Artifacts และความผิดปกติทางฟิสิกส์
+- **Expected Output:** `ai_gen_confidence: 90` (ช่วง 0-100)
+
+**AC-3: คำนวณ Visual Risk Score**
+- **Input:** forgery_confidence = 85, ai_gen_confidence = 90
+- **Processing:** คำนวณ Normalize(Confidence×Coverage) จาก SegFormer แล้วรวมด้วย Hybrid max+bonus (S_base คือค่าสูงสุดของ 3 มิติ +5 ต่อมิติรองที่มีคะแนน ≥40, cap 100)
+- **Expected Output:** `visual_score` จาก Normalize(Confidence×Coverage) (ช่วง 0-100; ตัวอย่างเดิม 87 ใช้เพื่ออ้างอิงเท่านั้น)
+
+**AC-4: ภาพจริงไม่ถูกตัดต่อ**
+- **Input:** รูปภาพจริงที่ไม่ถูกแก้ไข
+- **Processing:** รัน Forgery + AI-Gen Detection
+- **Expected Output:** `forgery_confidence: 10`, `ai_gen_confidence: 5`, `visual_score: 8`
+
+**AC-5: เวลา Inference ≤ 10 วินาที (GPU)**
+- **Input:** รูปภาพขนาดมาตรฐาน (1920×1080)
+- **Processing:** รัน Visual Analysis บน GPU (NVIDIA T4)
+- **Expected Output:** เวลาประมวลผล ≤ 10 วินาที
+
+---
+
+#### FR-ANALYSIS-03: Source Analysis (Reverse Image Search)
+**Description:** ระบบต้องค้นหาแหล่งที่มาของภาพบนอินเทอร์เน็ต  
+**Source:** RC-ANALYSIS-05  
+**Traceability:** ST01 → OBJ-03 → SC02 → RC-ANALYSIS-05 → FR-ANALYSIS-03  
+**Priority:** Must
+
+**Acceptance Criteria:**
+
+**AC-1: ค้นหาแหล่งที่มาสำเร็จ**
+- **Input:** รูปภาพที่เคยปรากฏบนอินเทอร์เน็ต
+- **Processing:** 
+  - ส่งรูปภาพไป Google Vision API (Web Detection)
+  - รับรายการ Similar URLs
+  - วิเคราะห์บริบท (จำนวนแหล่ง, ประเภทเว็บ, ความเก่า)
+- **Expected Output:** `source_urls: ["url1", "url2", ...]`, `source_count: 15`, `source_risk_score: 75`
+
+**AC-2: คำนวณ Source Risk Score**
+- **Input:** source_count = 15 (> 10), context = "social media + 2 years old"
+- **Processing:** `S_source = ((source_count_factor × 0.5) + (context_risk × 0.5)) × 100` (ช่วง 0-100) โดย `source_count_factor = min(1, count/10)` และ `context_risk ∈ [0,1]` ตามตาราง: ไม่พบแหล่งที่มา 0.0 / เว็บข่าวหรือหน่วยงานทางการ 0.2 / ฟอรัมทั่วไป 0.4 / social media 0.5 / บวก 0.1 ถ้าภาพเก่าเกิน 1 ปี (cap 1.0)
+- **Expected Output:** `source_score: 75` (factor = min(1, 15/10) = 1.0; context = 0.5 → ((1.0×0.5)+(0.5×0.5))×100 = 75)
+
+**AC-3: ไม่พบแหล่งที่มา**
+- **Input:** รูปภาพใหม่ที่ไม่เคยปรากฏบนอินเทอร์เน็ต
+- **Processing:** Google Vision API ไม่พบ Similar URLs
+- **Expected Output:** `source_urls: []`, `source_count: 0`, `source_score: 0`
+
+**AC-4: Fallback เมื่อ API Down (มติ DOC-01, 2026-09-11: ไม่ใช้ค่ากลางปลอม)**
+- **Input:** Google Vision API Down (HTTP 503) หรือยังไม่เชื่อมต่อจริง
+- **Processing:** 
+  - ตรวจจับ Error
+  - ตั้ง source_status = "unavailable" และแจ้งผู้ใช้ว่าฟังก์ชันค้นหาแหล่งที่มาของภาพยังไม่พร้อมใช้งาน
+  - คำนวณคะแนนรวมจากมิติที่สำเร็จเท่านั้น (ตัดมิติ source ออก)
+- **Expected Output:** `source_status: "unavailable"`, ข้อความแจ้งผู้ใช้, `source_urls: []`
+
+---
+
+#### FR-ANALYSIS-04: Risk Score Calculation
+**Description:** ระบบต้องคำนวณคะแนนความเสี่ยงรวม  
+**Source:** RC-ANALYSIS-07, RC-ANALYSIS-08  
+**Traceability:** ST01 → OBJ-03 → SC02 → RC-ANALYSIS-07/08 → FR-ANALYSIS-04  
+**Priority:** Must
+
+**Acceptance Criteria:**
+
+**AC-1: คำนวณคะแนนรวมสำเร็จตามหลัก Hybrid max+bonus**
+- **Input:** text_score = 50, visual_score = 85, source_score = 0
+- **Processing:** `S_base = max(85, 50, 0) = 85`, `compounding = 5 (เนื่องจาก text_score >= 40)`, `Risk Score = min(100, 85 + 5) = 90`
+- **Expected Output:** `risk_score: 90`, `risk_grade: "High"`, `primary_factor: "visual"`
+
+**AC-2: จำกัดคะแนนในช่วง 0-100**
+- **Input:** text_score = 100, visual_score = 100, source_score = 100
+- **Processing:** `S_base = 100`, `compounding = 10`, `Risk Score = min(100, 100 + 10) = 100`
+- **Expected Output:** `risk_score: 100`, `risk_grade: "High"`
+
+**AC-3: แปลงเป็น Risk Grade (Low) — 3 ระดับ: Low 0-39 / Medium 40-69 / High 70-100**
+- **Input:** risk_score = 10
+- **Processing:** 0-39 = Low
+- **Expected Output:** `risk_grade: "low"`, สีเขียว
+
+**AC-4: แปลงเป็น Risk Grade (Low ปลายช่วง)**
+- **Input:** risk_score = 30
+- **Processing:** 0-39 = Low
+- **Expected Output:** `risk_grade: "low"`, สีเขียว
+
+**AC-5: แปลงเป็น Risk Grade (Medium)**
+- **Input:** risk_score = 55
+- **Processing:** 40-69 = Medium
+- **Expected Output:** `risk_grade: "Medium"`, สีเหลือง
+
+**AC-6: แปลงเป็น Risk Grade (High)**
+- **Input:** risk_score = 80
+- **Processing:** 70-100 = High
+- **Expected Output:** `risk_grade: "High"`, สีแดง
+
+**AC-7: Special Rule — Visual Score ≥ 80**
+- **Input:** risk_score = 65, visual_score = 85
+- **Processing:** แม้ risk_score < 70 แต่ visual_score ≥ 80 → High
+- **Expected Output:** `risk_grade: "High"`, สีแดง
+
+---
+
+### 2.4 Explainability (FR-XAI)
+
+#### FR-XAI-01: Mask-to-Heatmap Overlay Generation & Display
+**Description:** ระบบต้องสร้างและแสดงแผนที่ความร้อนแบบ mask-to-heatmap overlay จาก SegFormer พร้อมคำอธิบายภาษาธรรมชาติ  
+**Source:** RC-XAI-01, RC-XAI-02, RC-XAI-03  
+**Traceability:** ST01, ST03 → OBJ-02, OBJ-04 → SC01, SC03 → RC-XAI-01/02/03 → FR-XAI-01  
+**Priority:** Must
+
+**Acceptance Criteria:**
+
+**AC-1: สร้าง Heatmap สำเร็จ**
+- **Input:** รูปภาพ, SegFormer Model Output (segmentation mask)
+- **Processing:** 
+  - แปลง mask เป็นแผนที่ความร้อนแล้ว overlay บนภาพต้นฉบับ
+  - คำอธิบายประกอบด้วย Qwen2.5-1.5B สำหรับสร้างคำอธิบายภาษาไทย (มติ DOC-12: ระบุรุ่นให้ชัด)
+  - สร้างภาพ Heatmap พร้อม Color Map (แดง=เสี่ยงสูง, เหลือง=ปานกลาง, เขียว=ปลอดภัย) ที่ opacity 50%
+  - บันทึก Heatmap เป็น heatmap.jpg
+  - อัปโหลดไปยัง Object Storage
+- **Expected Output:** `heatmap_url: "https://storage/scan_id/heatmap.jpg"`
+
+**AC-2: แสดง Heatmap แบบ Overlay**
+- **Input:** scan_id, heatmap_url
+- **Processing:** 
+  - โหลดภาพต้นฉบับและ Heatmap
+  - แสดงแบบ Overlay (ซ้อนทับ)
+  - แสดง Toggle Button สำหรับ On/Off Heatmap Layer
+  - แสดง Opacity Slider (0-100%)
+- **Expected Output:** ผู้ใช้เห็นภาพซ้อนทับพร้อม Controls
+
+**AC-3: Toggle Heatmap On/Off**
+- **Input:** ผู้ใช้คลิก Toggle Button
+- **Processing:** เปิด/ปิด Heatmap Layer
+- **Expected Output:** Heatmap แสดง/ซ่อน
+
+**AC-4: ปรับความโปร่งใส Heatmap**
+- **Input:** ผู้ใช้เลื่อน Opacity Slider (0-100%)
+- **Processing:** ปรับ opacity ของ Heatmap Layer
+- **Expected Output:** Heatmap โปร่งใสตามค่าที่เลือก (0% = โปร่งใสสนิท, 100% = ทึบ)
+
+**AC-5: แสดง Risk Breakdown**
+- **Input:** scan_id
+- **Processing:** ดึงข้อมูล text_score, visual_score, source_score, risk_score, risk_grade
+- **Expected Output:** 
+  - Radial Gauge แสดง risk_score
+  - 3 Progress Bars แสดง text_score, visual_score, source_score
+  - Risk Grade Label พร้อมสี
+  - OCR Text และ Scam Keywords (Highlighted)
+  - รายการแหล่งที่มา (URLs)
+
+---
+
+### 2.5 History & Reports (FR-HISTORY)
+
+#### FR-HISTORY-01: จัดการประวัติการสแกน
+**Description:** ระบบต้องให้ผู้ใช้ดู ค้นหา และลบประวัติการสแกน  
+**Source:** RC-HISTORY-01, RC-HISTORY-02, RC-HISTORY-03, RC-HISTORY-04  
+**Traceability:** ST01 → OBJ-01 → SC01 → RC-HISTORY-01/02/03/04 → FR-HISTORY-01  
+**Priority:** Must
+
+**Acceptance Criteria:**
+
+**AC-1: แสดงประวัติการสแกน**
+- **Input:** GET /history?user_id={user_id}
+- **Processing:** 
+  - ดึงข้อมูลจากฐานข้อมูล
+  - เรียงตามวันที่ล่าสุดก่อน (DESC)
+  - รองรับ Pagination (page, limit)
+- **Expected Output:** HTTP 200, Response Body: `{scans: [{scan_id, thumbnail_url, created_at, risk_score, risk_grade}, ...], total, page, limit}`
+
+**AC-2: ค้นหาตามช่วงวันที่**
+- **Input:** GET /history?start_date=2026-01-01&end_date=2026-01-31
+- **Processing:** กรองข้อมูลตาม created_at
+- **Expected Output:** HTTP 200, เฉพาะ scans ที่อยู่ในช่วงวันที่
+
+**AC-3: กรองตามระดับความเสี่ยง**
+- **Input:** GET /history?risk_grade=High
+- **Processing:** กรองข้อมูลตาม risk_grade
+- **Expected Output:** HTTP 200, เฉพาะ scans ที่ risk_grade = "High"
+
+**AC-4: ลบประวัติทีละรายการ**
+- **Input:** DELETE /history/{scan_id}
+- **Processing:** 
+  - แสดง Confirmation Dialog
+  - ผู้ใช้ยืนยัน
+  - ลบข้อมูลจาก Database
+  - ลบไฟล์จาก Object Storage (original.jpg, heatmap.jpg)
+- **Expected Output:** HTTP 200, `{message: "Scan deleted successfully"}` (ตรงกับ code)
+
+**AC-5: ลบประวัติทั้งหมด**
+- **Input:** DELETE /history (implement แล้ว มติ DOC-07/1B — ตรงกับที่ mobile เรียกอยู่)
+- **Processing:** 
+  - แสดง Confirmation Dialog 2 ครั้ง
+  - ผู้ใช้ยืนยัน
+  - ลบข้อมูลทั้งหมดของผู้ใช้จาก Database
+  - ลบไฟล์ทั้งหมดจาก Object Storage
+- **Expected Output:** HTTP 204
+
+---
+
+#### FR-HISTORY-02: รายงานภาพหลอกลวง
+**Description:** ระบบต้องให้ผู้ใช้รายงานภาพที่เชื่อว่าเป็นภาพหลอกลวง  
+**Source:** RC-HISTORY-05  
+**Traceability:** ST01, ST02 → OBJ-01 → SC01 → RC-HISTORY-05 → FR-HISTORY-02  
+**Priority:** Must
+
+**Acceptance Criteria:**
+
+**AC-1: รายงานสำเร็จ**
+- **Input:** POST /reports, Body: `{scan_id, category: "fake_slip", description: "สลิปโอนเงินปลอม จำนวนเงินถูกแก้ไข"}`
+- **Processing:** 
+  - ตรวจสอบ scan_id เป็นของผู้ใช้
+  - ตรวจสอบไม่เคยรายงาน scan นี้แล้ว
+  - ตรวจสอบ description ≥ 10 ตัวอักษร
+  - บันทึกรายงาน (status = "pending")
+- **Expected Output:** HTTP 201, Response Body: `{report_id, scan_id, status: "pending", created_at}`
+
+**AC-2: ปฏิเสธการรายงานซ้ำ**
+- **Input:** scan_id ที่เคยรายงานแล้ว
+- **Processing:** ตรวจสอบ report_id ที่มี scan_id นี้แล้ว
+- **Expected Output:** HTTP 409, Error Message: "You have already reported this scan" (ตรงกับ code + overview)
+
+**AC-3: ปฏิเสธคำอธิบายสั้นเกินไป**
+- **Input:** description = "ปลอม" (< 10 ตัวอักษร)
+- **Processing:** Validate description length
+- **Expected Output:** HTTP 400, Error Message: "Description must be at least 10 characters"
+
+**AC-4: หมวดหมู่รายงาน**
+- **Input:** category ∈ {romance_scam, online_shopping, fake_slip, investment, identity_theft, ai_deepfake, other} (7 keys มาตรฐาน backend — มติ DOC-08)
+- **Processing:** Validate category (นอกเซ็ต → 422)
+- **Expected Output:** ถูกต้อง หรือ HTTP 422 ถ้า category ไม่ถูกต้อง
+
+---
+
+### 2.6 PDPA & Consent (FR-PDPA)
+
+#### FR-PDPA-01: Consent Management
+**Description:** ระบบต้องจัดการความยินยอม 2 ระดับ (System Consent และ Research Consent)  
+**Source:** RC-PDPA-01, RC-PDPA-02, RC-PDPA-03  
+**Traceability:** ST01 → OBJ-01 → SC01 → RC-PDPA-01/02/03 → FR-PDPA-01  
+**Priority:** Must
+
+**Acceptance Criteria:**
+
+**AC-1: แสดงหน้า Consent Screen**
+- **Input:** ผู้ใช้สมัครสมาชิกครั้งแรก
+- **Processing:** แสดงหน้า Consent Screen พร้อม:
+  - System Consent (บังคับ): ยินยอมให้ระบบประมวลผลภาพ
+  - Research Consent (ไม่บังคับ): ยินยอมให้นำข้อมูลไปใช้วิจัย
+- **Expected Output:** Consent Screen แสดงขึ้น
+
+**AC-2: บันทึก Consent Logs**
+- **Input:** System Consent = true, Research Consent = true
+- **Processing:** 
+  - บันทึก consent_logs (user_id, consent_type, is_granted, created_at)
+  - 2 records: system_consent=true, research_consent=true
+- **Expected Output:** Consent Logs ถูกบันทึก
+
+**AC-3: ถอน Research Consent**
+- **Input:** PUT /consent/research, Body: `{is_granted: false}`
+- **Processing:** 
+  - อัปเดต consent_logs (is_granted = false)
+  - บันทึก updated_at
+- **Expected Output:** HTTP 200, `{consent_type: "research", is_granted: false}`
+
+**AC-4: Right to Access — ดูข้อมูลส่วนตัว**
+- **Input:** GET /users/me
+- **Processing:** ดึงข้อมูลผู้ใช้
+- **Expected Output:** HTTP 200, Response Body: `{id, full_name, email, role, status, created_at}`
+
+**AC-5: Right to Access — ดู Consent Logs**
+- **Input:** GET /consent/logs
+- **Processing:** ดึง consent_logs ของผู้ใช้
+- **Expected Output:** HTTP 200, Response Body: `{logs: [{consent_type, is_granted, created_at, updated_at}, ...]}`
+
+---
+
+### 2.7 Admin Portal (FR-ADMIN)
+
+#### FR-ADMIN-01: Dashboard & User Management
+**Description:** Admin ต้องสามารถดูสถิติและจัดการผู้ใช้  
+**Source:** RC-ADMIN-01, RC-ADMIN-02, RC-ADMIN-06  
+**Traceability:** ST02, ST03 → OBJ-04 → SC04 → RC-ADMIN-01/02/06 → FR-ADMIN-01  
+**Priority:** Must
+
+**Acceptance Criteria:**
+
+**AC-1: แสดง Dashboard Statistics**
+- **Input:** GET /admin/dashboard (Admin role)
+- **Processing:** ดึงสถิติ:
+  - Total Users, DAU, MAU
+  - Total Scans, Risk Distribution (Low/Medium/High)
+  - Model Accuracy
+  - Cache Hit Rate
+  - Report Count by Category
+- **Expected Output:** HTTP 200, Response Body: `{users: {...}, scans: {...}, models: {...}, cache: {...}, reports: {...}}`
+
+**AC-2: แสดงรายการผู้ใช้ (List Users)**
+- **Input:** GET /admin/users (Admin role)
+- **Processing:** ดึงรายการผู้ใช้ทั้งหมด
+- **Expected Output:** HTTP 200, Response Body: `{users: [{id, full_name, email, role, status, created_at}, ...], total}`
+
+**AC-3: ค้นหาผู้ใช้**
+- **Input:** GET /admin/users?search=test@example.com
+- **Processing:** ค้นหาตาม email หรือ full_name
+- **Expected Output:** HTTP 200, รายการผู้ใช้ที่ตรงกัน
+
+**AC-4: เปลี่ยนบทบาทผู้ใช้ — DEFERRED (Phase 2 backlog, candidate FR-ADMIN-05)**
+- **สถานะ:** code v1 มีแค่ `PATCH /admin/users/{user_id}` สำหรับเปิด/ปิดบัญชี (is_active + reason) ยังไม่มี endpoint เปลี่ยน role — AC นี้ย้ายไป Phase 2
+- **Requirement (Phase 2):** ระบบ shall ให้ Admin เปลี่ยน role ได้ (อนุญาตเฉพาะ user / researcher / admin; บทบาทอื่นต้อง HTTP 400) และ shall บันทึก Audit Log ทุกครั้ง
+- **Expected Output (Phase 2):** HTTP 200, `{user_id, role: "researcher"}`
+
+**AC-5: เปลี่ยนสถานะผู้ใช้**
+- **Input:** PATCH /admin/users/{user_id}, Body: `{is_active: false, reason: "..."}`
+- **Processing:** 
+  - อัปเดต status
+  - บันทึก Audit Log
+- **Expected Output:** HTTP 200, `{user_id, status: "inactive"}`
+
+**AC-6: RBAC — ปฏิเสธ Non-Admin**
+- **Input:** GET /admin/dashboard (User role)
+- **Processing:** ตรวจสอบ role
+- **Expected Output:** HTTP 403, Error Message: "Forbidden: Admin access required"
+
+---
+
+#### FR-ADMIN-02: Report Queue Management
+**Description:** Admin ต้องสามารถตรวจสอบและพิจารณารายงาน  
+**Source:** RC-ADMIN-03  
+**Traceability:** ST02 → OBJ-04 → SC04 → RC-ADMIN-03 → FR-ADMIN-02  
+**Priority:** Must
+
+**Acceptance Criteria:**
+
+**AC-1: แสดง Report Queue**
+- **Input:** GET /admin/reports?status=pending
+- **Processing:** ดึงรายการรายงานที่ status = pending
+- **Expected Output:** HTTP 200, Response Body: `{reports: [{report_id, scan_id, user_id, category, description, status, created_at}, ...], total}`
+
+**AC-2: เปลี่ยนสถานะเป็น Reviewing**
+- **Input:** POST /admin/reports/{report_id}/review, Body: `{version: 1}`
+- **Processing:** 
+  - อัปเดต status = "reviewing"
+  - บันทึก Audit Log
+- **Expected Output:** HTTP 200, `{report_id, status: "reviewing"}`
+
+**AC-3: อนุมัติรายงาน (Approve)**
+- **Input:** PATCH /admin/reports/{report_id}, Body: `{status: "approved", version: 2}`
+- **Processing:** 
+  - อัปเดต status = "approved"
+  - นำเข้า Dataset: คัดลอกไฟล์ภาพจาก Object Storage ไปยัง Dataset Storage พร้อมเพิ่ม Label
+  - บันทึก Audit Log (admin_id, action="approve_report", report_id)
+- **Expected Output:** HTTP 200, `{report_id, status: "approved"}`
+
+**AC-4: ปฏิเสธรายงาน (Reject) พร้อมเหตุผล**
+- **Input:** PATCH /admin/reports/{report_id}, Body: `{status: "rejected", version: 2, admin_note: "ภาพนี้ไม่ใช่ภาพหลอกลวง"}`
+- **Processing:** 
+  - อัปเดต status = "rejected"
+  - บันทึก admin_note
+  - บันทึก Audit Log
+- **Expected Output:** HTTP 200, `{report_id, status: "rejected", admin_note: "..."}`
+
+**AC-5: ปฏิเสธการ Reject โดยไม่มีเหตุผล**
+- **Input:** PATCH /admin/reports/{report_id}, Body: `{status: "rejected", version: 2, admin_note: ""}`
+- **Processing:** Validate admin_note
+- **Expected Output:** HTTP 400, Error Message: "Admin note is required for rejection"
+
+---
+
+#### FR-ADMIN-03: Model Management
+**Description:** Admin ต้องสามารถจัดการโมเดล AI  
+**Source:** RC-ADMIN-04  
+**Traceability:** ST02 → OBJ-04 → SC04 → RC-ADMIN-04 → FR-ADMIN-03  
+**Priority:** Must
+
+**Acceptance Criteria:**
+
+**AC-1: แสดงรายการโมเดล**
+- **Input:** GET /admin/models
+- **Processing:** ดึงรายการโมเดลทั้งหมด
+- **Expected Output:** HTTP 200, Response Body: `{models: [{model_id, version, file_path, status, accuracy, created_at}, ...], total}`
+
+**AC-2: อัปโหลดโมเดลใหม่ — Phase 2 (มติ DOC-07/2A)**
+- **สถานะ v1:** ยังไม่มี endpoint อัปโหลด ให้วางไฟล์ .onnx บน server เองแล้วสั่ง deploy ผ่าน API (AC-3) — endpoint อัปโหลดเลื่อนไป Phase 2
+- **Processing:** 
+  - บันทึกไฟล์ไปยัง Object Storage
+  - บันทึกข้อมูลโมเดล (status = "inactive")
+  - บันทึก Audit Log
+- **Expected Output:** HTTP 201, `{model_id, version: "2.0", status: "inactive"}`
+
+**AC-3: เปิดใช้งานโมเดล (Deploy)**
+- **Input:** POST /admin/models/{model_id}/deploy
+- **Processing:** 
+  - ปิดโมเดลเก่าทั้งหมด (status = "inactive")
+  - เปิดโมเดลใหม่ (status = "active")
+  - บันทึก Audit Log
+- **Expected Output:** HTTP 200, `{model_id, status: "active"}`
+
+**AC-4: ปฏิเสธเมื่อมีโมเดล Active > 1**
+- **Input:** มี 2 โมเดลที่ status = "active"
+- **Processing:** ตรวจสอบจำนวนโมเดล active
+- **Expected Output:** HTTP 400, Error Message: "Only one model can be active at a time"
+
+---
+
+#### FR-ADMIN-04: Audit Logs Viewer
+**Description:** Admin ต้องสามารถดู Audit Logs  
+**Source:** RC-ADMIN-05  
+**Traceability:** ST02, ST03 → OBJ-04 → SC04 → RC-ADMIN-05 → FR-ADMIN-04  
+**Priority:** Must
+
+**Acceptance Criteria:**
+
+**AC-1: แสดง Audit Logs**
+- **Input:** GET /admin/audit-logs
+- **Processing:** ดึงรายการ Audit Logs
+- **Expected Output:** HTTP 200, Response Body: `{logs: [{audit_id, admin_id, admin_name, action, details, timestamp}, ...], total}`
+
+**AC-2: ค้นหาตาม Admin**
+- **Input:** GET /admin/audit-logs?admin_id={admin_id}
+- **Processing:** กรองตาม admin_id
+- **Expected Output:** HTTP 200, เฉพาะ logs ของ admin นั้น
+
+**AC-3: ค้นหาตาม Action**
+- **Input:** GET /admin/audit-logs?action=approve_report
+- **Processing:** กรองตาม action
+- **Expected Output:** HTTP 200, เฉพาะ logs ที่ action = "approve_report"
+
+**AC-4: ค้นหาตามช่วงวันที่**
+- **Input:** GET /admin/audit-logs?start_date=2026-01-01&end_date=2026-01-31
+- **Processing:** กรองตาม timestamp
+- **Expected Output:** HTTP 200, เฉพาะ logs ในช่วงวันที่
+
+**AC-5: Audit Logs เป็น Immutable**
+- **Input:** ไม่มี PUT, DELETE endpoints สำหรับ /admin/audit-logs
+- **Processing:** ไม่สามารถแก้ไขหรือลบ
+- **Expected Output:** ข้อมูล Audit Logs ไม่สามารถเปลี่ยนแปลงได้
+
+---
+
+## 3. Non-Functional Requirements (NFR)
+
+### NFR-01: Performance — Response Time
+**Description:** ระบบต้องมีเวลาตอบสนองตามที่กำหนด  
+**Source:** RC-NFR-01, RC-NFR-02, RC-NFR-03  
+**Traceability:** ST01 → OBJ-04 → SC02, SC03 → RC-NFR-01/02/03 → NFR-01  
+**Priority:** Must
+
+**Acceptance Criteria:**
+
+**AC-1: Cache Hit Response Time ≤ 3 วินาที**
+- **Test:** ส่งรูปภาพที่เคยวิเคราะห์แล้ว (SHA-256 match)
+- **Measurement:** วัดเวลาจาก Request ถึง Response
+- **Expected:** P95 ≤ 3 วินาที
+
+**AC-2: New Analysis Response Time (Percentiles)**
+- **Test:** ส่งรูปภาพใหม่ (ไม่มี Cache)
+- **Measurement:** วัดเวลาจาก Request ถึง Response
+- **Expected:** 
+  - P50 (Median): ≤ 15 วินาที
+  - P95: ≤ 25 วินาที
+  - P99: ≤ 35 วินาที
+
+**AC-3: AI Inference Time ≤ 10 วินาที (GPU)**
+- **Test:** รัน Visual Analysis บน GPU (NVIDIA T4)
+- **Measurement:** วัดเวลา Inference เท่านั้น
+- **Expected:** Average ≤ 10 วินาที/ภาพ
+
+**AC-4: AI Inference Time ≤ 60 วินาที (CPU Fallback)**
+- **Test:** รัน Visual Analysis บน CPU (เมื่อ GPU ไม่พร้อม)
+- **Measurement:** วัดเวลา Inference บน CPU
+- **Expected:** Average ≤ 60 วินาที/ภาพ
+- **UI:** แสดงข้อความ "Processing may take longer (CPU mode)"
+
+---
+
+### NFR-02: Performance — Scalability
+**Description:** ระบบต้องรองรับผู้ใช้พร้อมกัน ≥ 100 คน  
+**Source:** RC-NFR-05  
+**Traceability:** ST01 → OBJ-04 → SC02 → RC-NFR-05 → NFR-02  
+**Priority:** Must
+
+**Acceptance Criteria:**
+
+**AC-1: รองรับ 100 Concurrent Users**
+- **Test:** Load Testing ด้วย JMeter หรือ Locust (100 concurrent users)
+- **Measurement:** 
+  - Cache Hit: Average Response Time ≤ 5 วินาที
+  - Cache Miss: Average Response Time ≤ 20 วินาที
+  - Error Rate < 1%
+- **Expected:** ระบบทำงานได้ปกติโดยไม่มี Timeout หรือ Error
+
+---
+
+### NFR-03: Availability — System Uptime & Monitoring
+**Description:** ระบบต้องมีความพร้อมใช้งาน ≥ 99.5% พร้อมระบบ Monitoring และ Alerting  
+**Source:** RC-NFR-04  
+**Traceability:** ST01, ST02 → OBJ-04 → SC02 → RC-NFR-04 → NFR-03  
+**Priority:** Must
+
+**Acceptance Criteria:**
+
+**AC-1: Uptime ≥ 99.5%**
+- **Test:** วัด Uptime ในช่วง 1 เดือน
+- **Measurement:** `Uptime % = (Total Time - Downtime) / Total Time × 100`
+- **Expected:** ≥ 99.5% (ไม่นับเวลา Planned Maintenance)
+
+**AC-2: Monitoring Tools Implementation**
+- **Tools:** Prometheus + Grafana
+- **Metrics:** API Uptime, Response Time, Error Rate, GPU/CPU Usage, Memory, Disk
+- **Expected:** Dashboard แสดง Real-time Metrics
+
+**AC-3: Alerting Strategy Implementation**
+- **Tools:** Grafana Alerts + Sentry
+- **Channels:** Slack, LINE, Email
+- **Triggers:**
+  - Error Rate > 5%
+  - Response Time > 30s (P95)
+  - System Uptime < 99.5%
+  - GPU/CPU Usage > 90%
+- **Expected:** แจ้งเตือนทันทีเมื่อเกิดเหตุการณ์
+
+---
+
+### NFR-04: Security — Authentication, Authorization, Encryption
+**Description:** ระบบต้องมีความปลอดภัยตามมาตรฐาน  
+**Source:** RC-NFR-08  
+**Traceability:** ST01, ST02 → OBJ-04 → SC02 → RC-NFR-08 → NFR-04  
+**Priority:** Must
+
+**Acceptance Criteria:**
+
+**AC-1: HTTPS/TLS 1.3 บังคับทุก Endpoint**
+- **Test:** เรียก API ผ่าน HTTP (ไม่ใช่ HTTPS)
+- **Expected:** ถูก Redirect ไปยัง HTTPS หรือ Error
+
+**AC-2: JWT Token มี TTL ที่ถูกต้อง**
+- **Test:** Decode Access Token
+- **Expected:** exp = iat + 900 (15 นาที)
+
+**AC-3: Password Hashing ด้วย bcrypt**
+- **Test:** ตรวจสอบ password_hash ในฐานข้อมูล
+- **Expected:** เป็น bcrypt hash (เริ่มด้วย "$2b$12$")
+
+**AC-4: Rate Limiting ทำงาน**
+- **Test:** ส่ง Request > 60 ครั้ง/นาที (Authenticated User)
+- **Expected:** HTTP 429, Error Message: "Too many requests"
+
+**AC-5: Input Validation**
+- **Test:** ส่ง SQL Injection, XSS Payload
+- **Expected:** HTTP 400, Payload ถูก Sanitize
+
+---
+
+### NFR-05: Accuracy — Model Performance (Accuracy + mDice)
+**Description:** โมเดล AI ต้องมีความแม่นยำ Accuracy ≥ 85% และ mDice ≥ 85%  
+**Source:** RC-NFR-06  
+**Traceability:** ST01, ST02, ST03 → OBJ-02 → SC03 → RC-NFR-06 → NFR-05  
+**Priority:** Must
+
+**Acceptance Criteria:**
+
+**AC-1: Accuracy ≥ 85%**
+- **Test:** ประเมินโมเดลบน Testing Set (1,000 ภาพ)
+- **Measurement:** `Accuracy = (TP + TN) / (TP + TN + FP + FN) × 100`
+- **Expected:** ≥ 85%
+
+**AC-2: mDice ≥ 85%**
+- **Test:** ประเมินโมเดลบน Testing Set (1,000 ภาพ)
+- **Measurement:** mDice
+- **Expected:** ≥ 85%
+
+**AC-3: Precision ≥ 85% (เกณฑ์เสริมเพื่อ traceability ใช้ Accuracy + mDice เป็นเกณฑ์หลัก)**
+- **Test:** ประเมินโมเดลบน Testing Set
+- **Measurement:** `Precision = TP / (TP + FP) × 100`
+- **Expected:** ≥ 85% (ลด False Positive — ภาพจริงแต่ระบบบอกว่าปลอม)
+
+**AC-4: Recall ≥ 85% (เกณฑ์เสริมเพื่อ traceability ใช้ Accuracy + mDice เป็นเกณฑ์หลัก)**
+- **Test:** ประเมินโมเดลบน Testing Set
+- **Measurement:** `Recall = TP / (TP + FN) × 100`
+- **Expected:** ≥ 85% (ลด False Negative — ภาพปลอมแต่ระบบบอกว่าจริง)
+
+---
+
+### NFR-06: Usability — User Satisfaction & Explainability
+**Description:** ผู้ใช้ต้องพึงพอใจและเข้าใจ Heatmap  
+**Source:** RC-NFR-09, RC-NFR-10  
+**Traceability:** ST01, ST03 → OBJ-04 → SC01, SC03 → RC-NFR-09/10 → NFR-06  
+**Priority:** Must
+
+**Acceptance Criteria:**
+
+**AC-1: คะแนนความพึงพอใจ ≥ 4.00**
+- **Test:** User Acceptance Testing (UAT) ด้วย Likert Scale 5 ระดับ (1-5)
+- **Sample Size:** 100 ผู้ทดสอบ
+- **Measurement:** คะแนนเฉลี่ย
+- **Expected:** ≥ 4.00 คะแนน
+
+**AC-2: ผู้ใช้เข้าใจ Heatmap ≥ 80% (Comprehension Test)**
+- **Test:** Scenario-based Questionnaire (4 คำถาม)
+- **Sample Size:** 100 ผู้ทดสอบ
+- **Questions:**
+  1. "บริเวณสีแดงสื่อความหมายถึงอะไร?" → คำตอบ: จุดที่เสี่ยงว่าถูกดัดแปลง
+  2. "เปรียบเทียบสีแดงกับสีเขียว ส่วนใดน่าเชื่อถือมากกว่า?" → คำตอบ: สีเขียว
+  3. "Heatmap ช่วยให้ท่านมั่นใจในการแยกแยะสลิปปลอมมากขึ้นเพียงใด?" → Likert 1-5
+  4. "ท่านเข้าใจแผนที่ความร้อนโดยไม่ต้องให้ผู้เชี่ยวชาญอธิบายหรือไม่?" → ใช่/ไม่ใช่
+- **Expected:**
+  - Q1, Q2: ตอบถูก ≥ 80%
+  - Q3: คะแนนเฉลี่ย ≥ 4.00
+  - Q4: ตอบ "ใช่" ≥ 80%
+
+---
+
+### NFR-07: Cache Efficiency & Performance Tuning
+**Description:** อัตราการ Cache Hit ต้อง ≥ 40% พร้อมกลยุทธ์เมื่อต่ำกว่าเป้าหมาย  
+**Source:** RC-NFR-07  
+**Traceability:** ST01 → OBJ-04 → SC02 → RC-NFR-07 → NFR-07  
+**Priority:** Should
+
+**Acceptance Criteria:**
+
+**AC-1: Cache Hit Rate ≥ 40%**
+- **Test:** วัดในช่วง 1 สัปดาห์การใช้งานจริง
+- **Measurement:** `Cache Hit Rate = Cache Hit / Total Requests × 100`
+- **Expected:** ≥ 40%
+
+**AC-2: Performance Tuning Strategy (เมื่อ Cache Hit < 40%)**
+- **Strategy 1: เพิ่ม TTL ใน Redis**
+  - ภาพไวรัลหรือความเสี่ยงสูง → TTL: 60-90 วัน (แทน 30 วัน)
+- **Strategy 2: Auto-Scaling AI Workers**
+  - ขยาย ONNX Worker Instances เมื่อ Queue Length > 50
+- **Strategy 3: Graceful Degradation**
+  - แสดงข้อความ: "มีผู้ใช้งานจำนวนมาก การวิเคราะห์อาจใช้เวลา 15-60 วินาที"
+- **Strategy 4: Monitoring Alert**
+  - แจ้งเตือนเมื่อ Cache Hit Rate < 35%
+- **Expected:** ระบบปรับตัวอัตโนมัติหรือแจ้งเตือน Admin
+
+---
+
+### NFR-08: Compatibility — Platform & Interoperability (ISO/IEC 25010)
+**Description:** ระบบต้องทำงานร่วมกับ Android หลายรุ่นและแลกเปลี่ยนข้อมูลผ่าน API มาตรฐานได้  
+**Source:** ISO/IEC 25010 gap-fill (audit §A, 2026-09-12)  
+**Traceability:** ST01 → OBJ-04 → SC01 → (gap-fill, ไม่มี RC) → NFR-08  
+**Priority:** Must
+
+**Acceptance Criteria:**
+
+**AC-1: Android Compatibility Matrix**
+- **Test:** ติดตั้งและรัน key flows (สมัคร → สแกน → ดูผล) บน Android 10–15 (API 29–35) ด้วย emulator/device farm บน CI
+- **Measurement:** ผ่านทุกเวอร์ชัน 100% ของ key flows
+- **Expected:** ติดตั้งได้และ key flows ผ่านบน Android 10, 12, 14, 15 อย่างน้อย
+
+**AC-2: API Interoperability**
+- **Test:** Mobile เรียก backend ผ่าน versioned REST (OpenAPI) JSON; round-trip อัปโหลด/ดาวน์โหลดภาพผ่าน presigned URL
+- **Measurement:** SHA-256 ของไฟล์ที่ round-trip ต้องตรงต้นฉบับ 100%; response ตรง OpenAPI schema
+- **Expected:** Integrity match 100% และ schema validation ผ่านทุก endpoint ที่ใช้ใน v1
+
+---
+
+### NFR-09: Maintainability — Testability & Modularity (ISO/IEC 25010)
+**Description:** ระบบต้องมี coverage และ quality gate ที่วัดได้เพื่อการบำรุงรักษา  
+**Source:** ISO/IEC 25010 gap-fill (audit §A, 2026-09-12)  
+**Traceability:** ST02, ST03 → OBJ-04 → SC02 → (gap-fill, ไม่มี RC) → NFR-09  
+**Priority:** Must
+
+**Acceptance Criteria:**
+
+**AC-1: Branch Coverage Gate บน CI**
+- **Test:** รัน `pytest --cov` (backend) และ `flutter test --coverage` (mobile) บน CI ทุก PR
+- **Measurement:** Branch coverage รวม
+- **Expected:** ≥ 80% ทั้ง backend และ mobile; ต่ำกว่าเกณฑ์ merge ไม่ได้
+
+**AC-2: Static Analysis Clean**
+- **Test:** รัน linter/type-checker ที่กำหนดบน CI (backend: ruff + mypy; mobile: flutter analyze)
+- **Measurement:** จำนวน error
+- **Expected:** 0 errors; warning ใหม่ต้องเป็น 0 ก่อน merge
+
+---
+
+## 4. Requirements Summary
+
+### 4.1 Functional Requirements Summary
+
+| Category | FR Count | Must | Should | Could |
+|----------|----------|------|--------|-------|
+| **Authentication & Authorization** | 4 | 4 | 0 | 0 |
+| **Image Upload & Scan** | 3 | 3 | 0 | 0 |
+| **Multi-layer Analysis** | 4 | 4 | 0 | 0 |
+| **Explainability (XAI)** | 1 | 1 | 0 | 0 |
+| **History & Reports** | 2 | 2 | 0 | 0 |
+| **PDPA & Consent** | 1 | 1 | 0 | 0 |
+| **Admin Portal** | 4 | 4 | 0 | 0 |
+| **TOTAL FR** | **19** | **19** | **0** | **0** |
+
+**Updated AC Count:** 83 (นับจริงด้วย grep `^\*\*AC-` — ตรงกับ Total ด้านล่าง)
+
+### 4.2 Non-Functional Requirements Summary
+
+| Category | NFR Count | Must | Should |
+|----------|-----------|------|--------|
+| **Performance** | 2 | 2 | 0 |
+| **Availability & Monitoring** | 1 | 1 | 0 |
+| **Security** | 1 | 1 | 0 |
+| **Accuracy** | 1 | 1 | 0 |
+| **Usability & XAI** | 1 | 1 | 0 |
+| **Cache Efficiency** | 1 | 0 | 1 |
+| **Compatibility** | 1 | 1 | 0 |
+| **Maintainability** | 1 | 1 | 0 |
+| **TOTAL NFR** | **9** | **8** | **1** |
+
+**Updated AC Count:** 25 (21 เดิม + 4 จาก NFR-08/09 — นับจริงด้วย grep ตรงกับ Total ด้านล่าง)
+
+### 4.3 Total Requirements
+
+- **Total Requirements:** 28 (19 FR + 9 NFR)
+- **Must:** 27 (96.4%)
+- **Should:** 1 (3.6%)
+- **Total Acceptance Criteria:** 108 (83 FR + 25 NFR)
+  - Increased from 92 due to:
+    - XAI Controls: +2 AC (Toggle Button, Opacity Slider)
+    - Monitoring & Alerting: +2 AC
+    - Precision & Recall: +2 AC
+  - Increased from 98 to 104 by subsequent AC additions (e.g. FR-ANALYSIS-04 AC-7) — recount verified 2026-09-11 (DOC-13)
+  - Increased from 104 to 108 by NFR-08/09 (Compatibility + Maintainability, audit §A 2026-09-12)
+
+---
+
+## 5. Document Summary
+
+เอกสาร Software Requirement Specification ฉบับนี้แปลง **49 Requirement Candidates** เป็น **28 Formal Requirements** (19 FR + 9 NFR) พร้อม **108 Acceptance Criteria** ที่สามารถทดสอบได้
+
+**Key Highlights:**
+- ✓ **Complete Traceability:** ST → OBJ → SC → RC → FR/NFR → AC
+- ✓ **Testable AC:** ทุก AC มีโครงสร้าง Input → Processing → Expected Output
+- ✓ **Priority Distribution:** 96.4% Must, 3.6% Should
+- ✓ **25010 Coverage:** ครบ 9 หมวด (Performance, Scalability, Availability, Security, Accuracy, Usability, Cache Efficiency, Compatibility, Maintainability)
+- ✓ **Comprehensive Coverage:** Functional + Non-Functional + Monitoring + UAT
+- ✓ **Evidence-Based:** ทุก Requirement มี Source Reference
+- ✓ **Implementation Ready:** พร้อมสำหรับ Development และ Testing
+
+**Detailed Specifications:**
+- XAI Controls: Toggle Button + Opacity Slider สำหรับ Heatmap Overlay
+- Monitoring: Prometheus + Grafana + Sentry พร้อม Real-time Dashboard
+- Alerting: Slack/LINE/Email with 4 Trigger Conditions
+- Model Metrics: Accuracy และ mDice ≥ 85%
+- Performance Targets: Percentiles (P50/P95/P99) และ Concurrent Users
+- Cache Strategy: 4-step Performance Tuning Approach
+- UAT Plan: 100 testers, 4 Scenario-based Comprehension Questions
+
+ใน 06_Requirement_Traceability.md จะแสดง RTM (Requirement Traceability Matrix) และตรวจสอบ:
+- Coverage: ST → OBJ → SC → RC → FR/NFR → AC
+- Orphan Detection: มี FR/NFR ไหนที่ไม่มี Traceability?
+- Consistency Check: ข้อขัดแย้งระหว่างเอกสาร?
+
+---
+
+

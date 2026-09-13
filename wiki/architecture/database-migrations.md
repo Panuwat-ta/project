@@ -28,10 +28,20 @@ server/
 ├── migrations/
 │   ├── env.py                     # สคริปต์เชื่อมต่อ SQLAlchemy Models กับฐานข้อมูล
 │   ├── script.py.mako             # Template สำหรับสร้างไฟล์ Migration ใหม่
-│   └── versions/                  # โฟลเดอร์เก็บไฟล์ประวัติการเปลี่ยนแปลงทั้งหมด
-│       ├── 001_initial_schema.py
-│       ├── 002_add_admins_table.py
-│       └── ...
+│   └── versions/                  # ไฟล์ประวัติการเปลี่ยนแปลงทั้งหมด 13 ไฟล์ (เรียงตามสายโซ่ down_revision)
+│       ├── c5d636f20434_initial_migration.py
+│       ├── 45368bf51fde_update_scam_reports_table.py
+│       ├── 62cb9477cf84_add_admin_table.py
+│       ├── a1b2c3d4e5f6_add_admin_sessions.py
+│       ├── c42a6b7c284c_phase_2_structured_audit_and_report_.py
+│       ├── 8b428eff3721_phase_2_indexes.py
+│       ├── cd0116a8d7bc_add_phase_4_modelversion_fields.py
+│       ├── 54e8b8cb0526_add_exportjob_table.py
+│       ├── e3844dc4110e_add_append_only_trigger_to_audit_log.py
+│       ├── 042de00eee1b_rename_metrics_to_segformer_metrics.py
+│       ├── 8bb2e7d0af3c_add_title_to_scan.py
+│       ├── 9a0123c45678_add_progress_to_scan.py
+│       └── efdfc08f2155_add_xai_explanation_to_scans.py   # head ล่าสุด
 └── app/
     └── models/                    # นิยาม SQLAlchemy ORM Models (9 ตาราง)
         ├── user.py                # Model ตาราง users
@@ -44,6 +54,10 @@ server/
         ├── audit_log.py           # Model ตาราง audit_log
         └── export_job.py          # Model ตาราง export_jobs
 ```
+
+> [!NOTE]
+> ไฟล์ `database/init.sql` มีแค่ `CREATE EXTENSION IF NOT EXISTS "uuid-ossp";` เท่านั้น —
+> ไม่ได้สร้างตารางใด ๆ ตารางทั้ง 9 สร้างผ่าน Alembic migrations ข้างต้นทั้งหมด
 
 ---
 
@@ -87,6 +101,40 @@ alembic upgrade head
 ```bash
 alembic downgrade -1
 ```
+
+---
+
+## 3.6 ประวัติ Migration รายไฟล์ (13 ไฟล์ ตามลำดับสายโซ่)
+
+| ลำดับ | ไฟล์ (revision) | ต่อจาก | สรุปการเปลี่ยนแปลง |
+| :--- | :--- | :--- | :--- |
+| 1 | `c5d636f20434_initial_migration.py` | — (base) | สร้างตารางตั้งต้น: users, scans, scam_reports, consent_logs, audit_log (แบบย่อ), model_versions (แบบย่อ) |
+| 2 | `45368bf51fde_update_scam_reports_table.py` | c5d636f20434 | เพิ่มคอลัมน์ scam_reports: category, platform, reference_url, allow_research_use, admin_note |
+| 3 | `62cb9477cf84_add_admin_table.py` | 45368bf51fde | สร้างตาราง admins (is_superadmin) + ย้าย FK audit_log.admin_id และ scam_reports.moderated_by จาก users ไป admins (SET NULL) |
+| 4 | `a1b2c3d4e5f6_add_admin_sessions.py` | 62cb9477cf84 | สร้างตาราง admin_sessions (refresh-token rotation, replaced_by ไม่มี FK) |
+| 5 | `c42a6b7c284c_phase_2_structured_audit_and_report_.py` | a1b2c3d4e5f6 | เพิ่ม structured audit fields ให้ audit_log (entity_type/id, before/after_state, reason, ip, user_agent, request_id) + version ให้ scam_reports |
+| 6 | `8b428eff3721_phase_2_indexes.py` | c42a6b7c284c | เพิ่ม index: audit_log (action, admin_id, created_at, entity_type), scam_reports (category, status, created_at), scans (user_id, created_at) |
+| 7 | `cd0116a8d7bc_add_phase_4_modelversion_fields.py` | 8b428eff3721 | เพิ่มฟิลด์ Phase 4 ให้ model_versions: artifact_checksum, framework_compatibility, accuracy/precision/recall, dataset_reference, created_by (FK admins), status, deployment_history |
+| 8 | `54e8b8cb0526_add_exportjob_table.py` | cd0116a8d7bc | สร้างตาราง export_jobs (รวม error_message) |
+| 9 | `e3844dc4110e_add_append_only_trigger_to_audit_log.py` | 54e8b8cb0526 | สร้าง trigger append-only ของ audit_log (ดู 3.7) |
+| 10 | `042de00eee1b_rename_metrics_to_segformer_metrics.py` | e3844dc4110e | ลบ accuracy/precision/recall แล้วเพิ่ม a_acc/m_iou/m_acc/m_dice แทน (ดู 3.8) — downgrade สร้างคอลัมน์เดิมกลับ |
+| 11 | `8bb2e7d0af3c_add_title_to_scan.py` | 042de00eee1b | เพิ่มคอลัมน์ title (nullable) ให้ scans |
+| 12 | `9a0123c45678_add_progress_to_scan.py` | 8bb2e7d0af3c | เพิ่มคอลัมน์ progress (NOT NULL, default 0) ให้ scans |
+| 13 | `efdfc08f2155_add_xai_explanation_to_scans.py` | 9a0123c45678 | เพิ่มคอลัมน์ xai_explanation (nullable) ให้ scans — head ล่าสุด |
+
+### 3.7 Trigger append-only ของ audit_log (`e3844dc4110e`)
+
+- `upgrade` สร้างฟังก์ชัน `prevent_audit_log_modification()` (plpgsql, `RAISE EXCEPTION` เสมอ)
+  แล้วสร้าง trigger `trg_prevent_audit_log_modification` แบบ `BEFORE UPDATE OR DELETE ON audit_log
+  FOR EACH ROW` — จึงห้าม UPDATE และ DELETE ทุกแถวที่ระดับฐานข้อมูล (INSERT ยังได้ปกติ)
+- `downgrade` ลบ trigger ก่อน (`DROP TRIGGER IF EXISTS ... ON audit_log`) แล้วลบ function
+  (`DROP FUNCTION IF EXISTS prevent_audit_log_modification()`)
+
+### 3.8 การเปลี่ยนชื่อ metrics โมเดล (`042de00eee1b`)
+
+- migration `cd0116a8d7bc` เคยเพิ่ม `accuracy / precision / recall` ให้ `model_versions`
+- migration `042de00eee1b` ลบคอลัมน์ทั้งสามทิ้ง แล้วเพิ่ม `a_acc / m_iou / m_acc / m_dice`
+  (SegFormer-style metrics, Float, nullable) แทน — โค้ดปัจจุบัน (`model_version.py`) ใช้ชื่อใหม่นี้
 
 ---
 
