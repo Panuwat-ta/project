@@ -14,11 +14,11 @@ updated: 2026-08-04
 
 ### เอกสารออกแบบที่ต้องอ่านก่อนเริ่ม
 
-- [design/server.md](../design/server.md) - สถาปัตยกรรม Backend, Database Schema, API Specs
-- [design/architecture.md](../design/architecture.md) - สถาปัตยกรรมระบบรวม, Risk Scoring Pipeline
-- [design/model.md](../design/model.md) - AI Model Design (SegFormer)
-- [design/training.md](../design/training.md) - Training Workflow, ONNX Export
-- [Document/server/server.md](../Document/server/server.md) - เอกสารสรุปภาพรวม Server
+- [design/server.md](../../design/server.md) - สถาปัตยกรรม Backend, Database Schema, API Specs
+- [design/architecture.md](../../design/architecture.md) - สถาปัตยกรรมระบบรวม, Risk Scoring Pipeline
+- [design/model.md](../../design/model.md) - AI Model Design (SegFormer)
+- [design/training.md](../../design/training.md) - Training Workflow, ONNX Export
+- [Document/server/server.md](../../Document/server/server.md) - เอกสารสรุปภาพรวม Server
 
 ---
 
@@ -868,4 +868,3 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 # 5. เปิด Swagger UI
 # -> http://localhost:8000/docs
 ```
-

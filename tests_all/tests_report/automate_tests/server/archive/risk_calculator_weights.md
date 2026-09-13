@@ -2,12 +2,14 @@
 >
 > ---
 
-## 2026-09-04 09:47 +07 - Risk Calculator Weighted Formula Verification
+# 2026-09-04 09:47 +07 - Risk Calculator Weighted Formula Verification
 
 - Target: server/tests/utils/test_risk_calculator.py
 - Command: `/home/panuwat/project/server/venv/bin/pytest tests/utils/test_risk_calculator.py -v`
 - Result: PASS
 - Summary: Total: 1 | Passed: 1 | Failed: 0 | Skipped: 0 | Duration: 0.01s
+- Requirement/TC mapping (historical): ไม่ได้บันทึกในผลรันเดิม จึงไม่สามารถย้อนยืนยันได้โดยไม่สร้างข้อมูลสมมติ
+- Commit/Build/Env (historical): ไม่ได้บันทึกในผลรันเดิม จึงไม่สามารถระบุค่าแทนได้อย่างน่าเชื่อถือ
 
 ### 1. รายการที่ผ่าน (Passed Tests) และพฤติกรรมที่ผ่าน (How it Passed)
 - **test_risk_score_calculation_weights**:

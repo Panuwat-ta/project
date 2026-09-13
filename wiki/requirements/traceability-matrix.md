@@ -2,7 +2,7 @@
 title: "เมทริกซ์การสืบย้อนความต้องการ (Requirement Traceability Matrix - RTM)"
 category: requirements
 tags: [requirements, rtm, traceability, stakeholders, verification, srs]
-sources: [Document/docs/06_Requirement_Traceability.md, Document/docs/07_Appendix_A_Full_Traceability_Matrix.md]
+sources: [Document/srs/06_Requirement_Traceability.md, Document/srs/07_Appendix_A_Full_Traceability_Matrix.md]
 updated: 2026-09-06
 ---
 
@@ -48,7 +48,7 @@ flowchart LR
 
 | ลำดับ | ST | OBJ | SC | รหัสความต้องการเบื้องต้น (RC) | รหัสข้อกำหนด (FR / NFR) | NFR ที่เกี่ยวข้อง | ลำดับความสำคัญ | สรุปพฤติกรรมของระบบ |
 
-> [!NOTE] Canonical RC/FR/NFR catalog อยู่ที่ `Document/docs/05_Software_Requirement_Specification.md` / `06_Requirement_Traceability.md` (RC-ADMIN-03 = Report Queue → FR-ADMIN-02, RC-ADMIN-04 = Model Management → FR-ADMIN-03, RC-ADMIN-05 = Audit Logs → FR-ADMIN-04, RC-SCAN-05 = Cache → FR-SCAN-03, RC-ANALYSIS-01 = Textual → FR-ANALYSIS-01, RC-ANALYSIS-02/03/04 = Visual → FR-ANALYSIS-02, RC-ANALYSIS-07/08 = Risk calc/grade → FR-ANALYSIS-04, RC-HISTORY-01/02/03/04 → FR-HISTORY-01, RC-HISTORY-05 → FR-HISTORY-02, RC-XAI-01/02/03 → FR-XAI-01) — ตารางนี้ใช้เลขชุดเดียวกับ Document; สูตร/เกณฑ์ดูนิยามที่ Document FR-ANALYSIS-04 ที่เดียว
+> [!NOTE] Canonical RC/FR/NFR catalog อยู่ที่ `Document/srs/05_Software_Requirement_Specification.md` / `06_Requirement_Traceability.md` (RC-ADMIN-03 = Report Queue → FR-ADMIN-02, RC-ADMIN-04 = Model Management → FR-ADMIN-03, RC-ADMIN-05 = Audit Logs → FR-ADMIN-04, RC-SCAN-05 = Cache → FR-SCAN-03, RC-ANALYSIS-01 = Textual → FR-ANALYSIS-01, RC-ANALYSIS-02/03/04 = Visual → FR-ANALYSIS-02, RC-ANALYSIS-07/08 = Risk calc/grade → FR-ANALYSIS-04, RC-HISTORY-01/02/03/04 → FR-HISTORY-01, RC-HISTORY-05 → FR-HISTORY-02, RC-XAI-01/02/03 → FR-XAI-01) — ตารางนี้ใช้เลขชุดเดียวกับ Document; สูตร/เกณฑ์ดูนิยามที่ Document FR-ANALYSIS-04 ที่เดียว
 > ยกเลิกเลข wiki-local: เดิม **NFR-10** → map ไป Document **NFR-04 + FR-PDPA-01** (+ RC-PDPA-04 deferred สำหรับ retention); เดิม **NFR-11** → map ไป Document **FR-ANALYSIS-03 AC-4** (fallback, มติ DOC-01)
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | 1 | ST01 | OBJ-01 | SC01 | RC-AUTH-01 | FR-AUTH-01 | NFR-04 | Must Have | สมัครสมาชิกผ่าน Mobile App ด้วย Email/Password พร้อมตรวจสอบความปลอดภัย |

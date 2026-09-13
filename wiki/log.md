@@ -13,6 +13,11 @@ grep "^## \[" wiki/log.md | tail -5
 
 ---
 
+## [2026-09-13] update | แก้ความขัดแย้ง Source Verification และลิงก์เอกสาร
+
+- ยึดมติ DOC-01: เมื่อ Google Vision API ยังไม่เชื่อมต่อหรือล้มเหลว ให้คืน `source_status = "unavailable"` และตัดมิติ source ออกจากการคำนวณ โดยไม่ใช้ neutral score 50
+- ระบุสถานะ Google Vision API ในหน้า Technology Choices และ External Integrations ให้ตรงกับ SRS และแก้ลิงก์เอกสาร Backend ที่เสีย 4 รายการ
+
 ## [2026-08-02] init | สร้าง Wiki ครั้งแรกจากเอกสารต้นฉบับทั้งหมด
 
 **ประเภทงาน:** สร้าง wiki ครั้งแรก — นำเข้าเอกสารต้นฉบับที่มีอยู่ทั้งหมด
@@ -103,7 +108,7 @@ grep "^## \[" wiki/log.md | tail -5
 - `architecture/admin-portal.md` — สถาปัตยกรรมและการออกแบบ Admin Portal (React/Vite, UI Design System, Model Registry, Telemetry) จาก `design/admin.md` และ `Document/admin/admin.md`
 - `architecture/database-migrations.md` — คู่มือและขั้นตอนการย้ายฐานข้อมูล (Database Migrations) ด้วย Alembic จาก `Document/database/alembic.md`
 - `concepts/mmsegmentation.md` — สถาปัตยกรรมโมดูลาร์ MMSegmentation (Backbone MiT, Decode Head, Training Loss) จาก `Document/model/mmsegmentation.md`
-- `requirements/traceability-matrix.md` — เมทริกซ์การสืบย้อนความต้องการ (Requirement Traceability Matrix - RTM) เชื่อมโยง ST -> OBJ -> SC -> RC -> FR/NFR จาก `Document/docs/06_Requirement_Traceability.md` และ `07_Appendix_A_Full_Traceability_Matrix.md`
+- `requirements/traceability-matrix.md` — เมทริกซ์การสืบย้อนความต้องการ (Requirement Traceability Matrix - RTM) เชื่อมโยง ST -> OBJ -> SC -> RC -> FR/NFR จาก `Document/log_docs/06_Requirement_Traceability.md` และ `07_Appendix_A_Full_Traceability_Matrix.md`
 - `planning/task-tracking.md` — การติดตามงานและการบริหารโครงการผ่านกระดาน Jira SCM และสถานะรายเฟส จาก `Document/jira/Task-Tracking.md` และ `Document/jira/to-do-list.md`
 
 **หน้าที่ปรับปรุง:**

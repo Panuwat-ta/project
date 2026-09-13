@@ -1,9 +1,11 @@
-## 2026-09-13 09:35 +07 - Backend API + DB Test Suite (pytest)
+# 2026-09-13 09:35 +07 - Backend API + DB Test Suite (pytest)
 
 - Target: `server/tests/api` + `server/tests/db` (รวมไฟล์ใหม่ `test_user_delete.py`)
 - Command: `python -m pytest tests/api tests/db -q --ignore=tests/api/test_scan_xai_live.py`
 - Result: PASS
 - Summary: Total: 26 | Passed: 25 | Failed: 0 | Skipped: 1 | Duration: ~1s (อัปเดตหลังเพิ่ม test_security_owasp.py 5 เคส)
+- Requirement/TC mapping (historical): ไม่ได้บันทึกในผลรันเดิม จึงไม่สามารถย้อนยืนยันได้โดยไม่สร้างข้อมูลสมมติ
+- Commit/Build/Env (historical): ไม่ได้บันทึกในผลรันเดิม จึงไม่สามารถระบุค่าแทนได้อย่างน่าเชื่อถือ
 - หมายเหตุ: `test_scan_xai_live.py` ถูก exclude ตั้งแต่ต้น (ต้องใช้ GPU/model จริง); `test_scan_real_image` skip เพราะไม่มีไฟล์ภาพเทส
 
 ### 1. รายการที่ผ่าน (Passed Tests) และพฤติกรรมที่ผ่าน (How it Passed)

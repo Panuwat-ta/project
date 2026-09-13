@@ -1,6 +1,6 @@
 ---
 title: "สารบัญ Wiki — โปรเจค Scam Image Detection"
-updated: 2026-09-06
+updated: 2026-09-13
 ---
 
 # สารบัญ Wiki

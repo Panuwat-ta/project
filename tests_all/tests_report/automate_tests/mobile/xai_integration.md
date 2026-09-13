@@ -1,9 +1,11 @@
-## 2026-09-03 04:34 +07 - Mobile XAI Dynamic Data Integration Test
+# 2026-09-03 04:34 +07 - Mobile XAI Dynamic Data Integration Test
 
 - Target: `test/features/result`, `test/features/history`
 - Command: `flutter test test/features/result test/features/history`
 - Result: PASS
 - Summary: Total: 67 | Passed: 67 | Failed: 0 | Skipped: 0 | Duration: 2s
+- Requirement/TC mapping (historical): ไม่ได้บันทึกในผลรันเดิม จึงไม่สามารถย้อนยืนยันได้โดยไม่สร้างข้อมูลสมมติ
+- Commit/Build/Env (historical): ไม่ได้บันทึกในผลรันเดิม จึงไม่สามารถระบุค่าแทนได้อย่างน่าเชื่อถือ
 
 ### 1. รายการที่ผ่าน (Passed Tests) และพฤติกรรมที่ผ่าน (How it Passed)
 - **`AnalysisResultModel.fromJson` — Server Flat Format with XAI Explanation**:

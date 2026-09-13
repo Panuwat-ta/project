@@ -1,9 +1,11 @@
-## 2026-09-06 05:07 +07 - Backend API Automated Test Suite (tests_all/automate_tests)
+# 2026-09-06 05:07 +07 - Backend API Automated Test Suite (tests_all/automate_tests)
 
 - Target: tests_all/automate_tests/tests/api/
 - Command: `./run.sh api`
 - Result: PASS
 - Summary: Total: 15 | Passed: 15 | Failed: 0 | Skipped: 0 | Duration: 16.96s
+- Requirement/TC mapping (historical): ไม่ได้บันทึกในผลรันเดิม จึงไม่สามารถย้อนยืนยันได้โดยไม่สร้างข้อมูลสมมติ
+- Commit/Build/Env (historical): ไม่ได้บันทึกในผลรันเดิม จึงไม่สามารถระบุค่าแทนได้อย่างน่าเชื่อถือ
 
 ### 1. รายการที่ผ่าน (Passed Tests) และพฤติกรรมที่ผ่าน (How it Passed)
 - **test_admin_requires_auth (`tests/api/test_admin.py`)**:

@@ -1,3 +1,4 @@
+# ภาพรวมโครงการ ScamGuard
 
 ## 1. โครงการนี้ทำอะไร
 
@@ -107,15 +108,15 @@ $$
 
 ## 5. ลอจิกคะแนนและระดับความเสี่ยง (Hybrid Worst-Case Risk Scoring)
 
-> สูตร/เกณฑ์ฉบับสมบูรณ์นิยามที่ `Document/docs/05_Software_Requirement_Specification.md` FR-ANALYSIS-04 ที่เดียว — หัวข้อนี้เหลือแค่ภาพรวมและลิงก์อ้าง
+> สูตร/เกณฑ์ฉบับสมบูรณ์นิยามที่ `Document/srs/05_Software_Requirement_Specification.md` FR-ANALYSIS-04 ที่เดียว — หัวข้อนี้เหลือแค่ภาพรวมและลิงก์อ้าง
 
 ระบบประเมินความเสี่ยงด้วยแนวทางผสมผสาน **Hybrid Worst-Case Trigger ร่วมกับ Multi-Factor Breakdown** เพื่อแก้ไขปัญหาการเจือจางคะแนน (Dilution Effect) ในกรณีที่ภาพมีองค์ประกอบไม่ครบ (เช่น ภาพ Romance Scam ที่ไม่มีข้อความ) โดยแจกแจงคะแนนแยก 3 มิติอิสระเต็ม 100% (Visual, Textual, Source) ควบคู่กับคะแนนรวม ดูนิยามสูตรและเกณฑ์ทั้งหมดที่ FR-ANALYSIS-04 ใน 05-SRS
 
 ### 5.1 คะแนนแยกมิติอิสระ (Independent Factors)
-ดูนิยามที่ `Document/docs/05_Software_Requirement_Specification.md` FR-ANALYSIS-01..03 ที่เดียว — สรุปสั้น: Visual (SegFormer), Textual (Surya OCR + NLP), Source (Reverse Search)
+ดูนิยามที่ `Document/srs/05_Software_Requirement_Specification.md` FR-ANALYSIS-01..03 ที่เดียว — สรุปสั้น: Visual (SegFormer), Textual (Surya OCR + NLP), Source (Reverse Search)
 
 ### 5.2 คะแนนสรุปภาพรวม (Overall Risk Score)
-ดูนิยามสูตร/เกณฑ์ที่ `Document/docs/05_Software_Requirement_Specification.md` FR-ANALYSIS-04 ที่เดียว
+ดูนิยามสูตร/เกณฑ์ที่ `Document/srs/05_Software_Requirement_Specification.md` FR-ANALYSIS-04 ที่เดียว
 
 ผลลัพธ์คือผู้ใช้ได้รับทั้งคะแนนสรุปภาพรวมที่ชัดเจน และเห็นการแจกแจงแยกมิติ (Breakdown Cards) ตามหลัก Explainable AI (XAI) รายละเอียดสูตร/เกณฑ์ดู FR-ANALYSIS-04 ใน 05-SRS ที่เดียว
 กฎพิเศษของคะแนนภาพมีไว้เพื่อไม่ให้ร่องรอยภาพที่รุนแรงถูกกลบด้วยคะแนนด้านอื่น ทั้งนี้ UI ต้องแสดงทั้งข้อความและสี ไม่ใช้สีอย่างเดียว และต้องมีคำเตือนว่าเป็นผลช่วยประกอบการตัดสินใจ

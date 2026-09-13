@@ -12,7 +12,7 @@ updated: 2026-08-02
 
 กำหนดสิ่งที่จะพัฒนา กรอบการทำงานของ 4 Containers หลัก และการแบ่งกลุ่มงานสำหรับสมาชิกทีม
 
-> **Canonical requirement catalog:** `Document/docs/04_Requirement_Candidates.md`, `05_Software_Requirement_Specification.md` (FR/NFR/AC), `06_Requirement_Traceability.md`, `07_Appendix_A_Full_Traceability_Matrix.md` — เลข FR/NFR ที่อ้างในไฟล์นี้ใช้ชุดเดียวกับ Document
+> **Canonical requirement catalog:** `Document/srs/04_Requirement_Candidates.md`, `05_Software_Requirement_Specification.md` (FR/NFR/AC), `06_Requirement_Traceability.md`, `07_Appendix_A_Full_Traceability_Matrix.md` — เลข FR/NFR ที่อ้างในไฟล์นี้ใช้ชุดเดียวกับ Document
 
 **เวอร์ชันปัจจุบัน: v1 Android เท่านั้น** (Flutter codebase เดียวกัน; ios/ + web/ เป็น future)
 

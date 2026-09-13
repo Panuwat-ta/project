@@ -283,7 +283,7 @@ flowchart TB
 
 ### 3.2 ความต้องการเชิงฟังก์ชัน (Functional Requirements - FR)
 
-> [!NOTE] Canonical catalog ของ FR/NFR/RC ฉบับจริงอยู่ที่ `Document/docs/05_Software_Requirement_Specification.md` และ `06_Requirement_Traceability.md`; FR-01..FR-10 ด้านล่างเป็นมุมมอง coarse ของ wiki (RC-AUTH-05 กู้รหัสผ่าน / RC-AUTH-06 Social Login = deferred Phase 2)
+> [!NOTE] Canonical catalog ของ FR/NFR/RC ฉบับจริงอยู่ที่ `Document/srs/05_Software_Requirement_Specification.md` และ `06_Requirement_Traceability.md`; FR-01..FR-10 ด้านล่างเป็นมุมมอง coarse ของ wiki (RC-AUTH-05 กู้รหัสผ่าน / RC-AUTH-06 Social Login = deferred Phase 2)
 
 | รหัส (FR-ID) | รายละเอียดความต้องการเชิงฟังก์ชัน |
 | :--- | :--- |
@@ -302,9 +302,9 @@ flowchart TB
 
 ### 3.3 ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements - NFR)
 
-> นิยามตัวเลข/สูตร/เกณฑ์ทั้งหมดอยู่ที่ `Document/docs/05_Software_Requirement_Specification.md` §3 (NFR-01..09) ที่เดียว — ตารางนี้ใช้เลขชุดเดียวกับ Document และเหลือแค่ลิงก์อ้าง + รายละเอียดระดับทดสอบ
+> นิยามตัวเลข/สูตร/เกณฑ์ทั้งหมดอยู่ที่ `Document/srs/05_Software_Requirement_Specification.md` §3 (NFR-01..09) ที่เดียว — ตารางนี้ใช้เลขชุดเดียวกับ Document และเหลือแค่ลิงก์อ้าง + รายละเอียดระดับทดสอบ
 
-| รหัส (NFR-ID) | รายละเอียดคุณภาพของระบบ (shall เดี่ยว + metric + เงื่อนไขวัด + วิธีวัด; canonical IDs ตาม Document/docs/05) |
+| รหัส (NFR-ID) | รายละเอียดคุณภาพของระบบ (shall เดี่ยว + metric + เงื่อนไขวัด + วิธีวัด; canonical IDs ตาม Document/log_docs/05) |
 | :--- | :--- |
 | **NFR-01 (PERF)** | **เวลาตอบสนอง (Performance):** ตาม Document NFR-01 — Cache Hit ≤ 3 วินาที (P95, End-to-End); Full inference P50 ≤15 วินาที/ภาพ (P95 ≤25s, P99 ≤35s); GPU ≤10s, CPU fallback ≤60s; เงื่อนไขภาพ 1080p / 4G / NVIDIA T4 |
 | **NFR-02 (SCAL)** | **การขยายตัว (Scalability):** ตาม Document NFR-02 — รองรับ 100 concurrent users (Cache Hit avg ≤ 5s, Cache Miss avg ≤ 20s, Error Rate < 1%); รายละเอียดระดับทดสอบ: scale-out AI Inference 1→4 replicas throughput ≥3x ใน 5 นาที |
