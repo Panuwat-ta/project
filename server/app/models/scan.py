@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, Float, Text, DateTime, ForeignKey
+from sqlalchemy import Column, String, Integer, Float, Text, DateTime, ForeignKey, CheckConstraint
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.sql import func
 import uuid
@@ -6,6 +6,18 @@ from app.core.database import Base
 
 class Scan(Base):
     __tablename__ = "scans"
+    __table_args__ = (
+        CheckConstraint(
+            "status IN ('pending', 'uploading', 'queued', 'processing_source', "
+            "'processing_visual', 'processing_text', 'completed', 'failed')",
+            name="ck_scans_status",
+        ),
+        CheckConstraint("text_score BETWEEN 0 AND 100", name="ck_scans_text_score"),
+        CheckConstraint("visual_score BETWEEN 0 AND 100", name="ck_scans_visual_score"),
+        CheckConstraint("source_score BETWEEN 0 AND 100", name="ck_scans_source_score"),
+        CheckConstraint("total_risk_score BETWEEN 0 AND 100", name="ck_scans_total_risk_score"),
+        CheckConstraint("progress BETWEEN 0 AND 100", name="ck_scans_progress"),
+    )
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
