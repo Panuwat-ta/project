@@ -29,6 +29,7 @@
 .side .count{margin-inline-start:auto;font-size:.75rem;color:var(--muted);font-weight:400}
 .side a{display:flex;align-items:center;gap:8px}
 .side a svg{flex:none}
+.brand svg,.side a svg{color:var(--teal)}
 .t01-legend{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:.82rem;color:var(--muted)}
 .t01-legend .row{display:flex;align-items:center;gap:8px;margin-top:6px}
 .t01-meter{flex:1;height:6px;border-radius:99px;background:var(--soft);overflow:hidden}
@@ -75,7 +76,7 @@ main h2.section:first-of-type{border-top:none;margin-top:22px;padding-top:0}
 </head>
 <body>
 <a class="skip" href="#content">ข้ามไปยังเนื้อหา</a>
-<header class="site-head"><div class="wrap"><a class="brand" href="../../index.html"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5l8-3z" stroke="#fff" stroke-width="1.8" fill="#0E7C7B"/><path d="M8.5 12l2.5 2.5 4.5-5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg> ScamGuard Docs</a><nav class="nav" aria-label="หลัก"><a href="../../../wiki/overview.md">ภาพรวม</a><a href="../../../wiki/concepts/multi-layer-analysis.md">หลายชั้น</a><a href="../../../wiki/concepts/risk-scoring.md">คะแนนเสี่ยง</a><a href="../../../wiki/architecture/system-architecture.md">สถาปัตยกรรม</a></nav></div></header>
+<header class="site-head"><div class="wrap"><a class="brand" href="../../index.html"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5l8-3z" stroke="#fff" stroke-width="1.8" fill="currentColor"/><path d="M8.5 12l2.5 2.5 4.5-5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg> ScamGuard Docs</a><nav class="nav" aria-label="หลัก"><a href="../../../wiki/overview.md">ภาพรวม</a><a href="../../../wiki/concepts/multi-layer-analysis.md">หลายชั้น</a><a href="../../../wiki/concepts/risk-scoring.md">คะแนนเสี่ยง</a><a href="../../../wiki/architecture/system-architecture.md">สถาปัตยกรรม</a></nav></div></header>
 
 <div class="wrap">
 <p class="t01-crumb"><a href="../../index.html">เทมเพลตทั้งหมด</a> / ศูนย์เอกสาร</p>
@@ -102,19 +103,19 @@ main h2.section:first-of-type{border-top:none;margin-top:22px;padding-top:0}
 <div class="wrap docs" style="padding-left:0;padding-right:0">
 <aside class="side" aria-label="สารบัญ">
 <p class="t01-side-group">เริ่มต้น</p>
-<a href="#quickstart" class="active"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>เริ่มใช้งาน <span class="count">3 ขั้น</span></a>
-<a href="#layers"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>การวิเคราะห์หลายชั้น <span class="count">3</span></a>
+<a href="#quickstart" class="active"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>เริ่มใช้งาน <span class="count">3 ขั้น</span></a>
+<a href="#layers"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>การวิเคราะห์หลายชั้น <span class="count">3</span></a>
 <p class="t01-side-group">ทำความเข้าใจผลลัพธ์</p>
-<a href="#risk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="#0E7C7B" stroke-width="2"/><path d="M12 7v5l3 3" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คะแนนความเสี่ยง <span class="count">3 ระดับ</span></a>
-<a href="#heatmap"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2" stroke="#0E7C7B" stroke-width="2"/><circle cx="9" cy="10" r="2" fill="#0E7C7B"/><path d="M3 16l5-4 4 3 4-4 5 4" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>อ่าน Heatmap</a>
+<a href="#risk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>คะแนนความเสี่ยง <span class="count">3 ระดับ</span></a>
+<a href="#heatmap"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="10" r="2" fill="currentColor"/><path d="M3 16l5-4 4 3 4-4 5 4" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>อ่าน Heatmap</a>
 <p class="t01-side-group">เชิงลึก</p>
-<a href="#arch"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><rect x="13" y="13" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><path d="M11 7h5v6M13 17H7v-6" stroke="#0E7C7B" stroke-width="2"/></svg>สถาปัตยกรรม</a>
-<a href="#faq"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 9a3 3 0 015.8 1c0 2-3.8 2.5-3.8 4M12 18h.01" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คำถามพบบ่อย <span class="count">5</span></a>
+<a href="#arch"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2" stroke="currentColor" stroke-width="2"/><rect x="13" y="13" width="8" height="8" rx="2" stroke="currentColor" stroke-width="2"/><path d="M11 7h5v6M13 17H7v-6" stroke="currentColor" stroke-width="2"/></svg>สถาปัตยกรรม</a>
+<a href="#faq"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 9a3 3 0 015.8 1c0 2-3.8 2.5-3.8 4M12 18h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>คำถามพบบ่อย <span class="count">5</span></a>
 <div class="t01-legend" aria-label="สัญลักษณ์ระดับความเสี่ยง">
-<strong style="color:var(--ink)">สัญลักษณ์ระดับความเสี่ยง</strong>
-<div class="row"><span class="badge b-low">Low</span><span class="t01-meter"><i style="width:30%;background:#1B7A4D"></i></span><span>0–39</span></div>
-<div class="row"><span class="badge b-med">Med</span><span class="t01-meter"><i style="width:55%;background:#9A6B12"></i></span><span>40–69</span></div>
-<div class="row"><span class="badge b-high">High</span><span class="t01-meter"><i style="width:85%;background:#B3372F"></i></span><span>70–100</span></div>
+<strong>สัญลักษณ์ระดับความเสี่ยง</strong>
+<div class="row"><span class="badge b-low">Low</span><span class="t01-meter"><i style="width:30%;background:var(--low)"></i></span><span>0–39</span></div>
+<div class="row"><span class="badge b-med">Med</span><span class="t01-meter"><i style="width:55%;background:var(--med)"></i></span><span>40–69</span></div>
+<div class="row"><span class="badge b-high">High</span><span class="t01-meter"><i style="width:85%;background:var(--high)"></i></span><span>70–100</span></div>
 </div>
 </aside>
 
@@ -131,8 +132,8 @@ main h2.section:first-of-type{border-top:none;margin-top:22px;padding-top:0}
 <p>แต่ละชั้นให้คะแนนอิสระ 0–100 แล้วรวมเป็นคะแนนภาพรวมด้วยหลัก Maximum Impact (มิติที่เสี่ยงที่สุดเป็นฐาน) บวก Multi-Factor Compounding เมื่อหลายมิติเสี่ยงพร้อมกัน รายละเอียดใน <a href="../../../wiki/concepts/multi-layer-analysis.md">wiki/concepts/multi-layer-analysis.md</a></p>
 <div class="t01-layers">
 <div class="t01-layer"><span class="t01-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h9" stroke="#0B1F3A" stroke-width="2" stroke-linecap="round"/></svg></span><h3>ชั้นที่ 1 — วิเคราะห์ข้อความ (OCR + NLP)</h3><p>อ่านข้อความในภาพด้วย Surya OCR แล้วตรวจภาษาหลอกลวง เช่น เร่งให้โอน อ้างรางวัล เลขบัญชีผิดปกติ</p><p class="score">คะแนนข้อความ: 0–100</p></div>
-<div class="t01-layer" style="border-top-color:#9A6B12"><span class="t01-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="#0B1F3A" stroke-width="2"/><path d="M20 20l-3.5-3.5" stroke="#0B1F3A" stroke-width="2" stroke-linecap="round"/></svg></span><h3>ชั้นที่ 2 — ตรวจสอบแหล่งที่มา</h3><p>ค้นย้อนว่าภาพนี้เคยปรากฏที่ไหนมาก่อนหรือไม่ สถานะ v1: <strong>unavailable</strong> (ยังไม่ต่อ Vision API จริง) จึงคำนวณจากมิติที่สำเร็จเท่านั้น</p><p class="score">สถานะ v1: unavailable</p></div>
-<div class="t01-layer" style="border-top-color:#B3372F"><span class="t01-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2" stroke="#0B1F3A" stroke-width="2"/><circle cx="9" cy="10" r="2" fill="#0B1F3A"/><path d="M3 16l5-4 4 3 4-4 5 4" stroke="#0B1F3A" stroke-width="2" stroke-linejoin="round"/></svg></span><h3>ชั้นที่ 3 — ภาพผิดปกติด้วย AI (SegFormer)</h3><p>โมเดลสแกนร่องรอยตัดต่อทั้งภาพ แล้วซ้อน Heatmap ลงบนภาพจริงเพื่อให้เห็นว่าจุดไหนน่าสงสัย</p><p class="score">คะแนนภาพ: 0–100</p></div>
+<div class="t01-layer" style="border-top-color:var(--med)"><span class="t01-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="#0B1F3A" stroke-width="2"/><path d="M20 20l-3.5-3.5" stroke="#0B1F3A" stroke-width="2" stroke-linecap="round"/></svg></span><h3>ชั้นที่ 2 — ตรวจสอบแหล่งที่มา</h3><p>ค้นย้อนว่าภาพนี้เคยปรากฏที่ไหนมาก่อนหรือไม่ สถานะ v1: <strong>unavailable</strong> (ยังไม่ต่อ Vision API จริง) จึงคำนวณจากมิติที่สำเร็จเท่านั้น</p><p class="score">สถานะ v1: unavailable</p></div>
+<div class="t01-layer" style="border-top-color:var(--high)"><span class="t01-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2" stroke="#0B1F3A" stroke-width="2"/><circle cx="9" cy="10" r="2" fill="#0B1F3A"/><path d="M3 16l5-4 4 3 4-4 5 4" stroke="#0B1F3A" stroke-width="2" stroke-linejoin="round"/></svg></span><h3>ชั้นที่ 3 — ภาพผิดปกติด้วย AI (SegFormer)</h3><p>โมเดลสแกนร่องรอยตัดต่อทั้งภาพ แล้วซ้อน Heatmap ลงบนภาพจริงเพื่อให้เห็นว่าจุดไหนน่าสงสัย</p><p class="score">คะแนนภาพ: 0–100</p></div>
 </div>
 
 <h2 class="section" id="risk">คะแนนความเสี่ยง 3 ระดับ</h2>
@@ -140,9 +141,9 @@ main h2.section:first-of-type{border-top:none;margin-top:22px;padding-top:0}
 <table class="t01-risk">
 <thead><tr><th scope="col">ระดับ</th><th scope="col">ช่วงคะแนน</th><th scope="col">แปลผลและสิ่งที่ควรทำ</th></tr></thead>
 <tbody>
-<tr><td><span class="badge b-low">Low</span><span class="bar"><i style="width:30%;background:#1B7A4D"></i></span></td><td><strong>0–39</strong></td><td>ไม่พบสัญญาณชัดเจน ตรวจสอบเบื้องต้นตามปกติก่อนทำธุรกรรม</td></tr>
-<tr><td><span class="badge b-med">Medium</span><span class="bar"><i style="width:55%;background:#9A6B12"></i></span></td><td><strong>40–69</strong></td><td>มีจุดน่าสงสัยบางส่วน ควรตรวจสอบเพิ่ม เช่น ขอหลักฐานอื่น หรือยืนยันตัวตนผู้ส่ง</td></tr>
-<tr><td><span class="badge b-high">High</span><span class="bar"><i style="width:85%;background:#B3372F"></i></span></td><td><strong>70–100</strong></td><td>พบสัญญาณหลอกลวงชัดเจน หยุดธุรกรรมทันที เก็บหลักฐาน แล้วรายงาน</td></tr>
+<tr><td><span class="badge b-low">Low</span><span class="bar"><i style="width:30%;background:var(--low)"></i></span></td><td><strong>0–39</strong></td><td>ไม่พบสัญญาณชัดเจน ตรวจสอบเบื้องต้นตามปกติก่อนทำธุรกรรม</td></tr>
+<tr><td><span class="badge b-med">Medium</span><span class="bar"><i style="width:55%;background:var(--med)"></i></span></td><td><strong>40–69</strong></td><td>มีจุดน่าสงสัยบางส่วน ควรตรวจสอบเพิ่ม เช่น ขอหลักฐานอื่น หรือยืนยันตัวตนผู้ส่ง</td></tr>
+<tr><td><span class="badge b-high">High</span><span class="bar"><i style="width:85%;background:var(--high)"></i></span></td><td><strong>70–100</strong></td><td>พบสัญญาณหลอกลวงชัดเจน หยุดธุรกรรมทันที เก็บหลักฐาน แล้วรายงาน</td></tr>
 </tbody>
 </table>
 

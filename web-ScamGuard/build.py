@@ -42,6 +42,23 @@ def discover_pages() -> list[tuple[str, str]]:
 
 PAGES = discover_pages()
 
+
+def _excluded_dests() -> set[str]:
+    """Dest names of wiki sources dropped by the allowlist (scratch/, AGENTS.md).
+
+    Links pointing at these have no built page; render them as plain labels
+    so the output contains no dead hrefs.
+    """
+    out = set()
+    for md in (REPO / "wiki").rglob("*.md"):
+        rel = md.relative_to(REPO)
+        if (EXCLUDE_DIR_PARTS & set(rel.parts)) or md.name in EXCLUDE_FILES:
+            out.add(md.stem + ".html")
+    return out
+
+
+EXCLUDED_DESTS = _excluded_dests()
+
 # --- Output sanitizers (offline self-contained rule + ADR-001) ----------------
 # No external URLs, no jira/atlassian tokens, no emoji in built HTML.
 AUTOLINK_RE = re.compile(r"<https?://[^>\s]+>")
@@ -106,6 +123,8 @@ def inline(md: str) -> str:
         if target.endswith(".md") or ".md#" in target or ".md?" in target:
             base = re.split(r"[#?]", target)[0]
             stem = Path(base).stem + ".html"
+            if stem in EXCLUDED_DESTS:
+                return m.group(1)  # allowlist-excluded source: label only, no dead href
             suffix = target[len(base):]
             return f'<a href="{html.escape(stem + suffix)}">{m.group(1)}</a>'
         return f'<a href="{html.escape(m.group(2))}">{m.group(1)}</a>'
@@ -124,6 +143,8 @@ def inline(md: str) -> str:
         if base.endswith(".md"):
             base = base[:-3]
         stem = base.split("/")[-1]  # flatten: [[dir/page]] -> page.html
+        if stem + ".html" in EXCLUDED_DESTS:
+            return html.escape(label)  # allowlist-excluded source: label only
         href = stem + ".html" + anchor
         return f'<a href="{html.escape(href)}">{html.escape(label)}</a>'
 
