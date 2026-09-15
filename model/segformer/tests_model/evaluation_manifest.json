@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "dataset": {
+    "id": "scamguard-locked-multisource-test-v1",
+    "sample_count": null,
+    "test_batches": 2504,
+    "note": "The exact sample count was not recorded in the completed logs. Do not infer it from batch size."
+  },
+  "versions": [
+    {
+      "version": "v1.0.0",
+      "checkpoint": "work_dirs/v1.0.0/best_mIoU_iter_112000.pth",
+      "onnx_model": "work_dirs/v1.0.0/segformer_v1_0_0_dynamic.onnx",
+      "training_log": "work_dirs/v1.0.0/20260717_205331/vis_data/scalars.json",
+      "training_run_id": "20260717_205331",
+      "test_log": "work_dirs/v1.0.0/test_eval/20260915_101330/20260915_101330.log",
+      "test_run_id": "20260915_101330",
+      "expected_common_test": {"mIoU": 48.70, "mDice": 51.42, "forgery_IoU": 2.92, "forgery_Dice": 5.67}
+    },
+    {
+      "version": "v1.0.1",
+      "checkpoint": "work_dirs/v1.0.1/best_mIoU_iter_152000.pth",
+      "onnx_model": "work_dirs/v1.0.1/segformer_v1_0_1_dynamic.onnx",
+      "training_log": "work_dirs/v1.0.1/20260808_051906/vis_data/scalars.json",
+      "training_run_id": "20260808_051906",
+      "test_log": "work_dirs/v1.0.1/test_eval/20260915_091531/20260915_091531.log",
+      "test_run_id": "20260915_091531",
+      "expected_common_test": {"mIoU": 47.80, "mDice": 49.69, "forgery_IoU": 1.12, "forgery_Dice": 2.22}
+    },
+    {
+      "version": "v1.0.2",
+      "checkpoint": "work_dirs/v1.0.2/best_mIoU_iter_132000.pth",
+      "onnx_model": "work_dirs/v1.0.2/segformer_v1_0_2_dynamic.onnx",
+      "training_log": "work_dirs/v1.0.2/20260809_133842/vis_data/scalars.json",
+      "training_run_id": "20260809_133842",
+      "test_log": "work_dirs/v1.0.2/test_eval/20260915_092949/20260915_092949.log",
+      "test_run_id": "20260915_092949",
+      "expected_common_test": {"mIoU": 47.81, "mDice": 49.72, "forgery_IoU": 1.16, "forgery_Dice": 2.29}
+    },
+    {
+      "version": "v1.0.3",
+      "checkpoint": "work_dirs/v1.0.3/best_mIoU_iter_160000.pth",
+      "onnx_model": "work_dirs/v1.0.3/segformer_v1_0_3_dynamic.onnx",
+      "training_log": "work_dirs/v1.0.3/20260810_175651/vis_data/scalars.json",
+      "training_run_id": "20260810_175651",
+      "test_log": "work_dirs/v1.0.3/test_eval/20260915_094407/20260915_094407.log",
+      "test_run_id": "20260915_094407",
+      "expected_common_test": {"mIoU": 47.99, "mDice": 50.08, "forgery_IoU": 1.53, "forgery_Dice": 3.01}
+    },
+    {
+      "version": "v1.0.4",
+      "checkpoint": "work_dirs/v1.0.4/best_mIoU_iter_495000.pth",
+      "onnx_model": "work_dirs/v1.0.4/segformer_v1_0_4_dynamic.onnx",
+      "training_log": "work_dirs/v1.0.4/20260814_062529/vis_data/scalars.json",
+      "training_run_id": "20260814_062529",
+      "test_log": "work_dirs/v1.0.4/test_eval/20260915_095832/20260915_095832.log",
+      "test_run_id": "20260915_095832",
+      "expected_common_test": {"mIoU": 81.21, "mDice": 88.74, "forgery_IoU": 64.94, "forgery_Dice": 78.74}
+    },
+    {
+      "version": "v1.0.5",
+      "checkpoint": "work_dirs/v1.0.5/best_mIoU_iter_197500.pth",
+      "onnx_model": "work_dirs/v1.0.5/segformer_v1_0_5_dynamic.onnx",
+      "training_log": "work_dirs/v1.0.5/20260910_151223/vis_data/scalars.json",
+      "training_run_id": "20260910_151223",
+      "test_log": "work_dirs/v1.0.5/test_eval/20260915_084109/20260915_084109.log",
+      "test_run_id": "20260915_084109",
+      "expected_common_test": {"mIoU": 91.24, "mDice": 95.25, "forgery_IoU": 83.51, "forgery_Dice": 91.01}
+    }
+  ]
+}

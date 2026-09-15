@@ -5,6 +5,10 @@ dataset/
 *.csv
 *.jsonl
 
+# Reproducible, generator-owned evaluation summaries
+!segformer/tests_model/report/figs/common_test_summary.csv
+!segformer/tests_model/report/figs/training_validation_summary.csv
+
 
 
 # Model Weights
