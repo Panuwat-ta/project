@@ -172,9 +172,12 @@ def main() -> int:
     entries = load_entries(args.manifest, args.versions)
     args.output_dir.mkdir(parents=True, exist_ok=True)
     rows: list[dict[str, Any]] = []
+    rows_by_version: dict[str, list[dict[str, Any]]] = {}
 
     for entry in entries:
         version = str(entry["version"])
+        version_rows: list[dict[str, Any]] = []
+        rows_by_version[version] = version_rows
         model_path = SEGFORMER_ROOT / str(entry["onnx_model"])
         if not model_path.is_file():
             raise FileNotFoundError(f"Missing ONNX model for {version}: {model_path}")
@@ -209,8 +212,7 @@ def main() -> int:
                 max_side=args.max_side,
             )
             figure.save(version_output / f"{pair.pair_id}.png", optimize=True)
-            rows.append(
-                {
+            record = {
                     "version": version,
                     "pair_id": pair.pair_id,
                     "original_path": str(pair.original_path),
@@ -230,7 +232,8 @@ def main() -> int:
                     "original_url": pair.metadata.get("original_url", ""),
                     "photoshop_url": pair.metadata.get("photoshop_url", ""),
                 }
-            )
+            rows.append(record)
+            version_rows.append(record)
             print(f"[{version}] {index}/{len(pairs)} pairs", flush=True)
 
     fieldnames = list(rows[0]) if rows else []
@@ -240,6 +243,15 @@ def main() -> int:
         writer = csv.DictWriter(handle, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(rows)
+    for version, version_records in rows_by_version.items():
+        version_output = args.output_dir / version
+        version_output.mkdir(parents=True, exist_ok=True)
+        with (version_output / f"qualitative_pair_scores_{version}.csv").open(
+            "w", newline="", encoding="utf-8"
+        ) as handle:
+            writer = csv.DictWriter(handle, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(version_records)
     summary = {
         "dataset_root": str(args.data_root.resolve()),
         "pair_count": len(pairs),
