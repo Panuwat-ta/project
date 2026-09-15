@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>โมเดล AI — Surya OCR — ScamGuard Docs</title>
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#content">ข้ามไปยังเนื้อหา</a>
+<header class="site-head"><div class="wrap"><a class="brand" href="index.html" data-i18n="brand">ScamGuard Docs</a><nav class="nav" aria-label="หลัก"><a href="overview.html" data-i18n="nav_overview">ภาพรวม</a><a href="overview.html#layers" data-i18n="nav_layers">หลายชั้น</a><a href="overview.html#risk" data-i18n="nav_risk">คะแนนเสี่ยง</a><a href="overview.html#arch" data-i18n="nav_arch">สถาปัตยกรรม</a></nav><button id="lang-toggle" data-i18n="lang_toggle" aria-label="switch language">EN</button></div></header>
+<div class="wrap layout">
+<aside class="side" aria-label="สารบัญ">
+<p class="t01-side-group">เริ่มต้น</p>
+<a href="#quickstart" class="active"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>เริ่มใช้งาน <span class="count">3 ขั้น</span></a>
+<a href="#layers"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>การวิเคราะห์หลายชั้น <span class="count">3</span></a>
+<p class="t01-side-group">ทำความเข้าใจผลลัพธ์</p>
+<a href="#risk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="#0E7C7B" stroke-width="2"/><path d="M12 7v5l3 3" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คะแนนความเสี่ยง <span class="count">3 ระดับ</span></a>
+<a href="#heatmap"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2" stroke="#0E7C7B" stroke-width="2"/><circle cx="9" cy="10" r="2" fill="#0E7C7B"/><path d="M3 16l5-4 4 3 4-4 5 4" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>อ่าน Heatmap</a>
+<p class="t01-side-group">เชิงลึก</p>
+<a href="#arch"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><rect x="13" y="13" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><path d="M11 7h5v6M13 17H7v-6" stroke="#0E7C7B" stroke-width="2"/></svg>สถาปัตยกรรม</a>
+<a href="#faq"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 9a3 3 0 015.8 1c0 2-3.8 2.5-3.8 4M12 18h.01" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คำถามพบบ่อย <span class="count">5</span></a>
+<div class="t01-legend" aria-label="สัญลักษณ์ระดับความเสี่ยง">
+<strong style="color:var(--ink)">สัญลักษณ์ระดับความเสี่ยง</strong>
+<div class="row"><span class="badge b-low">Low</span><span class="t01-meter"><i style="width:30%;background:#1B7A4D"></i></span><span>0–39</span></div>
+<div class="row"><span class="badge b-med">Med</span><span class="t01-meter"><i style="width:55%;background:#9A6B12"></i></span><span>40–69</span></div>
+<div class="row"><span class="badge b-high">High</span><span class="t01-meter"><i style="width:85%;background:#B3372F"></i></span><span>70–100</span></div>
+</div>
+</aside>
+<main id="content">
+<p class="t01-crumb"><a href="index.html" data-i18n="crumb">เทมเพลตทั้งหมด</a> / โมเดล AI — Surya OCR</p>
+<p class="en-wip" data-i18n="en_wip">English body translation in progress — เนื้อหาภาษาอังกฤษอยู่ระหว่างแปล</p>
+<h1>โมเดล AI — Surya OCR</h1>
+<p><strong>Surya-OCR</strong> คือโมเดล Modern OCR ที่ใช้ดึงข้อความและวิเคราะห์โครงสร้าง (Layout Detection) จากรูปภาพที่อัปโหลดเข้ามาระบบ โดยถูกจัดอยู่ใน <strong>Layer 1: Textual Analysis (ชั้นวิเคราะห์ข้อความ)</strong> รันแบบ <strong>Surya OCR v0.5.0 (Native PyTorch)</strong></p>
+<hr>
+<h2>ทำไมถึงเลือก Surya OCR?</h2>
+<p>โมเดลนี้ทำงานบนเวอร์ชัน <strong>0.5.0 (Native PyTorch)</strong> ซึ่งมีคุณสมบัติดังนี้:</p>
+<ol>
+<li><strong>Multi-lingual Support:</strong> รองรับการอ่านกว่า 90 ภาษาตาม model card ของผู้พัฒนา Surya v0.5.0 รวมทั้งภาษาไทยและภาษาอังกฤษ (เกณฑ์รับรอง: อ่านไทย/อังกฤษบนภาพ ≥720px ได้ถูกต้อง)</li>
+<li><strong>Native PyTorch Inference:</strong> รันโมเดลผ่านสถาปัตยกรรม PyTorch และใช้งานทรัพยากร GPU (CUDA) ได้เต็มประสิทธิภาพโดยตรง</li>
+<li><strong>Layout Detection:</strong> สามารถวิเคราะห์โครงสร้างเอกสาร แยกแยะบรรทัด และจัดกลุ่มฟิลด์บนสลิปโอนเงินได้แม่นยำสูง</li>
+<li><strong>Robust to Noise:</strong> ทนทานต่อภาพเบลอ ภาพที่ถูกบีบอัด หรือภาพจากสกรีนช็อตผ่านแอปแชต</li>
+</ol>
+<h2>อัลกอริทึมและสมการคณิตศาสตร์ (Mathematical Formulation)</h2>
+<p>Surya-OCR อาศัยสถาปัตยกรรมระดับ Vision-Language Model โดยแบ่งการทำงานเป็นส่วนของการเข้ารหัสภาพ (Vision Encoder) และการถอดรหัสข้อความ (Text Decoder):</p>
+<ol>
+<li><strong>Vision Encoder (Feature Extraction):</strong></li>
+<p>ภาพอินพุต $I$ จะถูกแปลงเป็น Sequence ของ Vision Tokens $F_v$ ผ่านเครือข่าย Transformer/CNN: $$ F_v = \text{Encoder}_{\text{vision}}(I) $$</p>
+</ol>
+<ol>
+<li><strong>Text Decoder (Autoregressive Text Generation):</strong></li>
+<p>การทำนายข้อความ $Y = (y_1, y_2, \dots, y_T)$ อาศัยความน่าจะเป็นแบบมีเงื่อนไข (Conditional Probability) ในการทำนายตัวอักษรถัดไป: $$ P(Y | I) = \prod_{t=1}^T P(y_t | y_{&lt;t}, F_v) $$ ฟังก์ชันเป้าหมาย (Objective Function) เพื่อลดค่าข้อผิดพลาดระหว่างการเทรนคือ Cross-Entropy Loss ($L_{CE}$): $$ L_{CE} = - \sum_{t=1}^T \log P(y_t | y_{&lt;t}, F_v) $$</p>
+</ol>
+<ol>
+<li><strong>Layout Detection (Bounding Box Regression):</strong></li>
+<p>เพื่อกำหนดขอบเขต (Bounding Box) ของตัวอักษร โมเดลใช้ฟังก์ชัน Smooth L1 Loss ในการเทียบพิกัด $(x, y, w, h)$: $$ L_{loc}(b, \hat{b}) = \sum_{i \in \{x,y,w,h\}} \text{smooth}_{L_1}(b_i - \hat{b}_i) $$ เมื่อ $\text{smooth}_{L_1}(x)$ ถูกนิยามเป็น: $$ \text{smooth}_{L_1}(x) = \begin{cases} 0.5 x^2 &amp; \text{if } |x| &lt; 1 \\ |x| - 0.5 &amp; \text{otherwise} \end{cases} $$</p>
+</ol>
+<hr>
+<h2>บทบาทในระบบ</h2>
+<ol>
+<li><strong>Text Recognition:</strong> รับรูปภาพเป็นอินพุตและสกัดออกมาเป็นตัวอักษร (String) พร้อมพิกัดโครงสร้างข้อความ</li>
+<li><strong>Scam Keyword Matching:</strong> สตริงที่สกัดได้จะถูกส่งต่อให้ NLP ภายใน Backend API กรองหาคำหลอกลวงหรือ Scam Keywords (เช่น &quot;กู้เงินด่วน&quot;, &quot;โอนเงินรับปันผล&quot;) เพื่อคำนวณคะแนนความเสี่ยงด้านข้อความ (Textual Score) ต่อไป</li>
+</ol>
+<hr>
+<h2>หน้าที่เกี่ยวข้อง</h2>
+<ul>
+<li><a href="multi-layer-analysis.html">concepts/multi-layer-analysis</a></li>
+<li><a href="risk-scoring.html">concepts/risk-scoring</a></li>
+<li><a href="ai-inference-service.html">architecture/ai-inference-service</a></li>
+</ul>
+</main>
+</div>
+<footer class="site-foot"><div class="wrap">ScamGuard Docs — ไทยเป็นหลัก</div></footer>
+<script src="assets/js/i18n.js" defer></script>
+</body>
+</html>

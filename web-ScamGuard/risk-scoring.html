@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>การคำนวณคะแนนความเสี่ยง (Risk Scoring) — ScamGuard Docs</title>
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#content">ข้ามไปยังเนื้อหา</a>
+<header class="site-head"><div class="wrap"><a class="brand" href="index.html" data-i18n="brand">ScamGuard Docs</a><nav class="nav" aria-label="หลัก"><a href="overview.html" data-i18n="nav_overview">ภาพรวม</a><a href="overview.html#layers" data-i18n="nav_layers">หลายชั้น</a><a href="overview.html#risk" data-i18n="nav_risk">คะแนนเสี่ยง</a><a href="overview.html#arch" data-i18n="nav_arch">สถาปัตยกรรม</a></nav><button id="lang-toggle" data-i18n="lang_toggle" aria-label="switch language">EN</button></div></header>
+<div class="wrap layout">
+<aside class="side" aria-label="สารบัญ">
+<p class="t01-side-group">เริ่มต้น</p>
+<a href="#quickstart" class="active"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>เริ่มใช้งาน <span class="count">3 ขั้น</span></a>
+<a href="#layers"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>การวิเคราะห์หลายชั้น <span class="count">3</span></a>
+<p class="t01-side-group">ทำความเข้าใจผลลัพธ์</p>
+<a href="#risk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="#0E7C7B" stroke-width="2"/><path d="M12 7v5l3 3" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คะแนนความเสี่ยง <span class="count">3 ระดับ</span></a>
+<a href="#heatmap"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2" stroke="#0E7C7B" stroke-width="2"/><circle cx="9" cy="10" r="2" fill="#0E7C7B"/><path d="M3 16l5-4 4 3 4-4 5 4" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>อ่าน Heatmap</a>
+<p class="t01-side-group">เชิงลึก</p>
+<a href="#arch"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><rect x="13" y="13" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><path d="M11 7h5v6M13 17H7v-6" stroke="#0E7C7B" stroke-width="2"/></svg>สถาปัตยกรรม</a>
+<a href="#faq"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 9a3 3 0 015.8 1c0 2-3.8 2.5-3.8 4M12 18h.01" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คำถามพบบ่อย <span class="count">5</span></a>
+<div class="t01-legend" aria-label="สัญลักษณ์ระดับความเสี่ยง">
+<strong style="color:var(--ink)">สัญลักษณ์ระดับความเสี่ยง</strong>
+<div class="row"><span class="badge b-low">Low</span><span class="t01-meter"><i style="width:30%;background:#1B7A4D"></i></span><span>0–39</span></div>
+<div class="row"><span class="badge b-med">Med</span><span class="t01-meter"><i style="width:55%;background:#9A6B12"></i></span><span>40–69</span></div>
+<div class="row"><span class="badge b-high">High</span><span class="t01-meter"><i style="width:85%;background:#B3372F"></i></span><span>70–100</span></div>
+</div>
+</aside>
+<main id="content">
+<p class="t01-crumb"><a href="index.html" data-i18n="crumb">เทมเพลตทั้งหมด</a> / การคำนวณคะแนนความเสี่ยง (Risk Scoring)</p>
+<p class="en-wip" data-i18n="en_wip">English body translation in progress — เนื้อหาภาษาอังกฤษอยู่ระหว่างแปล</p>
+<h1>การคำนวณคะแนนความเสี่ยง (Risk Scoring)</h1>
+<p>ระบบประเมินคะแนนความเสี่ยงของรูปภาพตามแนวทาง <strong>Recommended Hybrid Approach (Worst-Case Trigger with Multi-Factor Breakdown)</strong> ตามมาตรฐานวิศวกรรมความมั่นคงปลอดภัย (Fraud Detection &amp; Forensics) โดยประเมิน 3 มิติแยกอิสระ (0–100%) และรวมผลลัพธ์เป็น <strong>Overall Risk Score</strong> (0–100) พร้อมผลแจกแจงแยกมิติ</p>
+<hr>
+<h2>1. การประเมินคะแนนแยกมิติ (Independent Factors - 0–100%)</h2>
+<table>
+<thead><tr><th>มิติการวิเคราะห์</th><th>ตัวแปร</th><th>ช่วงคะแนน</th><th>บทบาทและการวัดผล</th></tr></thead><tbody>
+<tr><td><strong>Visual Anomaly</strong></td><td>$S_{visual}$</td><td>0–100%</td><td>วัดระดับการตัดต่อ/สังเคราะห์ภาพโดยตรง (Splicing, Copy-Move, AI Diffusion) ด้วย SegFormer และ Heatmap (สูตร canonical ดู <code>Document/model/configs.md</code> §3)</td></tr>
+<tr><td><strong>Textual Analysis</strong></td><td>$S_{textual}$</td><td>0–100%</td><td>วัดความอันตรายของข้อความ/คีย์เวิร์ดหลอกลวง (Blacklist, คำเร่งโอนเงิน, สัญญาผลตอบแทนสูง) ด้วย Surya-OCR</td></tr>
+<tr><td><strong>Source Verification</strong></td><td>$S_{source}$</td><td>0–100%</td><td>วัดประวัติการถูกนำไปใช้ซ้ำบนอินเทอร์เน็ต (Reverse Image Search) ผ่าน Google Vision API (ที่มา: นโยบาย heuristic v1 — พบ ≥3 แหล่ง = สูง, =2 = ปานกลาง/ไม่แน่ชัด, ≤1 = ต่ำ)</td></tr>
+</tbody></table>
+<hr>
+<h2>2. สูตรคำนวณคะแนนรวม (Overall Risk Score Formulation)</h2>
+<p>ระบบใช้หลักการ <strong>Maximum Impact (Worst-Case Trigger)</strong> ร่วมกับ <strong>Multi-Factor Compounding Penalty</strong> เพื่อป้องกันปัญหาคะแนนเจือจาง (Dilution Problem) เช่น ภาพตัดต่อชัดเจนแต่ไม่มีข้อความ ($S_{text} = 0$) คะแนนรวมจะไม่ถูกดึงลง:</p>
+<p>$$ S_{base} = \max(S_{visual}, S_{textual}, S_{source}) $$</p>
+<p>$$ S_{total} = \min\left(100, S_{base} + \sum_{i \in \text{secondary}} [S_i \ge 40] \times 5\right) $$</p>
+<ul>
+<li><strong>$S_{base}$</strong>: คะแนนความเสี่ยงของมิติที่รุนแรงที่สุด</li>
+<li><strong>Multi-Factor Compounding</strong>: หากตรวจพบความเสี่ยงระดับปานกลางขึ้นไปในมิติอื่น ($\ge 40$) จะบวกคะแนนเพิ่ม $+5$ ต่อมิติ (สูงสุดไม่เกิน 100)</li>
+<li><strong>Visual Override Rule</strong>: หากตรวจพบร่องรอยการดัดแปลงภาพในระดับวิกฤต ($S_{visual} \ge 80$) ระบบจะบังคับระดับผลลัพธ์เป็น <strong>High Risk</strong> ทันที</li>
+</ul>
+<hr>
+<h2>3. ระดับความเสี่ยง (Risk Grade)</h2>
+<p>ระบบแบ่งเกณฑ์การตัดสินเป็น 3 ระดับ (3-level Scale):</p>
+<table>
+<thead><tr><th>ช่วงคะแนน</th><th>ระดับ</th><th>สี</th><th>ความหมายและข้อแนะนำ</th></tr></thead><tbody>
+<tr><td>0 – 39</td><td><strong>Low</strong> (เสี่ยงต่ำ)</td><td>เขียว/เหลือง</td><td>ไม่พบร่องรอยการตัดต่อหรือข้อความหลอกลวงที่ชัดเจน ควรใช้วิจารณญาณประกอบ</td></tr>
+<tr><td>40 – 69</td><td><strong>Medium</strong> (น่าสงสัย)</td><td>ส้ม</td><td>พบสัญญาณน่าสงสัยระดับปานกลาง หรือพบความเสี่ยงหลายมิติควบคู่กัน</td></tr>
+<tr><td>70 – 100</td><td><strong>High</strong> (อันตราย)</td><td>แดง</td><td>พบหลักฐานการตัดต่อชัดเจน ข้อความหลอกลวงรุนแรง หรือภาพถูกใช้ซ้ำในหลายแหล่ง ($S_{visual} \ge 80$ ปรับเป็น High อัตโนมัติ)</td></tr>
+</tbody></table>
+<hr>
+<h2>4. การนำเสนอผลบนหน้าจอ (UI Presentation)</h2>
+<ol>
+<li><strong>ระดับภาพรวม (Overview Banner)</strong>: แสดง Risk Level สูงสุดที่พบ (Low / Medium / High) พร้อมคะแนนรวม Overall Score</li>
+<li><strong>รายละเอียดการวิเคราะห์ (Breakdown Cards)</strong>: แสดง Progress Bar และคำอธิบายแยกแต่ละมิติตามที่ตรวจพบจริง:</li>
+</ol>
+<ul>
+<li>ตรวจพบร่องรอยตัดต่อภาพ: $S_{visual}$% (ระดับความเสี่ยงของภาพ)</li>
+<li>ตรวจพบข้อความน่าสงสัย: $S_{textual}$% (หรือ &quot;ไม่พบข้อความ&quot;)</li>
+<li>ประวัติแหล่งที่มา: $S_{source}$% (จำนวนแหล่งที่พบบนอินเทอร์เน็ต)</li>
+</ul>
+<ol>
+<li><strong>หลักฐานเชิงภาพ (Explainable Heatmap)</strong>: แสดง Mask จุดที่โมเดลตรวจพบความผิดปกติซ้อนทับภาพต้นฉบับ</li>
+</ol>
+<hr>
+<h2>5. พฤติกรรมการ Cache</h2>
+<p>เมื่อคำนวณ Risk Score สำหรับภาพใดแล้ว จะเก็บผล inference ไว้ใน <strong>Redis</strong> (TTL 30 วัน) ถ้ามีการส่งรูปเดิมซ้ำจะใช้ผลที่แคชไว้ทันทีโดยไม่รัน AI Pipeline ซ้ำ ทำให้ latency ลดจาก ≤15 วินาทีเหลือ ≤3 วินาทีสำหรับภาพที่เคยวิเคราะห์แล้ว</p>
+<hr>
+<h2>6. การจัดการ Partial Failure</h2>
+<p>ถ้าชั้นการวิเคราะห์ใดชั้นหนึ่งล้มเหลว (เช่น Reverse Image Search API timeout) ระบบจะตัดมิตินั้นทิ้งแล้วคำนวณค่าสูงสุดจากมิติที่มีข้อมูลจริงเท่านั้น และระบุใน response ว่ามิติใดบ้างที่มีส่วนร่วมในการคำนวณ</p>
+<hr>
+<h2>7. ประเด็นสำคัญ</h2>
+<ul>
+<li>คะแนนเป็นตัวเลขต่อเนื่อง 0–100</li>
+<li>การใช้ Worst-Case Trigger แก้ปัญหาเรื่อง False Negative จากการเฉลี่ยน้ำหนักได้อย่างสมบูรณ์</li>
+<li>UI แสดงผลทั้งระดับสรุปและ Breakdown แยกมิติครบถ้วน</li>
+<li>การ Cache ขจัดการคำนวณซ้ำบนรูปที่เคยส่งมาแล้ว</li>
+</ul>
+<hr>
+<h2>หน้าที่เกี่ยวข้อง</h2>
+<ul>
+<li><a href="multi-layer-analysis.html">concepts/multi-layer-analysis</a></li>
+<li><a href="explainable-ai.html">concepts/explainable-ai</a></li>
+<li><a href="backend-api.html">architecture/backend-api</a></li>
+<li><a href="database-schema.html">architecture/database-schema</a></li>
+<li><a href="objectives-kpis.html">requirements/objectives-kpis</a></li>
+</ul>
+</main>
+</div>
+<footer class="site-foot"><div class="wrap">ScamGuard Docs — ไทยเป็นหลัก</div></footer>
+<script src="assets/js/i18n.js" defer></script>
+</body>
+</html>

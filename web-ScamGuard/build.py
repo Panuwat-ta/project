@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Stdlib wiki-to-HTML pipeline (Loop 2).
+"""Stdlib wiki-to-HTML pipeline (Loops 2-3).
 
-Converts one page: wiki/overview.md -> web-ScamGuard/overview.html
-inside the t01-sidebar shell, sidebar injected from
+Converts the allowlisted wiki pages (all wiki/**/*.md minus scratch/
+and AGENTS.md) into flat web-ScamGuard/*.html files inside the
+t01-sidebar shell, sidebar injected from
 web-ScamGuard/templates/t01-sidebar/index.html (<aside class="side">).
 
 Usage:
@@ -17,7 +18,51 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent  # web-ScamGuard/
 REPO = ROOT.parent
 TEMPLATE = ROOT / "templates" / "t01-sidebar" / "index.html"
-PAGES = [("wiki/overview.md", "overview.html")]
+
+EXCLUDE_DIR_PARTS = {"scratch"}
+EXCLUDE_FILES = {"AGENTS.md"}
+
+
+def discover_pages() -> list[tuple[str, str]]:
+    """Allowlist: all wiki/**/*.md minus scratch/ and AGENTS.md.
+
+    Destinations are flattened (basename stem + .html); stems are unique
+    across wiki/ so no collisions. Returns sorted (src_rel, dest_name).
+    """
+    pages = []
+    for md in sorted((REPO / "wiki").rglob("*.md")):
+        rel = md.relative_to(REPO)
+        if EXCLUDE_DIR_PARTS & set(rel.parts):
+            continue
+        if md.name in EXCLUDE_FILES:
+            continue
+        pages.append((rel.as_posix(), md.stem + ".html"))
+    return pages
+
+
+PAGES = discover_pages()
+
+# --- Output sanitizers (offline self-contained rule + ADR-001) ----------------
+# No external URLs, no jira/atlassian tokens, no emoji in built HTML.
+AUTOLINK_RE = re.compile(r"<https?://[^>\s]+>")
+BARE_URL_RE = re.compile(r"https?://\S+")
+MD_HTTP_LINK_RE = re.compile(r"\[([^\]]+)\]\(https?://[^)]+\)")
+EXCLUDED_TOKEN_RE = re.compile(r"atlassian|jira", re.I)
+EMOJI_RE = re.compile(
+    "[\u2600-\u27bf\u2b00-\u2bff\ufe00-\ufe0f"
+    "\U0001f000-\U0001faff\U0001fc00-\U0001ffff]"
+)
+EXTERNAL_PLACEHOLDER = "[ลิงก์ภายนอก]"
+NEUTRAL_BOARD = "task-board"
+
+
+def sanitize(md_text: str) -> str:
+    text = AUTOLINK_RE.sub(EXTERNAL_PLACEHOLDER, md_text)
+    text = MD_HTTP_LINK_RE.sub(r"\1", text)  # [label](http...) -> label
+    text = BARE_URL_RE.sub(EXTERNAL_PLACEHOLDER, text)
+    text = EXCLUDED_TOKEN_RE.sub(NEUTRAL_BOARD, text)
+    text = EMOJI_RE.sub("", text)
+    return text
 
 CALLOUT_RE = re.compile(r"^\s*\[!(NOTE|IMPORTANT|WARNING|TIP)\]\s*(.*)$", re.I)
 HEADING_RE = re.compile(r"^(#{1,6})\s+(.*)$")
@@ -55,6 +100,14 @@ def inline(md: str) -> str:
     md = BOLD_RE.sub(r"<strong>\1</strong>", md)
 
     def md_link(m):
+        target = m.group(2).strip()
+        if target.startswith("http://") or target.startswith("https://"):
+            return m.group(1)  # external links: keep label only (offline rule)
+        if target.endswith(".md") or ".md#" in target or ".md?" in target:
+            base = re.split(r"[#?]", target)[0]
+            stem = Path(base).stem + ".html"
+            suffix = target[len(base):]
+            return f'<a href="{html.escape(stem + suffix)}">{m.group(1)}</a>'
         return f'<a href="{html.escape(m.group(2))}">{m.group(1)}</a>'
 
     md = MD_LINK_RE.sub(md_link, md)
@@ -62,7 +115,16 @@ def inline(md: str) -> str:
     def wiki_link(m):
         target = m.group(1).strip()
         label = (m.group(2) or target).strip()
-        href = target if target.endswith(".html") else target + ".html"
+        if "#" in target:
+            base, anchor = target.split("#", 1)
+            anchor = "#" + anchor
+        else:
+            base, anchor = target, ""
+        base = base.strip()
+        if base.endswith(".md"):
+            base = base[:-3]
+        stem = base.split("/")[-1]  # flatten: [[dir/page]] -> page.html
+        href = stem + ".html" + anchor
         return f'<a href="{html.escape(href)}">{html.escape(label)}</a>'
 
     md = WIKILINK_RE.sub(wiki_link, md)
@@ -72,7 +134,7 @@ def inline(md: str) -> str:
 
 
 def md_to_html(md_text: str) -> str:
-    text = strip_frontmatter(md_text)
+    text = sanitize(strip_frontmatter(md_text))
     lines = text.split("\n")
     out: list[str] = []
     in_fence = False
@@ -219,7 +281,8 @@ def load_sidebar() -> str:
 def page_title(md_text: str, fallback: str) -> str:
     text = strip_frontmatter(md_text)
     m = re.search(r"^#\s+(.+)$", text, re.M)
-    return m.group(1).strip() if m else fallback
+    title = m.group(1).strip() if m else fallback
+    return sanitize(title).strip() or fallback
 
 
 SHELL = """<!DOCTYPE html>
@@ -242,6 +305,7 @@ SHELL = """<!DOCTYPE html>
 </main>
 </div>
 <footer class="site-foot"><div class="wrap">ScamGuard Docs — ไทยเป็นหลัก</div></footer>
+<script src="assets/js/i18n.js" defer></script>
 </body>
 </html>
 """
@@ -267,8 +331,15 @@ def build() -> list[Path]:
 
 
 def check() -> bool:
-    """Verify the Loop 2 build output. Prints BUILD OK on success."""
+    """Verify the full Loop 3 build output. Prints BUILD OK on success."""
     errors = []
+    expected = [dest for _, dest in PAGES]
+    if len(expected) < 35:
+        errors.append(f"allowlist only {len(expected)} pages (< 35)")
+    for dest_name in expected:
+        dest = ROOT / dest_name
+        if not dest.exists():
+            errors.append(f"missing {dest_name}")
     dest = ROOT / "overview.html"
     if not dest.exists():
         print("BUILD FAIL: overview.html missing")
@@ -282,9 +353,28 @@ def check() -> bool:
         (".html", "converted wikilink"),
         ("en-wip", "EN-WIP notice"),
         ('data-i18n="brand"', "i18n chrome key"),
+        ('assets/js/i18n.js', "i18n script"),
     ]:
         if needle not in src:
             errors.append(label)
+    # Per-page: every built page carries sidebar + EN-WIP + chrome key.
+    for dest_name in expected:
+        p = ROOT / dest_name
+        if not p.exists():
+            continue
+        s = p.read_text(encoding="utf-8")
+        if '<aside class="side"' not in s:
+            errors.append(f"{dest_name}: sidebar")
+        if "en-wip" not in s:
+            errors.append(f"{dest_name}: EN-WIP")
+        if 'data-i18n="brand"' not in s:
+            errors.append(f"{dest_name}: chrome")
+        if "http://" in s or "https://" in s:
+            errors.append(f"{dest_name}: external URL leak")
+        if re.search(r"atlassian|jira", s, re.I):
+            errors.append(f"{dest_name}: excluded token leak")
+        if EMOJI_RE.search(s):
+            errors.append(f"{dest_name}: emoji leak")
     # Fixture round-trip: sample.md must convert through the same code path.
     fixture = ROOT / "tests" / "fixtures" / "sample.md"
     if not fixture.exists():

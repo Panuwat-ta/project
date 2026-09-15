@@ -45,7 +45,7 @@
 <aside class="callout callout-important"><strong>IMPORTANT</strong> โปรเจคนี้ตรวจจับ <strong>ภาพหลอกลวงในวงกว้าง</strong> ไม่ใช่เฉพาะ &quot;สลิปปลอม&quot; การแยกแยะประเภทการปลอมแปลง (splicing, copy-move, AI-generation, reverse image identity theft) คือฟีเจอร์หลักของระบบ</aside>
 <hr>
 <h2>แนวทางหลัก: การวิเคราะห์หลายชั้น (Multi-layer Analysis)</h2>
-<p>ระบบไม่พึ่งพาวิธีตรวจจับเดียว แต่รันการวิเคราะห์ 3 มิติอย่างอิสระและรวมผลเป็น <strong>Overall Risk Score</strong> ตามแนวทาง <strong>Recommended Hybrid Approach (Worst-Case Trigger with Multi-Factor Breakdown)</strong> ดูรายละเอียดที่ <a href="concepts/multi-layer-analysis.html">concepts/multi-layer-analysis</a></p>
+<p>ระบบไม่พึ่งพาวิธีตรวจจับเดียว แต่รันการวิเคราะห์ 3 มิติอย่างอิสระและรวมผลเป็น <strong>Overall Risk Score</strong> ตามแนวทาง <strong>Recommended Hybrid Approach (Worst-Case Trigger with Multi-Factor Breakdown)</strong> ดูรายละเอียดที่ <a href="multi-layer-analysis.html">concepts/multi-layer-analysis</a></p>
 <table>
 <thead><tr><th>มิติการวิเคราะห์ (Independent Factors)</th><th>วิธีการ</th><th>ช่วงคะแนนเดี่ยว</th></tr></thead><tbody>
 <tr><td>วิเคราะห์ข้อความ (Textual Analysis)</td><td>OCR + Keyword/Pattern Matching ตรวจจับคำหลอกลวง</td><td>0–100%</td></tr>
@@ -54,7 +54,7 @@
 </tbody></table>
 <ul>
 <li><strong>สูตรคำนวณคะแนนรวม</strong>: ยึดมิติที่มีความเสี่ยงสูงสุดเป็นฐานหลัก $S_{base} = \max(S_{visual}, S_{textual}, S_{source})$ ร่วมกับ Multi-factor Compounding (+5 คะแนนต่อมิติรองที่มีความเสี่ยง $\ge 40$)</li>
-<li>คะแนนรวมอยู่ระหว่าง 0–100 แบ่งเป็น 3 ระดับ: Low (0–39), Medium (40–69), High (70–100 หรือ Visual $\ge 80$) ดูเกณฑ์ที่ <a href="concepts/risk-scoring.html">concepts/risk-scoring</a></li>
+<li>คะแนนรวมอยู่ระหว่าง 0–100 แบ่งเป็น 3 ระดับ: Low (0–39), Medium (40–69), High (70–100 หรือ Visual $\ge 80$) ดูเกณฑ์ที่ <a href="risk-scoring.html">concepts/risk-scoring</a></li>
 </ul>
 <hr>
 <h2>สรุปสถาปัตยกรรมระบบ</h2>
@@ -64,7 +64,7 @@
 <li><strong>Backend</strong> — Python FastAPI ทำหน้าที่เป็น Orchestrator/API Gateway; ONNX Worker subprocess สำหรับประมวลผลโมเดล</li>
 <li><strong>Storage</strong> — PostgreSQL สำหรับข้อมูลเชิงสัมพันธ์; Redis สำหรับ cache; Cloud Storage สำหรับไฟล์รูปภาพและ Heatmap</li>
 </ol>
-<p>ดูสถาปัตยกรรมเต็มที่ <a href="architecture/system-architecture.html">architecture/system-architecture</a></p>
+<p>ดูสถาปัตยกรรมเต็มที่ <a href="system-architecture.html">architecture/system-architecture</a></p>
 <hr>
 <h2>เทคโนโลยีหลัก</h2>
 <table>
@@ -79,7 +79,7 @@
 <tr><td>ค้นหาภาพย้อนกลับ</td><td>Google Vision API</td></tr>
 <tr><td>Push Notification</td><td>Firebase Cloud Messaging (FCM) — <strong>Phase 2</strong> (v1 ใช้ polling + in-app notification)</td></tr>
 </tbody></table>
-<p>ดูรายละเอียดที่ <a href="entities/tech-stack.html">entities/tech-stack</a> และ <a href="decisions/technology-choices.html">decisions/technology-choices</a></p>
+<p>ดูรายละเอียดที่ <a href="tech-stack.html">entities/tech-stack</a> และ <a href="technology-choices.html">decisions/technology-choices</a></p>
 <hr>
 <h2>ผลลัพธ์ที่ผู้ใช้ได้รับ</h2>
 <ol>
@@ -88,11 +88,11 @@
 <li><strong>ผลการวิเคราะห์ข้อความ</strong> — คำหลอกลวงหรือรูปแบบน่าสงสัยที่พบในภาพ</li>
 <li><strong>ผลการตรวจสอบแหล่งที่มา</strong> — รูปนี้พบในเว็บไซต์ใดบ้างและกี่แหล่ง</li>
 </ol>
-<p>Heatmap เป็นหัวใจของการออกแบบ <strong>Explainable AI (XAI)</strong> ดูที่ <a href="concepts/explainable-ai.html">concepts/explainable-ai</a></p>
+<p>Heatmap เป็นหัวใจของการออกแบบ <strong>Explainable AI (XAI)</strong> ดูที่ <a href="explainable-ai.html">concepts/explainable-ai</a></p>
 <hr>
 <h2>ข้อจำกัดของโปรเจค</h2>
 <ul>
-<li><strong>PDPA</strong> — ผู้ใช้ต้องยินยอมก่อนที่รูปภาพจะถูกเก็บหรือใช้เพื่อ training โมเดล ยินยอมแบบแยกส่วนและถอนได้ ดูที่ <a href="requirements/non-functional-requirements.html">requirements/non-functional-requirements</a></li>
+<li><strong>PDPA</strong> — ผู้ใช้ต้องยินยอมก่อนที่รูปภาพจะถูกเก็บหรือใช้เพื่อ training โมเดล ยินยอมแบบแยกส่วนและถอนได้ ดูที่ <a href="non-functional-requirements.html">requirements/non-functional-requirements</a></li>
 <li><strong>เป้าหมายประสิทธิภาพ</strong> — Cache Hit P95 ≤ 3 วินาที (ภาพ 1080p, เครือข่าย 4G/Wi-Fi, หน้าต่างวัด 7 วัน); Full AI inference P50 ≤ 15 วินาที / P95 ≤ 25 วินาทีต่อรูป (ภาพ 1080p, GPU T4)</li>
 <li><strong>เป้าหมายความแม่นยำ</strong> — โมเดล AI ต้องได้ Accuracy ≥ 85% และ mDice ≥ 85% บน frozen test set 1,000 ภาพ (ดูวิธีวัดใน requirements)</li>
 <li><strong>เป้าหมาย Availability</strong> — API และ AI Inference Service uptime ≥ 99.5% ต่อรอบ 30 วัน (ไม่รวม maintenance ที่ประกาศล่วงหน้า)</li>
@@ -107,17 +107,18 @@
 <hr>
 <h2>หน้าที่เกี่ยวข้อง</h2>
 <ul>
-<li><a href="concepts/multi-layer-analysis.html">concepts/multi-layer-analysis</a></li>
-<li><a href="concepts/risk-scoring.html">concepts/risk-scoring</a></li>
-<li><a href="concepts/explainable-ai.html">concepts/explainable-ai</a></li>
-<li><a href="architecture/system-architecture.html">architecture/system-architecture</a></li>
-<li><a href="requirements/objectives-kpis.html">requirements/objectives-kpis</a></li>
-<li><a href="planning/project-scope.html">planning/project-scope</a></li>
-<li><a href="planning/team.html">planning/team</a></li>
-<li><a href="entities/tech-stack.html">entities/tech-stack</a></li>
+<li><a href="multi-layer-analysis.html">concepts/multi-layer-analysis</a></li>
+<li><a href="risk-scoring.html">concepts/risk-scoring</a></li>
+<li><a href="explainable-ai.html">concepts/explainable-ai</a></li>
+<li><a href="system-architecture.html">architecture/system-architecture</a></li>
+<li><a href="objectives-kpis.html">requirements/objectives-kpis</a></li>
+<li><a href="project-scope.html">planning/project-scope</a></li>
+<li><a href="team.html">planning/team</a></li>
+<li><a href="tech-stack.html">entities/tech-stack</a></li>
 </ul>
 </main>
 </div>
 <footer class="site-foot"><div class="wrap">ScamGuard Docs — ไทยเป็นหลัก</div></footer>
+<script src="assets/js/i18n.js" defer></script>
 </body>
 </html>

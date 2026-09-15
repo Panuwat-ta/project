@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>การวิเคราะห์หลายชั้น (Multi-layer Analysis) — ScamGuard Docs</title>
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#content">ข้ามไปยังเนื้อหา</a>
+<header class="site-head"><div class="wrap"><a class="brand" href="index.html" data-i18n="brand">ScamGuard Docs</a><nav class="nav" aria-label="หลัก"><a href="overview.html" data-i18n="nav_overview">ภาพรวม</a><a href="overview.html#layers" data-i18n="nav_layers">หลายชั้น</a><a href="overview.html#risk" data-i18n="nav_risk">คะแนนเสี่ยง</a><a href="overview.html#arch" data-i18n="nav_arch">สถาปัตยกรรม</a></nav><button id="lang-toggle" data-i18n="lang_toggle" aria-label="switch language">EN</button></div></header>
+<div class="wrap layout">
+<aside class="side" aria-label="สารบัญ">
+<p class="t01-side-group">เริ่มต้น</p>
+<a href="#quickstart" class="active"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>เริ่มใช้งาน <span class="count">3 ขั้น</span></a>
+<a href="#layers"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>การวิเคราะห์หลายชั้น <span class="count">3</span></a>
+<p class="t01-side-group">ทำความเข้าใจผลลัพธ์</p>
+<a href="#risk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="#0E7C7B" stroke-width="2"/><path d="M12 7v5l3 3" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คะแนนความเสี่ยง <span class="count">3 ระดับ</span></a>
+<a href="#heatmap"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2" stroke="#0E7C7B" stroke-width="2"/><circle cx="9" cy="10" r="2" fill="#0E7C7B"/><path d="M3 16l5-4 4 3 4-4 5 4" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>อ่าน Heatmap</a>
+<p class="t01-side-group">เชิงลึก</p>
+<a href="#arch"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><rect x="13" y="13" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><path d="M11 7h5v6M13 17H7v-6" stroke="#0E7C7B" stroke-width="2"/></svg>สถาปัตยกรรม</a>
+<a href="#faq"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 9a3 3 0 015.8 1c0 2-3.8 2.5-3.8 4M12 18h.01" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คำถามพบบ่อย <span class="count">5</span></a>
+<div class="t01-legend" aria-label="สัญลักษณ์ระดับความเสี่ยง">
+<strong style="color:var(--ink)">สัญลักษณ์ระดับความเสี่ยง</strong>
+<div class="row"><span class="badge b-low">Low</span><span class="t01-meter"><i style="width:30%;background:#1B7A4D"></i></span><span>0–39</span></div>
+<div class="row"><span class="badge b-med">Med</span><span class="t01-meter"><i style="width:55%;background:#9A6B12"></i></span><span>40–69</span></div>
+<div class="row"><span class="badge b-high">High</span><span class="t01-meter"><i style="width:85%;background:#B3372F"></i></span><span>70–100</span></div>
+</div>
+</aside>
+<main id="content">
+<p class="t01-crumb"><a href="index.html" data-i18n="crumb">เทมเพลตทั้งหมด</a> / การวิเคราะห์หลายชั้น (Multi-layer Analysis)</p>
+<p class="en-wip" data-i18n="en_wip">English body translation in progress — เนื้อหาภาษาอังกฤษอยู่ระหว่างแปล</p>
+<h1>การวิเคราะห์หลายชั้น (Multi-layer Analysis)</h1>
+<p>กลยุทธ์การตรวจจับหลักของระบบ แทนที่จะพึ่งพาสัญญาณเดียว ระบบรัน 3 ชั้นการวิเคราะห์โดยอิสระและรวมผลออกมาเป็นคะแนนความเสี่ยงเดียว</p>
+<hr>
+<h2>ชั้นที่ 1: วิเคราะห์ข้อความ (Textual Analysis) — สเกลคะแนนอิสระ 0–100%</h2>
+<p>ดึงข้อมูลและวิเคราะห์ข้อความที่ฝังอยู่ในรูปภาพ</p>
+<p><strong>ขั้นตอน:</strong></p>
+<ol>
+<li><strong>OCR</strong> — ส่งภาพเข้า Surya-OCR (รองรับภาษาไทยและอังกฤษ) เพื่อดึงข้อความทั้งหมด</li>
+<li><strong>NLP keyword matching</strong> — นำข้อความที่ได้มาวิเคราะห์ด้วย Regular Expression และ/หรือโมเดล NLP ขนาดเล็ก เพื่อหารูปแบบที่บ่งชี้การหลอกลวง</li>
+</ol>
+<p><strong>สัญญาณที่ตรวจจับ:</strong></p>
+<ul>
+<li>ภาษาแสดงความเร่งด่วน (&quot;ด่วน&quot;, &quot;urgent&quot;, &quot;โอนด่วน&quot;)</li>
+<li>คำสัญญาผลตอบแทนสูง (&quot;รับปันผลสูง&quot;, &quot;กำไรรับประกัน&quot;)</li>
+<li>ชื่อบัญชีหรือเบอร์โทรที่อยู่ใน Blacklist</li>
+<li>คำสั่งทางการเงินที่น่าสงสัย</li>
+</ul>
+<p><strong>ผลลัพธ์:</strong> คะแนนความเสี่ยงจากข้อความ (S_text) 0–100%</p>
+<hr>
+<h2>ชั้นที่ 2: ตรวจสอบแหล่งที่มา (Source Verification) — สเกลคะแนนอิสระ 0–100%</h2>
+<p>ตรวจสอบว่ารูปภาพเคยถูกเผยแพร่บนอินเทอร์เน็ตหรือไม่ — เป็นตัวบ่งชี้สำคัญของการนำภาพไปใช้ซ้ำในเชิงหลอกลวง</p>
+<p><strong>ขั้นตอน:</strong></p>
+<ol>
+<li>ส่งรูปภาพ (หรือ URL) ไปยัง <strong>Google Vision API</strong> เพื่อค้นหาภาพย้อนกลับ (Reverse Image Search)</li>
+<li>ระบบนับจำนวนแหล่งที่มาที่แตกต่างกันที่พบภาพคล้ายกัน</li>
+</ol>
+<p><strong>เกณฑ์การให้คะแนน:</strong></p>
+<ul>
+<li>พบ &gt;= 3 แหล่งที่แตกต่างกัน → ความเสี่ยงจากแหล่งที่มาสูง (ภาพถูกเผยแพร่กว้าง อาจเป็นภาพแอบอ้าง)</li>
+<li>พบ = 2 แหล่ง → ความเสี่ยงปานกลาง/ไม่แน่ชัด (medium/uncertain)</li>
+<li>พบ &lt;= 1 แหล่ง → ความเสี่ยงต่ำ (ดำเนินการตรวจสอบภาพ AI-Generated ต่อ)</li>
+</ul>
+<p><strong>ผลลัพธ์:</strong> คะแนนความเสี่ยงจากแหล่งที่มา (S_source) 0–100%</p>
+<hr>
+<h2>ชั้นที่ 3: ตรวจจับความผิดปกติทางภาพ (Visual Anomaly Detection) — สเกลคะแนนอิสระ 0–100%</h2>
+<p>ชั้นที่วัดระดับการตัดต่อ/สังเคราะห์ภาพโดยตรง ใช้ Deep Learning ตรวจจับการดัดแปลงระดับพิกเซล</p>
+<p>การตรวจสอบย่อย 2 อย่าง:</p>
+<ul>
+<li><strong>ตรวจจับการตัดต่อภาพ (Semantic Segmentation-based)</strong> — ตรวจจับ splicing, copy-move และการแก้ไขพิกเซล ดูที่ <a href="semantic-segmentation.html">concepts/semantic-segmentation</a> และ <a href="ai-model-segformer.html">concepts/ai-model-segformer</a></li>
+<li><strong>ตรวจจับภาพสังเคราะห์จาก AI</strong> — จำแนกว่าภาพถูกสร้างโดยโมเดล Generative AI (เช่น GAN, Diffusion model) หรือไม่</li>
+</ul>
+<p><strong>ผลลัพธ์:</strong> คะแนนความเสี่ยงทางภาพ (S_visual) 0–100% พร้อม <strong>Heatmap</strong> สำหรับ XAI ดูที่ <a href="explainable-ai.html">concepts/explainable-ai</a></p>
+<hr>
+<h2>การไหลของ Pipeline</h2>
+<pre><code>ผู้ใช้อัปโหลดภาพ
+        |
+  ตรวจสอบและ Preprocess
+        |
+  ตรวจสอบ Redis Cache
+  ├── Cache Hit → ดึงผลลัพธ์เก่ากลับมาทันที
+  └── Cache Miss → รัน Pipeline:
+          Task 1: ดึง Metadata/EXIF
+          Task 2: OCR &amp; Textual Analysis  → S_text (0-100%)
+          Task 3: Visual Forgery Detection → S_visual (บางส่วน)
+               |
+          พบคำหลอกลวง? → ส่งไป Aggregator ทันที
+               |
+          Task 4: Reverse Image Search → S_source (0-100%)
+               |
+           &gt;= 3 แหล่ง? → ความเสี่ยงแหล่งที่มาสูง
+           = 2 แหล่ง? → ความเสี่ยงปานกลาง/ไม่แน่ชัด (medium/uncertain)
+           &lt; 2 แหล่ง? → Task 5: AI-Gen Detection → S_visual (ครบ 0-100%)
+               |
+          Aggregator: คำนวณ Overall Risk Score (Hybrid Worst-Case Trigger + Multi-factor Compounding)
+               |
+          สร้างคำอธิบาย XAI พร้อม Breakdown 3 มิติ
+               |
+          เก็บข้อมูลใน PostgreSQL, cache hash ใน Redis
+               |
+          ส่ง JSON ผลลัพธ์กลับ Client</code></pre>
+<hr>
+<h2>EXIF Metadata กับ Pipeline</h2>
+<p>ก่อนรัน 3 ชั้นหลัก API Gateway จะดึง <strong>EXIF Metadata</strong> (พิกัด GPS, รุ่นกล้อง, Software ที่ใช้, วันเวลา) เพื่อตรวจหาความไม่สอดคล้องเบื้องต้น เช่น ไม่มีข้อมูล GPS ทั้งที่อ้างว่าถ่ายที่ใดที่หนึ่ง หรือ metadata แสดงว่าใช้โปรแกรมแต่งภาพ</p>
+<hr>
+<h2>ประเด็นสำคัญ</h2>
+<ul>
+<li>ทั้ง 3 มิติประเมินคะแนนแยกกันเป็นอิสระ (0–100%) ตามหลัก Fraud Detection &amp; Forensics</li>
+<li>สรุปคะแนนรวมด้วยหลัก <strong>Worst-Case Trigger</strong>: $S_{base} = \max(S_{visual}, S_{text}, S_{source})$ เพื่อป้องกันปัญหา Dilution ไม่ให้ด้านที่ปลอดภัยมาฉุดคะแนนด้านที่อันตรายลง</li>
+<li>เสริมคะแนนด้วย <strong>Multi-Factor Compounding</strong>: หากพบความเสี่ยงปานกลางขึ้นไปในมิติอื่น ($\ge 40$) จะเพิ่มคะแนนความเสี่ยง +5 ต่อมิติ</li>
+<li>การ Cache ด้วย Redis image hash ทำให้การส่งรูปซ้ำได้รับคำตอบทันทีโดยไม่ต้องรัน AI ซ้ำ</li>
+</ul>
+<hr>
+<h2>หน้าที่เกี่ยวข้อง</h2>
+<ul>
+<li><a href="risk-scoring.html">concepts/risk-scoring</a></li>
+<li><a href="semantic-segmentation.html">concepts/semantic-segmentation</a></li>
+<li><a href="ai-model-segformer.html">concepts/ai-model-segformer</a></li>
+<li><a href="explainable-ai.html">concepts/explainable-ai</a></li>
+<li><a href="backend-api.html">architecture/backend-api</a></li>
+<li><a href="ai-inference-service.html">architecture/ai-inference-service</a></li>
+<li><a href="external-integrations.html">architecture/external-integrations</a></li>
+</ul>
+</main>
+</div>
+<footer class="site-foot"><div class="wrap">ScamGuard Docs — ไทยเป็นหลัก</div></footer>
+<script src="assets/js/i18n.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ความต้องการเชิงฟังก์ชัน (Functional Requirements) — ScamGuard Docs</title>
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#content">ข้ามไปยังเนื้อหา</a>
+<header class="site-head"><div class="wrap"><a class="brand" href="index.html" data-i18n="brand">ScamGuard Docs</a><nav class="nav" aria-label="หลัก"><a href="overview.html" data-i18n="nav_overview">ภาพรวม</a><a href="overview.html#layers" data-i18n="nav_layers">หลายชั้น</a><a href="overview.html#risk" data-i18n="nav_risk">คะแนนเสี่ยง</a><a href="overview.html#arch" data-i18n="nav_arch">สถาปัตยกรรม</a></nav><button id="lang-toggle" data-i18n="lang_toggle" aria-label="switch language">EN</button></div></header>
+<div class="wrap layout">
+<aside class="side" aria-label="สารบัญ">
+<p class="t01-side-group">เริ่มต้น</p>
+<a href="#quickstart" class="active"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>เริ่มใช้งาน <span class="count">3 ขั้น</span></a>
+<a href="#layers"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>การวิเคราะห์หลายชั้น <span class="count">3</span></a>
+<p class="t01-side-group">ทำความเข้าใจผลลัพธ์</p>
+<a href="#risk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="#0E7C7B" stroke-width="2"/><path d="M12 7v5l3 3" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คะแนนความเสี่ยง <span class="count">3 ระดับ</span></a>
+<a href="#heatmap"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2" stroke="#0E7C7B" stroke-width="2"/><circle cx="9" cy="10" r="2" fill="#0E7C7B"/><path d="M3 16l5-4 4 3 4-4 5 4" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>อ่าน Heatmap</a>
+<p class="t01-side-group">เชิงลึก</p>
+<a href="#arch"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><rect x="13" y="13" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><path d="M11 7h5v6M13 17H7v-6" stroke="#0E7C7B" stroke-width="2"/></svg>สถาปัตยกรรม</a>
+<a href="#faq"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 9a3 3 0 015.8 1c0 2-3.8 2.5-3.8 4M12 18h.01" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คำถามพบบ่อย <span class="count">5</span></a>
+<div class="t01-legend" aria-label="สัญลักษณ์ระดับความเสี่ยง">
+<strong style="color:var(--ink)">สัญลักษณ์ระดับความเสี่ยง</strong>
+<div class="row"><span class="badge b-low">Low</span><span class="t01-meter"><i style="width:30%;background:#1B7A4D"></i></span><span>0–39</span></div>
+<div class="row"><span class="badge b-med">Med</span><span class="t01-meter"><i style="width:55%;background:#9A6B12"></i></span><span>40–69</span></div>
+<div class="row"><span class="badge b-high">High</span><span class="t01-meter"><i style="width:85%;background:#B3372F"></i></span><span>70–100</span></div>
+</div>
+</aside>
+<main id="content">
+<p class="t01-crumb"><a href="index.html" data-i18n="crumb">เทมเพลตทั้งหมด</a> / ความต้องการเชิงฟังก์ชัน (Functional Requirements)</p>
+<p class="en-wip" data-i18n="en_wip">English body translation in progress — เนื้อหาภาษาอังกฤษอยู่ระหว่างแปล</p>
+<h1>ความต้องการเชิงฟังก์ชัน (Functional Requirements)</h1>
+<p>ความสามารถหลักที่ระบบต้องทำได้ จัดกลุ่มตามผู้ใช้และระบบย่อย</p>
+<blockquote><p><strong>ชื่อผลิตภัณฑ์:</strong> ScamGuard (ชื่อเต็ม: Scam Image Detection — แอปตรวจสอบรูปภาพตัดต่อเพื่อป้องกันการหลอกลวง)</p></blockquote>
+<blockquote><p><strong>Canonical catalog:</strong> <code>Document/srs/05_Software_Requirement_Specification.md</code> (FR/NFR/AC), <code>06_Requirement_Traceability.md</code>, <code>07_Appendix_A_Full_Traceability_Matrix.md</code>, <code>04_Requirement_Candidates.md</code> (RC) — ไฟล์นี้ใช้เลขชุดเดียวกับ Document; ID กลุ่ม <code>FR-INPUT/FR-SYS/FR-REPORT/FR-HIST/FR-RPT/FR-ADM/FR-AUDIT/FR-SHARE/FR-SET</code> เป็น test-scheme ฝั่ง wiki (baseline งานทดสอบใน <code>tests_all/rtm.md</code>) โดยแต่ละข้อมี canonical mapping กำกับไว้</p></blockquote>
+<hr>
+<h2>ฟังก์ชันฝั่งผู้ใช้ (Mobile App)</h2>
+<h3>การยืนยันตัวตน (Authentication) — canonical: FR-AUTH-01..04 (Document 05 §2.1)</h3>
+<ul>
+<li><strong>FR-AUTH-01:</strong> ผู้ใช้สมัครสมาชิกด้วย Email/Password ได้ (→ Document FR-AUTH-01)</li>
+<li><strong>FR-AUTH-02:</strong> ผู้ใช้เข้าสู่ระบบด้วย Email/Password + JWT ได้; โทเค็นเก็บใน Secure Storage ของเครื่อง (Secure Storage = Document FR-AUTH-02 AC-4)</li>
+<li><strong>FR-AUTH-03:</strong> ผู้ใช้ต่ออายุ Access Token ด้วย Refresh Token ได้ (→ Document FR-AUTH-03)</li>
+<li><strong>FR-AUTH-04:</strong> ผู้ใช้ออกจากระบบ (Logout) เพื่อล้างค่าเซสชั่นได้ (→ Document FR-AUTH-04; รวมเพิกถอน Refresh Token ฝั่ง server ภายใน 60 วินาที)</li>
+<li><strong>FR-AUTH-06:</strong> (Phase 2 backlog, RC-AUTH-06 deferred — ไม่ใช่ baseline v1) ผู้ใช้เข้าสู่ระบบด้วย Google OAuth (canonical FR-AUTH-03 = ต่ออายุ Token ตาม Document/log_docs/05)</li>
+</ul>
+<blockquote><p>Alias ประวัติ: test-scheme เดิมเรียก Secure Storage+Refresh ว่า FR-AUTH-04 และ Logout ว่า FR-AUTH-05 — ยุบ/ย้ายเป็น FR-AUTH-02/03/04 ตาม Document แล้ว (TC ที่เคยอ้างเลขเก่าอัปเดตตามใน <code>tests_all/rtm.md</code> และ <code>tests_all/manual_tests/</code>)</p></blockquote>
+<h3>การรับภาพ (Image Input) — test-scheme (canonical: Document FR-SCAN-01/02/03)</h3>
+<ul>
+<li><strong>FR-INPUT-01:</strong> ผู้ใช้เลือกรูปจากคลังภาพ (Gallery) ในเครื่องได้ (→ FR-SCAN-01)</li>
+<li><strong>FR-INPUT-02:</strong> ผู้ใช้ปรับขนาดและครอบตัด (Crop) ภาพก่อนส่งได้ เพื่อเน้นจุดสนใจ (→ FR-SCAN-01)</li>
+<li><strong>FR-INPUT-03:</strong> แอปอัปโหลดภาพผ่าน Multipart HTTP เพื่อส่งไปวิเคราะห์ (→ FR-SCAN-02)</li>
+<li><strong>FR-INPUT-04:</strong> แอปตรวจสอบประเภท/ขนาดไฟล์ก่อนอัปโหลด (jpg/jpeg/png/webp; Mobile ≤ 10MB / API Server ≤ 20MB; decode แล้ว ≤ 100M พิกเซล; trace → SRS FR-02) (→ FR-SCAN-02)</li>
+</ul>
+<h3>การแสดงรายงานความเสี่ยง (Risk Report Display) — test-scheme (canonical: Document FR-XAI-01 + FR-ANALYSIS-04)</h3>
+<ul>
+<li><strong>FR-REPORT-01:</strong> แอปแสดงคะแนนความเสี่ยงรวม Overall Risk Score (0-100) พร้อม Color Badge 3 ระดับ (Low/Medium/High; เกณฑ์ตาม Document FR-ANALYSIS-04 — ดูนิยามที่ Document ที่เดียว)</li>
+<li><strong>FR-REPORT-02:</strong> แอปแสดงภาพ Heatmap ซ้อนทับรูปจริง (→ FR-XAI-01)</li>
+<li><strong>FR-REPORT-03:</strong> ผู้ใช้กดเปิด/ปิด (Toggle) ภาพ Heatmap ซ้อนทับได้ (→ FR-XAI-01)</li>
+<li><strong>FR-REPORT-04:</strong> แอปแสดงคะแนนความเสี่ยงแยกย่อยแต่ละชั้น (Textual, Source, Visual) (→ FR-XAI-01 AC-5)</li>
+<li><strong>FR-REPORT-05:</strong> แอปแสดงคำที่เข้าข่ายน่าสงสัย/หลอกลวง (ถ้าพบโดยโมดูล OCR/NLP) (→ FR-ANALYSIS-01)</li>
+<li><strong>FR-REPORT-06:</strong> แอปแสดงผล Source Verification (จำนวนเว็บไซต์ที่พบภาพเดียวกัน) (→ FR-ANALYSIS-03)</li>
+</ul>
+<h3>ประวัติการสแกน (Scan History) — test-scheme (canonical: Document FR-HISTORY-01)</h3>
+<ul>
+<li><strong>FR-HIST-01:</strong> ผู้ใช้ดูประวัติผลการสแกนย้อนหลังตามลำดับเวลาได้ (→ FR-HISTORY-01)</li>
+<li><strong>FR-HIST-02:</strong> ผู้ใช้กดเปิดดูรายงานแบบละเอียดของการสแกนเก่าได้ (→ FR-HISTORY-01)</li>
+<li><strong>FR-HIST-03:</strong> ผู้ใช้ลบประวัติการสแกนได้ (ทีละรายการ + ลบทั้งหมด; ลบไฟล์ original/heatmap ใน Object Storage ด้วย — ตาม PDPA Right to Delete) (→ FR-HISTORY-01)</li>
+</ul>
+<h3>แจ้งรายงานหลอกลวง (Scam Reporting) — test-scheme (canonical: Document FR-HISTORY-02)</h3>
+<ul>
+<li><strong>FR-RPT-01:</strong> ผู้ใช้แจ้งยืนยันว่าผลสแกนคือการหลอกลวงจริง เพื่อส่งให้แอดมินตรวจสอบได้ (→ FR-HISTORY-02)</li>
+</ul>
+<h3>การแชร์ผลลัพธ์ (Result Sharing) — test-scheme ฝั่ง wiki (ไม่มี FR แยกใน Document; อยู่ใต้ FR-HISTORY-02/FR-08 มุมมอง coarse)</h3>
+<ul>
+<li><strong>FR-SHARE-01:</strong> ผู้ใช้แชร์ภาพผลลัพธ์/คำเตือนความเสี่ยงไปยังแอปพลิเคชันภายนอกได้ (trace → SRS BR-07/FR-08; หลักฐาน 02 SC01 §5; GAP: ยังไม่มี TC)</li>
+</ul>
+<h3>การจัดการข้อมูลส่วนบุคคล (PDPA Controls) — test-scheme (canonical: Document FR-PDPA-01)</h3>
+<ul>
+<li><strong>FR-PDPA-01:</strong> แสดงหน้าความยินยอม (Consent Screen) การประมวลผลข้อมูลในครั้งแรกที่เปิดแอป (→ Document FR-PDPA-01)</li>
+<li><strong>FR-PDPA-02:</strong> ผู้ใช้สามารถถอนความยินยอมในการเข้าร่วมวิจัยได้จากหน้าการตั้งค่าตลอดเวลา (→ Document FR-PDPA-01 AC-3)</li>
+<li><strong>FR-PDPA-03:</strong> หากถอนความยินยอม ระบบต้องลบภาพ/ข้อมูลของผู้ใช้ออกจาก Research Dataset ภายใน 72 ชม. (→ Document FR-PDPA-01; retention 1 ปี = RC-PDPA-04 deferred Phase 2)</li>
+</ul>
+<hr>
+<h2>ฟังก์ชันฝั่งแอดมิน (Admin Portal) — test-scheme (canonical: Document FR-ADMIN-01..04)</h2>
+<ul>
+<li><strong>FR-ADM-01:</strong> แอดมินดูสถิติภาพรวมระบบ (จำนวนการสแกน, สถิติความแม่นยำ, ยอดใช้งาน) ได้ (→ FR-ADMIN-01)</li>
+<li><strong>FR-ADM-02:</strong> แอดมินตรวจสอบรายการ Scam Report จากผู้ใช้ และอนุมัติ/ปัดตก ได้ (→ FR-ADMIN-02)</li>
+<li><strong>FR-ADM-03:</strong> แอดมิน Export ภาพ Scam ที่ถูกยืนยันแล้ว ไปทำ Dataset ได้ (→ FR-ADMIN-02 AC-3)</li>
+<li><strong>FR-ADM-04:</strong> แอดมินอัปโหลดไฟล์น้ำหนัก AI Model ล่าสุด และสั่ง Deploy ได้ (→ FR-ADMIN-03; อัปโหลดไฟล์ = Phase 2, v1 วางไฟล์บน server แล้ว deploy ผ่าน API)</li>
+<li><strong>FR-ADM-05:</strong> แอดมินจัดการบัญชีผู้ใช้งาน (ดูข้อมูล, แบนผู้ใช้) ได้ (→ FR-ADMIN-01; เปลี่ยนสถานะเท่านั้น ห้าม hard-delete)</li>
+<li><strong>FR-ADM-06:</strong> → ดู <strong>FR-AUDIT-01</strong> (ID เดียวสำหรับ Audit Log; ยุบรวมกันแล้ว ไม่นิยามซ้ำ) (→ FR-ADMIN-04)</li>
+</ul>
+<h3>การตรวจสอบย้อนหลัง (Audit) — test-scheme (canonical: Document FR-ADMIN-04)</h3>
+<ul>
+<li><strong>FR-AUDIT-01:</strong> ระบบบันทึกกิจกรรมของผู้ดูแลระบบลง Audit Log แบบ Append-only (แยกจาก FR-SYS-10 ซึ่งคือการแจ้งเตือน; FCM push = Phase 2) (→ FR-ADMIN-04)</li>
+</ul>
+<hr>
+<h2>ฟังก์ชันระบบอัตโนมัติ (Backend / AI) — test-scheme (canonical: Document FR-SCAN/FR-ANALYSIS/FR-XAI)</h2>
+<ul>
+<li><strong>FR-SYS-01:</strong> ระบบดึงข้อมูล EXIF Metadata ออกจากรูปที่อัปโหลด (→ RC-ANALYSIS-06 แสดงผลเท่านั้น ไม่ใช้คำนวณ Risk; ไม่มี FR แยกใน Document)</li>
+<li><strong>FR-SYS-02:</strong> ระบบสกัดข้อความ (OCR) รองรับภาษาไทยและอังกฤษ (→ FR-ANALYSIS-01)</li>
+<li><strong>FR-SYS-03:</strong> ระบบตรวจจับคำหลอกลวงหรือคีย์เวิร์ดเฝ้าระวังด้วย NLP (→ FR-ANALYSIS-01)</li>
+<li><strong>FR-SYS-04:</strong> ระบบสแกนหาที่มาภาพย้อนกลับด้วย Google Vision API (→ FR-ANALYSIS-03)</li>
+<li><strong>FR-SYS-05:</strong> ระบบตรวจสอบร่องรอยการดัดแปลงภาพระดับพิกเซลด้วย Deep Learning (SegFormer) (→ FR-ANALYSIS-02)</li>
+<li><strong>FR-SYS-06:</strong> ระบบคัดกรองรูปภาพที่สร้างจาก AI ด้วย Classifier (→ FR-ANALYSIS-02)</li>
+<li><strong>FR-SYS-07:</strong> ระบบประมวลผลคะแนนความเสี่ยงรวม Overall Risk Score พร้อม Multi-Factor Breakdown (สูตร/เกณฑ์ตาม Document FR-ANALYSIS-04 — ดูนิยามที่ Document ที่เดียว)</li>
+<li><strong>FR-SYS-08:</strong> ระบบสร้างภาพ Heatmap แบบ mask-to-heatmap overlay (→ FR-XAI-01)</li>
+<li><strong>FR-SYS-09:</strong> ระบบคำนวณ SHA-256 Hash ของภาพและเก็บผลสแกนลง Cache (Redis, TTL 30 วัน) เพื่อตอบกลับคำขอที่ซ้ำกันให้เร็วขึ้น (เป้าหมายเวลา: NFR-01; ยุบรวม FR-INPUT-05 แล้ว — ไม่นิยามซ้ำ) (→ FR-SCAN-03)</li>
+<li><strong>FR-SYS-10:</strong> ระบบแจ้งเตือนแบบ in-app/polling ภายใน 60 วินาทีเมื่อประมวลผลเบื้องหลัง (Async) เสร็จ (FCM push = Phase 2, RC-NOTIFY deferred; ไม่มี FR แยกใน Document)</li>
+<li><strong>FR-SYS-11:</strong> ระบบสร้างคำอธิบายภาษาไทยประกอบ Heatmap ด้วย Qwen2.5-1.5B (XAI; trace → Document FR-XAI-01 AC-1)</li>
+</ul>
+<hr>
+<h2>หน้าที่เกี่ยวข้อง</h2>
+<ul>
+<li><a href="objectives-kpis.html">requirements/objectives-kpis</a></li>
+<li><a href="non-functional-requirements.html">requirements/non-functional-requirements</a></li>
+<li><a href="actors.html">entities/actors</a></li>
+<li><a href="mobile-app.html">architecture/mobile-app</a></li>
+<li><a href="backend-api.html">architecture/backend-api</a></li>
+<li><a href="multi-layer-analysis.html">concepts/multi-layer-analysis</a></li>
+</ul>
+</main>
+</div>
+<footer class="site-foot"><div class="wrap">ScamGuard Docs — ไทยเป็นหลัก</div></footer>
+<script src="assets/js/i18n.js" defer></script>
+</body>
+</html>

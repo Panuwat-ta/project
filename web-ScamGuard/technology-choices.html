@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>การตัดสินใจเลือกเทคโนโลยี — ScamGuard Docs</title>
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#content">ข้ามไปยังเนื้อหา</a>
+<header class="site-head"><div class="wrap"><a class="brand" href="index.html" data-i18n="brand">ScamGuard Docs</a><nav class="nav" aria-label="หลัก"><a href="overview.html" data-i18n="nav_overview">ภาพรวม</a><a href="overview.html#layers" data-i18n="nav_layers">หลายชั้น</a><a href="overview.html#risk" data-i18n="nav_risk">คะแนนเสี่ยง</a><a href="overview.html#arch" data-i18n="nav_arch">สถาปัตยกรรม</a></nav><button id="lang-toggle" data-i18n="lang_toggle" aria-label="switch language">EN</button></div></header>
+<div class="wrap layout">
+<aside class="side" aria-label="สารบัญ">
+<p class="t01-side-group">เริ่มต้น</p>
+<a href="#quickstart" class="active"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>เริ่มใช้งาน <span class="count">3 ขั้น</span></a>
+<a href="#layers"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>การวิเคราะห์หลายชั้น <span class="count">3</span></a>
+<p class="t01-side-group">ทำความเข้าใจผลลัพธ์</p>
+<a href="#risk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="#0E7C7B" stroke-width="2"/><path d="M12 7v5l3 3" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คะแนนความเสี่ยง <span class="count">3 ระดับ</span></a>
+<a href="#heatmap"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2" stroke="#0E7C7B" stroke-width="2"/><circle cx="9" cy="10" r="2" fill="#0E7C7B"/><path d="M3 16l5-4 4 3 4-4 5 4" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>อ่าน Heatmap</a>
+<p class="t01-side-group">เชิงลึก</p>
+<a href="#arch"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><rect x="13" y="13" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><path d="M11 7h5v6M13 17H7v-6" stroke="#0E7C7B" stroke-width="2"/></svg>สถาปัตยกรรม</a>
+<a href="#faq"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 9a3 3 0 015.8 1c0 2-3.8 2.5-3.8 4M12 18h.01" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คำถามพบบ่อย <span class="count">5</span></a>
+<div class="t01-legend" aria-label="สัญลักษณ์ระดับความเสี่ยง">
+<strong style="color:var(--ink)">สัญลักษณ์ระดับความเสี่ยง</strong>
+<div class="row"><span class="badge b-low">Low</span><span class="t01-meter"><i style="width:30%;background:#1B7A4D"></i></span><span>0–39</span></div>
+<div class="row"><span class="badge b-med">Med</span><span class="t01-meter"><i style="width:55%;background:#9A6B12"></i></span><span>40–69</span></div>
+<div class="row"><span class="badge b-high">High</span><span class="t01-meter"><i style="width:85%;background:#B3372F"></i></span><span>70–100</span></div>
+</div>
+</aside>
+<main id="content">
+<p class="t01-crumb"><a href="index.html" data-i18n="crumb">เทมเพลตทั้งหมด</a> / การตัดสินใจเลือกเทคโนโลยี</p>
+<p class="en-wip" data-i18n="en_wip">English body translation in progress — เนื้อหาภาษาอังกฤษอยู่ระหว่างแปล</p>
+<h1>การตัดสินใจเลือกเทคโนโลยี</h1>
+<p>การตัดสินใจเลือกเทคโนโลยีหลัก ทางเลือกที่พิจารณา และเหตุผลทางวิศวกรรม</p>
+<hr>
+<h2>การตัดสินใจ 1: ใช้ Flutter สำหรับ Mobile</h2>
+<p><strong>สิ่งที่เลือก:</strong> Flutter (Dart) <strong>ทางเลือก:</strong> React Native (JavaScript)</p>
+<p><strong>เหตุผล:</strong></p>
+<ul>
+<li>Flutter ให้ Codebase เดียว (Dart) สำหรับ Android (และ iOS ในอนาคต)</li>
+<li>ประสิทธิภาพการ Render ดีกว่า — Flutter วาด Widget ของตัวเองโดยไม่ต้องพึ่ง Native UI Component Bridge</li>
+<li>รองรับ Dark Mode ทันที</li>
+<li>BLoC State Management มี Document ครบถ้วนและเขียน Test ง่าย</li>
+</ul>
+<p><strong>สรุป:</strong> โครงการนี้ใช้ <strong>Flutter</strong> เป็นเทคโนโลยีหลักสำหรับการพัฒนาแอปพลิเคชันมือถือ ดูข้อมูลเพิ่มเติมที่ <a href="tech-stack.html">entities/tech-stack</a></p>
+<hr>
+<h2>การตัดสินใจ 2: ใช้ SegFormer แทน CNN สำหรับตรวจภาพตัดต่อ</h2>
+<p><strong>สิ่งที่เลือก:</strong> SegFormer (Transformer-based semantic segmentation) <strong>ทางเลือก:</strong> CNN-based Classifiers (ResNet, EfficientNet), Traditional Semantic Segmentation Standalone</p>
+<p><strong>เหตุผล:</strong></p>
+<ul>
+<li>งานนี้ต้องระบุการดัดแปลงใน <strong>ระดับพิกเซล</strong> ซึ่งเป็นปัญหา Segmentation ที่ต้องระบุตำแหน่งระดับพิกเซล</li>
+<li>SegFormer จัดการเรื่อง Multi-scale Features (ทั้ง Global Context และ Local Pixel Detail) ได้ดีกว่า Transformer รุ่นแรกๆ</li>
+<li>ไม่มี Fixed Positional Encoding → Generalize กับรูปหลายขนาดได้ดีกว่า</li>
+<li>เร็วกว่า ViT-based Model ตัวเต็ม</li>
+<li>นำไปใช้ร่วมกับ Semantic Segmentation Preprocessing ได้ดี</li>
+</ul>
+<p><strong>ข้อแลกเปลี่ยน (Trade-off):</strong> กิน RAM/VRAM มากกว่า CNN Classifier แต่ยอมรับได้เมื่อรันบน Cloud</p>
+<hr>
+<h2>การตัดสินใจ 3: ใช้ FastAPI แทน Django/Flask/Node.js สำหรับ Backend</h2>
+<p><strong>สิ่งที่เลือก:</strong> Python FastAPI <strong>ทางเลือก:</strong> Django REST Framework, Flask, Node.js Express</p>
+<p><strong>เหตุผล:</strong></p>
+<ul>
+<li><strong>Async I/O</strong> — FastAPI จัดการ Concurrent Request ได้อย่างมีประสิทธิภาพโดยไม่ติดเรื่อง Threading Overhead</li>
+<li><strong>Performance</strong> — Throughput สำหรับงาน I/O-bound เทียบชั้นได้กับ Go และ Node.js</li>
+<li><strong>Pydantic Validation</strong> — ตรวจสอบ Schema เข้า-ออกแบบอัตโนมัติ</li>
+<li><strong>OpenAPI Docs</strong> — สร้าง API Document ให้โดยอัตโนมัติที่ <code>/docs</code></li>
+<li>ใช้ภาษา Python เช่นเดียวกับฝั่ง AI/ML ทำให้ทีมดูแลรักษาง่ายกว่าต้องสลับภาษา</li>
+</ul>
+<hr>
+<h2>การตัดสินใจ 4: ใช้ ONNX Runtime แทน Native PyTorch เพื่อ Serving</h2>
+<p><strong>สิ่งที่เลือก:</strong> ONNX Runtime (เฉพาะตอน Serving) <strong>การเทรน (Training):</strong> ยังใช้ PyTorch เหมือนเดิม</p>
+<p><strong>เหตุผล:</strong></p>
+<ul>
+<li>Inference เป้าหมายเร็วกว่า PyTorch baseline รุ่นเดียวกัน ≥ 2 เท่า (ภาพ 1080p เฉลี่ย 100 ภาพ บน T4; ยืนยันด้วย benchmark ก่อนอ้างภายนอก)</li>
+<li>ONNX ทำงานแยกจาก Framework — สามารถรัน Model ได้โดยไม่ต้องลง PyTorch ในฝั่ง Inference</li>
+<li>ลด Dependency และขนาด Container ของฝั่ง Serving</li>
+<li>Flow มาตรฐาน: Train ใน PyTorch → Export เป็น ONNX → Serve ด้วย ONNX Runtime</li>
+</ul>
+<hr>
+<h2>การตัดสินใจ 5: ใช้ PostgreSQL เป็นฐานข้อมูลหลัก</h2>
+<p><strong>สิ่งที่เลือก:</strong> PostgreSQL <strong>ทางเลือก:</strong> MongoDB, Firestore (NoSQL)</p>
+<p><strong>เหตุผล:</strong></p>
+<ul>
+<li>ระบบต้องการ <strong>ACID Transactions</strong> เพื่อรักษาความถูกต้องของข้อมูลสแกนและการเก็บ Consent PDPA</li>
+<li>ข้อมูลมีโครงสร้างแบบ Relational ชัดเจน (Users → Scans → Results, Reports)</li>
+<li>มี Extension PostGIS เผื่ออนาคตหากต้องการฟีเจอร์แผนที่จาก EXIF GPS</li>
+<li>เป็นฐานข้อมูลที่มีเสถียรภาพและได้รับความนิยมสูง</li>
+</ul>
+<hr>
+<h2>การตัดสินใจ 6: ใช้ Google Vision API สำหรับ Reverse Image Search</h2>
+<p><strong>สิ่งที่เลือก:</strong> Google Vision API <strong>ทางเลือก:</strong> Bing Visual Search</p>
+<p><strong>เหตุผล:</strong></p>
+<ul>
+<li>ฐานข้อมูลภาพบนเว็บใหญ่และครอบคลุมที่สุด</li>
+<li>เรียก API ครั้งเดียวสามารถค้นหาครอบคลุมอินเทอร์เน็ตส่วนใหญ่</li>
+<li>เสถียรและมี Document อธิบาย API ดีเยี่ยม</li>
+</ul>
+<p><strong>สถานะ v1:</strong> ยังไม่เชื่อมต่อ Google Vision API จริง จึงต้องคืน <code>source_status = &quot;unavailable&quot;</code>, ไม่ส่ง <code>source_score</code> ที่สร้างขึ้นเอง และคำนวณคะแนนรวมจากมิติที่สำเร็จเท่านั้น พร้อมแจ้งผู้ใช้ว่า Source Verification ยังไม่พร้อมใช้งาน</p>
+<p><strong>ความเสี่ยงเมื่อเปิดใช้:</strong> ยึดติดกับบริการภายนอก — หาก Google Vision ล่ม ให้ใช้พฤติกรรมเดียวกับสถานะข้างต้น ไม่ใช้ค่า neutral 50; Bing Visual Search เป็นแผนสำรองที่ยังวางแผนอยู่</p>
+<h2>การตัดสินใจ 7: ใช้ Surya OCR Native PyTorch แทน Tesseract สำหรับอ่านตัวอักษร</h2>
+<p><strong>สิ่งที่เลือก:</strong> Surya OCR v0.5.0 (Native PyTorch) <strong>ทางเลือก:</strong> Tesseract OCR (ดั้งเดิม), Google Cloud Vision API (Text Detection)</p>
+<p><strong>เหตุผล:</strong></p>
+<ul>
+<li>Tesseract OCR ขาดความแม่นยำในการอ่านภาษาไทย โดยเฉพาะรูปที่มีพื้นหลังลวดลายเยอะหรือมีสัญญาณรบกวน (Noise)</li>
+<li>Surya OCR Native รันบน PyTorch/CUDA โดยตรง เสถียรและใช้ GPU ได้เต็มประสิทธิภาพ โดยไม่ต้องพึ่งเซิร์ฟเวอร์แยก</li>
+<li>ช่วยคัดกรอง &quot;Scam Keywords&quot; หลอกลวง (เช่น ด่วน, โบนัส, กู้เงิน) ได้แม่นยำ ลด False Negative</li>
+</ul>
+<p>ส่วน Qwen2.5-1.5B ใช้สำหรับสร้างคำอธิบายภาษาไทย (XAI reasoning)</p>
+<hr>
+<h2>ประเด็นสำคัญ</h2>
+<ul>
+<li>การตัดสินใจเลือกเทคโนโลยีเกือบทั้งหมดอิงจาก Requirement: เช่น ต้องการผลระดับพิกเซล, PDPA Compliance, ประสิทธิภาพ, และทีมถนัด Python</li>
+<li>Trade-off ที่ยอมรับคือ SegFormer กิน Memory เยอะกว่า แต่นำมาซึ่งความแม่นยำของ Segmentation</li>
+<li>ONNX Runtime คือการ Optimization เพื่อความเร็วล้วนๆ ไม่ต้องแลกเปลี่ยนกับประสิทธิภาพของอัลกอริทึม</li>
+</ul>
+<hr>
+<h2>หน้าที่เกี่ยวข้อง</h2>
+<ul>
+<li><a href="tech-stack.html">entities/tech-stack</a></li>
+<li><a href="ai-model-segformer.html">concepts/ai-model-segformer</a></li>
+<li><a href="system-architecture.html">architecture/system-architecture</a></li>
+<li><a href="backend-api.html">architecture/backend-api</a></li>
+<li><a href="ai-inference-service.html">architecture/ai-inference-service</a></li>
+</ul>
+</main>
+</div>
+<footer class="site-foot"><div class="wrap">ScamGuard Docs — ไทยเป็นหลัก</div></footer>
+<script src="assets/js/i18n.js" defer></script>
+</body>
+</html>

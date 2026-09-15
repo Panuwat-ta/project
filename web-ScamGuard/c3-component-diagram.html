@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>C3: Component Diagram (API Application) — ScamGuard Docs</title>
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#content">ข้ามไปยังเนื้อหา</a>
+<header class="site-head"><div class="wrap"><a class="brand" href="index.html" data-i18n="brand">ScamGuard Docs</a><nav class="nav" aria-label="หลัก"><a href="overview.html" data-i18n="nav_overview">ภาพรวม</a><a href="overview.html#layers" data-i18n="nav_layers">หลายชั้น</a><a href="overview.html#risk" data-i18n="nav_risk">คะแนนเสี่ยง</a><a href="overview.html#arch" data-i18n="nav_arch">สถาปัตยกรรม</a></nav><button id="lang-toggle" data-i18n="lang_toggle" aria-label="switch language">EN</button></div></header>
+<div class="wrap layout">
+<aside class="side" aria-label="สารบัญ">
+<p class="t01-side-group">เริ่มต้น</p>
+<a href="#quickstart" class="active"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>เริ่มใช้งาน <span class="count">3 ขั้น</span></a>
+<a href="#layers"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>การวิเคราะห์หลายชั้น <span class="count">3</span></a>
+<p class="t01-side-group">ทำความเข้าใจผลลัพธ์</p>
+<a href="#risk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="#0E7C7B" stroke-width="2"/><path d="M12 7v5l3 3" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คะแนนความเสี่ยง <span class="count">3 ระดับ</span></a>
+<a href="#heatmap"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2" stroke="#0E7C7B" stroke-width="2"/><circle cx="9" cy="10" r="2" fill="#0E7C7B"/><path d="M3 16l5-4 4 3 4-4 5 4" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>อ่าน Heatmap</a>
+<p class="t01-side-group">เชิงลึก</p>
+<a href="#arch"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><rect x="13" y="13" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><path d="M11 7h5v6M13 17H7v-6" stroke="#0E7C7B" stroke-width="2"/></svg>สถาปัตยกรรม</a>
+<a href="#faq"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 9a3 3 0 015.8 1c0 2-3.8 2.5-3.8 4M12 18h.01" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คำถามพบบ่อย <span class="count">5</span></a>
+<div class="t01-legend" aria-label="สัญลักษณ์ระดับความเสี่ยง">
+<strong style="color:var(--ink)">สัญลักษณ์ระดับความเสี่ยง</strong>
+<div class="row"><span class="badge b-low">Low</span><span class="t01-meter"><i style="width:30%;background:#1B7A4D"></i></span><span>0–39</span></div>
+<div class="row"><span class="badge b-med">Med</span><span class="t01-meter"><i style="width:55%;background:#9A6B12"></i></span><span>40–69</span></div>
+<div class="row"><span class="badge b-high">High</span><span class="t01-meter"><i style="width:85%;background:#B3372F"></i></span><span>70–100</span></div>
+</div>
+</aside>
+<main id="content">
+<p class="t01-crumb"><a href="index.html" data-i18n="crumb">เทมเพลตทั้งหมด</a> / C3: Component Diagram (API Application)</p>
+<p class="en-wip" data-i18n="en_wip">English body translation in progress — เนื้อหาภาษาอังกฤษอยู่ระหว่างแปล</p>
+<h1>C3: Component Diagram (API Application)</h1>
+<p>แผนภาพ C3 นี้นำเสนอโครงสร้างภายในของ <strong>API Application Container (FastAPI)</strong> ซึ่งเป็นศูนย์กลาง (Orchestrator) ของระบบ Scam Image Detection โดยแสดงให้เห็นถึงการแบ่งเลเยอร์ภายใน</p>
+<pre><code class="language-mermaid">flowchart TB
+    %% การตั้งค่า Class สีต่างๆ
+    classDef clientFill fill:#dae8fc,stroke:#6c8ebf,color:black
+    classDef routerFill fill:#d5e8d4,stroke:#82b366,color:black
+    classDef serviceFill fill:#fff2cc,stroke:#d6b656,color:black
+    classDef repoFill fill:#e1d5e7,stroke:#9673a6,color:black
+    classDef storageFill fill:#ffe6cc,stroke:#d79b00,color:black
+    classDef extFill fill:#f5f5f5,stroke:#666666,color:black
+
+    %% Clients (จาก C2)
+    MobileApp(&quot;Mobile App&lt;br&gt;[Flutter]&quot;)
+    AdminPortal(&quot;Admin Portal&lt;br&gt;[React]&quot;)
+    
+    subgraph APIContainer [&quot;API Application Container - FastAPI&quot;]
+        
+        %% API Layer
+        subgraph APILayer [&quot;API Layer (Controllers)&quot;]
+            AuthRouter(&quot;Auth Router&lt;br&gt;รับข้อมูล Login/Register&quot;)
+            AdminRouter(&quot;Admin Router&lt;br&gt;จัดการระบบสำหรับ Admin&quot;)
+            ScanRouter(&quot;Scan Router&lt;br&gt;รับรูปภาพเพื่อตรวจสอบ&quot;)
+            ReportRouter(&quot;Report Router&lt;br&gt;รับรายงานภาพสแกม&quot;)
+        end
+
+        %% Business Logic Layer
+        subgraph ServiceLayer [&quot;Business Logic Layer (Services)&quot;]
+            AuthService(&quot;Auth Service&lt;br&gt;ออก Token และตรวจสอบสิทธิ์&quot;)
+            AdminService(&quot;Admin Service&lt;br&gt;ประมวลผลคำสั่ง Admin&quot;)
+            ScanService(&quot;Scan Service&lt;br&gt;Core Logic คำนวณความเสี่ยง&quot;)
+            InferenceClient(&quot;Inference Coordinator&lt;br&gt;จัดการคิวและการเรียก AI&quot;)
+            ReportService(&quot;Report Service&lt;br&gt;ประมวลผลการรายงาน&quot;)
+        end
+
+        %% Data Access Layer
+        subgraph RepoLayer [&quot;Data Access Layer (Repositories)&quot;]
+            UserRepo(&quot;User Repository&quot;)
+            ScanRepo(&quot;Scan Repository&quot;)
+            ReportRepo(&quot;Report Repository&quot;)
+        end
+    end
+
+    %% Storage &amp; Externals (จาก C2)
+    Cache(&quot;Redis Cache&quot;)
+    MainDB[(&quot;PostgreSQL Database&quot;)]
+    ObjectStore(&quot;Cloud Storage (Local / S3)&quot;)
+    AIWorker(&quot;ONNX Worker (Subprocess)&quot;)
+
+    %% Relationships - External to API
+    MobileApp ---&gt;|HTTPS / JSON| AuthRouter
+    MobileApp ---&gt;|HTTPS / Multipart| ScanRouter
+    MobileApp ---&gt;|HTTPS / JSON| ReportRouter
+    AdminPortal ---&gt;|HTTPS / JSON| AdminRouter
+    AdminPortal ---&gt;|HTTPS / JSON| AuthRouter
+
+    %% API to Services
+    AuthRouter ---&gt;|เรียกใช้งาน| AuthService
+    ScanRouter ---&gt;|มอบหมายงานตรวจสอบ| ScanService
+    ReportRouter ---&gt;|มอบหมายงานรายงาน| ReportService
+    AdminRouter ---&gt;|มอบหมายคำสั่ง| AdminService
+
+    %% Services to Services
+    ScanService ---&gt;|ส่งภาพให้ AI วิเคราะห์| InferenceClient
+    AdminService -.-&gt;|ดูข้อมูล| ReportService
+
+    %% Services to External/Cache
+    ScanService ---&gt;|ตรวจสอบ Hit/Miss| Cache
+    ScanService ---&gt;|จัดเก็บรูปต้นฉบับ| ObjectStore
+    InferenceClient ---&gt;|subprocess IPC ภายใน Backend| AIWorker
+    AIWorker ---&gt;|คืนผลลัพธ์ Heatmap| ObjectStore
+
+    %% Services to Repositories
+    AuthService ---&gt;|ค้นหา/ตรวจสอบ User| UserRepo
+    ScanService ---&gt;|บันทึกผลการสแกน| ScanRepo
+    ReportService ---&gt;|บันทึกและดึงรายงาน| ReportRepo
+    AdminService ---&gt;|ดึงข้อมูลเชิงสถิติ| ScanRepo
+    AdminService ---&gt;|จัดการบัญชีผู้ใช้| UserRepo
+
+    %% Repositories to DB
+    UserRepo ---&gt;|SQLAlchemy| MainDB
+    ScanRepo ---&gt;|SQLAlchemy| MainDB
+    ReportRepo ---&gt;|SQLAlchemy| MainDB
+
+    %% Apply Styles
+    class MobileApp,AdminPortal clientFill
+    class AuthRouter,ScanRouter,ReportRouter,AdminRouter routerFill
+    class AuthService,ScanService,ReportService,AdminService,InferenceClient serviceFill
+    class UserRepo,ScanRepo,ReportRepo repoFill
+    class Cache,MainDB,ObjectStore storageFill
+    class AIWorker extFill</code></pre>
+<hr>
+<h2>คำอธิบายองค์ประกอบภายใน (Component Details)</h2>
+<p>สถาปัตยกรรมภายในของ Backend ยึดหลักการ <strong>Layered Architecture</strong> เพื่อแยกส่วนหน้าที่ (Separation of Concerns) ทำให้โค้ดอ่านง่าย ทดสอบง่าย (Testable) และดูแลรักษาง่าย โดยแบ่งเป็น 3 เลเยอร์หลัก:</p>
+<h3>1. API Layer (Controllers)</h3>
+<p>ทำหน้าที่เป็นด่านหน้าในการรับ HTTP Request, ตรวจสอบความถูกต้องของข้อมูลเบื้องต้นผ่าน Schemas และส่งต่องานไปยัง Service ที่เกี่ยวข้อง</p>
+<ul>
+<li><strong>Auth Router:</strong> จัดการ Endpoint สำหรับ Login และ Register</li>
+<li><strong>Scan Router:</strong> รับไฟล์รูปภาพแบบ Multipart Form Data สำหรับตรวจสอบสแกม</li>
+<li><strong>Report Router:</strong> รับแจ้งรูปภาพหลอกลวงจากผู้ใช้ (Crowdsourcing)</li>
+<li><strong>Admin Router:</strong> เปิด Endpoint ให้นักวิจัยและ Admin จัดการข้อมูลโมเดลและระบบ</li>
+</ul>
+<h3>2. Business Logic Layer (Services)</h3>
+<p>เป็นหัวใจหลักของแอปพลิเคชัน ทำหน้าที่ประมวลผลตามกฎทางธุรกิจ</p>
+<ul>
+<li><strong>Scan Service:</strong> ควบคุมขั้นตอนการตรวจสอบภาพทั้งหมด เริ่มตั้งแต่เช็ค Cache, สกัด EXIF (แสดงผลเท่านั้น ไม่ร่วมคำนวณ), และคำนวณ <strong>Overall Risk Score</strong> ตามสูตร Hybrid Worst-Case</li>
+<li><strong>Inference Coordinator:</strong> ตัวประสานงานระหว่าง Backend กับ AI Model ทำหน้าที่จัดคิวรูปภาพและส่งคำสั่งข้าม Process ไปให้ Worker</li>
+<li><strong>Auth Service:</strong> จัดการการเข้ารหัสผ่าน (Hashing) และออก JWT Token</li>
+</ul>
+<h3>3. Data Access Layer (Repositories)</h3>
+<p>ทำหน้าที่ติดต่อกับฐานข้อมูลหลัก ช่วยให้ Business Logic Layer ไม่ต้องเขียนคำสั่ง SQL</p>
+<ul>
+<li><strong>User Repository:</strong> Query ข้อมูลบัญชีและสิทธิ์ของผู้ใช้งาน</li>
+<li><strong>Scan Repository:</strong> บันทึกและดึงประวัติ Risk Score ของแต่ละรูปภาพ</li>
+<li><strong>Report Repository:</strong> บันทึกข้อมูลที่ผู้ใช้แจ้งเข้ามาว่ารูปไหนเป็นสแกมของจริง</li>
+</ul>
+<h3>การทำงานร่วมกับ AI (ONNX Worker)</h3>
+<p>โมเดล AI ถูกออกแบบให้ทำงานแยกส่วนจาก Web Server หลัก โดยรันผ่าน subprocess เพื่อแยกภาระงานประมวลผลที่กินทรัพยากรสูงออกจากงานหลักของ FastAPI ทำให้ API ยังคงสามารถตอบสนอง Request อื่นๆ ได้อย่างรวดเร็วและไม่สะดุด</p>
+</main>
+</div>
+<footer class="site-foot"><div class="wrap">ScamGuard Docs — ไทยเป็นหลัก</div></footer>
+<script src="assets/js/i18n.js" defer></script>
+</body>
+</html>

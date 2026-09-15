@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>วัตถุประสงค์และตัวชี้วัดความสำเร็จ (KPIs) — ScamGuard Docs</title>
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#content">ข้ามไปยังเนื้อหา</a>
+<header class="site-head"><div class="wrap"><a class="brand" href="index.html" data-i18n="brand">ScamGuard Docs</a><nav class="nav" aria-label="หลัก"><a href="overview.html" data-i18n="nav_overview">ภาพรวม</a><a href="overview.html#layers" data-i18n="nav_layers">หลายชั้น</a><a href="overview.html#risk" data-i18n="nav_risk">คะแนนเสี่ยง</a><a href="overview.html#arch" data-i18n="nav_arch">สถาปัตยกรรม</a></nav><button id="lang-toggle" data-i18n="lang_toggle" aria-label="switch language">EN</button></div></header>
+<div class="wrap layout">
+<aside class="side" aria-label="สารบัญ">
+<p class="t01-side-group">เริ่มต้น</p>
+<a href="#quickstart" class="active"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>เริ่มใช้งาน <span class="count">3 ขั้น</span></a>
+<a href="#layers"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>การวิเคราะห์หลายชั้น <span class="count">3</span></a>
+<p class="t01-side-group">ทำความเข้าใจผลลัพธ์</p>
+<a href="#risk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="#0E7C7B" stroke-width="2"/><path d="M12 7v5l3 3" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คะแนนความเสี่ยง <span class="count">3 ระดับ</span></a>
+<a href="#heatmap"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2" stroke="#0E7C7B" stroke-width="2"/><circle cx="9" cy="10" r="2" fill="#0E7C7B"/><path d="M3 16l5-4 4 3 4-4 5 4" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>อ่าน Heatmap</a>
+<p class="t01-side-group">เชิงลึก</p>
+<a href="#arch"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><rect x="13" y="13" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><path d="M11 7h5v6M13 17H7v-6" stroke="#0E7C7B" stroke-width="2"/></svg>สถาปัตยกรรม</a>
+<a href="#faq"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 9a3 3 0 015.8 1c0 2-3.8 2.5-3.8 4M12 18h.01" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คำถามพบบ่อย <span class="count">5</span></a>
+<div class="t01-legend" aria-label="สัญลักษณ์ระดับความเสี่ยง">
+<strong style="color:var(--ink)">สัญลักษณ์ระดับความเสี่ยง</strong>
+<div class="row"><span class="badge b-low">Low</span><span class="t01-meter"><i style="width:30%;background:#1B7A4D"></i></span><span>0–39</span></div>
+<div class="row"><span class="badge b-med">Med</span><span class="t01-meter"><i style="width:55%;background:#9A6B12"></i></span><span>40–69</span></div>
+<div class="row"><span class="badge b-high">High</span><span class="t01-meter"><i style="width:85%;background:#B3372F"></i></span><span>70–100</span></div>
+</div>
+</aside>
+<main id="content">
+<p class="t01-crumb"><a href="index.html" data-i18n="crumb">เทมเพลตทั้งหมด</a> / วัตถุประสงค์และตัวชี้วัดความสำเร็จ (KPIs)</p>
+<p class="en-wip" data-i18n="en_wip">English body translation in progress — เนื้อหาภาษาอังกฤษอยู่ระหว่างแปล</p>
+<h1>วัตถุประสงค์และตัวชี้วัดความสำเร็จ (KPIs)</h1>
+<p>วัตถุประสงค์โครงการ (OBJ-01 ถึง OBJ-04) และตัวชี้วัดเชิงปริมาณและเชิงคุณภาพที่ใช้ประเมินความสำเร็จ</p>
+<hr>
+<h2>วัตถุประสงค์</h2>
+<h3>OBJ-01: พัฒนาแอปพลิเคชันมือถือสำหรับคัดกรองรูปภาพต้องสงสัย</h3>
+<p>พัฒนา Mobile App ด้วย Flutter (v1 Android เท่านั้น) เพื่อให้ผู้ใช้ทั่วไปเลือกรูปต้องสงสัยจากคลังภาพ (เช่น สลิปโอนเงิน, รูปโปรไฟล์) แล้วส่งให้ระบบวิเคราะห์หาความเสี่ยง</p>
+<h3>OBJ-02: ใช้ Deep Learning ตรวจจับภาพตัดต่อและภาพสังเคราะห์จาก AI</h3>
+<p>พัฒนาและเทรนโมเดล Deep Learning เพื่อประเมินร่องรอยการดัดแปลงพิกเซลด้วยเทคนิค Semantic Segmentation (ตรวจจับ Splicing และ Copy-Move) และคัดกรองภาพที่สร้างจาก AI</p>
+<h3>OBJ-03: พัฒนาระบบวิเคราะห์ความเสี่ยงหลายชั้นที่ทำงานร่วมกัน</h3>
+<p>พัฒนา FastAPI Backend เพื่อประสานงานการวิเคราะห์ Metadata, โครงสร้างข้อความ (OCR/NLP), ค้นหาภาพย้อนกลับ และรวมผลกับ AI Inference เพื่อประมวลผลออกมาเป็น Risk Score เดียว</p>
+<h3>OBJ-04: ทดสอบและประเมินประสิทธิภาพระบบและความพึงพอใจของผู้ใช้</h3>
+<p>ดำเนินการทดสอบผู้ใช้จริง (UAT), วัดความเร็วในการประมวลผล และทดสอบว่าความหมายของ Heatmap สามารถสื่อสารให้ผู้ใช้เข้าใจได้จริง</p>
+<hr>
+<h2>ตัวชี้วัด (KPIs) — เชิงปริมาณ</h2>
+<table>
+<thead><tr><th>ตัวชี้วัด (KPI)</th><th>เป้าหมาย</th></tr></thead><tbody>
+<tr><td>ความแม่นยำ AI (ภาพตัดต่อ)</td><td>Accuracy ≥85% + mDice ≥85% บน frozen test set 1,000 ภาพ</td></tr>
+<tr><td>ความแม่นยำ AI (AI-Gen)</td><td>Accuracy ≥85% + AUROC ≥0.90 (mDice ใช้เฉพาะงาน segmentation)</td></tr>
+<tr><td>ความเร็วตอบสนอง — แบบ Cache Hit</td><td>&lt;= 3 วินาที</td></tr>
+<tr><td>ความเร็วตอบสนอง — แบบ Full Inference (Cache Miss)</td><td>P50 ≤15s / P95 ≤25s / P99 ≤35s ต่อภาพ (เงื่อนไข 1080p/T4)</td></tr>
+<tr><td>System Availability (API + AI Inference)</td><td>Uptime ≥99.5% ต่อรอบ 30 วัน ไม่นับ Planned Maintenance (เกณฑ์ช่วงทดสอบ; SLA production กำหนดแยก)</td></tr>
+</tbody></table>
+<hr>
+<h2>ตัวชี้วัด (KPIs) — เชิงคุณภาพ</h2>
+<table>
+<thead><tr><th>ตัวชี้วัด (KPI)</th><th>เป้าหมาย</th></tr></thead><tbody>
+<tr><td>ความสามารถในการอธิบายผลของ Heatmap (Explainability)</td><td>ผู้ใช้ ≥80% (n=100, สุ่มตัวอย่าง) เข้าใจบริเวณต้องสงสัยได้โดยไม่มีพื้นฐานเทคนิค (UAT protocol + rubric 3 ข้อ)</td></tr>
+<tr><td>ความพึงพอใจโดยรวมของผู้ใช้ (Overall Satisfaction)</td><td>คะแนนเฉลี่ย ≥4.00/5.00 ตามแบบสอบถาม 5 ระดับ (Likert, n=100)</td></tr>
+</tbody></table>
+<hr>
+<h2>ประโยชน์ที่คาดว่าจะได้รับ</h2>
+<ol>
+<li><strong>ลดความสูญเสียจากอาชญากรรมไซเบอร์</strong> — ปกป้องประชาชนทั่วไปจากสลิปโอนเงินปลอม, Romance Scam, หรือการใช้ภาพตัดต่อ/AI หลอกลวง</li>
+<li><strong>เพิ่ม Digital Literacy</strong> — ด้วยการใช้ XAI (Heatmap) แอปไม่เพียงแค่เตือน แต่ยังให้เหตุผลว่า &quot;ทำไม&quot; รูปนี้ถึงน่าสงสัย</li>
+<li><strong>สร้าง Dataset เพื่องานวิจัย</strong> — ระบบจะสร้างฐานข้อมูลภาพ Scam ที่เกิดขึ้นจริงในบริบทของไทย (โดยคัดกรองอย่างถูกต้องและได้รับความยินยอม) เพื่อให้ชุมชน AI สามารถใช้ในงานวิจัยต่อไปได้</li>
+</ol>
+<hr>
+<h2>ประเด็นสำคัญ</h2>
+<ul>
+<li>เป้าหมายความแม่นยำ 85% แยกทดสอบอิสระ: ภาพตัดต่อใช้ Accuracy + mDice, ภาพ AI-Gen ใช้ Accuracy + AUROC ≥0.90 (บน frozen test set)</li>
+<li>เป้าหมาย 15 วินาที สำหรับโหมด Full Inference หมายถึงระบบต้องทำ OCR, ค้นหาแหล่งที่มา, AI Model Inference และรวมผลคะแนนทั้งหมดภายในเวลาที่จำกัดนี้</li>
+<li>ตัวชี้วัดความเข้าใจ Heatmap 80% วัดผ่านการทดสอบแบบ User Study ไม่ใช่ทดสอบอัตโนมัติ</li>
+</ul>
+<hr>
+<h2>หน้าที่เกี่ยวข้อง</h2>
+<ul>
+<li><a href="overview.html">overview</a></li>
+<li><a href="multi-layer-analysis.html">concepts/multi-layer-analysis</a></li>
+<li><a href="risk-scoring.html">concepts/risk-scoring</a></li>
+<li><a href="explainable-ai.html">concepts/explainable-ai</a></li>
+<li><a href="non-functional-requirements.html">requirements/non-functional-requirements</a></li>
+<li><a href="project-scope.html">planning/project-scope</a></li>
+</ul>
+</main>
+</div>
+<footer class="site-foot"><div class="wrap">ScamGuard Docs — ไทยเป็นหลัก</div></footer>
+<script src="assets/js/i18n.js" defer></script>
+</body>
+</html>

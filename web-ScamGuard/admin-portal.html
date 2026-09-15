@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>สถาปัตยกรรมและการออกแบบ Admin Portal — ScamGuard Docs</title>
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#content">ข้ามไปยังเนื้อหา</a>
+<header class="site-head"><div class="wrap"><a class="brand" href="index.html" data-i18n="brand">ScamGuard Docs</a><nav class="nav" aria-label="หลัก"><a href="overview.html" data-i18n="nav_overview">ภาพรวม</a><a href="overview.html#layers" data-i18n="nav_layers">หลายชั้น</a><a href="overview.html#risk" data-i18n="nav_risk">คะแนนเสี่ยง</a><a href="overview.html#arch" data-i18n="nav_arch">สถาปัตยกรรม</a></nav><button id="lang-toggle" data-i18n="lang_toggle" aria-label="switch language">EN</button></div></header>
+<div class="wrap layout">
+<aside class="side" aria-label="สารบัญ">
+<p class="t01-side-group">เริ่มต้น</p>
+<a href="#quickstart" class="active"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>เริ่มใช้งาน <span class="count">3 ขั้น</span></a>
+<a href="#layers"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>การวิเคราะห์หลายชั้น <span class="count">3</span></a>
+<p class="t01-side-group">ทำความเข้าใจผลลัพธ์</p>
+<a href="#risk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="#0E7C7B" stroke-width="2"/><path d="M12 7v5l3 3" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คะแนนความเสี่ยง <span class="count">3 ระดับ</span></a>
+<a href="#heatmap"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2" stroke="#0E7C7B" stroke-width="2"/><circle cx="9" cy="10" r="2" fill="#0E7C7B"/><path d="M3 16l5-4 4 3 4-4 5 4" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>อ่าน Heatmap</a>
+<p class="t01-side-group">เชิงลึก</p>
+<a href="#arch"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><rect x="13" y="13" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><path d="M11 7h5v6M13 17H7v-6" stroke="#0E7C7B" stroke-width="2"/></svg>สถาปัตยกรรม</a>
+<a href="#faq"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 9a3 3 0 015.8 1c0 2-3.8 2.5-3.8 4M12 18h.01" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คำถามพบบ่อย <span class="count">5</span></a>
+<div class="t01-legend" aria-label="สัญลักษณ์ระดับความเสี่ยง">
+<strong style="color:var(--ink)">สัญลักษณ์ระดับความเสี่ยง</strong>
+<div class="row"><span class="badge b-low">Low</span><span class="t01-meter"><i style="width:30%;background:#1B7A4D"></i></span><span>0–39</span></div>
+<div class="row"><span class="badge b-med">Med</span><span class="t01-meter"><i style="width:55%;background:#9A6B12"></i></span><span>40–69</span></div>
+<div class="row"><span class="badge b-high">High</span><span class="t01-meter"><i style="width:85%;background:#B3372F"></i></span><span>70–100</span></div>
+</div>
+</aside>
+<main id="content">
+<p class="t01-crumb"><a href="index.html" data-i18n="crumb">เทมเพลตทั้งหมด</a> / สถาปัตยกรรมและการออกแบบ Admin Portal</p>
+<p class="en-wip" data-i18n="en_wip">English body translation in progress — เนื้อหาภาษาอังกฤษอยู่ระหว่างแปล</p>
+<h1>สถาปัตยกรรมและการออกแบบ Admin Portal</h1>
+<p>เว็บคอนโซลสำหรับการบริหารจัดการระบบ ScamGuard แบบรวมศูนย์สำหรับผู้ดูแลระบบและนักวิจัย เพื่อควบคุมโมเดล AI ตรวจสอบรายงานการหลอกลวง และติดตามการทำงานของระบบแบบ Real-time</p>
+<hr>
+<h2>1. บทบาทและหน้าที่ในระบบ</h2>
+<p>Admin Portal เป็น 1 ใน 4 คอนเทนเนอร์หลักของระบบ ScamGuard (ตาม <a href="c2-container-diagram.html">C2 Container Diagram</a>) ทำหน้าที่เป็นส่วนต่อประสานสำหรับ:</p>
+<ol>
+<li><strong>ผู้ดูแลระบบ (Admin / Super Admin):</strong> จัดการบัญชีผู้ใช้ ตรวจสอบ Audit Log และควบคุมความปลอดภัยของระบบ</li>
+<li><strong>นักวิจัยและวิศวกร AI (AI Engineers / Researchers):</strong> ควบคุมการปล่อยโมเดล AI (Model Deployment &amp; Rollback) ตรวจสอบค่าเมตริก mIoU และอนุมัติรูปภาพ Scam เข้าสู่ Research Dataset</li>
+</ol>
+<hr>
+<h2>2. เทคโนโลยีและสถาปัตยกรรมฟรอนต์เอนด์</h2>
+<ul>
+<li><strong>Framework:</strong> React 19 (Single Page Application - SPA)</li>
+<li><strong>Build Tool:</strong> Vite สำหรับการ Build และ Hot Module Replacement (HMR) ที่รวดเร็ว</li>
+<li><strong>Styling:</strong> Tailwind CSS v4 พร้อม Design Tokens</li>
+<li><strong>State Management &amp; Data Fetching:</strong> React Hooks, Context API และ <code>fetch</code> wrapper รวมศูนย์ใน <code>src/lib/api.js</code> (token management + auto refresh + global error handling)</li>
+<li><strong>Real-time:</strong> WebSocket client เชื่อมต่อ WS /api/v1/ws/admin/dashboard</li>
+<li><strong>Icons &amp; Visuals:</strong> Lucide React และ Recharts สำหรับแสดงกราฟสถิติ</li>
+<li><strong>Routing:</strong> React Router DOM (v6) พร้อม Protected Route Guards</li>
+</ul>
+<hr>
+<h2>3. ระบบการออกแบบ (Design System &amp; Accessibility)</h2>
+<p>Admin Portal ออกแบบภายใต้มาตรฐานความสามารถในการเข้าถึงระดับ WCAG AA โดยรองรับทั้ง Dark Mode และ Light Mode:</p>
+<h3>3.1 Color Palette</h3>
+<ul>
+<li><strong>Theme Background:</strong></li>
+<li>Dark Mode: Surface Dark (<code>#121826</code>), Surface Card (<code>#1E293B</code>), Surface Hover (<code>#334155</code>)</li>
+<li>Light Mode: Neutral Background (<code>#F8FAFC</code>), Surface White (<code>#FFFFFF</code>), Border Light (<code>#E2E8F0</code>)</li>
+<li><strong>Brand &amp; Interactive:</strong></li>
+<li>Primary Indigo (<code>#4F46E5</code> / <code>#6366F1</code>) สำหรับปุ่มหลักและสเตตัสแอคทีฟ</li>
+<li>Secondary Slate (<code>#64748B</code>) สำหรับข้อความรองและเส้นแบ่ง</li>
+<li><strong>Semantic Status (3-Level Risk Scale):</strong></li>
+<li>Low Risk: สีเขียวมรกต (<code>#10B981</code> / <code>#059669</code>)</li>
+<li>Medium Risk: สีเหลืองอำพัน (<code>#F59E0B</code> / <code>#D97706</code>)</li>
+<li>High Risk: สีแดงกุหลาบ (<code>#EF4444</code> / <code>#DC2626</code>)</li>
+</ul>
+<h3>3.2 Typography &amp; Spacing</h3>
+<ul>
+<li>ฟอนต์หลัก: Sarabun และ Inter สำหรับเนื้อหาทั่วไป, JetBrains Mono สำหรับ Hash, IP Address และค่าทางเทคนิค</li>
+<li>Spacing Scale อิงตามระบบ 4px/8px Grid มาตรฐานเพื่อความสมดุลของข้อมูลบนหน้าจอขนาดใหญ่ (Desktop First: 1280px+)</li>
+</ul>
+<hr>
+<h2>4. หน้าจอหลักและโมดูลการทำงาน (Core Modules)</h2>
+<h3>4.1 Dashboard &amp; Real-time</h3>
+<ul>
+<li>แสดงผลสรุปสถิติสำคัญ (KPI Summary Cards): จำนวนการสแกนทั้งหมดวันนี้, อัตราส่วนภาพความเสี่ยงสูง, โมเดล AI ที่ทำงานอยู่ (Active Model)</li>
+<li>กราฟแนวโน้มการสแกนย้อนหลังและสัดส่วนระดับความเสี่ยง (Low / Medium / High)</li>
+<li>WebSocket widget (/api/v1/ws/admin/dashboard) แสดงสถานะเชื่อมต่อสดของ Backend Server</li>
+</ul>
+<h3>4.2 การจัดการโมเดล AI (AI Model Registry &amp; Rollback)</h3>
+<ul>
+<li>ตรวจสอบรายการโมเดล SegFormer ทั้งหมดในระบบ ดึงข้อมูลจากตาราง model_versions</li>
+<li>แสดงค่าเมตริกการทดสอบ: mIoU (Mean Intersection over Union), aAcc (All Accuracy), mAcc, mDice</li>
+<li>กลไกการ Deployment และ Rollback:</li>
+<li>ตรวจสอบความสมบูรณ์ของไฟล์น้ำหนักโมเดล (<code>.onnx</code>) ก่อนเปลี่ยนสถานะ</li>
+<li>รัน Dry-run Health Check เพื่อยืนยันว่า Subprocess Worker โหลดโมเดลได้สำเร็จ</li>
+<li>ทำงานภายใต้ Database Row Locking (<code>SELECT FOR UPDATE</code>) เพื่อป้องกัน Race Condition</li>
+<li>แสดงผลโมเดลที่ Active อยู่ลำดับแรกของตารางเสมอ</li>
+</ul>
+<h3>4.3 ตรวจสอบรายงานข้อร้องเรียน (Scam Reports Moderation)</h3>
+<ul>
+<li>รายการแจ้งเตือนจากผู้ใช้ที่ระบุว่าภาพสแกนเป็นการหลอกลวงจริง</li>
+<li>หน้าตรวจสอบเปรียบเทียบแบบ Side-by-Side: รูปภาพต้นฉบับ, รูปภาพ Heatmap Overlay, สรุปข้อความ OCR และคะแนนความเสี่ยงแยกมิติ</li>
+<li>การตัดสินใจของผู้ดูแลระบบ:</li>
+<li><strong>Approve (อนุมัติ):</strong> ยืนยันว่าภาพเป็น Scam และบันทึกเข้าสู่คลัง Dataset เพื่อใช้ในการฝึกสอนโมเดลรอบถัดไป</li>
+<li><strong>Reject (ปฏิเสธ):</strong> ปัดตกรายงานหากพบว่าเป็นภาพปกติหรือไม่เข้าข่ายหลอกลวง</li>
+</ul>
+<h3>4.4 การจัดการผู้ใช้งานและสิทธิ์ (User &amp; Consent Management)</h3>
+<ul>
+<li>ตรวจสอบรายชื่อผู้ใช้งานทั่วไปและนักวิจัย</li>
+<li>การติดตามสถานะความยินยอมตาม พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล (PDPA): <code>consent_analysis</code> และ <code>consent_research</code></li>
+<li>สิทธิ์การระงับการใช้งานชั่วคราว (Ban/Suspend) กรณีตรวจพบบัญชีที่ส่งคำขอผิดปกติ</li>
+</ul>
+<h3>4.5 บันทึกความปลอดภัยและการตรวจสอบ (Audit Logs)</h3>
+<ul>
+<li>ตารางบันทึกการกระทำของผู้ดูแลระบบแบบ Append-only ที่ไม่สามารถแก้ไขหรือลบได้</li>
+<li>บันทึกข้อมูลสำคัญ: รหัสแอดมิน (<code>admin_id</code>), การกระทำ (<code>action</code>), รายละเอียด (<code>details</code>), IP Address และเวลา (<code>created_at</code>)</li>
+<li>ระบบค้นหาและตัวกรองตามช่วงเวลาและประเภทกิจกรรม</li>
+</ul>
+<hr>
+<h2>5. ความปลอดภัยและการเชื่อมต่อ (Security &amp; Integration)</h2>
+<pre><code class="language-mermaid">flowchart LR
+    Browser[&quot;Admin Web Browser (React SPA)&quot;]
+    ViteProxy[&quot;Vite Dev / Nginx Gateway&quot;]
+    FastAPI[&quot;Backend API (/api/v1/admin/*)&quot;]
+    AdminDB[(&quot;PostgreSQL (admins, audit_log)&quot;)]
+    RedisCache[(&quot;Redis (Active Model &amp; Telemetry)&quot;)]
+
+    Browser --&gt;|HTTPS / JWT| ViteProxy
+    ViteProxy --&gt; FastAPI
+    FastAPI --&gt; AdminDB
+    FastAPI --&gt; RedisCache</code></pre>
+<ul>
+<li><strong>แยกการยืนยันตัวตนออกจากผู้ใช้ทั่วไป:</strong> ผู้ดูแลระบบต้องลงชื่อเข้าใช้ผ่าน Endpoint POST /api/v1/admin/login โดยตรวจสอบบัญชีและรหัสผ่านกับตาราง admins โดยเฉพาะ</li>
+<li><strong>Role-Based Access Control (RBAC):</strong> ทุก /admin/* ต้องเป็น <strong>Super Admin</strong></li>
+<li><strong>Reverse Proxy Protection:</strong> ในโหมดพัฒนาและ Production มีการซ่อนเบื้องหลังผ่าน Proxy เพื่อควบคุม CORS และป้องกันการเปิดเผย Endpoint ภายใน</li>
+</ul>
+<hr>
+<h2>6. ประเด็นสำคัญ</h2>
+<ul>
+<li>Admin Portal เป็นระบบควบคุมเบื้องหลังที่มีสิทธิ์สูง การดำเนินการทุกอย่างจึงถูกบันทึกเข้าสู่ตาราง audit_log เสมอ</li>
+<li>การเปลี่ยนโมเดล AI ผ่านหน้า Portal มีผลทันทีต่อการประมวลผลรูปภาพของผู้ใช้ Mobile ในการสแกนรอบถัดไป</li>
+<li>UI ปฏิบัติตามมาตรฐาน 3-Level Risk Scale (Low 0-39, Medium 40-69, High 70-100) สอดคล้องกับ Mobile App และ Backend</li>
+</ul>
+<hr>
+<h2>หน้าที่เกี่ยวข้อง</h2>
+<ul>
+<li><a href="system-architecture.html">สถาปัตยกรรมระบบโดยรวม</a></li>
+<li><a href="backend-api.html">Backend API — FastAPI Orchestrator</a></li>
+<li><a href="database-schema.html">โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li>
+<li><a href="database-er-diagram.html">แผนผังความสัมพันธ์ฐานข้อมูล (ER Diagram)</a></li>
+<li><a href="ai-model-segformer.html">โมเดล AI — SegFormer</a></li>
+<li><a href="runbook.html">คู่มือการรันระบบ (Runbook)</a></li>
+</ul>
+</main>
+</div>
+<footer class="site-foot"><div class="wrap">ScamGuard Docs — ไทยเป็นหลัก</div></footer>
+<script src="assets/js/i18n.js" defer></script>
+</body>
+</html>

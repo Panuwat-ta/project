@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>การเชื่อมต่อบริการภายนอก (External Integrations) — ScamGuard Docs</title>
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#content">ข้ามไปยังเนื้อหา</a>
+<header class="site-head"><div class="wrap"><a class="brand" href="index.html" data-i18n="brand">ScamGuard Docs</a><nav class="nav" aria-label="หลัก"><a href="overview.html" data-i18n="nav_overview">ภาพรวม</a><a href="overview.html#layers" data-i18n="nav_layers">หลายชั้น</a><a href="overview.html#risk" data-i18n="nav_risk">คะแนนเสี่ยง</a><a href="overview.html#arch" data-i18n="nav_arch">สถาปัตยกรรม</a></nav><button id="lang-toggle" data-i18n="lang_toggle" aria-label="switch language">EN</button></div></header>
+<div class="wrap layout">
+<aside class="side" aria-label="สารบัญ">
+<p class="t01-side-group">เริ่มต้น</p>
+<a href="#quickstart" class="active"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>เริ่มใช้งาน <span class="count">3 ขั้น</span></a>
+<a href="#layers"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>การวิเคราะห์หลายชั้น <span class="count">3</span></a>
+<p class="t01-side-group">ทำความเข้าใจผลลัพธ์</p>
+<a href="#risk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="#0E7C7B" stroke-width="2"/><path d="M12 7v5l3 3" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คะแนนความเสี่ยง <span class="count">3 ระดับ</span></a>
+<a href="#heatmap"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2" stroke="#0E7C7B" stroke-width="2"/><circle cx="9" cy="10" r="2" fill="#0E7C7B"/><path d="M3 16l5-4 4 3 4-4 5 4" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>อ่าน Heatmap</a>
+<p class="t01-side-group">เชิงลึก</p>
+<a href="#arch"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><rect x="13" y="13" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><path d="M11 7h5v6M13 17H7v-6" stroke="#0E7C7B" stroke-width="2"/></svg>สถาปัตยกรรม</a>
+<a href="#faq"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 9a3 3 0 015.8 1c0 2-3.8 2.5-3.8 4M12 18h.01" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คำถามพบบ่อย <span class="count">5</span></a>
+<div class="t01-legend" aria-label="สัญลักษณ์ระดับความเสี่ยง">
+<strong style="color:var(--ink)">สัญลักษณ์ระดับความเสี่ยง</strong>
+<div class="row"><span class="badge b-low">Low</span><span class="t01-meter"><i style="width:30%;background:#1B7A4D"></i></span><span>0–39</span></div>
+<div class="row"><span class="badge b-med">Med</span><span class="t01-meter"><i style="width:55%;background:#9A6B12"></i></span><span>40–69</span></div>
+<div class="row"><span class="badge b-high">High</span><span class="t01-meter"><i style="width:85%;background:#B3372F"></i></span><span>70–100</span></div>
+</div>
+</aside>
+<main id="content">
+<p class="t01-crumb"><a href="index.html" data-i18n="crumb">เทมเพลตทั้งหมด</a> / การเชื่อมต่อบริการภายนอก (External Integrations)</p>
+<p class="en-wip" data-i18n="en_wip">English body translation in progress — เนื้อหาภาษาอังกฤษอยู่ระหว่างแปล</p>
+<h1>การเชื่อมต่อบริการภายนอก (External Integrations)</h1>
+<p>เอกสารการออกแบบบริการภายนอกที่ API Application เป็นผู้เรียกแทน Client โดยตรง ปัจจุบัน Google Vision API ยังไม่เชื่อมต่อจริง และ FCM อยู่ใน Phase 2</p>
+<hr>
+<h2>Google Vision API — Reverse Image Search</h2>
+<p><strong>ผู้ให้บริการ:</strong> Google Cloud Vision API (มี Bing Visual Search เป็น Alternative)</p>
+<p><strong>สถานะ v1:</strong> ยังไม่เชื่อมต่อจริง ระบบต้องส่งกลับ <code>source_status = &quot;unavailable&quot;</code> และคำนวณคะแนนจากมิติที่สำเร็จเท่านั้น</p>
+<p><strong>หน้าที่:</strong> ชั้น Source Verification ของ <a href="multi-layer-analysis.html">การวิเคราะห์หลายชั้น</a> ตรวจสอบว่ารูปภาพที่อัปโหลดปรากฏในอินเทอร์เน็ตที่อื่นหรือไม่</p>
+<p><strong>การทำงาน:</strong></p>
+<ol>
+<li>API Application ส่งรูปภาพ Binary หรือ URL ไปยัง Google Vision API</li>
+<li>Google Vision ส่งคืน URL ของหน้าเว็บที่พบรูปคล้ายกัน</li>
+<li>ระบบนับ Domain ที่ไม่ซ้ำกัน</li>
+<li>&gt;= 3 Domain → ความเสี่ยงแหล่งที่มาสูง</li>
+<li>= 2 Domain → ความเสี่ยงปานกลาง/ไม่แน่ชัด (medium/uncertain)</li>
+<li>&lt;= 1 Domain → ความเสี่ยงต่ำ</li>
+</ol>
+<p><strong>มีส่วนใน:</strong> คะแนน $S_{source}$ (0–100 หนึ่งมิติในสูตร Hybrid max+bonus)</p>
+<p><strong>กรณี Failure:</strong> ถ้า External API Timeout หรือ Error ระบบจะตัดมิตินั้นทิ้งแล้วคำนวณค่าสูงสุดจากมิติที่สำเร็จ และระบุว่า &quot;Source Verification ไม่พร้อมใช้งาน&quot; ใน Response โดยไม่ใช้ค่า neutral 50</p>
+<hr>
+<h2>Firebase Cloud Messaging (FCM) — Phase 2 (v1 ใช้ polling + in-app)</h2>
+<p><strong>ผู้ให้บริการ:</strong> Google Firebase</p>
+<p><strong>หน้าที่:</strong> Push Notification สำหรับการวิเคราะห์แบบ Asynchronous (เริ่ม Phase 2 — มติ DOC-06)</p>
+<p><strong>การทำงาน:</strong></p>
+<ul>
+<li>การวิเคราะห์เต็มรูปแบบ (Cache Miss) ใช้เวลาสูงสุด 15 วินาที</li>
+<li>แทนที่จะ Hold HTTP Connection ไว้ 15 วินาที Mobile App รับ FCM Push Notification เมื่อผลลัพธ์พร้อม</li>
+<li>Notification Payload มี Scan ID และ Risk Grade (Low/Medium/High)</li>
+<li>Mobile App ดึงผลลัพธ์เต็มจาก API ต่อจาก Notification</li>
+</ul>
+<p><strong>เหตุผลที่เลือก FCM:</strong> ฟรีสำหรับ Volume มาตรฐาน, เสถียรบน Android, ไม่ต้องบริหาร Infrastructure</p>
+<hr>
+<h2>Integration ที่วางแผนในอนาคต</h2>
+<table>
+<thead><tr><th>บริการ</th><th>หน้าที่</th><th>สถานะ</th></tr></thead><tbody>
+<tr><td>Bing Visual Search</td><td>ทางเลือกสำรองสำหรับ Reverse Image Search</td><td>วางแผนแล้ว (Fallback)</td></tr>
+<tr><td>SynthID (Google DeepMind)</td><td>ตรวจจับภาพ AI ผ่าน Watermark</td><td>Future (นอกขอบเขต v1)</td></tr>
+<tr><td>Gemini (Google AI)</td><td>วิเคราะห์บริบทภาพด้วย LLM</td><td>Future (นอกขอบเขต v1)</td></tr>
+</tbody></table>
+<aside class="callout callout-note"><strong>NOTE</strong> SynthID และ Gemini ถูกอ้างถึงใน README ภายใต้ &quot;เทคโนโลยีระดับสูง&quot; สำหรับ Visual Anomaly Detection แต่การออกแบบ Integration ยังไม่มีเอกสาร ให้ ingest เอกสารที่เกี่ยวข้องเมื่อมีความคืบหน้า</aside>
+<hr>
+<h2>ประเด็นสำคัญ</h2>
+<ul>
+<li>ทั้งสองบริการเรียกผ่าน API Application เท่านั้น Client ไม่เรียก External API โดยตรง</li>
+<li>ทั้งคู่มี Fallback/Partial-failure Handling เพื่อป้องกันไม่ให้ Outage ของบริการภายนอกบล็อกการสแกนทั้งหมด</li>
+<li>Google Vision API คือบริการภายนอกเพียงรายการเดียวในการออกแบบปัจจุบันที่มีค่าใช้จ่าย</li>
+</ul>
+<hr>
+<h2>หน้าที่เกี่ยวข้อง</h2>
+<ul>
+<li><a href="multi-layer-analysis.html">concepts/multi-layer-analysis</a></li>
+<li><a href="risk-scoring.html">concepts/risk-scoring</a></li>
+<li><a href="backend-api.html">architecture/backend-api</a></li>
+<li><a href="system-architecture.html">architecture/system-architecture</a></li>
+</ul>
+</main>
+</div>
+<footer class="site-foot"><div class="wrap">ScamGuard Docs — ไทยเป็นหลัก</div></footer>
+<script src="assets/js/i18n.js" defer></script>
+</body>
+</html>

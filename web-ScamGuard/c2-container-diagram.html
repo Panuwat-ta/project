@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>C2: Container Diagram — ScamGuard Docs</title>
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#content">ข้ามไปยังเนื้อหา</a>
+<header class="site-head"><div class="wrap"><a class="brand" href="index.html" data-i18n="brand">ScamGuard Docs</a><nav class="nav" aria-label="หลัก"><a href="overview.html" data-i18n="nav_overview">ภาพรวม</a><a href="overview.html#layers" data-i18n="nav_layers">หลายชั้น</a><a href="overview.html#risk" data-i18n="nav_risk">คะแนนเสี่ยง</a><a href="overview.html#arch" data-i18n="nav_arch">สถาปัตยกรรม</a></nav><button id="lang-toggle" data-i18n="lang_toggle" aria-label="switch language">EN</button></div></header>
+<div class="wrap layout">
+<aside class="side" aria-label="สารบัญ">
+<p class="t01-side-group">เริ่มต้น</p>
+<a href="#quickstart" class="active"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>เริ่มใช้งาน <span class="count">3 ขั้น</span></a>
+<a href="#layers"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>การวิเคราะห์หลายชั้น <span class="count">3</span></a>
+<p class="t01-side-group">ทำความเข้าใจผลลัพธ์</p>
+<a href="#risk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="#0E7C7B" stroke-width="2"/><path d="M12 7v5l3 3" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คะแนนความเสี่ยง <span class="count">3 ระดับ</span></a>
+<a href="#heatmap"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2" stroke="#0E7C7B" stroke-width="2"/><circle cx="9" cy="10" r="2" fill="#0E7C7B"/><path d="M3 16l5-4 4 3 4-4 5 4" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>อ่าน Heatmap</a>
+<p class="t01-side-group">เชิงลึก</p>
+<a href="#arch"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><rect x="13" y="13" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><path d="M11 7h5v6M13 17H7v-6" stroke="#0E7C7B" stroke-width="2"/></svg>สถาปัตยกรรม</a>
+<a href="#faq"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 9a3 3 0 015.8 1c0 2-3.8 2.5-3.8 4M12 18h.01" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คำถามพบบ่อย <span class="count">5</span></a>
+<div class="t01-legend" aria-label="สัญลักษณ์ระดับความเสี่ยง">
+<strong style="color:var(--ink)">สัญลักษณ์ระดับความเสี่ยง</strong>
+<div class="row"><span class="badge b-low">Low</span><span class="t01-meter"><i style="width:30%;background:#1B7A4D"></i></span><span>0–39</span></div>
+<div class="row"><span class="badge b-med">Med</span><span class="t01-meter"><i style="width:55%;background:#9A6B12"></i></span><span>40–69</span></div>
+<div class="row"><span class="badge b-high">High</span><span class="t01-meter"><i style="width:85%;background:#B3372F"></i></span><span>70–100</span></div>
+</div>
+</aside>
+<main id="content">
+<p class="t01-crumb"><a href="index.html" data-i18n="crumb">เทมเพลตทั้งหมด</a> / C2: Container Diagram</p>
+<p class="en-wip" data-i18n="en_wip">English body translation in progress — เนื้อหาภาษาอังกฤษอยู่ระหว่างแปล</p>
+<h1>C2: Container Diagram</h1>
+<pre><code class="language-mermaid">flowchart TB
+    %% การตั้งค่า Class สีต่างๆ
+    classDef userFill fill:#fff2cc,stroke:#d6b656,color:black
+    classDef clientFill fill:#dae8fc,stroke:#6c8ebf,color:black
+    classDef backendFill fill:#d5e8d4,stroke:#82b366,color:black
+    classDef storageFill fill:#ffe6cc,stroke:#d79b00,color:black
+    classDef extFill fill:#f5f5f5,stroke:#666666,color:black
+
+    %% Actors Boundary
+    User(&quot;General User&lt;br&gt;[Person]&lt;br&gt;ผู้ใช้งานทั่วไป&quot;)
+    Admin(&quot;Admin&lt;br&gt;[Person]&lt;br&gt;ผู้ดูแลระบบ&quot;)
+
+    %% System Boundary
+    subgraph ScamSystem [Scam Image Detection - System Boundary]
+        direction TB
+
+        subgraph Frontends [Frontend Layer]
+            MobileApp(&quot;Mobile App&lt;br&gt;[Container: Flutter]&lt;br&gt;อัปโหลดและเลือกรูปภาพ,&lt;br&gt;แสดงผลคะแนนความเสี่ยง (Risk Score)&quot;)
+            AdminPortal(&quot;Admin Web Portal&lt;br&gt;[Container: React + Admin UI]&lt;br&gt;จัดการผู้ใช้ (ดู+เปิด/ปิดบัญชี), ตรวจสอบสแกมที่รายงาน,&lt;br&gt;จัดการชุดข้อมูล, อัปเดตโมเดล&quot;)
+        end
+
+        subgraph Backends [Backend &amp; API Layer]
+            APIGateway(&quot;API Application&lt;br&gt;[Container: Python FastAPI]&lt;br&gt;จัดการ Logic หลัก, ดึง Metadata,&lt;br&gt;ตรวจสอบ OCR&quot;)
+            AIInference(&quot;ONNX Worker&lt;br&gt;[Subprocess]&lt;br&gt;ตรวจการตัดต่อ (Semantic Segmentation),&lt;br&gt;เช็คว่าเป็นภาพ AI&quot;)
+        end
+
+        subgraph Storages [Storage &amp; Cache Layer]
+            Cache(&quot;Cache&lt;br&gt;[Container: Redis]&lt;br&gt;เก็บผลตรวจชั่วคราว (Cache Hit)&lt;br&gt;เพื่อลดเวลาประมวลผลซ้ำ&quot;)
+            ObjectStore(&quot;Object Storage&lt;br&gt;[Container: Cloud Storage]&lt;br&gt;เก็บไฟล์รูปภาพต้นฉบับ,&lt;br&gt;ภาพ Heatmap&quot;)
+            MainDB[(&quot;Main Database&lt;br&gt;[Container: PostgreSQL]&lt;br&gt;เก็บข้อมูลผู้ใช้, ประวัติการสแกน,&lt;br&gt;ผลลัพธ์ (Risk Score)&quot;)]
+        end
+    end
+
+    %% External Systems Boundary
+    subgraph Externals [External Services]
+        PushService(&quot;Push Notification Service&lt;br&gt;[External System: FCM]&lt;br&gt;แจ้งเตือนผลลัพธ์กลับไปยังแอป&quot;)
+        ReverseSearch(&quot;Reverse Image Search&lt;br&gt;[External System: Google Vision API]&lt;br&gt;ระบบค้นหาแหล่งที่มาของรูปภาพ&quot;)
+    end
+
+    %% Relationships / Associations
+    User -- &quot;Uploads image &amp; views result&quot; --&gt; MobileApp
+    Admin -- &quot;Manages system&quot; --&gt; AdminPortal
+
+    MobileApp -- &quot;API Calls&lt;br&gt;[HTTPS / JSON]&quot; --&gt; APIGateway
+    AdminPortal -- &quot;API Calls&lt;br&gt;[HTTPS / JSON]&quot; --&gt; APIGateway
+
+    APIGateway -- &quot;เช็คประวัติการสแกน&quot; --&gt; Cache
+    APIGateway -- &quot;ส่งตรวจร่องรอย / AI&lt;br&gt;[Subprocess IPC]&quot; --&gt; AIInference
+    APIGateway -- &quot;จัดเก็บ / ดึงรูปภาพ&quot; --&gt; ObjectStore
+    APIGateway -- &quot;บันทึกผลลัพธ์ขั้นสุดท้าย&quot; --&gt; MainDB
+    
+    APIGateway -- &quot;แจ้งเตือนเมื่อ Timeout / ประมวลผลเสร็จ&lt;br&gt;[HTTPS]&quot; --&gt; PushService
+    APIGateway -- &quot;ค้นหาแหล่งที่มา&lt;br&gt;[HTTPS]&quot; --&gt; ReverseSearch
+
+    %% Apply Styles
+    class User,Admin userFill
+    class MobileApp,AdminPortal clientFill
+    class APIGateway,AIInference backendFill
+    class Cache,ObjectStore,MainDB storageFill
+    class PushService,ReverseSearch extFill</code></pre>
+<hr>
+<h3>คำอธิบาย Container Diagram</h3>
+<p>สถาปัตยกรรมของระบบ Scam Image Detection ถูกออกแบบภายใต้แนวคิด <strong>Cloud-Native Architecture</strong> โดยงาน AI หนักแยกเป็น ONNX Worker subprocess เพื่อให้ระบบสามารถรองรับการประมวลผลข้อมูลรูปภาพและโมเดลปัญญาประดิษฐ์ (ซึ่งใช้ทรัพยากรการคำนวณสูง) ได้อย่างมีประสิทธิภาพ โดยไม่ส่งผลกระทบต่อความเร็วในการตอบสนองของแอปพลิเคชัน ภายในขอบเขตของระบบ (System Boundary) ประกอบด้วยคอนเทนเนอร์หลัก 3 ส่วน ดังนี้:</p>
+<h3>1. ส่วนติดต่อผู้ใช้งาน (Frontend Containers)</h3>
+<ul>
+<li><strong>Mobile App (Flutter):</strong></li>
+<li><strong>บทบาท:</strong> แอปพลิเคชันบนสมาร์ทโฟนสำหรับผู้ใช้งานทั่วไป (General User) ทำหน้าที่เป็นส่วนเชื่อมต่อหลักให้ผู้ใช้สามารถเลือกและอัปโหลดรูปภาพที่น่าสงสัย</li>
+<li><strong>หน้าที่:</strong> ส่งข้อมูลรูปภาพไปยัง API Application และรับการแสดงผลลัพธ์กลับมาเป็นคะแนนความเสี่ยง (Risk Score) พร้อมคำอธิบายและภาพแผนที่ความร้อน (Heatmap) แสดงจุดที่ผิดปกติ</li>
+<li><strong>เทคโนโลยี:</strong> Flutter (รองรับ Android)</li>
+</ul>
+<ul>
+<li><strong>Admin Web Portal (React + Admin UI):</strong></li>
+<li><strong>บทบาท:</strong> เว็บแอปพลิเคชันสำหรับผู้ดูแลระบบและนักวิจัย (Admin / Researcher)</li>
+<li><strong>หน้าที่:</strong> ใช้เป็นหน้าจอควบคุมและตรวจสอบสถานะระบบหลังบ้าน (Dashboard) การจัดการสิทธิ์ของผู้ใช้ (ดู + เปิด/ปิดบัญชี), ตรวจสอบรูปภาพสแกมที่ผู้ใช้ส่งรายงานเข้ามา (Scam Reports), จัดการคลังชุดข้อมูล (Dataset) และการอัปโหลดไฟล์น้ำหนักโมเดล AI (Model Weights)</li>
+<li><strong>เทคโนโลยี:</strong> React.js + TailwindCSS (หรือ Admin Template สำเร็จรูป)</li>
+</ul>
+<h3>2. ส่วนประมวลผลหลัก (Backend Containers)</h3>
+<ul>
+<li><strong>API Application (Python FastAPI):</strong></li>
+<li><strong>บทบาท:</strong> ทำหน้าที่เป็น API Gateway และตัวควบคุมการประสานงานหลัก (Orchestrator)</li>
+<li><strong>หน้าที่:</strong> จัดการตรรกะทางธุรกิจหลัก (Core Business Logic) ทั้งหมด เช่น การยืนยันตัวตน, จัดการข้อมูลผู้ใช้, ดึงข้อมูลเมทาดาตาแฝงของรูปภาพ (Metadata/EXIF Extraction), และสั่งประมวลผลสกัดตัวอักษรในภาพ (OCR) จากนั้นประสานงานส่งข้อมูลไปยังบริการวิเคราะห์ตัวอื่น ๆ</li>
+<li><strong>เทคโนโลยี:</strong> Python FastAPI</li>
+</ul>
+<ul>
+<li><strong>ONNX Worker (subprocess):</strong></li>
+<li><strong>บทบาท:</strong> งานวิเคราะห์รูปภาพผ่านระบบปัญญาประดิษฐ์เชิงลึก (Deep Learning) รันแยกโปรเซสจาก FastAPI event loop</li>
+<li><strong>หน้าที่:</strong> ประมวลผลรูปภาพเพื่อตรวจหาร่องรอยการแก้ไขภาพในระดับพิกเซลด้วย SegFormer ONNX (tiling 512/overlap 64) และตรวจสอบลักษณะทางกายภาพของภาพว่าถูกสร้างด้วยปัญญาประดิษฐ์ (AI-Generated Image) หรือไม่ พร้อมสร้างแผนที่ความร้อนแบบ mask-to-heatmap overlay</li>
+<li><strong>เทคโนโลยี:</strong> ONNX Runtime; เรียกผ่าน IPC ภายใน Backend</li>
+</ul>
+<h3>3. ส่วนจัดเก็บข้อมูล (Storage Containers)</h3>
+<ul>
+<li><strong>Cache (Redis):</strong></li>
+<li><strong>บทบาท:</strong> ฐานข้อมูลในหน่วยความจำชั่วคราวความเร็วสูง</li>
+<li><strong>หน้าที่:</strong> จัดเก็บแคชของรูปภาพที่เคยผ่านการสแกนตรวจสอบแล้วเพื่อลดการประมวลผลซ้ำ (Cache Hit) ช่วยให้อุปกรณ์ของผู้ใช้รายอื่นที่ส่งรูปภาพเดิมเข้ามาได้รับผลวิเคราะห์แทบจะทันทีโดยไม่ต้องรัน AI ซ้ำ</li>
+<li><strong>เทคโนโลยี:</strong> Redis Cache</li>
+</ul>
+<ul>
+<li><strong>Object Storage (Cloud Storage):</strong></li>
+<li><strong>บทบาท:</strong> แหล่งจัดเก็บไฟล์รูปภาพขนาดใหญ่</li>
+<li><strong>หน้าที่:</strong> จัดเก็บไฟล์รูปภาพต้นฉบับที่ผู้ใช้อัปโหลดเข้ามา และรูปภาพแผนที่ความร้อน (Heatmap) ที่ส่งกลับมาจากบริการ AI เพื่อแสดงจุดผิดปกติ</li>
+<li><strong>เทคโนโลยี:</strong> ระบบจัดเก็บไฟล์บนคลาวด์ (Cloud Storage)</li>
+</ul>
+<ul>
+<li><strong>Main Database (PostgreSQL):</strong></li>
+<li><strong>บทบาท:</strong> ฐานข้อมูลหลักเชิงสัมพันธ์ (Relational Database)</li>
+<li><strong>หน้าที่:</strong> จัดเก็บข้อมูลที่มีโครงสร้าง เช่น ข้อมูลบัญชีผู้ใช้, บันทึกสิทธิ์การเข้าใช้งาน (RBAC), รายการประวัติสแกน, และข้อมูลการรายงานรูปภาพต้องสงสัย</li>
+<li><strong>เทคโนโลยี:</strong> PostgreSQL</li>
+</ul>
+<h3>4. การเชื่อมต่อกับระบบภายนอก (External Systems)</h3>
+<ul>
+<li><strong>Reverse Image Search (Google Vision API):</strong></li>
+<li><strong>บทบาท:</strong> บริการสืบค้นหาแหล่งที่มาของภาพย้อนกลับ</li>
+<li><strong>หน้าที่:</strong> API Application จะส่งคำขอเพื่อตรวจสอบว่ารูปภาพที่ผู้ใช้อัปโหลดมานั้น เคยถูกเผยแพร่ในอินเทอร์เน็ตที่เว็บไซต์ใดมาก่อนหน้านี้หรือไม่ เพื่อตรวจสอบบริบทความสอดคล้อง (เช่น รูปโปรไฟล์จริง หรือรูปดาราที่มิจฉาชีพนำมาแอบอ้าง)</li>
+<li><strong>เทคโนโลยี:</strong> Google Vision API / Bing Visual Search</li>
+</ul>
+<ul>
+<li><strong>Push Notification Service (Firebase Cloud Messaging - FCM):</strong></li>
+<li><strong>บทบาท:</strong> ระบบส่งการแจ้งเตือนพุชไปยังผู้ใช้</li>
+<li><strong>หน้าที่:</strong> ในกรณีที่การสแกนตรวจสอบภาพในฝั่ง AI Inference Service ใช้เวลาประมวลผลนานกว่าปกติ หรือเกิดปัญหารอคิว ระบบจะทำงานเป็นแบบ Asynchronous โดย API Application จะส่ง Payload ไปยัง FCM เพื่อแจ้งเตือนกลับไปยัง Mobile App ของผู้ใช้งานเมื่อประมวลผลวิเคราะห์เสร็จสมบูรณ์</li>
+<li><strong>เทคโนโลยี:</strong> Firebase Cloud Messaging</li>
+</ul>
+</main>
+</div>
+<footer class="site-foot"><div class="wrap">ScamGuard Docs — ไทยเป็นหลัก</div></footer>
+<script src="assets/js/i18n.js" defer></script>
+</body>
+</html>

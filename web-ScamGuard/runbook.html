@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical — ScamGuard Docs</title>
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#content">ข้ามไปยังเนื้อหา</a>
+<header class="site-head"><div class="wrap"><a class="brand" href="index.html" data-i18n="brand">ScamGuard Docs</a><nav class="nav" aria-label="หลัก"><a href="overview.html" data-i18n="nav_overview">ภาพรวม</a><a href="overview.html#layers" data-i18n="nav_layers">หลายชั้น</a><a href="overview.html#risk" data-i18n="nav_risk">คะแนนเสี่ยง</a><a href="overview.html#arch" data-i18n="nav_arch">สถาปัตยกรรม</a></nav><button id="lang-toggle" data-i18n="lang_toggle" aria-label="switch language">EN</button></div></header>
+<div class="wrap layout">
+<aside class="side" aria-label="สารบัญ">
+<p class="t01-side-group">เริ่มต้น</p>
+<a href="#quickstart" class="active"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>เริ่มใช้งาน <span class="count">3 ขั้น</span></a>
+<a href="#layers"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>การวิเคราะห์หลายชั้น <span class="count">3</span></a>
+<p class="t01-side-group">ทำความเข้าใจผลลัพธ์</p>
+<a href="#risk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="#0E7C7B" stroke-width="2"/><path d="M12 7v5l3 3" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คะแนนความเสี่ยง <span class="count">3 ระดับ</span></a>
+<a href="#heatmap"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2" stroke="#0E7C7B" stroke-width="2"/><circle cx="9" cy="10" r="2" fill="#0E7C7B"/><path d="M3 16l5-4 4 3 4-4 5 4" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>อ่าน Heatmap</a>
+<p class="t01-side-group">เชิงลึก</p>
+<a href="#arch"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><rect x="13" y="13" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><path d="M11 7h5v6M13 17H7v-6" stroke="#0E7C7B" stroke-width="2"/></svg>สถาปัตยกรรม</a>
+<a href="#faq"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 9a3 3 0 015.8 1c0 2-3.8 2.5-3.8 4M12 18h.01" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คำถามพบบ่อย <span class="count">5</span></a>
+<div class="t01-legend" aria-label="สัญลักษณ์ระดับความเสี่ยง">
+<strong style="color:var(--ink)">สัญลักษณ์ระดับความเสี่ยง</strong>
+<div class="row"><span class="badge b-low">Low</span><span class="t01-meter"><i style="width:30%;background:#1B7A4D"></i></span><span>0–39</span></div>
+<div class="row"><span class="badge b-med">Med</span><span class="t01-meter"><i style="width:55%;background:#9A6B12"></i></span><span>40–69</span></div>
+<div class="row"><span class="badge b-high">High</span><span class="t01-meter"><i style="width:85%;background:#B3372F"></i></span><span>70–100</span></div>
+</div>
+</aside>
+<main id="content">
+<p class="t01-crumb"><a href="index.html" data-i18n="crumb">เทมเพลตทั้งหมด</a> / Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</p>
+<p class="en-wip" data-i18n="en_wip">English body translation in progress — เนื้อหาภาษาอังกฤษอยู่ระหว่างแปล</p>
+<h1>Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</h1>
+<blockquote><p>เอกสารนี้คือ runbook ฉบับ canonical เดียว (<code>wiki/runbook.md</code>); <code>Document/admin/runbook.md</code> เป็นเพียง pointer มาที่นี่ ห้ามแก้ไขแยกสองฉบับ สัญลักษณ์ <code>&lt;...&gt;</code> คือค่าที่ผู้ปฏิบัติต้องแทนด้วยค่าจริงหน้างาน (เช่น <code>&lt;JOB_ID&gt;</code>, <code>&lt;ADMIN_EMAIL&gt;</code>, <code>&lt;IP&gt;</code>) ห้ามรันคำสั่งทั้งที่ยังมีวงเล็บมุม กฎเหล็ก: <strong>backup ก่อนเขียนทุกครั้ง, ระบุเป้าหมายทีละตัว (ทีละ job/session/admin), ตรวจ verify หลังทำทุกขั้น</strong></p></blockquote>
+<h2>0. การเข้าถึงเซิร์ฟเวอร์ (SSH)</h2>
+<ol>
+<li>เชื่อมต่อ: <code>ssh &lt;USER&gt;@&lt;HOST&gt; -p &lt;PORT&gt;</code> (ตัวอย่าง <code>&lt;USER&gt;=deploy</code>, <code>&lt;HOST&gt;</code> ดูใน inventory ภายใน — ห้ามใส่ host จริงในเอกสารนี้)</li>
+<li>ยืนยันตัวตนเครื่อง: ตรวจ fingerprint ครั้งแรกกับ inventory, ตรวจ <code>whoami &amp;&amp; hostname</code> ตรงกับเครื่องเป้าหมายก่อนรันคำสั่งเขียนทุกครั้ง</li>
+<li>ตัวแปรฐานข้อมูลอ่านจาก <code>.env</code> ฝั่งเซิร์ฟเวอร์เท่านั้น ห้าม hardcode รหัสผ่านในคำสั่ง/เอกสาร (<code>psql &quot;$DATABASE_URL&quot; -c &quot;...&quot;</code>)</li>
+</ol>
+<h2>1. วิธีปิดบัญชี Super Admin (Revoke Super Admin — ทีละบัญชี)</h2>
+<ol>
+<li>สำรองแถวก่อนแก้:</li>
+<p>``<code>bash psql &quot;$DATABASE_URL&quot; -c &quot;COPY (SELECT * FROM admins WHERE email = &#x27;&lt;ADMIN_EMAIL&gt;&#x27;) TO &#x27;/tmp/admin_backup_&lt;ADMIN_EMAIL_SAFE&gt;.csv&#x27; CSV HEADER;&quot; </code>``</p>
+<li>ปิดสิทธิ์ + ตัดเซสชันของบัญชีนั้นบัญชีเดียวใน transaction เดียว:</li>
+<p>``<code>bash psql &quot;$DATABASE_URL&quot; -c &quot;BEGIN; UPDATE admins SET is_superadmin = FALSE, updated_at = now() WHERE email = &#x27;&lt;ADMIN_EMAIL&gt;&#x27;; DELETE FROM admin_sessions WHERE admin_id = (SELECT id FROM admins WHERE email = &#x27;&lt;ADMIN_EMAIL&gt;&#x27;); COMMIT;&quot; </code>``</p>
+<li>Verify: <code>psql &quot;$DATABASE_URL&quot; -c &quot;SELECT email, is_superadmin FROM admins WHERE email = &#x27;&lt;ADMIN_EMAIL&gt;&#x27;;&quot;</code> ต้องได้ <code>is_superadmin = f</code> และ <code>SELECT count(*) FROM admin_sessions WHERE admin_id = (SELECT id FROM admins WHERE email = &#x27;&lt;ADMIN_EMAIL&gt;&#x27;);</code> ต้องได้ <code>0</code></li>
+<li>Rollback: นำ CSV ข้อ 1 กลับเข้า (<code>COPY ... FROM</code>) หรือ <code>UPDATE admins SET is_superadmin = TRUE WHERE email = &#x27;&lt;ADMIN_EMAIL&gt;&#x27;;</code> แล้วบันทึกเหตุผลลง audit</li>
+</ol>
+<h2>2. วิธี Rollback Model (เกณฑ์ตัวเลข + transaction)</h2>
+<p>เกณฑ์เริ่มต้นในการสั่ง rollback (ปรับได้โดย SRE พร้อมบันทึกเหตุผล):</p>
+<ul>
+<li>False-positive rate &gt; 15% จากงาน review ย้อนหลัง 100 งานติดกัน, หรือ</li>
+<li>Inference P95 &gt; 25 วินาที (ภาพ 1080p) ต่อเนื่อง 15 นาที, หรือ</li>
+<li>Worker OOM/killed ≥ 3 ครั้งใน 1 ชั่วโมง</li>
+</ul>
+<p>ขั้นตอน:</p>
+<ol>
+<li>ผ่าน Admin Portal: เมนู <strong>AI Models</strong> → ค้นหาเวอร์ชันก่อนหน้า → กด <strong>Rollback</strong> (วิธีหลัก)</li>
+<li>กรณีหน้าเว็บใช้ไม่ได้ — หา ID รุ่นก่อนหน้าแบบ deterministic แล้วสลับใน transaction เดียว:</li>
+<p>``<code>bash psql &quot;$DATABASE_URL&quot; -c &quot;SELECT id, version, deployed_at FROM model_versions WHERE status=&#x27;active&#x27; ORDER BY deployed_at DESC LIMIT 1;&quot; psql &quot;$DATABASE_URL&quot; -c &quot;SELECT id, version, deployed_at FROM model_versions WHERE status=&#x27;inactive&#x27; ORDER BY deployed_at DESC LIMIT 1;&quot; psql &quot;$DATABASE_URL&quot; -c &quot;BEGIN; UPDATE model_versions SET status=&#x27;inactive&#x27; WHERE id = &#x27;&lt;ACTIVE_ID&gt;&#x27;; UPDATE model_versions SET status=&#x27;active&#x27; WHERE id = &#x27;&lt;PREVIOUS_ID&gt;&#x27;; COMMIT;&quot; </code>``</p>
+<li>Verify: <code>SELECT id, version, status FROM model_versions WHERE id IN (&#x27;&lt;ACTIVE_ID&gt;&#x27;,&#x27;&lt;PREVIOUS_ID&gt;&#x27;);</code> ต้องมี active exactly 1 แถว; ยิง smoke inference 1 ภาพแล้วตรวจคะแนนอยู่ในช่วงที่คาด</li>
+<li>Rollback ของ rollback: สลับ <code>&lt;ACTIVE_ID&gt;</code>/<code>&lt;PREVIOUS_ID&gt;</code> กลับด้วยคำสั่งเดียวกัน</li>
+</ol>
+<h2>3. วิธีจัดการ Export Job ที่ค้างหรือล้มเหลว (ทีละ job — ห้าม restart backend ทั้ง service)</h2>
+<ol>
+<li>ตรวจดิสก์: <code>df -h /var/lib/postgresql /tmp</code></li>
+<li>ระบุ job ที่ค้างทีละตัว (ไม่แตะ job อื่น):</li>
+<p>``<code>bash psql &quot;$DATABASE_URL&quot; -c &quot;SELECT id, status, updated_at FROM export_jobs WHERE status=&#x27;running&#x27; AND updated_at &lt; now() - interval &#x27;1 hour&#x27; ORDER BY updated_at;&quot; </code>``</p>
+<li>หยุดเฉพาะ worker ของ export (ห้าม <code>systemctl restart scamguard-backend</code> — จะล้าง RAM ของงานอื่นทั้งหมด): <code>systemctl stop scamguard-export-worker</code> แล้วตรวจ <code>systemctl status scamguard-export-worker</code></li>
+<li>สำรองแถว job นั้นก่อนแก้: <code>psql &quot;$DATABASE_URL&quot; -c &quot;COPY (SELECT * FROM export_jobs WHERE id = &#x27;&lt;JOB_ID&gt;&#x27;) TO &#x27;/tmp/export_job_&lt;JOB_ID&gt;.csv&#x27; CSV HEADER;&quot;</code></li>
+<li>ทำเครื่องหมาย failed ทีละ job ใน transaction: <code>psql &quot;$DATABASE_URL&quot; -c &quot;BEGIN; UPDATE export_jobs SET status=&#x27;failed&#x27;, error_message=&#x27;Manually aborted (&lt;TICKET&gt;)&#x27; WHERE id = &#x27;&lt;JOB_ID&gt;&#x27; AND status=&#x27;running&#x27;; COMMIT;&quot;</code></li>
+<li>Verify: <code>SELECT id, status FROM export_jobs WHERE id = &#x27;&lt;JOB_ID&gt;&#x27;;</code> ต้องได้ <code>failed</code>; สตาร์ท worker กลับ <code>systemctl start scamguard-export-worker</code> แล้วตรวจ status</li>
+</ol>
+<h2>4. วิธีรับมือเหตุการณ์ละเมิดความปลอดภัย (Incident Response — ระบุเป้าหมายทีละตัว)</h2>
+<ol>
+<li>บล็อก IP ทีละ address (ตัวอย่าง nftables; เลือกอย่างใดอย่างหนึ่งให้ตรง OS หน้างาน):</li>
+<p>```bash nft add rule ip filter input ip saddr &lt;IP&gt; drop</p>
+</ol>
+<h1>หรือระดับ Nginx: เพิ่ม &quot;deny &lt;IP&gt;;&quot; ใน server block แล้วรัน &quot;nginx -t &amp;&amp; systemctl reload nginx&quot;</h1>
+<h1>หรือ AWS WAF: เพิ่ม &lt;IP&gt;/32 เข้า IP set ของ WebACL (ผ่าน console/CLI ตามบัญชีที่ใช้จริง)</h1>
+<p>``<code> Verify: </code>nft list ruleset | grep &lt;IP&gt;<code> หรือ </code>nginx -t` ผ่าน + ทดสอบจาก IP นั้นถูกปฏิเสธ</p>
+<ol>
+<li>เพิกถอนเซสชัน<strong>เฉพาะบัญชีที่กระทบ</strong>ทีละบัญชี (ห้าม <code>TRUNCATE admin_sessions</code> — จะเตะแอดมินทุกคนโดยไม่สำรอง):</li>
+<p>``<code>bash pg_dump &quot;$DATABASE_URL&quot; -t admin_sessions -f /tmp/admin_sessions_$(date +%F_%H%M).sql psql &quot;$DATABASE_URL&quot; -c &quot;DELETE FROM admin_sessions WHERE admin_id IN (SELECT id FROM admins WHERE email IN (&#x27;&lt;ADMIN_EMAIL_1&gt;&#x27;,&#x27;&lt;ADMIN_EMAIL_2&gt;&#x27;));&quot; </code>`<code> Verify: </code>SELECT count(*) FROM admin_sessions WHERE admin_id IN (...);<code> ต้องได้ </code>0`; ไฟล์ backup ข้อบนต้องมีขนาด &gt; 0</p>
+<li>รัน Backup ฐานข้อมูล (ดูข้อ 5) <strong>ก่อน</strong> เก็บหลักฐานอื่นต่อ</li>
+<li>ตรวจ <code>audit_log</code> ทันที: audit log เป็น append-only (ล็อก UPDATE/DELETE ระดับ policy) จึงเหมาะใช้อ้างอิงย้อนหลัง — แต่<strong>ห้ามอ้างว่าเชื่อถือได้ 100%</strong> ให้ cross-check กับ log ฝั่ง proxy/app เสมอ</li>
+</ol>
+<h2>5. การกู้คืนระบบและฐานข้อมูล (พร้อมเกณฑ์สำเร็จ)</h2>
+<ul>
+<li><strong>Backup</strong>: <code>bash server/scripts/backup.sh</code> (เข้ารหัสด้วย OpenSSL)</li>
+<li><strong>Restore</strong>: <code>bash server/scripts/restore.sh &lt;backup-file.enc&gt;</code></li>
+<li>เกณฑ์สำเร็จ (ต้องผ่านทุกข้อจึงถือว่าเสร็จ):</li>
+</ul>
+<ol>
+<li>สคริปต์จบด้วย exit code <code>0</code></li>
+<li>ตรวจ checksum ไฟล์ backup ตรงกับค่าที่บันทึกตอนสร้าง (<code>sha256sum</code>)</li>
+<li>หลัง restore: <code>SELECT count(*) FROM scans;</code> (และตารางหลัก) ตรงกับจำนวนที่บันทึกไว้ก่อน backup ±0</li>
+<li>ยิง <code>GET /health</code> ได้ HTTP 200 และล็อกอินแอดมินทดสอบผ่าน</li>
+<li>ทดสอบ restore ลง staging อย่างน้อยไตรมาสละ 1 ครั้งแล้วบันทึกผล</li>
+</ol>
+</main>
+</div>
+<footer class="site-foot"><div class="wrap">ScamGuard Docs — ไทยเป็นหลัก</div></footer>
+<script src="assets/js/i18n.js" defer></script>
+</body>
+</html>

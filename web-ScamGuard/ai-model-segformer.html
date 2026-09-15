@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>โมเดล AI — SegFormer — ScamGuard Docs</title>
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#content">ข้ามไปยังเนื้อหา</a>
+<header class="site-head"><div class="wrap"><a class="brand" href="index.html" data-i18n="brand">ScamGuard Docs</a><nav class="nav" aria-label="หลัก"><a href="overview.html" data-i18n="nav_overview">ภาพรวม</a><a href="overview.html#layers" data-i18n="nav_layers">หลายชั้น</a><a href="overview.html#risk" data-i18n="nav_risk">คะแนนเสี่ยง</a><a href="overview.html#arch" data-i18n="nav_arch">สถาปัตยกรรม</a></nav><button id="lang-toggle" data-i18n="lang_toggle" aria-label="switch language">EN</button></div></header>
+<div class="wrap layout">
+<aside class="side" aria-label="สารบัญ">
+<p class="t01-side-group">เริ่มต้น</p>
+<a href="#quickstart" class="active"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>เริ่มใช้งาน <span class="count">3 ขั้น</span></a>
+<a href="#layers"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>การวิเคราะห์หลายชั้น <span class="count">3</span></a>
+<p class="t01-side-group">ทำความเข้าใจผลลัพธ์</p>
+<a href="#risk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="#0E7C7B" stroke-width="2"/><path d="M12 7v5l3 3" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คะแนนความเสี่ยง <span class="count">3 ระดับ</span></a>
+<a href="#heatmap"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2" stroke="#0E7C7B" stroke-width="2"/><circle cx="9" cy="10" r="2" fill="#0E7C7B"/><path d="M3 16l5-4 4 3 4-4 5 4" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>อ่าน Heatmap</a>
+<p class="t01-side-group">เชิงลึก</p>
+<a href="#arch"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><rect x="13" y="13" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><path d="M11 7h5v6M13 17H7v-6" stroke="#0E7C7B" stroke-width="2"/></svg>สถาปัตยกรรม</a>
+<a href="#faq"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 9a3 3 0 015.8 1c0 2-3.8 2.5-3.8 4M12 18h.01" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คำถามพบบ่อย <span class="count">5</span></a>
+<div class="t01-legend" aria-label="สัญลักษณ์ระดับความเสี่ยง">
+<strong style="color:var(--ink)">สัญลักษณ์ระดับความเสี่ยง</strong>
+<div class="row"><span class="badge b-low">Low</span><span class="t01-meter"><i style="width:30%;background:#1B7A4D"></i></span><span>0–39</span></div>
+<div class="row"><span class="badge b-med">Med</span><span class="t01-meter"><i style="width:55%;background:#9A6B12"></i></span><span>40–69</span></div>
+<div class="row"><span class="badge b-high">High</span><span class="t01-meter"><i style="width:85%;background:#B3372F"></i></span><span>70–100</span></div>
+</div>
+</aside>
+<main id="content">
+<p class="t01-crumb"><a href="index.html" data-i18n="crumb">เทมเพลตทั้งหมด</a> / โมเดล AI — SegFormer</p>
+<p class="en-wip" data-i18n="en_wip">English body translation in progress — เนื้อหาภาษาอังกฤษอยู่ระหว่างแปล</p>
+<h1>โมเดล AI — SegFormer</h1>
+<p>โมเดล Deep Learning หลักที่ใช้ตรวจจับการตัดต่อภาพในระดับพิกเซล SegFormer เป็นสถาปัตยกรรม Transformer ที่ออกแบบมาสำหรับงาน Semantic Segmentation โดยเฉพาะ</p>
+<hr>
+<h2>ทำไมถึงเลือก SegFormer?</h2>
+<p>งานหลักคือการหาว่า *พิกเซลใด* ถูกดัดแปลง — ซึ่งเป็นปัญหา <strong>Semantic Segmentation</strong> ไม่ใช่แค่ Classification ธรรมดา SegFormer ถูกเลือกเพราะ:</p>
+<ul>
+<li>ออกแบบมาสำหรับงาน Semantic Segmentation (การระบุป้ายกำกับระดับพิกเซล) โดยเฉพาะ</li>
+<li>ไม่ใช้ Positional Encoding แบบซับซ้อน ทำให้เร็วขึ้นและ generalize ได้ดีกว่า Vision Transformer รุ่นเก่า</li>
+<li>จัดการทั้ง <strong>Global Context</strong> (โครงสร้างภาพโดยรวม) และ <strong>Local Details</strong> (รายละเอียดพิกเซลละเอียด) ผ่าน Multi-scale Features</li>
+<li>เบากว่าโมเดล ViT-based ทั่วไป</li>
+<li>แปลงเป็น ONNX ได้ง่ายหลัง training ใน PyTorch</li>
+</ul>
+<p><strong>ข้อจำกัด:</strong> ใช้ RAM/VRAM สูงกว่า CNN แบบดั้งเดิม ยอมรับได้ในระดับ Server Inference แต่เป็นแรงผลักดันให้วางแผน On-device Quantization ในอนาคต</p>
+<hr>
+<h2>สถาปัตยกรรม</h2>
+<pre><code>รูปภาพ Input (RGB เช่น 512×512)
+        |
+  Preprocessing: Resize + Normalize
+        |
+  MiT Encoder (Mix Transformer Encoder)
+  ├── ดึง Feature หลายระดับความละเอียด (Hierarchical)
+  ├── Efficient Self-Attention (ไม่ใช้ Fixed Positional Encoding)
+  └── ส่งออก Multi-scale Feature Maps (F1, F2, F3, F4)
+        |
+  All-MLP Decoder (SegFormer Decoder)
+  ├── รวม Feature จาก Encoder หลายระดับ
+  └── สร้าง Probability Map ระดับพิกเซล
+        |
+  Pixel Prediction
+
+  ├── Class 0: พิกเซลดั้งเดิม
+  └── Class 1: พิกเซลที่ถูกดัดแปลง
+        |
+  Post-processing:
+  ├── Segmentation Mask (binary, ขนาดเท่า input)
+  ├── Heatmap (ค่าความเชื่อมั่นต่อพิกเซล)
+  └── Risk Score (รวมจาก mask coverage × confidence)</code></pre>
+<h3>อัลกอริทึมและสมการคณิตศาสตร์ (Mathematical Formulation)</h3>
+<ol>
+<li><strong>Efficient Self-Attention:</strong></li>
+<p>$X \in \mathbb{R}^{H \times W \times C}$ จะถูกแปลงให้แบนราบ (Flatten) เป็น Sequence $N = H \times W$ โดยลดมิติของ Key และ Value ด้วยอัตราส่วน $R$ เพื่อลดภาระการคำนวณ: $$K&#x27; = \text{Reshape}\left(\frac{N}{R}, C \cdot R\right)(K) \cdot W_K$$ $$V&#x27; = \text{Reshape}\left(\frac{N}{R}, C \cdot R\right)(V) \cdot W_V$$ $$ \text{Attention}(Q, K&#x27;, V&#x27;) = \text{Softmax}\left( \frac{Q (K&#x27;)^T}{\sqrt{d_k}} \right) V&#x27; $$</p>
+</ol>
+<ol>
+<li><strong>Mix-FFN (Mix Feed-Forward Network):</strong></li>
+<p>ใช้ 3x3 Convolution แทน Positional Encoding แบบตายตัว เพื่อพิจารณาตำแหน่งจากบริบทภาพ: $$x_{out} = \text{MLP}(\text{GELU}(\text{Conv}_{3\times3}(\text{MLP}(x_{in})))) + x_{in}$$</p>
+</ol>
+<hr>
+<h2>รูปแบบข้อมูล</h2>
+<table>
+<thead><tr><th>ขั้นตอน</th><th>รูปแบบ</th><th>คำอธิบาย</th></tr></thead><tbody>
+<tr><td>Input</td><td>Tensor <code>[B, 3, H, W]</code></td><td>เช่น <code>[1, 3, 512, 512]</code> สำหรับ 1 ภาพ</td></tr>
+<tr><td>Encoder output</td><td>Multi-scale feature maps</td><td>การแทนค่าแบบลำดับชั้น</td></tr>
+<tr><td>Decoder output</td><td>Tensor <code>[B, 2, H, W]</code></td><td>ความน่าจะเป็นต่อพิกเซลทุก class</td></tr>
+<tr><td>Segmentation Mask</td><td>PNG ขาวดำ</td><td>ขาว = ถูกดัดแปลง, ดำ = ดั้งเดิม</td></tr>
+<tr><td>Heatmap</td><td>Float array</td><td>ค่าความเชื่อมั่นต่อพิกเซล (0.0–1.0)</td></tr>
+<tr><td>Risk Score</td><td>Float 0–100</td><td>คำนวณจาก mask coverage และ confidence</td></tr>
+</tbody></table>
+<hr>
+<h2>Versioning และการ Deploy</h2>
+<ul>
+<li>Version โมเดลใช้ Semantic Versioning เช่น <code>segformer_v1.0.0</code></li>
+<li>Train ใน PyTorch แล้ว export เป็น <strong>ONNX format</strong> สำหรับ Production Inference</li>
+<li>ONNX Runtime เป็นเป้าหมายเพิ่มความเร็ว Inference ≥2 เท่าเทียบ Native PyTorch รุ่นเดียวกัน (วิธีวัด: GPU T4 เฉลี่ย 100 ภาพ; ตัวเลขจริงต้องบันทึกจาก benchmark ก่อนอ้างเป็นผล)</li>
+<li>น้ำหนักโมเดลเก็บใน <strong>Model Registry</strong> (Version-controlled file store)</li>
+<li>Admin สามารถ deploy โมเดลเวอร์ชันใหม่ผ่าน Admin Portal โดยไม่ต้อง Redeploy service</li>
+<li><strong>v1.0.5 (ล่าสุด, config v10):</strong> MiT-B2 fine-tune จาก <code>v1.0.0</code> ครบ 200,000 iters (จบ 2026-09-12) best validation mIoU <strong>91.31</strong> @iter 197,500 — อันดับหนึ่งบน locked common test (mIoU <strong>91.24</strong>, Forgery IoU <strong>83.51</strong>) — export ONNX <code>segformer_v1_0_5_dynamic.onnx</code> แล้ว แต่ยังเป็น candidate (Production ยังเป็น <code>v1.0.0</code>; รายละเอียดการเทรนดู <a href="model-training.html">concepts/model-training</a>)</li>
+</ul>
+<hr>
+<h2>ข้อจำกัดที่รู้จัก</h2>
+<ol>
+<li><strong>การ Re-compress ซ้ำหลายครั้ง</strong> — ความแม่นยำลดลงถ้าภาพถูก compress หลายรอบ (เช่น ส่งต่อผ่านแอปแชท) เพราะ artifact จาก compression บดบัง Semantic Segmentation signal</li>
+<li><strong>ภาพ AI-Generated ทั้งหมด</strong> — SegFormer ตรวจจับ *การตัดต่อ* ระดับพิกเซล ภาพ synthetic ทั้งหมดไม่มี splice artifact แบบดั้งเดิม ต้องใช้ AI-Gen classifier แยกต่างหาก</li>
+</ol>
+<hr>
+<h2>แผนพัฒนาในอนาคต</h2>
+<ul>
+<li><strong>Ensemble Model</strong> — เพิ่มโมเดลตรวจจับภาพ AI-Generated ควบคู่กับ SegFormer</li>
+<li><strong>Model Quantization</strong> (INT8/FP16) — เพื่อ Inference บนอุปกรณ์มือถือโดยตรง ขจัดการรอ Network Round-trip</li>
+</ul>
+<hr>
+<h2>หน้าที่เกี่ยวข้อง</h2>
+<ul>
+<li><a href="semantic-segmentation.html">concepts/semantic-segmentation</a></li>
+<li><a href="explainable-ai.html">concepts/explainable-ai</a></li>
+<li><a href="multi-layer-analysis.html">concepts/multi-layer-analysis</a></li>
+<li><a href="ai-inference-service.html">architecture/ai-inference-service</a></li>
+<li><a href="technology-choices.html">decisions/technology-choices</a></li>
+</ul>
+</main>
+</div>
+<footer class="site-foot"><div class="wrap">ScamGuard Docs — ไทยเป็นหลัก</div></footer>
+<script src="assets/js/i18n.js" defer></script>
+</body>
+</html>

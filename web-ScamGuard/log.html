@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>บันทึกการดำเนินงาน Wiki — ScamGuard Docs</title>
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#content">ข้ามไปยังเนื้อหา</a>
+<header class="site-head"><div class="wrap"><a class="brand" href="index.html" data-i18n="brand">ScamGuard Docs</a><nav class="nav" aria-label="หลัก"><a href="overview.html" data-i18n="nav_overview">ภาพรวม</a><a href="overview.html#layers" data-i18n="nav_layers">หลายชั้น</a><a href="overview.html#risk" data-i18n="nav_risk">คะแนนเสี่ยง</a><a href="overview.html#arch" data-i18n="nav_arch">สถาปัตยกรรม</a></nav><button id="lang-toggle" data-i18n="lang_toggle" aria-label="switch language">EN</button></div></header>
+<div class="wrap layout">
+<aside class="side" aria-label="สารบัญ">
+<p class="t01-side-group">เริ่มต้น</p>
+<a href="#quickstart" class="active"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>เริ่มใช้งาน <span class="count">3 ขั้น</span></a>
+<a href="#layers"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>การวิเคราะห์หลายชั้น <span class="count">3</span></a>
+<p class="t01-side-group">ทำความเข้าใจผลลัพธ์</p>
+<a href="#risk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="#0E7C7B" stroke-width="2"/><path d="M12 7v5l3 3" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คะแนนความเสี่ยง <span class="count">3 ระดับ</span></a>
+<a href="#heatmap"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2" stroke="#0E7C7B" stroke-width="2"/><circle cx="9" cy="10" r="2" fill="#0E7C7B"/><path d="M3 16l5-4 4 3 4-4 5 4" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>อ่าน Heatmap</a>
+<p class="t01-side-group">เชิงลึก</p>
+<a href="#arch"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><rect x="13" y="13" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><path d="M11 7h5v6M13 17H7v-6" stroke="#0E7C7B" stroke-width="2"/></svg>สถาปัตยกรรม</a>
+<a href="#faq"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 9a3 3 0 015.8 1c0 2-3.8 2.5-3.8 4M12 18h.01" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คำถามพบบ่อย <span class="count">5</span></a>
+<div class="t01-legend" aria-label="สัญลักษณ์ระดับความเสี่ยง">
+<strong style="color:var(--ink)">สัญลักษณ์ระดับความเสี่ยง</strong>
+<div class="row"><span class="badge b-low">Low</span><span class="t01-meter"><i style="width:30%;background:#1B7A4D"></i></span><span>0–39</span></div>
+<div class="row"><span class="badge b-med">Med</span><span class="t01-meter"><i style="width:55%;background:#9A6B12"></i></span><span>40–69</span></div>
+<div class="row"><span class="badge b-high">High</span><span class="t01-meter"><i style="width:85%;background:#B3372F"></i></span><span>70–100</span></div>
+</div>
+</aside>
+<main id="content">
+<p class="t01-crumb"><a href="index.html" data-i18n="crumb">เทมเพลตทั้งหมด</a> / บันทึกการดำเนินงาน Wiki</p>
+<p class="en-wip" data-i18n="en_wip">English body translation in progress — เนื้อหาภาษาอังกฤษอยู่ระหว่างแปล</p>
+<h1>บันทึกการดำเนินงาน Wiki</h1>
+<p>บันทึกตามลำดับเวลาของทุกการดำเนินงานใน wiki แบบ append-only ห้ามลบหรือแก้ไข entry เก่า</p>
+<pre><code class="language-bash"># ดู 5 entry ล่าสุด:
+grep &quot;^## \[&quot; wiki/log.md | tail -5</code></pre>
+<hr>
+<h2>[2026-09-13] update | แก้ความขัดแย้ง Source Verification และลิงก์เอกสาร</h2>
+<ul>
+<li>ยึดมติ DOC-01: เมื่อ Google Vision API ยังไม่เชื่อมต่อหรือล้มเหลว ให้คืน <code>source_status = &quot;unavailable&quot;</code> และตัดมิติ source ออกจากการคำนวณ โดยไม่ใช้ neutral score 50</li>
+<li>ระบุสถานะ Google Vision API ในหน้า Technology Choices และ External Integrations ให้ตรงกับ SRS และแก้ลิงก์เอกสาร Backend ที่เสีย 4 รายการ</li>
+</ul>
+<h2>[2026-08-02] init | สร้าง Wiki ครั้งแรกจากเอกสารต้นฉบับทั้งหมด</h2>
+<p><strong>ประเภทงาน:</strong> สร้าง wiki ครั้งแรก — นำเข้าเอกสารต้นฉบับที่มีอยู่ทั้งหมด</p>
+<p><strong>เอกสารที่ประมวลผล:</strong></p>
+<ul>
+<li><code>README.md</code> — ภาพรวมโปรเจค, ทีม, ลิงก์ workspace</li>
+<li><code>Document/objective.md</code> — วัตถุประสงค์ (OBJ-01 ถึง OBJ-04) และ KPI</li>
+<li><code>Document/scop.md</code> — ขอบเขตโปรเจคและ Work Package</li>
+<li><code>design/architecture.md</code> — สถาปัตยกรรมระบบ, Risk Scoring Pipeline, Tech Stack</li>
+<li><code>design/model.md</code> — การออกแบบโมเดล AI (SegFormer, Semantic Segmentation, Heatmap)</li>
+<li><code>design/server.md</code> — โครงสร้าง Backend FastAPI และ Database</li>
+</ul>
+<p><strong>หน้าที่สร้าง:</strong></p>
+<ul>
+<li><code>AGENTS.md</code> — schema และคู่มือการดำเนินงานสำหรับ LLM</li>
+<li><code>index.md</code> — สารบัญทุกหน้า</li>
+<li><code>log.md</code> — ไฟล์นี้</li>
+<li><code>howto.md</code> — คู่มือการใช้งาน wiki</li>
+<li><code>overview.md</code> — ภาพรวมโปรเจค</li>
+<li><code>concepts/multi-layer-analysis.md</code></li>
+<li><code>concepts/risk-scoring.md</code></li>
+<li><code>concepts/explainable-ai.md</code></li>
+<li><code>concepts/ai-model-segformer.md</code></li>
+<li><code>concepts/semantic-segmentation.md</code></li>
+<li><code>architecture/system-architecture.md</code></li>
+<li><code>architecture/mobile-app.md</code></li>
+<li><code>architecture/backend-api.md</code></li>
+<li><code>architecture/ai-inference-service.md</code></li>
+<li><code>architecture/database-schema.md</code></li>
+<li><code>architecture/external-integrations.md</code></li>
+<li><code>entities/actors.md</code></li>
+<li><code>entities/tech-stack.md</code></li>
+<li><code>decisions/technology-choices.md</code></li>
+<li><code>requirements/objectives-kpis.md</code></li>
+<li><code>requirements/functional-requirements.md</code></li>
+<li><code>requirements/non-functional-requirements.md</code></li>
+<li><code>planning/project-scope.md</code></li>
+<li><code>planning/team.md</code></li>
+</ul>
+<p><strong>หมายเหตุ:</strong> เอกสารที่ยังไม่ได้ ingest ครบ: <code>Document/srs.md</code> (ฉบับเต็ม), <code>Document/Use-Case-Diagram.md</code>, <code>Document/flowchart.md</code>, <code>Document/C1-System-Context-Diagram.md</code>, <code>Document/C2-Container-Diagram.md</code>, <code>design/design.md</code>, <code>design/mobile.md</code>, <code>design/training.md</code></p>
+<hr>
+<h2>[2026-08-02] update | แปลทุกหน้าเป็นภาษาไทย</h2>
+<p><strong>ประเภทงาน:</strong> แปลเนื้อหาทั้งหมดเป็นภาษาไทย คงคำศัพท์เทคนิคภาษาอังกฤษตามมาตรฐานวิชาชีพ</p>
+<hr>
+<h2>[2026-08-04] update | Phase 4 OCR Integration &amp; Qwen2.5-VL Fix</h2>
+<p><strong>ประเภทงาน:</strong> ติดตั้งและปรับแต่งโมเดล Surya OCR 2 (GGUF)</p>
+<p><strong>รายละเอียด:</strong></p>
+<ul>
+<li>ปรับปรุงไฟล์ <code>inference_service.py</code> ให้โหลด <code>surya-2.gguf</code> ผ่าน <code>llama-cpp-python</code></li>
+<li>อัปเดต <code>scan_service.py</code> เพื่อนำ <code>ocr_text</code> ที่อ่านได้มาคิดคะแนน <code>text_score</code> ร่วมกับ Scam Keywords (เช่น ด่วน, โบนัส, ลงทุน)</li>
+<li><strong>Problem Solving:</strong> แก้บั๊ก Context Memory ของ Qwen2-VL โดยการเปลี่ยน Chat Handler ไปใช้ <code>Qwen25VLChatHandler</code> แทน <code>Llava15ChatHandler</code> และขยาย <code>n_ctx=8192</code> ทำให้สามารถประมวลผลรูปภาพความละเอียดสูงได้สมบูรณ์</li>
+<li><strong>GPU Optimization:</strong> แนะนำและวางแนวทางการติดตั้ง <code>cuda-toolkit</code> OS-level เพื่อนำเข้าไดรเวอร์ <code>libcudart</code> ให้ <code>llama-cpp-python</code> รันบน VRAM (RTX 3050) ได้ 100% (n_gpu_layers=-1)</li>
+</ul>
+<hr>
+<h2>[2026-08-04] mass_ingest | ย้ายเอกสารต้นฉบับเข้า Wiki</h2>
+<p><strong>ประเภทงาน:</strong> รวบรวมเอกสารจากโฟลเดอร์ <code>Document/</code>, <code>design/</code>, <code>database/</code>, และ <code>server/</code> เข้าสู่สารบบ Wiki แบบอัตโนมัติ</p>
+<p><strong>รายการไฟล์ที่นำเข้า (พร้อมเพิ่ม Frontmatter):</strong></p>
+<ul>
+<li><strong>Requirements:</strong> <code>srs.md</code>, <code>use-case-diagram.md</code></li>
+<li><strong>Architecture:</strong> <code>c1-system-context-diagram.md</code>, <code>c2-container-diagram.md</code>, <code>flowchart.md</code>, <code>design-overview.md</code>, <code>mobile-design.md</code>, <code>database-er-diagram.md</code></li>
+<li><strong>Concepts:</strong> <code>model-training.md</code></li>
+<li><strong>Planning:</strong> <code>backend-howto.md</code></li>
+</ul>
+<p><strong>รายละเอียด:</strong></p>
+<ul>
+<li>ใช้สคริปต์ <code>mass_ingest.py</code> จัดการคัดลอกไฟล์ทั้งหมดและแทรก YAML Frontmatter ด้านบนของไฟล์โดยอัตโนมัติ เพื่อรักษาโครงสร้างเดิมของโปรเจคไว้</li>
+<li>สั่ง Build HTML ใหม่ เพื่อให้เอกสารทั้งหมดเข้าไปอยู่ใน Web Portal (<code>web-ScamGuard</code>) อย่างสมบูรณ์</li>
+</ul>
+<h2>[2026-08-06] ingest | /Document/model/model.md</h2>
+<hr>
+<h2>[2026-09-06] sync | อัปเดต Wiki ให้สอดคล้องกับ Document, design และระบบจริง</h2>
+<p><strong>ประเภทงาน:</strong> ซิงค์และเติมเต็มเอกสาร Wiki จาก Document, design และโครงสร้างระบบจริงล่าสุด</p>
+<p><strong>หน้าที่สร้างใหม่:</strong></p>
+<ul>
+<li><code>architecture/admin-portal.md</code> — สถาปัตยกรรมและการออกแบบ Admin Portal (React/Vite, UI Design System, Model Registry, Telemetry) จาก <code>design/admin.md</code> และ <code>Document/admin/admin.md</code></li>
+<li><code>architecture/database-migrations.md</code> — คู่มือและขั้นตอนการย้ายฐานข้อมูล (Database Migrations) ด้วย Alembic จาก <code>Document/database/alembic.md</code></li>
+<li><code>concepts/mmsegmentation.md</code> — สถาปัตยกรรมโมดูลาร์ MMSegmentation (Backbone MiT, Decode Head, Training Loss) จาก <code>Document/model/mmsegmentation.md</code></li>
+<li><code>requirements/traceability-matrix.md</code> — เมทริกซ์การสืบย้อนความต้องการ (Requirement Traceability Matrix - RTM) เชื่อมโยง ST -&gt; OBJ -&gt; SC -&gt; RC -&gt; FR/NFR จาก <code>Document/log_docs/06_Requirement_Traceability.md</code> และ <code>07_Appendix_A_Full_Traceability_Matrix.md</code></li>
+<li><code>planning/task-tracking.md</code> — การติดตามงานและการบริหารโครงการผ่านกระดาน task-board SCM และสถานะรายเฟส จาก <code>Document/task-board/Task-Tracking.md</code> และ <code>Document/task-board/to-do-list.md</code></li>
+</ul>
+<p><strong>หน้าที่ปรับปรุง:</strong></p>
+<ul>
+<li><code>architecture/database-er-diagram.md</code> — อัปเดต Mermaid ER Diagram เพิ่มตาราง <code>admins</code> แยกเดี่ยว, เพิ่มฟิลด์ <code>title</code> และ <code>progress</code> ใน <code>scans</code>, ปรับ Foreign Key ให้ชี้ไปยัง <code>admins</code> ตาม <code>database/ER_Diagram.md</code> ล่าสุด</li>
+<li><code>architecture/database-schema.md</code> — อัปเดตคำอธิบายตารางหลักใน PostgreSQL ให้มี <code>admins</code>, <code>scam_reports</code>, <code>consent_logs</code> และเชื่อมโยงหน้ารายละเอียด</li>
+<li><code>index.md</code> — เพิ่มรายการหน้าใหม่ทั้งหมด 5 หน้าลงในสารบัญครบทุกหมวดหมู่</li>
+</ul>
+<p><strong>ผลการตรวจสอบ:</strong></p>
+<ul>
+<li>สถาปัตยกรรมครอบคลุมครบทั้ง 4 คอนเทนเนอร์หลัก (Mobile App, Backend API, AI Inference, Admin Portal)</li>
+<li>โครงสร้างฐานข้อมูลใน Wiki สอดคล้องกับ PostgreSQL และ <code>database/ER_Diagram.md</code> ล่าสุด</li>
+<li>เอกสารทั้งหมดไม่มีสัญลักษณ์ Emoji และรันคอมไพล์เว็บ <code>web-ScamGuard</code> ผ่านสมบูรณ์</li>
+</ul>
+<h2>[2026-09-11] fix | DOC-04: v1 Android-only (iOS/Web future) — overview.md, planning/project-scope.md</h2>
+<h2>[2026-09-11] fix | DOC-05: gallery-only — PRODUCT.md</h2>
+<h2>[2026-09-11] fix | DOC-06: FCM Phase 2 — 02 + 03</h2>
+<h2>[2026-09-11] fix | DOC-13: 409, AC 104, CRUD→Read/Update — 05/06/AppA + wiki</h2>
+<h2>[2026-09-13] sync | database wiki ตรง schema ปัจจุบัน (er-diagram, schema, migrations)</h2>
+<h2>[2026-09-15] update | เพิ่มหน้า testing/test-cases — ตาราง 10 คอลัมน์ IEEE 829/ISTQB, กฎ md-canonical + CSV, ยอดเคส 7 พื้นที่ และ tests_all/tests_report/</h2>
+<h2>[2026-09-15] update | v1.0.5 training outcome + v10 config lessons → concepts/model-training, ai-model-segformer, configs (val 91.31 / common-test 91.24 แยกค่า)</h2>
+<h2>[2026-09-15] fix | refresh เส้นทาง test artifacts + สถานะเทรน v1.0.5 — planning/task-tracking.md</h2>
+<h2>[2026-09-15] update | ตารางผลรายเวอร์ชัน v1.0.0–v1.0.5 (val + locked common test + local set แยก 3 ชุด) — concepts/model-training</h2>
+</main>
+</div>
+<footer class="site-foot"><div class="wrap">ScamGuard Docs — ไทยเป็นหลัก</div></footer>
+<script src="assets/js/i18n.js" defer></script>
+</body>
+</html>

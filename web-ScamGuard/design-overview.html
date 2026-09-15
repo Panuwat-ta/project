@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>การออกแบบแอปพลิเคชันบนอุปกรณ์เคลื่อนที่ (Mobile Application Design) — ScamGuard Docs</title>
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#content">ข้ามไปยังเนื้อหา</a>
+<header class="site-head"><div class="wrap"><a class="brand" href="index.html" data-i18n="brand">ScamGuard Docs</a><nav class="nav" aria-label="หลัก"><a href="overview.html" data-i18n="nav_overview">ภาพรวม</a><a href="overview.html#layers" data-i18n="nav_layers">หลายชั้น</a><a href="overview.html#risk" data-i18n="nav_risk">คะแนนเสี่ยง</a><a href="overview.html#arch" data-i18n="nav_arch">สถาปัตยกรรม</a></nav><button id="lang-toggle" data-i18n="lang_toggle" aria-label="switch language">EN</button></div></header>
+<div class="wrap layout">
+<aside class="side" aria-label="สารบัญ">
+<p class="t01-side-group">เริ่มต้น</p>
+<a href="#quickstart" class="active"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>เริ่มใช้งาน <span class="count">3 ขั้น</span></a>
+<a href="#layers"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>การวิเคราะห์หลายชั้น <span class="count">3</span></a>
+<p class="t01-side-group">ทำความเข้าใจผลลัพธ์</p>
+<a href="#risk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="#0E7C7B" stroke-width="2"/><path d="M12 7v5l3 3" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คะแนนความเสี่ยง <span class="count">3 ระดับ</span></a>
+<a href="#heatmap"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2" stroke="#0E7C7B" stroke-width="2"/><circle cx="9" cy="10" r="2" fill="#0E7C7B"/><path d="M3 16l5-4 4 3 4-4 5 4" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>อ่าน Heatmap</a>
+<p class="t01-side-group">เชิงลึก</p>
+<a href="#arch"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><rect x="13" y="13" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><path d="M11 7h5v6M13 17H7v-6" stroke="#0E7C7B" stroke-width="2"/></svg>สถาปัตยกรรม</a>
+<a href="#faq"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 9a3 3 0 015.8 1c0 2-3.8 2.5-3.8 4M12 18h.01" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คำถามพบบ่อย <span class="count">5</span></a>
+<div class="t01-legend" aria-label="สัญลักษณ์ระดับความเสี่ยง">
+<strong style="color:var(--ink)">สัญลักษณ์ระดับความเสี่ยง</strong>
+<div class="row"><span class="badge b-low">Low</span><span class="t01-meter"><i style="width:30%;background:#1B7A4D"></i></span><span>0–39</span></div>
+<div class="row"><span class="badge b-med">Med</span><span class="t01-meter"><i style="width:55%;background:#9A6B12"></i></span><span>40–69</span></div>
+<div class="row"><span class="badge b-high">High</span><span class="t01-meter"><i style="width:85%;background:#B3372F"></i></span><span>70–100</span></div>
+</div>
+</aside>
+<main id="content">
+<p class="t01-crumb"><a href="index.html" data-i18n="crumb">เทมเพลตทั้งหมด</a> / การออกแบบแอปพลิเคชันบนอุปกรณ์เคลื่อนที่ (Mobile Application Design)</p>
+<p class="en-wip" data-i18n="en_wip">English body translation in progress — เนื้อหาภาษาอังกฤษอยู่ระหว่างแปล</p>
+<h1>การออกแบบแอปพลิเคชันบนอุปกรณ์เคลื่อนที่ (Mobile Application Design)</h1>
+<h2>โครงงาน: แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง (Scam Image Detection)</h2>
+<p>เอกสารฉบับนี้อธิบายรายละเอียดโครงสร้างการออกแบบส่วนหน้าบ้าน (Frontend Mobile Application) ที่พัฒนาด้วย Flutter ของระบบ Scam Image Detection โดยครอบคลุมสถาปัตยกรรมซอฟต์แวร์, ระบบการออกแบบ UI/UX, โครงสร้างหน้าจอ และแผนผังการไหลของข้อมูลผู้ใช้งาน (User Flow)</p>
+<hr>
+<h2>1. สถาปัตยกรรมซอฟต์แวร์ฝั่ง Mobile App (Software Architecture)</h2>
+<p>แอปพลิเคชันพัฒนาด้วย Flutter โดยยึดตามหลักการออกแบบ Clean Architecture และแบ่งการเขียนโค้ดตามรูปแบบ MVVM (Model-View-ViewModel) ร่วมกับ State Management ของ BLoC (Business Logic Component) เพื่อแยก Logic การทำงานออกจาก UI อย่างชัดเจน</p>
+<pre><code class="language-mermaid">flowchart TD
+    subgraph UI_Layer [Presentation Layer / UI]
+        Views(&quot;Views (Widgets)&lt;br&gt;[UI Elements]&quot;)
+        Blocs(&quot;ViewModels (BLoC)&lt;br&gt;[State Management]&quot;)
+    end
+
+    subgraph Domain_Layer [Domain Layer / Business Rules]
+        Entities(&quot;Entities&lt;br&gt;[Data Models]&quot;)
+        UseCases(&quot;Use Cases&lt;br&gt;[Business Logic]&quot;)
+    end
+
+    subgraph Data_Layer [Data Layer / Source]
+        Repositories(&quot;Repositories Interface&lt;br&gt;&amp; Implementation&quot;)
+        DataSources(&quot;Data Sources&lt;br&gt;[Local Cache &amp; REST API via Dio]&quot;)
+    end
+
+    %% Connections
+    Views --&gt; Blocs
+    Blocs --&gt; UseCases
+    UseCases --&gt; Entities
+    UseCases --&gt; Repositories
+    Repositories --&gt; DataSources</code></pre>
+<h3>รายละเอียดโครงสร้าง Layer</h3>
+<ul>
+<li><strong>Presentation Layer:</strong> ประกอบด้วย Widget ต่าง ๆ ที่ทำหน้าที่แสดงผลหน้าตาแอป และ BLoC ที่ทำหน้าที่รับ Event จากหน้าจอ ประมวลผลเปลี่ยนสถานะ (State) แล้วส่งผลลัพธ์กลับไปอัปเดต UI</li>
+<li><strong>Domain Layer:</strong> แกนกลางที่ไม่ขึ้นตรงกับเฟรมเวิร์กใด ๆ ประกอบด้วยโมเดลข้อมูลหลัก (Entities) และคลาสคำสั่งธุรกิจ (Use Cases) เช่น การส่งตรวจวิเคราะห์ภาพ หรือการเรียกดูประวัติ</li>
+<li><strong>Data Layer:</strong> จัดการเชื่อมต่อกับแหล่งข้อมูลภายนอก โดยเชื่อมต่อ REST API ผ่าน HTTP Client (คลาส Dio) และการจัดเก็บโทเคนความปลอดภัยใน Secure Storage</li>
+</ul>
+<hr>
+<h2>2. ระบบการออกแบบ UI/UX และธีมสี (Design System &amp; Theme)</h2>
+<p>แอปพลิเคชันออกแบบภายใต้ธีม Dark Mode เพื่อเน้นความล้ำสมัย ปลอดภัย และลดอาการเมื่อยล้าสายตา โดยใช้สีและแบบอักษรที่คัดสรรเป็นพิเศษดังนี้:</p>
+<h3>โทนสีของระบบ (Color Palette)</h3>
+<ul>
+<li><strong>สีพื้นหลังหลัก (Primary Background):</strong> Slate Gray (#121824) ให้ความรู้สึกมั่นคง สบายตา</li>
+<li><strong>สีพื้นหลังรอง (Secondary Background):</strong> Navy Blue Gray (#1A2333) สำหรับการสร้างกล่องข้อความและส่วนประกอบย่อย</li>
+<li><strong>สีเน้นการทำงาน (Accent/Primary Color):</strong> Neon Cyan (#00E5FF) สีฟ้าสว่าง ใช้สำหรับปุ่มกดหลักและองค์ประกอบที่ต้องการเน้นสายตา</li>
+<li><strong>สีสถานะความเสี่ยง (Risk Indicators):</strong></li>
+<li>ความเสี่ยงต่ำ (Low Risk): Emerald Green (#00E676)</li>
+<li>ความเสี่ยงปานกลาง (Medium Risk): Amber Yellow (#FFD700)</li>
+<li>ความเสี่ยงสูง (High Risk): Crimson Red (#FF1744)</li>
+</ul>
+<h3>ตัวอักษร (Typography — canonical ตรงกับ <code>design/design.md</code> และ <code>design/mobile/requirements.md</code> REQ-NF-004)</h3>
+<ul>
+<li>เลือกใช้แบบอักษร <strong>Sarabun</strong> สำหรับข้อความภาษาไทยและภาษาอังกฤษเพื่อให้อ่านง่ายและมีความเป็นทางการ</li>
+<li>ใช้แบบอักษร <strong>Inter</strong> (จาก Google Fonts) สำหรับตัวเลข ข้อมูล และข้อความเชิงเทคนิค</li>
+</ul>
+<hr>
+<h2>3. โครงสร้างหน้าจอและทางเดินของผู้ใช้ (App Screen Structure &amp; Navigation)</h2>
+<p>หน้าจอหลักของแอปพลิเคชันประกอบไปด้วย 5 หน้าจอหลักที่เชื่อมต่อผ่านระบบ Bottom Navigation Bar:</p>
+<pre><code class="language-mermaid">flowchart LR
+    Splash[Splash Screen] --&gt; Login[Login / OAuth]
+    Login --&gt; Home[Home Screen]
+    
+    Home --&gt; Nav[Navigation Bar]
+    Nav --&gt; NavHome[Home / Scan Screen]
+    Nav --&gt; NavHistory[History Screen]
+    Nav --&gt; NavSettings[Settings &amp; PDPA Screen]
+
+    NavHome --&gt; Result[Analysis Result Screen]
+    Result --&gt; Report[Report Scam Screen]</code></pre>
+<h3>รายละเอียดหน้าที่ของแต่ละหน้าจอ</h3>
+<h4>1. Splash Screen</h4>
+<ul>
+<li>ทำหน้าที่โหลดการตั้งค่าระบบ ตรวจเช็กโทเคนการเข้าสู่ระบบเดิม (Session Token)</li>
+<li>หากผู้ใช้เคยล็อกอินค้างไว้ ระบบจะข้ามไปหน้า Home ทันที หากไม่มีจะพาไปหน้า Login</li>
+</ul>
+<h4>2. Login &amp; Authentication Screen</h4>
+<ul>
+<li>หน้าจอกรอก Email/Password (Google Login / Apple ID เป็น Phase 2)</li>
+<li>มีลิงก์สำหรับสมัครสมาชิกใหม่ และระบบขอเปลี่ยนรหัสผ่านใหม่ (Forgot Password)</li>
+</ul>
+<h4>3. Home / Scan Screen (หน้าแรกและนำเข้ารูปภาพ)</h4>
+<ul>
+<li>เป็นหน้าหลักเมื่อเปิดแอป ประกอบด้วย:</li>
+<li>ปุ่มกดสำหรับ นำเข้ารูปภาพจากคลังภาพ (Gallery) เพื่ออัปโหลดเข้าสู่ระบบ</li>
+<li>เมนูแนะนำภัยออนไลน์ (Scam Alerts Feed) สำหรับอัปเดตกลโกงใหม่ ๆ จากผู้ดูแลระบบ</li>
+<li>เมื่อเลือกรูปภาพเสร็จ แอปจะส่งไปยังหน้าครอปตัดรูป (Image Cropper Widget) ก่อนจะเริ่มส่งขึ้น API และแสดงสถานะกำลังวิเคราะห์ (Loading Shimmer Effect)</li>
+</ul>
+<h4>4. Analysis Result Screen (หน้าแสดงผลลัพธ์)</h4>
+<ul>
+<li>แสดงผลคะแนนความเสี่ยงรวม (Overall Risk Score) ในรูปของมาตรวัดวงกลมสี (Radial Risk Gauge) พร้อมผลแจกแจงแยก 3 มิติ (Multi-Factor Breakdown)</li>
+<li>ตัวเลือกระหว่าง:</li>
+<li>หน้าแสดงข้อมูลภาพต้นฉบับ</li>
+<li>หน้าภาพ Heatmap (แสดง Heatmap ที่ชี้พิกเซลผิดปกติจาก AI)</li>
+<li>รายละเอียดผลวิเคราะห์ 3 มิติ (Multi-layer Analysis Breakdown):</li>
+<li>ผลตรวจสอบ OCR &amp; คำอันตราย (Textual Detection)</li>
+<li>ผลตรวจสอบข้อมูลไฟล์และอุปกรณ์ที่ใช้บันทึกภาพ (Metadata Check)</li>
+<li>ผลตรวจสอบแหล่งที่มาดั้งเดิม (Reverse Image Search Results)</li>
+<li>ปุ่มกดรายงานเบาะแสเข้าระบบกลาง (Report to Scam DB) และปุ่มแชร์รูปภาพแจ้งเตือน (Share Scam Alert)</li>
+</ul>
+<h4>5. History Screen (หน้าประวัติการสแกน)</h4>
+<ul>
+<li>หน้าแสดงรายการการสแกนที่ผ่านมา จัดเรียงตามวัน-เวลา</li>
+<li>แสดงข้อมูลสรุปย่อ เช่น รูปตัวอย่าง, วันที่สแกน, และระดับความเสี่ยง</li>
+<li>ฟังก์ชันการลบประวัติทีละรายการ (Slide to delete) หรือลบทั้งหมดในครั้งเดียว</li>
+</ul>
+<h4>6. Settings &amp; PDPA Screen (หน้าการตั้งค่าและสิทธิ์)</h4>
+<ul>
+<li>จัดการข้อมูลส่วนตัว และเปลี่ยนรหัสผ่าน</li>
+<li>ส่วนจัดการข้อตกลงความเป็นส่วนตัว (PDPA / Consent Management) ให้ผู้ใช้สามารถกดยกเลิกความยินยอมการส่งไฟล์ภาพเข้าคลังวิจัยย้อนหลังได้ตลอดเวลา</li>
+</ul>
+<hr>
+<h2>4. แผนผังการทำงานและการประมวลผลข้อมูล (Sequence Flow)</h2>
+<p>ขั้นตอนการส่งรูปภาพขึ้นไปประมวลผลและส่งการแจ้งเตือนกลับมายังแอปพลิเคชันมือถือ:</p>
+<pre><code class="language-mermaid">sequenceDiagram
+    actor User as General User
+    participant App as Mobile App (Flutter)
+    participant API as API Application (FastAPI)
+    participant AI as AI Inference Service
+    participant Push as FCM Service
+
+    User-&gt;&gt;App: เลือก/อัปโหลดรูปภาพ
+    App-&gt;&gt;API: ส่งรูปภาพดิบ (POST Multipart/form-data)
+    Note over API: ดึงค่า Metadata &amp; รัน OCR ค้นหาคำอันตราย
+    API--&gt;&gt;App: ส่งรหัสติดตามงานสแกน (Scan Task ID)
+    Note over App: แสดงหน้า Loading ประมวลผลเบื้องหลัง
+    
+    API-&gt;&gt;AI: ส่งรูปภาพไปตรวจสอบระดับพิกเซล (Semantic Segmentation &amp; GenAI check)
+    Note over AI: ประมวลผลรูปภาพสร้างแผนที่ความร้อน (Heatmap)
+    AI--&gt;&gt;API: ส่งผลการคำนวณและรูปภาพ Heatmap
+    
+    Note over API: คำนวณ Overall Risk Score (Hybrid Approach) สรุปผลภาพรวม
+    API-&gt;&gt;Push: ส่งคำสั่งแจ้งเตือนพร้อมสแกนเสร็จสิ้น (Push Payload)
+    Push--&gt;&gt;App: เด้งหน้าต่างแจ้งเตือนที่เครื่องผู้ใช้ (Scan Completed)
+    
+    User-&gt;&gt;App: กดดูการแจ้งเตือน
+    App-&gt;&gt;API: เรียกข้อมูลผลลัพธ์ผ่าน Task ID
+    API--&gt;&gt;App: ส่งกลับข้อมูล Risk Score, Heatmap URL, และรายละเอียดวิเคราะห์
+    App-&gt;&gt;User: แสดงรายงานระดับความเสี่ยงบนหน้าจอ</code></pre>
+</main>
+</div>
+<footer class="site-foot"><div class="wrap">ScamGuard Docs — ไทยเป็นหลัก</div></footer>
+<script src="assets/js/i18n.js" defer></script>
+</body>
+</html>
