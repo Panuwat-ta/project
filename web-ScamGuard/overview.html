@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ภาพรวมโปรเจค: Scam Image Detection — ScamGuard Docs</title>
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#content">ข้ามไปยังเนื้อหา</a>
+<header class="site-head"><div class="wrap"><a class="brand" href="index.html" data-i18n="brand">ScamGuard Docs</a><nav class="nav" aria-label="หลัก"><a href="overview.html" data-i18n="nav_overview">ภาพรวม</a><a href="overview.html#layers" data-i18n="nav_layers">หลายชั้น</a><a href="overview.html#risk" data-i18n="nav_risk">คะแนนเสี่ยง</a><a href="overview.html#arch" data-i18n="nav_arch">สถาปัตยกรรม</a></nav><button id="lang-toggle" data-i18n="lang_toggle" aria-label="switch language">EN</button></div></header>
+<div class="wrap layout">
+<aside class="side" aria-label="สารบัญ">
+<p class="t01-side-group">เริ่มต้น</p>
+<a href="#quickstart" class="active"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>เริ่มใช้งาน <span class="count">3 ขั้น</span></a>
+<a href="#layers"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>การวิเคราะห์หลายชั้น <span class="count">3</span></a>
+<p class="t01-side-group">ทำความเข้าใจผลลัพธ์</p>
+<a href="#risk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="#0E7C7B" stroke-width="2"/><path d="M12 7v5l3 3" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คะแนนความเสี่ยง <span class="count">3 ระดับ</span></a>
+<a href="#heatmap"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2" stroke="#0E7C7B" stroke-width="2"/><circle cx="9" cy="10" r="2" fill="#0E7C7B"/><path d="M3 16l5-4 4 3 4-4 5 4" stroke="#0E7C7B" stroke-width="2" stroke-linejoin="round"/></svg>อ่าน Heatmap</a>
+<p class="t01-side-group">เชิงลึก</p>
+<a href="#arch"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><rect x="13" y="13" width="8" height="8" rx="2" stroke="#0E7C7B" stroke-width="2"/><path d="M11 7h5v6M13 17H7v-6" stroke="#0E7C7B" stroke-width="2"/></svg>สถาปัตยกรรม</a>
+<a href="#faq"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 9a3 3 0 015.8 1c0 2-3.8 2.5-3.8 4M12 18h.01" stroke="#0E7C7B" stroke-width="2" stroke-linecap="round"/></svg>คำถามพบบ่อย <span class="count">5</span></a>
+<div class="t01-legend" aria-label="สัญลักษณ์ระดับความเสี่ยง">
+<strong style="color:var(--ink)">สัญลักษณ์ระดับความเสี่ยง</strong>
+<div class="row"><span class="badge b-low">Low</span><span class="t01-meter"><i style="width:30%;background:#1B7A4D"></i></span><span>0–39</span></div>
+<div class="row"><span class="badge b-med">Med</span><span class="t01-meter"><i style="width:55%;background:#9A6B12"></i></span><span>40–69</span></div>
+<div class="row"><span class="badge b-high">High</span><span class="t01-meter"><i style="width:85%;background:#B3372F"></i></span><span>70–100</span></div>
+</div>
+</aside>
+<main id="content">
+<p class="t01-crumb"><a href="index.html" data-i18n="crumb">เทมเพลตทั้งหมด</a> / ภาพรวมโปรเจค: Scam Image Detection</p>
+<p class="en-wip" data-i18n="en_wip">English body translation in progress — เนื้อหาภาษาอังกฤษอยู่ระหว่างแปล</p>
+<h1>ภาพรวมโปรเจค: Scam Image Detection</h1>
+<p>แอปพลิเคชันมือถือที่ใช้การวิเคราะห์หลายชั้นด้วย AI เพื่อช่วยให้ผู้ใช้ทั่วไปตรวจสอบว่ารูปภาพถูกตัดต่อหรือถูกนำมาใช้ในการหลอกลวงหรือไม่ ก่อนที่จะเชื่อหรือโอนเงิน</p>
+<hr>
+<h2>ปัญหาที่โปรเจคนี้แก้ไข</h2>
+<p>การหลอกลวงโดยใช้รูปภาพพบได้บ่อยในประเทศไทยและทั่วโลก รูปแบบการโจมตีที่พบบ่อย ได้แก่:</p>
+<ul>
+<li><strong>Romance Scam</strong> — รูปโปรไฟล์ที่สร้างด้วย AI หรือขโมยจากคนอื่น</li>
+<li><strong>การตัดต่อภาพ (Image Forgery)</strong> — สกรีนช็อตที่ดัดแปลง, สลิปโอนเงินปลอม, ใบเสร็จที่แก้ไขตัวเลข</li>
+<li><strong>ภาพสังเคราะห์จาก AI</strong> — ใบหน้าหรือฉากที่สร้างขึ้นทั้งหมดเพื่อหลอกลวง</li>
+<li><strong>การแอบอ้างตัวตน</strong> — นำรูปจากบริบทหนึ่งไปใช้อ้างตัวตนในอีกบริบท</li>
+</ul>
+<p>ผู้ใช้ทั่วไปไม่สามารถตรวจจับสิ่งเหล่านี้ได้ด้วยตาเปล่า แอปนี้คือเครื่องมือนิติวิทยาศาสตร์ดิจิทัลในกระเป๋า</p>
+<aside class="callout callout-important"><strong>IMPORTANT</strong> โปรเจคนี้ตรวจจับ <strong>ภาพหลอกลวงในวงกว้าง</strong> ไม่ใช่เฉพาะ &quot;สลิปปลอม&quot; การแยกแยะประเภทการปลอมแปลง (splicing, copy-move, AI-generation, reverse image identity theft) คือฟีเจอร์หลักของระบบ</aside>
+<hr>
+<h2>แนวทางหลัก: การวิเคราะห์หลายชั้น (Multi-layer Analysis)</h2>
+<p>ระบบไม่พึ่งพาวิธีตรวจจับเดียว แต่รันการวิเคราะห์ 3 มิติอย่างอิสระและรวมผลเป็น <strong>Overall Risk Score</strong> ตามแนวทาง <strong>Recommended Hybrid Approach (Worst-Case Trigger with Multi-Factor Breakdown)</strong> ดูรายละเอียดที่ <a href="concepts/multi-layer-analysis.html">concepts/multi-layer-analysis</a></p>
+<table>
+<thead><tr><th>มิติการวิเคราะห์ (Independent Factors)</th><th>วิธีการ</th><th>ช่วงคะแนนเดี่ยว</th></tr></thead><tbody>
+<tr><td>วิเคราะห์ข้อความ (Textual Analysis)</td><td>OCR + Keyword/Pattern Matching ตรวจจับคำหลอกลวง</td><td>0–100%</td></tr>
+<tr><td>ตรวจสอบแหล่งที่มา (Source Verification)</td><td>Reverse Image Search ผ่าน Google Vision API (external แบบ optional — เมื่อใช้ไม่ได้ต้องคืนผลบางส่วนพร้อมสถานะตาม FR-ANALYSIS-03 fallback และห้ามสรุปว่าภาพปลอดภัย)</td><td>0–100%</td></tr>
+<tr><td>ตรวจจับความผิดปกติทางภาพ (Visual Anomaly)</td><td>Deep Learning (SegFormer) + Heatmap Output</td><td>0–100%</td></tr>
+</tbody></table>
+<ul>
+<li><strong>สูตรคำนวณคะแนนรวม</strong>: ยึดมิติที่มีความเสี่ยงสูงสุดเป็นฐานหลัก $S_{base} = \max(S_{visual}, S_{textual}, S_{source})$ ร่วมกับ Multi-factor Compounding (+5 คะแนนต่อมิติรองที่มีความเสี่ยง $\ge 40$)</li>
+<li>คะแนนรวมอยู่ระหว่าง 0–100 แบ่งเป็น 3 ระดับ: Low (0–39), Medium (40–69), High (70–100 หรือ Visual $\ge 80$) ดูเกณฑ์ที่ <a href="concepts/risk-scoring.html">concepts/risk-scoring</a></li>
+</ul>
+<hr>
+<h2>สรุปสถาปัตยกรรมระบบ</h2>
+<p>ระบบเป็นแบบ Cloud-Native และแยกส่วนออกเป็น 3 ชั้น:</p>
+<ol>
+<li><strong>Frontend</strong> — Flutter Mobile App (v1: Android; iOS เป็น future) สำหรับผู้ใช้ทั่วไป; React.js Admin Portal สำหรับนักวิจัยและเจ้าหน้าที่</li>
+<li><strong>Backend</strong> — Python FastAPI ทำหน้าที่เป็น Orchestrator/API Gateway; ONNX Worker subprocess สำหรับประมวลผลโมเดล</li>
+<li><strong>Storage</strong> — PostgreSQL สำหรับข้อมูลเชิงสัมพันธ์; Redis สำหรับ cache; Cloud Storage สำหรับไฟล์รูปภาพและ Heatmap</li>
+</ol>
+<p>ดูสถาปัตยกรรมเต็มที่ <a href="architecture/system-architecture.html">architecture/system-architecture</a></p>
+<hr>
+<h2>เทคโนโลยีหลัก</h2>
+<table>
+<thead><tr><th>งาน</th><th>เทคโนโลยี</th></tr></thead><tbody>
+<tr><td>Mobile App</td><td>Flutter (Dart) — v1 Android, iOS ในอนาคต</td></tr>
+<tr><td>Admin Portal</td><td>React.js + Tailwind CSS</td></tr>
+<tr><td>API Backend</td><td>Python FastAPI</td></tr>
+<tr><td>โมเดล AI</td><td>SegFormer (PyTorch → ONNX)</td></tr>
+<tr><td>ฐานข้อมูล</td><td>PostgreSQL</td></tr>
+<tr><td>Cache</td><td>Redis</td></tr>
+<tr><td>เก็บไฟล์</td><td>Cloud Object Storage</td></tr>
+<tr><td>ค้นหาภาพย้อนกลับ</td><td>Google Vision API</td></tr>
+<tr><td>Push Notification</td><td>Firebase Cloud Messaging (FCM) — <strong>Phase 2</strong> (v1 ใช้ polling + in-app notification)</td></tr>
+</tbody></table>
+<p>ดูรายละเอียดที่ <a href="entities/tech-stack.html">entities/tech-stack</a> และ <a href="decisions/technology-choices.html">decisions/technology-choices</a></p>
+<hr>
+<h2>ผลลัพธ์ที่ผู้ใช้ได้รับ</h2>
+<ol>
+<li><strong>Overall Risk Score</strong> (0–100) แสดงเป็น color badge 3 ระดับ (Low / Medium / High) พร้อมผลแจกแจงแยก 3 มิติ (Multi-Factor Breakdown)</li>
+<li><strong>Heatmap</strong> ซ้อนทับรูปภาพต้นฉบับแสดงจุดที่โมเดลตรวจพบความผิดปกติ</li>
+<li><strong>ผลการวิเคราะห์ข้อความ</strong> — คำหลอกลวงหรือรูปแบบน่าสงสัยที่พบในภาพ</li>
+<li><strong>ผลการตรวจสอบแหล่งที่มา</strong> — รูปนี้พบในเว็บไซต์ใดบ้างและกี่แหล่ง</li>
+</ol>
+<p>Heatmap เป็นหัวใจของการออกแบบ <strong>Explainable AI (XAI)</strong> ดูที่ <a href="concepts/explainable-ai.html">concepts/explainable-ai</a></p>
+<hr>
+<h2>ข้อจำกัดของโปรเจค</h2>
+<ul>
+<li><strong>PDPA</strong> — ผู้ใช้ต้องยินยอมก่อนที่รูปภาพจะถูกเก็บหรือใช้เพื่อ training โมเดล ยินยอมแบบแยกส่วนและถอนได้ ดูที่ <a href="requirements/non-functional-requirements.html">requirements/non-functional-requirements</a></li>
+<li><strong>เป้าหมายประสิทธิภาพ</strong> — Cache Hit P95 ≤ 3 วินาที (ภาพ 1080p, เครือข่าย 4G/Wi-Fi, หน้าต่างวัด 7 วัน); Full AI inference P50 ≤ 15 วินาที / P95 ≤ 25 วินาทีต่อรูป (ภาพ 1080p, GPU T4)</li>
+<li><strong>เป้าหมายความแม่นยำ</strong> — โมเดล AI ต้องได้ Accuracy ≥ 85% และ mDice ≥ 85% บน frozen test set 1,000 ภาพ (ดูวิธีวัดใน requirements)</li>
+<li><strong>เป้าหมาย Availability</strong> — API และ AI Inference Service uptime ≥ 99.5% ต่อรอบ 30 วัน (ไม่รวม maintenance ที่ประกาศล่วงหน้า)</li>
+</ul>
+<hr>
+<h2>สิ่งที่อยู่นอกขอบเขต (v1)</h2>
+<ul>
+<li>วิเคราะห์วิดีโอ (วางแผนในอนาคตด้วย keyframe extraction)</li>
+<li>Inference บนอุปกรณ์ (วางแผนด้วย model quantization)</li>
+<li>แอปเป็น Flutter ทดสอบและรองรับบน Android ใน v1 — iOS เป็น future (build จาก codebase เดียวกันได้)</li>
+</ul>
+<hr>
+<h2>หน้าที่เกี่ยวข้อง</h2>
+<ul>
+<li><a href="concepts/multi-layer-analysis.html">concepts/multi-layer-analysis</a></li>
+<li><a href="concepts/risk-scoring.html">concepts/risk-scoring</a></li>
+<li><a href="concepts/explainable-ai.html">concepts/explainable-ai</a></li>
+<li><a href="architecture/system-architecture.html">architecture/system-architecture</a></li>
+<li><a href="requirements/objectives-kpis.html">requirements/objectives-kpis</a></li>
+<li><a href="planning/project-scope.html">planning/project-scope</a></li>
+<li><a href="planning/team.html">planning/team</a></li>
+<li><a href="entities/tech-stack.html">entities/tech-stack</a></li>
+</ul>
+</main>
+</div>
+<footer class="site-foot"><div class="wrap">ScamGuard Docs — ไทยเป็นหลัก</div></footer>
+</body>
+</html>
