@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="th" data-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="Wiki Operating Guide — Scam Image Detection Project Context This wiki serves as the persistent knowledge base for the Scam Image Detection project, developed by Software Engineering students…">
+  <meta name="color-scheme" content="light dark">
+  <title>Wiki Operating Guide — Scam Image Detection | ScamGuard Documentation</title>
+  <link rel="stylesheet" href="../assets/css/site.css">
+  <script>document.documentElement.dataset.theme = (() => { try { return localStorage.getItem('scamguard-docs-theme') || 'light' } catch (e) { return 'light' } })(); window.SC_DOCS_ROOT = '../';</script>
+</head>
+
+<body class="">
+  <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
+  <header class="masthead">
+    <div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false"
+        aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg></button><a class="brand" href="../index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z" />
+          <path d="m9.2 12 1.8 1.8 3.9-4.2" />
+        </svg><span>ScamGuard <small>Documentation</small></span></a>
+      <div class="masthead-actions"><button class="control" type="button" data-search-open><svg viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+            aria-hidden="true">
+            <circle cx="11" cy="11" r="6.5" />
+            <path d="m16 16 4 4" />
+          </svg><span>ค้นหา</span><span class="search-shortcut">Ctrl K</span></button><button class="control"
+          type="button" data-theme-toggle aria-label="เปลี่ยนเป็นโหมดมืด"><svg viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.5A7 7 0 0 1 12 3Z" />
+          </svg><span class="theme-label" data-theme-label>โหมดมืด</span></button></div>
+    </div>
+  </header>
+  <div class="docs-shell">
+    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><button class="control nav-close"
+        type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg></button>
+      <p class="sidebar-title">เอกสารทั้งหมด</p>
+      <details class="sidebar-group">
+        <summary>ภาพรวม</summary>
+        <ul class="sidebar-list">
+          <li><a href="overview.html">ภาพรวมโปรเจค</a></li>
+          <li><a href="index.html">สารบัญ Wiki — โปรเจค Scam Image Detection</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>ความต้องการระบบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="requirements/functional-requirements.html">ความต้องการเชิงฟังก์ชัน (Functional Requirements)</a>
+          </li>
+          <li><a href="requirements/non-functional-requirements.html">ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional
+              Requirements)</a></li>
+          <li><a href="requirements/traceability-matrix.html">เมทริกซ์การสืบย้อนความต้องการ</a></li>
+          <li><a href="requirements/objectives-kpis.html">วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp; KPIs)</a>
+          </li>
+          <li><a href="requirements/srs.html">Software Requirements Specification (SRS)</a></li>
+          <li><a href="requirements/use-case-diagram.html">Use Case Diagram</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>สถาปัตยกรรม</summary>
+        <ul class="sidebar-list">
+          <li><a href="architecture/database-migrations.html">การจัดการการย้ายฐานข้อมูล (Database Migrations)</a></li>
+          <li><a href="architecture/external-integrations.html">การเชื่อมต่อบริการภายนอก (External Integrations)</a>
+          </li>
+          <li><a href="architecture/database-schema.html">โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li>
+          <li><a href="architecture/system-architecture.html">สถาปัตยกรรมระบบ (System Architecture)</a></li>
+          <li><a href="architecture/admin-portal.html">สถาปัตยกรรมและการออกแบบ Admin Portal</a></li>
+          <li><a href="architecture/mobile-app.html">สถาปัตยกรรม Mobile App</a></li>
+          <li><a href="architecture/ai-inference-service.html">AI Inference Service</a></li>
+          <li><a href="architecture/backend-api.html">Backend API — FastAPI Orchestrator</a></li>
+          <li><a href="architecture/c1-system-context-diagram.html">C1 System Context Diagram</a></li>
+          <li><a href="architecture/c2-container-diagram.html">C2 Container Diagram</a></li>
+          <li><a href="architecture/c3-component-diagram.html">C3 Component Diagram - API Application</a></li>
+          <li><a href="architecture/c4-code-diagram.html">C4 Code Diagram - Image Scanning Flow</a></li>
+          <li><a href="architecture/database-er-diagram.html">Entity Relationship Diagram (ER Diagram)</a></li>
+          <li><a href="architecture/mobile-design.html">Mobile App Architecture</a></li>
+          <li><a href="architecture/flowchart.html">System Flowchart</a></li>
+          <li><a href="architecture/design-overview.html">UX/UI &amp; System Design Overview</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>แนวคิดและเทคนิค</summary>
+        <ul class="sidebar-list">
+          <li><a href="concepts/risk-scoring.html">การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li>
+          <li><a href="concepts/multi-layer-analysis.html">การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li>
+          <li><a href="concepts/explainable-ai.html">ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li>
+          <li><a href="concepts/configs.html">พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li>
+          <li><a href="concepts/ai-model-segformer.html">โมเดล AI — SegFormer</a></li>
+          <li><a href="concepts/surya-ocr.html">โมเดล AI — Surya OCR</a></li>
+          <li><a href="concepts/model-training.html">AI Model Training Workflow</a></li>
+          <li><a href="concepts/mmsegmentation.html">MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li>
+          <li><a href="concepts/semantic-segmentation.html">Semantic Segmentation</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>องค์ประกอบระบบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="entities/tech-stack.html">เทคโนโลยีที่ใช้ (Technology Stack)</a></li>
+          <li><a href="entities/actors.html">ผู้ใช้ระบบ (Actors)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การตัดสินใจ</summary>
+        <ul class="sidebar-list">
+          <li><a href="decisions/technology-choices.html">การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การวางแผน</summary>
+        <ul class="sidebar-list">
+          <li><a href="planning/task-tracking.html">การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a></li>
+          <li><a href="planning/project-scope.html">ขอบเขตโครงการ (Project Scope)</a></li>
+          <li><a href="planning/team.html">ทีมงานและผู้รับผิดชอบ (Team)</a></li>
+          <li><a href="planning/backend-documentation.html">Backend Documentation</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การทดสอบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="testing/test-cases.html">กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group" open>
+        <summary>คู่มือและภาคผนวก</summary>
+        <ul class="sidebar-list">
+          <li><a href="log.html">บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li>
+          <li><a href="howto.html">วิธีใช้งาน Wiki (How to Use This Wiki)</a></li>
+          <li><a href="runbook.html">Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li>
+          <li><a href="AGENTS.html" aria-current="page">Wiki Operating Guide</a></li>
+        </ul>
+      </details>
+    </aside>
+    <div class="nav-backdrop" data-nav-backdrop></div>
+    <main class="article" id="main-content">
+      <nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../index.html">หน้าแรก</a><span
+          aria-hidden="true">/</span><span>คู่มือและภาคผนวก</span></nav>
+      <header class="article-header">
+        <h1>Wiki Operating Guide — Scam Image Detection</h1>
+        <p class="article-lead">This wiki serves as the persistent knowledge base for the Scam Image Detection project,
+          developed by Software Engineering students at RMUTL Academic Year 2/2568 .</p>
+        <div class="meta"><span>หมวด คู่มือและภาคผนวก</span><span>ต้นฉบับ AGENTS.md</span></div>
+      </header>
+      <div class="prose">
+        <h1 id="wiki-operating-guide-scam-image-detection">Wiki Operating Guide — Scam Image Detection</h1>
+        <h2 id="project-context">Project Context</h2>
+        <p>This wiki serves as the persistent knowledge base for the <strong>Scam Image Detection</strong> project,
+          developed by Software Engineering students at RMUTL (Academic Year 2/2568).</p>
+        <blockquote>
+          <p><strong>CRITICAL DOMAIN RESTRICTION:</strong> Do NOT conflate this project with standard &quot;fake bank
+            slip detection.&quot; This project aims to detect scam-related image manipulations in a broader context
+            (e.g., romance scams, forged documents, AI-generated synthetic images), not just bank slips.</p>
+        </blockquote>
+        <hr>
+        <h2 id="folder-structure">Folder Structure</h2>
+        <pre><code><div class="code-frame"><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-text">wiki/
+  AGENTS.md          &lt;- This file: The operating guide and schema for LLM agents.
+  index.md           &lt;- The master catalog of all pages (must be updated on every ingest).
+  log.md             &lt;- The chronological operation log (append-only).
+  howto.md           &lt;- User-facing guide on how to interact with the wiki and the LLM.
+  overview.md        &lt;- The high-level synthesis of the entire project.
+
+  concepts/          &lt;- Core concepts and techniques
+    multi-layer-analysis.md
+    risk-scoring.md
+    explainable-ai.md
+    ai-model-segformer.md
+    semantic-segmentation.md
+
+  architecture/      &lt;- System design and structural components
+    system-architecture.md
+    mobile-app.md
+    backend-api.md
+    ai-inference-service.md
+    database-schema.md
+    external-integrations.md
+
+  entities/          &lt;- Named system actors, components, and services
+    actors.md
+    tech-stack.md
+
+  decisions/         &lt;- Engineering trade-offs and technology choices
+    technology-choices.md
+
+  requirements/      &lt;- Functional and non-functional requirements, KPIs
+    objectives-kpis.md
+    functional-requirements.md
+    non-functional-requirements.md
+
+  planning/          &lt;- Scope, tasks, timeline, and team info
+    project-scope.md
+    team.md
+</code></pre>
+      </div></code></pre>
+      <hr>
+      <h2 id="page-convention">Page Convention</h2>
+      <h3 id="frontmatter-yaml">Frontmatter (YAML)</h3>
+      <p>Every page MUST begin with the following YAML frontmatter:</p>
+      <pre><code class="language-yaml"><div class="code-frame"><span class="visually-hidden">ภาษา yaml</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-yaml"><span class="hljs-meta">---</span>
+<span class="hljs-attr">title:</span> <span class="hljs-string">&quot;Page Title (Thai preferred)&quot;</span>
+<span class="hljs-attr">category:</span> <span class="hljs-string">concepts</span> <span class="hljs-string">|</span> <span class="hljs-string">architecture</span> <span class="hljs-string">|</span> <span class="hljs-string">entities</span> <span class="hljs-string">|</span> <span class="hljs-string">decisions</span> <span class="hljs-string">|</span> <span class="hljs-string">requirements</span> <span class="hljs-string">|</span> <span class="hljs-string">planning</span> <span class="hljs-string">|</span> <span class="hljs-string">testing</span>
+<span class="hljs-attr">tags:</span> [<span class="hljs-string">tag1</span>, <span class="hljs-string">tag2</span>]
+<span class="hljs-attr">sources:</span> [<span class="hljs-string">relative/path/to/source.md</span>]
+<span class="hljs-attr">updated:</span> <span class="hljs-string">YYYY-MM-DD</span>
+<span class="hljs-meta">---
+</span></code></pre>
+  </div></code></pre>
+  <h3 id="cross-references">Cross-references</h3>
+  <ul>
+    <li>Use Obsidian-style wikilinks: <code>[[page-name]]</code> or <code>[[page-name|Display Text]]</code>.</li>
+    <li>Any concept mentioned for the first time in a document MUST be linked to its dedicated page.</li>
+    <li>Every page MUST contain a &quot;Related Pages&quot; (หน้าที่เกี่ยวข้อง) section at the very bottom.</li>
+  </ul>
+  <h3 id="page-structure">Page Structure</h3>
+  <ol>
+    <li>A brief, one-sentence summary immediately following the frontmatter.</li>
+    <li>Main content organized logically with H2/H3 headers.</li>
+    <li>A &quot;Key Points&quot; or &quot;Summary&quot; (ประเด็นสำคัญ) section.</li>
+    <li>A &quot;Related Pages&quot; (หน้าที่เกี่ยวข้อง) section.</li>
+  </ol>
+  <hr>
+  <h2 id="llm-agent-workflow">LLM Agent Workflow</h2>
+  <h3 id="1-ingesting-new-documents">1. Ingesting New Documents</h3>
+  <p>When instructed to ingest a document from <code>Document/</code>, <code>design/</code>, or elsewhere:</p>
+  <ol>
+    <li>Read the entire raw source document.</li>
+    <li>Identify core concepts, entities, decisions, and key information.</li>
+    <li>Create or update the relevant wiki pages in the appropriate directories.</li>
+    <li>Update <code>index.md</code> to reflect any newly created pages.</li>
+    <li>Append a new entry to <code>log.md</code> in the exact format:
+      <code>## [YYYY-MM-DD] ingest | &lt;Document Name&gt;</code>
+    </li>
+  </ol>
+  <h3 id="2-querying-answering-user-questions">2. Querying (Answering User Questions)</h3>
+  <ol>
+    <li>Read <code>index.md</code> to locate relevant pages.</li>
+    <li>Read the identified pages to gather context.</li>
+    <li>Summarize the answer and explicitly cite the source wiki pages using wikilinks.</li>
+    <li>If the generated answer holds persistent value, offer to save it as a new wiki page.</li>
+  </ol>
+  <h3 id="3-linting">3. Linting</h3>
+  <p>When instructed to lint the wiki, scan for:</p>
+  <ul>
+    <li>Orphan pages (pages with no incoming links).</li>
+    <li>Conflicting information across different pages.</li>
+    <li>Important concepts that are frequently mentioned but lack a dedicated page.</li>
+    <li>Missing cross-references between obviously related pages.</li>
+    <li>Missing or malformed YAML frontmatter.</li>
+  </ul>
+  <hr>
+  <h2 id="raw-sources-directory">Raw Sources Directory</h2>
+  <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align:left">File</th>
+          <th style="text-align:left">Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="text-align:left"><code>README.md</code></td>
+          <td style="text-align:left">Project overview</td>
+        </tr>
+        <tr>
+          <td style="text-align:left"><code>Document/srs.md</code></td>
+          <td style="text-align:left">Complete Software Requirements Specification</td>
+        </tr>
+        <tr>
+          <td style="text-align:left"><code>Document/objective.md</code></td>
+          <td style="text-align:left">Objectives and KPIs</td>
+        </tr>
+        <tr>
+          <td style="text-align:left"><code>Document/scop.md</code></td>
+          <td style="text-align:left">Project scope and work packages</td>
+        </tr>
+        <tr>
+          <td style="text-align:left"><code>Document/C1-System-Context-Diagram.md</code></td>
+          <td style="text-align:left">C1 Context Diagram</td>
+        </tr>
+        <tr>
+          <td style="text-align:left"><code>Document/C2-Container-Diagram.md</code></td>
+          <td style="text-align:left">C2 Container Diagram</td>
+        </tr>
+        <tr>
+          <td style="text-align:left"><code>Document/Use-Case-Diagram.md</code></td>
+          <td style="text-align:left">Use Case Diagram and FR list</td>
+        </tr>
+        <tr>
+          <td style="text-align:left"><code>Document/flowchart.md</code></td>
+          <td style="text-align:left">User Flow and System Flowchart</td>
+        </tr>
+        <tr>
+          <td style="text-align:left"><code>design/architecture.md</code></td>
+          <td style="text-align:left">Overall system architecture</td>
+        </tr>
+        <tr>
+          <td style="text-align:left"><code>design/design.md</code></td>
+          <td style="text-align:left">Mobile UI/UX design specs</td>
+        </tr>
+        <tr>
+          <td style="text-align:left"><code>design/mobile.md</code></td>
+          <td style="text-align:left">Detailed Mobile App design</td>
+        </tr>
+        <tr>
+          <td style="text-align:left"><code>design/server.md</code></td>
+          <td style="text-align:left">Backend and Server Architecture</td>
+        </tr>
+        <tr>
+          <td style="text-align:left"><code>design/model.md</code></td>
+          <td style="text-align:left">AI Model design</td>
+        </tr>
+        <tr>
+          <td style="text-align:left"><code>design/training.md</code></td>
+          <td style="text-align:left">Model Training pipeline design</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <hr>
+  <h2 id="llm-writing-guidelines">LLM Writing Guidelines</h2>
+  <ul>
+    <li><strong>Primary Language:</strong> Write all page content primarily in <strong>Thai</strong>. Maintain technical
+      terms (frameworks, protocols, libraries) in English according to industry standards.</li>
+    <li><strong>Synthesis over Copying:</strong> Do NOT copy-paste raw source documents verbatim. Synthesize, summarize,
+      and restructure the information to fit the wiki format.</li>
+    <li><strong>Conflict Resolution:</strong> If conflicting information is found, document it using a
+      <code>&gt; [!WARNING]</code> callout block.
+    </li>
+    <li><strong>Information Gaps:</strong> Highlight missing information or open questions using a
+      <code>&gt; [!NOTE]</code> callout block.
+    </li>
+    <li><strong>Authority:</strong> If information overlaps between two documents, explicitly state which document is
+      being treated as the authoritative source.</li>
+  </ul>
+  </div>
+  <footer class="source-panel"><strong>แหล่งข้อมูลของหน้านี้</strong>
+    <ul>
+      <li><a href="../sources/wiki/AGENTS.md">Markdown ต้นฉบับ: AGENTS.md</a></li>
+    </ul>
+  </footer>
+  </main>
+  <aside class="toc-wrap" aria-label="สารบัญในหน้านี้">
+    <p class="toc-title">ในหน้านี้</p>
+    <ol class="toc">
+      <li class="toc-level-2"><a href="#project-context">Project Context</a></li>
+      <li class="toc-level-2"><a href="#folder-structure">Folder Structure</a></li>
+      <li class="toc-level-2"><a href="#page-convention">Page Convention</a></li>
+      <li class="toc-level-3"><a href="#frontmatter-yaml">Frontmatter (YAML)</a></li>
+      <li class="toc-level-3"><a href="#cross-references">Cross-references</a></li>
+      <li class="toc-level-3"><a href="#page-structure">Page Structure</a></li>
+      <li class="toc-level-2"><a href="#llm-agent-workflow">LLM Agent Workflow</a></li>
+      <li class="toc-level-3"><a href="#1-ingesting-new-documents">1. Ingesting New Documents</a></li>
+      <li class="toc-level-3"><a href="#2-querying-answering-user-questions">2. Querying (Answering User Questions)</a>
+      </li>
+      <li class="toc-level-3"><a href="#3-linting">3. Linting</a></li>
+      <li class="toc-level-2"><a href="#raw-sources-directory">Raw Sources Directory</a></li>
+      <li class="toc-level-2"><a href="#llm-writing-guidelines">LLM Writing Guidelines</a></li>
+    </ol>
+  </aside>
+  </div>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title">
+    <div class="search-dialog-head"><label class="visually-hidden" id="search-title"
+        for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…"
+        autocomplete="off" data-search-input><button class="control" type="button" data-search-close
+        aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg></button></div>
+    <div class="search-results" data-search-results aria-live="polite"></div>
+  </dialog>
+  <script src="../assets/js/search-index.js"></script>
+  <script src="../assets/js/site.js"></script>
+</body>
+
+</html>

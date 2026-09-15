@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="th" data-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="โมเดล AI — Surya OCR Surya-OCR คือโมเดล Modern OCR ที่ใช้ดึงข้อความและวิเคราะห์โครงสร้าง Layout Detection จากรูปภาพที่อัปโหลดเข้ามาระบบ โดยถูกจัดอยู่ใน Layer 1: Textual Analysis ชั้นวิเคราะห…">
+  <meta name="color-scheme" content="light dark">
+  <title>โมเดล AI — Surya OCR | ScamGuard Documentation</title>
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <script>document.documentElement.dataset.theme = (() => { try { return localStorage.getItem('scamguard-docs-theme') || 'light' } catch (e) { return 'light' } })(); window.SC_DOCS_ROOT = '../../';</script>
+</head>
+
+<body class="">
+  <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
+  <header class="masthead">
+    <div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false"
+        aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg></button><a class="brand" href="../../index.html"><svg viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z" />
+          <path d="m9.2 12 1.8 1.8 3.9-4.2" />
+        </svg><span>ScamGuard <small>Documentation</small></span></a>
+      <div class="masthead-actions"><button class="control" type="button" data-search-open><svg viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+            aria-hidden="true">
+            <circle cx="11" cy="11" r="6.5" />
+            <path d="m16 16 4 4" />
+          </svg><span>ค้นหา</span><span class="search-shortcut">Ctrl K</span></button><button class="control"
+          type="button" data-theme-toggle aria-label="เปลี่ยนเป็นโหมดมืด"><svg viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.5A7 7 0 0 1 12 3Z" />
+          </svg><span class="theme-label" data-theme-label>โหมดมืด</span></button></div>
+    </div>
+  </header>
+  <div class="docs-shell">
+    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><button class="control nav-close"
+        type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg></button>
+      <p class="sidebar-title">เอกสารทั้งหมด</p>
+      <details class="sidebar-group">
+        <summary>ภาพรวม</summary>
+        <ul class="sidebar-list">
+          <li><a href="../overview.html">ภาพรวมโปรเจค</a></li>
+          <li><a href="../index.html">สารบัญ Wiki — โปรเจค Scam Image Detection</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>ความต้องการระบบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../requirements/functional-requirements.html">ความต้องการเชิงฟังก์ชัน (Functional
+              Requirements)</a></li>
+          <li><a href="../requirements/non-functional-requirements.html">ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional
+              Requirements)</a></li>
+          <li><a href="../requirements/traceability-matrix.html">เมทริกซ์การสืบย้อนความต้องการ</a></li>
+          <li><a href="../requirements/objectives-kpis.html">วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp;
+              KPIs)</a></li>
+          <li><a href="../requirements/srs.html">Software Requirements Specification (SRS)</a></li>
+          <li><a href="../requirements/use-case-diagram.html">Use Case Diagram</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>สถาปัตยกรรม</summary>
+        <ul class="sidebar-list">
+          <li><a href="../architecture/database-migrations.html">การจัดการการย้ายฐานข้อมูล (Database Migrations)</a>
+          </li>
+          <li><a href="../architecture/external-integrations.html">การเชื่อมต่อบริการภายนอก (External Integrations)</a>
+          </li>
+          <li><a href="../architecture/database-schema.html">โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li>
+          <li><a href="../architecture/system-architecture.html">สถาปัตยกรรมระบบ (System Architecture)</a></li>
+          <li><a href="../architecture/admin-portal.html">สถาปัตยกรรมและการออกแบบ Admin Portal</a></li>
+          <li><a href="../architecture/mobile-app.html">สถาปัตยกรรม Mobile App</a></li>
+          <li><a href="../architecture/ai-inference-service.html">AI Inference Service</a></li>
+          <li><a href="../architecture/backend-api.html">Backend API — FastAPI Orchestrator</a></li>
+          <li><a href="../architecture/c1-system-context-diagram.html">C1 System Context Diagram</a></li>
+          <li><a href="../architecture/c2-container-diagram.html">C2 Container Diagram</a></li>
+          <li><a href="../architecture/c3-component-diagram.html">C3 Component Diagram - API Application</a></li>
+          <li><a href="../architecture/c4-code-diagram.html">C4 Code Diagram - Image Scanning Flow</a></li>
+          <li><a href="../architecture/database-er-diagram.html">Entity Relationship Diagram (ER Diagram)</a></li>
+          <li><a href="../architecture/mobile-design.html">Mobile App Architecture</a></li>
+          <li><a href="../architecture/flowchart.html">System Flowchart</a></li>
+          <li><a href="../architecture/design-overview.html">UX/UI &amp; System Design Overview</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group" open>
+        <summary>แนวคิดและเทคนิค</summary>
+        <ul class="sidebar-list">
+          <li><a href="risk-scoring.html">การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li>
+          <li><a href="multi-layer-analysis.html">การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li>
+          <li><a href="explainable-ai.html">ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li>
+          <li><a href="configs.html">พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li>
+          <li><a href="ai-model-segformer.html">โมเดล AI — SegFormer</a></li>
+          <li><a href="surya-ocr.html" aria-current="page">โมเดล AI — Surya OCR</a></li>
+          <li><a href="model-training.html">AI Model Training Workflow</a></li>
+          <li><a href="mmsegmentation.html">MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li>
+          <li><a href="semantic-segmentation.html">Semantic Segmentation</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>องค์ประกอบระบบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../entities/tech-stack.html">เทคโนโลยีที่ใช้ (Technology Stack)</a></li>
+          <li><a href="../entities/actors.html">ผู้ใช้ระบบ (Actors)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การตัดสินใจ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../decisions/technology-choices.html">การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การวางแผน</summary>
+        <ul class="sidebar-list">
+          <li><a href="../planning/task-tracking.html">การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a>
+          </li>
+          <li><a href="../planning/project-scope.html">ขอบเขตโครงการ (Project Scope)</a></li>
+          <li><a href="../planning/team.html">ทีมงานและผู้รับผิดชอบ (Team)</a></li>
+          <li><a href="../planning/backend-documentation.html">Backend Documentation</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การทดสอบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../testing/test-cases.html">กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>คู่มือและภาคผนวก</summary>
+        <ul class="sidebar-list">
+          <li><a href="../log.html">บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li>
+          <li><a href="../howto.html">วิธีใช้งาน Wiki (How to Use This Wiki)</a></li>
+          <li><a href="../runbook.html">Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li>
+          <li><a href="../AGENTS.html">Wiki Operating Guide</a></li>
+        </ul>
+      </details>
+    </aside>
+    <div class="nav-backdrop" data-nav-backdrop></div>
+    <main class="article" id="main-content">
+      <nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span
+          aria-hidden="true">/</span><span>แนวคิดและเทคนิค</span></nav>
+      <header class="article-header">
+        <h1>โมเดล AI — Surya OCR</h1>
+        <p class="article-lead">Surya-OCR คือโมเดล Modern OCR ที่ใช้ดึงข้อความและวิเคราะห์โครงสร้าง Layout Detection
+          จากรูปภาพที่อัปโหลดเข้ามาระบบ โดยถูกจัดอยู่ใน Layer 1: Textual Analysis ชั้นวิเคราะห์ข้อความ รันแบบ Surya OCR
+          v0.5.0 Native PyTorch</p>
+        <div class="meta"><span>หมวด แนวคิดและเทคนิค</span><time datetime="2026-08-06">อัปเดต
+            2026-08-06</time><span>ต้นฉบับ concepts/surya-ocr.md</span></div>
+        <div class="tags"><span class="tag">ocr</span><span class="tag">layout-detection</span><span
+            class="tag">native-pytorch</span><span class="tag">text-extraction</span></div>
+      </header>
+      <div class="prose">
+        <h1 id="โมเดล-ai-surya-ocr">โมเดล AI — Surya OCR</h1>
+        <p><strong>Surya-OCR</strong> คือโมเดล Modern OCR ที่ใช้ดึงข้อความและวิเคราะห์โครงสร้าง (Layout Detection)
+          จากรูปภาพที่อัปโหลดเข้ามาระบบ โดยถูกจัดอยู่ใน <strong>Layer 1: Textual Analysis
+            (ชั้นวิเคราะห์ข้อความ)</strong> รันแบบ <strong>Surya OCR v0.5.0 (Native PyTorch)</strong></p>
+        <hr>
+        <h2 id="ทำไมถึงเลือก-surya-ocr">ทำไมถึงเลือก Surya OCR?</h2>
+        <p>โมเดลนี้ทำงานบนเวอร์ชัน <strong>0.5.0 (Native PyTorch)</strong> ซึ่งมีคุณสมบัติดังนี้:</p>
+        <ol>
+          <li><strong>Multi-lingual Support:</strong> รองรับการอ่านกว่า 90 ภาษาตาม model card ของผู้พัฒนา Surya v0.5.0
+            รวมทั้งภาษาไทยและภาษาอังกฤษ (เกณฑ์รับรอง: อ่านไทย/อังกฤษบนภาพ ≥720px ได้ถูกต้อง)</li>
+          <li><strong>Native PyTorch Inference:</strong> รันโมเดลผ่านสถาปัตยกรรม PyTorch และใช้งานทรัพยากร GPU (CUDA)
+            ได้เต็มประสิทธิภาพโดยตรง</li>
+          <li><strong>Layout Detection:</strong> สามารถวิเคราะห์โครงสร้างเอกสาร แยกแยะบรรทัด
+            และจัดกลุ่มฟิลด์บนสลิปโอนเงินได้แม่นยำสูง</li>
+          <li><strong>Robust to Noise:</strong> ทนทานต่อภาพเบลอ ภาพที่ถูกบีบอัด หรือภาพจากสกรีนช็อตผ่านแอปแชต</li>
+        </ol>
+        <h2 id="อัลกอริทึมและสมการคณิตศาสตร์-mathematical-formulation">อัลกอริทึมและสมการคณิตศาสตร์ (Mathematical
+          Formulation)</h2>
+        <p>Surya-OCR อาศัยสถาปัตยกรรมระดับ Vision-Language Model โดยแบ่งการทำงานเป็นส่วนของการเข้ารหัสภาพ (Vision
+          Encoder) และการถอดรหัสข้อความ (Text Decoder):</p>
+        <ol>
+          <li>
+            <p><strong>Vision Encoder (Feature Extraction):</strong>
+              ภาพอินพุต $I$ จะถูกแปลงเป็น Sequence ของ Vision Tokens $F_v$ ผ่านเครือข่าย Transformer/CNN:
+              $$ F_v = \text{Encoder}_{\text{vision}}(I) $$</p>
+          </li>
+          <li>
+            <p><strong>Text Decoder (Autoregressive Text Generation):</strong>
+              การทำนายข้อความ $Y = (y_1, y_2, \dots, y_T)$ อาศัยความน่าจะเป็นแบบมีเงื่อนไข (Conditional Probability)
+              ในการทำนายตัวอักษรถัดไป:
+              $$ P(Y | I) = \prod_{t=1}^T P(y_t | y_{&lt;t}, F_v) $$
+              ฟังก์ชันเป้าหมาย (Objective Function) เพื่อลดค่าข้อผิดพลาดระหว่างการเทรนคือ Cross-Entropy Loss ($L_{CE}$):
+              $$ L_{CE} = - \sum_{t=1}^T \log P(y_t | y_{&lt;t}, F_v) $$</p>
+          </li>
+          <li>
+            <p><strong>Layout Detection (Bounding Box Regression):</strong>
+              เพื่อกำหนดขอบเขต (Bounding Box) ของตัวอักษร โมเดลใช้ฟังก์ชัน Smooth L1 Loss ในการเทียบพิกัด $(x, y, w,
+              h)$:
+              $$ L_{loc}(b, \hat{b}) = \sum_{i \in {x,y,w,h}} \text{smooth}<em>{L_1}(b_i - \hat{b}<em>i) $$
+                  เมื่อ $\text{smooth}</em>{L_1}(x)$ ถูกนิยามเป็น:
+                $$ \text{smooth}</em>{L_1}(x) = \begin{cases} 0.5 x^2 &amp; \text{if } |x| &lt; 1 \ |x| - 0.5 &amp;
+              \text{otherwise} \end{cases} $$</p>
+          </li>
+        </ol>
+        <hr>
+        <h2 id="บทบาทในระบบ">บทบาทในระบบ</h2>
+        <ol>
+          <li><strong>Text Recognition:</strong> รับรูปภาพเป็นอินพุตและสกัดออกมาเป็นตัวอักษร (String)
+            พร้อมพิกัดโครงสร้างข้อความ</li>
+          <li><strong>Scam Keyword Matching:</strong> สตริงที่สกัดได้จะถูกส่งต่อให้ NLP ภายใน Backend API
+            กรองหาคำหลอกลวงหรือ Scam Keywords (เช่น &quot;กู้เงินด่วน&quot;, &quot;โอนเงินรับปันผล&quot;)
+            เพื่อคำนวณคะแนนความเสี่ยงด้านข้อความ (Textual Score) ต่อไป</li>
+        </ol>
+        <hr>
+        <h2 id="หน้าที่เกี่ยวข้อง">หน้าที่เกี่ยวข้อง</h2>
+        <ul>
+          <li><a href="multi-layer-analysis.html">concepts/multi-layer-analysis</a></li>
+          <li><a href="risk-scoring.html">concepts/risk-scoring</a></li>
+          <li><a href="../architecture/ai-inference-service.html">architecture/ai-inference-service</a></li>
+        </ul>
+      </div>
+      <footer class="source-panel"><strong>แหล่งข้อมูลของหน้านี้</strong>
+        <ul>
+          <li><a href="../../sources/wiki/concepts/surya-ocr.md">Markdown ต้นฉบับ: concepts/surya-ocr.md</a></li>
+          <li>Document/model/model.md</li>
+        </ul>
+      </footer>
+    </main>
+    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้">
+      <p class="toc-title">ในหน้านี้</p>
+      <ol class="toc">
+        <li class="toc-level-2"><a
+            href="#%E0%B8%97%E0%B8%B3%E0%B9%84%E0%B8%A1%E0%B8%96%E0%B8%B6%E0%B8%87%E0%B9%80%E0%B8%A5%E0%B8%B7%E0%B8%AD%E0%B8%81-surya-ocr">ทำไมถึงเลือก
+            Surya OCR?</a></li>
+        <li class="toc-level-2"><a
+            href="#%E0%B8%AD%E0%B8%B1%E0%B8%A5%E0%B8%81%E0%B8%AD%E0%B8%A3%E0%B8%B4%E0%B8%97%E0%B8%B6%E0%B8%A1%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%AA%E0%B8%A1%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%84%E0%B8%93%E0%B8%B4%E0%B8%95%E0%B8%A8%E0%B8%B2%E0%B8%AA%E0%B8%95%E0%B8%A3%E0%B9%8C-mathematical-formulation">อัลกอริทึมและสมการคณิตศาสตร์
+            (Mathematical Formulation)</a></li>
+        <li class="toc-level-2"><a
+            href="#%E0%B8%9A%E0%B8%97%E0%B8%9A%E0%B8%B2%E0%B8%97%E0%B9%83%E0%B8%99%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A">บทบาทในระบบ</a>
+        </li>
+        <li class="toc-level-2"><a
+            href="#%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%87">หน้าที่เกี่ยวข้อง</a>
+        </li>
+      </ol>
+    </aside>
+  </div>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title">
+    <div class="search-dialog-head"><label class="visually-hidden" id="search-title"
+        for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…"
+        autocomplete="off" data-search-input><button class="control" type="button" data-search-close
+        aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg></button></div>
+    <div class="search-results" data-search-results aria-live="polite"></div>
+  </dialog>
+  <script src="../../assets/js/search-index.js"></script>
+  <script src="../../assets/js/site.js"></script>
+</body>
+
+</html>

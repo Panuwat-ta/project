@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="th" data-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล ระบบใช้ Storage 3 ประเภทร่วมกัน: PostgreSQL สำหรับข้อมูลเชิงสัมพันธ์, Redis สำหรับ Cache และ Cloud Object Storage สำหรับไฟล์ --- PostgreSQL — ฐานข้อมูลห…">
+  <meta name="color-scheme" content="light dark">
+  <title>โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล | ScamGuard Documentation</title>
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <script>document.documentElement.dataset.theme = (() => { try { return localStorage.getItem('scamguard-docs-theme') || 'light' } catch (e) { return 'light' } })(); window.SC_DOCS_ROOT = '../../';</script>
+</head>
+
+<body class="">
+  <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
+  <header class="masthead">
+    <div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false"
+        aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg></button><a class="brand" href="../../index.html"><svg viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z" />
+          <path d="m9.2 12 1.8 1.8 3.9-4.2" />
+        </svg><span>ScamGuard <small>Documentation</small></span></a>
+      <div class="masthead-actions"><button class="control" type="button" data-search-open><svg viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+            aria-hidden="true">
+            <circle cx="11" cy="11" r="6.5" />
+            <path d="m16 16 4 4" />
+          </svg><span>ค้นหา</span><span class="search-shortcut">Ctrl K</span></button><button class="control"
+          type="button" data-theme-toggle aria-label="เปลี่ยนเป็นโหมดมืด"><svg viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.5A7 7 0 0 1 12 3Z" />
+          </svg><span class="theme-label" data-theme-label>โหมดมืด</span></button></div>
+    </div>
+  </header>
+  <div class="docs-shell">
+    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><button class="control nav-close"
+        type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg></button>
+      <p class="sidebar-title">เอกสารทั้งหมด</p>
+      <details class="sidebar-group">
+        <summary>ภาพรวม</summary>
+        <ul class="sidebar-list">
+          <li><a href="../overview.html">ภาพรวมโปรเจค</a></li>
+          <li><a href="../index.html">สารบัญ Wiki — โปรเจค Scam Image Detection</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>ความต้องการระบบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../requirements/functional-requirements.html">ความต้องการเชิงฟังก์ชัน (Functional
+              Requirements)</a></li>
+          <li><a href="../requirements/non-functional-requirements.html">ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional
+              Requirements)</a></li>
+          <li><a href="../requirements/traceability-matrix.html">เมทริกซ์การสืบย้อนความต้องการ</a></li>
+          <li><a href="../requirements/objectives-kpis.html">วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp;
+              KPIs)</a></li>
+          <li><a href="../requirements/srs.html">Software Requirements Specification (SRS)</a></li>
+          <li><a href="../requirements/use-case-diagram.html">Use Case Diagram</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group" open>
+        <summary>สถาปัตยกรรม</summary>
+        <ul class="sidebar-list">
+          <li><a href="database-migrations.html">การจัดการการย้ายฐานข้อมูล (Database Migrations)</a></li>
+          <li><a href="external-integrations.html">การเชื่อมต่อบริการภายนอก (External Integrations)</a></li>
+          <li><a href="database-schema.html" aria-current="page">โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li>
+          <li><a href="system-architecture.html">สถาปัตยกรรมระบบ (System Architecture)</a></li>
+          <li><a href="admin-portal.html">สถาปัตยกรรมและการออกแบบ Admin Portal</a></li>
+          <li><a href="mobile-app.html">สถาปัตยกรรม Mobile App</a></li>
+          <li><a href="ai-inference-service.html">AI Inference Service</a></li>
+          <li><a href="backend-api.html">Backend API — FastAPI Orchestrator</a></li>
+          <li><a href="c1-system-context-diagram.html">C1 System Context Diagram</a></li>
+          <li><a href="c2-container-diagram.html">C2 Container Diagram</a></li>
+          <li><a href="c3-component-diagram.html">C3 Component Diagram - API Application</a></li>
+          <li><a href="c4-code-diagram.html">C4 Code Diagram - Image Scanning Flow</a></li>
+          <li><a href="database-er-diagram.html">Entity Relationship Diagram (ER Diagram)</a></li>
+          <li><a href="mobile-design.html">Mobile App Architecture</a></li>
+          <li><a href="flowchart.html">System Flowchart</a></li>
+          <li><a href="design-overview.html">UX/UI &amp; System Design Overview</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>แนวคิดและเทคนิค</summary>
+        <ul class="sidebar-list">
+          <li><a href="../concepts/risk-scoring.html">การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li>
+          <li><a href="../concepts/multi-layer-analysis.html">การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li>
+          <li><a href="../concepts/explainable-ai.html">ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li>
+          <li><a href="../concepts/configs.html">พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li>
+          <li><a href="../concepts/ai-model-segformer.html">โมเดล AI — SegFormer</a></li>
+          <li><a href="../concepts/surya-ocr.html">โมเดล AI — Surya OCR</a></li>
+          <li><a href="../concepts/model-training.html">AI Model Training Workflow</a></li>
+          <li><a href="../concepts/mmsegmentation.html">MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li>
+          <li><a href="../concepts/semantic-segmentation.html">Semantic Segmentation</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>องค์ประกอบระบบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../entities/tech-stack.html">เทคโนโลยีที่ใช้ (Technology Stack)</a></li>
+          <li><a href="../entities/actors.html">ผู้ใช้ระบบ (Actors)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การตัดสินใจ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../decisions/technology-choices.html">การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การวางแผน</summary>
+        <ul class="sidebar-list">
+          <li><a href="../planning/task-tracking.html">การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a>
+          </li>
+          <li><a href="../planning/project-scope.html">ขอบเขตโครงการ (Project Scope)</a></li>
+          <li><a href="../planning/team.html">ทีมงานและผู้รับผิดชอบ (Team)</a></li>
+          <li><a href="../planning/backend-documentation.html">Backend Documentation</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การทดสอบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../testing/test-cases.html">กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>คู่มือและภาคผนวก</summary>
+        <ul class="sidebar-list">
+          <li><a href="../log.html">บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li>
+          <li><a href="../howto.html">วิธีใช้งาน Wiki (How to Use This Wiki)</a></li>
+          <li><a href="../runbook.html">Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li>
+          <li><a href="../AGENTS.html">Wiki Operating Guide</a></li>
+        </ul>
+      </details>
+    </aside>
+    <div class="nav-backdrop" data-nav-backdrop></div>
+    <main class="article" id="main-content">
+      <nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span
+          aria-hidden="true">/</span><span>สถาปัตยกรรม</span></nav>
+      <header class="article-header">
+        <h1>โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</h1>
+        <p class="article-lead">ระบบใช้ Storage 3 ประเภทร่วมกัน: PostgreSQL สำหรับข้อมูลเชิงสัมพันธ์, Redis สำหรับ Cache
+          และ Cloud Object Storage สำหรับไฟล์</p>
+        <div class="meta"><span>หมวด สถาปัตยกรรม</span><time datetime="2026-09-13">อัปเดต 2026-09-13</time><span>ต้นฉบับ
+            architecture/database-schema.md</span></div>
+        <div class="tags"><span class="tag">PostgreSQL</span><span class="tag">Redis</span><span
+            class="tag">cache</span><span class="tag">cloud-storage</span><span class="tag">schema</span><span
+            class="tag">ACID</span></div>
+      </header>
+      <div class="prose">
+        <h1 id="โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล">โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</h1>
+        <p>ระบบใช้ Storage 3 ประเภทร่วมกัน: PostgreSQL สำหรับข้อมูลเชิงสัมพันธ์, Redis สำหรับ Cache และ Cloud Object
+          Storage สำหรับไฟล์</p>
+        <hr>
+        <h2 id="postgresql-ฐานข้อมูลหลัก">PostgreSQL — ฐานข้อมูลหลัก</h2>
+        <p><strong>หน้าที่:</strong> เก็บข้อมูลเชิงสัมพันธ์ที่มีโครงสร้างทั้งหมดด้วย ACID Transaction</p>
+        <h3 id="ตารางหลัก-11-ตาราง-9-หลัก-2-archive">ตารางหลัก (11 ตาราง: 9 หลัก + 2 archive)</h3>
+        <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
+          <table>
+            <thead>
+              <tr>
+                <th style="text-align:left">ตาราง</th>
+                <th style="text-align:left">คำอธิบาย</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="text-align:left">users</td>
+                <td style="text-align:left">บัญชีผู้ใช้: email, hashed password, full name, role (user/researcher; admin
+                  แยกตาราง admins, CHECK <code>ck_users_role</code>), is_active, created_at, updated_at</td>
+              </tr>
+              <tr>
+                <td style="text-align:left">admins</td>
+                <td style="text-align:left">บัญชีผู้ดูแลระบบแยกตาราง, คอลัมน์ is_superadmin (Boolean, default False)
+                </td>
+              </tr>
+              <tr>
+                <td style="text-align:left">scans</td>
+                <td style="text-align:left">รายการ Scan: id UUID, user_id, image_hash SHA-256, raw_image_url,
+                  heatmap_image_url, title, text_score, visual_score, source_score, total_risk_score (CHECK 0–100),
+                  exif_data, ocr_text, scam_keywords_found, reverse_search_results, ai_gen_probability, xai_explanation,
+                  status (CHECK 8 ค่า), progress (CHECK 0–100), created_at, completed_at (ระดับความเสี่ยงคำนวณตอนแสดงผล)
+                </td>
+              </tr>
+              <tr>
+                <td style="text-align:left">scam_reports</td>
+                <td style="text-align:left">รายงาน Scam จากผู้ใช้: scan_id, category (CHECK 7 ค่า canonical), reason,
+                  platform, reference_url, allow_research_use, status (pending/reviewing/approved/rejected), admin_note,
+                  moderated_by/at (FK admins, SET NULL), version</td>
+              </tr>
+              <tr>
+                <td style="text-align:left">consent_logs</td>
+                <td style="text-align:left">ประวัติการยินยอม PDPA แบบตรวจสอบย้อนหลังได้: user_id (nullable, SET NULL
+                  เมื่อลบ user), system_consent, research_consent, ip_address, user_agent, created_at (สร้างตอน
+                  register; trigger ล้าง PII ตอนลบ user)</td>
+              </tr>
+              <tr>
+                <td style="text-align:left">model_versions</td>
+                <td style="text-align:left">Registry โมเดล: version_tag, file_path, is_active, deployed_at,
+                  artifact_checksum, framework_compatibility (onnx), metrics a_acc, m_iou, m_acc, m_dice (เปลี่ยนชื่อจาก
+                  accuracy/precision/recall โดย migration 042de00eee1b), dataset_reference, created_by (FK admins, SET
+                  NULL), status (CHECK), deployment_history</td>
+              </tr>
+              <tr>
+                <td style="text-align:left">admin_sessions</td>
+                <td style="text-align:left">Session/refresh-token rotation ของ admin</td>
+              </tr>
+              <tr>
+                <td style="text-align:left">audit_log</td>
+                <td style="text-align:left">บันทึก Append-only ของการกระทำโดย Admin: admin_id, action, entity_type,
+                  entity_id, before_state, after_state, reason, ip_address, user_agent, request_id, details, created_at
+                </td>
+              </tr>
+              <tr>
+                <td style="text-align:left">export_jobs</td>
+                <td style="text-align:left">งาน export dataset: admin_id (nullable, SET NULL), status (CHECK), progress,
+                  total_rows, file_size_bytes, error_message, file_path, manifest, filter_config, expires_at (7 วัน),
+                  created_at, completed_at</td>
+              </tr>
+              <tr>
+                <td style="text-align:left">audit_log_archive / consent_logs_archive</td>
+                <td style="text-align:left">ที่เก็บ log เกิน retention 1 ปี (+archived_at, ไม่มี FK/trigger; ย้ายโดย
+                  <code>scripts/archive_old_logs.py</code> รายเดือน)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3 id="append-only-trigger-ของ-audit-log">Append-only trigger ของ audit_log</h3>
+        <p>ตาราง audit_log เป็น append-only ที่ระดับฐานข้อมูล: trigger <code>trg_prevent_audit_log_modification</code>
+          (<code>BEFORE UPDATE OR DELETE ON audit_log FOR EACH ROW</code>) เรียกฟังก์ชัน
+          <code>prevent_audit_log_modification()</code> ซึ่ง <code>RAISE EXCEPTION</code> เสมอ จึงห้าม UPDATE และ DELETE
+          ทุกแถว (สร้างโดย migration <code>e3844dc4110e</code>; migration <code>c8d9e0f1a2b3</code> เปิดช่องเฉพาะ DELETE
+          ใน transaction ที่ตั้ง <code>SET LOCAL app.allow_audit_archive='on'</code> ให้สคริปต์ archive ใช้)
+        </p>
+        <h3 id="field-ที่เกี่ยวกับ-pdpa">Field ที่เกี่ยวกับ PDPA</h3>
+        <p>consent จะถูกส่งผ่าน body ของ register แล้วบันทึกเป็นแถวใหม่ใน consent_logs:</p>
+        <ul>
+          <li>system_consent — ยินยอมให้ประมวลผลรูปภาพ (จำเป็น ถ้าไม่ยินยอมใช้แอปไม่ได้)</li>
+          <li>research_consent — ยินยอมให้นำรูปภาพไป Train AI (ไม่บังคับ ถอนได้)</li>
+        </ul>
+        <hr>
+        <h2 id="redis-cache-store">Redis — Cache Store</h2>
+        <p><strong>หน้าที่:</strong> ค้นหาภาพที่เคยวิเคราะห์แล้วด้วยความเร็วสูง เพื่อหลีกเลี่ยงการรัน AI ซ้ำ</p>
+        <h3 id="การทำงาน">การทำงาน</h3>
+        <ol>
+          <li>เมื่อรับรูปภาพ API จะคำนวณ <strong>SHA-256</strong> ของไฟล์รูป</li>
+          <li>ใช้ Hash นั้นเป็น key ใน Redis (TTL 30 วัน)</li>
+          <li><strong>Cache Hit</strong> — พบ Hash ใน Redis → ใช้ผล inference ที่แคชไว้ → ส่งคืนทันที (เป้าหมาย &lt; 3
+            วินาที)</li>
+          <li><strong>Cache Miss</strong> — ไม่พบ Hash → รัน Pipeline ครบ → เก็บใน PostgreSQL → เขียน Hash ลง Redis</li>
+        </ol>
+        <h3 id="cache-invalidation">Cache Invalidation</h3>
+        <ul>
+          <li>Redis Key หมดอายุตาม TTL ที่ตั้งไว้</li>
+          <li>เมื่อ Deploy โมเดลใหม่ (น้ำหนักใหม่) Cache entry เก่าอาจ Stale — Admin สั่ง Cache Invalidation แบบ Forced
+            ได้</li>
+        </ul>
+        <hr>
+        <h2 id="local-filesystem-storage">Local Filesystem Storage</h2>
+        <p><strong>หน้าที่:</strong> เก็บไฟล์รูป (normalize เป็น PNG) ที่ไม่เหมาะเก็บในฐานข้อมูล Relational</p>
+        <h3 id="โครงสร้างการจัดเก็บ">โครงสร้างการจัดเก็บ</h3>
+        <pre><code><div class="code-frame"><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-text">uploads/
+  รูปต้นฉบับ (normalize lossless PNG)
+  heatmaps/
+    Heatmap overlay (mask-to-heatmap)
+</code></pre>
+      </div></code></pre>
+      <p>DB เก็บเฉพาะ path ของรูปต้นฉบับและ Heatmap</p>
+      <h3 id="access-control">Access Control</h3>
+      <ul>
+        <li>เสิร์ฟผ่าน /uploads ให้ admin portal preview ได้</li>
+      </ul>
+      <h3 id="การเก็บรักษาข้อมูล">การเก็บรักษาข้อมูล</h3>
+      <ul>
+        <li>scan + ไฟล์รูป (raw/heatmap): ลบอัตโนมัติเมื่ออายุเกิน 90 วัน
+          (<code>server/scripts/purge_old_scans.py</code>, cron ทุกวัน 03:00)</li>
+        <li>audit_log/consent_logs: archive เมื่ออายุเกิน 1 ปี (<code>server/scripts/archive_old_logs.py</code>, cron
+          วันที่ 1 เวลา 04:00)</li>
+        <li>ไฟล์ export: เก็บ 7 วันแล้ว mark <code>expired</code></li>
+      </ul>
+      <aside class="callout callout-warning" aria-label="คำเตือน">
+        <p class="callout-title">คำเตือน</p>
+        <p>ข้อความเดิมว่า &quot;รูปต้นฉบับถูกลบเมื่อวิเคราะห์เสร็จ&quot; ไม่ตรงกับโค้ดปัจจุบัน
+          (<code>scan_service.py</code>
+          บันทึก PNG เป็นหลักฐาน, ไม่มี step ลบหลังวิเคราะห์) — ยึดนโยบาย purge 90 วันข้างต้นเป็นหลัก</p>
+      </aside>
+      <hr>
+      <h2 id="ประเด็นสำคัญ">ประเด็นสำคัญ</h2>
+      <ul>
+        <li>PostgreSQL คือ Source of Truth สำหรับข้อมูลที่มีโครงสร้างทั้งหมด (11 ตาราง: 9 หลัก + 2 archive)</li>
+        <li>Redis คือ Performance Optimization — ล้างและสร้างใหม่ได้ (TTL 30 วัน)</li>
+        <li>Local filesystem รับผิดชอบไฟล์รูปทั้งหมด ฐานข้อมูล Relational เก็บแค่ Path/URL</li>
+        <li>PDPA Compliance บังคับที่ระดับ Storage: เก็บน้อยที่สุด, consent ผ่าน register body ไปยัง consent logs,
+          ถอนได้</li>
+      </ul>
+      <hr>
+      <h2 id="หน้าที่เกี่ยวข้อง">หน้าที่เกี่ยวข้อง</h2>
+      <ul>
+        <li><a href="database-er-diagram.html">แผนผังความสัมพันธ์ฐานข้อมูล (ER Diagram)</a></li>
+        <li><a href="database-migrations.html">การจัดการการย้ายฐานข้อมูล (Database Migrations)</a></li>
+        <li><a href="backend-api.html">Backend API — FastAPI Orchestrator</a></li>
+        <li><a href="admin-portal.html">สถาปัตยกรรม Admin Portal</a></li>
+        <li><a href="ai-inference-service.html">AI Inference Service</a></li>
+        <li><a href="system-architecture.html">สถาปัตยกรรมระบบรวม</a></li>
+        <li><a href="../requirements/non-functional-requirements.html">ข้อกำหนดความต้องการที่ไม่ใช่ฟังก์ชัน</a></li>
+        <li><a href="../concepts/risk-scoring.html">การคำนวณคะแนนความเสี่ยง</a></li>
+      </ul>
+  </div>
+  <footer class="source-panel"><strong>แหล่งข้อมูลของหน้านี้</strong>
+    <ul>
+      <li><a href="../../sources/wiki/architecture/database-schema.md">Markdown ต้นฉบับ:
+          architecture/database-schema.md</a></li>
+      <li>design/architecture.md</li>
+      <li>design/server.md</li>
+      <li>database/ER_Diagram.md</li>
+    </ul>
+  </footer>
+  </main>
+  <aside class="toc-wrap" aria-label="สารบัญในหน้านี้">
+    <p class="toc-title">ในหน้านี้</p>
+    <ol class="toc">
+      <li class="toc-level-2"><a
+          href="#postgresql-%E0%B8%90%E0%B8%B2%E0%B8%99%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B8%B9%E0%B8%A5%E0%B8%AB%E0%B8%A5%E0%B8%B1%E0%B8%81">PostgreSQL
+          — ฐานข้อมูลหลัก</a></li>
+      <li class="toc-level-3"><a
+          href="#%E0%B8%95%E0%B8%B2%E0%B8%A3%E0%B8%B2%E0%B8%87%E0%B8%AB%E0%B8%A5%E0%B8%B1%E0%B8%81-11-%E0%B8%95%E0%B8%B2%E0%B8%A3%E0%B8%B2%E0%B8%87-9-%E0%B8%AB%E0%B8%A5%E0%B8%B1%E0%B8%81-2-archive">ตารางหลัก
+          (11 ตาราง: 9 หลัก + 2 archive)</a></li>
+      <li class="toc-level-3"><a href="#append-only-trigger-%E0%B8%82%E0%B8%AD%E0%B8%87-audit-log">Append-only trigger
+          ของ audit_log</a></li>
+      <li class="toc-level-3"><a
+          href="#field-%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%81%E0%B8%B1%E0%B8%9A-pdpa">Field
+          ที่เกี่ยวกับ PDPA</a></li>
+      <li class="toc-level-2"><a href="#redis-cache-store">Redis — Cache Store</a></li>
+      <li class="toc-level-3"><a
+          href="#%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%97%E0%B8%B3%E0%B8%87%E0%B8%B2%E0%B8%99">การทำงาน</a></li>
+      <li class="toc-level-3"><a href="#cache-invalidation">Cache Invalidation</a></li>
+      <li class="toc-level-2"><a href="#local-filesystem-storage">Local Filesystem Storage</a></li>
+      <li class="toc-level-3"><a
+          href="#%E0%B9%82%E0%B8%84%E0%B8%A3%E0%B8%87%E0%B8%AA%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B9%80%E0%B8%81%E0%B9%87%E0%B8%9A">โครงสร้างการจัดเก็บ</a>
+      </li>
+      <li class="toc-level-3"><a href="#access-control">Access Control</a></li>
+      <li class="toc-level-3"><a
+          href="#%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%81%E0%B9%87%E0%B8%9A%E0%B8%A3%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B8%B2%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B8%B9%E0%B8%A5">การเก็บรักษาข้อมูล</a>
+      </li>
+      <li class="toc-level-2"><a
+          href="#%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%94%E0%B9%87%E0%B8%99%E0%B8%AA%E0%B8%B3%E0%B8%84%E0%B8%B1%E0%B8%8D">ประเด็นสำคัญ</a>
+      </li>
+      <li class="toc-level-2"><a
+          href="#%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%87">หน้าที่เกี่ยวข้อง</a>
+      </li>
+    </ol>
+  </aside>
+  </div>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title">
+    <div class="search-dialog-head"><label class="visually-hidden" id="search-title"
+        for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…"
+        autocomplete="off" data-search-input><button class="control" type="button" data-search-close
+        aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg></button></div>
+    <div class="search-results" data-search-results aria-live="polite"></div>
+  </dialog>
+  <script src="../../assets/js/search-index.js"></script>
+  <script src="../../assets/js/site.js"></script>
+</body>
+
+</html>

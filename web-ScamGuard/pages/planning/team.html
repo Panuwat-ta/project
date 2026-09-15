@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="th" data-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="ทีมงานและผู้รับผิดชอบ Team สมาชิกผู้พัฒนาโครงการ บทบาท และอาจารย์ที่ปรึกษา สำหรับโครงการ Scam Image Detection --- สถาบันที่สังกัด มหาวิทยาลัยเทคโนโลยีราชมงคลล้านนา RMUTL - วิทยาเขตภาคพายัพเช…">
+  <meta name="color-scheme" content="light dark">
+  <title>ทีมงานและผู้รับผิดชอบ (Team) | ScamGuard Documentation</title>
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <script>document.documentElement.dataset.theme = (() => { try { return localStorage.getItem('scamguard-docs-theme') || 'light' } catch (e) { return 'light' } })(); window.SC_DOCS_ROOT = '../../';</script>
+</head>
+
+<body class="">
+  <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
+  <header class="masthead">
+    <div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false"
+        aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg></button><a class="brand" href="../../index.html"><svg viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z" />
+          <path d="m9.2 12 1.8 1.8 3.9-4.2" />
+        </svg><span>ScamGuard <small>Documentation</small></span></a>
+      <div class="masthead-actions"><button class="control" type="button" data-search-open><svg viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+            aria-hidden="true">
+            <circle cx="11" cy="11" r="6.5" />
+            <path d="m16 16 4 4" />
+          </svg><span>ค้นหา</span><span class="search-shortcut">Ctrl K</span></button><button class="control"
+          type="button" data-theme-toggle aria-label="เปลี่ยนเป็นโหมดมืด"><svg viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.5A7 7 0 0 1 12 3Z" />
+          </svg><span class="theme-label" data-theme-label>โหมดมืด</span></button></div>
+    </div>
+  </header>
+  <div class="docs-shell">
+    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><button class="control nav-close"
+        type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg></button>
+      <p class="sidebar-title">เอกสารทั้งหมด</p>
+      <details class="sidebar-group">
+        <summary>ภาพรวม</summary>
+        <ul class="sidebar-list">
+          <li><a href="../overview.html">ภาพรวมโปรเจค</a></li>
+          <li><a href="../index.html">สารบัญ Wiki — โปรเจค Scam Image Detection</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>ความต้องการระบบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../requirements/functional-requirements.html">ความต้องการเชิงฟังก์ชัน (Functional
+              Requirements)</a></li>
+          <li><a href="../requirements/non-functional-requirements.html">ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional
+              Requirements)</a></li>
+          <li><a href="../requirements/traceability-matrix.html">เมทริกซ์การสืบย้อนความต้องการ</a></li>
+          <li><a href="../requirements/objectives-kpis.html">วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp;
+              KPIs)</a></li>
+          <li><a href="../requirements/srs.html">Software Requirements Specification (SRS)</a></li>
+          <li><a href="../requirements/use-case-diagram.html">Use Case Diagram</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>สถาปัตยกรรม</summary>
+        <ul class="sidebar-list">
+          <li><a href="../architecture/database-migrations.html">การจัดการการย้ายฐานข้อมูล (Database Migrations)</a>
+          </li>
+          <li><a href="../architecture/external-integrations.html">การเชื่อมต่อบริการภายนอก (External Integrations)</a>
+          </li>
+          <li><a href="../architecture/database-schema.html">โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li>
+          <li><a href="../architecture/system-architecture.html">สถาปัตยกรรมระบบ (System Architecture)</a></li>
+          <li><a href="../architecture/admin-portal.html">สถาปัตยกรรมและการออกแบบ Admin Portal</a></li>
+          <li><a href="../architecture/mobile-app.html">สถาปัตยกรรม Mobile App</a></li>
+          <li><a href="../architecture/ai-inference-service.html">AI Inference Service</a></li>
+          <li><a href="../architecture/backend-api.html">Backend API — FastAPI Orchestrator</a></li>
+          <li><a href="../architecture/c1-system-context-diagram.html">C1 System Context Diagram</a></li>
+          <li><a href="../architecture/c2-container-diagram.html">C2 Container Diagram</a></li>
+          <li><a href="../architecture/c3-component-diagram.html">C3 Component Diagram - API Application</a></li>
+          <li><a href="../architecture/c4-code-diagram.html">C4 Code Diagram - Image Scanning Flow</a></li>
+          <li><a href="../architecture/database-er-diagram.html">Entity Relationship Diagram (ER Diagram)</a></li>
+          <li><a href="../architecture/mobile-design.html">Mobile App Architecture</a></li>
+          <li><a href="../architecture/flowchart.html">System Flowchart</a></li>
+          <li><a href="../architecture/design-overview.html">UX/UI &amp; System Design Overview</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>แนวคิดและเทคนิค</summary>
+        <ul class="sidebar-list">
+          <li><a href="../concepts/risk-scoring.html">การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li>
+          <li><a href="../concepts/multi-layer-analysis.html">การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li>
+          <li><a href="../concepts/explainable-ai.html">ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li>
+          <li><a href="../concepts/configs.html">พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li>
+          <li><a href="../concepts/ai-model-segformer.html">โมเดล AI — SegFormer</a></li>
+          <li><a href="../concepts/surya-ocr.html">โมเดล AI — Surya OCR</a></li>
+          <li><a href="../concepts/model-training.html">AI Model Training Workflow</a></li>
+          <li><a href="../concepts/mmsegmentation.html">MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li>
+          <li><a href="../concepts/semantic-segmentation.html">Semantic Segmentation</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>องค์ประกอบระบบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../entities/tech-stack.html">เทคโนโลยีที่ใช้ (Technology Stack)</a></li>
+          <li><a href="../entities/actors.html">ผู้ใช้ระบบ (Actors)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การตัดสินใจ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../decisions/technology-choices.html">การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group" open>
+        <summary>การวางแผน</summary>
+        <ul class="sidebar-list">
+          <li><a href="task-tracking.html">การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a></li>
+          <li><a href="project-scope.html">ขอบเขตโครงการ (Project Scope)</a></li>
+          <li><a href="team.html" aria-current="page">ทีมงานและผู้รับผิดชอบ (Team)</a></li>
+          <li><a href="backend-documentation.html">Backend Documentation</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การทดสอบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../testing/test-cases.html">กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>คู่มือและภาคผนวก</summary>
+        <ul class="sidebar-list">
+          <li><a href="../log.html">บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li>
+          <li><a href="../howto.html">วิธีใช้งาน Wiki (How to Use This Wiki)</a></li>
+          <li><a href="../runbook.html">Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li>
+          <li><a href="../AGENTS.html">Wiki Operating Guide</a></li>
+        </ul>
+      </details>
+    </aside>
+    <div class="nav-backdrop" data-nav-backdrop></div>
+    <main class="article" id="main-content">
+      <nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span
+          aria-hidden="true">/</span><span>การวางแผน</span></nav>
+      <header class="article-header">
+        <h1>ทีมงานและผู้รับผิดชอบ (Team)</h1>
+        <p class="article-lead">สมาชิกผู้พัฒนาโครงการ บทบาท และอาจารย์ที่ปรึกษา สำหรับโครงการ Scam Image Detection</p>
+        <div class="meta"><span>หมวด การวางแผน</span><time datetime="2026-08-02">อัปเดต 2026-08-02</time><span>ต้นฉบับ
+            planning/team.md</span></div>
+        <div class="tags"><span class="tag">team</span><span class="tag">members</span><span
+            class="tag">advisor</span><span class="tag">responsibilities</span><span class="tag">contact</span></div>
+      </header>
+      <div class="prose">
+        <h1 id="ทีมงานและผู้รับผิดชอบ-team">ทีมงานและผู้รับผิดชอบ (Team)</h1>
+        <p>สมาชิกผู้พัฒนาโครงการ บทบาท และอาจารย์ที่ปรึกษา สำหรับโครงการ Scam Image Detection</p>
+        <hr>
+        <h2 id="สถาบันที่สังกัด">สถาบันที่สังกัด</h2>
+        <p><strong>มหาวิทยาลัยเทคโนโลยีราชมงคลล้านนา (RMUTL) - วิทยาเขตภาคพายัพเชียงใหม่ ดอยสะเก็ด</strong>
+          คณะวิศวกรรมศาสตร์ — หลักสูตรวิศวกรรมซอฟต์แวร์ (วิศวกรรมไฟฟ้า)
+          ปีการศึกษา: 2/2568
+          รหัสโครงการ (Project Code): SE02</p>
+        <hr>
+        <h2 id="อาจารย์ที่ปรึกษาโครงการร่วม">อาจารย์ที่ปรึกษาโครงการร่วม</h2>
+        <p><strong>อาจารย์ สัญญา อุทธโยธา และ อาจารย์ ปิยผล ยืนยงสถาวร</strong></p>
+        <hr>
+        <h2 id="สมาชิกในทีม-team-members">สมาชิกในทีม (Team Members)</h2>
+        <h3 id="ภานุวัฒน์-ต๋าคำ-หัวหน้าโครงการ">ภานุวัฒน์ ต๋าคำ (หัวหน้าโครงการ)</h3>
+        <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
+          <table>
+            <thead>
+              <tr>
+                <th style="text-align:left">ข้อมูล</th>
+                <th style="text-align:left">รายละเอียด</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="text-align:left">รหัสนักศึกษา</td>
+                <td style="text-align:left">67543210044-3</td>
+              </tr>
+              <tr>
+                <td style="text-align:left">ชั้นปี</td>
+                <td style="text-align:left">ปี 2 (หลักสูตรเทียบโอน)</td>
+              </tr>
+              <tr>
+                <td style="text-align:left">สัดส่วนความรับผิดชอบ</td>
+                <td style="text-align:left">70%</td>
+              </tr>
+              <tr>
+                <td style="text-align:left">อีเมล</td>
+                <td style="text-align:left"><a href="mailto:panuwat_ta67@live.rmutl.ac.th"
+                    rel="noreferrer">panuwat_ta67@live.rmutl.ac.th</a></td>
+              </tr>
+              <tr>
+                <td style="text-align:left">เบอร์โทรศัพท์</td>
+                <td style="text-align:left">083-923-0703</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>ทักษะความเชี่ยวชาญ:</strong> พัฒนา Mobile App, พัฒนา Web Application, วิเคราะห์และออกแบบระบบ,
+          ออกแบบฐานข้อมูล, ออกแบบ UI, ภาษา Python และ JavaScript</p>
+        <p><strong>หน้าที่และความรับผิดชอบ:</strong></p>
+        <ul>
+          <li>วางแผนภาพรวมโครงการและการกำหนดขอบเขต</li>
+          <li>รวบรวมข้อมูล วิเคราะห์ปัญหา และทำความเข้าใจ Requirements</li>
+          <li>วิเคราะห์ ออกแบบโครงสร้างภาพรวมระบบ และวางสถาปัตยกรรม (Architecture)</li>
+          <li>พัฒนาแอปพลิเคชันบนมือถือผ่าน (Flutter)</li>
+          <li>พัฒนาโครงสร้างการรัน Backend (FastAPI)</li>
+          <li>พัฒนาและป้อนข้อมูลระบบ AI Inference (PyTorch/ONNX)</li>
+          <li>จัดทำเอกสารโครงการ</li>
+        </ul>
+        <hr>
+        <h3 id="เอกพันธ์-ทศทิศรังสรรค์-ผู้ร่วมพัฒนา">เอกพันธ์ ทศทิศรังสรรค์ (ผู้ร่วมพัฒนา)</h3>
+        <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
+          <table>
+            <thead>
+              <tr>
+                <th style="text-align:left">ข้อมูล</th>
+                <th style="text-align:left">รายละเอียด</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="text-align:left">รหัสนักศึกษา</td>
+                <td style="text-align:left">67543210050-0</td>
+              </tr>
+              <tr>
+                <td style="text-align:left">ชั้นปี</td>
+                <td style="text-align:left">ปี 2 (หลักสูตรเทียบโอน)</td>
+              </tr>
+              <tr>
+                <td style="text-align:left">สัดส่วนความรับผิดชอบ</td>
+                <td style="text-align:left">30%</td>
+              </tr>
+              <tr>
+                <td style="text-align:left">อีเมล</td>
+                <td style="text-align:left"><a href="mailto:akkapan_to67@live.rmutl.ac.th"
+                    rel="noreferrer">akkapan_to67@live.rmutl.ac.th</a></td>
+              </tr>
+              <tr>
+                <td style="text-align:left">เบอร์โทรศัพท์</td>
+                <td style="text-align:left">093-149-1440</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>ทักษะความเชี่ยวชาญ:</strong> พัฒนา Mobile App, พัฒนา Web Application, วิเคราะห์และออกแบบระบบ</p>
+        <p><strong>หน้าที่และความรับผิดชอบ:</strong></p>
+        <ul>
+          <li>วิเคราะห์และออกแบบโครงสร้างระบบ</li>
+          <li>พัฒนาแอปพลิเคชันบนมือถือผ่าน (Flutter)</li>
+          <li>จัดทำเอกสารโครงการ</li>
+          <li>ออกแบบกรณีและการดำเนินการเพื่อทดสอบระบบ (System Testing)</li>
+        </ul>
+        <hr>
+        <h2 id="ลิงก์พื้นที่ทำงานร่วม-workspace-links">ลิงก์พื้นที่ทำงานร่วม (Workspace Links)</h2>
+        <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
+          <table>
+            <thead>
+              <tr>
+                <th style="text-align:left">ทรัพยากร (Resource)</th>
+                <th style="text-align:left">ลิงก์</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="text-align:left">เซิร์ฟเวอร์ Discord</td>
+                <td style="text-align:left"><a href="https://discord.gg/WSEXfzrb"
+                    rel="noreferrer">https://discord.gg/WSEXfzrb</a></td>
+              </tr>
+              <tr>
+                <td style="text-align:left">กระดานภาพ Miro</td>
+                <td style="text-align:left">(อยู่ในไฟล์ README.md)</td>
+              </tr>
+              <tr>
+                <td style="text-align:left">ดีไซน์ต้นฉบับ Figma</td>
+                <td style="text-align:left">(อยู่ในไฟล์ README.md)</td>
+              </tr>
+              <tr>
+                <td style="text-align:left">แผนงานบน Jira</td>
+                <td style="text-align:left"><a
+                    href="https://panuwattakham2002.atlassian.net/jira/software/projects/SCM/boards/35"
+                    rel="noreferrer">https://panuwattakham2002.atlassian.net/jira/software/projects/SCM/boards/35</a>
+                </td>
+              </tr>
+              <tr>
+                <td style="text-align:left">แผนผัง Diagram รวม (Google Drive)</td>
+                <td style="text-align:left">(อยู่ในไฟล์ README.md)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <hr>
+        <h2 id="กำหนดส่งโครงการปิดจบโครงการ">กำหนดส่งโครงการปิดจบโครงการ</h2>
+        <p><strong>วันที่ 20 มีนาคม พ.ศ. 2568</strong> (March 20, 2025)</p>
+        <hr>
+        <h2 id="หน้าที่เกี่ยวข้อง">หน้าที่เกี่ยวข้อง</h2>
+        <ul>
+          <li><a href="project-scope.html">planning/project-scope</a></li>
+          <li><a href="../overview.html">overview</a></li>
+        </ul>
+      </div>
+      <footer class="source-panel"><strong>แหล่งข้อมูลของหน้านี้</strong>
+        <ul>
+          <li><a href="../../sources/wiki/planning/team.md">Markdown ต้นฉบับ: planning/team.md</a></li>
+          <li>README.md</li>
+          <li>Document/srs.md</li>
+        </ul>
+      </footer>
+    </main>
+    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้">
+      <p class="toc-title">ในหน้านี้</p>
+      <ol class="toc">
+        <li class="toc-level-2"><a
+            href="#%E0%B8%AA%E0%B8%96%E0%B8%B2%E0%B8%9A%E0%B8%B1%E0%B8%99%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%AA%E0%B8%B1%E0%B8%87%E0%B8%81%E0%B8%B1%E0%B8%94">สถาบันที่สังกัด</a>
+        </li>
+        <li class="toc-level-2"><a
+            href="#%E0%B8%AD%E0%B8%B2%E0%B8%88%E0%B8%B2%E0%B8%A3%E0%B8%A2%E0%B9%8C%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%9B%E0%B8%A3%E0%B8%B6%E0%B8%81%E0%B8%A9%E0%B8%B2%E0%B9%82%E0%B8%84%E0%B8%A3%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%A3%E0%B9%88%E0%B8%A7%E0%B8%A1">อาจารย์ที่ปรึกษาโครงการร่วม</a>
+        </li>
+        <li class="toc-level-2"><a
+            href="#%E0%B8%AA%E0%B8%A1%E0%B8%B2%E0%B8%8A%E0%B8%B4%E0%B8%81%E0%B9%83%E0%B8%99%E0%B8%97%E0%B8%B5%E0%B8%A1-team-members">สมาชิกในทีม
+            (Team Members)</a></li>
+        <li class="toc-level-3"><a
+            href="#%E0%B8%A0%E0%B8%B2%E0%B8%99%E0%B8%B8%E0%B8%A7%E0%B8%B1%E0%B8%92%E0%B8%99%E0%B9%8C-%E0%B8%95%E0%B9%8B%E0%B8%B2%E0%B8%84%E0%B8%B3-%E0%B8%AB%E0%B8%B1%E0%B8%A7%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B9%82%E0%B8%84%E0%B8%A3%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3">ภานุวัฒน์
+            ต๋าคำ (หัวหน้าโครงการ)</a></li>
+        <li class="toc-level-3"><a
+            href="#%E0%B9%80%E0%B8%AD%E0%B8%81%E0%B8%9E%E0%B8%B1%E0%B8%99%E0%B8%98%E0%B9%8C-%E0%B8%97%E0%B8%A8%E0%B8%97%E0%B8%B4%E0%B8%A8%E0%B8%A3%E0%B8%B1%E0%B8%87%E0%B8%AA%E0%B8%A3%E0%B8%A3%E0%B8%84%E0%B9%8C-%E0%B8%9C%E0%B8%B9%E0%B9%89%E0%B8%A3%E0%B9%88%E0%B8%A7%E0%B8%A1%E0%B8%9E%E0%B8%B1%E0%B8%92%E0%B8%99%E0%B8%B2">เอกพันธ์
+            ทศทิศรังสรรค์ (ผู้ร่วมพัฒนา)</a></li>
+        <li class="toc-level-2"><a
+            href="#%E0%B8%A5%E0%B8%B4%E0%B8%87%E0%B8%81%E0%B9%8C%E0%B8%9E%E0%B8%B7%E0%B9%89%E0%B8%99%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%97%E0%B8%B3%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%A3%E0%B9%88%E0%B8%A7%E0%B8%A1-workspace-links">ลิงก์พื้นที่ทำงานร่วม
+            (Workspace Links)</a></li>
+        <li class="toc-level-2"><a
+            href="#%E0%B8%81%E0%B8%B3%E0%B8%AB%E0%B8%99%E0%B8%94%E0%B8%AA%E0%B9%88%E0%B8%87%E0%B9%82%E0%B8%84%E0%B8%A3%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9B%E0%B8%B4%E0%B8%94%E0%B8%88%E0%B8%9A%E0%B9%82%E0%B8%84%E0%B8%A3%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3">กำหนดส่งโครงการปิดจบโครงการ</a>
+        </li>
+        <li class="toc-level-2"><a
+            href="#%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%87">หน้าที่เกี่ยวข้อง</a>
+        </li>
+      </ol>
+    </aside>
+  </div>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title">
+    <div class="search-dialog-head"><label class="visually-hidden" id="search-title"
+        for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…"
+        autocomplete="off" data-search-input><button class="control" type="button" data-search-close
+        aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg></button></div>
+    <div class="search-results" data-search-results aria-live="polite"></div>
+  </dialog>
+  <script src="../../assets/js/search-index.js"></script>
+  <script src="../../assets/js/site.js"></script>
+</body>
+
+</html>

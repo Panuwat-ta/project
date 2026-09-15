@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="th" data-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="C4: Code Diagram Image Scanning Flow แผนภาพ C4 ระดับ Code นี้แสดงลำดับขั้นตอนการทำงานเชิงลึกของกระบวนการวิเคราะห์รูปภาพ Image Scanning ภายใน Backend ของระบบ Scam Image Detection ซึ่งครอบคลุม…">
+  <meta name="color-scheme" content="light dark">
+  <title>C4 Code Diagram - Image Scanning Flow | ScamGuard Documentation</title>
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <script>document.documentElement.dataset.theme = (() => { try { return localStorage.getItem('scamguard-docs-theme') || 'light' } catch (e) { return 'light' } })(); window.SC_DOCS_ROOT = '../../';</script>
+</head>
+
+<body class="">
+  <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
+  <header class="masthead">
+    <div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false"
+        aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg></button><a class="brand" href="../../index.html"><svg viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z" />
+          <path d="m9.2 12 1.8 1.8 3.9-4.2" />
+        </svg><span>ScamGuard <small>Documentation</small></span></a>
+      <div class="masthead-actions"><button class="control" type="button" data-search-open><svg viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+            aria-hidden="true">
+            <circle cx="11" cy="11" r="6.5" />
+            <path d="m16 16 4 4" />
+          </svg><span>ค้นหา</span><span class="search-shortcut">Ctrl K</span></button><button class="control"
+          type="button" data-theme-toggle aria-label="เปลี่ยนเป็นโหมดมืด"><svg viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.5A7 7 0 0 1 12 3Z" />
+          </svg><span class="theme-label" data-theme-label>โหมดมืด</span></button></div>
+    </div>
+  </header>
+  <div class="docs-shell">
+    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><button class="control nav-close"
+        type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg></button>
+      <p class="sidebar-title">เอกสารทั้งหมด</p>
+      <details class="sidebar-group">
+        <summary>ภาพรวม</summary>
+        <ul class="sidebar-list">
+          <li><a href="../overview.html">ภาพรวมโปรเจค</a></li>
+          <li><a href="../index.html">สารบัญ Wiki — โปรเจค Scam Image Detection</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>ความต้องการระบบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../requirements/functional-requirements.html">ความต้องการเชิงฟังก์ชัน (Functional
+              Requirements)</a></li>
+          <li><a href="../requirements/non-functional-requirements.html">ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional
+              Requirements)</a></li>
+          <li><a href="../requirements/traceability-matrix.html">เมทริกซ์การสืบย้อนความต้องการ</a></li>
+          <li><a href="../requirements/objectives-kpis.html">วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp;
+              KPIs)</a></li>
+          <li><a href="../requirements/srs.html">Software Requirements Specification (SRS)</a></li>
+          <li><a href="../requirements/use-case-diagram.html">Use Case Diagram</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group" open>
+        <summary>สถาปัตยกรรม</summary>
+        <ul class="sidebar-list">
+          <li><a href="database-migrations.html">การจัดการการย้ายฐานข้อมูล (Database Migrations)</a></li>
+          <li><a href="external-integrations.html">การเชื่อมต่อบริการภายนอก (External Integrations)</a></li>
+          <li><a href="database-schema.html">โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li>
+          <li><a href="system-architecture.html">สถาปัตยกรรมระบบ (System Architecture)</a></li>
+          <li><a href="admin-portal.html">สถาปัตยกรรมและการออกแบบ Admin Portal</a></li>
+          <li><a href="mobile-app.html">สถาปัตยกรรม Mobile App</a></li>
+          <li><a href="ai-inference-service.html">AI Inference Service</a></li>
+          <li><a href="backend-api.html">Backend API — FastAPI Orchestrator</a></li>
+          <li><a href="c1-system-context-diagram.html">C1 System Context Diagram</a></li>
+          <li><a href="c2-container-diagram.html">C2 Container Diagram</a></li>
+          <li><a href="c3-component-diagram.html">C3 Component Diagram - API Application</a></li>
+          <li><a href="c4-code-diagram.html" aria-current="page">C4 Code Diagram - Image Scanning Flow</a></li>
+          <li><a href="database-er-diagram.html">Entity Relationship Diagram (ER Diagram)</a></li>
+          <li><a href="mobile-design.html">Mobile App Architecture</a></li>
+          <li><a href="flowchart.html">System Flowchart</a></li>
+          <li><a href="design-overview.html">UX/UI &amp; System Design Overview</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>แนวคิดและเทคนิค</summary>
+        <ul class="sidebar-list">
+          <li><a href="../concepts/risk-scoring.html">การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li>
+          <li><a href="../concepts/multi-layer-analysis.html">การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li>
+          <li><a href="../concepts/explainable-ai.html">ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li>
+          <li><a href="../concepts/configs.html">พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li>
+          <li><a href="../concepts/ai-model-segformer.html">โมเดล AI — SegFormer</a></li>
+          <li><a href="../concepts/surya-ocr.html">โมเดล AI — Surya OCR</a></li>
+          <li><a href="../concepts/model-training.html">AI Model Training Workflow</a></li>
+          <li><a href="../concepts/mmsegmentation.html">MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li>
+          <li><a href="../concepts/semantic-segmentation.html">Semantic Segmentation</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>องค์ประกอบระบบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../entities/tech-stack.html">เทคโนโลยีที่ใช้ (Technology Stack)</a></li>
+          <li><a href="../entities/actors.html">ผู้ใช้ระบบ (Actors)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การตัดสินใจ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../decisions/technology-choices.html">การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การวางแผน</summary>
+        <ul class="sidebar-list">
+          <li><a href="../planning/task-tracking.html">การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a>
+          </li>
+          <li><a href="../planning/project-scope.html">ขอบเขตโครงการ (Project Scope)</a></li>
+          <li><a href="../planning/team.html">ทีมงานและผู้รับผิดชอบ (Team)</a></li>
+          <li><a href="../planning/backend-documentation.html">Backend Documentation</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การทดสอบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../testing/test-cases.html">กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>คู่มือและภาคผนวก</summary>
+        <ul class="sidebar-list">
+          <li><a href="../log.html">บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li>
+          <li><a href="../howto.html">วิธีใช้งาน Wiki (How to Use This Wiki)</a></li>
+          <li><a href="../runbook.html">Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li>
+          <li><a href="../AGENTS.html">Wiki Operating Guide</a></li>
+        </ul>
+      </details>
+    </aside>
+    <div class="nav-backdrop" data-nav-backdrop></div>
+    <main class="article" id="main-content">
+      <nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span
+          aria-hidden="true">/</span><span>สถาปัตยกรรม</span></nav>
+      <header class="article-header">
+        <h1>C4 Code Diagram - Image Scanning Flow</h1>
+        <p class="article-lead">แผนภาพ C4 ระดับ Code นี้แสดงลำดับขั้นตอนการทำงานเชิงลึกของกระบวนการวิเคราะห์รูปภาพ Image
+          Scanning ภายใน Backend ของระบบ Scam Image Detection ซึ่งครอบคลุมตั้งแต่การรับ Request จากผู้ใช้
+          ไปจนถึงการจัดเก็บผลลัพธ์ลงฐานข้อมูล</p>
+        <div class="meta"><span>หมวด สถาปัตยกรรม</span><time datetime="2026-08-08">อัปเดต 2026-08-08</time><span>ต้นฉบับ
+            architecture/c4-code-diagram.md</span></div>
+        <div class="tags"><span class="tag">architecture</span><span class="tag">c4</span><span
+            class="tag">code</span><span class="tag">sequence</span><span class="tag">diagram</span><span
+            class="tag">backend</span></div>
+      </header>
+      <div class="prose">
+        <h1 id="c4-code-diagram-image-scanning-flow">C4: Code Diagram (Image Scanning Flow)</h1>
+        <p>แผนภาพ C4 (ระดับ Code) นี้แสดงลำดับขั้นตอนการทำงานเชิงลึกของกระบวนการวิเคราะห์รูปภาพ (Image Scanning) ภายใน
+          Backend ของระบบ Scam Image Detection ซึ่งครอบคลุมตั้งแต่การรับ Request จากผู้ใช้
+          ไปจนถึงการจัดเก็บผลลัพธ์ลงฐานข้อมูล</p>
+        <figure class="diagram-frame">
+          <div class="diagram-toolbar"><span>แผนภาพ 11</span><button class="control" type="button"
+              data-diagram-expand>ดูขนาดใหญ่</button></div><img
+            src="../../assets/diagrams/architecture-c4-code-diagram-11.svg"
+            alt="แผนภาพจาก C4 Code Diagram - Image Scanning Flow" loading="lazy">
+          <details class="diagram-source">
+            <summary>ดู Mermaid source</summary>
+            <pre><code>sequenceDiagram
+    autonumber
+    
+    actor Client as Mobile App
+    participant Router as ScanRouter
+    participant Service as ScanService
+    participant Utils as ImageUtils
+    participant FS as Local Storage
+    participant Inference as InferenceService
+    participant ONNX as ONNX Worker
+    participant OCR as Surya OCR
+    participant RiskCalc as RiskCalculator
+    participant DB as PostgreSQL
+
+    Client-&gt;&gt;Router: POST /api/v1/scan (Multipart)
+    
+    activate Router
+    Router-&gt;&gt;Service: ส่งงานวิเคราะห์ภาพ
+    
+    activate Service
+    Note over Service: 1. อ่านไฟล์&lt;br&gt;และเช็คขนาดไฟล์
+    
+    Service-&gt;&gt;Utils: ตรวจสอบภาพและดึง EXIF
+    Utils--&gt;&gt;Service: ภาพและ EXIF Data
+    
+    Service-&gt;&gt;Utils: normalize เป็น PNG
+    Utils--&gt;&gt;Service: PNG Bytes
+    
+    Service-&gt;&gt;FS: บันทึกรูปต้นฉบับ
+    FS--&gt;&gt;Service: Success
+    
+    Note over Service: ส่งงานให้ AI&lt;br&gt;เพื่อไม่บล็อกงานหลัก
+    Service-&gt;&gt;Inference: ส่งภาพให้วิเคราะห์
+    
+    activate Inference
+    
+    %% SegFormer Processing
+    Inference-&gt;&gt;ONNX: ส่งภาพให้ Worker ประมวลผล
+    activate ONNX
+    Note over ONNX: ประมวลผล Semantic Segmentation&lt;br&gt;ด้วยโมเดล ONNX
+    ONNX--&gt;&gt;Inference: ส่งผลวิเคราะห์และ Heatmap กลับ
+    deactivate ONNX
+    
+    %% OCR Processing
+    Inference-&gt;&gt;OCR: สกัดข้อความภาษาไทย/อังกฤษ
+    activate OCR
+    Note over OCR: สกัดข้อความภาษาไทย/อังกฤษ&lt;br&gt;ด้วย Surya OCR
+    OCR--&gt;&gt;Inference: ข้อความที่สกัดได้
+    deactivate OCR
+    
+    Inference--&gt;&gt;Service: ส่งผลวิเคราะห์กลับ
+    deactivate Inference
+    
+    Service-&gt;&gt;FS: บันทึก Heatmap
+    
+    Note over Service: วิเคราะห์ข้อความแบบ Rule-based&lt;br&gt;ค้นหา Scam Keywords
+    
+    %% Risk Calculation
+    Service-&gt;&gt;RiskCalc: คำนวณคะแนนความเสี่ยงรวม
+    activate RiskCalc
+    Note over RiskCalc: Hybrid Worst-Case Trigger&lt;br&gt;max(Visual, Text, Source) + Compounding
+    RiskCalc--&gt;&gt;Service: ส่งคะแนนรวมและระดับความเสี่ยงกลับ
+    deactivate RiskCalc
+    
+    %% DB Persistence
+    Service-&gt;&gt;DB: บันทึกผลสแกน
+    activate DB
+    DB--&gt;&gt;Service: บันทึกสำเร็จ
+    deactivate DB
+    
+    Service--&gt;&gt;Router: ส่งผลสแกนกลับ
+    deactivate Service
+    
+    Router--&gt;&gt;Client: ส่งผลลัพธ์กลับ (JSON)
+    deactivate Router
+</code></pre>
+          </details>
+          <dialog aria-label="แผนภาพขนาดใหญ่">
+            <div class="diagram-expanded-head"><button class="control" type="button"
+                data-diagram-zoom="out">ย่อ</button><span class="zoom-status" data-zoom-status>100%</span><button
+                class="control" type="button" data-diagram-zoom="in">ขยาย</button><button class="control" type="button"
+                data-diagram-close>ปิด</button></div>
+            <div class="diagram-pan" data-diagram-pan data-zoom="1" tabindex="0"
+              aria-label="พื้นที่แผนภาพ เลื่อนได้ทั้งแนวตั้งและแนวนอน"><img
+                src="../../assets/diagrams/architecture-c4-code-diagram-11.svg"
+                alt="แผนภาพจาก C4 Code Diagram - Image Scanning Flow"></div>
+          </dialog>
+        </figure>
+        <hr>
+        <h2 id="คำอธิบายองค์ประกอบที่เกี่ยวข้อง">คำอธิบายองค์ประกอบที่เกี่ยวข้อง</h2>
+        <p>แผนภาพนี้เจาะลึกการทำงานหลักของ ScanService ซึ่งแสดงให้เห็นถึงการทำงานแบบ Non-blocking (Asynchronous)
+          และวิธีการที่ Backend สื่อสารกับ AI</p>
+        <h3 id="1-api-layer-scanrouter">1. API Layer (ScanRouter)</h3>
+        <ul>
+          <li><strong>หน้าที่:</strong> ตรวจสอบสิทธิ์ผู้ใช้งาน และรับไฟล์รูปแบบ Multipart Form Data จากนั้นส่งต่อให้
+            Service ประมวลผล</li>
+        </ul>
+        <h3 id="2-business-logic-layer-scanservice">2. Business Logic Layer (ScanService)</h3>
+        <ul>
+          <li><strong>หน้าที่:</strong>
+            <ol>
+              <li>ตรวจสอบความปลอดภัยของไฟล์ (ขนาดไฟล์ และการแปลงเป็นภาพ Lossless PNG)</li>
+              <li>สร้าง Hash จากไฟล์ต้นฉบับเพื่อใช้ตั้งชื่อไฟล์</li>
+              <li>เรียกงานประมวลผลหนัก เช่น AI และ Image Processing แบบไม่บล็อกงานหลักของ FastAPI</li>
+              <li>วิเคราะห์คำหลอกลวงเบื้องต้นจากผลลัพธ์ OCR</li>
+              <li>บันทึกผลสู่ฐานข้อมูล</li>
+            </ol>
+          </li>
+        </ul>
+        <h3 id="3-ai-integration-layer-inferenceservice">3. AI Integration Layer (InferenceService)</h3>
+        <ul>
+          <li><strong>หน้าที่:</strong> ทำงานประสาน AI โมเดลทั้ง 2 ตัว
+            <ul>
+              <li><strong>ONNX Worker (SegFormer):</strong> ออกแบบให้รันใน subprocess แยกต่างหาก
+                เพื่อแยกการจัดการทรัพยากรและหน่วยความจำของฝั่ง AI ออกจาก Web Server หลัก</li>
+              <li><strong>Surya OCR:</strong> โมเดลจะถูกเตรียมพร้อมไว้ในหน่วยความจำหลักตั้งแต่ระบบเริ่มทำงาน
+                เพื่อให้สามารถประมวลผลข้อความจากรูปภาพได้ทันทีโดยไม่ต้องเสียเวลาโหลดโมเดลใหม่
+                ช่วยลดความหน่วงในการตอบสนอง</li>
+            </ul>
+          </li>
+        </ul>
+        <h3 id="4-utility-and-calculation">4. Utility and Calculation</h3>
+        <ul>
+          <li><strong>คลาส/โมดูล:</strong> RiskCalculator</li>
+          <li><strong>หน้าที่:</strong> รับค่าตัวเลขคะแนนดิบเข้าไปคำนวณตามหลัก Worst-Case Trigger ร่วมกับ Multi-factor
+            Compounding และส่งค่าความเสี่ยงรวม ระดับ ปัจจัยหลัก และ Breakdown แยกมิติกลับมา</li>
+        </ul>
+      </div>
+      <footer class="source-panel"><strong>แหล่งข้อมูลของหน้านี้</strong>
+        <ul>
+          <li><a href="../../sources/wiki/architecture/c4-code-diagram.md">Markdown ต้นฉบับ:
+              architecture/c4-code-diagram.md</a></li>
+        </ul>
+      </footer>
+    </main>
+    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้">
+      <p class="toc-title">ในหน้านี้</p>
+      <ol class="toc">
+        <li class="toc-level-2"><a
+            href="#%E0%B8%84%E0%B8%B3%E0%B8%AD%E0%B8%98%E0%B8%B4%E0%B8%9A%E0%B8%B2%E0%B8%A2%E0%B8%AD%E0%B8%87%E0%B8%84%E0%B9%8C%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%81%E0%B8%AD%E0%B8%9A%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%87">คำอธิบายองค์ประกอบที่เกี่ยวข้อง</a>
+        </li>
+        <li class="toc-level-3"><a href="#1-api-layer-scanrouter">1. API Layer (ScanRouter)</a></li>
+        <li class="toc-level-3"><a href="#2-business-logic-layer-scanservice">2. Business Logic Layer (ScanService)</a>
+        </li>
+        <li class="toc-level-3"><a href="#3-ai-integration-layer-inferenceservice">3. AI Integration Layer
+            (InferenceService)</a></li>
+        <li class="toc-level-3"><a href="#4-utility-and-calculation">4. Utility and Calculation</a></li>
+      </ol>
+    </aside>
+  </div>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title">
+    <div class="search-dialog-head"><label class="visually-hidden" id="search-title"
+        for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…"
+        autocomplete="off" data-search-input><button class="control" type="button" data-search-close
+        aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg></button></div>
+    <div class="search-results" data-search-results aria-live="polite"></div>
+  </dialog>
+  <script src="../../assets/js/search-index.js"></script>
+  <script src="../../assets/js/site.js"></script>
+</body>
+
+</html>

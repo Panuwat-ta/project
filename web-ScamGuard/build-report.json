@@ -1,0 +1,326 @@
+{
+  "generatedAt": "2026-09-15T13:11:49.885Z",
+  "sourceMarkdownCount": 45,
+  "renderedPageCount": 45,
+  "mermaidSourceCount": 20,
+  "mermaidRenderedCount": 20,
+  "unresolvedLinks": [],
+  "diagramFailures": [],
+  "pages": [
+    {
+      "source": "overview.md",
+      "output": "pages/overview.html",
+      "title": "ภาพรวมโปรเจค — Scam Image Detection",
+      "category": "overview",
+      "headings": 8
+    },
+    {
+      "source": "index.md",
+      "output": "pages/index.html",
+      "title": "สารบัญ Wiki — โปรเจค Scam Image Detection",
+      "category": "overview",
+      "headings": 8
+    },
+    {
+      "source": "requirements/functional-requirements.md",
+      "output": "pages/requirements/functional-requirements.html",
+      "title": "ความต้องการเชิงฟังก์ชัน (Functional Requirements)",
+      "category": "requirements",
+      "headings": 12
+    },
+    {
+      "source": "requirements/non-functional-requirements.md",
+      "output": "pages/requirements/non-functional-requirements.html",
+      "title": "ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements)",
+      "category": "requirements",
+      "headings": 20
+    },
+    {
+      "source": "requirements/traceability-matrix.md",
+      "output": "pages/requirements/traceability-matrix.html",
+      "title": "เมทริกซ์การสืบย้อนความต้องการ (Requirement Traceability Matrix - RTM)",
+      "category": "requirements",
+      "headings": 6
+    },
+    {
+      "source": "requirements/objectives-kpis.md",
+      "output": "pages/requirements/objectives-kpis.html",
+      "title": "วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives & KPIs)",
+      "category": "requirements",
+      "headings": 10
+    },
+    {
+      "source": "requirements/srs.md",
+      "output": "pages/requirements/srs.html",
+      "title": "Software Requirements Specification (SRS)",
+      "category": "requirements",
+      "headings": 30
+    },
+    {
+      "source": "requirements/use-case-diagram.md",
+      "output": "pages/requirements/use-case-diagram.html",
+      "title": "Use Case Diagram",
+      "category": "requirements",
+      "headings": 2
+    },
+    {
+      "source": "architecture/database-migrations.md",
+      "output": "pages/architecture/database-migrations.html",
+      "title": "การจัดการการย้ายฐานข้อมูล (Database Migrations)",
+      "category": "architecture",
+      "headings": 16
+    },
+    {
+      "source": "architecture/external-integrations.md",
+      "output": "pages/architecture/external-integrations.html",
+      "title": "การเชื่อมต่อบริการภายนอก (External Integrations)",
+      "category": "architecture",
+      "headings": 5
+    },
+    {
+      "source": "architecture/database-schema.md",
+      "output": "pages/architecture/database-schema.html",
+      "title": "โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล",
+      "category": "architecture",
+      "headings": 13
+    },
+    {
+      "source": "architecture/system-architecture.md",
+      "output": "pages/architecture/system-architecture.html",
+      "title": "สถาปัตยกรรมระบบ (System Architecture)",
+      "category": "architecture",
+      "headings": 7
+    },
+    {
+      "source": "architecture/admin-portal.md",
+      "output": "pages/architecture/admin-portal.html",
+      "title": "สถาปัตยกรรมและการออกแบบ Admin Portal",
+      "category": "architecture",
+      "headings": 14
+    },
+    {
+      "source": "architecture/mobile-app.md",
+      "output": "pages/architecture/mobile-app.html",
+      "title": "สถาปัตยกรรม Mobile App",
+      "category": "architecture",
+      "headings": 8
+    },
+    {
+      "source": "architecture/ai-inference-service.md",
+      "output": "pages/architecture/ai-inference-service.html",
+      "title": "AI Inference Service",
+      "category": "architecture",
+      "headings": 10
+    },
+    {
+      "source": "architecture/backend-api.md",
+      "output": "pages/architecture/backend-api.html",
+      "title": "Backend API — FastAPI Orchestrator",
+      "category": "architecture",
+      "headings": 16
+    },
+    {
+      "source": "architecture/c1-system-context-diagram.md",
+      "output": "pages/architecture/c1-system-context-diagram.html",
+      "title": "C1 System Context Diagram",
+      "category": "architecture",
+      "headings": 4
+    },
+    {
+      "source": "architecture/c2-container-diagram.md",
+      "output": "pages/architecture/c2-container-diagram.html",
+      "title": "C2 Container Diagram",
+      "category": "architecture",
+      "headings": 5
+    },
+    {
+      "source": "architecture/c3-component-diagram.md",
+      "output": "pages/architecture/c3-component-diagram.html",
+      "title": "C3 Component Diagram - API Application",
+      "category": "architecture",
+      "headings": 5
+    },
+    {
+      "source": "architecture/c4-code-diagram.md",
+      "output": "pages/architecture/c4-code-diagram.html",
+      "title": "C4 Code Diagram - Image Scanning Flow",
+      "category": "architecture",
+      "headings": 5
+    },
+    {
+      "source": "architecture/database-er-diagram.md",
+      "output": "pages/architecture/database-er-diagram.html",
+      "title": "Entity Relationship Diagram (ER Diagram)",
+      "category": "architecture",
+      "headings": 6
+    },
+    {
+      "source": "architecture/mobile-design.md",
+      "output": "pages/architecture/mobile-design.html",
+      "title": "Mobile App Architecture",
+      "category": "architecture",
+      "headings": 74
+    },
+    {
+      "source": "architecture/flowchart.md",
+      "output": "pages/architecture/flowchart.html",
+      "title": "System Flowchart",
+      "category": "architecture",
+      "headings": 5
+    },
+    {
+      "source": "architecture/design-overview.md",
+      "output": "pages/architecture/design-overview.html",
+      "title": "UX/UI & System Design Overview",
+      "category": "architecture",
+      "headings": 9
+    },
+    {
+      "source": "concepts/risk-scoring.md",
+      "output": "pages/concepts/risk-scoring.html",
+      "title": "การคำนวณคะแนนความเสี่ยง (Risk Scoring)",
+      "category": "concepts",
+      "headings": 8
+    },
+    {
+      "source": "concepts/multi-layer-analysis.md",
+      "output": "pages/concepts/multi-layer-analysis.html",
+      "title": "การวิเคราะห์หลายชั้น (Multi-layer Analysis)",
+      "category": "concepts",
+      "headings": 7
+    },
+    {
+      "source": "concepts/explainable-ai.md",
+      "output": "pages/concepts/explainable-ai.html",
+      "title": "ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)",
+      "category": "concepts",
+      "headings": 7
+    },
+    {
+      "source": "concepts/configs.md",
+      "output": "pages/concepts/configs.html",
+      "title": "พารามิเตอร์และสมการคณิตศาสตร์ (Configurations & Math)",
+      "category": "concepts",
+      "headings": 5
+    },
+    {
+      "source": "concepts/ai-model-segformer.md",
+      "output": "pages/concepts/ai-model-segformer.html",
+      "title": "โมเดล AI — SegFormer",
+      "category": "concepts",
+      "headings": 8
+    },
+    {
+      "source": "concepts/surya-ocr.md",
+      "output": "pages/concepts/surya-ocr.html",
+      "title": "โมเดล AI — Surya OCR",
+      "category": "concepts",
+      "headings": 4
+    },
+    {
+      "source": "concepts/model-training.md",
+      "output": "pages/concepts/model-training.html",
+      "title": "AI Model Training Workflow",
+      "category": "concepts",
+      "headings": 18
+    },
+    {
+      "source": "concepts/mmsegmentation.md",
+      "output": "pages/concepts/mmsegmentation.html",
+      "title": "MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์",
+      "category": "concepts",
+      "headings": 6
+    },
+    {
+      "source": "concepts/semantic-segmentation.md",
+      "output": "pages/concepts/semantic-segmentation.html",
+      "title": "Semantic Segmentation",
+      "category": "concepts",
+      "headings": 5
+    },
+    {
+      "source": "entities/tech-stack.md",
+      "output": "pages/entities/tech-stack.html",
+      "title": "เทคโนโลยีที่ใช้ (Technology Stack)",
+      "category": "entities",
+      "headings": 5
+    },
+    {
+      "source": "entities/actors.md",
+      "output": "pages/entities/actors.html",
+      "title": "ผู้ใช้ระบบ (Actors)",
+      "category": "entities",
+      "headings": 4
+    },
+    {
+      "source": "decisions/technology-choices.md",
+      "output": "pages/decisions/technology-choices.html",
+      "title": "การตัดสินใจเลือกเทคโนโลยี (Technology Choices)",
+      "category": "decisions",
+      "headings": 9
+    },
+    {
+      "source": "planning/task-tracking.md",
+      "output": "pages/planning/task-tracking.html",
+      "title": "การติดตามงานและการบริหารโครงการ (Task Tracking & Jira)",
+      "category": "planning",
+      "headings": 9
+    },
+    {
+      "source": "planning/project-scope.md",
+      "output": "pages/planning/project-scope.html",
+      "title": "ขอบเขตโครงการ (Project Scope)",
+      "category": "planning",
+      "headings": 8
+    },
+    {
+      "source": "planning/team.md",
+      "output": "pages/planning/team.html",
+      "title": "ทีมงานและผู้รับผิดชอบ (Team)",
+      "category": "planning",
+      "headings": 8
+    },
+    {
+      "source": "planning/backend-documentation.md",
+      "output": "pages/planning/backend-documentation.html",
+      "title": "Backend Documentation",
+      "category": "planning",
+      "headings": 43
+    },
+    {
+      "source": "testing/test-cases.md",
+      "output": "pages/testing/test-cases.html",
+      "title": "กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)",
+      "category": "testing",
+      "headings": 6
+    },
+    {
+      "source": "log.md",
+      "output": "pages/log.html",
+      "title": "บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection",
+      "category": "guide",
+      "headings": 16
+    },
+    {
+      "source": "howto.md",
+      "output": "pages/howto.html",
+      "title": "วิธีใช้งาน Wiki (How to Use This Wiki)",
+      "category": "guide",
+      "headings": 12
+    },
+    {
+      "source": "runbook.md",
+      "output": "pages/runbook.html",
+      "title": "Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical",
+      "category": "guide",
+      "headings": 6
+    },
+    {
+      "source": "AGENTS.md",
+      "output": "pages/AGENTS.html",
+      "title": "Wiki Operating Guide — Scam Image Detection",
+      "category": "guide",
+      "headings": 12
+    }
+  ]
+}

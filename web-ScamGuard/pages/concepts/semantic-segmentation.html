@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="th" data-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="Semantic Segmentation เทคนิคทางคอมพิวเตอร์วิทัศน์ Computer Vision ที่ทำการจำแนกประเภทของแต่ละพิกเซลในรูปภาพ ว่าเป็นภาพพื้นหลัง Background หรือเป็นรอยที่ถูกดัดแปลงตัดต่อ Forgery --- หลักการทำ…">
+  <meta name="color-scheme" content="light dark">
+  <title>Semantic Segmentation | ScamGuard Documentation</title>
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <script>document.documentElement.dataset.theme = (() => { try { return localStorage.getItem('scamguard-docs-theme') || 'light' } catch (e) { return 'light' } })(); window.SC_DOCS_ROOT = '../../';</script>
+</head>
+
+<body class="">
+  <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
+  <header class="masthead">
+    <div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false"
+        aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg></button><a class="brand" href="../../index.html"><svg viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z" />
+          <path d="m9.2 12 1.8 1.8 3.9-4.2" />
+        </svg><span>ScamGuard <small>Documentation</small></span></a>
+      <div class="masthead-actions"><button class="control" type="button" data-search-open><svg viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+            aria-hidden="true">
+            <circle cx="11" cy="11" r="6.5" />
+            <path d="m16 16 4 4" />
+          </svg><span>ค้นหา</span><span class="search-shortcut">Ctrl K</span></button><button class="control"
+          type="button" data-theme-toggle aria-label="เปลี่ยนเป็นโหมดมืด"><svg viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.5A7 7 0 0 1 12 3Z" />
+          </svg><span class="theme-label" data-theme-label>โหมดมืด</span></button></div>
+    </div>
+  </header>
+  <div class="docs-shell">
+    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><button class="control nav-close"
+        type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg></button>
+      <p class="sidebar-title">เอกสารทั้งหมด</p>
+      <details class="sidebar-group">
+        <summary>ภาพรวม</summary>
+        <ul class="sidebar-list">
+          <li><a href="../overview.html">ภาพรวมโปรเจค</a></li>
+          <li><a href="../index.html">สารบัญ Wiki — โปรเจค Scam Image Detection</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>ความต้องการระบบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../requirements/functional-requirements.html">ความต้องการเชิงฟังก์ชัน (Functional
+              Requirements)</a></li>
+          <li><a href="../requirements/non-functional-requirements.html">ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional
+              Requirements)</a></li>
+          <li><a href="../requirements/traceability-matrix.html">เมทริกซ์การสืบย้อนความต้องการ</a></li>
+          <li><a href="../requirements/objectives-kpis.html">วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp;
+              KPIs)</a></li>
+          <li><a href="../requirements/srs.html">Software Requirements Specification (SRS)</a></li>
+          <li><a href="../requirements/use-case-diagram.html">Use Case Diagram</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>สถาปัตยกรรม</summary>
+        <ul class="sidebar-list">
+          <li><a href="../architecture/database-migrations.html">การจัดการการย้ายฐานข้อมูล (Database Migrations)</a>
+          </li>
+          <li><a href="../architecture/external-integrations.html">การเชื่อมต่อบริการภายนอก (External Integrations)</a>
+          </li>
+          <li><a href="../architecture/database-schema.html">โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li>
+          <li><a href="../architecture/system-architecture.html">สถาปัตยกรรมระบบ (System Architecture)</a></li>
+          <li><a href="../architecture/admin-portal.html">สถาปัตยกรรมและการออกแบบ Admin Portal</a></li>
+          <li><a href="../architecture/mobile-app.html">สถาปัตยกรรม Mobile App</a></li>
+          <li><a href="../architecture/ai-inference-service.html">AI Inference Service</a></li>
+          <li><a href="../architecture/backend-api.html">Backend API — FastAPI Orchestrator</a></li>
+          <li><a href="../architecture/c1-system-context-diagram.html">C1 System Context Diagram</a></li>
+          <li><a href="../architecture/c2-container-diagram.html">C2 Container Diagram</a></li>
+          <li><a href="../architecture/c3-component-diagram.html">C3 Component Diagram - API Application</a></li>
+          <li><a href="../architecture/c4-code-diagram.html">C4 Code Diagram - Image Scanning Flow</a></li>
+          <li><a href="../architecture/database-er-diagram.html">Entity Relationship Diagram (ER Diagram)</a></li>
+          <li><a href="../architecture/mobile-design.html">Mobile App Architecture</a></li>
+          <li><a href="../architecture/flowchart.html">System Flowchart</a></li>
+          <li><a href="../architecture/design-overview.html">UX/UI &amp; System Design Overview</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group" open>
+        <summary>แนวคิดและเทคนิค</summary>
+        <ul class="sidebar-list">
+          <li><a href="risk-scoring.html">การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li>
+          <li><a href="multi-layer-analysis.html">การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li>
+          <li><a href="explainable-ai.html">ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li>
+          <li><a href="configs.html">พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li>
+          <li><a href="ai-model-segformer.html">โมเดล AI — SegFormer</a></li>
+          <li><a href="surya-ocr.html">โมเดล AI — Surya OCR</a></li>
+          <li><a href="model-training.html">AI Model Training Workflow</a></li>
+          <li><a href="mmsegmentation.html">MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li>
+          <li><a href="semantic-segmentation.html" aria-current="page">Semantic Segmentation</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>องค์ประกอบระบบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../entities/tech-stack.html">เทคโนโลยีที่ใช้ (Technology Stack)</a></li>
+          <li><a href="../entities/actors.html">ผู้ใช้ระบบ (Actors)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การตัดสินใจ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../decisions/technology-choices.html">การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การวางแผน</summary>
+        <ul class="sidebar-list">
+          <li><a href="../planning/task-tracking.html">การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a>
+          </li>
+          <li><a href="../planning/project-scope.html">ขอบเขตโครงการ (Project Scope)</a></li>
+          <li><a href="../planning/team.html">ทีมงานและผู้รับผิดชอบ (Team)</a></li>
+          <li><a href="../planning/backend-documentation.html">Backend Documentation</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การทดสอบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../testing/test-cases.html">กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>คู่มือและภาคผนวก</summary>
+        <ul class="sidebar-list">
+          <li><a href="../log.html">บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li>
+          <li><a href="../howto.html">วิธีใช้งาน Wiki (How to Use This Wiki)</a></li>
+          <li><a href="../runbook.html">Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li>
+          <li><a href="../AGENTS.html">Wiki Operating Guide</a></li>
+        </ul>
+      </details>
+    </aside>
+    <div class="nav-backdrop" data-nav-backdrop></div>
+    <main class="article" id="main-content">
+      <nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span
+          aria-hidden="true">/</span><span>แนวคิดและเทคนิค</span></nav>
+      <header class="article-header">
+        <h1>Semantic Segmentation</h1>
+        <p class="article-lead">เทคนิคทางคอมพิวเตอร์วิทัศน์ Computer Vision ที่ทำการจำแนกประเภทของแต่ละพิกเซลในรูปภาพ
+          ว่าเป็นภาพพื้นหลัง Background หรือเป็นรอยที่ถูกดัดแปลงตัดต่อ Forgery</p>
+        <div class="meta"><span>หมวด แนวคิดและเทคนิค</span><time datetime="2026-08-07">อัปเดต
+            2026-08-07</time><span>ต้นฉบับ concepts/semantic-segmentation.md</span></div>
+        <div class="tags"><span class="tag">Semantic Segmentation</span><span class="tag">SegFormer</span><span
+            class="tag">forgery</span><span class="tag">pixel-analysis</span></div>
+      </header>
+      <div class="prose">
+        <h1 id="semantic-segmentation">Semantic Segmentation</h1>
+        <p>เทคนิคทางคอมพิวเตอร์วิทัศน์ (Computer Vision) ที่ทำการจำแนกประเภทของแต่ละพิกเซลในรูปภาพ ว่าเป็นภาพพื้นหลัง
+          (Background) หรือเป็นรอยที่ถูกดัดแปลงตัดต่อ (Forgery)</p>
+        <hr>
+        <h2 id="หลักการทำงาน">หลักการทำงาน</h2>
+        <p>ระบบประเมินความเสี่ยงและตรวจสอบร่องรอยการตัดต่อในระดับพิกเซลด้วยโมเดล Deep Learning (SegFormer)
+          โดยวิเคราะห์บริบทของภาพทั้งในระดับโครงสร้างรวม (Global Context) และรายละเอียดระดับขอบเขตพิกเซล (Local Details)
+        </p>
+        <p><strong>ขั้นตอน:</strong></p>
+        <ol>
+          <li>รูปภาพดิบจะถูกส่งเข้าโมเดล SegFormer</li>
+          <li>โมเดลสกัด Features ในหลายระดับความละเอียด (Hierarchical Features)</li>
+          <li>Decoder ของโมเดลจะรวม Features เข้าด้วยกัน และทำการทำนาย (Prediction)
+            ว่าแต่ละพิกเซลในภาพมีความน่าจะเป็นที่จะเป็นรอยตัดต่อมากน้อยเพียงใด</li>
+          <li>ผลลัพธ์ที่ได้จะเป็น Probability Map ที่สามารถนำไปพล็อตเป็นภาพแผนที่ความร้อน (Heatmap)
+            แสดงบริเวณที่น่าสงสัย</li>
+        </ol>
+        <hr>
+        <h2 id="ประเภทการปลอมแปลงที่ตรวจจับได้">ประเภทการปลอมแปลงที่ตรวจจับได้</h2>
+        <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
+          <table>
+            <thead>
+              <tr>
+                <th style="text-align:left">ประเภทการปลอมแปลง</th>
+                <th style="text-align:left">คำอธิบาย</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="text-align:left">Splicing</td>
+                <td style="text-align:left">นำบริเวณจากรูปอื่นมาวาง (มักมีความผิดปกติของสัญญาณพิกเซลและขอบเขต)</td>
+              </tr>
+              <tr>
+                <td style="text-align:left">Copy-Move</td>
+                <td style="text-align:left">คัดลอกบริเวณในรูปเดิมแล้วย้ายไปที่อื่น (โมเดลสามารถเรียนรู้ความซ้ำซ้อน)</td>
+              </tr>
+              <tr>
+                <td style="text-align:left">Retouching</td>
+                <td style="text-align:left">แก้ไขพิกเซลเฉพาะจุด (เช่น เปลี่ยนตัวเลขบนสลิปโอนเงิน)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <hr>
+        <h2 id="semantic-segmentation-ในระบบนี้">Semantic Segmentation ในระบบนี้</h2>
+        <p>เทคนิคนี้เป็นกลไกหลักที่ใช้โดย <a href="../architecture/ai-inference-service.html">AI Inference Service</a>
+          ผ่านโมเดล <a href="ai-model-segformer.html">SegFormer</a></p>
+        <p>กระบวนการ:</p>
+        <ol>
+          <li>API ส่งภาพไปยัง AI Inference Service</li>
+          <li>ภาพถูกป้อนเข้าสู่กระบวนการ Semantic Segmentation ด้วยโมเดล SegFormer</li>
+          <li>SegFormer สร้าง Segmentation Mask / Probability Map ออกมา</li>
+          <li>Mask ถูกแปลงเป็น <a href="explainable-ai.html">Heatmap</a> สำหรับแสดงผลให้ผู้ใช้เห็นจุดเสี่ยง</li>
+        </ol>
+        <hr>
+        <h2 id="ประเด็นสำคัญ">ประเด็นสำคัญ</h2>
+        <ul>
+          <li>แตกต่างจาก Image Classification ที่บอกแค่ว่า &quot;มี&quot; หรือ &quot;ไม่มี&quot; การตัดต่อ แต่ Semantic
+            Segmentation จะชี้ตำแหน่งพิกเซล (Localization) ให้เห็นชัดเจน</li>
+          <li>ใช้ <a href="model-training.html">Differential Learning Rates</a> ในการ Train โมเดลให้มีความแม่นยำสูง</li>
+          <li>ได้ผลดีกับประเภทภาพหลอกลวงที่พบบ่อยที่สุด: สลิปที่ถูกแก้ไขตัวเลข, ใบเสร็จปลอม, รูปโปรไฟล์ที่เปลี่ยนใบหน้า
+          </li>
+        </ul>
+        <hr>
+        <h2 id="หน้าที่เกี่ยวข้อง">หน้าที่เกี่ยวข้อง</h2>
+        <ul>
+          <li><a href="ai-model-segformer.html">concepts/ai-model-segformer</a></li>
+          <li><a href="multi-layer-analysis.html">concepts/multi-layer-analysis</a></li>
+          <li><a href="explainable-ai.html">concepts/explainable-ai</a></li>
+          <li><a href="../architecture/ai-inference-service.html">architecture/ai-inference-service</a></li>
+        </ul>
+      </div>
+      <footer class="source-panel"><strong>แหล่งข้อมูลของหน้านี้</strong>
+        <ul>
+          <li><a href="../../sources/wiki/concepts/semantic-segmentation.md">Markdown ต้นฉบับ:
+              concepts/semantic-segmentation.md</a></li>
+          <li>design/architecture.md</li>
+          <li>design/model.md</li>
+          <li>Document/srs.md</li>
+        </ul>
+      </footer>
+    </main>
+    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้">
+      <p class="toc-title">ในหน้านี้</p>
+      <ol class="toc">
+        <li class="toc-level-2"><a
+            href="#%E0%B8%AB%E0%B8%A5%E0%B8%B1%E0%B8%81%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%97%E0%B8%B3%E0%B8%87%E0%B8%B2%E0%B8%99">หลักการทำงาน</a>
+        </li>
+        <li class="toc-level-2"><a
+            href="#%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%A0%E0%B8%97%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9B%E0%B8%A5%E0%B8%AD%E0%B8%A1%E0%B9%81%E0%B8%9B%E0%B8%A5%E0%B8%87%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%95%E0%B8%A3%E0%B8%A7%E0%B8%88%E0%B8%88%E0%B8%B1%E0%B8%9A%E0%B9%84%E0%B8%94%E0%B9%89">ประเภทการปลอมแปลงที่ตรวจจับได้</a>
+        </li>
+        <li class="toc-level-2"><a
+            href="#semantic-segmentation-%E0%B9%83%E0%B8%99%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A%E0%B8%99%E0%B8%B5%E0%B9%89">Semantic
+            Segmentation ในระบบนี้</a></li>
+        <li class="toc-level-2"><a
+            href="#%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%94%E0%B9%87%E0%B8%99%E0%B8%AA%E0%B8%B3%E0%B8%84%E0%B8%B1%E0%B8%8D">ประเด็นสำคัญ</a>
+        </li>
+        <li class="toc-level-2"><a
+            href="#%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%87">หน้าที่เกี่ยวข้อง</a>
+        </li>
+      </ol>
+    </aside>
+  </div>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title">
+    <div class="search-dialog-head"><label class="visually-hidden" id="search-title"
+        for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…"
+        autocomplete="off" data-search-input><button class="control" type="button" data-search-close
+        aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg></button></div>
+    <div class="search-results" data-search-results aria-live="polite"></div>
+  </dialog>
+  <script src="../../assets/js/search-index.js"></script>
+  <script src="../../assets/js/site.js"></script>
+</body>
+
+</html>

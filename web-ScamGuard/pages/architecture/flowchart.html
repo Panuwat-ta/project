@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="th" data-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="Mobile App: Scam Image Detection User Flow การทำงานฝั่งผู้ใช้ คำอธิบาย User Flow 1. เริ่มต้น Start : ผู้ใช้เข้าสู่แอปพลิเคชัน 2. หน้าแรก Home : แสดงเมนูหลัก 3. นำเข้าภาพ Import : เลือกรูปภาพ…">
+  <meta name="color-scheme" content="light dark">
+  <title>System Flowchart | ScamGuard Documentation</title>
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <script>document.documentElement.dataset.theme = (() => { try { return localStorage.getItem('scamguard-docs-theme') || 'light' } catch (e) { return 'light' } })(); window.SC_DOCS_ROOT = '../../';</script>
+</head>
+
+<body class="">
+  <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
+  <header class="masthead">
+    <div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false"
+        aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg></button><a class="brand" href="../../index.html"><svg viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z" />
+          <path d="m9.2 12 1.8 1.8 3.9-4.2" />
+        </svg><span>ScamGuard <small>Documentation</small></span></a>
+      <div class="masthead-actions"><button class="control" type="button" data-search-open><svg viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+            aria-hidden="true">
+            <circle cx="11" cy="11" r="6.5" />
+            <path d="m16 16 4 4" />
+          </svg><span>ค้นหา</span><span class="search-shortcut">Ctrl K</span></button><button class="control"
+          type="button" data-theme-toggle aria-label="เปลี่ยนเป็นโหมดมืด"><svg viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.5A7 7 0 0 1 12 3Z" />
+          </svg><span class="theme-label" data-theme-label>โหมดมืด</span></button></div>
+    </div>
+  </header>
+  <div class="docs-shell">
+    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><button class="control nav-close"
+        type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg></button>
+      <p class="sidebar-title">เอกสารทั้งหมด</p>
+      <details class="sidebar-group">
+        <summary>ภาพรวม</summary>
+        <ul class="sidebar-list">
+          <li><a href="../overview.html">ภาพรวมโปรเจค</a></li>
+          <li><a href="../index.html">สารบัญ Wiki — โปรเจค Scam Image Detection</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>ความต้องการระบบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../requirements/functional-requirements.html">ความต้องการเชิงฟังก์ชัน (Functional
+              Requirements)</a></li>
+          <li><a href="../requirements/non-functional-requirements.html">ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional
+              Requirements)</a></li>
+          <li><a href="../requirements/traceability-matrix.html">เมทริกซ์การสืบย้อนความต้องการ</a></li>
+          <li><a href="../requirements/objectives-kpis.html">วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp;
+              KPIs)</a></li>
+          <li><a href="../requirements/srs.html">Software Requirements Specification (SRS)</a></li>
+          <li><a href="../requirements/use-case-diagram.html">Use Case Diagram</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group" open>
+        <summary>สถาปัตยกรรม</summary>
+        <ul class="sidebar-list">
+          <li><a href="database-migrations.html">การจัดการการย้ายฐานข้อมูล (Database Migrations)</a></li>
+          <li><a href="external-integrations.html">การเชื่อมต่อบริการภายนอก (External Integrations)</a></li>
+          <li><a href="database-schema.html">โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li>
+          <li><a href="system-architecture.html">สถาปัตยกรรมระบบ (System Architecture)</a></li>
+          <li><a href="admin-portal.html">สถาปัตยกรรมและการออกแบบ Admin Portal</a></li>
+          <li><a href="mobile-app.html">สถาปัตยกรรม Mobile App</a></li>
+          <li><a href="ai-inference-service.html">AI Inference Service</a></li>
+          <li><a href="backend-api.html">Backend API — FastAPI Orchestrator</a></li>
+          <li><a href="c1-system-context-diagram.html">C1 System Context Diagram</a></li>
+          <li><a href="c2-container-diagram.html">C2 Container Diagram</a></li>
+          <li><a href="c3-component-diagram.html">C3 Component Diagram - API Application</a></li>
+          <li><a href="c4-code-diagram.html">C4 Code Diagram - Image Scanning Flow</a></li>
+          <li><a href="database-er-diagram.html">Entity Relationship Diagram (ER Diagram)</a></li>
+          <li><a href="mobile-design.html">Mobile App Architecture</a></li>
+          <li><a href="flowchart.html" aria-current="page">System Flowchart</a></li>
+          <li><a href="design-overview.html">UX/UI &amp; System Design Overview</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>แนวคิดและเทคนิค</summary>
+        <ul class="sidebar-list">
+          <li><a href="../concepts/risk-scoring.html">การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li>
+          <li><a href="../concepts/multi-layer-analysis.html">การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li>
+          <li><a href="../concepts/explainable-ai.html">ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li>
+          <li><a href="../concepts/configs.html">พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li>
+          <li><a href="../concepts/ai-model-segformer.html">โมเดล AI — SegFormer</a></li>
+          <li><a href="../concepts/surya-ocr.html">โมเดล AI — Surya OCR</a></li>
+          <li><a href="../concepts/model-training.html">AI Model Training Workflow</a></li>
+          <li><a href="../concepts/mmsegmentation.html">MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li>
+          <li><a href="../concepts/semantic-segmentation.html">Semantic Segmentation</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>องค์ประกอบระบบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../entities/tech-stack.html">เทคโนโลยีที่ใช้ (Technology Stack)</a></li>
+          <li><a href="../entities/actors.html">ผู้ใช้ระบบ (Actors)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การตัดสินใจ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../decisions/technology-choices.html">การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การวางแผน</summary>
+        <ul class="sidebar-list">
+          <li><a href="../planning/task-tracking.html">การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a>
+          </li>
+          <li><a href="../planning/project-scope.html">ขอบเขตโครงการ (Project Scope)</a></li>
+          <li><a href="../planning/team.html">ทีมงานและผู้รับผิดชอบ (Team)</a></li>
+          <li><a href="../planning/backend-documentation.html">Backend Documentation</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การทดสอบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../testing/test-cases.html">กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>คู่มือและภาคผนวก</summary>
+        <ul class="sidebar-list">
+          <li><a href="../log.html">บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li>
+          <li><a href="../howto.html">วิธีใช้งาน Wiki (How to Use This Wiki)</a></li>
+          <li><a href="../runbook.html">Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li>
+          <li><a href="../AGENTS.html">Wiki Operating Guide</a></li>
+        </ul>
+      </details>
+    </aside>
+    <div class="nav-backdrop" data-nav-backdrop></div>
+    <main class="article" id="main-content">
+      <nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span
+          aria-hidden="true">/</span><span>สถาปัตยกรรม</span></nav>
+      <header class="article-header">
+        <h1>System Flowchart</h1>
+        <div class="meta"><span>หมวด สถาปัตยกรรม</span><time datetime="2026-08-04">อัปเดต 2026-08-04</time><span>ต้นฉบับ
+            architecture/flowchart.md</span></div>
+        <div class="tags"><span class="tag">architecture</span><span class="tag">flowchart</span><span
+            class="tag">workflow</span></div>
+      </header>
+      <div class="prose">
+        <h1 id="mobile-app-scam-image-detection">Mobile App: Scam Image Detection</h1>
+        <h2 id="user-flow-การทำงานฝั่งผู้ใช้">User Flow (การทำงานฝั่งผู้ใช้)</h2>
+        <figure class="diagram-frame">
+          <div class="diagram-toolbar"><span>แผนภาพ 15</span><button class="control" type="button"
+              data-diagram-expand>ดูขนาดใหญ่</button></div><img
+            src="../../assets/diagrams/architecture-flowchart-15.svg" alt="แผนภาพจาก System Flowchart" loading="lazy">
+          <details class="diagram-source">
+            <summary>ดู Mermaid source</summary>
+            <pre><code>graph TD
+    Start([เริ่มใช้งาน]) --&gt; Home[หน้าแรก]
+    Home -- &quot;เลือกเมนู&quot; --&gt; Gallery[เลือกรูปภาพจาก Gallery]
+    Gallery --&gt; Image[ปรับแต่ง / Crop รูป]
+    
+    Image -- &quot;PNG&quot; --&gt; Preview[แสดง Preview รูปภาพ]
+    Preview -- &quot;upload images&quot; --&gt; CheckBtn[/กดปุ่มตรวจสอบ/]
+    CheckBtn --&gt; S3((&quot;upload img Cloud Storage&quot;))
+    
+    S3 --&gt; Analyzing{&quot;ระบบกำลังวิเคราะห์... (System Logic)&quot;}
+    
+    Analyzing -- &quot;สำเร็จ&quot; --&gt; Result[&quot;หน้าผลลัพธ์ (Risk Score + Evidence)&quot;]
+    Analyzing -- &quot;ล้มเหลว&quot; --&gt; Error[แจ้งเตือนข้อผิดพลาด]
+    
+    Result --&gt; AutoSave[(Auto-Save ลง DB)]
+    
+    AutoSave --&gt; Action{Action}
+    
+    Action -- &quot;แชร์&quot; --&gt; Share[แชร์ผลลัพธ์]
+    Action -- &quot;ไม่แชร์&quot; --&gt; End([จบการทำงาน])
+    
+    Share --&gt; End
+    
+    Error --&gt; Options{ทางเลือก}
+    Options -- &quot;นำเข้ารูปใหม่&quot; --&gt; ImportMethod
+    Options -- &quot;ยกเลิก&quot; --&gt; End
+
+    %% Styling
+    classDef blue fill:#0050ef,stroke:#001DBC,color:#fff
+    classDef green fill:#d5e8d4,stroke:#82b366,color:#000
+    classDef yellow fill:#fff2cc,stroke:#d6b656,color:#000
+    classDef purple fill:#e1d5e7,stroke:#9673a6,color:#000
+    classDef cloud fill:#dae8fc,stroke:#6c8ebf,color:#000
+    classDef error fill:#f8cecc,stroke:#b85450,color:#000
+
+    class Start,End blue
+    class Home,Gallery,Image,Preview,Result,Error,Share green
+    class Analyzing,Action,Options yellow
+    class CheckBtn,RetCache,Gen purple
+    class S3,AutoSave cloud
+</code></pre>
+          </details>
+          <dialog aria-label="แผนภาพขนาดใหญ่">
+            <div class="diagram-expanded-head"><button class="control" type="button"
+                data-diagram-zoom="out">ย่อ</button><span class="zoom-status" data-zoom-status>100%</span><button
+                class="control" type="button" data-diagram-zoom="in">ขยาย</button><button class="control" type="button"
+                data-diagram-close>ปิด</button></div>
+            <div class="diagram-pan" data-diagram-pan data-zoom="1" tabindex="0"
+              aria-label="พื้นที่แผนภาพ เลื่อนได้ทั้งแนวตั้งและแนวนอน"><img
+                src="../../assets/diagrams/architecture-flowchart-15.svg" alt="แผนภาพจาก System Flowchart"></div>
+          </dialog>
+        </figure>
+        <h3 id="คำอธิบาย-user-flow">คำอธิบาย User Flow</h3>
+        <ol>
+          <li><strong>เริ่มต้น (Start)</strong>: ผู้ใช้เข้าสู่แอปพลิเคชัน</li>
+          <li><strong>หน้าแรก (Home)</strong>: แสดงเมนูหลัก</li>
+          <li><strong>นำเข้าภาพ (Import)</strong>: เลือกรูปภาพที่น่าสงสัยจากคลังภาพ (Gallery) เพื่อเตรียมอัปโหลด</li>
+          <li><strong>ปรับแต่ง (Edit)</strong>: Crop หรือปรับขนาดภาพก่อนส่ง (PNG)</li>
+          <li><strong>ตรวจสอบ (Check)</strong>: กดปุ่มตรวจสอบเพื่อส่งข้อมูล</li>
+          <li><strong>ประมวลผล (Processing)</strong>: อัปโหลดภาพไปยังระบบจัดเก็บคลาวด์ (Cloud Storage)
+            และเข้าสู่กระบวนการวิเคราะห์ System Logic</li>
+          <li><strong>ผลลัพธ์ (Result)</strong>:
+            <ul>
+              <li><strong>สำเร็จ</strong>: แสดงคะแนนความเสี่ยง (Risk Score) และหลักฐาน (Evidence) จากนั้น Auto-Save
+                ลงฐานข้อมูล</li>
+              <li><strong>ล้มเหลว</strong>: แจ้งเตือนข้อผิดพลาด และให้ทางเลือก (ลองใหม่ หรือ ยกเลิก)</li>
+            </ul>
+          </li>
+          <li><strong>Action</strong>: ผู้ใช้เลือกแชร์ผลลัพธ์ หรือจบการทำงาน</li>
+        </ol>
+        <hr>
+        <h2 id="system-logic-การทำงานฝั่งระบบ">System Logic (การทำงานฝั่งระบบ)</h2>
+        <figure class="diagram-frame">
+          <div class="diagram-toolbar"><span>แผนภาพ 16</span><button class="control" type="button"
+              data-diagram-expand>ดูขนาดใหญ่</button></div><img
+            src="../../assets/diagrams/architecture-flowchart-16.svg" alt="แผนภาพจาก System Flowchart" loading="lazy">
+          <details class="diagram-source">
+            <summary>ดู Mermaid source</summary>
+            <pre><code>graph TD
+    %% Source &amp; Initial Validation
+    S3([Cloud Storage]) -- import_image --&gt; Receive[/รับไฟล์รูปภาพ/]
+    Receive --&gt; NodeValidate{ตรวจสอบไฟล์ Valid Image}
+    
+    NodeValidate -- ไม่ใช่รูปหรือไฟล์เสีย --&gt; Reject[คืนค่า Error]
+    NodeValidate -- ถูกต้อง --&gt; Preprocess[Preprocessing]
+
+    %% Cache Mechanism
+    Preprocess --&gt; NodeCache{เคยตรวจรูปนี้ไหม Redis}
+    NodeCache -- Hit_เคยตรวจ --&gt; RetCache[ดึงผลเก่าจาก DB]
+    
+    %% Processing Tasks (ส่วนที่เป็นข้อความสีดำบนพื้นเทา)
+    NodeCache -- Miss_ไม่เคย --&gt; Task1[Task 1 Metadata]
+    Task1 --&gt; Task2[Task 2 OCR]
+    Task2 --&gt; Task3[Task 3 Forgery]
+    
+    %% Error Handling &amp; Logic Branching
+    Task3 --&gt; PartialFail[Partial Failure Timeout 5s]
+    PartialFail --&gt; NodeKeyword{เจอ Keyword อันตราย}
+    
+    NodeKeyword -- ไม่เจอความเสี่ยงชัดเจน --&gt; Task4[Task 4 Source]
+    Task4 --&gt; NodeSearch{ค้นหารูปในเน็ต}
+    
+    NodeSearch -- มากกว่าหรือเท่ากับ 3 --&gt; SourceHigh[เจอรูปมีที่มามากกว่า 3 ที่]
+    NodeSearch -- น้อยกว่าหรือเท่ากับ 1 --&gt; SourceLow[เจอรูปมีที่มาน้อยกว่า 1 ที่]
+    
+    SourceLow --&gt; Task5[Task 5 AI-Gen]
+    
+    %% Aggregation Point (Collector)
+    Collector(( ))
+    NodeKeyword -- เจอ --&gt; Collector
+    SourceHigh -- เจอ --&gt; Collector
+    Task5 -- เจอ --&gt; Collector
+    
+    %% Final Calculation &amp; Storage
+    Collector --&gt; Calc[คำนวณคะแนนความเสี่ยง]
+    Calc --&gt; Gen[สร้างคำอธิบายผลลัพธ์]
+    Gen --&gt; DB[(บันทึกลง Database)]
+    
+    %% Output
+    DB --&gt; Output[/ส่ง JSON กลับ Client/]
+    RetCache --&gt; Output
+
+    %% Styling (กำหนดสีข้อความเป็นสีดำด้วย color:#000)
+    style S3 fill:#dae8fc,stroke:#6c8ebf,color:#000
+    style Receive fill:#0050ef,color:#fff
+    style NodeValidate fill:#f5f5f5,stroke:#666,color:#000
+    style Reject fill:#f8cecc,stroke:#b85450,color:#000
+    style Preprocess fill:#dae8fc,stroke:#6c8ebf,color:#000
+    style NodeCache fill:#ffe6cc,stroke:#d79b00,color:#000
+    style RetCache fill:#e1d5e7,stroke:#9673a6,color:#000
+    style Task1 fill:#f5f5f5,stroke:#666,color:#000
+    style Task2 fill:#f5f5f5,stroke:#666,color:#000
+    style Task3 fill:#f5f5f5,stroke:#666,color:#000
+    style Task4 fill:#f5f5f5,stroke:#666,color:#000
+    style Task5 fill:#f5f5f5,stroke:#666,color:#000
+    style PartialFail fill:#d5e8d4,stroke:#82b366,color:#000
+    style NodeKeyword fill:#ffe6cc,stroke:#d79b00,color:#000
+    style NodeSearch fill:#ffe6cc,stroke:#d79b00,color:#000
+    style SourceHigh fill:#d5e8d4,stroke:#82b366,color:#000
+    style SourceLow fill:#d5e8d4,stroke:#82b366,color:#000
+    style Calc fill:#d5e8d4,stroke:#82b366,color:#000
+    style DB fill:#ffe6cc,stroke:#d79b00,color:#000
+    style Output fill:#0050ef,color:#fff
+</code></pre>
+          </details>
+          <dialog aria-label="แผนภาพขนาดใหญ่">
+            <div class="diagram-expanded-head"><button class="control" type="button"
+                data-diagram-zoom="out">ย่อ</button><span class="zoom-status" data-zoom-status>100%</span><button
+                class="control" type="button" data-diagram-zoom="in">ขยาย</button><button class="control" type="button"
+                data-diagram-close>ปิด</button></div>
+            <div class="diagram-pan" data-diagram-pan data-zoom="1" tabindex="0"
+              aria-label="พื้นที่แผนภาพ เลื่อนได้ทั้งแนวตั้งและแนวนอน"><img
+                src="../../assets/diagrams/architecture-flowchart-16.svg" alt="แผนภาพจาก System Flowchart"></div>
+          </dialog>
+        </figure>
+        <h3 id="คำอธิบาย-system-logic">คำอธิบาย System Logic</h3>
+        <ol>
+          <li><strong>Input</strong>: รับไฟล์รูปภาพจากระบบคลาวด์สตอเรจ (Cloud Storage)</li>
+          <li><strong>Validation</strong>: ตรวจสอบว่าไฟล์รูปภาพถูกต้องหรือไม่
+            <ul>
+              <li>หากเสีย/ไม่ใช่รูป: Reject คืนค่า Error</li>
+              <li>หากถูกต้อง: ส่งไป Preprocessing</li>
+            </ul>
+          </li>
+          <li><strong>Preprocessing</strong>: ปรับขนาด (Resize) และ Normalize ภาพ</li>
+          <li><strong>Caching</strong>: ตรวจสอบ Hash ใน Redis
+            <ul>
+              <li><strong>Hit</strong>: เคยตรวจแล้ว ให้ดึงผลเก่าจาก Database ส่งคืนทันที</li>
+              <li><strong>Miss</strong>: ไม่เคยตรวจ ให้เข้าสู่ Pipeline การตรวจสอบ</li>
+            </ul>
+          </li>
+          <li><strong>Analysis Tasks</strong>:
+            <ul>
+              <li><strong>Task 1 Metadata</strong>: ดึงข้อมูล EXIF/GPS</li>
+              <li><strong>Task 2 OCR</strong>: อ่านข้อความในภาพ</li>
+              <li><strong>Task 3 Forgery</strong>: ตรวจสอบการตัดต่อ (Semantic Segmentation)</li>
+              <li><strong>Partial Failure</strong>: ดักจับกรณี Timeout</li>
+              <li><strong>Keyword Check</strong>: ตรวจสอบคำเสี่ยงสูง</li>
+              <li><strong>Task 4 Source</strong>: ค้นหาที่มาของภาพ
+                <ul>
+                  <li>หากพบน้อย (&lt;=1): ความเสี่ยงต่ำ ส่งไปตรวจ AI-Gen (Task 5)</li>
+                  <li>หากพบมาก (&gt;=3): ความเสี่ยงสูง</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li><strong>Scoring</strong>: คำนวณคะแนนความเสี่ยงรวม (Overall Risk Score) ตาม Hybrid Worst-Case Trigger
+            จากผลลัพธ์ทุกมิติ</li>
+          <li><strong>Output</strong>: สร้างคำอธิบาย บันทึกลง Database และส่ง JSON กลับ Client</li>
+        </ol>
+        <hr>
+        <h3 id="diagram-link"><a
+            href="https://drive.google.com/file/d/1vf9so53ErwXpJDqi6HplX7wtufLqP1hv/view?usp=sharing"
+            rel="noreferrer">Diagram Link</a></h3>
+      </div>
+      <footer class="source-panel"><strong>แหล่งข้อมูลของหน้านี้</strong>
+        <ul>
+          <li><a href="../../sources/wiki/architecture/flowchart.md">Markdown ต้นฉบับ: architecture/flowchart.md</a>
+          </li>
+          <li>Document/flowchart.md</li>
+        </ul>
+      </footer>
+    </main>
+    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้">
+      <p class="toc-title">ในหน้านี้</p>
+      <ol class="toc">
+        <li class="toc-level-2"><a
+            href="#user-flow-%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%97%E0%B8%B3%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%9D%E0%B8%B1%E0%B9%88%E0%B8%87%E0%B8%9C%E0%B8%B9%E0%B9%89%E0%B9%83%E0%B8%8A%E0%B9%89">User
+            Flow (การทำงานฝั่งผู้ใช้)</a></li>
+        <li class="toc-level-3"><a
+            href="#%E0%B8%84%E0%B8%B3%E0%B8%AD%E0%B8%98%E0%B8%B4%E0%B8%9A%E0%B8%B2%E0%B8%A2-user-flow">คำอธิบาย User
+            Flow</a></li>
+        <li class="toc-level-2"><a
+            href="#system-logic-%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%97%E0%B8%B3%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%9D%E0%B8%B1%E0%B9%88%E0%B8%87%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A">System
+            Logic (การทำงานฝั่งระบบ)</a></li>
+        <li class="toc-level-3"><a
+            href="#%E0%B8%84%E0%B8%B3%E0%B8%AD%E0%B8%98%E0%B8%B4%E0%B8%9A%E0%B8%B2%E0%B8%A2-system-logic">คำอธิบาย
+            System Logic</a></li>
+        <li class="toc-level-3"><a href="#diagram-link">Diagram Link</a></li>
+      </ol>
+    </aside>
+  </div>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title">
+    <div class="search-dialog-head"><label class="visually-hidden" id="search-title"
+        for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…"
+        autocomplete="off" data-search-input><button class="control" type="button" data-search-close
+        aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg></button></div>
+    <div class="search-results" data-search-results aria-live="polite"></div>
+  </dialog>
+  <script src="../../assets/js/search-index.js"></script>
+  <script src="../../assets/js/site.js"></script>
+</body>
+
+</html>

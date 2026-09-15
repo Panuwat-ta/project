@@ -1,0 +1,392 @@
+# เอกสารสถาปัตยกรรมระบบ (System Architecture)
+## โครงงาน: แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง (Scam Image Detection)
+### หลักสูตรวิศวกรรมซอฟต์แวร์ สาขาวิศวกรรมไฟฟ้า คณะวิศวกรรมศาสตร์ มทร.ล้านนา (เชียงใหม่ ดอยสะเก็ด)
+
+เอกสารฉบับนี้อธิบายโครงสร้างสถาปัตยกรรมระบบ (System Architecture) ทั้งหมดของโครงการ **Scam Image Detection** โดยครอบคลุมโครงสร้างหน้าบ้าน (Frontend), หลังบ้าน (Backend), ระบบปัญญาประดิษฐ์ (AI Inference), ระบบฐานข้อมูลและการจัดเก็บไฟล์ (Database & Storage) ตลอดจนการบูรณาการระบบภายนอก (External Integrations) และแนวทางการประมวลผลข้อมูลในแต่ละชั้นวิเคราะห์ (Multi-layer Analysis Pipeline)
+
+---
+
+## 🔗 เอกสารที่เกี่ยวข้อง (Related Documents)
+
+* เอกสารข้อกำหนดความต้องการระบบหลัก (SRS) (Document/srs-doc.md)
+* เอกสารข้อกำหนดความต้องการระบบฉบับรายวิชา (SRS SE02) (Document/srs-se02.md)
+* การออกแบบส่วนหน้าบ้าน (Mobile Application Design) (design/design.md)
+* การออกแบบโมบายแอปพลิเคชันโดยละเอียด (Detailed Mobile Design) (design/mobile/mobile.md)
+* การออกแบบระบบหลังบ้านและเซิร์ฟเวอร์ (Backend & Server Architecture) (design/server.md)
+* การออกแบบโมเดลปัญญาประดิษฐ์ (AI Model Design) (design/model.md)
+* การออกแบบระบบฝึกสอนโมเดล (Model Training Design) (design/training.md)
+* แผนภาพระดับ C1 (System Context Diagram) (Document/Software Architecture/C1-System-Context-Diagram.md)
+* แผนภาพระดับ C2 (Container Diagram) (Document/Software Architecture/C2-Container-Diagram.md)
+* แผนภาพระดับ C3 (Component Diagram) (Document/Software Architecture/C3-Component-Diagram.md)
+* แผนภาพระดับ C4 (Code Diagram) (Document/Software Architecture/C4-code-Diagram.md)
+* แผนภาพและรายละเอียดโฟลว์การทำงาน (Flowchart & System Logic) (Document/Software Architecture/flowchart.md)
+
+---
+
+## 1. ภาพรวมสถาปัตยกรรมระบบ (Architecture Overview)
+
+ระบบ Scam Image Detection ได้รับการออกแบบภายใต้แนวคิด **Cloud-Native Architecture** และ **Decoupled Architecture** เพื่อแยกส่วนแสดงผล (Frontend Widgets) ออกจากตรรกะทางธุรกิจและการคำนวณของปัญญาประดิษฐ์ (AI Core Model Inference) ที่ต้องใช้ทรัพยากรการคำนวณระดับสูง
+
+ระบบถูกแบ่งออกเป็น 3 เลเยอร์หลัก:
+1. **Presentation Layer (Frontend):** แอปพลิเคชันสมาร์ทโฟนที่พัฒนาด้วย **Flutter** สำหรับผู้ใช้งานทั่วไป และระบบเว็บพอร์ทัลที่พัฒนาด้วย **React.js** สำหรับผู้ดูแลระบบ
+2. **Business & Processing Layer (Backend Services):** ใช้ระบบย่อยประเภท Microservices โดยมี **API Application (FastAPI)** ทำหน้าที่คอยประสานงาน และสั่งงานการคำนวณเฉพาะด้านแยกไปที่ **AI Inference Service (PyTorch/ONNX)** โดย ONNX Worker เป็น Subprocess แยกโดดภายใน API Service
+3. **Data & Storage Layer (Storages):** ระบบจัดเก็บข้อมูลเชิงสัมพันธ์ **PostgreSQL**, หน่วยความจำแคชความเร็วสูง **Redis Cache** และพื้นที่จัดเก็บไฟล์ (Cloud Storage)
+
+---
+
+## 2. แผนภาพบริบทระบบ (C1: System Context Diagram)
+
+แผนภาพแสดงขอบเขตของระบบหลัก (Software System), ผู้มีส่วนเกี่ยวข้อง (Actors) และบริการภายนอกที่ระบบมีการเข้าถึงและสื่อสาร (External Systems)
+
+```mermaid
+flowchart TD
+    %% การตั้งค่า Class สีต่างๆ
+    classDef mainSystem fill:#0050ef,stroke:#001DBC,color:white
+    classDef userFill fill:#fff2cc,stroke:#d6b656,color:black
+    classDef adminFill fill:#dae8fc,stroke:#6c8ebf,color:black
+    classDef extFill fill:#f5f5f5,stroke:#666666,color:black
+
+    subgraph Context [C1: System Context Diagram]
+        direction TB
+        
+        User("General User<br>[Person]<br>ผู้ใช้งานทั่วไป")
+        
+        System("Mobile App: Scam Image Detection<br>[Software System]<br>ระบบสแกนและประเมินระดับความเสี่ยงของภาพถ่าย<br>จากการดัดแปลง, AI และประวัติสแกม")
+        
+        Admin("Admin / Researcher<br>[Person]<br>ผู้ดูแลระบบและนักวิจัย")
+        
+        ExtSearch("Reverse Image Search Provider<br>[External System]<br>Google Vision API / Bing Visual Search<br>(ใช้สืบค้นหาแหล่งที่มาของภาพแอบอ้าง)")
+        
+        ExtNotify("Push Notification Service<br>[External System]<br>Firebase Cloud Messaging (FCM)<br>(ส่งสัญญาณเตือนกรณีประมวลผลเสร็จสิ้นแบบ Async)")
+
+        %% Relationships
+        User -- "1. อัปโหลดรูปภาพเพื่อตรวจสอบ<br>2. เรียกดูผลวิเคราะห์ความเสี่ยง" --> System
+        System -- "ส่ง URL รูปภาพ / ข้อมูลไบนารี" --> ExtSearch
+        ExtSearch -.->|"ส่งคืนแหล่งที่พบภาพคล้ายคลึงกัน"| System
+        System -- "ส่งข้อมูลและหัวข้อการแจ้งเตือน (Payload)" --> ExtNotify
+        Admin -- "ตรวจสอบเคสที่ถูกรายงาน /<br>อัปโหลดชุดข้อมูลและโมเดล" --> System
+    end
+
+    %% Apply Styles
+    class System mainSystem
+    class User userFill
+    class Admin adminFill
+    class ExtSearch,ExtNotify extFill
+```
+
+---
+
+## 3. แผนภาพระดับคอนเทนเนอร์ (C2: Container Diagram)
+
+แผนภาพแสดงองค์ประกอบและคอนเทนเนอร์ย่อยภายในกรอบการทำงานของระบบ (System Boundary) ซึ่งอธิบายความสัมพันธ์และโปรโตคอลในการสื่อสารระหว่างแต่ละกล่องบริการ
+
+```mermaid
+flowchart TB
+    %% การตั้งค่า Class สีต่างๆ
+    classDef userFill fill:#fff2cc,stroke:#d6b656,color:black
+    classDef clientFill fill:#dae8fc,stroke:#6c8ebf,color:black
+    classDef backendFill fill:#d5e8d4,stroke:#82b366,color:black
+    classDef storageFill fill:#ffe6cc,stroke:#d79b00,color:black
+    classDef extFill fill:#f5f5f5,stroke:#666666,color:black
+
+    %% Actors Boundary
+    User("General User<br>[Person]<br>ผู้ใช้งานทั่วไป")
+    Admin("Admin / Researcher<br>[Person]<br>ผู้ดูแลระบบและนักวิจัย")
+
+    %% System Boundary
+    subgraph ScamSystem [Scam Image Detection - System Boundary]
+        direction TB
+
+        subgraph Frontends [Frontend Layer]
+            MobileApp("Mobile App<br>[Container: Flutter]<br>อัปโหลด/แต่งภาพต้นฉบับ,<br>แสดงผลคะแนนความเสี่ยง (Risk Score)")
+            AdminPortal("Admin Web Portal<br>[Container: React + Tailwind]<br>แดชบอร์ดตรวจสอบสถิติระบบ, ตรวจรายงาน,<br>จัดการข้อมูลผู้ใช้, อัปเดตโมเดล")
+        end
+
+        subgraph Backends [Backend & API Layer]
+            APIGateway("API Application<br>[Container: Python FastAPI]<br>ผู้ประสานงาน (Orchestrator), สกัด EXIF Metadata,<br>รัน OCR หา Scam Keywords")
+            AIInference("AI Inference Service<br>[Container: PyTorch / ONNX]<br>ตรวจหาร่องรอยการตัดต่อ (Semantic Segmentation),<br>จำแนกภาพ AI-Generated, สร้างภาพ Heatmap")
+        end
+
+        subgraph Storages [Storage & Cache Layer]
+            Cache("Cache Store<br>[Container: Redis]<br>แคชข้อมูลภาพที่สแกนแล้ว (Image Hash)<br>เพื่อหลีกเลี่ยงการรัน AI ซ้ำซ้อน")
+            ObjectStore("Object Storage<br>[Container: Cloud Storage]<br>จัดเก็บภาพดิบของผู้ใช้<br>และภาพผลลัพธ์ Heatmap")
+            MainDB[("Main Relational DB<br>[Container: PostgreSQL]<br>เก็บข้อมูลบัญชีผู้ใช้, ประวัติการสแกน,<br>ข้อมูลการรายงานสแกม และบันทึก Log")]
+        end
+    end
+
+    %% External Systems Boundary
+    subgraph Externals [External Services]
+        PushService("Push Notification Service<br>[External System: FCM]<br>ส่งสัญญาณแจ้งเตือนผู้ใช้งานปลายทาง")
+        ReverseSearch("Reverse Image Search<br>[External System: Google Vision API]<br>ระบบค้นหาประวัติการแพร่กระจายของภาพ")
+    end
+
+    %% Relationships / Associations
+    User -- "นำเข้ารูปภาพ & ตรวจสอบผลลัพธ์" --> MobileApp
+    Admin -- "ควบคุมการทำงานหลังบ้าน" --> AdminPortal
+
+    MobileApp -- "API Requests<br>[HTTPS / REST JSON]" --> APIGateway
+    AdminPortal -- "API Requests<br>[HTTPS / REST JSON]" --> APIGateway
+
+    APIGateway -- "1. ค้นหา Image Hash (Cache Lookup)" --> Cache
+    APIGateway -- "4. ส่งตรวจร่องรอยการตัดต่อ<br>(SegFormer)" --> AIInference
+    APIGateway -- "6. ค้นหารูปภาพใกล้เคียงบนเว็บ<br>[HTTPS]" --> ReverseSearch
+    APIGateway -- "7. ส่งตรวจจับภาพ AI-Generated" --> AIInference
+    APIGateway -- "บันทึก / เรียกดึงไฟล์รูปภาพ" --> ObjectStore
+    APIGateway -- "บันทึกสถานะการสแกนและผลคะแนนความเสี่ยง" --> MainDB
+    
+    APIGateway -- "แจ้งเตือนประมวลผลเสร็จสิ้น<br>[HTTPS]" --> PushService
+
+    %% Apply Styles
+    class User,Admin userFill
+    class MobileApp,AdminPortal clientFill
+    class APIGateway,AIInference backendFill
+    class Cache,ObjectStore,MainDB storageFill
+    class PushService,ReverseSearch extFill
+```
+
+---
+
+## 4. รายละเอียดส่วนประกอบของระบบ (Container Component Details)
+
+### 4.1 Frontend Containers
+
+#### 4.1.1 Mobile Application (Flutter)
+* **สถาปัตยกรรมโค้ด:** พัฒนาภายใต้หลักการ **Clean Architecture** แยกแยะโครงสร้างเป็น Presentation Layer, Domain Layer และ Data Layer ตามรูปแบบ **MVVM (Model-View-ViewModel)**
+* **การจัดการสถานะ (State Management):** ใช้บล็อกควบคุมการไหลข้อมูล **BLoC (Business Logic Component)** ช่วยให้หน้าจอ UI ปราศจาก Logic ประมวลผล และลดการผูกติดกับ SDK
+* **กลไกการนำเข้ารูปภาพ:** มีโมดูลปรับแต่งครอปรูปภาพ (Image Cropper) ในตัวเครื่อง เพื่อช่วยให้ผู้ใช้สามารถโฟกัสจุดที่ต้องการตรวจสอบ (เช่น รายละเอียดข้อความบนใบเสร็จหรือพิกเซลของภาพถ่าย) ก่อนส่งผ่านโปรโตคอล Multipart ไปที่หลังบ้าน
+* **การสื่อสาร:** เชื่อมโยงผ่าน REST API ของ API Application โดยใช้ HTTP Client (คลาส Dio) ร่วมกับการจัดการ Session โทเคนใน Secure Storage
+
+#### 4.1.2 Admin Web Portal (React + Tailwind CSS)
+* **บทบาท:** สำหรับเจ้าหน้าที่ระบบ นักวิจัยปัญญาประดิษฐ์ หรือทีมงานสนับสนุนระบบ
+* **หน้าที่หลัก:**
+  * **Dashboard:** แสดงผลสถิติภาพรวม อัตราความแม่นยำของการสแกน และปริมาณทราฟฟิก
+  * **Report Management:** คัดกรองและพิจารณาความถูกต้องของรูปภาพที่ผู้ใช้รายงานเข้ามาว่าเป็นการหลอกลวงจริงหรือไม่ (Scam Reports Verification)
+  * **Data Enrichment:** รวบรวมข้อมูลรูปภาพสแกมเพื่อใช้ทำ Dataset ในการ Train โมเดลเวอร์ชันใหม่
+  * **Model Deployment:** เมนูในการอัปเดตและเปลี่ยนแปลงน้ำหนักของโมเดลตรวจจับปัญญาประดิษฐ์ (Weight Management)
+
+---
+
+### 4.2 Backend & API Containers
+
+#### 4.2.1 API Application (Python FastAPI)
+* **บทบาท:** ตัวควบคุมหลัก (Orchestrator/API Gateway) จัดการเส้นทางข้อมูล (Data Pipelines) และเป็นจุดสิ้นสุด (Endpoints) สำหรับแอปพลิเคชันภายนอกทั้งหมด
+* **หน้าที่การทำงานหลัก:**
+  1. **User Authentication:** ควบคุมการเข้าสู่ระบบผ่านการลงทะเบียนแบบธรรมดาและ OAuth โดยมีรูปแบบสิทธิ์ผู้ใช้จำแนกตามตำแหน่ง (Role-Based Access Control)
+  2. **Metadata Extraction:** สกัดข้อมูลที่แฝงมากับไฟล์ภาพ เช่น EXIF Data, GPS Location, รุ่นของกล้อง เพื่อตรวจหาความไม่สอดคล้องเบื้องต้น
+  3. **Textual OCR Analysis:** แปลงรูปภาพเป็นข้อความด้วย OCR Engine **Surya-OCR** จากนั้นส่งให้ระบบวิเคราะห์ NLP (เช่น RegEx หรือโมเดล NLP ขนาดเล็ก) เพื่อค้นหาคำศัพท์อันตราย (Scam Keywords) เช่น "ด่วน", "โอนเงินด่วน", "รับปันผลสูง"
+  4. **Job Coordinator:** ดำเนินการกระจายภารกิจสแกนภาพที่เหลือไปยังคอนเทนเนอร์ AI Inference และฐานข้อมูลตามลำดับ
+
+#### 4.2.2 AI Inference Service (PyTorch / ONNX Runtime)
+* **บทบาท:** เซอร์วิสวิเคราะห์รูปภาพเชิงลึก (Deep Learning Node) แยกต่างหากเพื่อลดการใช้ CPU/GPU ของเครื่อง API Gateway โดย ONNX Worker ทำงานเป็น **Subprocess** ที่ถูกแยกโดดภายใน API Service โดยสื่อสารผ่าน STDIN/STDOUT JSON IPC
+* **โมเดลการวิเคราะห์หลัก:**
+  * **Visual Forgery Detection (SegFormer):** ตรวจสอบระดับพิกเซลด้วย Semantic Segmentation เพื่อหาร่องรอยการบันทึกภาพซ้ำหรือปรับแต่งระดับพิกเซล เช่น บริเวณตัวเลขสลิปโอนเงิน หรือการเปลี่ยนใบหน้าบุคคล
+  * **AI-Generated Image Detection:** ใช้โมเดลจำแนกภาพเชิงลึกเพื่อตรวจสอบลวดลายความถี่ของเม็ดสีพิกเซลที่เกิดจากการสร้างด้วยปัญญาประดิษฐ์ (Generative AI)
+  * **Explainable AI (XAI):** สร้างภาพแผนที่ความร้อน (**Heatmap**) ด้วย mask-to-heatmap overlay จาก segmentation mask เพื่อใช้พล็อตทับลงบนรูปภาพจริง ส่งให้ผู้ใช้เห็นพื้นที่ที่มีความเสี่ยงสูง
+
+---
+
+### 4.3 Storage Containers
+
+* **Cache Store (Redis):** ทำหน้าที่เป็น Cache Lookup เมื่อมีผู้ส่งตรวจสอบรูปภาพ ระบบจะแปลงภาพเป็นค่า Hash และเช็กที่ Redis หากพบค่าเดิม (Cache Hit) จะตอบกลับข้อมูลผลลัพธ์เก่าทันทีโดยไม่ต้องรัน AI ซ้ำ
+* **Object Storage (Cloud Storage):** จัดเก็บรูปภาพต้นฉบับของผู้ใช้ โดยแบ่ง Directory อย่างมีระเบียบ และจัดเก็บรูปผลลัพธ์ Heatmap เพื่อให้หน้าจอแอปแสดงภาพซ้อนทับบริเวณที่ตัดต่อ
+* **Main Relational Database (PostgreSQL):** ใช้จัดเก็บข้อมูลที่มีความสัมพันธ์กันและต้องรับประกันความปลอดภัยของข้อมูล (ACID Transaction) ได้แก่ ตารางประวัติผู้ใช้งาน, รายการประวัติสแกน, สถิติคะแนนความเสี่ยง, ข้อมูลรายงานสแกม และสถานะ Consent การยินยอมความเป็นส่วนตัว
+
+---
+
+## 5. การวิเคราะห์ข้อมูลและการคำนวณระดับความเสี่ยง (System Logic & Risk Scoring Pipeline)
+
+ระบบดำเนินการประเมินผลภาพถ่ายผ่านขั้นตอนการประมวลผลเชิงวิเคราะห์หลายมิติ (Multi-layer Analysis Pipeline) ดังแผนภาพด้านล่างนี้:
+
+```mermaid
+graph TD
+    %% Source & Initial Validation
+    CloudStorage([Cloud Storage / Client File]) -- อัปโหลดรูปภาพ --> Receive[/รับไฟล์รูปภาพ/]
+    Receive --> NodeValidate{ตรวจสอบประเภทและ<br>ความสมบูรณ์ของรูปภาพ}
+    
+    NodeValidate -- ไฟล์เสียหาย/ไม่ใช่รูปภาพ --> Reject[ส่งข้อผิดพลาดกลับผู้ใช้งาน]
+    NodeValidate -- ข้อมูลถูกต้อง --> Preprocess[ทำการจัดขนาดและแปลงสีภาพ]
+
+    %% Cache Mechanism
+    Preprocess --> NodeCache{มีข้อมูล Hash รูปนี้<br>ใน Redis หรือไม่}
+    NodeCache -- Hit (เคยสแกนแล้ว) --> RetCache[ดึงผลลัพธ์เดิมจาก PostgreSQL]
+    
+    %% Processing Tasks
+    NodeCache -- Miss (สแกนใหม่) --> Task1[Task 1: Metadata Check]
+    Task1 --> Task2[Task 2: OCR & Textual Analysis]
+    Task2 --> Task3[Task 3: Visual Forgery Detection]
+    
+    %% Error Handling & Logic Branching
+    Task3 --> PartialFail[จัดการกรณี Timeout / Partial Failure]
+    PartialFail --> NodeKeyword{ตรวจเจอคำศัพท์สุ่มเสี่ยง?}
+    
+    NodeKeyword -- ไม่พบความสุ่มเสี่ยงชัดเจน --> Task4[Task 4: Reverse Search]
+    Task4 --> NodeSearch{สืบค้นประวัติการเผยแพร่}
+    
+    NodeSearch -- เจอแหล่งข้อมูลซ้ำซ้อน >= 3 แหล่ง --> SourceHigh[ประเมินความเสี่ยงสูงจากรูปแอบอ้าง]
+    NodeSearch -- เจอแหล่งข้อมูลน้อยหรือไม่เจอ <= 1 แหล่ง --> SourceLow[ประเมินความเสี่ยงต่ำ ส่งเช็คภาพวาด AI]
+    
+    SourceLow --> Task5[Task 5: AI-Gen Detection]
+    
+    %% Aggregation Point (Collector)
+    Collector((ตัวรวบรวมคะแนนความเสี่ยง))
+    NodeKeyword -- พบคำสุ่มเสี่ยง --> Collector
+    SourceHigh -- พบข้อมูลซ้ำซ้อน --> Collector
+    Task5 -- ตรวจสอบความถูกต้องสมบูรณ์ --> Collector
+    
+    %% Final Calculation & Storage
+    Collector --> Calc[คำนวณคะแนนรวม Hybrid Risk Score]
+    Calc --> Gen[สร้างคำอธิบายความปลอดภัยอ้างอิงอธิบายได้ XAI]
+    Gen --> DB[(จัดเก็บบันทึกลง PostgreSQL)]
+    
+    %% Output
+    DB --> Output[/ส่ง JSON ผลลัพธ์กลับ Client/]
+    RetCache --> Output
+
+    %% Styling
+    style CloudStorage fill:#dae8fc,stroke:#6c8ebf,color:black
+    style Receive fill:#0050ef,color:white
+    style NodeValidate fill:#f5f5f5,stroke:#666,color:black
+    style Reject fill:#f8cecc,stroke:#b85450,color:black
+    style Preprocess fill:#dae8fc,stroke:#6c8ebf,color:black
+    style NodeCache fill:#ffe6cc,stroke:#d79b00,color:black
+    style RetCache fill:#e1d5e7,stroke:#9673a6,color:black
+    style Task1 fill:#f5f5f5,stroke:#666,color:black
+    style Task2 fill:#f5f5f5,stroke:#666,color:black
+    style Task3 fill:#f5f5f5,stroke:#666,color:black
+    style Task4 fill:#f5f5f5,stroke:#666,color:black
+    style Task5 fill:#f5f5f5,stroke:#666,color:black
+    style PartialFail fill:#d5e8d4,stroke:#82b366,color:black
+    style NodeKeyword fill:#ffe6cc,stroke:#d79b00,color:black
+    style NodeSearch fill:#ffe6cc,stroke:#d79b00,color:black
+    style SourceHigh fill:#d5e8d4,stroke:#82b366,color:black
+    style SourceLow fill:#d5e8d4,stroke:#82b366,color:black
+    style Calc fill:#d5e8d4,stroke:#82b366,color:black
+    style DB fill:#ffe6cc,stroke:#d79b00,color:black
+    style Output fill:#0050ef,color:white
+```
+
+### 5.1 ขั้นตอนและเกณฑ์การคำนวณ Risk Score (Hybrid Worst-Case Approach)
+ระบบจะทำการแปลงสัญญาณการตรวจจับออกมาเป็นตัวเลขแยกอิสระเต็ม **0 ถึง 100%** ในแต่ละเลเยอร์:
+
+1. **Visual Anomaly Risk Score ($S_{visual}$ - 0–100%):** ความเสี่ยงจากโมเดล SegFormer ตรวจสอบการแก้ไขตัดแต่งพิกเซล ($S_{forgery}$) ร่วมกับความเสี่ยงจากการถูกสร้างด้วย AI ($S_{aigen}$) คำนวณด้วยสูตร canonical เดียวทั้งระบบ: $S_{visual} = \text{Normalize}(\text{Confidence} \times \text{Coverage})$ โดย $\text{Confidence}$ = ค่าเฉลี่ยความน่าจะเป็นของพิกเซลที่ถูก flag (0–1), $\text{Coverage}$ = สัดส่วนพิกเซลที่ถูก flag ต่อทั้งภาพ (0–1), $\text{Normalize}(y) = \min(100, \text{round}(y \times 100))$ (นิยามเต็ม+ตัวอย่างคำนวณดู `Document/model/configs.md` §3 ซึ่งเป็นฉบับ canonical)
+2. **Textual Risk Score ($S_{text}$ - 0–100%):** คะแนนจากการวิเคราะห์คำหลอกลวง (เช่น ชักจูงโอนเงิน, ชื่อบัญชีแบล็กลิสต์, ปันผลเร็ว)
+3. **Source Verification Risk Score ($S_{source}$ - 0–100%):** ผลวิเคราะห์ความน่าสงสัยของการใช้ภาพผิดบริบทหรือภาพที่ถูกก๊อปปี้มาใช้งานหลายเว็บไซต์
+
+คะแนนภาพรวมคำนวณด้วยหลักการ Maximum Impact (Worst-Case Base) ร่วมกับ Multi-Factor Compounding:
+$$S_{base} = \max(S_{visual}, S_{text}, S_{source})$$
+$$Risk\ Score = \min\left(100, S_{base} + \sum_{i \neq \text{dominant}, S_i \ge 40} 5\right)$$
+
+### 5.2 การแปลผลลัพธ์ระดับความเสี่ยง (Risk Grades)
+
+$$
+\text{Risk Grade} = 
+\begin{cases} 
+\text{Low (เสี่ยงต่ำ)} & \text{if } 0 \le S_{total} \le 39 \\
+\text{Medium (น่าสงสัย)} & \text{if } 40 \le S_{total} \le 69 \\
+\text{High (อันตราย)} & \text{if } S_{total} \ge 70 
+\end{cases}
+$$
+
+* **0 - 39 คะแนน (Low Risk):** ระดับความเสี่ยงต่ำ สีเขียว มีสัญญาณอ่อนบางจุดแต่ยังไม่ถึงระดับที่ควรกังวล
+* **40 - 69 คะแนน (Medium Risk):** ระดับความเสี่ยงปานกลาง สีเหลือง พบความผิดปกติบางชั้นหรือหลักฐานอ่อนๆ ควรใช้วิจารณญาณประกอบ
+* **70 - 100 คะแนน (High Risk):** ระดับความเสี่ยงสูง สีแดง ตรวจพบร่องรอยการตัดแต่ง คัดลอก หรือพบคำหลอกลวงเด่นชัด (กรณี $S_{visual} \ge 80$ จะเป็น High ทันที)
+
+---
+
+## 6. ความมั่นคงปลอดภัยและการปฏิบัติตามกฎหมาย (Security & Compliance)
+
+### 6.1 การควบคุมการเข้าถึงและการส่งผ่านข้อมูล (Access & Transport Security)
+* **HTTPS/TLS Encryption:** สื่อสารผ่านระบบเครือข่ายด้วยความปลอดภัยระดับ HTTPS เพื่อป้องกันการถูกดักฟังระหว่างโมบายแอปและเซิร์ฟเวอร์หลังบ้าน
+* **JSON Web Token (JWT):** ใช้ JWT ในการยืนยันตัวตนสำหรับเรียกใช้ API Gateway โดยจัดเก็บรหัสโทเคนในคลังเก็บความลับบนเครื่องอุปกรณ์เคลื่อนที่อย่างปลอดภัย (Secure Storage)
+* **Role-Based Access Control (RBAC):** แยกสิทธิ์ผู้ใช้และผู้ดูแลระบบออกจากกันอย่างสิ้นเชิงทางฐานข้อมูล โดย Admin Portal เท่านั้นที่สามารถอัปโหลดโมเดลหรือสุ่มตรวจเคสผู้ใช้ได้
+
+### 6.2 การคุ้มครองข้อมูลส่วนบุคคล (PDPA & Consent Management)
+* **Privacy by Design:** ระบบถูกสร้างขึ้นโดยคำนึงถึงความเป็นส่วนตัวของผู้ใช้งานเป็นหลัก
+* **Consent Control (ยินยอมระบุสิทธิ์):** ในการสมัครสมาชิกหรือเริ่มใช้งานครั้งแรก ผู้ใช้สามารถเลือกสิทธิ์ความยินยอมได้เป็น 2 ส่วน:
+  1. **ความต้องการเชิงระบบ:** ความยินยอมส่งประมวลผลไฟล์ภาพแบบประจักษ์ (สแกนครั้งเดียวและลบข้อมูลจากการจัดเก็บบนคลาวด์เมื่อได้ข้อสรุปชั่วคราว)
+  2. **ความยินยอมด้านงานวิจัย:** การอนุญาตให้นำรูปภาพที่ส่งสแกนหรือสปอตเต็ดบันทึกเข้าสู่คลัง Dataset เพื่อใช้เทรน AI ปรับปรุงความแม่นยำ ซึ่งผู้ใช้สามารถกดยกเลิกความยินยอม (Opt-out) ย้อนหลังในหน้าตั้งค่าได้ทุกเวลา
+* **Data Anonymization:** รูปภาพในประวัติการสแกนและสเปกไฟล์ที่เปิดเผยสำหรับการศึกษาจะถูกตัดค่าพิกัด GPS หรือสัญลักษณ์แวดล้อมที่ระบุตัวตนจริงของผู้ใช้ดั้งเดิมออกไปทั้งหมด
+
+---
+
+## 7. ตารางสรุปการเลือกใช้เทคโนโลยี (Technology Stack Summary)
+
+| ส่วนของระบบ | เทคโนโลยีที่เลือกใช้ | เหตุผลเชิงวิศวกรรมซอฟต์แวร์ |
+| :--- | :--- | :--- |
+| **Mobile App (Frontend)** | Flutter | รองรับการทำงาน (Android) ด้วย Codebase ชุดเดียว และง่ายต่อการปรับปรุง UI/UX ด้วยธีม Dark Mode |
+| **Admin Portal (Frontend)** | React.js + Tailwind CSS | โหลดข้อมูลแบบ Dynamic ได้รวดเร็ว, จัดการ State ของหน้าต่างแอดมินได้ดี และสร้าง UI ในรูปแบบ Dashboard ได้เหมาะสม |
+| **Backend & Orchestrator** | Python FastAPI | ทำงานแบบ Asynchronous ได้มีประสิทธิภาพสูง, อัตราความเร็วใกล้เคียง Go/Node.js, มีระบบ Validate ข้อมูลและสร้าง API Doc อัตโนมัติ |
+| **AI Processing Framework** | PyTorch / ONNX Runtime | ปฏิบัติการคำนวณ Deep Learning โมเดลได้ดี, ONNX Runtime เป็นเป้าหมายเพิ่มความเร็ว Inference ≥2 เท่าเทียบ PyTorch baseline รุ่นเดียวกัน (วัดบน GPU T4 เฉลี่ย 100 ภาพ; ตัวเลขจริงต้องบันทึกจาก benchmark ก่อนอ้างเป็นผล — ดู `Document/model/training.md`) |
+| **Primary Relational DB** | PostgreSQL | มีเสถียรภาพในการบันทึกข้อมูลแบบสัมพันธ์ (Relational Data), ปลอดภัย, รองรับคิวรีซับซ้อนและการเก็บพิกัดเชิงภูมิศาสตร์ (PostGIS) |
+| **Caching Engine** | Redis Cache | ช่วยดึงค่า Image Hash ที่เคยตรวจสอบแล้วอย่างรวดเร็ว (ลด latency จากหลายวินาทีให้เหลือหลักมิลลิวินาที) |
+| **File Storage** | Cloud Storage | รองรับการจัดเก็บไฟล์อิมเมจและรูป Heatmap ได้ในปริมาณมหาศาลบนระบบคลาวด์สตอเรจ พร้อมระบบกำหนดอายุลิงก์ชั่วคราว (Presigned URLs) |
+| **External Search API** | Google Vision API | ใช้กลไก Reverse Image Search เพื่อสืบค้นข้อมูลภาพแอบอ้างในโลกออนไลน์ได้อย่างแม่นยำและครอบคลุมที่สุด |
+| **Push Notification** | Firebase Cloud Messaging (FCM) | เป็นระบบส่ง Push Alert ที่เป็นมาตรฐาน เสถียรสูง และรองรับอุปกรณ์ Android โดยไม่มีค่าใช้จ่ายพื้นฐาน |
+
+---
+
+## ภาคผนวก: สรุปข้อกำหนดที่อ้างอิงจากเอกสารฐาน
+
+### A.1 API Inventory
+
+| Endpoint | Method | คำอธิบาย |
+| :--- | :--- | :--- |
+| `/auth/register` | POST | สมัครสมาชิก |
+| `/auth/login` | POST | เข้าสู่ระบบ (รับ JWT Token) |
+| `/scan/` | POST | อัปโหลดรูปภาพเพื่อตรวจสอบ (canonical spec ดู `design/server.md` §5.2.1: multipart `file` บังคับ + `title` ไม่บังคับ, async 202 แล้ว poll `GET /scan/{id}`) |
+| `/scan/{id}` | GET | ดึงผลการตรวจสอบ (poll ทุก 3 วินาที, timeout 120 วินาที) |
+| `/history` | GET | ดูประวัติการสแกน |
+| `/reports` | POST | รายงานภาพหลอกลวง |
+| `/admin/dashboard` | GET | สถิติระบบ (Admin only) |
+
+> หมายเหตุ: Endpoint ตระกูล `/admin/models*` (จัดการโมเดล) และ `/admin/users*` (จัดการผู้ใช้) ให้บริการภายใน Admin Portal เท่านั้น
+
+### A.2 ข้อกำหนดความปลอดภัย (Security)
+
+* Access Token TTL **15 นาที** / Refresh Token TTL **7 วัน**; เข้ารหัสรหัสผ่านด้วย bcrypt cost factor **12**
+* TLS **1.3** + Certificate Pinning บนแอปมือถือ
+* Rate Limiting แบบ tier ต่อนาที (guest 10 / user 60 / admin 300 / POST scan 5, key ตาม IP — มติ DOC-02)
+* จำกัดไฟล์ภาพ **server ≤ 20 MB (413), mobile 10 MB**, decode **≤ 100M px**, รองรับเฉพาะ **JPG/PNG/WebP** (มติ DOC-03)
+* Data Retention: Auto-delete ข้อมูลเมื่อครบอายุ **1 ปี**
+
+### A.3 เป้าหมายประสิทธิภาพ (Performance Targets — เงื่อนไขวัด: ภาพ 1080p, GPU T4, เครือข่าย 4G ขึ้นไป)
+
+* Cache Hit **P95 ≤ 3 วินาที** (7 วันย้อนหลัง) / วิเคราะห์ใหม่ **P50 ≤ 15 วินาที, P95 ≤ 25 วินาที, P99 ≤ 35 วินาที**
+* AI Inference **≤ 10 วินาที (GPU)**, CPU Fallback **≤ 60 วินาที**
+* Uptime **≥ 99.5% ต่อรอบ 30 วัน** (ไม่รวม maintenance ที่ประกาศล่วงหน้า) รองรับผู้ใช้พร้อมกัน **≥ 100 คน** (วัดด้วย load test)
+* Async Queue ตามรูปแบบ Celery + RabbitMQ; Redis Cache TTL **30 วัน** Eviction Policy LRU
+
+### A.4 Deployment & CI/CD
+
+* Cloud Option: ECS / Cloud Run + RDS PostgreSQL + ElastiCache Redis
+* On-Premise Option: Docker / Kubernetes + MinIO Object Storage
+* CI/CD ผ่าน GitHub Actions
+* Monitoring ด้วย Prometheus + Grafana
+
+### A.5 ตารางฐานข้อมูลเพิ่มเติม (PostgreSQL)
+
+* `model_versions` — Model Registry: เก็บเวอร์ชันโมเดล AI (id, version, file_path, status, accuracy)
+* `audit_log` — บันทึกการดำเนินการของ Admin แบบ Immutable (id, admin_id, action, details)
+
+### A.6 Use-Case Index (UC-01 – UC-10)
+
+Actors: General User, Admin และ **System (Automated)** (Actor ที่สาม ทำงานอัตโนมัติ UC-03/UC-04)
+
+| ID | Use Case | | ID | Use Case |
+| :--- | :--- | :--- | :--- | :--- |
+| UC-01 | Login & Authentication | | UC-06 | Receive Push Notification |
+| UC-02 | Upload Image | | UC-07 | History Management |
+| UC-03 | Primary Analysis | | UC-08 | Report & Share |
+| UC-04 | AI Inference | | UC-09 | Admin Dashboard & RBAC |
+| UC-05 | View Result & Heatmap | | UC-10 | Dataset & Model Management |
+
+### A.7 สรุปโครงสร้าง C3/C4 (Component & Code Level)
+
+* Backend แบ่ง Layering เป็น Routers → Services → Repositories แยกความรับผิดชอบชัดเจน
+* Inference Coordinator ประสานงานกับ ONNX Worker ซึ่งรันเป็น Subprocess แยกโดดภายใน API Service ผ่าน STDIN/STDOUT JSON IPC
+* Key Sequence: `POST /api/v1/scan` → วิเคราะห์ภาพผ่าน Threadpool Isolation → ส่งภาพ STDIN (Base64) → รับผล STDOUT JSON → คำนวณคะแนนรวมแบบ Hybrid
+
+### A.8 ไฮไลต์ Risk Register
+
+* Google Vision API Downtime → ตั้ง `source_status="unavailable"` แจ้งผู้ใช้ว่าฟังก์ชันยังไม่พร้อมใช้งาน คำนวณคะแนนจากมิติที่สำเร็จเท่านั้น ไม่ใช้ Neutral 50 (มติ DOC-01)
+* False Positive (ภาพจริงถูกตั้งธงว่าปลอม) → Human-in-the-loop ให้ Admin ตรวจสอบทบทวนผลลัพธ์

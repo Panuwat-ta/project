@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="th" data-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="C1: System Context Diagram 1. ระบบหลัก The Software System Mobile App: Scam Image Detection : หน้าที่: เป็นแอปพลิเคชันบนมือถือที่ให้ผู้ใช้เข้ามาอัปโหลดรูปภาพที่น่าสงสัย ระบบจะทำการวิเคราะห์…">
+  <meta name="color-scheme" content="light dark">
+  <title>C1 System Context Diagram | ScamGuard Documentation</title>
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <script>document.documentElement.dataset.theme = (() => { try { return localStorage.getItem('scamguard-docs-theme') || 'light' } catch (e) { return 'light' } })(); window.SC_DOCS_ROOT = '../../';</script>
+</head>
+
+<body class="">
+  <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
+  <header class="masthead">
+    <div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false"
+        aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg></button><a class="brand" href="../../index.html"><svg viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z" />
+          <path d="m9.2 12 1.8 1.8 3.9-4.2" />
+        </svg><span>ScamGuard <small>Documentation</small></span></a>
+      <div class="masthead-actions"><button class="control" type="button" data-search-open><svg viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+            aria-hidden="true">
+            <circle cx="11" cy="11" r="6.5" />
+            <path d="m16 16 4 4" />
+          </svg><span>ค้นหา</span><span class="search-shortcut">Ctrl K</span></button><button class="control"
+          type="button" data-theme-toggle aria-label="เปลี่ยนเป็นโหมดมืด"><svg viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.5A7 7 0 0 1 12 3Z" />
+          </svg><span class="theme-label" data-theme-label>โหมดมืด</span></button></div>
+    </div>
+  </header>
+  <div class="docs-shell">
+    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><button class="control nav-close"
+        type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg></button>
+      <p class="sidebar-title">เอกสารทั้งหมด</p>
+      <details class="sidebar-group">
+        <summary>ภาพรวม</summary>
+        <ul class="sidebar-list">
+          <li><a href="../overview.html">ภาพรวมโปรเจค</a></li>
+          <li><a href="../index.html">สารบัญ Wiki — โปรเจค Scam Image Detection</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>ความต้องการระบบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../requirements/functional-requirements.html">ความต้องการเชิงฟังก์ชัน (Functional
+              Requirements)</a></li>
+          <li><a href="../requirements/non-functional-requirements.html">ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional
+              Requirements)</a></li>
+          <li><a href="../requirements/traceability-matrix.html">เมทริกซ์การสืบย้อนความต้องการ</a></li>
+          <li><a href="../requirements/objectives-kpis.html">วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp;
+              KPIs)</a></li>
+          <li><a href="../requirements/srs.html">Software Requirements Specification (SRS)</a></li>
+          <li><a href="../requirements/use-case-diagram.html">Use Case Diagram</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group" open>
+        <summary>สถาปัตยกรรม</summary>
+        <ul class="sidebar-list">
+          <li><a href="database-migrations.html">การจัดการการย้ายฐานข้อมูล (Database Migrations)</a></li>
+          <li><a href="external-integrations.html">การเชื่อมต่อบริการภายนอก (External Integrations)</a></li>
+          <li><a href="database-schema.html">โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li>
+          <li><a href="system-architecture.html">สถาปัตยกรรมระบบ (System Architecture)</a></li>
+          <li><a href="admin-portal.html">สถาปัตยกรรมและการออกแบบ Admin Portal</a></li>
+          <li><a href="mobile-app.html">สถาปัตยกรรม Mobile App</a></li>
+          <li><a href="ai-inference-service.html">AI Inference Service</a></li>
+          <li><a href="backend-api.html">Backend API — FastAPI Orchestrator</a></li>
+          <li><a href="c1-system-context-diagram.html" aria-current="page">C1 System Context Diagram</a></li>
+          <li><a href="c2-container-diagram.html">C2 Container Diagram</a></li>
+          <li><a href="c3-component-diagram.html">C3 Component Diagram - API Application</a></li>
+          <li><a href="c4-code-diagram.html">C4 Code Diagram - Image Scanning Flow</a></li>
+          <li><a href="database-er-diagram.html">Entity Relationship Diagram (ER Diagram)</a></li>
+          <li><a href="mobile-design.html">Mobile App Architecture</a></li>
+          <li><a href="flowchart.html">System Flowchart</a></li>
+          <li><a href="design-overview.html">UX/UI &amp; System Design Overview</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>แนวคิดและเทคนิค</summary>
+        <ul class="sidebar-list">
+          <li><a href="../concepts/risk-scoring.html">การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li>
+          <li><a href="../concepts/multi-layer-analysis.html">การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li>
+          <li><a href="../concepts/explainable-ai.html">ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li>
+          <li><a href="../concepts/configs.html">พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li>
+          <li><a href="../concepts/ai-model-segformer.html">โมเดล AI — SegFormer</a></li>
+          <li><a href="../concepts/surya-ocr.html">โมเดล AI — Surya OCR</a></li>
+          <li><a href="../concepts/model-training.html">AI Model Training Workflow</a></li>
+          <li><a href="../concepts/mmsegmentation.html">MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li>
+          <li><a href="../concepts/semantic-segmentation.html">Semantic Segmentation</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>องค์ประกอบระบบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../entities/tech-stack.html">เทคโนโลยีที่ใช้ (Technology Stack)</a></li>
+          <li><a href="../entities/actors.html">ผู้ใช้ระบบ (Actors)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การตัดสินใจ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../decisions/technology-choices.html">การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การวางแผน</summary>
+        <ul class="sidebar-list">
+          <li><a href="../planning/task-tracking.html">การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a>
+          </li>
+          <li><a href="../planning/project-scope.html">ขอบเขตโครงการ (Project Scope)</a></li>
+          <li><a href="../planning/team.html">ทีมงานและผู้รับผิดชอบ (Team)</a></li>
+          <li><a href="../planning/backend-documentation.html">Backend Documentation</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การทดสอบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../testing/test-cases.html">กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>คู่มือและภาคผนวก</summary>
+        <ul class="sidebar-list">
+          <li><a href="../log.html">บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li>
+          <li><a href="../howto.html">วิธีใช้งาน Wiki (How to Use This Wiki)</a></li>
+          <li><a href="../runbook.html">Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li>
+          <li><a href="../AGENTS.html">Wiki Operating Guide</a></li>
+        </ul>
+      </details>
+    </aside>
+    <div class="nav-backdrop" data-nav-backdrop></div>
+    <main class="article" id="main-content">
+      <nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span
+          aria-hidden="true">/</span><span>สถาปัตยกรรม</span></nav>
+      <header class="article-header">
+        <h1>C1 System Context Diagram</h1>
+        <p class="article-lead">ระบบของเราไม่ได้ทำงานด้วยตัวคนเดียว
+          แต่มีการเชื่อมต่อกับบริการอื่นเพื่อลดภาระงานและเพิ่มประสิทธิภาพ:</p>
+        <div class="meta"><span>หมวด สถาปัตยกรรม</span><time datetime="2026-08-04">อัปเดต 2026-08-04</time><span>ต้นฉบับ
+            architecture/c1-system-context-diagram.md</span></div>
+        <div class="tags"><span class="tag">architecture</span><span class="tag">c4</span><span
+            class="tag">system-context</span><span class="tag">diagram</span></div>
+      </header>
+      <div class="prose">
+        <h1 id="c1-system-context-diagram">C1: System Context Diagram</h1>
+        <figure class="diagram-frame">
+          <div class="diagram-toolbar"><span>แผนภาพ 8</span><button class="control" type="button"
+              data-diagram-expand>ดูขนาดใหญ่</button></div><img
+            src="../../assets/diagrams/architecture-c1-system-context-diagram-8.svg"
+            alt="แผนภาพจาก C1 System Context Diagram" loading="lazy">
+          <details class="diagram-source">
+            <summary>ดู Mermaid source</summary>
+            <pre><code>flowchart TD
+    %% การตั้งค่า Class สีต่างๆ (กำหนด color:black ตามคำสั่ง)
+    classDef mainSystem fill:#0050ef,stroke:#001DBC,color:black
+    classDef userFill fill:#fff2cc,stroke:#d6b656,color:black
+    classDef adminFill fill:#dae8fc,stroke:#6c8ebf,color:black
+    classDef extFill fill:#f5f5f5,stroke:#666666,color:black
+
+    %% Title Area
+    subgraph Context [C1: System Context Diagram]
+        direction TB
+        
+        %% Nodes (โหนดต่างๆ)
+        User(&quot;General User&lt;br&gt;[Person]&quot;)
+        
+        System(&quot;Mobile App: Scam Image Detection&lt;br&gt;[Software System]&lt;br&gt;Allows users to upload images to detect forgery,&lt;br&gt;AI generation, and existing scams.&quot;)
+        
+        Admin(&quot;Admin&lt;br&gt;[Person]&quot;)
+        
+        ExtSearch(&quot;Reverse Image Search Provider&lt;br&gt;[External System]&lt;br&gt;Google Vision API / Bing Visual Search&lt;br&gt;(Used to find similar images on the web)&quot;)
+        
+        ExtNotify(&quot;Push Notification Service (Phase 2)&lt;br&gt;[External System]&lt;br&gt;Firebase Cloud Messaging (FCM)&lt;br&gt;(Sends alerts/results to mobile)&quot;)
+
+        %% Relationships (เส้นเชื่อมโยง)
+        User -- &quot;1. อัปโหลดรูปเพื่อตรวจสอบ&lt;br&gt;2. ดูรายงานความเสี่ยง&quot; --&gt; System
+        
+        System -- &quot;ส่ง URL รูปภาพ / ข้อมูลไบนารี&quot; --&gt; ExtSearch
+        ExtSearch -.-&gt;|&quot;ส่งคืน URL รูปภาพที่คล้ายกัน&quot;| System
+        
+        System -- &quot;ส่งข้อมูลการแจ้งเตือน (Payload)&quot; --&gt; ExtNotify
+        
+        Admin -- &quot;ตรวจสอบรูปที่ถูกรายงาน /&lt;br&gt;อัปเดตข้อมูลโมเดล&quot; --&gt; System
+    end
+
+    %% Apply Styles (การระบายสี)
+    class System mainSystem
+    class User userFill
+    class Admin adminFill
+    class ExtSearch,ExtNotify extFill
+
+</code></pre>
+          </details>
+          <dialog aria-label="แผนภาพขนาดใหญ่">
+            <div class="diagram-expanded-head"><button class="control" type="button"
+                data-diagram-zoom="out">ย่อ</button><span class="zoom-status" data-zoom-status>100%</span><button
+                class="control" type="button" data-diagram-zoom="in">ขยาย</button><button class="control" type="button"
+                data-diagram-close>ปิด</button></div>
+            <div class="diagram-pan" data-diagram-pan data-zoom="1" tabindex="0"
+              aria-label="พื้นที่แผนภาพ เลื่อนได้ทั้งแนวตั้งและแนวนอน"><img
+                src="../../assets/diagrams/architecture-c1-system-context-diagram-8.svg"
+                alt="แผนภาพจาก C1 System Context Diagram"></div>
+          </dialog>
+        </figure>
+        <h3 id="1-ระบบหลัก-the-software-system">1. ระบบหลัก (The Software System)</h3>
+        <ul>
+          <li><strong>Mobile App: Scam Image Detection :</strong></li>
+          <li><strong>หน้าที่:</strong> เป็นแอปพลิเคชันบนมือถือที่ให้ผู้ใช้เข้ามาอัปโหลดรูปภาพที่น่าสงสัย
+            ระบบจะทำการวิเคราะห์ เช็คค่า EXIF/GPS ข้อมูลรายละเอียดของไฟล์รูปภาพและข้อมูลพิกัด (ถ้ามี),
+            เช็คการตัดต่อระดับพิกเซล (Semantic Segmentation), อ่านข้อความในภาพเพื่อหา Keyword อันตราย,
+            วิเคราะห์ภาพเพื่อดูว่าเป็นภาพที่สร้างจาก AI หรือไม่</li>
+        </ul>
+        <h3 id="2-ผู้ใช้งาน-people">2. ผู้ใช้งาน (People)</h3>
+        <ul>
+          <li>
+            <p><strong>General User (ผู้ใช้งานทั่วไป):</strong></p>
+            <ul>
+              <li>คือคนธรรมดาที่อาจจะได้รับรูปภาพแปลกๆ (เช่น สลิปโอนเงินปลอม, รูปโปรไฟล์หลอกลงทุน)</li>
+              <li><strong>การกระทำ:</strong> ส่งรูปเข้ามาในแอป (Upload) และรอรับผลการตรวจสอบ (View Report)
+                เพื่อดูว่ารูปนั้นเสี่ยงแค่ไหน</li>
+            </ul>
+          </li>
+          <li>
+            <p><strong>Admin (ผู้ดูแลระบบ):</strong></p>
+            <ul>
+              <li>คือทีมงานหลังบ้าน หรือนักวิจัย</li>
+              <li><strong>การกระทำ:</strong> เข้ามาดูรูปที่ถูก Report เข้ามา เพื่อยืนยันความถูกต้อง หรือนำข้อมูลใหม่ๆ
+                ไปอัปเดตให้โมเดล AI ฉลาดขึ้น (Updates model data)</li>
+            </ul>
+          </li>
+        </ul>
+        <h3 id="3-ระบบภายนอก-external-systems">3. ระบบภายนอก (External Systems)</h3>
+        <p>ระบบของเราไม่ได้ทำงานด้วยตัวคนเดียว แต่มีการเชื่อมต่อกับบริการอื่นเพื่อลดภาระงานและเพิ่มประสิทธิภาพ:</p>
+        <ul>
+          <li>
+            <p><strong>Reverse Image Search Provider :</strong></p>
+          </li>
+          <li>
+            <p><strong>คืออะไร:</strong> บริการค้นหารูปภาพระดับโลก เช่น Google Vision API หรือ Bing Visual Search</p>
+          </li>
+          <li>
+            <p><strong>ทำไมต้องใช้:</strong> ระบบของเราส่งรูปไปถามเจ้านี้ว่า &quot;เคยเห็นรูปนี้ที่ไหนในเน็ตไหม?&quot;
+              (Send URL/Binary)</p>
+          </li>
+          <li>
+            <p><strong>สิ่งที่ได้กลับมา:</strong> แหล่งที่มาของภาพ (Similar URLs) เช่น ถ้าเป็นรูปโปรไฟล์สาวสวย
+              แต่ไปเจอว่าเป็นดาราเกาหลี ก็แสดงว่าปลอมแน่นอน</p>
+          </li>
+          <li>
+            <p><strong>Push Notification Service (Phase 2 — v1 ใช้ polling + in-app):</strong></p>
+          </li>
+          <li>
+            <p><strong>คืออะไร:</strong> บริการส่งการแจ้งเตือน (เริ่ม Phase 2)</p>
+          </li>
+          <li>
+            <p><strong>ทำไมต้องใช้:</strong> การวิเคราะห์รูปภาพอาจใช้เวลา (2-10 วินาที หรือมากกว่า)
+              เราจึงไม่ให้ผู้ใช้รอนิ่งๆ หน้าจอ แต่เมื่อระบบประมวลผลเสร็จ จะส่งข้อมูล (Payload) ไปที่ FCM
+              เพื่อเด้งแจ้งเตือนที่มือถือผู้ใช้ว่า &quot;ตรวจสอบเสร็จแล้ว!&quot;</p>
+          </li>
+        </ul>
+        <hr>
+        <h3 id="สรุปขั้นตอนการทำงาน-workflow-scenario">สรุปขั้นตอนการทำงาน (Workflow Scenario)</h3>
+        <ol>
+          <li><strong>User</strong> อัปโหลดรูปสลิปโอนเงินที่สงสัยเข้ามาใน <strong>App</strong></li>
+          <li><strong>App</strong> ส่งรูปนั้นไปเช็คกับ <strong>Google/Bing (External)</strong>
+            ว่ารูปนี้ไปก๊อปมาจากเว็บไหนไหม</li>
+          <li><strong>App</strong> ประมวลผลภายใน (เช็คการตัดต่อ/AI)</li>
+          <li>เมื่อได้ผลลัพธ์ครบ <strong>App</strong> แจ้งเตือนผู้ใช้ในแอป (v1 polling; FCM เป็น Phase 2)</li>
+          <li><strong>User</strong> เปิดดูผลลัพธ์คะแนนความเสี่ยง</li>
+          <li>(Optional) หากเป็นเคสใหม่ <strong>Admin</strong> จะเข้ามาตรวจสอบข้อมูลเพื่อปรับปรุงระบบในภายหลัง</li>
+        </ol>
+      </div>
+      <footer class="source-panel"><strong>แหล่งข้อมูลของหน้านี้</strong>
+        <ul>
+          <li><a href="../../sources/wiki/architecture/c1-system-context-diagram.md">Markdown ต้นฉบับ:
+              architecture/c1-system-context-diagram.md</a></li>
+          <li>Document/C1-System-Context-Diagram.md</li>
+        </ul>
+      </footer>
+    </main>
+    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้">
+      <p class="toc-title">ในหน้านี้</p>
+      <ol class="toc">
+        <li class="toc-level-3"><a
+            href="#1-%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A%E0%B8%AB%E0%B8%A5%E0%B8%B1%E0%B8%81-the-software-system">1.
+            ระบบหลัก (The Software System)</a></li>
+        <li class="toc-level-3"><a
+            href="#2-%E0%B8%9C%E0%B8%B9%E0%B9%89%E0%B9%83%E0%B8%8A%E0%B9%89%E0%B8%87%E0%B8%B2%E0%B8%99-people">2.
+            ผู้ใช้งาน (People)</a></li>
+        <li class="toc-level-3"><a
+            href="#3-%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A%E0%B8%A0%E0%B8%B2%E0%B8%A2%E0%B8%99%E0%B8%AD%E0%B8%81-external-systems">3.
+            ระบบภายนอก (External Systems)</a></li>
+        <li class="toc-level-3"><a
+            href="#%E0%B8%AA%E0%B8%A3%E0%B8%B8%E0%B8%9B%E0%B8%82%E0%B8%B1%E0%B9%89%E0%B8%99%E0%B8%95%E0%B8%AD%E0%B8%99%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%97%E0%B8%B3%E0%B8%87%E0%B8%B2%E0%B8%99-workflow-scenario">สรุปขั้นตอนการทำงาน
+            (Workflow Scenario)</a></li>
+      </ol>
+    </aside>
+  </div>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title">
+    <div class="search-dialog-head"><label class="visually-hidden" id="search-title"
+        for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…"
+        autocomplete="off" data-search-input><button class="control" type="button" data-search-close
+        aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg></button></div>
+    <div class="search-results" data-search-results aria-live="polite"></div>
+  </dialog>
+  <script src="../../assets/js/search-index.js"></script>
+  <script src="../../assets/js/site.js"></script>
+</body>
+
+</html>

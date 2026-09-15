@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="th" data-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="C3: Component Diagram API Application แผนภาพ C3 นี้นำเสนอโครงสร้างภายในของ API Application Container FastAPI ซึ่งเป็นศูนย์กลาง Orchestrator ของระบบ Scam Image Detection โดยแสดงให้เห็นถึงการแ…">
+  <meta name="color-scheme" content="light dark">
+  <title>C3 Component Diagram - API Application | ScamGuard Documentation</title>
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <script>document.documentElement.dataset.theme = (() => { try { return localStorage.getItem('scamguard-docs-theme') || 'light' } catch (e) { return 'light' } })(); window.SC_DOCS_ROOT = '../../';</script>
+</head>
+
+<body class="">
+  <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
+  <header class="masthead">
+    <div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false"
+        aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg></button><a class="brand" href="../../index.html"><svg viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z" />
+          <path d="m9.2 12 1.8 1.8 3.9-4.2" />
+        </svg><span>ScamGuard <small>Documentation</small></span></a>
+      <div class="masthead-actions"><button class="control" type="button" data-search-open><svg viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+            aria-hidden="true">
+            <circle cx="11" cy="11" r="6.5" />
+            <path d="m16 16 4 4" />
+          </svg><span>ค้นหา</span><span class="search-shortcut">Ctrl K</span></button><button class="control"
+          type="button" data-theme-toggle aria-label="เปลี่ยนเป็นโหมดมืด"><svg viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.5A7 7 0 0 1 12 3Z" />
+          </svg><span class="theme-label" data-theme-label>โหมดมืด</span></button></div>
+    </div>
+  </header>
+  <div class="docs-shell">
+    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><button class="control nav-close"
+        type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg></button>
+      <p class="sidebar-title">เอกสารทั้งหมด</p>
+      <details class="sidebar-group">
+        <summary>ภาพรวม</summary>
+        <ul class="sidebar-list">
+          <li><a href="../overview.html">ภาพรวมโปรเจค</a></li>
+          <li><a href="../index.html">สารบัญ Wiki — โปรเจค Scam Image Detection</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>ความต้องการระบบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../requirements/functional-requirements.html">ความต้องการเชิงฟังก์ชัน (Functional
+              Requirements)</a></li>
+          <li><a href="../requirements/non-functional-requirements.html">ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional
+              Requirements)</a></li>
+          <li><a href="../requirements/traceability-matrix.html">เมทริกซ์การสืบย้อนความต้องการ</a></li>
+          <li><a href="../requirements/objectives-kpis.html">วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp;
+              KPIs)</a></li>
+          <li><a href="../requirements/srs.html">Software Requirements Specification (SRS)</a></li>
+          <li><a href="../requirements/use-case-diagram.html">Use Case Diagram</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group" open>
+        <summary>สถาปัตยกรรม</summary>
+        <ul class="sidebar-list">
+          <li><a href="database-migrations.html">การจัดการการย้ายฐานข้อมูล (Database Migrations)</a></li>
+          <li><a href="external-integrations.html">การเชื่อมต่อบริการภายนอก (External Integrations)</a></li>
+          <li><a href="database-schema.html">โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li>
+          <li><a href="system-architecture.html">สถาปัตยกรรมระบบ (System Architecture)</a></li>
+          <li><a href="admin-portal.html">สถาปัตยกรรมและการออกแบบ Admin Portal</a></li>
+          <li><a href="mobile-app.html">สถาปัตยกรรม Mobile App</a></li>
+          <li><a href="ai-inference-service.html">AI Inference Service</a></li>
+          <li><a href="backend-api.html">Backend API — FastAPI Orchestrator</a></li>
+          <li><a href="c1-system-context-diagram.html">C1 System Context Diagram</a></li>
+          <li><a href="c2-container-diagram.html">C2 Container Diagram</a></li>
+          <li><a href="c3-component-diagram.html" aria-current="page">C3 Component Diagram - API Application</a></li>
+          <li><a href="c4-code-diagram.html">C4 Code Diagram - Image Scanning Flow</a></li>
+          <li><a href="database-er-diagram.html">Entity Relationship Diagram (ER Diagram)</a></li>
+          <li><a href="mobile-design.html">Mobile App Architecture</a></li>
+          <li><a href="flowchart.html">System Flowchart</a></li>
+          <li><a href="design-overview.html">UX/UI &amp; System Design Overview</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>แนวคิดและเทคนิค</summary>
+        <ul class="sidebar-list">
+          <li><a href="../concepts/risk-scoring.html">การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li>
+          <li><a href="../concepts/multi-layer-analysis.html">การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li>
+          <li><a href="../concepts/explainable-ai.html">ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li>
+          <li><a href="../concepts/configs.html">พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li>
+          <li><a href="../concepts/ai-model-segformer.html">โมเดล AI — SegFormer</a></li>
+          <li><a href="../concepts/surya-ocr.html">โมเดล AI — Surya OCR</a></li>
+          <li><a href="../concepts/model-training.html">AI Model Training Workflow</a></li>
+          <li><a href="../concepts/mmsegmentation.html">MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li>
+          <li><a href="../concepts/semantic-segmentation.html">Semantic Segmentation</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>องค์ประกอบระบบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../entities/tech-stack.html">เทคโนโลยีที่ใช้ (Technology Stack)</a></li>
+          <li><a href="../entities/actors.html">ผู้ใช้ระบบ (Actors)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การตัดสินใจ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../decisions/technology-choices.html">การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การวางแผน</summary>
+        <ul class="sidebar-list">
+          <li><a href="../planning/task-tracking.html">การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a>
+          </li>
+          <li><a href="../planning/project-scope.html">ขอบเขตโครงการ (Project Scope)</a></li>
+          <li><a href="../planning/team.html">ทีมงานและผู้รับผิดชอบ (Team)</a></li>
+          <li><a href="../planning/backend-documentation.html">Backend Documentation</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การทดสอบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../testing/test-cases.html">กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>คู่มือและภาคผนวก</summary>
+        <ul class="sidebar-list">
+          <li><a href="../log.html">บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li>
+          <li><a href="../howto.html">วิธีใช้งาน Wiki (How to Use This Wiki)</a></li>
+          <li><a href="../runbook.html">Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li>
+          <li><a href="../AGENTS.html">Wiki Operating Guide</a></li>
+        </ul>
+      </details>
+    </aside>
+    <div class="nav-backdrop" data-nav-backdrop></div>
+    <main class="article" id="main-content">
+      <nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span
+          aria-hidden="true">/</span><span>สถาปัตยกรรม</span></nav>
+      <header class="article-header">
+        <h1>C3 Component Diagram - API Application</h1>
+        <p class="article-lead">แผนภาพ C3 นี้นำเสนอโครงสร้างภายในของ API Application Container FastAPI ซึ่งเป็นศูนย์กลาง
+          Orchestrator ของระบบ Scam Image Detection โดยแสดงให้เห็นถึงการแบ่งเลเยอร์ภายใน</p>
+        <div class="meta"><span>หมวด สถาปัตยกรรม</span><time datetime="2026-08-08">อัปเดต 2026-08-08</time><span>ต้นฉบับ
+            architecture/c3-component-diagram.md</span></div>
+        <div class="tags"><span class="tag">architecture</span><span class="tag">c4</span><span
+            class="tag">component</span><span class="tag">diagram</span><span class="tag">backend</span></div>
+      </header>
+      <div class="prose">
+        <h1 id="c3-component-diagram-api-application">C3: Component Diagram (API Application)</h1>
+        <p>แผนภาพ C3 นี้นำเสนอโครงสร้างภายในของ <strong>API Application Container (FastAPI)</strong> ซึ่งเป็นศูนย์กลาง
+          (Orchestrator) ของระบบ Scam Image Detection โดยแสดงให้เห็นถึงการแบ่งเลเยอร์ภายใน</p>
+        <figure class="diagram-frame">
+          <div class="diagram-toolbar"><span>แผนภาพ 10</span><button class="control" type="button"
+              data-diagram-expand>ดูขนาดใหญ่</button></div><img
+            src="../../assets/diagrams/architecture-c3-component-diagram-10.svg"
+            alt="แผนภาพจาก C3 Component Diagram - API Application" loading="lazy">
+          <details class="diagram-source">
+            <summary>ดู Mermaid source</summary>
+            <pre><code>flowchart TB
+    %% การตั้งค่า Class สีต่างๆ
+    classDef clientFill fill:#dae8fc,stroke:#6c8ebf,color:black
+    classDef routerFill fill:#d5e8d4,stroke:#82b366,color:black
+    classDef serviceFill fill:#fff2cc,stroke:#d6b656,color:black
+    classDef repoFill fill:#e1d5e7,stroke:#9673a6,color:black
+    classDef storageFill fill:#ffe6cc,stroke:#d79b00,color:black
+    classDef extFill fill:#f5f5f5,stroke:#666666,color:black
+
+    %% Clients (จาก C2)
+    MobileApp(&quot;Mobile App&lt;br&gt;[Flutter]&quot;)
+    AdminPortal(&quot;Admin Portal&lt;br&gt;[React]&quot;)
+    
+    subgraph APIContainer [&quot;API Application Container - FastAPI&quot;]
+        
+        %% API Layer
+        subgraph APILayer [&quot;API Layer (Controllers)&quot;]
+            AuthRouter(&quot;Auth Router&lt;br&gt;รับข้อมูล Login/Register&quot;)
+            AdminRouter(&quot;Admin Router&lt;br&gt;จัดการระบบสำหรับ Admin&quot;)
+            ScanRouter(&quot;Scan Router&lt;br&gt;รับรูปภาพเพื่อตรวจสอบ&quot;)
+            ReportRouter(&quot;Report Router&lt;br&gt;รับรายงานภาพสแกม&quot;)
+        end
+
+        %% Business Logic Layer
+        subgraph ServiceLayer [&quot;Business Logic Layer (Services)&quot;]
+            AuthService(&quot;Auth Service&lt;br&gt;ออก Token และตรวจสอบสิทธิ์&quot;)
+            AdminService(&quot;Admin Service&lt;br&gt;ประมวลผลคำสั่ง Admin&quot;)
+            ScanService(&quot;Scan Service&lt;br&gt;Core Logic คำนวณความเสี่ยง&quot;)
+            InferenceClient(&quot;Inference Coordinator&lt;br&gt;จัดการคิวและการเรียก AI&quot;)
+            ReportService(&quot;Report Service&lt;br&gt;ประมวลผลการรายงาน&quot;)
+        end
+
+        %% Data Access Layer
+        subgraph RepoLayer [&quot;Data Access Layer (Repositories)&quot;]
+            UserRepo(&quot;User Repository&quot;)
+            ScanRepo(&quot;Scan Repository&quot;)
+            ReportRepo(&quot;Report Repository&quot;)
+        end
+    end
+
+    %% Storage &amp; Externals (จาก C2)
+    Cache(&quot;Redis Cache&quot;)
+    MainDB[(&quot;PostgreSQL Database&quot;)]
+    ObjectStore(&quot;Cloud Storage (Local / S3)&quot;)
+    AIWorker(&quot;ONNX Worker (Subprocess)&quot;)
+
+    %% Relationships - External to API
+    MobileApp ---&gt;|HTTPS / JSON| AuthRouter
+    MobileApp ---&gt;|HTTPS / Multipart| ScanRouter
+    MobileApp ---&gt;|HTTPS / JSON| ReportRouter
+    AdminPortal ---&gt;|HTTPS / JSON| AdminRouter
+    AdminPortal ---&gt;|HTTPS / JSON| AuthRouter
+
+    %% API to Services
+    AuthRouter ---&gt;|เรียกใช้งาน| AuthService
+    ScanRouter ---&gt;|มอบหมายงานตรวจสอบ| ScanService
+    ReportRouter ---&gt;|มอบหมายงานรายงาน| ReportService
+    AdminRouter ---&gt;|มอบหมายคำสั่ง| AdminService
+
+    %% Services to Services
+    ScanService ---&gt;|ส่งภาพให้ AI วิเคราะห์| InferenceClient
+    AdminService -.-&gt;|ดูข้อมูล| ReportService
+
+    %% Services to External/Cache
+    ScanService ---&gt;|ตรวจสอบ Hit/Miss| Cache
+    ScanService ---&gt;|จัดเก็บรูปต้นฉบับ| ObjectStore
+    InferenceClient ---&gt;|subprocess IPC ภายใน Backend| AIWorker
+    AIWorker ---&gt;|คืนผลลัพธ์ Heatmap| ObjectStore
+
+    %% Services to Repositories
+    AuthService ---&gt;|ค้นหา/ตรวจสอบ User| UserRepo
+    ScanService ---&gt;|บันทึกผลการสแกน| ScanRepo
+    ReportService ---&gt;|บันทึกและดึงรายงาน| ReportRepo
+    AdminService ---&gt;|ดึงข้อมูลเชิงสถิติ| ScanRepo
+    AdminService ---&gt;|จัดการบัญชีผู้ใช้| UserRepo
+
+    %% Repositories to DB
+    UserRepo ---&gt;|SQLAlchemy| MainDB
+    ScanRepo ---&gt;|SQLAlchemy| MainDB
+    ReportRepo ---&gt;|SQLAlchemy| MainDB
+
+    %% Apply Styles
+    class MobileApp,AdminPortal clientFill
+    class AuthRouter,ScanRouter,ReportRouter,AdminRouter routerFill
+    class AuthService,ScanService,ReportService,AdminService,InferenceClient serviceFill
+    class UserRepo,ScanRepo,ReportRepo repoFill
+    class Cache,MainDB,ObjectStore storageFill
+    class AIWorker extFill
+</code></pre>
+          </details>
+          <dialog aria-label="แผนภาพขนาดใหญ่">
+            <div class="diagram-expanded-head"><button class="control" type="button"
+                data-diagram-zoom="out">ย่อ</button><span class="zoom-status" data-zoom-status>100%</span><button
+                class="control" type="button" data-diagram-zoom="in">ขยาย</button><button class="control" type="button"
+                data-diagram-close>ปิด</button></div>
+            <div class="diagram-pan" data-diagram-pan data-zoom="1" tabindex="0"
+              aria-label="พื้นที่แผนภาพ เลื่อนได้ทั้งแนวตั้งและแนวนอน"><img
+                src="../../assets/diagrams/architecture-c3-component-diagram-10.svg"
+                alt="แผนภาพจาก C3 Component Diagram - API Application"></div>
+          </dialog>
+        </figure>
+        <hr>
+        <h2 id="คำอธิบายองค์ประกอบภายใน-component-details">คำอธิบายองค์ประกอบภายใน (Component Details)</h2>
+        <p>สถาปัตยกรรมภายในของ Backend ยึดหลักการ <strong>Layered Architecture</strong> เพื่อแยกส่วนหน้าที่ (Separation
+          of Concerns) ทำให้โค้ดอ่านง่าย ทดสอบง่าย (Testable) และดูแลรักษาง่าย โดยแบ่งเป็น 3 เลเยอร์หลัก:</p>
+        <h3 id="1-api-layer-controllers">1. API Layer (Controllers)</h3>
+        <p>ทำหน้าที่เป็นด่านหน้าในการรับ HTTP Request, ตรวจสอบความถูกต้องของข้อมูลเบื้องต้นผ่าน Schemas
+          และส่งต่องานไปยัง Service ที่เกี่ยวข้อง</p>
+        <ul>
+          <li><strong>Auth Router:</strong> จัดการ Endpoint สำหรับ Login และ Register</li>
+          <li><strong>Scan Router:</strong> รับไฟล์รูปภาพแบบ Multipart Form Data สำหรับตรวจสอบสแกม</li>
+          <li><strong>Report Router:</strong> รับแจ้งรูปภาพหลอกลวงจากผู้ใช้ (Crowdsourcing)</li>
+          <li><strong>Admin Router:</strong> เปิด Endpoint ให้นักวิจัยและ Admin จัดการข้อมูลโมเดลและระบบ</li>
+        </ul>
+        <h3 id="2-business-logic-layer-services">2. Business Logic Layer (Services)</h3>
+        <p>เป็นหัวใจหลักของแอปพลิเคชัน ทำหน้าที่ประมวลผลตามกฎทางธุรกิจ</p>
+        <ul>
+          <li><strong>Scan Service:</strong> ควบคุมขั้นตอนการตรวจสอบภาพทั้งหมด เริ่มตั้งแต่เช็ค Cache, สกัด EXIF
+            (แสดงผลเท่านั้น ไม่ร่วมคำนวณ), และคำนวณ <strong>Overall Risk Score</strong> ตามสูตร Hybrid Worst-Case</li>
+          <li><strong>Inference Coordinator:</strong> ตัวประสานงานระหว่าง Backend กับ AI Model
+            ทำหน้าที่จัดคิวรูปภาพและส่งคำสั่งข้าม Process ไปให้ Worker</li>
+          <li><strong>Auth Service:</strong> จัดการการเข้ารหัสผ่าน (Hashing) และออก JWT Token</li>
+        </ul>
+        <h3 id="3-data-access-layer-repositories">3. Data Access Layer (Repositories)</h3>
+        <p>ทำหน้าที่ติดต่อกับฐานข้อมูลหลัก ช่วยให้ Business Logic Layer ไม่ต้องเขียนคำสั่ง SQL</p>
+        <ul>
+          <li><strong>User Repository:</strong> Query ข้อมูลบัญชีและสิทธิ์ของผู้ใช้งาน</li>
+          <li><strong>Scan Repository:</strong> บันทึกและดึงประวัติ Risk Score ของแต่ละรูปภาพ</li>
+          <li><strong>Report Repository:</strong> บันทึกข้อมูลที่ผู้ใช้แจ้งเข้ามาว่ารูปไหนเป็นสแกมของจริง</li>
+        </ul>
+        <h3 id="การทำงานร่วมกับ-ai-onnx-worker">การทำงานร่วมกับ AI (ONNX Worker)</h3>
+        <p>โมเดล AI ถูกออกแบบให้ทำงานแยกส่วนจาก Web Server หลัก โดยรันผ่าน subprocess
+          เพื่อแยกภาระงานประมวลผลที่กินทรัพยากรสูงออกจากงานหลักของ FastAPI ทำให้ API ยังคงสามารถตอบสนอง Request อื่นๆ
+          ได้อย่างรวดเร็วและไม่สะดุด</p>
+      </div>
+      <footer class="source-panel"><strong>แหล่งข้อมูลของหน้านี้</strong>
+        <ul>
+          <li><a href="../../sources/wiki/architecture/c3-component-diagram.md">Markdown ต้นฉบับ:
+              architecture/c3-component-diagram.md</a></li>
+        </ul>
+      </footer>
+    </main>
+    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้">
+      <p class="toc-title">ในหน้านี้</p>
+      <ol class="toc">
+        <li class="toc-level-2"><a
+            href="#%E0%B8%84%E0%B8%B3%E0%B8%AD%E0%B8%98%E0%B8%B4%E0%B8%9A%E0%B8%B2%E0%B8%A2%E0%B8%AD%E0%B8%87%E0%B8%84%E0%B9%8C%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%81%E0%B8%AD%E0%B8%9A%E0%B8%A0%E0%B8%B2%E0%B8%A2%E0%B9%83%E0%B8%99-component-details">คำอธิบายองค์ประกอบภายใน
+            (Component Details)</a></li>
+        <li class="toc-level-3"><a href="#1-api-layer-controllers">1. API Layer (Controllers)</a></li>
+        <li class="toc-level-3"><a href="#2-business-logic-layer-services">2. Business Logic Layer (Services)</a></li>
+        <li class="toc-level-3"><a href="#3-data-access-layer-repositories">3. Data Access Layer (Repositories)</a></li>
+        <li class="toc-level-3"><a
+            href="#%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%97%E0%B8%B3%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%A3%E0%B9%88%E0%B8%A7%E0%B8%A1%E0%B8%81%E0%B8%B1%E0%B8%9A-ai-onnx-worker">การทำงานร่วมกับ
+            AI (ONNX Worker)</a></li>
+      </ol>
+    </aside>
+  </div>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title">
+    <div class="search-dialog-head"><label class="visually-hidden" id="search-title"
+        for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…"
+        autocomplete="off" data-search-input><button class="control" type="button" data-search-close
+        aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg></button></div>
+    <div class="search-results" data-search-results aria-live="polite"></div>
+  </dialog>
+  <script src="../../assets/js/search-index.js"></script>
+  <script src="../../assets/js/site.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="th" data-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="วิธีใช้งาน Wiki Wiki นี้คือฐานความรู้ถาวรของโปรเจค Scam Image Detection ที่ดูแลรักษาโดย LLM Agent แนวคิดหลักคือ: คุณเป็นคนหาข้อมูลและตั้งคำถาม — LLM เป็นคนเขียนและอัปเดต wiki --- โครงสร้างขอ…">
+  <meta name="color-scheme" content="light dark">
+  <title>วิธีใช้งาน Wiki (How to Use This Wiki) | ScamGuard Documentation</title>
+  <link rel="stylesheet" href="../assets/css/site.css">
+  <script>document.documentElement.dataset.theme = (() => { try { return localStorage.getItem('scamguard-docs-theme') || 'light' } catch (e) { return 'light' } })(); window.SC_DOCS_ROOT = '../';</script>
+</head>
+
+<body class="">
+  <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
+  <header class="masthead">
+    <div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false"
+        aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg></button><a class="brand" href="../index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z" />
+          <path d="m9.2 12 1.8 1.8 3.9-4.2" />
+        </svg><span>ScamGuard <small>Documentation</small></span></a>
+      <div class="masthead-actions"><button class="control" type="button" data-search-open><svg viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+            aria-hidden="true">
+            <circle cx="11" cy="11" r="6.5" />
+            <path d="m16 16 4 4" />
+          </svg><span>ค้นหา</span><span class="search-shortcut">Ctrl K</span></button><button class="control"
+          type="button" data-theme-toggle aria-label="เปลี่ยนเป็นโหมดมืด"><svg viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.5A7 7 0 0 1 12 3Z" />
+          </svg><span class="theme-label" data-theme-label>โหมดมืด</span></button></div>
+    </div>
+  </header>
+  <div class="docs-shell">
+    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><button class="control nav-close"
+        type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg></button>
+      <p class="sidebar-title">เอกสารทั้งหมด</p>
+      <details class="sidebar-group">
+        <summary>ภาพรวม</summary>
+        <ul class="sidebar-list">
+          <li><a href="overview.html">ภาพรวมโปรเจค</a></li>
+          <li><a href="index.html">สารบัญ Wiki — โปรเจค Scam Image Detection</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>ความต้องการระบบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="requirements/functional-requirements.html">ความต้องการเชิงฟังก์ชัน (Functional Requirements)</a>
+          </li>
+          <li><a href="requirements/non-functional-requirements.html">ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional
+              Requirements)</a></li>
+          <li><a href="requirements/traceability-matrix.html">เมทริกซ์การสืบย้อนความต้องการ</a></li>
+          <li><a href="requirements/objectives-kpis.html">วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp; KPIs)</a>
+          </li>
+          <li><a href="requirements/srs.html">Software Requirements Specification (SRS)</a></li>
+          <li><a href="requirements/use-case-diagram.html">Use Case Diagram</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>สถาปัตยกรรม</summary>
+        <ul class="sidebar-list">
+          <li><a href="architecture/database-migrations.html">การจัดการการย้ายฐานข้อมูล (Database Migrations)</a></li>
+          <li><a href="architecture/external-integrations.html">การเชื่อมต่อบริการภายนอก (External Integrations)</a>
+          </li>
+          <li><a href="architecture/database-schema.html">โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li>
+          <li><a href="architecture/system-architecture.html">สถาปัตยกรรมระบบ (System Architecture)</a></li>
+          <li><a href="architecture/admin-portal.html">สถาปัตยกรรมและการออกแบบ Admin Portal</a></li>
+          <li><a href="architecture/mobile-app.html">สถาปัตยกรรม Mobile App</a></li>
+          <li><a href="architecture/ai-inference-service.html">AI Inference Service</a></li>
+          <li><a href="architecture/backend-api.html">Backend API — FastAPI Orchestrator</a></li>
+          <li><a href="architecture/c1-system-context-diagram.html">C1 System Context Diagram</a></li>
+          <li><a href="architecture/c2-container-diagram.html">C2 Container Diagram</a></li>
+          <li><a href="architecture/c3-component-diagram.html">C3 Component Diagram - API Application</a></li>
+          <li><a href="architecture/c4-code-diagram.html">C4 Code Diagram - Image Scanning Flow</a></li>
+          <li><a href="architecture/database-er-diagram.html">Entity Relationship Diagram (ER Diagram)</a></li>
+          <li><a href="architecture/mobile-design.html">Mobile App Architecture</a></li>
+          <li><a href="architecture/flowchart.html">System Flowchart</a></li>
+          <li><a href="architecture/design-overview.html">UX/UI &amp; System Design Overview</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>แนวคิดและเทคนิค</summary>
+        <ul class="sidebar-list">
+          <li><a href="concepts/risk-scoring.html">การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li>
+          <li><a href="concepts/multi-layer-analysis.html">การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li>
+          <li><a href="concepts/explainable-ai.html">ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li>
+          <li><a href="concepts/configs.html">พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li>
+          <li><a href="concepts/ai-model-segformer.html">โมเดล AI — SegFormer</a></li>
+          <li><a href="concepts/surya-ocr.html">โมเดล AI — Surya OCR</a></li>
+          <li><a href="concepts/model-training.html">AI Model Training Workflow</a></li>
+          <li><a href="concepts/mmsegmentation.html">MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li>
+          <li><a href="concepts/semantic-segmentation.html">Semantic Segmentation</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>องค์ประกอบระบบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="entities/tech-stack.html">เทคโนโลยีที่ใช้ (Technology Stack)</a></li>
+          <li><a href="entities/actors.html">ผู้ใช้ระบบ (Actors)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การตัดสินใจ</summary>
+        <ul class="sidebar-list">
+          <li><a href="decisions/technology-choices.html">การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การวางแผน</summary>
+        <ul class="sidebar-list">
+          <li><a href="planning/task-tracking.html">การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a></li>
+          <li><a href="planning/project-scope.html">ขอบเขตโครงการ (Project Scope)</a></li>
+          <li><a href="planning/team.html">ทีมงานและผู้รับผิดชอบ (Team)</a></li>
+          <li><a href="planning/backend-documentation.html">Backend Documentation</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การทดสอบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="testing/test-cases.html">กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group" open>
+        <summary>คู่มือและภาคผนวก</summary>
+        <ul class="sidebar-list">
+          <li><a href="log.html">บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li>
+          <li><a href="howto.html" aria-current="page">วิธีใช้งาน Wiki (How to Use This Wiki)</a></li>
+          <li><a href="runbook.html">Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li>
+          <li><a href="AGENTS.html">Wiki Operating Guide</a></li>
+        </ul>
+      </details>
+    </aside>
+    <div class="nav-backdrop" data-nav-backdrop></div>
+    <main class="article" id="main-content">
+      <nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../index.html">หน้าแรก</a><span
+          aria-hidden="true">/</span><span>คู่มือและภาคผนวก</span></nav>
+      <header class="article-header">
+        <h1>วิธีใช้งาน Wiki (How to Use This Wiki)</h1>
+        <p class="article-lead">Wiki นี้คือฐานความรู้ถาวรของโปรเจค Scam Image Detection ที่ดูแลรักษาโดย LLM Agent
+          แนวคิดหลักคือ: คุณเป็นคนหาข้อมูลและตั้งคำถาม — LLM เป็นคนเขียนและอัปเดต wiki</p>
+        <div class="meta"><span>หมวด คู่มือและภาคผนวก</span><time datetime="2026-08-02">อัปเดต
+            2026-08-02</time><span>ต้นฉบับ howto.md</span></div>
+        <div class="tags"><span class="tag">howto</span><span class="tag">guide</span><span
+            class="tag">workflow</span><span class="tag">obsidian</span><span class="tag">LLM</span></div>
+      </header>
+      <div class="prose">
+        <h1 id="วิธีใช้งาน-wiki">วิธีใช้งาน Wiki</h1>
+        <p>Wiki นี้คือฐานความรู้ถาวรของโปรเจค <strong>Scam Image Detection</strong> ที่ดูแลรักษาโดย LLM Agent<br>
+          แนวคิดหลักคือ: <strong>คุณเป็นคนหาข้อมูลและตั้งคำถาม — LLM เป็นคนเขียนและอัปเดต wiki</strong></p>
+        <hr>
+        <h2 id="โครงสร้างของ-wiki">โครงสร้างของ Wiki</h2>
+        <pre><code><div class="code-frame"><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-text">wiki/
+  AGENTS.md          &lt;- คู่มือสำหรับ LLM: schema, convention, workflow
+  index.md           &lt;- สารบัญรวมทุกหน้า (เริ่มอ่านที่นี่)
+  log.md             &lt;- บันทึกการดำเนินงานตามลำดับเวลา
+  overview.md        &lt;- ภาพรวมโปรเจคทั้งหมด
+  howto.md           &lt;- ไฟล์นี้: คู่มือการใช้งาน
+
+  concepts/          &lt;- แนวคิดและเทคนิค (Semantic Segmentation, SegFormer, XAI, Risk Scoring)
+  architecture/      &lt;- การออกแบบระบบ (Mobile, Backend, AI, Database)
+  entities/          &lt;- สิ่งที่มีชื่อในระบบ (Actors, Tech Stack)
+  decisions/         &lt;- การตัดสินใจเลือกเทคโนโลยีและ tradeoff
+  requirements/      &lt;- ความต้องการของระบบ (Objectives, KPIs, FR, NFR)
+  planning/          &lt;- ขอบเขตงาน, ทีม, แผนการทำงาน
+</code></pre>
+      </div></code></pre>
+      <hr>
+      <h2 id="เปิดใช้งานกับ-obsidian">เปิดใช้งานกับ Obsidian</h2>
+      <ol>
+        <li>เปิด Obsidian</li>
+        <li>เลือก <strong>Open folder as vault</strong></li>
+        <li>เลือกโฟลเดอร์ <code>/home/panuwat/project/wiki</code></li>
+        <li>ใช้ <strong>Graph view</strong> (ไอคอนกราฟ) เพื่อดูความสัมพันธ์ระหว่างหน้าต่างๆ</li>
+        <li>เริ่มที่ <a href="index.html"><code>index.md</code></a> เพื่อดูสารบัญทั้งหมด หรือ <a
+            href="overview.html"><code>overview.md</code></a> เพื่อเข้าใจภาพรวมโปรเจค</li>
+      </ol>
+      <hr>
+      <h2 id="3-วิธีใช้งาน-llm-กับ-wiki">3 วิธีใช้งาน LLM กับ Wiki</h2>
+      <h3 id="1-ingest-เพิ่มเอกสารใหม่เข้า-wiki">1. Ingest — เพิ่มเอกสารใหม่เข้า Wiki</h3>
+      <p>เมื่อมีเอกสารใหม่ในโปรเจค (เช่น ไฟล์ใน <code>Document/</code> หรือ <code>design/</code>) บอก LLM ว่า:</p>
+      <pre><code><div class="code-frame"><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-text">&quot;ingest design/training.md เข้า wiki&quot;
+</code></pre>
+  </div></code></pre>
+  <p>LLM จะ:</p>
+  <ul>
+    <li>อ่านเอกสารต้นฉบับ โดยไม่แก้ไขต้นฉบับ</li>
+    <li>เขียนหรืออัปเดตหน้า wiki ที่เกี่ยวข้อง (อาจกระทบ 5–15 หน้า)</li>
+    <li>อัปเดต <code>index.md</code></li>
+    <li>บันทึก entry ใหม่ลง <code>log.md</code></li>
+  </ul>
+  <p><strong>สถานะการย้ายเอกสาร:</strong> เอกสารที่อยู่ในแผนการย้าย: Document/srs.md (ฉบับเต็ม),
+    Document/Use-Case-Diagram.md, Document/flowchart.md, Document/C1-System-Context-Diagram.md,
+    Document/C2-Container-Diagram.md, design/design.md, design/mobile.md, design/training.md —
+    ติดตามรายการที่เหลือได้ที่ log.md</p>
+  <hr>
+  <h3 id="2-query-ถามคำถามเกี่ยวกับโปรเจค">2. Query — ถามคำถามเกี่ยวกับโปรเจค</h3>
+  <p>ถามคำถามกับ LLM ได้เลย เช่น:</p>
+  <pre><code><div class="code-frame"><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-text">&quot;ระบบคำนวณ Risk Score อย่างไร?&quot;
+&quot;เพราะอะไรถึงเลือก SegFormer แทน CNN?&quot;
+&quot;เปรียบเทียบข้อดีข้อเสียของ 3 analysis layer&quot;
+&quot;PDPA compliance ทำอะไรบ้างในระบบนี้?&quot;
+&quot;อธิบาย Heatmap ให้คนไม่มีพื้น AI เข้าใจ&quot;
+</code></pre>
+  </div></code></pre>
+  <p>LLM จะ:</p>
+  <ul>
+    <li>อ่าน <code>index.md</code> เพื่อหาหน้าที่เกี่ยวข้อง</li>
+    <li>อ่านหน้าเหล่านั้น</li>
+    <li>ตอบพร้อม cite ชื่อหน้า wiki</li>
+  </ul>
+  <p><strong>Tip:</strong> ถ้าคำตอบที่ได้มีประโยชน์และใช้ซ้ำได้ บอก LLM ให้บันทึกเป็นหน้า wiki ใหม่:</p>
+  <pre><code><div class="code-frame"><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-text">&quot;บันทึกคำตอบนี้เป็นหน้า wiki ใหม่ชื่อ decisions/risk-score-design-rationale.md&quot;
+</code></pre>
+  </div></code></pre>
+  <p>คำตอบและการวิเคราะห์ที่ดีจะสะสมใน wiki และไม่หายไปกับ chat history</p>
+  <hr>
+  <h3 id="3-lint-ตรวจสุขภาพ-wiki">3. Lint — ตรวจสุขภาพ Wiki</h3>
+  <p>บอก LLM เป็นระยะๆ ว่า:</p>
+  <pre><code><div class="code-frame"><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-text">&quot;lint wiki&quot;
+</code></pre>
+  </div></code></pre>
+  <p>LLM จะตรวจหา:</p>
+  <ul>
+    <li>หน้าที่ไม่มีหน้าอื่น link มาถึง (orphan pages)</li>
+    <li>ข้อมูลขัดแย้งระหว่างหน้า</li>
+    <li>แนวคิดสำคัญที่ถูกพูดถึงแต่ยังไม่มีหน้าของตัวเอง</li>
+    <li>cross-reference ที่ขาดหายไป</li>
+    <li>frontmatter ที่ไม่ครบ</li>
+    <li>เอกสารที่มี update ใหม่แต่หน้า wiki ยังไม่ได้รับการอัปเดต</li>
+  </ul>
+  <hr>
+  <h2 id="convention-ของแต่ละหน้า">Convention ของแต่ละหน้า</h2>
+  <p>ทุกหน้าใน wiki เริ่มด้วย YAML frontmatter:</p>
+  <pre><code class="language-markdown"><div class="code-frame"><span class="visually-hidden">ภาษา markdown</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-markdown">---
+title: &quot;ชื่อหน้า&quot;
+category: concepts | architecture | entities | decisions | requirements | planning
+tags: [tag1, tag2]
+sources: [path/to/source.md]
+<span class="hljs-section">updated: YYYY-MM-DD
+---</span>
+</code></pre>
+  </div></code></pre>
+  <p>ตามด้วยโครงสร้างเนื้อหา:</p>
+  <ol>
+    <li>ประโยคสรุปสั้นๆ (1 บรรทัด)</li>
+    <li>เนื้อหาหลักแบ่งเป็น H2/H3 sections</li>
+    <li>ส่วน &quot;Key Points&quot; หรือ &quot;Summary&quot;</li>
+    <li>ส่วน &quot;Related Pages&quot; ที่ด้านล่างสุด</li>
+  </ol>
+  <hr>
+  <h2 id="wikilinks-obsidian-style">Wikilinks (Obsidian-style)</h2>
+  <p>Wiki ใช้ syntax ของ Obsidian ในการ link ระหว่างหน้า:</p>
+  <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align:left">Syntax</th>
+          <th style="text-align:left">ผลลัพธ์</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="text-align:left"><code>[[overview]]</code></td>
+          <td style="text-align:left">link ไปหน้า <code>overview.md</code></td>
+        </tr>
+        <tr>
+          <td style="text-align:left"><code>[[concepts/semantic-segmentation]]</code></td>
+          <td style="text-align:left">link ไปหน้าใน subfolder</td>
+        </tr>
+        <tr>
+          <td style="text-align:left"><code>[[concepts/semantic-segmentation|Semantic Segmentation]]</code></td>
+          <td style="text-align:left">link แต่แสดงข้อความว่า &quot;Semantic Segmentation&quot;</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <hr>
+  <h2 id="ไฟล์สำคัญ">ไฟล์สำคัญ</h2>
+  <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align:left">ไฟล์</th>
+          <th style="text-align:left">หน้าที่</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="text-align:left"><a href="AGENTS.html"><code>AGENTS.md</code></a></td>
+          <td style="text-align:left">คู่มือ LLM — schema และ workflow สำหรับ agent</td>
+        </tr>
+        <tr>
+          <td style="text-align:left"><a href="index.html"><code>index.md</code></a></td>
+          <td style="text-align:left">สารบัญ — อัปเดตทุกครั้งที่มีหน้าใหม่</td>
+        </tr>
+        <tr>
+          <td style="text-align:left"><a href="log.html"><code>log.md</code></a></td>
+          <td style="text-align:left">บันทึก — append-only, ห้ามลบ entry เก่า</td>
+        </tr>
+        <tr>
+          <td style="text-align:left"><a href="overview.html"><code>overview.md</code></a></td>
+          <td style="text-align:left">ภาพรวมโปรเจค — จุดเริ่มต้นสำหรับคนใหม่</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <hr>
+  <h2 id="ตัวอย่าง-session-การทำงาน">ตัวอย่าง Session การทำงาน</h2>
+  <pre><code><div class="code-frame"><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-text">คุณ:   &quot;ingest design/training.md เข้า wiki&quot;
+LLM:   อ่านไฟล์ → อัปเดต concepts/ai-model-segformer.md
+       → สร้าง concepts/model-training.md ใหม่
+       → อัปเดต index.md → บันทึก log.md
+
+คุณ:   &quot;ทำไม SegFormer ถึงดีกว่า CNN สำหรับโปรเจคนี้?&quot;
+LLM:   อ่าน index.md → อ่าน concepts/ai-model-segformer.md
+       + decisions/technology-choices.md → ตอบพร้อม cite
+
+คุณ:   &quot;บันทึกคำตอบนี้เป็นหน้า wiki&quot;
+LLM:   สร้าง decisions/segformer-vs-cnn-rationale.md
+       → อัปเดต index.md + log.md
+</code></pre>
+  </div></code></pre>
+  <hr>
+  <h2 id="สิ่งที่คุณทำ-vs-สิ่งที่-llm-ทำ">สิ่งที่คุณทำ vs สิ่งที่ LLM ทำ</h2>
+  <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align:left">คุณ (Human)</th>
+          <th style="text-align:left">LLM</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="text-align:left">หาเอกสารและแหล่งข้อมูลใหม่</td>
+          <td style="text-align:left">อ่าน สรุป และเขียนหน้า wiki</td>
+        </tr>
+        <tr>
+          <td style="text-align:left">ตั้งคำถามและสำรวจความรู้</td>
+          <td style="text-align:left">ค้นหาและ synthesize คำตอบจาก wiki</td>
+        </tr>
+        <tr>
+          <td style="text-align:left">บอกว่าอะไรสำคัญหรือควรเน้น</td>
+          <td style="text-align:left">ทำ cross-reference และ maintenance</td>
+        </tr>
+        <tr>
+          <td style="text-align:left">Browse ผลลัพธ์ใน Obsidian</td>
+          <td style="text-align:left">อัปเดต index และ log ทุกครั้ง</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <hr>
+  <h2 id="หมายเหตุสำคัญ">หมายเหตุสำคัญ</h2>
+  <ul>
+    <li>เอกสารต้นฉบับใน Document/ และ design/ — LLM อ่านได้แต่ไม่แก้ไขเด็ดขาด</li>
+    <li>Wiki ใน <code>wiki/</code> คือ <strong>living document</strong> — LLM เป็นเจ้าของและดูแลทั้งหมด</li>
+    <li><code>log.md</code> เป็น append-only — ห้ามลบ entry เก่า เพื่อให้ trace timeline ของ wiki ได้</li>
+    <li>ถ้า wiki โตขึ้นมากจนค้นหาลำบาก ให้พิจารณาติดตั้ง <a href="https://github.com/taylorai/qmd"
+        rel="noreferrer">qmd</a> สำหรับ hybrid search (BM25 + vector) บน local machine</li>
+  </ul>
+  </div>
+  <footer class="source-panel"><strong>แหล่งข้อมูลของหน้านี้</strong>
+    <ul>
+      <li><a href="../sources/wiki/howto.md">Markdown ต้นฉบับ: howto.md</a></li>
+    </ul>
+  </footer>
+  </main>
+  <aside class="toc-wrap" aria-label="สารบัญในหน้านี้">
+    <p class="toc-title">ในหน้านี้</p>
+    <ol class="toc">
+      <li class="toc-level-2"><a
+          href="#%E0%B9%82%E0%B8%84%E0%B8%A3%E0%B8%87%E0%B8%AA%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B8%82%E0%B8%AD%E0%B8%87-wiki">โครงสร้างของ
+          Wiki</a></li>
+      <li class="toc-level-2"><a
+          href="#%E0%B9%80%E0%B8%9B%E0%B8%B4%E0%B8%94%E0%B9%83%E0%B8%8A%E0%B9%89%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%81%E0%B8%B1%E0%B8%9A-obsidian">เปิดใช้งานกับ
+          Obsidian</a></li>
+      <li class="toc-level-2"><a
+          href="#3-%E0%B8%A7%E0%B8%B4%E0%B8%98%E0%B8%B5%E0%B9%83%E0%B8%8A%E0%B9%89%E0%B8%87%E0%B8%B2%E0%B8%99-llm-%E0%B8%81%E0%B8%B1%E0%B8%9A-wiki">3
+          วิธีใช้งาน LLM กับ Wiki</a></li>
+      <li class="toc-level-3"><a
+          href="#1-ingest-%E0%B9%80%E0%B8%9E%E0%B8%B4%E0%B9%88%E0%B8%A1%E0%B9%80%E0%B8%AD%E0%B8%81%E0%B8%AA%E0%B8%B2%E0%B8%A3%E0%B9%83%E0%B8%AB%E0%B8%A1%E0%B9%88%E0%B9%80%E0%B8%82%E0%B9%89%E0%B8%B2-wiki">1.
+          Ingest — เพิ่มเอกสารใหม่เข้า Wiki</a></li>
+      <li class="toc-level-3"><a
+          href="#2-query-%E0%B8%96%E0%B8%B2%E0%B8%A1%E0%B8%84%E0%B8%B3%E0%B8%96%E0%B8%B2%E0%B8%A1%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%81%E0%B8%B1%E0%B8%9A%E0%B9%82%E0%B8%9B%E0%B8%A3%E0%B9%80%E0%B8%88%E0%B8%84">2.
+          Query — ถามคำถามเกี่ยวกับโปรเจค</a></li>
+      <li class="toc-level-3"><a
+          href="#3-lint-%E0%B8%95%E0%B8%A3%E0%B8%A7%E0%B8%88%E0%B8%AA%E0%B8%B8%E0%B8%82%E0%B8%A0%E0%B8%B2%E0%B8%9E-wiki">3.
+          Lint — ตรวจสุขภาพ Wiki</a></li>
+      <li class="toc-level-2"><a
+          href="#convention-%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B9%81%E0%B8%95%E0%B9%88%E0%B8%A5%E0%B8%B0%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2">Convention
+          ของแต่ละหน้า</a></li>
+      <li class="toc-level-2"><a href="#wikilinks-obsidian-style">Wikilinks (Obsidian-style)</a></li>
+      <li class="toc-level-2"><a
+          href="#%E0%B9%84%E0%B8%9F%E0%B8%A5%E0%B9%8C%E0%B8%AA%E0%B8%B3%E0%B8%84%E0%B8%B1%E0%B8%8D">ไฟล์สำคัญ</a></li>
+      <li class="toc-level-2"><a
+          href="#%E0%B8%95%E0%B8%B1%E0%B8%A7%E0%B8%AD%E0%B8%A2%E0%B9%88%E0%B8%B2%E0%B8%87-session-%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%97%E0%B8%B3%E0%B8%87%E0%B8%B2%E0%B8%99">ตัวอย่าง
+          Session การทำงาน</a></li>
+      <li class="toc-level-2"><a
+          href="#%E0%B8%AA%E0%B8%B4%E0%B9%88%E0%B8%87%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%84%E0%B8%B8%E0%B8%93%E0%B8%97%E0%B8%B3-vs-%E0%B8%AA%E0%B8%B4%E0%B9%88%E0%B8%87%E0%B8%97%E0%B8%B5%E0%B9%88-llm-%E0%B8%97%E0%B8%B3">สิ่งที่คุณทำ
+          vs สิ่งที่ LLM ทำ</a></li>
+      <li class="toc-level-2"><a
+          href="#%E0%B8%AB%E0%B8%A1%E0%B8%B2%E0%B8%A2%E0%B9%80%E0%B8%AB%E0%B8%95%E0%B8%B8%E0%B8%AA%E0%B8%B3%E0%B8%84%E0%B8%B1%E0%B8%8D">หมายเหตุสำคัญ</a>
+      </li>
+    </ol>
+  </aside>
+  </div>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title">
+    <div class="search-dialog-head"><label class="visually-hidden" id="search-title"
+        for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…"
+        autocomplete="off" data-search-input><button class="control" type="button" data-search-close
+        aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg></button></div>
+    <div class="search-results" data-search-results aria-live="polite"></div>
+  </dialog>
+  <script src="../assets/js/search-index.js"></script>
+  <script src="../assets/js/site.js"></script>
+</body>
+
+</html>

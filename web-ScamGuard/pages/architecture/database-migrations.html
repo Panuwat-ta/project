@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="th" data-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="การจัดการการย้ายฐานข้อมูล Database Migrations คู่มือและข้อกำหนดการจัดการการเปลี่ยนแปลงโครงสร้างฐานข้อมูล PostgreSQL ของระบบ ScamGuard ด้วยเครื่องมือ Alembic ร่วมกับ SQLAlchemy --- 1. ภาพรวมแ…">
+  <meta name="color-scheme" content="light dark">
+  <title>การจัดการการย้ายฐานข้อมูล (Database Migrations) | ScamGuard Documentation</title>
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <script>document.documentElement.dataset.theme = (() => { try { return localStorage.getItem('scamguard-docs-theme') || 'light' } catch (e) { return 'light' } })(); window.SC_DOCS_ROOT = '../../';</script>
+</head>
+
+<body class="">
+  <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
+  <header class="masthead">
+    <div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false"
+        aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg></button><a class="brand" href="../../index.html"><svg viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z" />
+          <path d="m9.2 12 1.8 1.8 3.9-4.2" />
+        </svg><span>ScamGuard <small>Documentation</small></span></a>
+      <div class="masthead-actions"><button class="control" type="button" data-search-open><svg viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+            aria-hidden="true">
+            <circle cx="11" cy="11" r="6.5" />
+            <path d="m16 16 4 4" />
+          </svg><span>ค้นหา</span><span class="search-shortcut">Ctrl K</span></button><button class="control"
+          type="button" data-theme-toggle aria-label="เปลี่ยนเป็นโหมดมืด"><svg viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.5A7 7 0 0 1 12 3Z" />
+          </svg><span class="theme-label" data-theme-label>โหมดมืด</span></button></div>
+    </div>
+  </header>
+  <div class="docs-shell">
+    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><button class="control nav-close"
+        type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg></button>
+      <p class="sidebar-title">เอกสารทั้งหมด</p>
+      <details class="sidebar-group">
+        <summary>ภาพรวม</summary>
+        <ul class="sidebar-list">
+          <li><a href="../overview.html">ภาพรวมโปรเจค</a></li>
+          <li><a href="../index.html">สารบัญ Wiki — โปรเจค Scam Image Detection</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>ความต้องการระบบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../requirements/functional-requirements.html">ความต้องการเชิงฟังก์ชัน (Functional
+              Requirements)</a></li>
+          <li><a href="../requirements/non-functional-requirements.html">ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional
+              Requirements)</a></li>
+          <li><a href="../requirements/traceability-matrix.html">เมทริกซ์การสืบย้อนความต้องการ</a></li>
+          <li><a href="../requirements/objectives-kpis.html">วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp;
+              KPIs)</a></li>
+          <li><a href="../requirements/srs.html">Software Requirements Specification (SRS)</a></li>
+          <li><a href="../requirements/use-case-diagram.html">Use Case Diagram</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group" open>
+        <summary>สถาปัตยกรรม</summary>
+        <ul class="sidebar-list">
+          <li><a href="database-migrations.html" aria-current="page">การจัดการการย้ายฐานข้อมูล (Database Migrations)</a>
+          </li>
+          <li><a href="external-integrations.html">การเชื่อมต่อบริการภายนอก (External Integrations)</a></li>
+          <li><a href="database-schema.html">โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li>
+          <li><a href="system-architecture.html">สถาปัตยกรรมระบบ (System Architecture)</a></li>
+          <li><a href="admin-portal.html">สถาปัตยกรรมและการออกแบบ Admin Portal</a></li>
+          <li><a href="mobile-app.html">สถาปัตยกรรม Mobile App</a></li>
+          <li><a href="ai-inference-service.html">AI Inference Service</a></li>
+          <li><a href="backend-api.html">Backend API — FastAPI Orchestrator</a></li>
+          <li><a href="c1-system-context-diagram.html">C1 System Context Diagram</a></li>
+          <li><a href="c2-container-diagram.html">C2 Container Diagram</a></li>
+          <li><a href="c3-component-diagram.html">C3 Component Diagram - API Application</a></li>
+          <li><a href="c4-code-diagram.html">C4 Code Diagram - Image Scanning Flow</a></li>
+          <li><a href="database-er-diagram.html">Entity Relationship Diagram (ER Diagram)</a></li>
+          <li><a href="mobile-design.html">Mobile App Architecture</a></li>
+          <li><a href="flowchart.html">System Flowchart</a></li>
+          <li><a href="design-overview.html">UX/UI &amp; System Design Overview</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>แนวคิดและเทคนิค</summary>
+        <ul class="sidebar-list">
+          <li><a href="../concepts/risk-scoring.html">การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li>
+          <li><a href="../concepts/multi-layer-analysis.html">การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li>
+          <li><a href="../concepts/explainable-ai.html">ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li>
+          <li><a href="../concepts/configs.html">พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li>
+          <li><a href="../concepts/ai-model-segformer.html">โมเดล AI — SegFormer</a></li>
+          <li><a href="../concepts/surya-ocr.html">โมเดล AI — Surya OCR</a></li>
+          <li><a href="../concepts/model-training.html">AI Model Training Workflow</a></li>
+          <li><a href="../concepts/mmsegmentation.html">MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li>
+          <li><a href="../concepts/semantic-segmentation.html">Semantic Segmentation</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>องค์ประกอบระบบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../entities/tech-stack.html">เทคโนโลยีที่ใช้ (Technology Stack)</a></li>
+          <li><a href="../entities/actors.html">ผู้ใช้ระบบ (Actors)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การตัดสินใจ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../decisions/technology-choices.html">การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การวางแผน</summary>
+        <ul class="sidebar-list">
+          <li><a href="../planning/task-tracking.html">การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a>
+          </li>
+          <li><a href="../planning/project-scope.html">ขอบเขตโครงการ (Project Scope)</a></li>
+          <li><a href="../planning/team.html">ทีมงานและผู้รับผิดชอบ (Team)</a></li>
+          <li><a href="../planning/backend-documentation.html">Backend Documentation</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การทดสอบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../testing/test-cases.html">กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>คู่มือและภาคผนวก</summary>
+        <ul class="sidebar-list">
+          <li><a href="../log.html">บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li>
+          <li><a href="../howto.html">วิธีใช้งาน Wiki (How to Use This Wiki)</a></li>
+          <li><a href="../runbook.html">Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li>
+          <li><a href="../AGENTS.html">Wiki Operating Guide</a></li>
+        </ul>
+      </details>
+    </aside>
+    <div class="nav-backdrop" data-nav-backdrop></div>
+    <main class="article" id="main-content">
+      <nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span
+          aria-hidden="true">/</span><span>สถาปัตยกรรม</span></nav>
+      <header class="article-header">
+        <h1>การจัดการการย้ายฐานข้อมูล (Database Migrations)</h1>
+        <p class="article-lead">คู่มือและข้อกำหนดการจัดการการเปลี่ยนแปลงโครงสร้างฐานข้อมูล PostgreSQL ของระบบ ScamGuard
+          ด้วยเครื่องมือ Alembic ร่วมกับ SQLAlchemy</p>
+        <div class="meta"><span>หมวด สถาปัตยกรรม</span><time datetime="2026-09-13">อัปเดต 2026-09-13</time><span>ต้นฉบับ
+            architecture/database-migrations.md</span></div>
+        <div class="tags"><span class="tag">database</span><span class="tag">postgresql</span><span
+            class="tag">alembic</span><span class="tag">sqlalchemy</span><span class="tag">migration</span><span
+            class="tag">schema</span></div>
+      </header>
+      <div class="prose">
+        <h1 id="การจัดการการย้ายฐานข้อมูล-database-migrations">การจัดการการย้ายฐานข้อมูล (Database Migrations)</h1>
+        <p>คู่มือและข้อกำหนดการจัดการการเปลี่ยนแปลงโครงสร้างฐานข้อมูล PostgreSQL ของระบบ ScamGuard ด้วยเครื่องมือ
+          Alembic ร่วมกับ SQLAlchemy</p>
+        <hr>
+        <h2 id="1-ภาพรวมและบทบาทของ-alembic">1. ภาพรวมและบทบาทของ Alembic</h2>
+        <p>Alembic ทำหน้าที่เป็นระบบควบคุมเวอร์ชัน (Version Control) สำหรับฐานข้อมูลเชิงสัมพันธ์ PostgreSQL ในระบบ
+          ScamGuard ช่วยให้ทีมพัฒนาสามารถติดตาม ตรวจสอบ และปรับใช้การเปลี่ยนแปลงของสคีมาฐานข้อมูล (เช่น การเพิ่มตาราง
+          <code>admins</code>, การเพิ่มคอลัมน์ <code>title</code> ใน <code>scans</code>) ได้อย่างเป็นระบบ
+          ป้องกันความคลาดเคลื่อนของโครงสร้างฐานข้อมูลระหว่างสภาพแวดล้อม Development, Testing และ Production</p>
+        <hr>
+        <h2 id="2-โครงสร้างไฟล์และโฟลเดอร์ที่เกี่ยวข้อง">2. โครงสร้างไฟล์และโฟลเดอร์ที่เกี่ยวข้อง</h2>
+        <p>ระบบเก็บไฟล์ที่เกี่ยวข้องกับการ Migration ไว้ภายในโฟลเดอร์ <code>server/</code> ดังนี้:</p>
+        <pre><code class="language-text"><div class="code-frame"><span class="visually-hidden">ภาษา text</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-text">server/
+├── alembic.ini                    # ไฟล์กำหนดค่าการทำงานหลักของ Alembic
+├── migrations/
+│   ├── env.py                     # สคริปต์เชื่อมต่อ SQLAlchemy Models กับฐานข้อมูล
+│   ├── script.py.mako             # Template สำหรับสร้างไฟล์ Migration ใหม่
+│   └── versions/                  # ไฟล์ประวัติการเปลี่ยนแปลงทั้งหมด 18 ไฟล์ (เรียงตามสายโซ่ down_revision)
+│       ├── c5d636f20434_initial_migration.py
+│       ├── 45368bf51fde_update_scam_reports_table.py
+│       ├── 62cb9477cf84_add_admin_table.py
+│       ├── a1b2c3d4e5f6_add_admin_sessions.py
+│       ├── c42a6b7c284c_phase_2_structured_audit_and_report_.py
+│       ├── 8b428eff3721_phase_2_indexes.py
+│       ├── cd0116a8d7bc_add_phase_4_modelversion_fields.py
+│       ├── 54e8b8cb0526_add_exportjob_table.py
+│       ├── e3844dc4110e_add_append_only_trigger_to_audit_log.py
+│       ├── 042de00eee1b_rename_metrics_to_segformer_metrics.py
+│       ├── 8bb2e7d0af3c_add_title_to_scan.py
+│       ├── 9a0123c45678_add_progress_to_scan.py
+│       ├── efdfc08f2155_add_xai_explanation_to_scans.py
+│       ├── d4e5f6a7b8c9_design_review_fixes.py
+│       ├── b7c8d9e0f1a2_anonymize_consent_on_user_delete.py
+│       ├── c8d9e0f1a2b3_log_retention_archive.py
+│       ├── d9e0f1a2b3c4_add_updated_at_to_scans.py
+│       └── e0f1a2b3c4d5_app_role_least_privilege.py   # head ล่าสุด
+└── app/
+    └── models/                    # นิยาม SQLAlchemy ORM Models (11 ตาราง)
+        ├── user.py                # Model ตาราง users
+        ├── admin.py               # Model ตาราง admins
+        ├── scan.py                # Model ตาราง scans
+        ├── consent.py             # Model ตาราง consent_logs
+        ├── report.py              # Model ตาราง scam_reports
+        ├── model_version.py       # Model ตาราง model_versions
+        ├── admin_session.py       # Model ตาราง admin_sessions
+        ├── audit_log.py           # Model ตาราง audit_log
+        ├── export_job.py          # Model ตาราง export_jobs
+        └── log_archive.py         # Model ตาราง audit_log_archive + consent_logs_archive
+</code></pre>
+      </div></code></pre>
+      <aside class="callout callout-note" aria-label="หมายเหตุ">
+        <p class="callout-title">หมายเหตุ</p>
+        <p>ไฟล์ <code>database/init.sql</code> มีแค่ <code>CREATE EXTENSION IF NOT EXISTS &quot;uuid-ossp&quot;;</code>
+          เท่านั้น —
+          ไม่ได้สร้างตารางใด ๆ ตารางทั้ง 11 สร้างผ่าน Alembic migrations ข้างต้นทั้งหมด</p>
+      </aside>
+      <hr>
+      <h2 id="3-ขั้นตอนการทำงานและคำสั่งที่ใช้บ่อย-workflow-commands">3. ขั้นตอนการทำงานและคำสั่งที่ใช้บ่อย (Workflow
+        &amp; Commands)</h2>
+      <aside class="callout callout-important" aria-label="สำคัญ">
+        <p class="callout-title">สำคัญ</p>
+        <p>ต้องรันคำสั่งทั้งหมดภายในโฟลเดอร์ server และต้องเปิดใช้งาน Virtual Environment
+          พร้อมตั้งค่าตัวแปรสภาพแวดล้อมใน .env ให้ครบถ้วนเสมอ</p>
+      </aside>
+      <h3 id="3-1-การสร้างไฟล์-migration-อัตโนมัติ-generate-migration">3.1 การสร้างไฟล์ Migration อัตโนมัติ (Generate
+        Migration)</h3>
+      <p>เมื่อมีการเพิ่มหรือแก้ไขฟิลด์ในคลาส Model ภายใต้โฟลเดอร์ models ให้รันคำสั่งเพื่อให้ Alembic
+        เปรียบเทียบความแตกต่างและสร้าง Script อัตโนมัติ:</p>
+      <pre><code class="language-bash"><div class="code-frame"><span class="visually-hidden">ภาษา bash</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-bash">alembic revision --autogenerate -m <span class="hljs-string">&quot;add admins table and scan title&quot;</span>
+</code></pre>
+  </div></code></pre>
+  <h3 id="3-2-ตรวจสอบไฟล์-script-ก่อนนำไปใช้จริง">3.2 ตรวจสอบไฟล์ Script ก่อนนำไปใช้จริง</h3>
+  <p>หลังจากสร้างไฟล์ในโฟลเดอร์ migrations/versions ให้เปิดตรวจสอบคำสั่งภายในฟังก์ชัน:</p>
+  <ul>
+    <li>upgrade: คำสั่ง SQL สำหรับปรับใช้การเปลี่ยนแปลงใหม่</li>
+    <li>downgrade: คำสั่ง SQL สำหรับย้อนกลับโครงสร้างเดิมกรณีมีปัญหา</li>
+  </ul>
+  <h3 id="3-3-การปรับใช้การเปลี่ยนแปลงไปยังฐานข้อมูล-upgrade">3.3 การปรับใช้การเปลี่ยนแปลงไปยังฐานข้อมูล (Upgrade)</h3>
+  <p>รันคำสั่งเพื่ออัปเดตสคีมาของ PostgreSQL ให้เป็นเวอร์ชันล่าสุด:</p>
+  <pre><code class="language-bash"><div class="code-frame"><span class="visually-hidden">ภาษา bash</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-bash">alembic upgrade <span class="hljs-built_in">head</span>
+</code></pre>
+  </div></code></pre>
+  <h3 id="3-4-การตรวจสอบสถานะและประวัติเวอร์ชัน">3.4 การตรวจสอบสถานะและประวัติเวอร์ชัน</h3>
+  <ul>
+    <li>ตรวจสอบเวอร์ชันปัจจุบันของฐานข้อมูล:
+      <pre><code class="language-bash"><div class="code-frame"><span class="visually-hidden">ภาษา bash</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-bash">alembic current
+</code></pre>
+      </div></code></pre>
+    </li>
+    <li>ดูประวัติการ Migration ทั้งหมดตามลำดับเวลา:
+      <pre><code class="language-bash"><div class="code-frame"><span class="visually-hidden">ภาษา bash</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-bash">alembic <span class="hljs-built_in">history</span> --verbose
+</code></pre>
+      </div></code></pre>
+    </li>
+  </ul>
+  <h3 id="3-5-การย้อนกลับการเปลี่ยนแปลง-downgrade">3.5 การย้อนกลับการเปลี่ยนแปลง (Downgrade)</h3>
+  <p>หากเกิดข้อผิดพลาดและต้องการย้อนกลับไปยังเวอร์ชันก่อนหน้า 1 ขั้น:</p>
+  <pre><code class="language-bash"><div class="code-frame"><span class="visually-hidden">ภาษา bash</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-bash">alembic downgrade -1
+</code></pre>
+  </div></code></pre>
+  <hr>
+  <h2 id="3-6-ประวัติ-migration-รายไฟล์-18-ไฟล์-ตามลำดับสายโซ่">3.6 ประวัติ Migration รายไฟล์ (18 ไฟล์ ตามลำดับสายโซ่)
+  </h2>
+  <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align:left">ลำดับ</th>
+          <th style="text-align:left">ไฟล์ (revision)</th>
+          <th style="text-align:left">ต่อจาก</th>
+          <th style="text-align:left">สรุปการเปลี่ยนแปลง</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="text-align:left">1</td>
+          <td style="text-align:left"><code>c5d636f20434_initial_migration.py</code></td>
+          <td style="text-align:left">— (base)</td>
+          <td style="text-align:left">สร้างตารางตั้งต้น: users, scans, scam_reports, consent_logs, audit_log (แบบย่อ),
+            model_versions (แบบย่อ)</td>
+        </tr>
+        <tr>
+          <td style="text-align:left">2</td>
+          <td style="text-align:left"><code>45368bf51fde_update_scam_reports_table.py</code></td>
+          <td style="text-align:left">c5d636f20434</td>
+          <td style="text-align:left">เพิ่มคอลัมน์ scam_reports: category, platform, reference_url, allow_research_use,
+            admin_note</td>
+        </tr>
+        <tr>
+          <td style="text-align:left">3</td>
+          <td style="text-align:left"><code>62cb9477cf84_add_admin_table.py</code></td>
+          <td style="text-align:left">45368bf51fde</td>
+          <td style="text-align:left">สร้างตาราง admins (is_superadmin) + ย้าย FK audit_log.admin_id และ
+            scam_reports.moderated_by จาก users ไป admins (SET NULL)</td>
+        </tr>
+        <tr>
+          <td style="text-align:left">4</td>
+          <td style="text-align:left"><code>a1b2c3d4e5f6_add_admin_sessions.py</code></td>
+          <td style="text-align:left">62cb9477cf84</td>
+          <td style="text-align:left">สร้างตาราง admin_sessions (refresh-token rotation, replaced_by ไม่มี FK)</td>
+        </tr>
+        <tr>
+          <td style="text-align:left">5</td>
+          <td style="text-align:left"><code>c42a6b7c284c_phase_2_structured_audit_and_report_.py</code></td>
+          <td style="text-align:left">a1b2c3d4e5f6</td>
+          <td style="text-align:left">เพิ่ม structured audit fields ให้ audit_log (entity_type/id, before/after_state,
+            reason, ip, user_agent, request_id) + version ให้ scam_reports</td>
+        </tr>
+        <tr>
+          <td style="text-align:left">6</td>
+          <td style="text-align:left"><code>8b428eff3721_phase_2_indexes.py</code></td>
+          <td style="text-align:left">c42a6b7c284c</td>
+          <td style="text-align:left">เพิ่ม index: audit_log (action, admin_id, created_at, entity_type), scam_reports
+            (category, status, created_at), scans (user_id, created_at)</td>
+        </tr>
+        <tr>
+          <td style="text-align:left">7</td>
+          <td style="text-align:left"><code>cd0116a8d7bc_add_phase_4_modelversion_fields.py</code></td>
+          <td style="text-align:left">8b428eff3721</td>
+          <td style="text-align:left">เพิ่มฟิลด์ Phase 4 ให้ model_versions: artifact_checksum, framework_compatibility,
+            accuracy/precision/recall, dataset_reference, created_by (FK admins), status, deployment_history</td>
+        </tr>
+        <tr>
+          <td style="text-align:left">8</td>
+          <td style="text-align:left"><code>54e8b8cb0526_add_exportjob_table.py</code></td>
+          <td style="text-align:left">cd0116a8d7bc</td>
+          <td style="text-align:left">สร้างตาราง export_jobs (รวม error_message)</td>
+        </tr>
+        <tr>
+          <td style="text-align:left">9</td>
+          <td style="text-align:left"><code>e3844dc4110e_add_append_only_trigger_to_audit_log.py</code></td>
+          <td style="text-align:left">54e8b8cb0526</td>
+          <td style="text-align:left">สร้าง trigger append-only ของ audit_log (ดู 3.7)</td>
+        </tr>
+        <tr>
+          <td style="text-align:left">10</td>
+          <td style="text-align:left"><code>042de00eee1b_rename_metrics_to_segformer_metrics.py</code></td>
+          <td style="text-align:left">e3844dc4110e</td>
+          <td style="text-align:left">ลบ accuracy/precision/recall แล้วเพิ่ม a_acc/m_iou/m_acc/m_dice แทน (ดู 3.8) —
+            downgrade สร้างคอลัมน์เดิมกลับ</td>
+        </tr>
+        <tr>
+          <td style="text-align:left">11</td>
+          <td style="text-align:left"><code>8bb2e7d0af3c_add_title_to_scan.py</code></td>
+          <td style="text-align:left">042de00eee1b</td>
+          <td style="text-align:left">เพิ่มคอลัมน์ title (nullable) ให้ scans</td>
+        </tr>
+        <tr>
+          <td style="text-align:left">12</td>
+          <td style="text-align:left"><code>9a0123c45678_add_progress_to_scan.py</code></td>
+          <td style="text-align:left">8bb2e7d0af3c</td>
+          <td style="text-align:left">เพิ่มคอลัมน์ progress (NOT NULL, default 0) ให้ scans</td>
+        </tr>
+        <tr>
+          <td style="text-align:left">13</td>
+          <td style="text-align:left"><code>efdfc08f2155_add_xai_explanation_to_scans.py</code></td>
+          <td style="text-align:left">9a0123c45678</td>
+          <td style="text-align:left">เพิ่มคอลัมน์ xai_explanation (nullable) ให้ scans</td>
+        </tr>
+        <tr>
+          <td style="text-align:left">14</td>
+          <td style="text-align:left"><code>d4e5f6a7b8c9_design_review_fixes.py</code></td>
+          <td style="text-align:left">efdfc08f2155</td>
+          <td style="text-align:left">CHECK constraints (role/status/category/score) + index FK ที่ขาด + FK เป็น SET
+            NULL ทั้งหมด + consent/export admin_id เป็น nullable + data migration
+            <code>fake_image</code>→<code>other</code> 3 แถว (ดู 3.9)</td>
+        </tr>
+        <tr>
+          <td style="text-align:left">15</td>
+          <td style="text-align:left"><code>b7c8d9e0f1a2_anonymize_consent_on_user_delete.py</code></td>
+          <td style="text-align:left">d4e5f6a7b8c9</td>
+          <td style="text-align:left">trigger <code>trg_anonymize_consent_on_user_delete</code> ล้าง ip/user_agent ใน
+            consent_logs เมื่อลบ user</td>
+        </tr>
+        <tr>
+          <td style="text-align:left">16</td>
+          <td style="text-align:left"><code>c8d9e0f1a2b3_log_retention_archive.py</code></td>
+          <td style="text-align:left">b7c8d9e0f1a2</td>
+          <td style="text-align:left">ตาราง <code>audit_log_archive</code>/<code>consent_logs_archive</code> + เปิดช่อง
+            archive ให้ trigger audit ผ่าน <code>SET LOCAL</code> (ดู 3.10)</td>
+        </tr>
+        <tr>
+          <td style="text-align:left">17</td>
+          <td style="text-align:left"><code>d9e0f1a2b3c4_add_updated_at_to_scans.py</code></td>
+          <td style="text-align:left">c8d9e0f1a2b3</td>
+          <td style="text-align:left">เพิ่มคอลัมน์ <code>updated_at</code> (nullable, server_default now, onupdate) ให้
+            scans</td>
+        </tr>
+        <tr>
+          <td style="text-align:left">18</td>
+          <td style="text-align:left"><code>e0f1a2b3c4d5_app_role_least_privilege.py</code></td>
+          <td style="text-align:left">d9e0f1a2b3c4</td>
+          <td style="text-align:left">role <code>scamguard_app</code> (NOLOGIN): CONNECT + DML บนตารางปัจจุบันและอนาคต
+            (DEFAULT PRIVILEGES), ไม่มี DDL — head ล่าสุด</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 id="3-7-trigger-append-only-ของ-audit-log-e3844dc4110e">3.7 Trigger append-only ของ audit_log
+    (<code>e3844dc4110e</code>)</h3>
+  <ul>
+    <li><code>upgrade</code> สร้างฟังก์ชัน <code>prevent_audit_log_modification()</code> (plpgsql,
+      <code>RAISE EXCEPTION</code> เสมอ)
+      แล้วสร้าง trigger <code>trg_prevent_audit_log_modification</code> แบบ
+      <code>BEFORE UPDATE OR DELETE ON audit_log FOR EACH ROW</code> — จึงห้าม UPDATE และ DELETE ทุกแถวที่ระดับฐานข้อมูล
+      (INSERT ยังได้ปกติ)</li>
+    <li><code>downgrade</code> ลบ trigger ก่อน (<code>DROP TRIGGER IF EXISTS ... ON audit_log</code>) แล้วลบ function
+      (<code>DROP FUNCTION IF EXISTS prevent_audit_log_modification()</code>)</li>
+  </ul>
+  <h3 id="3-8-การเปลี่ยนชื่อ-metrics-โมเดล-042de00eee1b">3.8 การเปลี่ยนชื่อ metrics โมเดล (<code>042de00eee1b</code>)
+  </h3>
+  <ul>
+    <li>migration <code>cd0116a8d7bc</code> เคยเพิ่ม <code>accuracy / precision / recall</code> ให้
+      <code>model_versions</code></li>
+    <li>migration <code>042de00eee1b</code> ลบคอลัมน์ทั้งสามทิ้ง แล้วเพิ่ม <code>a_acc / m_iou / m_acc / m_dice</code>
+      (SegFormer-style metrics, Float, nullable) แทน — โค้ดปัจจุบัน (<code>model_version.py</code>) ใช้ชื่อใหม่นี้</li>
+  </ul>
+  <h3 id="3-9-design-review-fixes-d4e5f6a7b8c9">3.9 Design review fixes (<code>d4e5f6a7b8c9</code>)</h3>
+  <ul>
+    <li>ที่มา: รีวิว schema เทียบหลักการออกแบบ — enum คุมแค่โค้ด, FK ขาด index, ondelete ไม่สม่ำเสมอ,
+      consent CASCADE ลบหลักฐาน PDPA</li>
+    <li>เพิ่ม CHECK ระดับ DB ตรงกับค่าที่โค้ดใช้จริง (สแกน status 8 ค่า, category 7 ค่า canonical ตาม
+      <code>ReportCategory</code>)</li>
+    <li>Upgrade บนข้อมูลจริงเจอ <code>category='fake_image'</code> (legacy ก่อน DOC-08) 3 แถว → data migration เป็น
+      <code>'other'</code> ก่อนสร้าง CHECK</li>
+  </ul>
+  <h3 id="3-10-log-retention-archive-c8d9e0f1a2b3">3.10 Log retention archive (<code>c8d9e0f1a2b3</code>)</h3>
+  <ul>
+    <li>สร้างตาราง archive 2 ตาราง (+<code>archived_at</code>, ไม่มี FK/trigger) คู่กับสคริปต์
+      <code>scripts/archive_old_logs.py</code> (retention 1 ปี)</li>
+    <li>เปิดช่องให้ trigger audit ยอม DELETE เฉพาะ transaction ที่ตั้ง
+      <code>SET LOCAL app.allow_audit_archive='on'</code>
+      (transaction-scoped — session อื่นไม่ได้รับสิทธิ์, app ไม่เคยตั้งค่านี้)</li>
+  </ul>
+  <hr>
+  <h2 id="4-ข้อควรระวังและแนวทางปฏิบัติที่ดีที่สุด-best-practices">4. ข้อควรระวังและแนวทางปฏิบัติที่ดีที่สุด (Best
+    Practices)</h2>
+  <ol>
+    <li><strong>ห้ามแก้ไขสคีมาฐานข้อมูลโดยตรงด้วย SQL Console ในสภาพแวดล้อมจริง:</strong> ทุกการเปลี่ยนแปลงของตาราง
+      คอลัมน์ ดัชนี (Index) หรือ Foreign Key ต้องผ่านไฟล์ Script ของ Alembic เท่านั้น</li>
+    <li><strong>ไม่ลบไฟล์ Migration ในอดีต:</strong> ไฟล์ประวัติใน <code>migrations/versions/</code> ต้องถูกบันทึกลง Git
+      เพื่อให้ผู้พัฒนารายอื่นและ Pipeline CI/CD สามารถ Replicate ฐานข้อมูลได้ตรงกัน 100%</li>
+    <li><strong>การทดสอบ Downgrade เสมอ:</strong> ทุกครั้งที่เขียน Migration ใหม่ ให้ทดสอบรัน upgrade แล้วตามด้วย
+      downgrade บนเครื่องทดสอบ เพื่อยืนยันว่าสคริปต์สามารถย้อนกลับได้อย่างสมบูรณ์ ไม่ทิ้งขยะหรือข้อผิดพลาดตกค้าง</li>
+  </ol>
+  <hr>
+  <h2 id="5-ประเด็นสำคัญ">5. ประเด็นสำคัญ</h2>
+  <ul>
+    <li>Alembic ทำงานคู่กับ SQLAlchemy เพื่อสร้างความสอดคล้องระหว่าง Python Code และ PostgreSQL</li>
+    <li>ทุก Migration Script ต้องมีทั้งฟังก์ชัน upgrade และ downgrade ที่ทำงานได้จริง</li>
+    <li>ข้อมูลการเชื่อมต่อฐานข้อมูลถูกดึงมาจากตัวแปรสภาพแวดล้อม DATABASE_URL ใน .env ปราศจากการ Hardcode ข้อมูลความลับ
+    </li>
+  </ul>
+  <hr>
+  <h2 id="หน้าที่เกี่ยวข้อง">หน้าที่เกี่ยวข้อง</h2>
+  <ul>
+    <li><a href="database-schema.html">โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li>
+    <li><a href="database-er-diagram.html">แผนผังความสัมพันธ์ฐานข้อมูล (ER Diagram)</a></li>
+    <li><a href="backend-api.html">Backend API — FastAPI Orchestrator</a></li>
+    <li><a href="../runbook.html">คู่มือการรันระบบ (Runbook)</a></li>
+  </ul>
+  </div>
+  <footer class="source-panel"><strong>แหล่งข้อมูลของหน้านี้</strong>
+    <ul>
+      <li><a href="../../sources/wiki/architecture/database-migrations.md">Markdown ต้นฉบับ:
+          architecture/database-migrations.md</a></li>
+      <li>Document/database/alembic.md</li>
+    </ul>
+  </footer>
+  </main>
+  <aside class="toc-wrap" aria-label="สารบัญในหน้านี้">
+    <p class="toc-title">ในหน้านี้</p>
+    <ol class="toc">
+      <li class="toc-level-2"><a
+          href="#1-%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%A3%E0%B8%A7%E0%B8%A1%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%9A%E0%B8%97%E0%B8%9A%E0%B8%B2%E0%B8%97%E0%B8%82%E0%B8%AD%E0%B8%87-alembic">1.
+          ภาพรวมและบทบาทของ Alembic</a></li>
+      <li class="toc-level-2"><a
+          href="#2-%E0%B9%82%E0%B8%84%E0%B8%A3%E0%B8%87%E0%B8%AA%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B9%84%E0%B8%9F%E0%B8%A5%E0%B9%8C%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B9%82%E0%B8%9F%E0%B8%A5%E0%B9%80%E0%B8%94%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%87">2.
+          โครงสร้างไฟล์และโฟลเดอร์ที่เกี่ยวข้อง</a></li>
+      <li class="toc-level-2"><a
+          href="#3-%E0%B8%82%E0%B8%B1%E0%B9%89%E0%B8%99%E0%B8%95%E0%B8%AD%E0%B8%99%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%97%E0%B8%B3%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%84%E0%B8%B3%E0%B8%AA%E0%B8%B1%E0%B9%88%E0%B8%87%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%83%E0%B8%8A%E0%B9%89%E0%B8%9A%E0%B9%88%E0%B8%AD%E0%B8%A2-workflow-commands">3.
+          ขั้นตอนการทำงานและคำสั่งที่ใช้บ่อย (Workflow &amp; Commands)</a></li>
+      <li class="toc-level-3"><a
+          href="#3-1-%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%AA%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B9%84%E0%B8%9F%E0%B8%A5%E0%B9%8C-migration-%E0%B8%AD%E0%B8%B1%E0%B8%95%E0%B9%82%E0%B8%99%E0%B8%A1%E0%B8%B1%E0%B8%95%E0%B8%B4-generate-migration">3.1
+          การสร้างไฟล์ Migration อัตโนมัติ (Generate Migration)</a></li>
+      <li class="toc-level-3"><a
+          href="#3-2-%E0%B8%95%E0%B8%A3%E0%B8%A7%E0%B8%88%E0%B8%AA%E0%B8%AD%E0%B8%9A%E0%B9%84%E0%B8%9F%E0%B8%A5%E0%B9%8C-script-%E0%B8%81%E0%B9%88%E0%B8%AD%E0%B8%99%E0%B8%99%E0%B8%B3%E0%B9%84%E0%B8%9B%E0%B9%83%E0%B8%8A%E0%B9%89%E0%B8%88%E0%B8%A3%E0%B8%B4%E0%B8%87">3.2
+          ตรวจสอบไฟล์ Script ก่อนนำไปใช้จริง</a></li>
+      <li class="toc-level-3"><a
+          href="#3-3-%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9B%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B9%83%E0%B8%8A%E0%B9%89%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%9B%E0%B8%A5%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%99%E0%B9%81%E0%B8%9B%E0%B8%A5%E0%B8%87%E0%B9%84%E0%B8%9B%E0%B8%A2%E0%B8%B1%E0%B8%87%E0%B8%90%E0%B8%B2%E0%B8%99%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B8%B9%E0%B8%A5-upgrade">3.3
+          การปรับใช้การเปลี่ยนแปลงไปยังฐานข้อมูล (Upgrade)</a></li>
+      <li class="toc-level-3"><a
+          href="#3-4-%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%95%E0%B8%A3%E0%B8%A7%E0%B8%88%E0%B8%AA%E0%B8%AD%E0%B8%9A%E0%B8%AA%E0%B8%96%E0%B8%B2%E0%B8%99%E0%B8%B0%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%A7%E0%B8%B1%E0%B8%95%E0%B8%B4%E0%B9%80%E0%B8%A7%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B8%8A%E0%B8%B1%E0%B8%99">3.4
+          การตรวจสอบสถานะและประวัติเวอร์ชัน</a></li>
+      <li class="toc-level-3"><a
+          href="#3-5-%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%A2%E0%B9%89%E0%B8%AD%E0%B8%99%E0%B8%81%E0%B8%A5%E0%B8%B1%E0%B8%9A%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%9B%E0%B8%A5%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%99%E0%B9%81%E0%B8%9B%E0%B8%A5%E0%B8%87-downgrade">3.5
+          การย้อนกลับการเปลี่ยนแปลง (Downgrade)</a></li>
+      <li class="toc-level-2"><a
+          href="#3-6-%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%A7%E0%B8%B1%E0%B8%95%E0%B8%B4-migration-%E0%B8%A3%E0%B8%B2%E0%B8%A2%E0%B9%84%E0%B8%9F%E0%B8%A5%E0%B9%8C-18-%E0%B9%84%E0%B8%9F%E0%B8%A5%E0%B9%8C-%E0%B8%95%E0%B8%B2%E0%B8%A1%E0%B8%A5%E0%B8%B3%E0%B8%94%E0%B8%B1%E0%B8%9A%E0%B8%AA%E0%B8%B2%E0%B8%A2%E0%B9%82%E0%B8%8B%E0%B9%88">3.6
+          ประวัติ Migration รายไฟล์ (18 ไฟล์ ตามลำดับสายโซ่)</a></li>
+      <li class="toc-level-3"><a href="#3-7-trigger-append-only-%E0%B8%82%E0%B8%AD%E0%B8%87-audit-log-e3844dc4110e">3.7
+          Trigger append-only ของ audit_log (e3844dc4110e)</a></li>
+      <li class="toc-level-3"><a
+          href="#3-8-%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%9B%E0%B8%A5%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%99%E0%B8%8A%E0%B8%B7%E0%B9%88%E0%B8%AD-metrics-%E0%B9%82%E0%B8%A1%E0%B9%80%E0%B8%94%E0%B8%A5-042de00eee1b">3.8
+          การเปลี่ยนชื่อ metrics โมเดล (042de00eee1b)</a></li>
+      <li class="toc-level-3"><a href="#3-9-design-review-fixes-d4e5f6a7b8c9">3.9 Design review fixes (d4e5f6a7b8c9)</a>
+      </li>
+      <li class="toc-level-3"><a href="#3-10-log-retention-archive-c8d9e0f1a2b3">3.10 Log retention archive
+          (c8d9e0f1a2b3)</a></li>
+      <li class="toc-level-2"><a
+          href="#4-%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%84%E0%B8%A7%E0%B8%A3%E0%B8%A3%E0%B8%B0%E0%B8%A7%E0%B8%B1%E0%B8%87%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B9%81%E0%B8%99%E0%B8%A7%E0%B8%97%E0%B8%B2%E0%B8%87%E0%B8%9B%E0%B8%8F%E0%B8%B4%E0%B8%9A%E0%B8%B1%E0%B8%95%E0%B8%B4%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%94%E0%B8%B5%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%AA%E0%B8%B8%E0%B8%94-best-practices">4.
+          ข้อควรระวังและแนวทางปฏิบัติที่ดีที่สุด (Best Practices)</a></li>
+      <li class="toc-level-2"><a
+          href="#5-%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%94%E0%B9%87%E0%B8%99%E0%B8%AA%E0%B8%B3%E0%B8%84%E0%B8%B1%E0%B8%8D">5.
+          ประเด็นสำคัญ</a></li>
+      <li class="toc-level-2"><a
+          href="#%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%87">หน้าที่เกี่ยวข้อง</a>
+      </li>
+    </ol>
+  </aside>
+  </div>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title">
+    <div class="search-dialog-head"><label class="visually-hidden" id="search-title"
+        for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…"
+        autocomplete="off" data-search-input><button class="control" type="button" data-search-close
+        aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg></button></div>
+    <div class="search-results" data-search-results aria-live="polite"></div>
+  </dialog>
+  <script src="../../assets/js/search-index.js"></script>
+  <script src="../../assets/js/site.js"></script>
+</body>
+
+</html>

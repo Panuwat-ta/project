@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="th" data-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="การตั้งค่าพารามิเตอร์ อัลกอริทึมและสมการคณิตศาสตร์ที่ใช้ Configuration, Algorithms, and Mathematical Equations เอกสารฉบับนี้รวบรวมสมการคณิตศาสตร์ อัลกอริทึม และค่าการตั้งค่า Configurations ห…">
+  <meta name="color-scheme" content="light dark">
+  <title>พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math) | ScamGuard Documentation</title>
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <script>document.documentElement.dataset.theme = (() => { try { return localStorage.getItem('scamguard-docs-theme') || 'light' } catch (e) { return 'light' } })(); window.SC_DOCS_ROOT = '../../';</script>
+</head>
+
+<body class="">
+  <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
+  <header class="masthead">
+    <div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false"
+        aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg></button><a class="brand" href="../../index.html"><svg viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z" />
+          <path d="m9.2 12 1.8 1.8 3.9-4.2" />
+        </svg><span>ScamGuard <small>Documentation</small></span></a>
+      <div class="masthead-actions"><button class="control" type="button" data-search-open><svg viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+            aria-hidden="true">
+            <circle cx="11" cy="11" r="6.5" />
+            <path d="m16 16 4 4" />
+          </svg><span>ค้นหา</span><span class="search-shortcut">Ctrl K</span></button><button class="control"
+          type="button" data-theme-toggle aria-label="เปลี่ยนเป็นโหมดมืด"><svg viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.5A7 7 0 0 1 12 3Z" />
+          </svg><span class="theme-label" data-theme-label>โหมดมืด</span></button></div>
+    </div>
+  </header>
+  <div class="docs-shell">
+    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><button class="control nav-close"
+        type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg></button>
+      <p class="sidebar-title">เอกสารทั้งหมด</p>
+      <details class="sidebar-group">
+        <summary>ภาพรวม</summary>
+        <ul class="sidebar-list">
+          <li><a href="../overview.html">ภาพรวมโปรเจค</a></li>
+          <li><a href="../index.html">สารบัญ Wiki — โปรเจค Scam Image Detection</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>ความต้องการระบบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../requirements/functional-requirements.html">ความต้องการเชิงฟังก์ชัน (Functional
+              Requirements)</a></li>
+          <li><a href="../requirements/non-functional-requirements.html">ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional
+              Requirements)</a></li>
+          <li><a href="../requirements/traceability-matrix.html">เมทริกซ์การสืบย้อนความต้องการ</a></li>
+          <li><a href="../requirements/objectives-kpis.html">วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp;
+              KPIs)</a></li>
+          <li><a href="../requirements/srs.html">Software Requirements Specification (SRS)</a></li>
+          <li><a href="../requirements/use-case-diagram.html">Use Case Diagram</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>สถาปัตยกรรม</summary>
+        <ul class="sidebar-list">
+          <li><a href="../architecture/database-migrations.html">การจัดการการย้ายฐานข้อมูล (Database Migrations)</a>
+          </li>
+          <li><a href="../architecture/external-integrations.html">การเชื่อมต่อบริการภายนอก (External Integrations)</a>
+          </li>
+          <li><a href="../architecture/database-schema.html">โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li>
+          <li><a href="../architecture/system-architecture.html">สถาปัตยกรรมระบบ (System Architecture)</a></li>
+          <li><a href="../architecture/admin-portal.html">สถาปัตยกรรมและการออกแบบ Admin Portal</a></li>
+          <li><a href="../architecture/mobile-app.html">สถาปัตยกรรม Mobile App</a></li>
+          <li><a href="../architecture/ai-inference-service.html">AI Inference Service</a></li>
+          <li><a href="../architecture/backend-api.html">Backend API — FastAPI Orchestrator</a></li>
+          <li><a href="../architecture/c1-system-context-diagram.html">C1 System Context Diagram</a></li>
+          <li><a href="../architecture/c2-container-diagram.html">C2 Container Diagram</a></li>
+          <li><a href="../architecture/c3-component-diagram.html">C3 Component Diagram - API Application</a></li>
+          <li><a href="../architecture/c4-code-diagram.html">C4 Code Diagram - Image Scanning Flow</a></li>
+          <li><a href="../architecture/database-er-diagram.html">Entity Relationship Diagram (ER Diagram)</a></li>
+          <li><a href="../architecture/mobile-design.html">Mobile App Architecture</a></li>
+          <li><a href="../architecture/flowchart.html">System Flowchart</a></li>
+          <li><a href="../architecture/design-overview.html">UX/UI &amp; System Design Overview</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group" open>
+        <summary>แนวคิดและเทคนิค</summary>
+        <ul class="sidebar-list">
+          <li><a href="risk-scoring.html">การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li>
+          <li><a href="multi-layer-analysis.html">การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li>
+          <li><a href="explainable-ai.html">ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li>
+          <li><a href="configs.html" aria-current="page">พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a>
+          </li>
+          <li><a href="ai-model-segformer.html">โมเดล AI — SegFormer</a></li>
+          <li><a href="surya-ocr.html">โมเดล AI — Surya OCR</a></li>
+          <li><a href="model-training.html">AI Model Training Workflow</a></li>
+          <li><a href="mmsegmentation.html">MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li>
+          <li><a href="semantic-segmentation.html">Semantic Segmentation</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>องค์ประกอบระบบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../entities/tech-stack.html">เทคโนโลยีที่ใช้ (Technology Stack)</a></li>
+          <li><a href="../entities/actors.html">ผู้ใช้ระบบ (Actors)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การตัดสินใจ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../decisions/technology-choices.html">การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การวางแผน</summary>
+        <ul class="sidebar-list">
+          <li><a href="../planning/task-tracking.html">การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a>
+          </li>
+          <li><a href="../planning/project-scope.html">ขอบเขตโครงการ (Project Scope)</a></li>
+          <li><a href="../planning/team.html">ทีมงานและผู้รับผิดชอบ (Team)</a></li>
+          <li><a href="../planning/backend-documentation.html">Backend Documentation</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การทดสอบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../testing/test-cases.html">กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>คู่มือและภาคผนวก</summary>
+        <ul class="sidebar-list">
+          <li><a href="../log.html">บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li>
+          <li><a href="../howto.html">วิธีใช้งาน Wiki (How to Use This Wiki)</a></li>
+          <li><a href="../runbook.html">Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li>
+          <li><a href="../AGENTS.html">Wiki Operating Guide</a></li>
+        </ul>
+      </details>
+    </aside>
+    <div class="nav-backdrop" data-nav-backdrop></div>
+    <main class="article" id="main-content">
+      <nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span
+          aria-hidden="true">/</span><span>แนวคิดและเทคนิค</span></nav>
+      <header class="article-header">
+        <h1>พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</h1>
+        <p class="article-lead">เอกสารฉบับนี้รวบรวมสมการคณิตศาสตร์ อัลกอริทึม และค่าการตั้งค่า Configurations
+          หลักที่ใช้ในกระบวนการประมวลผล ประเมินผลลัพธ์ และการฝึกสอนโมเดล AI ภายในระบบ Scam Image Detection
+          พร้อมคำอธิบายเหตุผลและหลักการที่อยู่เบื้องหลังการออกแบบ…</p>
+        <div class="meta"><span>หมวด แนวคิดและเทคนิค</span><time datetime="2026-09-15">อัปเดต
+            2026-09-15</time><span>ต้นฉบับ concepts/configs.md</span></div>
+        <div class="tags"><span class="tag">risk-score</span><span class="tag">equations</span><span
+            class="tag">loss-function</span><span class="tag">SegFormer</span><span class="tag">parameters</span></div>
+      </header>
+      <div class="prose">
+        <h1
+          id="การตั้งค่าพารามิเตอร์-อัลกอริทึมและสมการคณิตศาสตร์ที่ใช้-configuration-algorithms-and-mathematical-equations">
+          การตั้งค่าพารามิเตอร์ อัลกอริทึมและสมการคณิตศาสตร์ที่ใช้ (Configuration, Algorithms, and Mathematical
+          Equations)</h1>
+        <p>เอกสารฉบับนี้รวบรวมสมการคณิตศาสตร์ อัลกอริทึม และค่าการตั้งค่า (Configurations) หลักที่ใช้ในกระบวนการประมวลผล
+          ประเมินผลลัพธ์ และการฝึกสอนโมเดล AI ภายในระบบ Scam Image Detection
+          พร้อมคำอธิบายเหตุผลและหลักการที่อยู่เบื้องหลังการออกแบบแต่ละส่วน</p>
+        <hr>
+        <h2 id="1-การคำนวณคะแนนความเสี่ยงรวม-overall-risk-score-recommended-hybrid-approach">1.
+          การคำนวณคะแนนความเสี่ยงรวม (Overall Risk Score - Recommended Hybrid Approach)</h2>
+        <p>ระบบประมวลผลคะแนนความเสี่ยงของรูปภาพโดยใช้หลักการ <strong>Maximum Impact (Worst-Case Trigger) ร่วมกับ
+            Multi-Factor Compounding Penalty</strong> ซึ่งเป็นมาตรฐานวิศวกรรมความมั่นคงปลอดภัย (Fraud Detection &amp;
+          Forensics):</p>
+        <p>$$ S_{base} = \max(S_{visual}, S_{textual}, S_{source}) $$</p>
+        <p>$$ S_{total} = \min\left(100, S_{base} + \sum_{i \in \text{secondary}} [S_i \ge 40] \times 5\right) $$</p>
+        <p>โดยที่:</p>
+        <ul>
+          <li><strong>$S_{total}$</strong> คือ คะแนนความเสี่ยงรวม (Overall Risk Score) มีค่าตั้งแต่ 0 ถึง 100</li>
+          <li><strong>$S_{base}$</strong> คือ ค่าคะแนนสูงสุดในบรรดามิติที่ตรวจพบ ($\max$) เพื่อเป็นฐานความเสี่ยงหลัก
+          </li>
+          <li><strong>$S_{visual}$</strong> คือ คะแนนความผิดปกติทางภาพ (Visual Anomaly Score 0–100%) จากโมเดล SegFormer
+            + Heatmap</li>
+          <li><strong>$S_{textual}$</strong> คือ คะแนนความเสี่ยงด้านข้อความ (Textual Analysis Score 0–100%) จาก
+            Surya-OCR + Pattern Matching</li>
+          <li><strong>$S_{source}$</strong> คือ คะแนนความเสี่ยงจากแหล่งที่มาของภาพ (Source Reliability Score 0–100%) จาก
+            Reverse Image Search (ที่มา: นโยบาย heuristic v1 — พบ ≥3 แหล่ง = สูง, =2 = ปานกลาง/ไม่แน่ชัด, ≤1 = ต่ำ;
+            ทบทวนเกณฑ์เมื่อมีข้อมูลภาคสนาม)</li>
+          <li><strong>Compounding Penalty:</strong> หากมิติรองใดมีคะแนน $\ge 40$ (ระดับ Medium ขึ้นไป) จะบวกเพิ่ม $+5$
+            ต่อมิติ (สูงสุดไม่เกิน 100)</li>
+          <li><strong>Partial Failure:</strong>
+            ถ้ามิติใดล้มเหลวให้ตัดมิตินั้นทิ้งแล้วคำนวณค่าสูงสุดจากมิติที่สำเร็จเท่านั้น</li>
+        </ul>
+        <p><strong>คำอธิบายและเหตุผลที่ใช้:</strong></p>
+        <ul>
+          <li><strong>แก้ปัญหา Dilution Problem:</strong> ในกรณีที่เป็นภาพตัดต่อหรือภาพสังเคราะห์ชัดเจนแต่ไม่มีข้อความ
+            ($S_{visual} = 85, S_{text} = 0$) หรือกรณี Romance Scam
+            การใช้ค่าเฉลี่ยถ่วงน้ำหนักจะทำให้คะแนนรวมถูกฉุดลงจนหลุดเกณฑ์อันตราย แต่ Worst-Case Trigger
+            จะการันตีว่าคะแนนรวมไม่ต่ำกว่ามิติที่อันตรายที่สุด</li>
+          <li><strong>สะท้อนความอันตรายแบบทวีคูณ (Multi-factor Risk):</strong>
+            หากภาพใดพบทั้งการตัดต่อภาพและมีข้อความหลอกลวงพร้อมกัน คะแนนรวมจะได้รับการเพิ่มพิเศษ (Compounding)
+            เพื่อเตือนภัยผู้ใช้อย่างเด็ดขาด</li>
+          <li><strong>การนำเสนอผลแบบคู่ขนาน (UI Breakdown):</strong> นอกเหนือจาก Overall Score แล้ว บน UI จะแจกแจง
+            Progress Bar และคำอธิบายแยกแต่ละมิติ 0–100% เสมอ</li>
+        </ul>
+        <hr>
+        <h2 id="2-เกณฑ์การตัดสินระดับความเสี่ยง-risk-grading-thresholds">2. เกณฑ์การตัดสินระดับความเสี่ยง (Risk Grading
+          Thresholds)</h2>
+        <p>เมื่อคำนวณคะแนน $S_{total}$ ออกมาแล้ว ระบบจะนำไปจัดกลุ่มระดับความเสี่ยงตามเงื่อนไข (Threshold Configuration)
+          ดังนี้:</p>
+        <p>$$
+          \text{Risk Grade} =
+          \begin{cases}
+          \text{Low (เสี่ยงต่ำ)} &amp; \text{if } 0 \le S_{total} \le 39 \
+          \text{Medium (น่าสงสัย)} &amp; \text{if } 40 \le S_{total} \le 69 \
+          \text{High (อันตราย)} &amp; \text{if } S_{total} \ge 70
+          \end{cases}
+          $$</p>
+        <p><strong>คำอธิบายและเหตุผลที่ใช้:</strong></p>
+        <ul>
+          <li><strong>ช่วงเสี่ยงต่ำ (0 -- 39):</strong> มีสัญญาณอ่อนบางจุดที่ตรวจพบ แต่ยังไม่ถึงระดับที่ควรกังวล
+            ผู้ใช้งานควรทราบแต่ไม่จำเป็นต้องดำเนินการใดเป็นพิเศษ</li>
+          <li><strong>ช่วงน่าสงสัย (40 -- 69):</strong> มีบางชั้นตรวจพบความผิดปกติ แต่ไม่ชัดเจนทุกชั้น
+            หรือพบหลักฐานแบบอ่อนๆ ผู้ใช้งานควรพิจารณาประกอบกับวิจารณญาณส่วนตัว</li>
+          <li><strong>ช่วงอันตราย (70 -- 100):</strong>
+            ผลวิเคราะห์ส่วนใหญ่ชี้ไปในทิศทางเดียวกันว่าภาพถูกปรับแต่งหรือมีข้อความหลอกลวงที่ชัดเจน
+            ภาพนี้มีความเสี่ยงสูงที่จะเป็นสแกม (กรณี $S_{visual} \ge 80$ ระบบจะขึ้นเป็น High ทันที)</li>
+        </ul>
+        <hr>
+        <h2 id="3-การคำนวณคะแนนความเสี่ยงทางภาพ-s-visual">3. การคำนวณคะแนนความเสี่ยงทางภาพ ($S_{visual}$)</h2>
+        <p>การได้มาซึ่งคะแนน $S_{visual}$ จากโมเดล SegFormer อาศัยความน่าจะเป็นของการเป็นรอยตัดต่อ (Confidence Score)
+          และสัดส่วนพื้นที่ที่พบความผิดปกติ (Mask Coverage):</p>
+        <p>$$ S_{visual} = \text{Normalize}(\text{Confidence} \times \text{Mask Coverage}) $$</p>
+        <p><strong>คำอธิบายและเหตุผลที่ใช้:</strong></p>
+        <ul>
+          <li><strong>Confidence Score:</strong> คือค่าเฉลี่ยความน่าจะเป็นของพิกเซลที่ถูก flag ว่าดัดแปลง
+            (มีค่าความน่าจะเป็น 0–1)</li>
+          <li><strong>Mask Coverage:</strong> คือสัดส่วนจำนวนพิกเซลที่ถูก flag เทียบกับพิกเซลทั้งหมดของภาพ (0–1)</li>
+          <li><strong>Normalize:</strong> นิยามตายตัว $\text{Normalize}(y) = \min(100, \text{round}(y \times 100))$ —
+            แปลงผลคูณ (ช่วง 0–1) เป็นคะแนน 0–100 (ฉบับ canonical ดู <code>Document/model/configs.md</code> §3)</li>
+          <li><strong>หลักการคิด:</strong> หากมีการแก้ไขภาพด้วยความเนียนที่ต่ำ (Confidence สูง) และแก้พื้นที่เยอะ
+            (Coverage สูง) คะแนนความเสี่ยงทางภาพ ($S_{visual}$) จะยิ่งมีค่าสูงขึ้น ในขณะที่รอยแก้เล็กๆ แม้ Confidence
+            สูง ก็จะมีผลต่อคะแนนลดลงบ้างตามสัดส่วน</li>
+          <li><strong>ตัวอย่างคำนวณ:</strong> Confidence เฉลี่ย 0.9, Coverage 0.2 → $0.9 \times 0.2 = 0.18$ →
+            $\text{Normalize}(0.18) = 18$ → $S_{visual} = 18$ (Low)</li>
+        </ul>
+        <hr>
+        <h2 id="4-สมการสำหรับการฝึกสอนโมเดลและการตั้งค่า-loss-function-training-configurations">4.
+          สมการสำหรับการฝึกสอนโมเดลและการตั้งค่า Loss Function (Training Configurations)</h2>
+        <p>เพื่อเพิ่มความแม่นยำในการเทรนโมเดลจำแนกพิกเซล (Semantic Segmentation) ระบบใช้ <strong>Loss Function</strong>
+          แบบผสมผสานระหว่าง Binary Cross-Entropy (BCE) และ Dice Loss:</p>
+        <p>$$ L = L_{BCE} + L_{Dice} $$</p>
+        <p>การปรับน้ำหนักของโมเดล (Weight Update) ใช้เทคนิค <strong>Differential Learning Rates</strong> ผ่าน AdamW
+          Optimizer โดยมีการตั้งค่าตัวคูณ (Multiplier) ที่แตกต่างกัน:</p>
+        <ol>
+          <li>
+            <p><strong>Backbone Configuration (เรียนรู้ช้า):</strong> <code>lr_mult = 0.1</code>
+              $$ \theta_{backbone}^{(t+1)} = \theta_{backbone}^{(t)} - (\eta \times 0.1) \frac{\partial L}{\partial
+              \theta_{backbone}} $$</p>
+          </li>
+          <li>
+            <p><strong>Classification Head Configuration (เรียนรู้เร็ว):</strong> <code>lr_mult = 10.0</code>
+              $$ \theta_{head}^{(t+1)} = \theta_{head}^{(t)} - (\eta \times 10.0) \frac{\partial L}{\partial
+              \theta_{head}} $$
+              <em>(โดย $\eta$ คือค่า Base Learning Rate ของระบบ)</em>
+            </p>
+          </li>
+        </ol>
+        <p><strong>คำอธิบายและเหตุผลที่ใช้:</strong></p>
+        <ul>
+          <li><strong>การผสม BCE และ Dice Loss:</strong>
+            <ul>
+              <li>$L_{BCE}$ ช่วยบังคับให้โมเดลประเมินค่าความน่าจะเป็นของแต่ละพิกเซลได้อย่างแม่นยำ</li>
+              <li>$L_{Dice}$ ช่วยรักษารูปทรงและขอบเขต (Boundary) ของรอยตัดต่อให้คมชัด
+                ลดปัญหาความไม่สมดุลของข้อมูลระหว่างบริเวณพิกเซลจริงที่มีมาก กับพิกเซลรอยแก้ที่มีน้อย</li>
+            </ul>
+          </li>
+          <li><strong>Differential Learning Rates:</strong> ระบบต้องการเก็บความสามารถเดิมในการสกัดจุดเด่นของภาพ (Feature
+            Extraction) จากโมเดลที่พรีเทรนมาแล้วเอาไว้ (ป้องกัน Catastrophic Forgetting) จึงสั่งให้แกนหลัก (Backbone)
+            เรียนรู้ช้าสุดๆ (<code>0.1</code>) แต่ขณะเดียวกันเราต้องการให้ส่วนประมวลผลปลายทาง (Classification Head)
+            ปรับตัวเข้าหาความรู้ใหม่และข้อมูลภาพสลิปใบเสร็จใหม่ๆ จึงให้เรียนรู้เร็วถึง (<code>10.0</code>) เท่า</li>
+        </ul>
+        <blockquote>
+          <p><strong>ค่าที่ใช้จริงใน config v10 (<code>segformer_mit-b2-v10.py</code> → โมเดล v1.0.5):</strong>
+            <code>CrossEntropyLoss loss_weight=1.0, class_weight=[1.0, 2.5]</code> +
+            <code>DiceLoss loss_weight=1.5</code> — batch 8 + <code>accumulative_counts=2</code> (effective 16 บน VRAM
+            8GB) — AdamW <code>lr=2e-5</code> + LinearLR warmup 3,000 iters + PolyLR — งบ
+            <code>max_iters=200,000</code>, <code>val_interval=2,500</code>, <code>save_best='mIoU'</code> — ผล: best
+            validation mIoU <strong>91.31</strong> @iter 197,500 (รายละเอียดผลดู <a
+              href="model-training.html">concepts/model-training</a>)</p>
+        </blockquote>
+        <hr>
+        <h2 id="5-สมการประเมินประสิทธิภาพโมเดล-evaluation-metrics">5. สมการประเมินประสิทธิภาพโมเดล (Evaluation Metrics)
+        </h2>
+        <p>ระบบอาศัยการวัดผลทั้งในระดับภาพรวมและระดับพิกเซล เพื่อนำมาตั้งค่า Validation Checkpoint</p>
+        <ul>
+          <li>
+            <p><strong>Accuracy:</strong>
+              $$ \text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN} $$</p>
+          </li>
+          <li>
+            <p><strong>F1-Score (ใช้จัดการ Imbalanced Data):</strong>
+              $$ \text{F1-Score} = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} +
+              \text{Recall}} $$</p>
+          </li>
+          <li>
+            <p><strong>IoU (Intersection over Union) / Dice Coefficient (สำหรับระดับพิกเซล):</strong>
+              $$ \text{IoU} = \frac{TP}{TP + FP + FN} $$
+              $$ \text{Dice} = \frac{2TP}{2TP + FP + FN} $$</p>
+          </li>
+        </ul>
+        <p><strong>คำอธิบายและเหตุผลที่ใช้:</strong></p>
+        <ul>
+          <li><strong>ค่า TP, TN, FP, FN:</strong> TP (ตรวจถูกว่าเป็นภาพปลอม), TN (ตรวจถูกว่าเป็นภาพจริง), FP
+            (ตรวจผิดว่าเป็นภาพปลอม ทั้งที่จริง), FN (ตรวจหลุดว่าเป็นภาพจริง ทั้งที่ปลอม)</li>
+          <li><strong>ข้อจำกัดของ Accuracy:</strong> ความแม่นยำรวม (Accuracy) มักหลอกตาในกรณีที่ภาพสแกม (Scam)
+            ในชุดข้อมูลมีน้อยมาก (Imbalanced Data) ตัวอย่างเช่น มีภาพแท้ 95 ภาพ ภาพสแกม 5 ภาพ โมเดลตอบภาพแท้เสมอ ก็จะได้
+            Accuracy 95% ทันที</li>
+          <li><strong>การใช้ F1-Score, IoU, mDice:</strong> จึงมีความจำเป็นในการใช้ F1-Score
+            (ทั้งระดับภาพรวมและระดับพิกเซล) เพื่อบังคับให้โมเดลต้องหาความสมดุลระหว่างความไว (Recall) และความแม่นยำ
+            (Precision) ทำให้การวัดผลภาพสแกมและการพ่นสี Heatmap ของรอยตัดต่อ มีความน่าเชื่อถือที่สุด</li>
+        </ul>
+      </div>
+      <footer class="source-panel"><strong>แหล่งข้อมูลของหน้านี้</strong>
+        <ul>
+          <li><a href="../../sources/wiki/concepts/configs.md">Markdown ต้นฉบับ: concepts/configs.md</a></li>
+          <li>Document/model/configs.md</li>
+          <li>Document/model/training.md</li>
+        </ul>
+      </footer>
+    </main>
+    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้">
+      <p class="toc-title">ในหน้านี้</p>
+      <ol class="toc">
+        <li class="toc-level-2"><a
+            href="#1-%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%84%E0%B8%B3%E0%B8%99%E0%B8%A7%E0%B8%93%E0%B8%84%E0%B8%B0%E0%B9%81%E0%B8%99%E0%B8%99%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B9%80%E0%B8%AA%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%87%E0%B8%A3%E0%B8%A7%E0%B8%A1-overall-risk-score-recommended-hybrid-approach">1.
+            การคำนวณคะแนนความเสี่ยงรวม (Overall Risk Score - Recommended Hybrid Approach)</a></li>
+        <li class="toc-level-2"><a
+            href="#2-%E0%B9%80%E0%B8%81%E0%B8%93%E0%B8%91%E0%B9%8C%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%95%E0%B8%B1%E0%B8%94%E0%B8%AA%E0%B8%B4%E0%B8%99%E0%B8%A3%E0%B8%B0%E0%B8%94%E0%B8%B1%E0%B8%9A%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B9%80%E0%B8%AA%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%87-risk-grading-thresholds">2.
+            เกณฑ์การตัดสินระดับความเสี่ยง (Risk Grading Thresholds)</a></li>
+        <li class="toc-level-2"><a
+            href="#3-%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%84%E0%B8%B3%E0%B8%99%E0%B8%A7%E0%B8%93%E0%B8%84%E0%B8%B0%E0%B9%81%E0%B8%99%E0%B8%99%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B9%80%E0%B8%AA%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%87%E0%B8%97%E0%B8%B2%E0%B8%87%E0%B8%A0%E0%B8%B2%E0%B8%9E-s-visual">3.
+            การคำนวณคะแนนความเสี่ยงทางภาพ ($S_{visual}$)</a></li>
+        <li class="toc-level-2"><a
+            href="#4-%E0%B8%AA%E0%B8%A1%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%AA%E0%B8%B3%E0%B8%AB%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9D%E0%B8%B6%E0%B8%81%E0%B8%AA%E0%B8%AD%E0%B8%99%E0%B9%82%E0%B8%A1%E0%B9%80%E0%B8%94%E0%B8%A5%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%95%E0%B8%B1%E0%B9%89%E0%B8%87%E0%B8%84%E0%B9%88%E0%B8%B2-loss-function-training-configurations">4.
+            สมการสำหรับการฝึกสอนโมเดลและการตั้งค่า Loss Function (Training Configurations)</a></li>
+        <li class="toc-level-2"><a
+            href="#5-%E0%B8%AA%E0%B8%A1%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%A1%E0%B8%B4%E0%B8%99%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%AA%E0%B8%B4%E0%B8%97%E0%B8%98%E0%B8%B4%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B9%82%E0%B8%A1%E0%B9%80%E0%B8%94%E0%B8%A5-evaluation-metrics">5.
+            สมการประเมินประสิทธิภาพโมเดล (Evaluation Metrics)</a></li>
+      </ol>
+    </aside>
+  </div>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title">
+    <div class="search-dialog-head"><label class="visually-hidden" id="search-title"
+        for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…"
+        autocomplete="off" data-search-input><button class="control" type="button" data-search-close
+        aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg></button></div>
+    <div class="search-results" data-search-results aria-live="polite"></div>
+  </dialog>
+  <script src="../../assets/js/search-index.js"></script>
+  <script src="../../assets/js/site.js"></script>
+</body>
+
+</html>

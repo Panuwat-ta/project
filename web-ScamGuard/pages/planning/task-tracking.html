@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="th" data-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="การติดตามงานและการบริหารโครงการ Task Tracking &amp; Jira โครงสร้างการติดตามความคืบหน้าของงาน พัฒนาการของระบบ และการบริหารโครงการ ScamGuard ผ่านกระดาน Jira และรายงานสถานะตาม Work Packages --- 1.…">
+  <meta name="color-scheme" content="light dark">
+  <title>การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira) | ScamGuard Documentation</title>
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <script>document.documentElement.dataset.theme = (() => { try { return localStorage.getItem('scamguard-docs-theme') || 'light' } catch (e) { return 'light' } })(); window.SC_DOCS_ROOT = '../../';</script>
+</head>
+
+<body class="">
+  <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
+  <header class="masthead">
+    <div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false"
+        aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg></button><a class="brand" href="../../index.html"><svg viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z" />
+          <path d="m9.2 12 1.8 1.8 3.9-4.2" />
+        </svg><span>ScamGuard <small>Documentation</small></span></a>
+      <div class="masthead-actions"><button class="control" type="button" data-search-open><svg viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+            aria-hidden="true">
+            <circle cx="11" cy="11" r="6.5" />
+            <path d="m16 16 4 4" />
+          </svg><span>ค้นหา</span><span class="search-shortcut">Ctrl K</span></button><button class="control"
+          type="button" data-theme-toggle aria-label="เปลี่ยนเป็นโหมดมืด"><svg viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.5A7 7 0 0 1 12 3Z" />
+          </svg><span class="theme-label" data-theme-label>โหมดมืด</span></button></div>
+    </div>
+  </header>
+  <div class="docs-shell">
+    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><button class="control nav-close"
+        type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg></button>
+      <p class="sidebar-title">เอกสารทั้งหมด</p>
+      <details class="sidebar-group">
+        <summary>ภาพรวม</summary>
+        <ul class="sidebar-list">
+          <li><a href="../overview.html">ภาพรวมโปรเจค</a></li>
+          <li><a href="../index.html">สารบัญ Wiki — โปรเจค Scam Image Detection</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>ความต้องการระบบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../requirements/functional-requirements.html">ความต้องการเชิงฟังก์ชัน (Functional
+              Requirements)</a></li>
+          <li><a href="../requirements/non-functional-requirements.html">ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional
+              Requirements)</a></li>
+          <li><a href="../requirements/traceability-matrix.html">เมทริกซ์การสืบย้อนความต้องการ</a></li>
+          <li><a href="../requirements/objectives-kpis.html">วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp;
+              KPIs)</a></li>
+          <li><a href="../requirements/srs.html">Software Requirements Specification (SRS)</a></li>
+          <li><a href="../requirements/use-case-diagram.html">Use Case Diagram</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>สถาปัตยกรรม</summary>
+        <ul class="sidebar-list">
+          <li><a href="../architecture/database-migrations.html">การจัดการการย้ายฐานข้อมูล (Database Migrations)</a>
+          </li>
+          <li><a href="../architecture/external-integrations.html">การเชื่อมต่อบริการภายนอก (External Integrations)</a>
+          </li>
+          <li><a href="../architecture/database-schema.html">โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li>
+          <li><a href="../architecture/system-architecture.html">สถาปัตยกรรมระบบ (System Architecture)</a></li>
+          <li><a href="../architecture/admin-portal.html">สถาปัตยกรรมและการออกแบบ Admin Portal</a></li>
+          <li><a href="../architecture/mobile-app.html">สถาปัตยกรรม Mobile App</a></li>
+          <li><a href="../architecture/ai-inference-service.html">AI Inference Service</a></li>
+          <li><a href="../architecture/backend-api.html">Backend API — FastAPI Orchestrator</a></li>
+          <li><a href="../architecture/c1-system-context-diagram.html">C1 System Context Diagram</a></li>
+          <li><a href="../architecture/c2-container-diagram.html">C2 Container Diagram</a></li>
+          <li><a href="../architecture/c3-component-diagram.html">C3 Component Diagram - API Application</a></li>
+          <li><a href="../architecture/c4-code-diagram.html">C4 Code Diagram - Image Scanning Flow</a></li>
+          <li><a href="../architecture/database-er-diagram.html">Entity Relationship Diagram (ER Diagram)</a></li>
+          <li><a href="../architecture/mobile-design.html">Mobile App Architecture</a></li>
+          <li><a href="../architecture/flowchart.html">System Flowchart</a></li>
+          <li><a href="../architecture/design-overview.html">UX/UI &amp; System Design Overview</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>แนวคิดและเทคนิค</summary>
+        <ul class="sidebar-list">
+          <li><a href="../concepts/risk-scoring.html">การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li>
+          <li><a href="../concepts/multi-layer-analysis.html">การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li>
+          <li><a href="../concepts/explainable-ai.html">ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li>
+          <li><a href="../concepts/configs.html">พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li>
+          <li><a href="../concepts/ai-model-segformer.html">โมเดล AI — SegFormer</a></li>
+          <li><a href="../concepts/surya-ocr.html">โมเดล AI — Surya OCR</a></li>
+          <li><a href="../concepts/model-training.html">AI Model Training Workflow</a></li>
+          <li><a href="../concepts/mmsegmentation.html">MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li>
+          <li><a href="../concepts/semantic-segmentation.html">Semantic Segmentation</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>องค์ประกอบระบบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../entities/tech-stack.html">เทคโนโลยีที่ใช้ (Technology Stack)</a></li>
+          <li><a href="../entities/actors.html">ผู้ใช้ระบบ (Actors)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การตัดสินใจ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../decisions/technology-choices.html">การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group" open>
+        <summary>การวางแผน</summary>
+        <ul class="sidebar-list">
+          <li><a href="task-tracking.html" aria-current="page">การติดตามงานและการบริหารโครงการ (Task Tracking &amp;
+              Jira)</a></li>
+          <li><a href="project-scope.html">ขอบเขตโครงการ (Project Scope)</a></li>
+          <li><a href="team.html">ทีมงานและผู้รับผิดชอบ (Team)</a></li>
+          <li><a href="backend-documentation.html">Backend Documentation</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การทดสอบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../testing/test-cases.html">กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>คู่มือและภาคผนวก</summary>
+        <ul class="sidebar-list">
+          <li><a href="../log.html">บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li>
+          <li><a href="../howto.html">วิธีใช้งาน Wiki (How to Use This Wiki)</a></li>
+          <li><a href="../runbook.html">Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li>
+          <li><a href="../AGENTS.html">Wiki Operating Guide</a></li>
+        </ul>
+      </details>
+    </aside>
+    <div class="nav-backdrop" data-nav-backdrop></div>
+    <main class="article" id="main-content">
+      <nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span
+          aria-hidden="true">/</span><span>การวางแผน</span></nav>
+      <header class="article-header">
+        <h1>การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</h1>
+        <p class="article-lead">โครงสร้างการติดตามความคืบหน้าของงาน พัฒนาการของระบบ และการบริหารโครงการ ScamGuard
+          ผ่านกระดาน Jira และรายงานสถานะตาม Work Packages</p>
+        <div class="meta"><span>หมวด การวางแผน</span><time datetime="2026-09-15">อัปเดต 2026-09-15</time><span>ต้นฉบับ
+            planning/task-tracking.md</span></div>
+        <div class="tags"><span class="tag">planning</span><span class="tag">jira</span><span
+            class="tag">task-tracking</span><span class="tag">scrum</span><span class="tag">kanban</span><span
+            class="tag">project-management</span></div>
+      </header>
+      <div class="prose">
+        <h1 id="การติดตามงานและการบริหารโครงการ-task-tracking-jira">การติดตามงานและการบริหารโครงการ (Task Tracking &amp;
+          Jira)</h1>
+        <p>โครงสร้างการติดตามความคืบหน้าของงาน พัฒนาการของระบบ และการบริหารโครงการ ScamGuard ผ่านกระดาน Jira
+          และรายงานสถานะตาม Work Packages</p>
+        <hr>
+        <h2 id="1-ข้อมูลโครงการและบอร์ดติดตามงาน-jira-board">1. ข้อมูลโครงการและบอร์ดติดตามงาน (Jira Board)</h2>
+        <p>ทีมพัฒนาใช้ซอฟต์แวร์ Jira ในการบริหารจัดการและติดตามงานตามแนวทาง Agile/Scrum:</p>
+        <ul>
+          <li><strong>รหัสโครงการ (Project Key):</strong> SCM</li>
+          <li><strong>กระดานติดตามงาน (Board):</strong> ScamGuard Board</li>
+          <li><strong>สถานะการดำเนินงาน (Workflow Statuses):</strong>
+            <ol>
+              <li><strong>To Do:</strong> งานที่ผ่านการวิเคราะห์และรอเริ่มดำเนินการ</li>
+              <li><strong>In Progress:</strong> งานที่อยู่ระหว่างการพัฒนาหรือทดสอบในเครื่องผู้พัฒนา</li>
+              <li><strong>In Review:</strong> งานที่เสร็จสิ้นแล้วและอยู่ระหว่างการตรวจสอบโค้ด (Code Review)
+                หรือการทดสอบเทียบกับเกณฑ์ยอมรับ (Acceptance Criteria)</li>
+              <li><strong>Done:</strong> งานที่ผ่านการทดสอบ ผ่านการ Review และรวมเข้าสู่กิ่งหลัก (Main Branch)
+                เรียบร้อยแล้ว</li>
+            </ol>
+          </li>
+        </ul>
+        <hr>
+        <h2 id="2-สถานะความคืบหน้าภาพรวมรายเฟส-phase-progress">2. สถานะความคืบหน้าภาพรวมรายเฟส (Phase Progress)</h2>
+        <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
+          <table>
+            <thead>
+              <tr>
+                <th style="text-align:left">เฟสการทำงาน</th>
+                <th style="text-align:left">รายละเอียดงาน</th>
+                <th style="text-align:left">สถานะ</th>
+                <th style="text-align:left">ความคืบหน้า</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="text-align:left"><strong>เฟส 1: ข้อกำหนดและการวางแผน</strong></td>
+                <td style="text-align:left">รวบรวม Requirement Candidates (RC), วิเคราะห์ SRS, กำหนด KPI และขอบเขตงาน
+                </td>
+                <td style="text-align:left">เสร็จสิ้น</td>
+                <td style="text-align:left">100%</td>
+              </tr>
+              <tr>
+                <td style="text-align:left"><strong>เฟส 2: การออกแบบระบบและสถาปัตยกรรม</strong></td>
+                <td style="text-align:left">ออกแบบ C1-C4 Diagrams, ER Diagram, UI/UX บน Figma และ Design System</td>
+                <td style="text-align:left">เสร็จสิ้น</td>
+                <td style="text-align:left">100%</td>
+              </tr>
+              <tr>
+                <td style="text-align:left"><strong>เฟส 3: การพัฒนาส่วนประกอบหลัก</strong></td>
+                <td style="text-align:left">พัฒนา Mobile App, FastAPI Backend, AI SegFormer Model, Surya OCR และ Admin
+                  Portal</td>
+                <td style="text-align:left">กำลังดำเนินการ</td>
+                <td style="text-align:left">~90%*</td>
+              </tr>
+              <tr>
+                <td style="text-align:left"><strong>เฟส 4: การทดสอบและการผสานระบบ</strong></td>
+                <td style="text-align:left">Automated Test Suites (Unit/Integration/E2E), Performance Load Test และ NFR
+                  Validation (รายงานใน <code>tests_all/tests_report/</code>, เคส manual ใน
+                  <code>tests_all/manual_tests/</code>, สำเนา CSV ใน <code>spreadsheets/</code>, ต้นทางผลประเมินโมเดลใน
+                  <code>model/segformer/Test-Case/output/</code>)</td>
+                <td style="text-align:left">กำลังดำเนินการ</td>
+                <td style="text-align:left">~85%*</td>
+              </tr>
+              <tr>
+                <td style="text-align:left"><strong>เฟส 5: การส่งมอบและเอกสารสมบูรณ์</strong></td>
+                <td style="text-align:left">รวบรวมเอกสารคู่มือ บันทึกการดำเนินงาน และรายงานผลการตรวจรับโครงงานวิศวกรรม
+                </td>
+                <td style="text-align:left">กำลังดำเนินการ</td>
+                <td style="text-align:left">~80%*</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <blockquote>
+          <p>* ตัวเลขเป็นค่าประมาณจากสัดส่วนงาน Done/ทั้งหมดบนบอร์ด Jira SCM ณ 2026-09-06 — อัปเดตพร้อมวันที่ทุกครั้ง
+            ไม่ใช้เป็นเกณฑ์ตัดสิน</p>
+        </blockquote>
+        <hr>
+        <h2 id="3-รายการงานสำคัญแยกตามคอมโพเนนต์-key-component-work-packages">3. รายการงานสำคัญแยกตามคอมโพเนนต์ (Key
+          Component Work Packages)</h2>
+        <h3 id="3-1-mobile-application-flutter">3.1 Mobile Application (Flutter)</h3>
+        <ul>
+          <li>พัฒนาโครงสร้าง Clean Architecture (Presentation, Domain, Data) พร้อม BLoC State Management</li>
+          <li>ปรับปรุง UI รองรับ Dark Mode First และ Light Mode ตามมาตรฐาน WCAG AA</li>
+          <li>เชื่อมต่อ RESTful API เต็มรูปแบบกับระบบหลังบ้าน (นำ Mock Repositories ออก)</li>
+          <li>เพิ่มระบบแคชและประวัติการสแกนย้อนหลัง (Recent History, Thumbnails, Tap Navigation)</li>
+        </ul>
+        <h3 id="3-2-backend-api-database-fastapi-postgresql">3.2 Backend API &amp; Database (FastAPI &amp; PostgreSQL)
+        </h3>
+        <ul>
+          <li>ออกแบบ RESTful API Endpoints สำหรับ Authentication, Scan Processing และ Admin Operations</li>
+          <li>วางระบบ Caching บน Redis ด้วย SHA-256 Hash ตอบกลับ Cache Hit ภายใน P95 ≤ 3 วินาที (ภาพ 1080p, 4G/Wi-Fi)
+          </li>
+          <li>แยกสคีมาตาราง <code>admins</code> ออกจาก <code>users</code> เพื่อความปลอดภัยขั้นสูงสุด</li>
+          <li>ติดตั้งระบบ Database Migration ด้วย Alembic เพื่อควบคุมการเปลี่ยนแปลงของสคีมา</li>
+        </ul>
+        <h3 id="3-3-ai-inference-engine-pipelines">3.3 AI Inference Engine &amp; Pipelines</h3>
+        <ul>
+          <li>พัฒนาและส่งออกโมเดล SegFormer (MiT-B0 ถึง MiT-B2) ในรูปแบบ ONNX Runtime — ฝึกและประเมินถึง v1.0.5 แล้ว
+            (MiT-B2, 197.5k iters, checkpoint 20260915_084109; ดีที่สุดบน common test และ export ONNX แล้ว แต่ local set
+            ได้ mDice 84.87% ยังไม่ผ่านเกณฑ์ 85.00%; คะแนนรายเวอร์ชัน v1.0.0–v1.0.5 ใน
+            <code>spreadsheets/qualitative/</code> และ <code>spreadsheets/quantitative/</code>)</li>
+          <li>ใช้อัลกอริทึม Overlapping Tiling Inference ป้องกันรอยต่อของภาพขนาดใหญ่</li>
+          <li>ติดตั้ง Surya OCR v0.5.0 (Native PyTorch) สำหรับการสกัดข้อความภาษาไทยและอังกฤษ</li>
+          <li>ปรับแต่ง XAI Pipeline ร่วมกับ Qwen2.5 สำหรับสร้างคำอธิบายความผิดปกติ</li>
+        </ul>
+        <h3 id="3-4-admin-portal-react-vite">3.4 Admin Portal (React / Vite)</h3>
+        <ul>
+          <li>พัฒนา Web Console สำหรับผู้ดูแลระบบ เชื่อมต่อ API จริงและฐานข้อมูล PostgreSQL</li>
+          <li>แสดงสถิติและสถานะระบบแบบ Real-time ด้วย WebSocket Telemetry</li>
+          <li>ระบบ AI Model Registry ควบคุมการ Deploy/Rollback เวอร์ชันโมเดลพร้อม Row Locking</li>
+          <li>ระบบจัดการและตรวจสอบข้อร้องเรียน (Moderation Queue) เพื่อคัดเลือกภาพเข้า Dataset</li>
+        </ul>
+        <hr>
+        <h2 id="4-ประเด็นสำคัญ">4. ประเด็นสำคัญ</h2>
+        <ul>
+          <li>งานทั้งหมดถูกแบ่งย่อยและมี Traceability เชื่อมโยงกลับไปยังข้อกำหนดใน <a
+              href="../requirements/traceability-matrix.html">Traceability Matrix</a> เสมอ</li>
+          <li>การเปลี่ยนแปลงในแต่ละคอมโพเนนต์จะถูกบันทึกลงใน Git และบันทึกประวัติการพัฒนาใน <code>.agents/log.md</code>
+          </li>
+          <li>ความคืบหน้าทางเทคนิคในปัจจุบันมุ่งเน้นการเสริมความแข็งแกร่ง (Hardening) การทดสอบระบบอัตโนมัติ
+            และความปลอดภัย</li>
+        </ul>
+        <hr>
+        <h2 id="หน้าที่เกี่ยวข้อง">หน้าที่เกี่ยวข้อง</h2>
+        <ul>
+          <li><a href="project-scope.html">ขอบเขตโครงการ (Project Scope)</a></li>
+          <li><a href="team.html">ทีมพัฒนาและที่ปรึกษา</a></li>
+          <li><a href="../requirements/traceability-matrix.html">เมทริกซ์การสืบย้อนความต้องการ (Traceability Matrix)</a>
+          </li>
+          <li><a href="../architecture/system-architecture.html">สถาปัตยกรรมระบบโดยรวม</a></li>
+        </ul>
+      </div>
+      <footer class="source-panel"><strong>แหล่งข้อมูลของหน้านี้</strong>
+        <ul>
+          <li><a href="../../sources/wiki/planning/task-tracking.md">Markdown ต้นฉบับ: planning/task-tracking.md</a>
+          </li>
+          <li>Document/jira/Task-Tracking.md</li>
+          <li>Document/jira/to-do-list.md</li>
+        </ul>
+      </footer>
+    </main>
+    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้">
+      <p class="toc-title">ในหน้านี้</p>
+      <ol class="toc">
+        <li class="toc-level-2"><a
+            href="#1-%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B8%B9%E0%B8%A5%E0%B9%82%E0%B8%84%E0%B8%A3%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%9A%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B8%94%E0%B8%95%E0%B8%B4%E0%B8%94%E0%B8%95%E0%B8%B2%E0%B8%A1%E0%B8%87%E0%B8%B2%E0%B8%99-jira-board">1.
+            ข้อมูลโครงการและบอร์ดติดตามงาน (Jira Board)</a></li>
+        <li class="toc-level-2"><a
+            href="#2-%E0%B8%AA%E0%B8%96%E0%B8%B2%E0%B8%99%E0%B8%B0%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%84%E0%B8%B7%E0%B8%9A%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%A3%E0%B8%A7%E0%B8%A1%E0%B8%A3%E0%B8%B2%E0%B8%A2%E0%B9%80%E0%B8%9F%E0%B8%AA-phase-progress">2.
+            สถานะความคืบหน้าภาพรวมรายเฟส (Phase Progress)</a></li>
+        <li class="toc-level-2"><a
+            href="#3-%E0%B8%A3%E0%B8%B2%E0%B8%A2%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%AA%E0%B8%B3%E0%B8%84%E0%B8%B1%E0%B8%8D%E0%B9%81%E0%B8%A2%E0%B8%81%E0%B8%95%E0%B8%B2%E0%B8%A1%E0%B8%84%E0%B8%AD%E0%B8%A1%E0%B9%82%E0%B8%9E%E0%B9%80%E0%B8%99%E0%B8%99%E0%B8%95%E0%B9%8C-key-component-work-packages">3.
+            รายการงานสำคัญแยกตามคอมโพเนนต์ (Key Component Work Packages)</a></li>
+        <li class="toc-level-3"><a href="#3-1-mobile-application-flutter">3.1 Mobile Application (Flutter)</a></li>
+        <li class="toc-level-3"><a href="#3-2-backend-api-database-fastapi-postgresql">3.2 Backend API &amp; Database
+            (FastAPI &amp; PostgreSQL)</a></li>
+        <li class="toc-level-3"><a href="#3-3-ai-inference-engine-pipelines">3.3 AI Inference Engine &amp; Pipelines</a>
+        </li>
+        <li class="toc-level-3"><a href="#3-4-admin-portal-react-vite">3.4 Admin Portal (React / Vite)</a></li>
+        <li class="toc-level-2"><a
+            href="#4-%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%94%E0%B9%87%E0%B8%99%E0%B8%AA%E0%B8%B3%E0%B8%84%E0%B8%B1%E0%B8%8D">4.
+            ประเด็นสำคัญ</a></li>
+        <li class="toc-level-2"><a
+            href="#%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%87">หน้าที่เกี่ยวข้อง</a>
+        </li>
+      </ol>
+    </aside>
+  </div>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title">
+    <div class="search-dialog-head"><label class="visually-hidden" id="search-title"
+        for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…"
+        autocomplete="off" data-search-input><button class="control" type="button" data-search-close
+        aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg></button></div>
+    <div class="search-results" data-search-results aria-live="polite"></div>
+  </dialog>
+  <script src="../../assets/js/search-index.js"></script>
+  <script src="../../assets/js/site.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="th" data-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="ปัญญาประดิษฐ์ที่อธิบายได้ XAI ผลลัพธ์ของ AI ถูกแปลให้ผู้ใช้ทั่วไปเข้าใจได้ผ่านชั้นคำอธิบายทางภาพ: Heatmap ซ้อนทับลงบนรูปภาพต้นฉบับ --- ปัญหาที่ XAI แก้ไข คะแนนความเสี่ยงตัวเลขเปล่า เช่น &quot;72%…">
+  <meta name="color-scheme" content="light dark">
+  <title>ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI) | ScamGuard Documentation</title>
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <script>document.documentElement.dataset.theme = (() => { try { return localStorage.getItem('scamguard-docs-theme') || 'light' } catch (e) { return 'light' } })(); window.SC_DOCS_ROOT = '../../';</script>
+</head>
+
+<body class="">
+  <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
+  <header class="masthead">
+    <div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false"
+        aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg></button><a class="brand" href="../../index.html"><svg viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z" />
+          <path d="m9.2 12 1.8 1.8 3.9-4.2" />
+        </svg><span>ScamGuard <small>Documentation</small></span></a>
+      <div class="masthead-actions"><button class="control" type="button" data-search-open><svg viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+            aria-hidden="true">
+            <circle cx="11" cy="11" r="6.5" />
+            <path d="m16 16 4 4" />
+          </svg><span>ค้นหา</span><span class="search-shortcut">Ctrl K</span></button><button class="control"
+          type="button" data-theme-toggle aria-label="เปลี่ยนเป็นโหมดมืด"><svg viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.5A7 7 0 0 1 12 3Z" />
+          </svg><span class="theme-label" data-theme-label>โหมดมืด</span></button></div>
+    </div>
+  </header>
+  <div class="docs-shell">
+    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><button class="control nav-close"
+        type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg></button>
+      <p class="sidebar-title">เอกสารทั้งหมด</p>
+      <details class="sidebar-group">
+        <summary>ภาพรวม</summary>
+        <ul class="sidebar-list">
+          <li><a href="../overview.html">ภาพรวมโปรเจค</a></li>
+          <li><a href="../index.html">สารบัญ Wiki — โปรเจค Scam Image Detection</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>ความต้องการระบบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../requirements/functional-requirements.html">ความต้องการเชิงฟังก์ชัน (Functional
+              Requirements)</a></li>
+          <li><a href="../requirements/non-functional-requirements.html">ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional
+              Requirements)</a></li>
+          <li><a href="../requirements/traceability-matrix.html">เมทริกซ์การสืบย้อนความต้องการ</a></li>
+          <li><a href="../requirements/objectives-kpis.html">วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp;
+              KPIs)</a></li>
+          <li><a href="../requirements/srs.html">Software Requirements Specification (SRS)</a></li>
+          <li><a href="../requirements/use-case-diagram.html">Use Case Diagram</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>สถาปัตยกรรม</summary>
+        <ul class="sidebar-list">
+          <li><a href="../architecture/database-migrations.html">การจัดการการย้ายฐานข้อมูล (Database Migrations)</a>
+          </li>
+          <li><a href="../architecture/external-integrations.html">การเชื่อมต่อบริการภายนอก (External Integrations)</a>
+          </li>
+          <li><a href="../architecture/database-schema.html">โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li>
+          <li><a href="../architecture/system-architecture.html">สถาปัตยกรรมระบบ (System Architecture)</a></li>
+          <li><a href="../architecture/admin-portal.html">สถาปัตยกรรมและการออกแบบ Admin Portal</a></li>
+          <li><a href="../architecture/mobile-app.html">สถาปัตยกรรม Mobile App</a></li>
+          <li><a href="../architecture/ai-inference-service.html">AI Inference Service</a></li>
+          <li><a href="../architecture/backend-api.html">Backend API — FastAPI Orchestrator</a></li>
+          <li><a href="../architecture/c1-system-context-diagram.html">C1 System Context Diagram</a></li>
+          <li><a href="../architecture/c2-container-diagram.html">C2 Container Diagram</a></li>
+          <li><a href="../architecture/c3-component-diagram.html">C3 Component Diagram - API Application</a></li>
+          <li><a href="../architecture/c4-code-diagram.html">C4 Code Diagram - Image Scanning Flow</a></li>
+          <li><a href="../architecture/database-er-diagram.html">Entity Relationship Diagram (ER Diagram)</a></li>
+          <li><a href="../architecture/mobile-design.html">Mobile App Architecture</a></li>
+          <li><a href="../architecture/flowchart.html">System Flowchart</a></li>
+          <li><a href="../architecture/design-overview.html">UX/UI &amp; System Design Overview</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group" open>
+        <summary>แนวคิดและเทคนิค</summary>
+        <ul class="sidebar-list">
+          <li><a href="risk-scoring.html">การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li>
+          <li><a href="multi-layer-analysis.html">การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li>
+          <li><a href="explainable-ai.html" aria-current="page">ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a>
+          </li>
+          <li><a href="configs.html">พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li>
+          <li><a href="ai-model-segformer.html">โมเดล AI — SegFormer</a></li>
+          <li><a href="surya-ocr.html">โมเดล AI — Surya OCR</a></li>
+          <li><a href="model-training.html">AI Model Training Workflow</a></li>
+          <li><a href="mmsegmentation.html">MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li>
+          <li><a href="semantic-segmentation.html">Semantic Segmentation</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>องค์ประกอบระบบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../entities/tech-stack.html">เทคโนโลยีที่ใช้ (Technology Stack)</a></li>
+          <li><a href="../entities/actors.html">ผู้ใช้ระบบ (Actors)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การตัดสินใจ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../decisions/technology-choices.html">การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การวางแผน</summary>
+        <ul class="sidebar-list">
+          <li><a href="../planning/task-tracking.html">การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a>
+          </li>
+          <li><a href="../planning/project-scope.html">ขอบเขตโครงการ (Project Scope)</a></li>
+          <li><a href="../planning/team.html">ทีมงานและผู้รับผิดชอบ (Team)</a></li>
+          <li><a href="../planning/backend-documentation.html">Backend Documentation</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>การทดสอบ</summary>
+        <ul class="sidebar-list">
+          <li><a href="../testing/test-cases.html">กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li>
+        </ul>
+      </details>
+      <details class="sidebar-group">
+        <summary>คู่มือและภาคผนวก</summary>
+        <ul class="sidebar-list">
+          <li><a href="../log.html">บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li>
+          <li><a href="../howto.html">วิธีใช้งาน Wiki (How to Use This Wiki)</a></li>
+          <li><a href="../runbook.html">Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li>
+          <li><a href="../AGENTS.html">Wiki Operating Guide</a></li>
+        </ul>
+      </details>
+    </aside>
+    <div class="nav-backdrop" data-nav-backdrop></div>
+    <main class="article" id="main-content">
+      <nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span
+          aria-hidden="true">/</span><span>แนวคิดและเทคนิค</span></nav>
+      <header class="article-header">
+        <h1>ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</h1>
+        <p class="article-lead">ผลลัพธ์ของ AI ถูกแปลให้ผู้ใช้ทั่วไปเข้าใจได้ผ่านชั้นคำอธิบายทางภาพ: Heatmap
+          ซ้อนทับลงบนรูปภาพต้นฉบับ</p>
+        <div class="meta"><span>หมวด แนวคิดและเทคนิค</span><time datetime="2026-08-02">อัปเดต
+            2026-08-02</time><span>ต้นฉบับ concepts/explainable-ai.md</span></div>
+        <div class="tags"><span class="tag">XAI</span><span class="tag">Heatmap</span><span
+            class="tag">heatmap</span><span class="tag">overlay</span><span class="tag">transparency</span></div>
+      </header>
+      <div class="prose">
+        <h1 id="ปัญญาประดิษฐ์ที่อธิบายได้-xai">ปัญญาประดิษฐ์ที่อธิบายได้ (XAI)</h1>
+        <p>ผลลัพธ์ของ AI ถูกแปลให้ผู้ใช้ทั่วไปเข้าใจได้ผ่านชั้นคำอธิบายทางภาพ: <strong>Heatmap</strong>
+          ซ้อนทับลงบนรูปภาพต้นฉบับ</p>
+        <hr>
+        <h2 id="ปัญหาที่-xai-แก้ไข">ปัญหาที่ XAI แก้ไข</h2>
+        <p>คะแนนความเสี่ยงตัวเลขเปล่า (เช่น &quot;72%&quot;) บอกผู้ใช้ว่าระบบ <em>พบ</em> สิ่งผิดปกติ แต่ไม่บอกว่า
+          <em>ที่ไหน</em> หรือ <em>ทำไม</em> หากไม่มีคำอธิบาย ผู้ใช้ก็ไม่มีเหตุผลที่จะเชื่อหรือดำเนินการตามผลลัพธ์ XAI
+          ปิดช่องว่างนี้</p>
+        <hr>
+        <h2 id="heatmap">Heatmap</h2>
+        <p><strong>Heatmap</strong> คือภาพแผนที่ความร้อนที่แสดงบริเวณที่โมเดลตรวจพบความผิดปกติ
+          โดยบริเวณที่เสี่ยงสูงจะแสดงเป็นโทนร้อนและบริเวณที่ปกติจะแสดงเป็นโทนเย็น</p>
+        <p><strong>การทำงานในระบบนี้:</strong></p>
+        <ol>
+          <li>หลังจากที่ <a href="ai-model-segformer.html">concepts/ai-model-segformer</a> สร้าง segmentation mask
+            ระดับพิกเซล ค่าความเชื่อมั่นของแต่ละพิกเซลจะถูกแปลงเป็น color gradient</li>
+          <li>บริเวณที่มีความเสี่ยงสูง → แสดงเป็น <strong>สีแดง/โทนร้อน</strong></li>
+          <li>บริเวณที่ปลอดภัย → แสดงเป็น <strong>สีน้ำเงิน/โทนเย็น</strong></li>
+          <li>Heatmap ถูกผสม (blend) ด้วยค่าความโปร่งใสทับลงบนรูปภาพต้นฉบับ</li>
+          <li>ภาพ overlay ที่ได้ถูกเก็บใน Cloud Object Storage และส่งให้ Mobile App แสดงผล</li>
+        </ol>
+        <hr>
+        <h2 id="การแสดงผลบนแอป">การแสดงผลบนแอป</h2>
+        <p>บนหน้าจอผลลัพธ์ของ Mobile App:</p>
+        <ul>
+          <li>ผู้ใช้เห็น <strong>รูปภาพต้นฉบับ</strong> พร้อม Heatmap ซ้อนทับ</li>
+          <li>สามารถ toggle เปิด/ปิด Heatmap เพื่อเปรียบเทียบ</li>
+          <li>แอปแสดงป้ายกำกับภาษาธรรมดาสำหรับบริเวณที่ถูก flag (เช่น &quot;บริเวณข้อความที่ถูกดัดแปลง&quot;,
+            &quot;รูปแบบพิกเซลที่ผิดปกติ&quot;)</li>
+        </ul>
+        <p><strong>KPI (UAT protocol):</strong> ผู้ใช้ &gt;= 80% จากกลุ่มตัวอย่าง 100 คน (สุ่มแบบ stratified
+          ตามช่วงอายุ/ความคุ้นเคยสมาร์ทโฟน จากผู้ใช้ทดสอบที่ยินยอม) ต้องสามารถระบุบริเวณที่น่าสงสัยจาก Heatmap
+          ได้โดยไม่ต้องมีพื้นฐานทางเทคนิค — วิธีวัด: ให้ดู overlay แล้วชี้บริเวณเสี่ยง เทียบกับ mask จริง
+          (นับถูกเมื่อทับซ้อนบริเวณ flag ≥ 50%)</p>
+        <hr>
+        <h2 id="ความสัมพันธ์กับ-segformer">ความสัมพันธ์กับ SegFormer</h2>
+        <p>โมเดล SegFormer สร้าง <strong>Segmentation Mask</strong> — แผนที่พิกเซล binary ที่ 1 =
+          บริเวณที่น่าจะถูกดัดแปลง และ 0 = พิกเซลดั้งเดิม ชั้น XAI แปลง mask นี้เป็น heatmap ค่าต่อเนื่อง แล้วแต่งสีและ
+          overlay ทับรูป ดูรายละเอียด<a href="ai-model-segformer.html">สถาปัตยกรรมโมเดล</a></p>
+        <hr>
+        <h2 id="ภาพสังเคราะห์จาก-ai-กับ-xai">ภาพสังเคราะห์จาก AI กับ XAI</h2>
+        <p>สำหรับภาพที่สร้างจาก AI ทั้งหมด ไม่มี &quot;บริเวณที่ถูกตัดต่อ&quot; แบบเฉพาะเจาะจง
+          เพราะทั้งภาพถูกสังเคราะห์มา ในกรณีนี้ ผลลัพธ์ XAI จะเปลี่ยนไปแสดง feature ระดับ global ที่บ่งชี้ Generative AI
+          แทน และคำอธิบายระบุว่า &quot;ภาพมีลักษณะเป็น AI-Generated&quot; แทนที่จะชี้บริเวณเฉพาะ</p>
+        <aside class="callout callout-note" aria-label="หมายเหตุ">
+          <p class="callout-title">หมายเหตุ</p>
+          <p>แนวทาง XAI สำหรับภาพ AI-Generated มีความแม่นยำเชิงพื้นที่น้อยกว่าการตรวจจับ splicing/copy-move
+            นี่คือข้อจำกัดที่รับรู้แล้วและบันทึกไว้ในเอกสารออกแบบโมเดล</p>
+        </aside>
+        <hr>
+        <h2 id="ประเด็นสำคัญ">ประเด็นสำคัญ</h2>
+        <ul>
+          <li>Heatmap คือเทคนิค XAI หลักที่ใช้ในระบบ</li>
+          <li>Heatmap overlay คือ UX element สำคัญที่แยกแอปนี้ออกจากเครื่องมือที่แสดงแค่คะแนนตัวเลข</li>
+          <li>ออกแบบให้ผู้ใช้ทั่วไปเข้าใจได้โดยไม่ต้องมีความรู้นิติวิทยาศาสตร์</li>
+          <li>ภาพ overlay ถูกสร้างล่วงหน้าและเก็บไว้ ไม่ต้องคำนวณซ้ำตอนแสดงผล</li>
+        </ul>
+        <hr>
+        <h2 id="หน้าที่เกี่ยวข้อง">หน้าที่เกี่ยวข้อง</h2>
+        <ul>
+          <li><a href="ai-model-segformer.html">concepts/ai-model-segformer</a></li>
+          <li><a href="multi-layer-analysis.html">concepts/multi-layer-analysis</a></li>
+          <li><a href="risk-scoring.html">concepts/risk-scoring</a></li>
+          <li><a href="../architecture/ai-inference-service.html">architecture/ai-inference-service</a></li>
+          <li><a href="../architecture/mobile-app.html">architecture/mobile-app</a></li>
+          <li><a href="../requirements/objectives-kpis.html">requirements/objectives-kpis</a></li>
+        </ul>
+      </div>
+      <footer class="source-panel"><strong>แหล่งข้อมูลของหน้านี้</strong>
+        <ul>
+          <li><a href="../../sources/wiki/concepts/explainable-ai.md">Markdown ต้นฉบับ: concepts/explainable-ai.md</a>
+          </li>
+          <li>design/model.md</li>
+          <li>design/architecture.md</li>
+          <li>Document/objective.md</li>
+        </ul>
+      </footer>
+    </main>
+    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้">
+      <p class="toc-title">ในหน้านี้</p>
+      <ol class="toc">
+        <li class="toc-level-2"><a
+            href="#%E0%B8%9B%E0%B8%B1%E0%B8%8D%E0%B8%AB%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88-xai-%E0%B9%81%E0%B8%81%E0%B9%89%E0%B9%84%E0%B8%82">ปัญหาที่
+            XAI แก้ไข</a></li>
+        <li class="toc-level-2"><a href="#heatmap">Heatmap</a></li>
+        <li class="toc-level-2"><a
+            href="#%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%81%E0%B8%AA%E0%B8%94%E0%B8%87%E0%B8%9C%E0%B8%A5%E0%B8%9A%E0%B8%99%E0%B9%81%E0%B8%AD%E0%B8%9B">การแสดงผลบนแอป</a>
+        </li>
+        <li class="toc-level-2"><a
+            href="#%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%AA%E0%B8%B1%E0%B8%A1%E0%B8%9E%E0%B8%B1%E0%B8%99%E0%B8%98%E0%B9%8C%E0%B8%81%E0%B8%B1%E0%B8%9A-segformer">ความสัมพันธ์กับ
+            SegFormer</a></li>
+        <li class="toc-level-2"><a
+            href="#%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%AA%E0%B8%B1%E0%B8%87%E0%B9%80%E0%B8%84%E0%B8%A3%E0%B8%B2%E0%B8%B0%E0%B8%AB%E0%B9%8C%E0%B8%88%E0%B8%B2%E0%B8%81-ai-%E0%B8%81%E0%B8%B1%E0%B8%9A-xai">ภาพสังเคราะห์จาก
+            AI กับ XAI</a></li>
+        <li class="toc-level-2"><a
+            href="#%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%94%E0%B9%87%E0%B8%99%E0%B8%AA%E0%B8%B3%E0%B8%84%E0%B8%B1%E0%B8%8D">ประเด็นสำคัญ</a>
+        </li>
+        <li class="toc-level-2"><a
+            href="#%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%87">หน้าที่เกี่ยวข้อง</a>
+        </li>
+      </ol>
+    </aside>
+  </div>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title">
+    <div class="search-dialog-head"><label class="visually-hidden" id="search-title"
+        for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…"
+        autocomplete="off" data-search-input><button class="control" type="button" data-search-close
+        aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg></button></div>
+    <div class="search-results" data-search-results aria-live="polite"></div>
+  </dialog>
+  <script src="../../assets/js/search-index.js"></script>
+  <script src="../../assets/js/site.js"></script>
+</body>
+
+</html>
