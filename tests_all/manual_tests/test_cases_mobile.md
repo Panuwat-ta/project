@@ -1,855 +1,121 @@
-# ชุดกรณีทดสอบ: แอปพลิเคชันสมาร์ตโฟน (Mobile Application - Flutter)
+# test_cases_mobile
 
-- **System**: ScamGuard Mobile Client
-- **Architecture**: Clean Architecture, BLoC/Cubit State Management
-- **Framework**: Flutter SDK 3.x, Dio HTTP Client, Flutter Secure Storage
-- **Version**: 1.0.0
-- **Status**: Baseline
-
----
+> หมายเหตุ: เอกสารฉบับนี้ restructured จาก prose เดิมเป็นตาราง 10 คอลัมน์ เนื้อหาทุกเซลล์มาจากไฟล์เดิม ไม่มีการแต่ง Requirement ID / Test Data เพิ่มเติม ช่องที่ไม่ระบุในเอกสารเดิมจะเขียนว่า `ไม่ระบุในเอกสารเดิม` ทุกแถว `Actual Result / Status` เริ่มต้นเป็น `To Do`
 
 ## 1. หมวดหมู่การยืนยันตัวตน (Authentication)
 
-### TC-MOB-AUTH-01: การลงทะเบียนผู้ใช้ใหม่สำเร็จด้วย Email และ Password (Happy Path)
-- **Module / Feature**: Authentication / User Registration
-- **Requirement ID**: FR-AUTH-01
-- **Test Type**: Functional
-- **Priority**: P0 (Blocker)
-- **Pre-conditions**:
-  1. เครื่องสมาร์ตโฟนเชื่อมต่ออินเทอร์เน็ต
-  2. แอปเปิดอยู่ที่หน้าลงทะเบียน (Register Screen)
-- **Test Data**:
-  - Email: `newuser_qa@example.com`
-  - Password: `Password123!`
-  - Confirm Password: `Password123!`
-  - Full Name: `QA New User`
-  - system_consent: `true`
-  - research_consent: `false`
-- **Test Steps**:
-  1. กรอก Email ในช่องอีเมล
-  2. กรอก Password และ Confirm Password ให้ตรงกัน
-  3. กดปุ่ม "สมัครสมาชิก" (Register)
-- **Expected Results**:
-  1. `POST /api/v1/auth/register` ตอบ `201 Created` ภายใน 5 วินาที (P95, เน็ตปกติ RTT ≤50ms)
-  2. Response มี `id email full_name role` ตรงตัวอักษร โดยไม่มีรหัสผ่าน plain text
-  3. แอปแสดงข้อความยืนยันการลงทะเบียนสำเร็จตรงตัวอักษรตามสเปก UI แล้วนำทางไปหน้า Login อัตโนมัติภายใน 2 วินาที
-- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_auth_flow.py`
-
----
-
-### TC-MOB-AUTH-02: การเข้าสู่ระบบสำเร็จและการบันทึก Token (Login Flow)
-- **Module / Feature**: Authentication / User Login
-- **Requirement ID**: FR-AUTH-02
-- **Test Type**: Functional
-- **Priority**: P0 (Blocker)
-- **Pre-conditions**:
-  1. มีบัญชีผู้ใช้ที่ผ่านการลงทะเบียนแล้วในระบบ
-  2. แอปเปิดอยู่ที่หน้า Login
-- **Test Data**:
-  - Email: `qa_tester@scamguard.local`
-  - Password: `Password123!`
-- **Test Steps**:
-  1. กรอก Email และ Password
-  2. กดปุ่ม "เข้าสู่ระบบ" (Login)
-- **Expected Results**:
-  1. ระบบส่งคำขอไปยัง `POST /api/v1/auth/login` และได้รับ Access Token + Refresh Token ภายใน 5 วินาที (P95, เน็ตปกติ RTT ≤50ms)
-  2. แอปนำทางเข้าสู่หน้าแรก (Home Screen) ภายใน ≤2 วินาทีหลังได้ Token (วิธีจับเวลา: stopwatch ตั้งแต่แตะปุ่ม Login ถึงหน้า Home แสดงครบ)
-  3. Token ถูกจัดเก็บใน Flutter Secure Storage — เป็น white-box check ย้ายไปตรวจใน automated test ฝั่ง Mobile แทนการตรวจด้วยตา (Secure Storage ตรวจด้วยตาเปล่าไม่ได้) เคส manual ตรวจเพียงว่าไม่มี Token หลุดมาแสดงบนหน้าจอหรือ log
-- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_auth_flow.py`
-
----
-
-### TC-MOB-AUTH-03: การปฏิเสธการเข้าสู่ระบบเมื่อกรอกรหัสผ่านไม่ถูกต้อง (Negative Test)
-- **Module / Feature**: Authentication / Login Error Handling
-- **Requirement ID**: FR-AUTH-02
-- **Test Type**: Negative
-- **Priority**: P1 (High)
-- **Pre-conditions**:
-  1. แอปอยู่ที่หน้า Login
-- **Test Data**:
-  - Email: `qa_tester@scamguard.local`
-  - Password: `WrongPassword999`
-- **Test Steps**:
-  1. กรอก Email ถูกต้อง แต่กรอก Password ผิด
-  2. กดปุ่ม "เข้าสู่ระบบ"
-- **Expected Results**:
-  1. แอปแสดง SnackBar หรือ Dialog แจ้งข้อผิดพลาด "อีเมลหรือรหัสผ่านไม่ถูกต้อง"
-  2. ไม่มีการบันทึก Token ใดๆ
-  3. ผู้ใช้ยังคงอยู่ที่หน้า Login เดิม
-- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_auth_flow.py`
-
----
-
-### TC-MOB-AUTH-04: การออกจากระบบและการล้าง Session (Logout)
-- **Module / Feature**: Authentication / Logout
-- **Requirement ID**: FR-AUTH-05
-- **Test Type**: Functional
-- **Priority**: P1 (High)
-- **Pre-conditions**:
-  1. ผู้ใช้ล็อกอินอยู่ในระบบเรียบร้อยแล้ว
-- **Test Data**: N/A
-- **Test Steps**:
-  1. ไปที่เมนู "การตั้งค่า" (Settings)
-  2. แตะปุ่ม "ออกจากระบบ" (Logout)
-  3. ยืนยันในกล่องข้อความยืนยัน
-- **Expected Results**:
-  1. Token ทั้งหมดใน Secure Storage ถูกล้างผ่าน `clearTokens()` ซึ่งเรียก `deleteAll()` (โค้ดจริงล้างทั้งหมด ไม่ใช่ `delete` รายคีย์) โดย `AuthRepository.logout()` เรียก `POST /api/v1/auth/logout` ก่อนแล้วล้างเสมอแม้เซิร์ฟเวอร์ตอบพลาด
-  2. State ของ AuthBloc เปลี่ยนเป็น `AuthUnauthenticated`
-  3. ระบบนำทางกลับสู่หน้า Login ทันที และไม่สามารถกดย้อนกลับ (Back) มาหน้าหลักได้
-- **Automation Mapping**: Manual Verification
-
----
-
-### TC-MOB-AUTH-05: การต่ออายุ Token และการดึงโปรไฟล์ผู้ใช้ (Refresh Plus Me)
-- **Module / Feature**: Authentication / Token Refresh
-- **Requirement ID**: FR-AUTH-04
-- **Test Type**: Functional
-- **Priority**: P1 (High)
-- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
-  1. ผู้ใช้ล็อกอินค้างไว้ มี Refresh Token ที่ยังไม่หมดอายุ
-- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
-  - Endpoint: `POST /api/v1/auth/refresh` พร้อม `refresh_token`
-  - Endpoint: `GET /api/v1/auth/me` พร้อม Access Token ใหม่
-- **Test Steps (ขั้นตอนการทดสอบ)**:
-  1. รอให้ Access Token หมดอายุหรือบังคับให้หมดอายุ
-  2. เปิดแอปใหม่หรือเรียกข้อมูลที่ต้องใช้สิทธิ์
-  3. สังเกตการต่ออายุ Token อัตโนมัติและการดึงโปรไฟล์
-- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
-  1. แอปเรียก `POST /api/v1/auth/refresh` และได้รับ `access_token` ใหม่โดยไม่ต้องกรอกรหัสผ่านซ้ำ
-  2. Response มีโครงสร้าง `access_token`, `refresh_token`, `token_type`, `user` โดยไม่มีฟิลด์ `expires_in`
-  3. เรียก `GET /api/v1/auth/me` สำเร็จและแสดงชื่อผู้ใช้ถูกต้อง
-- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_auth_flow.py`
-
----
-
-### TC-MOB-AUTH-06: การจัดการ Session หมดอายุและการนำทางกลับหน้า Login (Session Timeout)
-- **Module / Feature**: Authentication / Session Timeout
-- **Requirement ID**: FR-AUTH-04
-- **Test Type**: Negative
-- **Priority**: P1 (High)
-- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
-  1. ผู้ใช้ล็อกอินค้างไว้
-  2. เตรียม Refresh Token ที่หมดอายุหรือไม่ถูกต้อง
-- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
-  - Refresh Token ที่หมดอายุ
-- **Test Steps (ขั้นตอนการทดสอบ)**:
-  1. บังคับให้ Refresh Token หมดอายุด้วยวิธีใดวิธีหนึ่ง (เลือก 1 วิธีแล้วบันทึกในผลรัน — วิธีแนะนำ: ใช้บิลด์ทดสอบที่ตั้ง Refresh TTL สั้น = 60 วินาที แล้วรอให้หมดอายุ; ทางเลือก: เลื่อนนาฬิกาเครื่องไปข้างหน้าเกินอายุ Token หรือใช้ fixture Token หมดอายุที่เตรียมไว้)
-  2. เปิดแอปและพยายามเรียกข้อมูลที่ต้องใช้สิทธิ์
-- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
-  1. Backend ตอบ `401 Unauthorized` พร้อมข้อความว่า Token ไม่ถูกต้องหรือหมดอายุ
-  2. แอปล้าง Token ใน Secure Storage และนำทางกลับหน้า Login
-  3. แสดงข้อความแจ้งให้ล็อกอินใหม่
-- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_auth_flow.py`
-
----
+| Test Case ID | Test Case name | Requirement ID | Preconditions | Test Data | Description | Test Steps | Expected Results | Actual Result / Status | Priority |
+|---|---|---|---|---|---|---|---|---|---|
+| TC-MOB-AUTH-01 | การลงทะเบียนผู้ใช้ใหม่สำเร็จด้วย Email และ Password (Happy Path) | FR-AUTH-01 | เครื่องสมาร์ตโฟนเชื่อมต่ออินเทอร์เน็ต<br>แอปเปิดอยู่ที่หน้าลงทะเบียน (Register Screen) | Email: `newuser_qa@example.com`<br>Password: `Password123!`<br>Confirm Password: `Password123!`<br>Full Name: `QA New User`<br>system_consent: `true`<br>research_consent: `false` | Authentication / User Registration [Functional] (Automation: `tests_all/automate_tests/tests/api/test_auth_flow.py`) | กรอก Email ในช่องอีเมล<br>กรอก Password และ Confirm Password ให้ตรงกัน<br>กดปุ่ม "สมัครสมาชิก" (Register) | `POST /api/v1/auth/register` ตอบ `201 Created` ภายใน 5 วินาที (P95, เน็ตปกติ RTT ≤50ms)<br>Response มี `id email full_name role` ตรงตัวอักษร โดยไม่มีรหัสผ่าน plain text<br>แอปแสดงข้อความยืนยันการลงทะเบียนสำเร็จตรงตัวอักษรตามสเปก UI แล้วนำทางไปหน้า Login อัตโนมัติภายใน 2 วินาที | To Do | P0 (Blocker) |
+| TC-MOB-AUTH-02 | การเข้าสู่ระบบสำเร็จและการบันทึก Token (Login Flow) | FR-AUTH-02 | มีบัญชีผู้ใช้ที่ผ่านการลงทะเบียนแล้วในระบบ<br>แอปเปิดอยู่ที่หน้า Login | Email: `qa_tester@scamguard.local`<br>Password: `Password123!` | Authentication / User Login [Functional] (Automation: `tests_all/automate_tests/tests/api/test_auth_flow.py`) | กรอก Email และ Password<br>กดปุ่ม "เข้าสู่ระบบ" (Login) | ระบบส่งคำขอไปยัง `POST /api/v1/auth/login` และได้รับ Access Token + Refresh Token ภายใน 5 วินาที (P95, เน็ตปกติ RTT ≤50ms)<br>แอปนำทางเข้าสู่หน้าแรก (Home Screen) ภายใน ≤2 วินาทีหลังได้ Token (วิธีจับเวลา: stopwatch ตั้งแต่แตะปุ่ม Login ถึงหน้า Home แสดงครบ)<br>Token ถูกจัดเก็บใน Flutter Secure Storage — เป็น white-box check ย้ายไปตรวจใน automated test ฝั่ง Mobile แทนการตรวจด้วยตา (Secure Storage ตรวจด้วยตาเปล่าไม่ได้) เคส manual ตรวจเพียงว่าไม่มี Token หลุดมาแสดงบนหน้าจอหรือ log | To Do | P0 (Blocker) |
+| TC-MOB-AUTH-03 | การปฏิเสธการเข้าสู่ระบบเมื่อกรอกรหัสผ่านไม่ถูกต้อง (Negative Test) | FR-AUTH-02 | แอปอยู่ที่หน้า Login | Email: `qa_tester@scamguard.local`<br>Password: `WrongPassword999` | Authentication / Login Error Handling [Negative] (Automation: `tests_all/automate_tests/tests/api/test_auth_flow.py`) | กรอก Email ถูกต้อง แต่กรอก Password ผิด<br>กดปุ่ม "เข้าสู่ระบบ" | แอปแสดง SnackBar หรือ Dialog แจ้งข้อผิดพลาด "อีเมลหรือรหัสผ่านไม่ถูกต้อง"<br>ไม่มีการบันทึก Token ใดๆ<br>ผู้ใช้ยังคงอยู่ที่หน้า Login เดิม | To Do | P1 (High) |
+| TC-MOB-AUTH-04 | การออกจากระบบและการล้าง Session (Logout) | FR-AUTH-05 | ผู้ใช้ล็อกอินอยู่ในระบบเรียบร้อยแล้ว | N/A | Authentication / Logout [Functional] (Automation: Manual Verification) | ไปที่เมนู "การตั้งค่า" (Settings)<br>แตะปุ่ม "ออกจากระบบ" (Logout)<br>ยืนยันในกล่องข้อความยืนยัน | Token ทั้งหมดใน Secure Storage ถูกล้างผ่าน `clearTokens()` ซึ่งเรียก `deleteAll()` (โค้ดจริงล้างทั้งหมด ไม่ใช่ `delete` รายคีย์) โดย `AuthRepository.logout()` เรียก `POST /api/v1/auth/logout` ก่อนแล้วล้างเสมอแม้เซิร์ฟเวอร์ตอบพลาด<br>State ของ AuthBloc เปลี่ยนเป็น `AuthUnauthenticated`<br>ระบบนำทางกลับสู่หน้า Login ทันที และไม่สามารถกดย้อนกลับ (Back) มาหน้าหลักได้ | To Do | P1 (High) |
+| TC-MOB-AUTH-05 | การต่ออายุ Token และการดึงโปรไฟล์ผู้ใช้ (Refresh Plus Me) | FR-AUTH-04 | ผู้ใช้ล็อกอินค้างไว้ มี Refresh Token ที่ยังไม่หมดอายุ | Endpoint: `POST /api/v1/auth/refresh` พร้อม `refresh_token`<br>Endpoint: `GET /api/v1/auth/me` พร้อม Access Token ใหม่ | Authentication / Token Refresh [Functional] (Automation: `tests_all/automate_tests/tests/api/test_auth_flow.py`) | รอให้ Access Token หมดอายุหรือบังคับให้หมดอายุ<br>เปิดแอปใหม่หรือเรียกข้อมูลที่ต้องใช้สิทธิ์<br>สังเกตการต่ออายุ Token อัตโนมัติและการดึงโปรไฟล์ | แอปเรียก `POST /api/v1/auth/refresh` และได้รับ `access_token` ใหม่โดยไม่ต้องกรอกรหัสผ่านซ้ำ<br>Response มีโครงสร้าง `access_token`, `refresh_token`, `token_type`, `user` โดยไม่มีฟิลด์ `expires_in`<br>เรียก `GET /api/v1/auth/me` สำเร็จและแสดงชื่อผู้ใช้ถูกต้อง | To Do | P1 (High) |
+| TC-MOB-AUTH-06 | การจัดการ Session หมดอายุและการนำทางกลับหน้า Login (Session Timeout) | FR-AUTH-04 | ผู้ใช้ล็อกอินค้างไว้<br>เตรียม Refresh Token ที่หมดอายุหรือไม่ถูกต้อง | Refresh Token ที่หมดอายุ | Authentication / Session Timeout [Negative] (Automation: `tests_all/automate_tests/tests/api/test_auth_flow.py`) | บังคับให้ Refresh Token หมดอายุด้วยวิธีใดวิธีหนึ่ง (เลือก 1 วิธีแล้วบันทึกในผลรัน — วิธีแนะนำ: ใช้บิลด์ทดสอบที่ตั้ง Refresh TTL สั้น = 60 วินาที แล้วรอให้หมดอายุ; ทางเลือก: เลื่อนนาฬิกาเครื่องไปข้างหน้าเกินอายุ Token หรือใช้ fixture Token หมดอายุที่เตรียมไว้)<br>เปิดแอปและพยายามเรียกข้อมูลที่ต้องใช้สิทธิ์ | Backend ตอบ `401 Unauthorized` พร้อมข้อความว่า Token ไม่ถูกต้องหรือหมดอายุ<br>แอปล้าง Token ใน Secure Storage และนำทางกลับหน้า Login<br>แสดงข้อความแจ้งให้ล็อกอินใหม่ | To Do | P1 (High) |
 
 ## 2. หมวดหมู่การรับภาพและการตรวจสอบไฟล์ (Image Input & Validation)
 
-### TC-MOB-IMG-01: การเลือกรูปภาพจาก Photo Gallery
-- **Module / Feature**: Image Input / Gallery Picker
-- **Requirement ID**: FR-INPUT-01
-- **Test Type**: Functional
-- **Priority**: P0 (Blocker)
-- **Pre-conditions**:
-  1. มีรูปภาพตัวอย่างอยู่ในแกลเลอรีของเครื่อง
-  2. แอปขอและได้รับสิทธิ์เข้าถึง Photos/Storage แล้ว
-- **Test Data**: ภาพสลิปตัวอย่าง `slip_test.png` (ขนาด 1.2 MB)
-- **Test Steps**:
-  1. ในหน้าหลัก แตะปุ่ม "เลือกรูปภาพจากคลัง" (Choose from Gallery)
-  2. เลือกภาพ `slip_test.png`
-- **Expected Results**:
-  1. ภาพตัวอย่างแสดงเต็มกรอบ preview โดยอัตราส่วนภาพคงเดิม ไม่ยืด/ไม่บีบ (เทียบสัดส่วนกว้าง×สูงของภาพต้นฉบับกับภาพที่แสดงต้องเท่ากัน) ไม่มีแถบเหลืองดำ ไม่มีส่วนภาพถูกตัดทิ้ง
-  2. ปุ่ม "เริ่มสแกน" (Start Scan) เปลี่ยนสถานะเป็น Active พร้อมกดได้
-- **Automation Mapping**: Manual UI Test
-
----
-
-### TC-MOB-IMG-02: การจัดการเมื่อผู้ใช้ปฏิเสธสิทธิ์แกลเลอรี (Permission Denied)
-- **Module / Feature**: Image Input / Permission Handling
-- **Requirement ID**: FR-INPUT-01
-- **Test Type**: Negative
-- **Priority**: P1 (High)
-- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
-  1. แอปยังไม่ได้รับสิทธิ์เข้าถึงแกลเลอรี
-  2. อยู่ในหน้าหลักของแอป
-- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
-  - การปฏิเสธสิทธิ์ผ่าน System Dialog
-- **Test Steps (ขั้นตอนการทดสอบ)**:
-  1. แตะปุ่มเลือกรูปภาพจากแกลเลอรี
-  2. กดปฏิเสธสิทธิ์ใน System Dialog
-  3. สังเกตหน้าจอที่แสดงผล
-- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
-  1. State เปลี่ยนเป็น `HomePermissionDenied`
-  2. หน้าจอแสดง `PermissionRequestView` พร้อมคำแนะนำและปุ่มเปิดการตั้งค่า
-  3. ไม่เกิดการแครชและไม่เปิดตัวเลือกไฟล์
-- **Automation Mapping**: Manual UI Test
-
----
-
-### TC-MOB-IMG-03: การแจ้งเตือนและบีบอัดไฟล์ภาพขนาดเกินแนะนำ 10MB ฝั่ง Mobile (Client-Side Warning Plus Compress)
-- **Module / Feature**: Image Validation / File Size Handling
-- **Requirement ID**: FR-INPUT-04
-- **Test Type**: Boundary
-- **Priority**: P1 (High)
-- **Pre-conditions**:
-  1. เตรียมไฟล์ภาพขนาด 12.5 MB ในเครื่อง
-- **Test Data**: `large_image_12mb.jpg` (ขนาด 12.5 MB)
-- **Test Steps**:
-  1. เลือกภาพ `large_image_12mb.jpg` จากแกลเลอรี
-  2. สังเกตคำเตือนและการบีบอัดก่อนอัปโหลด
-- **Expected Results (พฤติกรรมที่ต้องเป็นจริง)**:
-  1. เมื่อเลือกภาพขนาดเกิน 10MB แอปต้องแสดงคำเตือนให้ผู้ใช้เห็นบนหน้าจอ (ข้อความ + ขนาดไฟล์) ก่อนอัปโหลด แล้วบีบอัดไฟล์ให้เหลือไม่เกิน 10MB หรือปฏิเสธไฟล์พร้อมเหตุผลที่เข้าใจง่าย
-  2. ไฟล์ที่ส่งไป Backend ต้องมีขนาดหลังบีบอัดไม่เกินลิมิตฝั่ง Server 20MB (Server ตอบ 413 ก็ต่อเมื่อเกิน 20MB เท่านั้น)
-- **Defect Log (ยังไม่ผ่าน — ห้ามรับรองเป็น pass)**:
-  - `DEFECT-MOB-IMG-03`: โค้ดปัจจุบัน (`ScanRepositoryImpl`) มีเพียงค่าคงที่ `_maxFileSizeBytes` 10MB กับ `assert(print)` เตือนเฉพาะโหมดดีบัก ไม่มีแถบแจ้งเตือนฝั่งหน้าจอให้ผู้ใช้เห็น และการบีบอัด (`imageQuality: 85`/`compressQuality: 85`) ทำคงที่ทุกไฟล์ ไม่ได้บีบอัดเฉพาะไฟล์เกิน 10MB — TC นี้คงสถานะ FAIL จนกว่า defect จะถูกแก้
-- **Automation Mapping**: Manual UI Test
-
----
-
-### TC-MOB-IMG-04: การปฏิเสธไฟล์นามสกุลที่ไม่รองรับ
-- **Module / Feature**: Image Validation / File Format
-- **Requirement ID**: FR-INPUT-04
-- **Test Type**: Negative
-- **Priority**: P1 (High)
-- **Pre-conditions**:
-  1. มีไฟล์ที่ไม่ใช่ jpg/jpeg/png/webp อยู่ในเครื่อง (เช่น PDF หรือ GIF)
-- **Test Data**: `document.pdf` หรือ `animation.gif`
-- **Test Steps**:
-  1. พยายามเลือกไฟล์ที่ไม่ใช่รูปภาพที่รองรับ
-- **Expected Results**:
-  1. ตัวเลือกไฟล์กรองเฉพาะรูปภาพนามสกุล jpg, jpeg, png, webp
-  2. หากเลือกไฟล์ผิดประเภท ระบบแจ้งเตือน "รูปแบบไฟล์ไม่รองรับ รองรับเฉพาะ jpg, jpeg, png, webp"
-- **Automation Mapping**: Manual UI Test
-
----
-
-### TC-MOB-IMG-05: การครอบตัดภาพก่อนส่งสแกน (Crop Before Scan)
-- **Module / Feature**: Image Input / Crop Editor
-- **Requirement ID**: FR-INPUT-02
-- **Test Type**: Functional / UI
-- **Priority**: P1 (High)
-- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
-  1. เลือกรูปภาพจากแกลเลอรีแล้ว อยู่ในหน้าตัวอย่างภาพ
-- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
-  - ภาพสลิปทดสอบขนาด 800 KB
-- **Test Steps (ขั้นตอนการทดสอบ)**:
-  1. แตะปุ่มครอบตัดภาพแล้วลากกรอบเลือกเฉพาะส่วนสลิป
-  2. ยืนยันการครอบตัดแล้วตรวจสอบภาพตัวอย่าง
-  3. กดปุ่มเริ่มสแกน
-- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
-  1. ภาพตัวอย่างแสดงเฉพาะส่วนที่ครอบตัดไว้
-  2. ไฟล์ที่ส่งสแกนถูกบีบอัดคุณภาพ 85 ก่อนอัปโหลด
-  3. งานสแกนเริ่มได้ตามปกติและได้ `taskId` กลับมา
-- **Automation Mapping**: Manual UI Test
-
----
+| Test Case ID | Test Case name | Requirement ID | Preconditions | Test Data | Description | Test Steps | Expected Results | Actual Result / Status | Priority |
+|---|---|---|---|---|---|---|---|---|---|
+| TC-MOB-IMG-01 | การเลือกรูปภาพจาก Photo Gallery | FR-INPUT-01 | มีรูปภาพตัวอย่างอยู่ในแกลเลอรีของเครื่อง<br>แอปขอและได้รับสิทธิ์เข้าถึง Photos/Storage แล้ว | ภาพสลิปตัวอย่าง `slip_test.png` (ขนาด 1.2 MB) | Image Input / Gallery Picker [Functional] (Automation: Manual UI Test) | ในหน้าหลัก แตะปุ่ม "เลือกรูปภาพจากคลัง" (Choose from Gallery)<br>เลือกภาพ `slip_test.png` | ภาพตัวอย่างแสดงเต็มกรอบ preview โดยอัตราส่วนภาพคงเดิม ไม่ยืด/ไม่บีบ (เทียบสัดส่วนกว้าง×สูงของภาพต้นฉบับกับภาพที่แสดงต้องเท่ากัน) ไม่มีแถบเหลืองดำ ไม่มีส่วนภาพถูกตัดทิ้ง<br>ปุ่ม "เริ่มสแกน" (Start Scan) เปลี่ยนสถานะเป็น Active พร้อมกดได้ | To Do | P0 (Blocker) |
+| TC-MOB-IMG-02 | การจัดการเมื่อผู้ใช้ปฏิเสธสิทธิ์แกลเลอรี (Permission Denied) | FR-INPUT-01 | แอปยังไม่ได้รับสิทธิ์เข้าถึงแกลเลอรี<br>อยู่ในหน้าหลักของแอป | การปฏิเสธสิทธิ์ผ่าน System Dialog | Image Input / Permission Handling [Negative] (Automation: Manual UI Test) | แตะปุ่มเลือกรูปภาพจากแกลเลอรี<br>กดปฏิเสธสิทธิ์ใน System Dialog<br>สังเกตหน้าจอที่แสดงผล | State เปลี่ยนเป็น `HomePermissionDenied`<br>หน้าจอแสดง `PermissionRequestView` พร้อมคำแนะนำและปุ่มเปิดการตั้งค่า<br>ไม่เกิดการแครชและไม่เปิดตัวเลือกไฟล์ | To Do | P1 (High) |
+| TC-MOB-IMG-03 | การแจ้งเตือนและบีบอัดไฟล์ภาพขนาดเกินแนะนำ 10MB ฝั่ง Mobile (Client-Side Warning Plus Compress) | FR-INPUT-04 | เตรียมไฟล์ภาพขนาด 12.5 MB ในเครื่อง | `large_image_12mb.jpg` (ขนาด 12.5 MB) | Image Validation / File Size Handling [Boundary] (Automation: Manual UI Test) | เลือกภาพ `large_image_12mb.jpg` จากแกลเลอรี<br>สังเกตคำเตือนและการบีบอัดก่อนอัปโหลด | เมื่อเลือกภาพขนาดเกิน 10MB แอปต้องแสดงคำเตือนให้ผู้ใช้เห็นบนหน้าจอ (ข้อความ + ขนาดไฟล์) ก่อนอัปโหลด แล้วบีบอัดไฟล์ให้เหลือไม่เกิน 10MB หรือปฏิเสธไฟล์พร้อมเหตุผลที่เข้าใจง่าย<br>ไฟล์ที่ส่งไป Backend ต้องมีขนาดหลังบีบอัดไม่เกินลิมิตฝั่ง Server 20MB (Server ตอบ 413 ก็ต่อเมื่อเกิน 20MB เท่านั้น)<br>[Defect Log] - `DEFECT-MOB-IMG-03`: โค้ดปัจจุบัน (`ScanRepositoryImpl`) มีเพียงค่าคงที่ `_maxFileSizeBytes` 10MB กับ `assert(print)` เตือนเฉพาะโหมดดีบัก ไม่มีแถบแจ้งเตือนฝั่งหน้าจอให้ผู้ใช้เห็น และการบีบอัด (`imageQuality: 85`/`compressQuality: 85`) ทำคงที่ทุกไฟล์ ไม่ได้บีบอัดเฉพาะไฟล์เกิน 10MB — TC นี้คงสถานะ FAIL จนกว่า defect จะถูกแก้ | To Do | P1 (High) |
+| TC-MOB-IMG-04 | การปฏิเสธไฟล์นามสกุลที่ไม่รองรับ | FR-INPUT-04 | มีไฟล์ที่ไม่ใช่ jpg/jpeg/png/webp อยู่ในเครื่อง (เช่น PDF หรือ GIF) | `document.pdf` หรือ `animation.gif` | Image Validation / File Format [Negative] (Automation: Manual UI Test) | พยายามเลือกไฟล์ที่ไม่ใช่รูปภาพที่รองรับ | ตัวเลือกไฟล์กรองเฉพาะรูปภาพนามสกุล jpg, jpeg, png, webp<br>หากเลือกไฟล์ผิดประเภท ระบบแจ้งเตือน "รูปแบบไฟล์ไม่รองรับ รองรับเฉพาะ jpg, jpeg, png, webp" | To Do | P1 (High) |
+| TC-MOB-IMG-05 | การครอบตัดภาพก่อนส่งสแกน (Crop Before Scan) | FR-INPUT-02 | เลือกรูปภาพจากแกลเลอรีแล้ว อยู่ในหน้าตัวอย่างภาพ | ภาพสลิปทดสอบขนาด 800 KB | Image Input / Crop Editor [Functional / UI] (Automation: Manual UI Test) | แตะปุ่มครอบตัดภาพแล้วลากกรอบเลือกเฉพาะส่วนสลิป<br>ยืนยันการครอบตัดแล้วตรวจสอบภาพตัวอย่าง<br>กดปุ่มเริ่มสแกน | ภาพตัวอย่างแสดงเฉพาะส่วนที่ครอบตัดไว้<br>ไฟล์ที่ส่งสแกนถูกบีบอัดคุณภาพ 85 ก่อนอัปโหลด<br>งานสแกนเริ่มได้ตามปกติและได้ `taskId` กลับมา | To Do | P1 (High) |
 
 ## 3. หมวดหมู่กระบวนการสแกนและการจัดการสถานะ (Scan BLoC Workflow)
 
-### TC-MOB-SCAN-01: กระบวนการส่งสแกนภาพและการเปลี่ยนสถานะ BLoC สำเร็จ
-- **Module / Feature**: Scan Workflow / BLoC State Management
-- **Requirement ID**: FR-INPUT-03, FR-SYS-07
-- **Test Type**: Integration
-- **Priority**: P0 (Blocker)
-- **Pre-conditions**:
-  1. ผู้ใช้เลือกภาพแล้วในหน้า Preview
-  2. เซิร์ฟเวอร์ Backend ทำงานปกติ
-- **Test Data**: ภาพสลิปทดสอบ `sample_slip.jpg` (ขนาด 800 KB)
-- **Test Steps**:
-  1. กดปุ่ม "เริ่มสแกนภาพ"
-  2. สังเกตการเปลี่ยนแปลงบนหน้าจอ
-- **Expected Results**:
-  1. State เปลี่ยนจาก `ScanInitial` -> `ScanUploading` -> `ScanPolling`
-  2. หน้าจอแสดง Loading พร้อมแถบความคืบหน้าขณะรอผล
-  3. เมื่อ Backend ประมวลผลเสร็จ State เปลี่ยนเป็น `ScanCompleted` พร้อม `taskId`
-  4. แอปนำทางไปยังหน้ารายงานผลการวิเคราะห์ (Result Screen) อัตโนมัติ
-- **Automation Mapping**: `scam_image_mobile/test/features/scan/presentation/bloc/scan_bloc_test.dart`
-
----
-
-### TC-MOB-SCAN-02A: การแสดงข้อผิดพลาดเมื่อ Server ตอบ 500 (Server Error Path)
-- **Module / Feature**: Scan Workflow / Error Handling
-- **Requirement ID**: FR-INPUT-03
-- **Test Type**: Negative
-- **Priority**: P1 (High)
-- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
-  1. ผู้ใช้เลือกภาพแล้ว
-  2. Backend ตอบ `500 Internal Server Error` (วิธีจำลอง: ใช้ mock server/stub ให้ `POST /api/v1/scan/` ตอบ 500 หรือหยุด AI worker ชั่วคราวใน env ทดสอบ)
-- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
-  - ภาพปกติขนาด 800 KB
-- **Test Steps (ขั้นตอนการทดสอบ)**:
-  1. กดปุ่มเริ่มสแกน
-  2. สังเกต State และข้อความที่แสดง
-- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
-  1. State เปลี่ยนเป็น `ScanError` พร้อมข้อความภาษาไทยที่เข้าใจง่าย
-  2. หน้าจอแสดง SnackBar หรือ Dialog แจ้งข้อผิดพลาด
-  3. ผู้ใช้สามารถกดลองใหม่ได้โดยไม่ต้องเลือกภาพซ้ำ
-- **Automation Mapping**: `scam_image_mobile/test/features/scan/presentation/bloc/scan_bloc_test.dart`
-
----
-
-### TC-MOB-SCAN-02B: การแสดงข้อผิดพลาดเมื่อไม่มีเครือข่าย (No-Network Path)
-- **Module / Feature**: Scan Workflow / Error Handling
-- **Requirement ID**: FR-INPUT-03
-- **Test Type**: Negative
-- **Priority**: P1 (High)
-- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
-  1. ผู้ใช้เลือกภาพแล้ว
-  2. อุปกรณ์ไม่มีการเชื่อมต่อเครือข่าย (วิธีจำลอง: เปิด Airplane Mode แล้วปิด Wi-Fi)
-- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
-  - ภาพปกติขนาด 800 KB
-- **Test Steps (ขั้นตอนการทดสอบ)**:
-  1. กดปุ่มเริ่มสแกนขณะออฟไลน์
-  2. สังเกต State และข้อความที่แสดง แล้วปิด Airplane Mode กดลองใหม่
-- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
-  1. State เปลี่ยนเป็น `ScanError` พร้อมข้อความแจ้งว่าไม่มีการเชื่อมต่ออินเทอร์เน็ต
-  2. หน้าจอแสดง SnackBar หรือ Dialog แจ้งข้อผิดพลาด
-  3. เมื่อกลับมาออนไลน์ ผู้ใช้กดลองใหม่ได้โดยไม่ต้องเลือกภาพซ้ำ
-- **Automation Mapping**: `scam_image_mobile/test/features/scan/presentation/bloc/scan_bloc_test.dart`
-
----
-
-### TC-MOB-SCAN-03: การแจ้งเตือนเมื่อรอผลนานเกินกำหนด (ScanTimeout Path)
-- **Module / Feature**: Scan Workflow / Timeout Handling
-- **Requirement ID**: FR-INPUT-03
-- **Test Type**: Boundary
-- **Priority**: P1 (High)
-- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
-  1. ผู้ใช้เริ่มสแกนแล้วอยู่ในสถานะ `ScanPolling`
-  2. Backend ไม่ตอบกลับภายในเวลาที่กำหนด
-- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
-  - งานวิเคราะห์ที่ค้างสถานะ processing เกิน Timeout
-- **Test Steps (ขั้นตอนการทดสอบ)**:
-  1. เริ่มสแกนกับงานที่ค้างสถานะ processing (วิธีจำลอง: ใช้ stub ให้ `GET /api/v1/scan/{scan_id}` ตอบ processing ค้าง) พร้อมจับเวลาด้วย stopwatch ตั้งแต่กดปุ่มเริ่มสแกน
-  2. รอจนครบ Timeout 60 วินาที สังเกตข้อความและการนำทาง (วิธีทำซ้ำ: รัน 3 รอบ ต้องได้ผลเดียวกันทั้ง 3 รอบ)
-- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
-  1. เมื่อครบ 60 วินาที State เปลี่ยนเป็น `ScanTimeout` (เกณฑ์เวลา 60s ±5s)
-  2. แสดงข้อความหมดเวลา กรุณาลองใหม่
-  3. ระบบหยุด Polling ทันที (เกณฑ์หยุด: ไม่มีคำขอ `GET /api/v1/scan/{scan_id}` เพิ่มหลัง Timeout — ตรวจจาก network log) และกลับสู่สถานะพร้อมเริ่มใหม่
-- **Automation Mapping**: `scam_image_mobile/test/features/scan/presentation/bloc/scan_bloc_test.dart`
-
----
-
-### TC-MOB-SCAN-04: การยกเลิกงานสแกนระหว่างรอผล (Client-side Cancel)
-- **Module / Feature**: Scan Workflow / Cancel Scan
-- **Requirement ID**: FR-INPUT-03
-- **Test Type**: Functional
-- **Priority**: P3 (Low)
-- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
-  1. ผู้ใช้เริ่มสแกนและอยู่ในสถานะ `ScanPolling`
-- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
-  - taskId ของงานที่กำลังประมวลผล
-- **Test Steps (ขั้นตอนการทดสอบ)**:
-  1. กดปุ่มยกเลิกขณะรอผล (`ScanPolling`)
-  2. สังเกต State และยืนยันว่าไม่มีคำขอ polling เพิ่ม (ตรวจจาก network log)
-- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
-  1. แอปหยุด Polling ในฝั่ง Client ทันทีและกลับสู่ `ScanInitial` โดยไม่ค้างหน้า Loading
-  2. งานฝั่ง Server อาจยังประมวลผลต่อจนจบ (พฤติกรรมปัจจุบันที่ต้องเป็นจริง) — ไม่มีผลข้างเคียงต่อแอป
-- **Change Request (ส่วนที่ทำไม่ได้จริงในสเปกปัจจุบัน)**:
-  - `CR-MOB-SCAN-04`: ฝั่ง Server มีเพียง `POST /api/v1/scan/` และ `GET /api/v1/scan/{scan_id}` ยังไม่มี `DELETE /scan/{id}` สำหรับยกเลิกงานฝั่ง Server — ย้ายข้อกำหนด endpoint ยกเลิกไปเป็น change request แยก ไม่รวมในเกณฑ์ pass ของ TC นี้
-- **Automation Mapping**: Manual Verification
-
----
+| Test Case ID | Test Case name | Requirement ID | Preconditions | Test Data | Description | Test Steps | Expected Results | Actual Result / Status | Priority |
+|---|---|---|---|---|---|---|---|---|---|
+| TC-MOB-SCAN-01 | กระบวนการส่งสแกนภาพและการเปลี่ยนสถานะ BLoC สำเร็จ | FR-INPUT-03, FR-SYS-07 | ผู้ใช้เลือกภาพแล้วในหน้า Preview<br>เซิร์ฟเวอร์ Backend ทำงานปกติ | ภาพสลิปทดสอบ `sample_slip.jpg` (ขนาด 800 KB) | Scan Workflow / BLoC State Management [Integration] (Automation: `scam_image_mobile/test/features/scan/presentation/bloc/scan_bloc_test.dart`) | กดปุ่ม "เริ่มสแกนภาพ"<br>สังเกตการเปลี่ยนแปลงบนหน้าจอ | State เปลี่ยนจาก `ScanInitial` -> `ScanUploading` -> `ScanPolling`<br>หน้าจอแสดง Loading พร้อมแถบความคืบหน้าขณะรอผล<br>เมื่อ Backend ประมวลผลเสร็จ State เปลี่ยนเป็น `ScanCompleted` พร้อม `taskId`<br>แอปนำทางไปยังหน้ารายงานผลการวิเคราะห์ (Result Screen) อัตโนมัติ | To Do | P0 (Blocker) |
+| TC-MOB-SCAN-02A | การแสดงข้อผิดพลาดเมื่อ Server ตอบ 500 (Server Error Path) | FR-INPUT-03 | ผู้ใช้เลือกภาพแล้ว<br>Backend ตอบ `500 Internal Server Error` (วิธีจำลอง: ใช้ mock server/stub ให้ `POST /api/v1/scan/` ตอบ 500 หรือหยุด AI worker ชั่วคราวใน env ทดสอบ) | ภาพปกติขนาด 800 KB | Scan Workflow / Error Handling [Negative] (Automation: `scam_image_mobile/test/features/scan/presentation/bloc/scan_bloc_test.dart`) | กดปุ่มเริ่มสแกน<br>สังเกต State และข้อความที่แสดง | State เปลี่ยนเป็น `ScanError` พร้อมข้อความภาษาไทยที่เข้าใจง่าย<br>หน้าจอแสดง SnackBar หรือ Dialog แจ้งข้อผิดพลาด<br>ผู้ใช้สามารถกดลองใหม่ได้โดยไม่ต้องเลือกภาพซ้ำ | To Do | P1 (High) |
+| TC-MOB-SCAN-02B | การแสดงข้อผิดพลาดเมื่อไม่มีเครือข่าย (No-Network Path) | FR-INPUT-03 | ผู้ใช้เลือกภาพแล้ว<br>อุปกรณ์ไม่มีการเชื่อมต่อเครือข่าย (วิธีจำลอง: เปิด Airplane Mode แล้วปิด Wi-Fi) | ภาพปกติขนาด 800 KB | Scan Workflow / Error Handling [Negative] (Automation: `scam_image_mobile/test/features/scan/presentation/bloc/scan_bloc_test.dart`) | กดปุ่มเริ่มสแกนขณะออฟไลน์<br>สังเกต State และข้อความที่แสดง แล้วปิด Airplane Mode กดลองใหม่ | State เปลี่ยนเป็น `ScanError` พร้อมข้อความแจ้งว่าไม่มีการเชื่อมต่ออินเทอร์เน็ต<br>หน้าจอแสดง SnackBar หรือ Dialog แจ้งข้อผิดพลาด<br>เมื่อกลับมาออนไลน์ ผู้ใช้กดลองใหม่ได้โดยไม่ต้องเลือกภาพซ้ำ | To Do | P1 (High) |
+| TC-MOB-SCAN-03 | การแจ้งเตือนเมื่อรอผลนานเกินกำหนด (ScanTimeout Path) | FR-INPUT-03 | ผู้ใช้เริ่มสแกนแล้วอยู่ในสถานะ `ScanPolling`<br>Backend ไม่ตอบกลับภายในเวลาที่กำหนด | งานวิเคราะห์ที่ค้างสถานะ processing เกิน Timeout | Scan Workflow / Timeout Handling [Boundary] (Automation: `scam_image_mobile/test/features/scan/presentation/bloc/scan_bloc_test.dart`) | เริ่มสแกนกับงานที่ค้างสถานะ processing (วิธีจำลอง: ใช้ stub ให้ `GET /api/v1/scan/{scan_id}` ตอบ processing ค้าง) พร้อมจับเวลาด้วย stopwatch ตั้งแต่กดปุ่มเริ่มสแกน<br>รอจนครบ Timeout 60 วินาที สังเกตข้อความและการนำทาง (วิธีทำซ้ำ: รัน 3 รอบ ต้องได้ผลเดียวกันทั้ง 3 รอบ) | เมื่อครบ 60 วินาที State เปลี่ยนเป็น `ScanTimeout` (เกณฑ์เวลา 60s ±5s)<br>แสดงข้อความหมดเวลา กรุณาลองใหม่<br>ระบบหยุด Polling ทันที (เกณฑ์หยุด: ไม่มีคำขอ `GET /api/v1/scan/{scan_id}` เพิ่มหลัง Timeout — ตรวจจาก network log) และกลับสู่สถานะพร้อมเริ่มใหม่ | To Do | P1 (High) |
+| TC-MOB-SCAN-04 | การยกเลิกงานสแกนระหว่างรอผล (Client-side Cancel) | FR-INPUT-03 | ผู้ใช้เริ่มสแกนและอยู่ในสถานะ `ScanPolling` | taskId ของงานที่กำลังประมวลผล | Scan Workflow / Cancel Scan [Functional] (Automation: Manual Verification) | กดปุ่มยกเลิกขณะรอผล (`ScanPolling`)<br>สังเกต State และยืนยันว่าไม่มีคำขอ polling เพิ่ม (ตรวจจาก network log) | แอปหยุด Polling ในฝั่ง Client ทันทีและกลับสู่ `ScanInitial` โดยไม่ค้างหน้า Loading<br>งานฝั่ง Server อาจยังประมวลผลต่อจนจบ (พฤติกรรมปัจจุบันที่ต้องเป็นจริง) — ไม่มีผลข้างเคียงต่อแอป<br>[Change Request] - `CR-MOB-SCAN-04`: ฝั่ง Server มีเพียง `POST /api/v1/scan/` และ `GET /api/v1/scan/{scan_id}` ยังไม่มี `DELETE /scan/{id}` สำหรับยกเลิกงานฝั่ง Server — ย้ายข้อกำหนด endpoint ยกเลิกไปเป็น change request แยก ไม่รวมในเกณฑ์ pass ของ TC นี้ | To Do | P3 (Low) |
 
 ## 4. หมวดหมู่การแสดงผลรายงานคะแนนและ Heatmap (Result & Heatmap)
 
-### TC-MOB-RES-01: การแสดงผลระดับความเสี่ยง 3 ระดับอย่างถูกต้อง (Risk Score Grading)
-- **Module / Feature**: Result Display / Risk Scoring
-- **Requirement ID**: FR-REPORT-01
-- **Test Type**: Functional / UI
-- **Priority**: P0 (Blocker)
-- **Pre-conditions**:
-  1. ได้รับผลการวิเคราะห์จาก Backend
-- **Test Data**:
-  - Case A: Score 25 (Low Risk)
-  - Case B: Score 55 (Medium Risk)
-  - Case C: Score 85 (High Risk)
-- **Test Steps**:
-  1. ตรวจสอบ Badge สีและข้อความระดับความเสี่ยงของแต่ละเคส
-- **Expected Results**:
-  1. Case A (0–39): แสดงป้ายสีเขียว พร้อมข้อความ "ความเสี่ยงต่ำ (Low Risk)"
-  2. Case B (40–69): แสดงป้ายสีส้ม พร้อมข้อความ "ความเสี่ยงปานกลาง (Medium Risk)"
-  3. Case C (70–100): แสดงป้ายสีแดง พร้อมข้อความ "ความเสี่ยงสูง (High Risk)"
-  4. ไม่พบระดับ Safe ในการแสดงผลระดับความเสี่ยง มีเพียง Low, Medium, High ส่วนคีย์ safe ในไฟล์แปลภาษาเป็นค่าตกค้างที่ไม่ได้ใช้แสดงระดับความเสี่ยง
-- **Automation Mapping**: `scam_image_mobile/test/core/utils/risk_level_helper_test.dart`
-
----
-
-### TC-MOB-RES-02: การเปิด/ปิด และปรับความโปร่งใส Heatmap Overlay (Interactive Heatmap)
-- **Module / Feature**: Result Display / Heatmap Interaction
-- **Requirement ID**: FR-REPORT-02, FR-REPORT-03
-- **Test Type**: Functional / UI
-- **Priority**: P1 (High)
-- **Pre-conditions**:
-  1. อยู่ที่หน้า Result Screen ที่มี Heatmap URL
-- **Test Data**: ภาพ Heatmap ความละเอียดสูง
-- **Test Steps**:
-  1. แตะสวิตช์เปิด/ปิด Heatmap Overlay
-  2. เลื่อน Slider ปรับระดับ Opacity จาก 0% ไป 100%
-- **Expected Results**:
-  1. เมื่อสวิตช์เปิด แผนที่ความร้อนจะซ้อนทับลงบนภาพต้นฉบับตรงพิกัดอย่างแม่นยำ
-  2. เมื่อเลื่อน Slider ความเข้มของสี Heatmap เปลี่ยนแปลงอย่างนุ่มนวล (Smooth transition)
-  3. เมื่อสวิตช์ปิด Heatmap จะถูกซ่อน เหลือเฉพาะภาพต้นฉบับ
-- **Automation Mapping**: Manual UI Test
-
----
-
-### TC-MOB-RES-03: การแสดงคำอธิบายเชิงเหตุผล (Explainable AI Summary)
-- **Module / Feature**: Result Display / XAI Breakdown
-- **Requirement ID**: FR-REPORT-04, FR-REPORT-05, FR-SYS-11
-- **Test Type**: Functional
-- **Priority**: P1 (High)
-- **Pre-conditions**:
-  1. อยู่ที่หน้า Result Screen
-- **Test Data**: ผลการวิเคราะห์ที่มีคะแนนจำแนกและคำอธิบาย XAI จาก Qwen2.5 พร้อมข้อความจาก Surya OCR
-- **Test Steps**:
-  1. เลื่อนดูการ์ด "รายละเอียดการวิเคราะห์" (Analysis Breakdown)
-- **Expected Results**:
-  1. แสดงคะแนนจำแนก 3 ด้าน: ข้อความ (Textual Score), แหล่งที่มา (Source Verification), และร่องรอยการตัดต่อ (Visual Anomaly)
-  2. แสดงคำที่เข้าข่ายน่าสงสัยจาก Surya OCR พร้อมคำอธิบายภาษาไทยจาก Qwen2.5 ที่สอดคล้องกับพิกัด Heatmap
-  3. ไม่แสดงข้อมูลนอกเหนือจากผลการตรวจจับจริง
-- **Automation Mapping**: Manual UI Test
-
----
+| Test Case ID | Test Case name | Requirement ID | Preconditions | Test Data | Description | Test Steps | Expected Results | Actual Result / Status | Priority |
+|---|---|---|---|---|---|---|---|---|---|
+| TC-MOB-RES-01 | การแสดงผลระดับความเสี่ยง 3 ระดับอย่างถูกต้อง (Risk Score Grading) | FR-REPORT-01 | ได้รับผลการวิเคราะห์จาก Backend | Case A: Score 25 (Low Risk)<br>Case B: Score 55 (Medium Risk)<br>Case C: Score 85 (High Risk) | Result Display / Risk Scoring [Functional / UI] (Automation: `scam_image_mobile/test/core/utils/risk_level_helper_test.dart`) | ตรวจสอบ Badge สีและข้อความระดับความเสี่ยงของแต่ละเคส | Case A (0–39): แสดงป้ายสีเขียว พร้อมข้อความ "ความเสี่ยงต่ำ (Low Risk)"<br>Case B (40–69): แสดงป้ายสีส้ม พร้อมข้อความ "ความเสี่ยงปานกลาง (Medium Risk)"<br>Case C (70–100): แสดงป้ายสีแดง พร้อมข้อความ "ความเสี่ยงสูง (High Risk)"<br>ไม่พบระดับ Safe ในการแสดงผลระดับความเสี่ยง มีเพียง Low, Medium, High ส่วนคีย์ safe ในไฟล์แปลภาษาเป็นค่าตกค้างที่ไม่ได้ใช้แสดงระดับความเสี่ยง | To Do | P0 (Blocker) |
+| TC-MOB-RES-02 | การเปิด/ปิด และปรับความโปร่งใส Heatmap Overlay (Interactive Heatmap) | FR-REPORT-02, FR-REPORT-03 | อยู่ที่หน้า Result Screen ที่มี Heatmap URL | ภาพ Heatmap ความละเอียดสูง | Result Display / Heatmap Interaction [Functional / UI] (Automation: Manual UI Test) | แตะสวิตช์เปิด/ปิด Heatmap Overlay<br>เลื่อน Slider ปรับระดับ Opacity จาก 0% ไป 100% | เมื่อสวิตช์เปิด แผนที่ความร้อนจะซ้อนทับลงบนภาพต้นฉบับตรงพิกัดอย่างแม่นยำ<br>เมื่อเลื่อน Slider ความเข้มของสี Heatmap เปลี่ยนแปลงอย่างนุ่มนวล (Smooth transition)<br>เมื่อสวิตช์ปิด Heatmap จะถูกซ่อน เหลือเฉพาะภาพต้นฉบับ | To Do | P1 (High) |
+| TC-MOB-RES-03 | การแสดงคำอธิบายเชิงเหตุผล (Explainable AI Summary) | FR-REPORT-04, FR-REPORT-05, FR-SYS-11 | อยู่ที่หน้า Result Screen | ผลการวิเคราะห์ที่มีคะแนนจำแนกและคำอธิบาย XAI จาก Qwen2.5 พร้อมข้อความจาก Surya OCR | Result Display / XAI Breakdown [Functional] (Automation: Manual UI Test) | เลื่อนดูการ์ด "รายละเอียดการวิเคราะห์" (Analysis Breakdown) | แสดงคะแนนจำแนก 3 ด้าน: ข้อความ (Textual Score), แหล่งที่มา (Source Verification), และร่องรอยการตัดต่อ (Visual Anomaly)<br>แสดงคำที่เข้าข่ายน่าสงสัยจาก Surya OCR พร้อมคำอธิบายภาษาไทยจาก Qwen2.5 ที่สอดคล้องกับพิกัด Heatmap<br>ไม่แสดงข้อมูลนอกเหนือจากผลการตรวจจับจริง | To Do | P1 (High) |
 
 ## 5. หมวดหมู่ประวัติการสแกนและโหมด Offline (History & Offline)
 
-### TC-MOB-HIST-01: การแสดงผลรายการประวัติย้อนหลังพร้อมภาพ Thumbnail
-- **Module / Feature**: History / Recent Scans
-- **Requirement ID**: FR-HIST-01
-- **Test Type**: Functional
-- **Priority**: P1 (High)
-- **Pre-conditions**:
-  1. ผู้ใช้เคยสแกนภาพมาแล้วอย่างน้อย 3 ภาพ
-  2. เข้าสู่หน้า "ประวัติการสแกน" (History Screen)
-- **Test Data**: ประวัติการสแกนย้อนหลัง
-- **Test Steps**:
-  1. ตรวจสอบรายการในหน้า History
-- **Expected Results**:
-  1. แสดงรายการเรียงจากล่าสุดไปหาเก่าสุด
-  2. มี Thumbnail รูปภาพแสดงผลถูกต้องทุกรายการ
-  3. แสดงระดับความเสี่ยง (Low/Med/High) พร้อมวันที่และเวลาในเขตเวลาไทย (UTC+7)
-- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_history.py`
-
----
-
-### TC-MOB-HIST-02: การแตะรายการประวัติเพื่อเปิดดูผลวิเคราะห์เดิม (Tap Navigation)
-- **Module / Feature**: History / Navigation
-- **Requirement ID**: FR-HIST-02
-- **Test Type**: Functional / UI
-- **Priority**: P1 (High)
-- **Pre-conditions**:
-  1. อยู่ในหน้า History Screen
-- **Test Data**: แตะที่รายการสแกนลำดับแรก
-- **Test Steps**:
-  1. แตะที่การ์ดรายการสแกน
-- **Expected Results**:
-  1. แอปนำทางไปยังหน้า Result Screen ของรายการนั้น
-  2. ข้อมูลต่อไปนี้ตรงกับประวัติเดิมทุกฟิลด์: `total_risk_score`, `risk_grade`, URL/ภาพ Heatmap, คำอธิบาย XAI, `title`, `created_at` (UTC+7) — เทียบทีละฟิลด์ ไม่ใช้คำว่า 100% ลอยๆ
-- **Automation Mapping**: Manual UI Test
-
----
-
-### TC-MOB-HIST-03: การทำงานในโหมด Offline เมื่อเครือข่ายขัดข้อง (Local Storage Fallback)
-- **Module / Feature**: History / Offline Graceful Degradation
-- **Requirement ID**: NFR-PERF-03 (Offline, เดิม FR-HIST-03)
-- **Test Type**: Negative / Reliability
-- **Priority**: P1 (High)
-- **Pre-conditions**:
-  1. เคยเปิดดูประวัติการสแกนขณะต่อเน็ตมาแล้ว
-  2. ปิด Wi-Fi และ Cellular Data (เปิดโหมดเครื่องบิน)
-- **Test Data**: โหมดไม่มีสัญญาณอินเทอร์เน็ต
-- **Test Steps**:
-  1. เปิดแอปและไปที่หน้าประวัติการสแกน
-- **Expected Results**:
-  1. แอปไม่เกิดการแครช (No Fatal Crash)
-  2. แอปแสดงรายการจากแคชโดยไม่มีแถบแจ้งเตือนออฟไลน์ (พฤติกรรมปัจจุบัน: ไม่มีวิดเจ็ตแบนเนอร์ — เปิด DEFECT ขาดแบนเนอร์โหมดออฟไลน์แยก ไม่นับเป็น pass ของข้อนี้จนกว่าจะมีแบนเนอร์หรือสเปกยืนยันว่าไม่ต้องมี)
-  3. สามารถเปิดดูรายการประวัติที่ถูกแคชไว้ใน Local Storage ได้
-- **Automation Mapping**: Manual Device Test
-
----
-
-### TC-MOB-HIST-04: การลบประวัติการสแกนออกจากเครื่องและ Server (Delete History)
-- **Module / Feature**: History / Delete Scan
-- **Requirement ID**: FR-HIST-03
-- **Test Type**: Functional
-- **Priority**: P1 (High)
-- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
-  1. มีประวัติการสแกนอย่างน้อย 1 รายการ
-  2. ผู้ใช้ล็อกอินค้างไว้
-- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
-  - scan_id ของรายการที่ต้องการลบ
-  - Endpoint: `DELETE /api/v1/history/{scan_id}`
-- **Test Steps (ขั้นตอนการทดสอบ)**:
-  1. ในหน้าประวัติ ปัดหรือกดปุ่มลบที่รายการเป้าหมาย
-  2. ยืนยันการลบใน Dialog
-  3. เรียก `GET /api/v1/history/{scan_id}` ซ้ำเพื่อยืนยัน
-- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
-1. รายการหายจากหน้าประวัติทันที
-2. Server ลบไฟล์ภาพต้นฉบับและ Heatmap เมื่อไม่มีงานอื่นใช้ `image_hash` เดียวกัน
-3. เรียกดูรายการเดิมซ้ำได้ `404 Not Found` พร้อม `{"detail": "Scan not found"}`
-- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_history.py`
-
----
+| Test Case ID | Test Case name | Requirement ID | Preconditions | Test Data | Description | Test Steps | Expected Results | Actual Result / Status | Priority |
+|---|---|---|---|---|---|---|---|---|---|
+| TC-MOB-HIST-01 | การแสดงผลรายการประวัติย้อนหลังพร้อมภาพ Thumbnail | FR-HIST-01 | ผู้ใช้เคยสแกนภาพมาแล้วอย่างน้อย 3 ภาพ<br>เข้าสู่หน้า "ประวัติการสแกน" (History Screen) | ประวัติการสแกนย้อนหลัง | History / Recent Scans [Functional] (Automation: `tests_all/automate_tests/tests/api/test_history.py`) | ตรวจสอบรายการในหน้า History | แสดงรายการเรียงจากล่าสุดไปหาเก่าสุด<br>มี Thumbnail รูปภาพแสดงผลถูกต้องทุกรายการ<br>แสดงระดับความเสี่ยง (Low/Med/High) พร้อมวันที่และเวลาในเขตเวลาไทย (UTC+7) | To Do | P1 (High) |
+| TC-MOB-HIST-02 | การแตะรายการประวัติเพื่อเปิดดูผลวิเคราะห์เดิม (Tap Navigation) | FR-HIST-02 | อยู่ในหน้า History Screen | แตะที่รายการสแกนลำดับแรก | History / Navigation [Functional / UI] (Automation: Manual UI Test) | แตะที่การ์ดรายการสแกน | แอปนำทางไปยังหน้า Result Screen ของรายการนั้น<br>ข้อมูลต่อไปนี้ตรงกับประวัติเดิมทุกฟิลด์: `total_risk_score`, `risk_grade`, URL/ภาพ Heatmap, คำอธิบาย XAI, `title`, `created_at` (UTC+7) — เทียบทีละฟิลด์ ไม่ใช้คำว่า 100% ลอยๆ | To Do | P1 (High) |
+| TC-MOB-HIST-03 | การทำงานในโหมด Offline เมื่อเครือข่ายขัดข้อง (Local Storage Fallback) | NFR-PERF-03 (Offline, เดิม FR-HIST-03) | เคยเปิดดูประวัติการสแกนขณะต่อเน็ตมาแล้ว<br>ปิด Wi-Fi และ Cellular Data (เปิดโหมดเครื่องบิน) | โหมดไม่มีสัญญาณอินเทอร์เน็ต | History / Offline Graceful Degradation [Negative / Reliability] (Automation: Manual Device Test) | เปิดแอปและไปที่หน้าประวัติการสแกน | แอปไม่เกิดการแครช (No Fatal Crash)<br>แอปแสดงรายการจากแคชโดยไม่มีแถบแจ้งเตือนออฟไลน์ (พฤติกรรมปัจจุบัน: ไม่มีวิดเจ็ตแบนเนอร์ — เปิด DEFECT ขาดแบนเนอร์โหมดออฟไลน์แยก ไม่นับเป็น pass ของข้อนี้จนกว่าจะมีแบนเนอร์หรือสเปกยืนยันว่าไม่ต้องมี)<br>สามารถเปิดดูรายการประวัติที่ถูกแคชไว้ใน Local Storage ได้ | To Do | P1 (High) |
+| TC-MOB-HIST-04 | การลบประวัติการสแกนออกจากเครื่องและ Server (Delete History) | FR-HIST-03 | มีประวัติการสแกนอย่างน้อย 1 รายการ<br>ผู้ใช้ล็อกอินค้างไว้ | scan_id ของรายการที่ต้องการลบ<br>Endpoint: `DELETE /api/v1/history/{scan_id}` | History / Delete Scan [Functional] (Automation: `tests_all/automate_tests/tests/api/test_history.py`) | ในหน้าประวัติ ปัดหรือกดปุ่มลบที่รายการเป้าหมาย<br>ยืนยันการลบใน Dialog<br>เรียก `GET /api/v1/history/{scan_id}` ซ้ำเพื่อยืนยัน | รายการหายจากหน้าประวัติทันที<br>Server ลบไฟล์ภาพต้นฉบับและ Heatmap เมื่อไม่มีงานอื่นใช้ `image_hash` เดียวกัน<br>เรียกดูรายการเดิมซ้ำได้ `404 Not Found` พร้อม `{"detail": "Scan not found"}` | To Do | P1 (High) |
 
 ## 6. หมวดหมู่การแจ้งรายงานข้อร้องเรียน (Scam Report)
 
-### TC-MOB-RPT-01: ผู้ใช้กดยืนยันการรายงานภาพหลอกลวง (User Scam Report Submission)
-- **Module / Feature**: Scam Reporting / User Feedback
-- **Requirement ID**: FR-RPT-01
-- **Test Type**: Functional
-- **Priority**: P2 (Medium)
-- **Pre-conditions**:
-  1. ผู้ใช้อยู่ในหน้ารายงานผลการวิเคราะห์ภาพ
-- **Test Data**:
-  - scan_id ของผลสแกนที่ต้องการรายงาน
-  - category: `fake_slip`
-  - description: "สลิปนี้ตัดต่อยอดเงิน ปลอมแปลงการโอนเงินจริง" (ความยาวไม่ต่ำกว่า 10 ตัวอักษร)
-- **Test Steps**:
-  1. เลื่อนลงมาแตะปุ่ม "รายงานว่าเป็นภาพหลอกลวง" (Report as Scam)
-  2. เลือกหมวดหมู่ `fake_slip` และกรอกรายละเอียด
-  3. กดปุ่มส่งรายงาน
-- **Expected Results**:
-  1. แอปส่งคำขอไปยัง `POST /api/v1/reports` พร้อม `scan_id`, `category`, `description`
-  2. แสดง SnackBar สีเขียวด้วยข้อความ `report_success` ว่า "ส่งรายงานสำเร็จ ขอบคุณที่ช่วยปกป้องผู้ใช้คนอื่น" (โค้ดจริงใช้ SnackBar ไม่ใช่ Dialog และไม่มีข้อความเรื่องส่งให้ผู้เชี่ยวชาญตรวจสอบ)
-  3. รายงานปรากฏในฐานข้อมูลพร้อมสถานะ `pending` เพื่อให้ Admin พิจารณา
-- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_history.py`
-
----
-
-### TC-MOB-RPT-02: การดึงหมวดหมู่รายงานและการดูรายงานของตนเอง (Report Categories Plus My Reports)
-- **Module / Feature**: Scam Reporting / Categories and My Reports
-- **Requirement ID**: FR-RPT-01
-- **Test Type**: Functional
-- **Priority**: P2 (Medium)
-- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
-  1. ผู้ใช้ล็อกอินค้างไว้
-  2. เคยส่งรายงานอย่างน้อย 1 ฉบับ
-- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
-  - Endpoint: `GET /api/v1/reports/categories`
-  - Endpoint: `GET /api/v1/reports/my`
-- **Test Steps (ขั้นตอนการทดสอบ)**:
-  1. เปิดฟอร์มรายงานและตรวจสอบรายการหมวดหมู่ที่ดึงจาก Server
-  2. เปิดหน้าประวัติรายงานของตนเอง
-- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
-1. หมวดหมู่ที่ได้มี 7 ค่า ได้แก่ `romance_scam`, `online_shopping`, `fake_slip`, `investment`, `identity_theft`, `ai_deepfake`, `other` พร้อมป้ายภาษาไทยและอังกฤษ
-2. หน้ารายงานของตนเองแสดงสถานะตัวพิมพ์เล็ก ได้แก่ `pending`, `reviewing`, `approved`, `rejected` พร้อมเลข `version`
-- **Automation Mapping**: `tests_all/automate_tests/tests/api/test_history.py`
-
----
+| Test Case ID | Test Case name | Requirement ID | Preconditions | Test Data | Description | Test Steps | Expected Results | Actual Result / Status | Priority |
+|---|---|---|---|---|---|---|---|---|---|
+| TC-MOB-RPT-01 | ผู้ใช้กดยืนยันการรายงานภาพหลอกลวง (User Scam Report Submission) | FR-RPT-01 | ผู้ใช้อยู่ในหน้ารายงานผลการวิเคราะห์ภาพ | scan_id ของผลสแกนที่ต้องการรายงาน<br>category: `fake_slip`<br>description: "สลิปนี้ตัดต่อยอดเงิน ปลอมแปลงการโอนเงินจริง" (ความยาวไม่ต่ำกว่า 10 ตัวอักษร) | Scam Reporting / User Feedback [Functional] (Automation: `tests_all/automate_tests/tests/api/test_history.py`) | เลื่อนลงมาแตะปุ่ม "รายงานว่าเป็นภาพหลอกลวง" (Report as Scam)<br>เลือกหมวดหมู่ `fake_slip` และกรอกรายละเอียด<br>กดปุ่มส่งรายงาน | แอปส่งคำขอไปยัง `POST /api/v1/reports` พร้อม `scan_id`, `category`, `description`<br>แสดง SnackBar สีเขียวด้วยข้อความ `report_success` ว่า "ส่งรายงานสำเร็จ ขอบคุณที่ช่วยปกป้องผู้ใช้คนอื่น" (โค้ดจริงใช้ SnackBar ไม่ใช่ Dialog และไม่มีข้อความเรื่องส่งให้ผู้เชี่ยวชาญตรวจสอบ)<br>รายงานปรากฏในฐานข้อมูลพร้อมสถานะ `pending` เพื่อให้ Admin พิจารณา | To Do | P2 (Medium) |
+| TC-MOB-RPT-02 | การดึงหมวดหมู่รายงานและการดูรายงานของตนเอง (Report Categories Plus My Reports) | FR-RPT-01 | ผู้ใช้ล็อกอินค้างไว้<br>เคยส่งรายงานอย่างน้อย 1 ฉบับ | Endpoint: `GET /api/v1/reports/categories`<br>Endpoint: `GET /api/v1/reports/my` | Scam Reporting / Categories and My Reports [Functional] (Automation: `tests_all/automate_tests/tests/api/test_history.py`) | เปิดฟอร์มรายงานและตรวจสอบรายการหมวดหมู่ที่ดึงจาก Server<br>เปิดหน้าประวัติรายงานของตนเอง | หมวดหมู่ที่ได้มี 7 ค่า ได้แก่ `romance_scam`, `online_shopping`, `fake_slip`, `investment`, `identity_theft`, `ai_deepfake`, `other` พร้อมป้ายภาษาไทยและอังกฤษ<br>หน้ารายงานของตนเองแสดงสถานะตัวพิมพ์เล็ก ได้แก่ `pending`, `reviewing`, `approved`, `rejected` พร้อมเลข `version` | To Do | P2 (Medium) |
 
 ## 7. หมวดหมู่ความยินยอมข้อมูลส่วนบุคคล (PDPA Consent)
 
-### TC-MOB-PDPA-01: หน้าจอแสดงความยินยอม (Consent Screen) ในการเปิดแอปครั้งแรก
-- **Module / Feature**: Privacy / PDPA Consent
-- **Requirement ID**: FR-PDPA-01
-- **Test Type**: Functional / Compliance
-- **Priority**: P0 (Blocker)
-- **Pre-conditions**:
-  1. ติดตั้งแอปใหม่ หรือล้าง App Data (First Launch)
-- **Test Data**: นโยบายความเป็นส่วนตัวและเงื่อนไขการประมวลผลข้อมูล
-- **Test Steps**:
-  1. เปิดแอปพลิเคชันขึ้นมาเป็นครั้งแรก
-- **Expected Results**:
-  1. ปรากฏหน้า Consent Modal บังคับให้อ่านเงื่อนไขการประมวลผลภาพก่อนเข้าใช้งาน
-  2. มี Checkbox ให้ยินยอมการนำภาพไปช่วยพัฒนางานวิจัย (Optional)
-  3. หากไม่กดยินยอมข้อตกลงพื้นฐาน จะไม่สามารถเข้าใช้งานแอปได้
-  4. เมื่อกดยินยอม ค่าความยินยอมจะถูกบันทึกลง Local Settings และไม่แสดงซ้ำอีกในครั้งถัดไป
-- **Automation Mapping**: Manual UI Test
-
----
+| Test Case ID | Test Case name | Requirement ID | Preconditions | Test Data | Description | Test Steps | Expected Results | Actual Result / Status | Priority |
+|---|---|---|---|---|---|---|---|---|---|
+| TC-MOB-PDPA-01 | หน้าจอแสดงความยินยอม (Consent Screen) ในการเปิดแอปครั้งแรก | FR-PDPA-01 | ติดตั้งแอปใหม่ หรือล้าง App Data (First Launch) | นโยบายความเป็นส่วนตัวและเงื่อนไขการประมวลผลข้อมูล | Privacy / PDPA Consent [Functional / Compliance] (Automation: Manual UI Test) | เปิดแอปพลิเคชันขึ้นมาเป็นครั้งแรก | ปรากฏหน้า Consent Modal บังคับให้อ่านเงื่อนไขการประมวลผลภาพก่อนเข้าใช้งาน<br>มี Checkbox ให้ยินยอมการนำภาพไปช่วยพัฒนางานวิจัย (Optional)<br>หากไม่กดยินยอมข้อตกลงพื้นฐาน จะไม่สามารถเข้าใช้งานแอปได้<br>เมื่อกดยินยอม ค่าความยินยอมจะถูกบันทึกลง Local Settings และไม่แสดงซ้ำอีกในครั้งถัดไป | To Do | P0 (Blocker) |
 
 ## 8. หมวดหมู่ภาษาและธีม (Localization & Theme Mode)
 
-### TC-MOB-UI-01: การสลับภาษาระหว่างภาษาไทยและภาษาอังกฤษ (i18n)
-- **Module / Feature**: Settings / Localization
-- **Requirement ID**: FR-SET-01
-- **Test Type**: Functional / UI
-- **Priority**: P2 (Medium)
-- **Pre-conditions**:
-  1. อยู่ในหน้าการตั้งค่า (Settings)
-- **Test Data**: สลับระหว่าง ภาษาไทย (TH) และ ภาษาอังกฤษ (EN)
-- **Test Steps**:
-  1. เปลี่ยนภาษาเป็น "English"
-  2. ตรวจสอบข้อความบนหน้าจอหลักและหน้าผลการสแกน
-  3. ปิดแอปและเปิดใหม่
-- **Expected Results**:
-  1. ข้อความและปุ่มทั้งหมดเปลี่ยนเป็นภาษาอังกฤษทันทีโดยไม่ต้อง Restart เครื่อง
-  2. เมื่อเปิดแอปใหม่ ค่าภาษายังคงจำไว้เป็น English (Persistence)
-- **Automation Mapping**: Manual UI Test
-
----
-
-### TC-MOB-UI-02: การสลับโหมดมืด/โหมดสว่าง (Dark & Light Mode)
-- **Module / Feature**: Settings / Theme Management
-- **Requirement ID**: FR-SET-02
-- **Test Type**: UI / Visual
-- **Priority**: P2 (Medium)
-- **Pre-conditions**:
-  1. อยู่ในหน้าการตั้งค่า
-- **Test Data**: Light Mode และ Dark Mode
-- **Test Steps**:
-  1. แตะสลับ Theme เป็น Dark Mode
-  2. ตรวจสอบคอนทราสต์และความคมชัดของตัวหนังสือ
-- **Expected Results**:
-  1. พื้นหลังเปลี่ยนเป็นโทนมืด ข้อความเปลี่ยนเป็นสีสว่าง อ่านง่าย ไม่กลืนกับพื้นหลัง
-  2. สีของ Badge ความเสี่ยง (เขียว/ส้ม/แดง) ยังคงมีคอนทราสต์ชัดเจนตามมาตรฐาน WCAG AA
-  3. ปิดแอปและเปิดใหม่ การตั้งค่าโหมดมืดยังคงอยู่
-- **Automation Mapping**: Manual UI Test
-
----
-
-### TC-MOB-NOTIF-01: การแจ้งเตือนเมื่องานวิเคราะห์เสร็จ [PARKED — รอ FCM Phase 2]
-- **Module / Feature**: Notifications / Background Task Completion
-- **Requirement ID**: FR-SYS-10
-- **Test Type**: Functional
-- **Priority**: P3 (Low)
-- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
-  1. ผู้ใช้เริ่มสแกนแล้วสลับแอปไปพื้นหลัง
-- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
-  - งานสแกนที่ใช้เวลาประมวลผลนาน
-- **Test Steps (ขั้นตอนการทดสอบ)**:
-  1. เริ่มสแกนแล้วย่อแอปลงพื้นหลัง
-  2. รอจนงานวิเคราะห์เสร็จ
-  3. ตรวจสอบการแจ้งเตือนที่ได้รับ
-- **Status**: PARKED (future — ไม่นับในเกณฑ์ pass/fail ของรอบปัจจุบัน)
-- **Expected Results (พฤติกรรมปัจจุบันที่ต้องเป็นจริง)**:
-  1. ปัจจุบันยังไม่มีการเชื่อมต่อ Firebase Cloud Messaging — แอปแสดงผลเฉพาะเมื่อเปิดค้างในหน้า Loading ผ่าน `ScanPolling` จนเป็น `ScanCompleted` แล้วนำทางไปหน้า Result อัตโนมัติ
-  2. ไม่มี notification ใดเด้งขณะแอปอยู่พื้นหลัง (พฤติกรรมปัจจุบันที่ต้องเป็นจริง ไม่ใช่ข้อบกพร่องของ TC นี้)
-- **Future Steps (Phase 2 — เริ่มเมื่อมี FCM)**:
-  1. เริ่มสแกนแล้วย่อแอปลงพื้นหลัง รอจนงานวิเคราะห์เสร็จ
-  2. แตะการแจ้งเตือนแล้วต้องเปิดหน้ารายงานผลได้ถูกต้อง
-- **Automation Mapping**: Manual UI Test
-
----
+| Test Case ID | Test Case name | Requirement ID | Preconditions | Test Data | Description | Test Steps | Expected Results | Actual Result / Status | Priority |
+|---|---|---|---|---|---|---|---|---|---|
+| TC-MOB-UI-01 | การสลับภาษาระหว่างภาษาไทยและภาษาอังกฤษ (i18n) | FR-SET-01 | อยู่ในหน้าการตั้งค่า (Settings) | สลับระหว่าง ภาษาไทย (TH) และ ภาษาอังกฤษ (EN) | Settings / Localization [Functional / UI] (Automation: Manual UI Test) | เปลี่ยนภาษาเป็น "English"<br>ตรวจสอบข้อความบนหน้าจอหลักและหน้าผลการสแกน<br>ปิดแอปและเปิดใหม่ | ข้อความและปุ่มทั้งหมดเปลี่ยนเป็นภาษาอังกฤษทันทีโดยไม่ต้อง Restart เครื่อง<br>เมื่อเปิดแอปใหม่ ค่าภาษายังคงจำไว้เป็น English (Persistence) | To Do | P2 (Medium) |
+| TC-MOB-UI-02 | การสลับโหมดมืด/โหมดสว่าง (Dark & Light Mode) | FR-SET-02 | อยู่ในหน้าการตั้งค่า | Light Mode และ Dark Mode | Settings / Theme Management [UI / Visual] (Automation: Manual UI Test) | แตะสลับ Theme เป็น Dark Mode<br>ตรวจสอบคอนทราสต์และความคมชัดของตัวหนังสือ | พื้นหลังเปลี่ยนเป็นโทนมืด ข้อความเปลี่ยนเป็นสีสว่าง อ่านง่าย ไม่กลืนกับพื้นหลัง<br>สีของ Badge ความเสี่ยง (เขียว/ส้ม/แดง) ยังคงมีคอนทราสต์ชัดเจนตามมาตรฐาน WCAG AA<br>ปิดแอปและเปิดใหม่ การตั้งค่าโหมดมืดยังคงอยู่ | To Do | P2 (Medium) |
+| TC-MOB-NOTIF-01 | การแจ้งเตือนเมื่องานวิเคราะห์เสร็จ [PARKED — รอ FCM Phase 2] | FR-SYS-10 | ผู้ใช้เริ่มสแกนแล้วสลับแอปไปพื้นหลัง | งานสแกนที่ใช้เวลาประมวลผลนาน | Notifications / Background Task Completion [Functional] (Automation: Manual UI Test) | เริ่มสแกนแล้วย่อแอปลงพื้นหลัง<br>รอจนงานวิเคราะห์เสร็จ<br>ตรวจสอบการแจ้งเตือนที่ได้รับ | ปัจจุบันยังไม่มีการเชื่อมต่อ Firebase Cloud Messaging — แอปแสดงผลเฉพาะเมื่อเปิดค้างในหน้า Loading ผ่าน `ScanPolling` จนเป็น `ScanCompleted` แล้วนำทางไปหน้า Result อัตโนมัติ<br>ไม่มี notification ใดเด้งขณะแอปอยู่พื้นหลัง (พฤติกรรมปัจจุบันที่ต้องเป็นจริง ไม่ใช่ข้อบกพร่องของ TC นี้)<br>[Future Steps] 1. เริ่มสแกนแล้วย่อแอปลงพื้นหลัง รอจนงานวิเคราะห์เสร็จ 2. แตะการแจ้งเตือนแล้วต้องเปิดหน้ารายงานผลได้ถูกต้อง<br>[Status] PARKED (future — ไม่นับในเกณฑ์ pass/fail ของรอบปัจจุบัน) | To Do | P3 (Low) |
 
 ## 9. หมวดหมู่การตรวจสอบข้อมูลนำเข้าเชิงลบ (Negative Input Validation)
 
-### TC-MOB-AUTH-07: การตรวจข้อมูลสมัครสมาชิกไม่ครบ รูปแบบผิด และอีเมลซ้ำ (Register Validation)
-- **Module / Feature**: Authentication / Register Form Validation
-- **Requirement ID**: FR-AUTH-01
-- **Test Type**: Functional
-- **Priority**: P1 (High)
-- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
-  1. แอปเปิดอยู่ที่หน้าลงทะเบียน
-  2. เตรียมอีเมลที่มีบัญชีอยู่แล้ว 1 บัญชี
-- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
-  - เคสว่าง: ไม่กรอกชื่อ ไม่กรอกอีเมล ไม่กรอกรหัสผ่าน
-  - อีเมลผิดรูปแบบ: `not-an-email`
-  - รหัสสั้น: `Abc12` (สั้นกว่า 8 ตัวอักษร)
-  - ยืนยันรหัสไม่ตรง: รหัส `Password123!` ยืนยัน `Password999!`
-  - ไม่กดยอมรับเงื่อนไขการใช้งาน
-  - อีเมลซ้ำ: อีเมลของบัญชีที่มีอยู่แล้ว พร้อมรหัสผ่านถูกต้องและกดยอมรับเงื่อนไข
-- **Test Steps (ขั้นตอนการทดสอบ — table-driven รันทีละแถว)**:
-| เคส | ข้อมูลกรอก | วิธีทำ |
-|---|---|---|
-| 07A ว่างทุกช่อง | ไม่กรอกชื่อ/อีเมล/รหัสผ่าน | กดสมัครทั้งที่ว่าง |
-| 07B อีเมลผิดรูปแบบ | `not-an-email` | กรอกแล้วกดสมัคร |
-| 07C รหัสสั้น | `Abc12` (สั้นกว่า 8) | กรอกแล้วกดสมัคร |
-| 07D ยืนยันรหัสไม่ตรง | `Password123!` / `Password999!` | กรอกแล้วกดสมัคร |
-| 07E ไม่ยอมรับเงื่อนไข | ข้อมูลถูกทุกช่อง แต่ไม่ติ๊กยินยอม | กดสมัคร |
-| 07F อีเมลซ้ำ | อีเมลที่มีบัญชีแล้ว + รหัสถูก + ติ๊กยินยอม | กดสมัคร |
-- **Expected Results (ผลลัพธ์ที่คาดหวังรายเคส — ข้อความกำกับรายช่อง)**:
-  1. 07A: ข้อความกำกับใต้ช่องที่ว่างทุกช่อง และไม่มีคำขอส่งออกไป
-  2. 07B: ข้อความใต้ช่องอีเมลว่ารูปแบบไม่ถูกต้อง และไม่มีคำขอส่งออกไป
-  3. 07C: ข้อความใต้ช่องรหัสผ่านแจ้งความยาวขั้นต่ำ 8 ตัวอักษร และไม่มีคำขอส่งออกไป
-  4. 07D: ข้อความใต้ช่องยืนยันรหัสว่ารหัสไม่ตรงกัน และไม่มีคำขอส่งออกไป
-  5. 07E: แถบแจ้งเตือนสีแดงให้ยอมรับเงื่อนไขก่อน และไม่มีคำขอส่งออกไป
-  6. 07F: ถูกปฏิเสธจากฝั่งบริการพร้อมข้อความว่าอีเมลนี้ถูกใช้งานแล้ว โดยผู้ใช้ยังอยู่ที่หน้าลงทะเบียน (หมายเหตุ: หน้าลงทะเบียนตรวจเฉพาะค่าว่าง ส่วนการตรวจรูปแบบอีเมลด้วยนิพจน์ปรกติมีที่หน้าลงชื่อเข้าใช้)
-- **Automation Mapping**: Manual UI Test
-
----
-
-### TC-MOB-IMG-06: การจัดการชื่อไฟล์อักขระพิเศษ นามสกุลตัวพิมพ์ใหญ่ และไฟล์ขนาด 0 Byte (Special Filename Plus Empty File)
-- **Module / Feature**: Image Input / Filename and Empty File Handling
-- **Requirement ID**: FR-INPUT-04
-- **Test Type**: Functional
-- **Priority**: P2 (Medium)
-- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
-  1. เตรียมไฟล์ในเครื่อง 3 แบบ: ชื่อมีอักขระพิเศษและช่องว่าง, นามสกุลตัวพิมพ์ใหญ่, ไฟล์ขนาด 0 Byte นามสกุล jpg
-  2. แอปได้รับสิทธิ์แกลเลอรีแล้ว
-- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
-  - `สลิป โอนเงิน (1)@#%.jpg`
-  - `SLIP_TEST.JPG`
-  - `empty_0byte.jpg` (ขนาด 0 Byte)
-- **Test Steps (ขั้นตอนการทดสอบ)**:
-  1. เลือกไฟล์ชื่อพิเศษ แล้วดำเนินการต่อจนถึงขั้นเริ่มสแกน
-  2. เลือกไฟล์นามสกุลตัวพิมพ์ใหญ่ แล้วดำเนินการต่อ
-  3. เลือกไฟล์ 0 Byte แล้วกดเริ่มสแกน
-- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
-  1. ไฟล์ชื่อพิเศษถูกเลือกและแสดงตัวอย่างได้ตามปกติ ไม่แครช
-  2. นามสกุลตัวพิมพ์ใหญ่ผ่านการตรวจรูปแบบ (ระบบเทียบแบบไม่สนตัวพิมพ์) และสแกนต่อได้
-  3. ไฟล์ 0 Byte ผ่านการตรวจรูปแบบฝั่งแอป แต่ถูกปฏิเสธที่ฝั่งบริการด้วยข้อความผิดพลาดทั่วไป กรุณาลองใหม่ โดยแอปไม่ค้างและไม่แครช
-- **Automation Mapping**: Manual UI Test
-
----
+| Test Case ID | Test Case name | Requirement ID | Preconditions | Test Data | Description | Test Steps | Expected Results | Actual Result / Status | Priority |
+|---|---|---|---|---|---|---|---|---|---|
+| TC-MOB-AUTH-07A | 07A ว่างทุกช่อง | FR-AUTH-01 | แอปเปิดอยู่ที่หน้าลงทะเบียน<br>เตรียมอีเมลที่มีบัญชีอยู่แล้ว 1 บัญชี | ไม่กรอกชื่อ/อีเมล/รหัสผ่าน<br>(บริบทชุดทดสอบ: เคสว่าง: ไม่กรอกชื่อ ไม่กรอกอีเมล ไม่กรอกรหัสผ่าน<br>อีเมลผิดรูปแบบ: `not-an-email`<br>รหัสสั้น: `Abc12` (สั้นกว่า 8 ตัว) | Authentication / Register Form Validation [Functional] (Automation: Manual UI Test) เคสย่อย 07A/6 ของ Register Validation แบบ table-driven รันทีละแถว | กดสมัครทั้งที่ว่าง (table-driven รันทีละแถว) | 07A: ข้อความกำกับใต้ช่องที่ว่างทุกช่อง และไม่มีคำขอส่งออกไป | To Do | P1 (High) |
+| TC-MOB-AUTH-07B | 07B อีเมลผิดรูปแบบ | FR-AUTH-01 | แอปเปิดอยู่ที่หน้าลงทะเบียน<br>เตรียมอีเมลที่มีบัญชีอยู่แล้ว 1 บัญชี | `not-an-email`<br>(บริบทชุดทดสอบ: เคสว่าง: ไม่กรอกชื่อ ไม่กรอกอีเมล ไม่กรอกรหัสผ่าน<br>อีเมลผิดรูปแบบ: `not-an-email`<br>รหัสสั้น: `Abc12` (สั้นกว่า 8 ตัว) | Authentication / Register Form Validation [Functional] (Automation: Manual UI Test) เคสย่อย 07B/6 ของ Register Validation แบบ table-driven รันทีละแถว | กรอกแล้วกดสมัคร (table-driven รันทีละแถว) | 07B: ข้อความใต้ช่องอีเมลว่ารูปแบบไม่ถูกต้อง และไม่มีคำขอส่งออกไป | To Do | P1 (High) |
+| TC-MOB-AUTH-07C | 07C รหัสสั้น | FR-AUTH-01 | แอปเปิดอยู่ที่หน้าลงทะเบียน<br>เตรียมอีเมลที่มีบัญชีอยู่แล้ว 1 บัญชี | `Abc12` (สั้นกว่า 8)<br>(บริบทชุดทดสอบ: เคสว่าง: ไม่กรอกชื่อ ไม่กรอกอีเมล ไม่กรอกรหัสผ่าน<br>อีเมลผิดรูปแบบ: `not-an-email`<br>รหัสสั้น: `Abc12` (สั้นกว่า 8 ตัว) | Authentication / Register Form Validation [Functional] (Automation: Manual UI Test) เคสย่อย 07C/6 ของ Register Validation แบบ table-driven รันทีละแถว | กรอกแล้วกดสมัคร (table-driven รันทีละแถว) | 07C: ข้อความใต้ช่องรหัสผ่านแจ้งความยาวขั้นต่ำ 8 ตัวอักษร และไม่มีคำขอส่งออกไป | To Do | P1 (High) |
+| TC-MOB-AUTH-07D | 07D ยืนยันรหัสไม่ตรง | FR-AUTH-01 | แอปเปิดอยู่ที่หน้าลงทะเบียน<br>เตรียมอีเมลที่มีบัญชีอยู่แล้ว 1 บัญชี | `Password123!` / `Password999!`<br>(บริบทชุดทดสอบ: เคสว่าง: ไม่กรอกชื่อ ไม่กรอกอีเมล ไม่กรอกรหัสผ่าน<br>อีเมลผิดรูปแบบ: `not-an-email`<br>รหัสสั้น: `Abc12` (สั้นกว่า 8 ตัว) | Authentication / Register Form Validation [Functional] (Automation: Manual UI Test) เคสย่อย 07D/6 ของ Register Validation แบบ table-driven รันทีละแถว | กรอกแล้วกดสมัคร (table-driven รันทีละแถว) | 07D: ข้อความใต้ช่องยืนยันรหัสว่ารหัสไม่ตรงกัน และไม่มีคำขอส่งออกไป | To Do | P1 (High) |
+| TC-MOB-AUTH-07E | 07E ไม่ยอมรับเงื่อนไข | FR-AUTH-01 | แอปเปิดอยู่ที่หน้าลงทะเบียน<br>เตรียมอีเมลที่มีบัญชีอยู่แล้ว 1 บัญชี | ข้อมูลถูกทุกช่อง แต่ไม่ติ๊กยินยอม<br>(บริบทชุดทดสอบ: เคสว่าง: ไม่กรอกชื่อ ไม่กรอกอีเมล ไม่กรอกรหัสผ่าน<br>อีเมลผิดรูปแบบ: `not-an-email`<br>รหัสสั้น: `Abc12` (สั้นกว่า 8 ตัว) | Authentication / Register Form Validation [Functional] (Automation: Manual UI Test) เคสย่อย 07E/6 ของ Register Validation แบบ table-driven รันทีละแถว | กดสมัคร (table-driven รันทีละแถว) | 07E: แถบแจ้งเตือนสีแดงให้ยอมรับเงื่อนไขก่อน และไม่มีคำขอส่งออกไป | To Do | P1 (High) |
+| TC-MOB-AUTH-07F | 07F อีเมลซ้ำ | FR-AUTH-01 | แอปเปิดอยู่ที่หน้าลงทะเบียน<br>เตรียมอีเมลที่มีบัญชีอยู่แล้ว 1 บัญชี | อีเมลที่มีบัญชีแล้ว + รหัสถูก + ติ๊กยินยอม<br>(บริบทชุดทดสอบ: เคสว่าง: ไม่กรอกชื่อ ไม่กรอกอีเมล ไม่กรอกรหัสผ่าน<br>อีเมลผิดรูปแบบ: `not-an-email`<br>รหัสสั้น: `Abc12` (สั้นกว่า 8 ตัว) | Authentication / Register Form Validation [Functional] (Automation: Manual UI Test) เคสย่อย 07F/6 ของ Register Validation แบบ table-driven รันทีละแถว | กดสมัคร (table-driven รันทีละแถว) | 07F: ถูกปฏิเสธจากฝั่งบริการพร้อมข้อความว่าอีเมลนี้ถูกใช้งานแล้ว โดยผู้ใช้ยังอยู่ที่หน้าลงทะเบียน (หมายเหตุ: หน้าลงทะเบียนตรวจเฉพาะค่าว่าง ส่วนการตรวจรูปแบบอีเมลด้วยนิพจน์ปรกติมีที่หน้าลงชื่อเข้าใช้) | To Do | P1 (High) |
+| TC-MOB-IMG-06 | การจัดการชื่อไฟล์อักขระพิเศษ นามสกุลตัวพิมพ์ใหญ่ และไฟล์ขนาด 0 Byte (Special Filename Plus Empty File) | FR-INPUT-04 | เตรียมไฟล์ในเครื่อง 3 แบบ: ชื่อมีอักขระพิเศษและช่องว่าง, นามสกุลตัวพิมพ์ใหญ่, ไฟล์ขนาด 0 Byte นามสกุล jpg<br>แอปได้รับสิทธิ์แกลเลอรีแล้ว | `สลิป โอนเงิน (1)@#%.jpg`<br>`SLIP_TEST.JPG`<br>`empty_0byte.jpg` (ขนาด 0 Byte) | Image Input / Filename and Empty File Handling [Functional] (Automation: Manual UI Test) | เลือกไฟล์ชื่อพิเศษ แล้วดำเนินการต่อจนถึงขั้นเริ่มสแกน<br>เลือกไฟล์นามสกุลตัวพิมพ์ใหญ่ แล้วดำเนินการต่อ<br>เลือกไฟล์ 0 Byte แล้วกดเริ่มสแกน | ไฟล์ชื่อพิเศษถูกเลือกและแสดงตัวอย่างได้ตามปกติ ไม่แครช<br>นามสกุลตัวพิมพ์ใหญ่ผ่านการตรวจรูปแบบ (ระบบเทียบแบบไม่สนตัวพิมพ์) และสแกนต่อได้<br>ไฟล์ 0 Byte ผ่านการตรวจรูปแบบฝั่งแอป แต่ถูกปฏิเสธที่ฝั่งบริการด้วยข้อความผิดพลาดทั่วไป กรุณาลองใหม่ โดยแอปไม่ค้างและไม่แครช | To Do | P2 (Medium) |
 
 ## 10. หมวดหมู่ประสบการณ์ผู้ใช้และการแสดงผล (UI/UX Behavior)
 
-### TC-MOB-AUTH-08: พฤติกรรมปุ่มลงชื่อเข้าใช้ขณะข้อมูลไม่ครบและขณะกำลังโหลด (Login Button State)
-- **Module / Feature**: Authentication / Login Form Interaction
-- **Requirement ID**: FR-AUTH-02
-- **Test Type**: UI/UX
-- **Priority**: P2 (Medium)
-- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
-  1. แอปเปิดอยู่ที่หน้าลงชื่อเข้าใช้
-- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
-  - ช่องว่างทั้งสองช่อง
-  - อีเมล `bad-format` รหัสผ่าน `123`
-  - บัญชีจริงสำหรับเคสกำลังโหลด
-- **Test Steps (ขั้นตอนการทดสอบ)**:
-  1. ไม่กรอกอะไรแล้วกดปุ่มลงชื่อเข้าใช้
-  2. กรอกอีเมลผิดรูปแบบและรหัสผ่านสั้นกว่า 6 ตัวอักษร แล้วกดปุ่ม
-  3. กรอกบัญชีถูกต้องแล้วกดปุ่ม สังเกตปุ่มระหว่างรอผล
-  4. แตะปุ่มลืมรหัสผ่าน
-- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
-  1. เคสข้อมูลไม่ครบแสดงข้อความกำกับใต้ช่องที่ผิด และไม่มีคำขอส่งออกไป
-  2. อีเมลผิดรูปแบบแสดงข้อความว่ารูปแบบอีเมลไม่ถูกต้อง รหัสสั้นแสดงข้อความว่าต้องมีอย่างน้อย 6 ตัวอักษร
-  3. ระหว่างรอผล ปุ่มแสดงวงล้อโหลดและกดซ้ำไม่ได้ ป้องกันการยิงคำขอซ้ำ
-  4. ปุ่มลืมรหัสผ่านในรุ่นปัจจุบันยังไม่มีผลลัพธ์ใด (GAP ส่วนย่อย: ยังไม่พบปลายทางกู้รหัสผ่าน)
-- **Automation Mapping**: Manual UI Test
-
----
-
-### TC-MOB-UI-03: การแสดงผลจอเล็ก จอใหญ่ และการหมุนจอ (Responsive Plus Rotation)
-- **Module / Feature**: Layout / Responsive and Orientation
-- **Requirement ID**: FR-SET-02
-- **Test Type**: UI/UX
-- **Priority**: P2 (Medium)
-- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
-  1. เตรียมอุปกรณ์จอเล็กหนึ่งเครื่องและอุปกรณ์จอใหญ่หนึ่งเครื่อง
-  2. ล็อกอินค้างไว้ มีประวัติการสแกนอย่างน้อย 1 รายการ
-- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
-  - หน้าหลัก ประวัติ ผลวิเคราะห์ รายงาน ตั้งค่า
-  - แนวตั้งและแนวนอน
-- **Test Steps (ขั้นตอนการทดสอบ)**:
-  1. เปิดทุกหน้าบนจอเล็ก ตรวจสอบว่าเนื้อหาเลื่อนดูได้ ไม่มีแถบเหลืองดำทับ ไม่มีปุ่มถูกตัด
-  2. เปิดทุกหน้าบนจอใหญ่ ตรวจสอบว่าเนื้อหาจัดกึ่งกลางอ่านง่าย ปุ่มกดได้ปกติ
-  3. หมุนจอเป็นแนวนอนบนหน้าผลวิเคราะห์และหน้ารายงาน ตรวจสอบการจัดวางใหม่
-- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
-  1. ทุกหน้าเลื่อนดูเนื้อหาจนสุดได้ ไม่มีข้อความล้นจนอ่านไม่ได้ ไม่มีปุ่มถูกบัง
-  2. บนจอใหญ่เนื้อหาไม่ยืดเต็มจนอ่านยาก ปุ่มทุกปุ่มยังกดได้
-  3. หมุนจอแล้วไม่แครช ไม่เสียสถานะการกรอกฟอร์ม ป้ายระดับความเสี่ยงและภาพยังแสดงครบ
-- **Automation Mapping**: Manual Device Test
-
----
+| Test Case ID | Test Case name | Requirement ID | Preconditions | Test Data | Description | Test Steps | Expected Results | Actual Result / Status | Priority |
+|---|---|---|---|---|---|---|---|---|---|
+| TC-MOB-AUTH-08 | พฤติกรรมปุ่มลงชื่อเข้าใช้ขณะข้อมูลไม่ครบและขณะกำลังโหลด (Login Button State) | FR-AUTH-02 | แอปเปิดอยู่ที่หน้าลงชื่อเข้าใช้ | ช่องว่างทั้งสองช่อง<br>อีเมล `bad-format` รหัสผ่าน `123`<br>บัญชีจริงสำหรับเคสกำลังโหลด | Authentication / Login Form Interaction [UI/UX] (Automation: Manual UI Test) | ไม่กรอกอะไรแล้วกดปุ่มลงชื่อเข้าใช้<br>กรอกอีเมลผิดรูปแบบและรหัสผ่านสั้นกว่า 6 ตัวอักษร แล้วกดปุ่ม<br>กรอกบัญชีถูกต้องแล้วกดปุ่ม สังเกตปุ่มระหว่างรอผล<br>แตะปุ่มลืมรหัสผ่าน | เคสข้อมูลไม่ครบแสดงข้อความกำกับใต้ช่องที่ผิด และไม่มีคำขอส่งออกไป<br>อีเมลผิดรูปแบบแสดงข้อความว่ารูปแบบอีเมลไม่ถูกต้อง รหัสสั้นแสดงข้อความว่าต้องมีอย่างน้อย 6 ตัวอักษร<br>ระหว่างรอผล ปุ่มแสดงวงล้อโหลดและกดซ้ำไม่ได้ ป้องกันการยิงคำขอซ้ำ<br>ปุ่มลืมรหัสผ่านในรุ่นปัจจุบันยังไม่มีผลลัพธ์ใด (GAP ส่วนย่อย: ยังไม่พบปลายทางกู้รหัสผ่าน) | To Do | P2 (Medium) |
+| TC-MOB-UI-03 | การแสดงผลจอเล็ก จอใหญ่ และการหมุนจอ (Responsive Plus Rotation) | FR-SET-02 | เตรียมอุปกรณ์จอเล็กหนึ่งเครื่องและอุปกรณ์จอใหญ่หนึ่งเครื่อง<br>ล็อกอินค้างไว้ มีประวัติการสแกนอย่างน้อย 1 รายการ | หน้าหลัก ประวัติ ผลวิเคราะห์ รายงาน ตั้งค่า<br>แนวตั้งและแนวนอน | Layout / Responsive and Orientation [UI/UX] (Automation: Manual Device Test) | เปิดทุกหน้าบนจอเล็ก ตรวจสอบว่าเนื้อหาเลื่อนดูได้ ไม่มีแถบเหลืองดำทับ ไม่มีปุ่มถูกตัด<br>เปิดทุกหน้าบนจอใหญ่ ตรวจสอบว่าเนื้อหาจัดกึ่งกลางอ่านง่าย ปุ่มกดได้ปกติ<br>หมุนจอเป็นแนวนอนบนหน้าผลวิเคราะห์และหน้ารายงาน ตรวจสอบการจัดวางใหม่ | ทุกหน้าเลื่อนดูเนื้อหาจนสุดได้ ไม่มีข้อความล้นจนอ่านไม่ได้ ไม่มีปุ่มถูกบัง<br>บนจอใหญ่เนื้อหาไม่ยืดเต็มจนอ่านยาก ปุ่มทุกปุ่มยังกดได้<br>หมุนจอแล้วไม่แครช ไม่เสียสถานะการกรอกฟอร์ม ป้ายระดับความเสี่ยงและภาพยังแสดงครบ | To Do | P2 (Medium) |
 
 ## 11. หมวดหมู่รายงานเชิงลบ (Report Negative)
 
-### TC-MOB-RPT-03: การปฏิเสธรายงานที่รายละเอียดสั้นเกินไปและไม่เลือกหมวดหมู่ (Report Form Validation)
-- **Module / Feature**: Scam Reporting / Report Form Validation
-- **Requirement ID**: FR-RPT-01
-- **Test Type**: Functional
-- **Priority**: P2 (Medium)
-- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
-  1. อยู่ในฟอร์มรายงานโดยมี `scan_id` อ้างอิง
-- **Test Data (ข้อมูลที่ใช้ทดสอบ — เกณฑ์ฝั่งบริการขั้นต่ำ 10 ตัวอักษร)**:
-  - กรณีไม่เลือกหมวดหมู่
-  - รายละเอียดยาว 4 ตัวอักษร (ฟอร์มปฏิเสธ)
-  - รายละเอียดยาว 9 / 10 / 11 ตัวอักษร (boundary ฝั่งบริการ) — ตรวจนับความยาวก่อนรันด้วย `python3 -c "print(len(s))"`
-- **Test Steps (ขั้นตอนการทดสอบ)**:
-  1. ไม่เลือกหมวดหมู่แล้วกดส่ง
-  2. เลือกหมวดหมู่ กรอกรายละเอียดยาว 4 ตัวอักษร แล้วกดส่ง
-  3. กรอกรายละเอียดยาว 9 ตัวอักษร แล้วกดส่ง
-  4. กรอกรายละเอียดยาว 10 ตัวอักษร แล้วกดส่ง
-  5. กรอกรายละเอียดยาว 11 ตัวอักษร แล้วกดส่ง
-- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
-  1. ไม่เลือกหมวดหมู่มีข้อความแจ้งให้เลือกหมวดหมู่ และไม่มีคำขอส่งออกไป
-  2. รายละเอียดยาว 4 ตัวอักษรถูกปฏิเสธที่ฟอร์ม พร้อมข้อความแจ้งให้กรอกเพิ่ม
-  3. รายละเอียดยาว 9 ตัวอักษรผ่านฟอร์มฝั่งแอป แต่ถูกปฏิเสธที่ฝั่งบริการ (ต่ำกว่า 10) พร้อมแถบแจ้งข้อผิดพลาดสีแดง โดยแอปไม่แครช
-  4. รายละเอียดยาว 10 และ 11 ตัวอักษรผ่านเกณฑ์ความยาวฝั่งบริการ (ได้ `201 Created`)
-- **Automation Mapping**: Manual UI Test
-
----
+| Test Case ID | Test Case name | Requirement ID | Preconditions | Test Data | Description | Test Steps | Expected Results | Actual Result / Status | Priority |
+|---|---|---|---|---|---|---|---|---|---|
+| TC-MOB-RPT-03 | การปฏิเสธรายงานที่รายละเอียดสั้นเกินไปและไม่เลือกหมวดหมู่ (Report Form Validation) | FR-RPT-01 | อยู่ในฟอร์มรายงานโดยมี `scan_id` อ้างอิง | กรณีไม่เลือกหมวดหมู่<br>รายละเอียดยาว 4 ตัวอักษร (ฟอร์มปฏิเสธ)<br>รายละเอียดยาว 9 / 10 / 11 ตัวอักษร (boundary ฝั่งบริการ) — ตรวจนับความยาวก่อนรันด้วย `python3 -c "print(len(s))"` | Scam Reporting / Report Form Validation [Functional] (Automation: Manual UI Test) | ไม่เลือกหมวดหมู่แล้วกดส่ง<br>เลือกหมวดหมู่ กรอกรายละเอียดยาว 4 ตัวอักษร แล้วกดส่ง<br>กรอกรายละเอียดยาว 9 ตัวอักษร แล้วกดส่ง<br>กรอกรายละเอียดยาว 10 ตัวอักษร แล้วกดส่ง<br>กรอกรายละเอียดยาว 11 ตัวอักษร แล้วกดส่ง | ไม่เลือกหมวดหมู่มีข้อความแจ้งให้เลือกหมวดหมู่ และไม่มีคำขอส่งออกไป<br>รายละเอียดยาว 4 ตัวอักษรถูกปฏิเสธที่ฟอร์ม พร้อมข้อความแจ้งให้กรอกเพิ่ม<br>รายละเอียดยาว 9 ตัวอักษรผ่านฟอร์มฝั่งแอป แต่ถูกปฏิเสธที่ฝั่งบริการ (ต่ำกว่า 10) พร้อมแถบแจ้งข้อผิดพลาดสีแดง โดยแอปไม่แครช<br>รายละเอียดยาว 10 และ 11 ตัวอักษรผ่านเกณฑ์ความยาวฝั่งบริการ (ได้ `201 Created`) | To Do | P2 (Medium) |
 
 ## 12. หมวดหมู่ความปลอดภัยฝั่งแสดงผล (Client-side Display Safety)
 
-### TC-MOB-SEC-01: การแสดงชื่อเรื่องที่มีแท็กสคริปต์ต้องเป็นข้อความธรรมดา (Script Tag in Title Display)
-- **Module / Feature**: History and Result / Untrusted Text Rendering
-- **Requirement ID**: FR-HIST-01
-- **Test Type**: Security
-- **Priority**: P1 (High)
-- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
-  1. ล็อกอินค้างไว้
-- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
-  - ชื่อเรื่อง `สลิป<script>alert(1)</script>โอนเงิน`
-- **Test Steps (ขั้นตอนการทดสอบ)**:
-  1. ส่งสแกนพร้อมชื่อเรื่องข้างต้น
-  2. เปิดหน้าประวัติและหน้ารายละเอียดของงานนั้น
-- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
-  1. ชื่อเรื่องแสดงเป็นตัวอักษรตามที่กรอกทุกตัว ไม่มีการเปิดกล่องข้อความแปลกปลอม ไม่มีการนำทางเอง
-  2. การค้นหาประวัติด้วยคำบางส่วนของชื่อเรื่องยังทำงานปกติ ไม่เกิดข้อผิดพลาดฐานข้อมูล
-- **Automation Mapping**: Manual UI Test
-
----
+| Test Case ID | Test Case name | Requirement ID | Preconditions | Test Data | Description | Test Steps | Expected Results | Actual Result / Status | Priority |
+|---|---|---|---|---|---|---|---|---|---|
+| TC-MOB-SEC-01 | การแสดงชื่อเรื่องที่มีแท็กสคริปต์ต้องเป็นข้อความธรรมดา (Script Tag in Title Display) | FR-HIST-01 | ล็อกอินค้างไว้ | ชื่อเรื่อง `สลิป<script>alert(1)</script>โอนเงิน` | History and Result / Untrusted Text Rendering [Security] (Automation: Manual UI Test) | ส่งสแกนพร้อมชื่อเรื่องข้างต้น<br>เปิดหน้าประวัติและหน้ารายละเอียดของงานนั้น | ชื่อเรื่องแสดงเป็นตัวอักษรตามที่กรอกทุกตัว ไม่มีการเปิดกล่องข้อความแปลกปลอม ไม่มีการนำทางเอง<br>การค้นหาประวัติด้วยคำบางส่วนของชื่อเรื่องยังทำงานปกติ ไม่เกิดข้อผิดพลาดฐานข้อมูล | To Do | P1 (High) |
 
 ## 13. หมวดหมู่ความเข้ากันได้ของอุปกรณ์ (Device Compatibility)
 
-### TC-MOB-COMP-01: การใช้งานบน Android รุ่นเก่าและรุ่นใหม่ด้วยตัวเลือกรูปจากแกลเลอรีเท่านั้น (Gallery-only Across Versions)
-- **Module / Feature**: Image Input / OS Version Compatibility
-- **Requirement ID**: FR-INPUT-01
-- **Test Type**: Compatibility
-- **Priority**: P2 (Medium)
-- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
-  1. เตรียมอุปกรณ์ 2 รุ่นอ้างอิงตามรุ่นขั้นต่ำที่โปรเจกต์รองรับ (minSdk = `flutter.minSdkVersion` = API 23): รุ่นเก่า API 23–24 (Android 6.0–7.0) 1 เครื่อง เช่น Samsung Galaxy J7 และรุ่นใหม่ API 33–34 (Android 13–14) 1 เครื่อง เช่น Google Pixel 7
-  2. ติดตั้งแอปบิลด์เดียวกันทั้งสองเครื่อง
-- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
-  - ภาพ jpg และ png อย่างละ 1 ไฟล์ในแกลเลอรีของแต่ละเครื่อง
-- **Test Steps (ขั้นตอนการทดสอบ)**:
-  1. บนแต่ละเครื่อง แตะปุ่มเลือกรูป สังเกตตัวเลือกที่มี
-  2. ปฏิเสธสิทธิ์แกลเลอรีหนึ่งครั้ง แล้วอนุญาตและเลือกภาพอีกครั้ง
-  3. ทำสแกนจนจบครบทุกขั้นตอนบนทั้งสองเครื่อง
-- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
-  1. ทั้งสองเครื่องเปิดได้เฉพาะตัวเลือกรูปจากแกลเลอรี ไม่มีเส้นทางถ่ายภาพด้วยกล้อง
-  2. กรณีปฏิเสธสิทธิ์แสดงหน้าคำแนะนำพร้อมปุ่มเปิดการตั้งค่า ไม่แครชทั้งสองรุ่น
-  3. หลังอนุญาต เลือกภาพ ครอบตัด สแกน ดูผล ดูประวัติได้ครบเหมือนกันทั้งสองรุ่น
-- **Automation Mapping**: Manual Device Test
-
----
+| Test Case ID | Test Case name | Requirement ID | Preconditions | Test Data | Description | Test Steps | Expected Results | Actual Result / Status | Priority |
+|---|---|---|---|---|---|---|---|---|---|
+| TC-MOB-COMP-01 | การใช้งานบน Android รุ่นเก่าและรุ่นใหม่ด้วยตัวเลือกรูปจากแกลเลอรีเท่านั้น (Gallery-only Across Versions) | FR-INPUT-01 | เตรียมอุปกรณ์ 2 รุ่นอ้างอิงตามรุ่นขั้นต่ำที่โปรเจกต์รองรับ (minSdk = `flutter.minSdkVersion` = API 23): รุ่นเก่า API 23–24 (Android 6.0–7.0) 1 เครื่อง เช่น Samsung Galaxy J7 และรุ่นใหม่ API 33–34 (Android 13–14) 1 เครื่อง เช่น Google Pixel 7<br>ติดตั้งแอปบิลด์เดียวกันทั้งสองเครื่อง | ภาพ jpg และ png อย่างละ 1 ไฟล์ในแกลเลอรีของแต่ละเครื่อง | Image Input / OS Version Compatibility [Compatibility] (Automation: Manual Device Test) | บนแต่ละเครื่อง แตะปุ่มเลือกรูป สังเกตตัวเลือกที่มี<br>ปฏิเสธสิทธิ์แกลเลอรีหนึ่งครั้ง แล้วอนุญาตและเลือกภาพอีกครั้ง<br>ทำสแกนจนจบครบทุกขั้นตอนบนทั้งสองเครื่อง | ทั้งสองเครื่องเปิดได้เฉพาะตัวเลือกรูปจากแกลเลอรี ไม่มีเส้นทางถ่ายภาพด้วยกล้อง<br>กรณีปฏิเสธสิทธิ์แสดงหน้าคำแนะนำพร้อมปุ่มเปิดการตั้งค่า ไม่แครชทั้งสองรุ่น<br>หลังอนุญาต เลือกภาพ ครอบตัด สแกน ดูผล ดูประวัติได้ครบเหมือนกันทั้งสองรุ่น | To Do | P2 (Medium) |
 
 ## 14. หมวดหมู่การใช้งานสำหรับทุกคน (Usability & Accessibility)
 
-### TC-MOB-A11Y-01: การใช้งานด้วยตัวอักษรขนาดใหญ่สุดและโปรแกรมอ่านหน้าจอ (Large Font Plus Screen Reader)
-- **Module / Feature**: Accessibility / Font Scaling and Screen Reader
-- **Requirement ID**: NFR-A11Y-01, NFR-A11Y-02
-- **Test Type**: Usability & Accessibility
-- **Priority**: P2 (Medium)
-- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
-  1. ตั้งขนาดตัวอักษรของระบบเป็นขนาดใหญ่สุด
-  2. เปิดโปรแกรมอ่านหน้าจอของระบบ
-  3. ล็อกอินค้างไว้
-- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
-  - หน้าลงชื่อเข้าใช้ หน้าหลัก ประวัติ ผลวิเคราะห์ รายงาน ตั้งค่า
-- **Test Steps (ขั้นตอนการทดสอบ)**:
-  1. เปิดทุกหน้าด้วยตัวอักษรขนาดใหญ่สุด ตรวจสอบการเลื่อนและการมองเห็นปุ่ม
-  2. ใช้โปรแกรมอ่านหน้าจอแตะไล่ทุกองค์ประกอบ ฟังคำอ่านของปุ่มและไอคอน
-  3. ปฏิบัติงานจริงด้วยโปรแกรมอ่านหน้าจอ: เลือกรูป เริ่มสแกน เปิดประวัติ ส่งรายงาน
-- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
-  1. ตัวอักษรใหญ่สุดไม่ทำให้ปุ่มหายหรือข้อความทับกันจนกดไม่ได้ เนื้อหาเลื่อนดูได้จนสุด
-  2. ปุ่มและไอคอนสำคัญมีคำอ่านกำกับ (ปุ่มข้อความอ่านตามป้าย ไอคอนหลักมีคำอธิบาย) ไม่มีปุ่มที่ข้ามไม่ได้
-  3. ทำงานครบทุกขั้นตอนด้วยโปรแกรมอ่านหน้าจอได้โดยไม่ต้องปิดฟีเจอร์ช่วยเหลือ
-- **Automation Mapping**: Manual Device Test
-
----
+| Test Case ID | Test Case name | Requirement ID | Preconditions | Test Data | Description | Test Steps | Expected Results | Actual Result / Status | Priority |
+|---|---|---|---|---|---|---|---|---|---|
+| TC-MOB-A11Y-01 | การใช้งานด้วยตัวอักษรขนาดใหญ่สุดและโปรแกรมอ่านหน้าจอ (Large Font Plus Screen Reader) | NFR-A11Y-01, NFR-A11Y-02 | ตั้งขนาดตัวอักษรของระบบเป็นขนาดใหญ่สุด<br>เปิดโปรแกรมอ่านหน้าจอของระบบ<br>ล็อกอินค้างไว้ | หน้าลงชื่อเข้าใช้ หน้าหลัก ประวัติ ผลวิเคราะห์ รายงาน ตั้งค่า | Accessibility / Font Scaling and Screen Reader [Usability & Accessibility] (Automation: Manual Device Test) | เปิดทุกหน้าด้วยตัวอักษรขนาดใหญ่สุด ตรวจสอบการเลื่อนและการมองเห็นปุ่ม<br>ใช้โปรแกรมอ่านหน้าจอแตะไล่ทุกองค์ประกอบ ฟังคำอ่านของปุ่มและไอคอน<br>ปฏิบัติงานจริงด้วยโปรแกรมอ่านหน้าจอ: เลือกรูป เริ่มสแกน เปิดประวัติ ส่งรายงาน | ตัวอักษรใหญ่สุดไม่ทำให้ปุ่มหายหรือข้อความทับกันจนกดไม่ได้ เนื้อหาเลื่อนดูได้จนสุด<br>ปุ่มและไอคอนสำคัญมีคำอ่านกำกับ (ปุ่มข้อความอ่านตามป้าย ไอคอนหลักมีคำอธิบาย) ไม่มีปุ่มที่ข้ามไม่ได้<br>ทำงานครบทุกขั้นตอนด้วยโปรแกรมอ่านหน้าจอได้โดยไม่ต้องปิดฟีเจอร์ช่วยเหลือ | To Do | P2 (Medium) |
 
 ## 15. หมวดหมู่การถดถอย (Regression)
 
-### TC-MOB-REG-01: ประวัติเดิมยังเปิดได้หลังอัปเดตแอป และการเปิดผลจากภายนอก (History After Update Plus Outside Link)
-- **Module / Feature**: History / Backward Compatibility and Routing
-- **Requirement ID**: FR-HIST-01, FR-HIST-02
-- **Test Type**: Regression
-- **Priority**: P2 (Medium)
-- **Pre-conditions (เงื่อนไขก่อนเริ่มทดสอบ)**:
-  1. บนแอปรุ่นก่อนหน้า มีประวัติแคชไว้ในเครื่องอย่างน้อย 2 รายการ
-  2. จดรหัสงานสแกนไว้ 1 รหัส
-- **Test Data (ข้อมูลที่ใช้ทดสอบ)**:
-  - ประวัติแคชเดิมในเครื่อง
-  - เส้นทางในแอป `/result/:scanId` และ `/detail/:scanId`
-- **Test Steps (ขั้นตอนการทดสอบ)**:
-  1. อัปเดตแอปเป็นรุ่นใหม่โดยไม่ล้างข้อมูล แล้วเปิดหน้าประวัติ
-  2. แตะประวัติเดิมเพื่อเปิดหน้ารายงานผล
-  (หมายเหตุ: การเปิดลิงก์ผลสแกนจากภายนอกแอป — deep-link ระดับ OS ยังไม่มีในรุ่นปัจจุบัน ย้ายเป็น change request แยก ไม่รวมใน TC นี้)
-- **Expected Results (ผลลัพธ์ที่คาดหวัง)**:
-  1. ประวัติเดิมยังแสดงครบ แตะแล้วเปิดผลเดิมได้ข้อมูลตรง
-  2. การนำทางภายในแอปไปหน้ารายงานผลและรายละเอียดยังทำงานปกติ
-- **Automation Mapping**: Manual Device Test
+| Test Case ID | Test Case name | Requirement ID | Preconditions | Test Data | Description | Test Steps | Expected Results | Actual Result / Status | Priority |
+|---|---|---|---|---|---|---|---|---|---|
+| TC-MOB-REG-01 | ประวัติเดิมยังเปิดได้หลังอัปเดตแอป และการเปิดผลจากภายนอก (History After Update Plus Outside Link) | FR-HIST-01, FR-HIST-02 | บนแอปรุ่นก่อนหน้า มีประวัติแคชไว้ในเครื่องอย่างน้อย 2 รายการ<br>จดรหัสงานสแกนไว้ 1 รหัส | ประวัติแคชเดิมในเครื่อง<br>เส้นทางในแอป `/result/:scanId` และ `/detail/:scanId` | History / Backward Compatibility and Routing [Regression] (Automation: Manual Device Test) | อัปเดตแอปเป็นรุ่นใหม่โดยไม่ล้างข้อมูล แล้วเปิดหน้าประวัติ<br>แตะประวัติเดิมเพื่อเปิดหน้ารายงานผล<br>(หมายเหตุ: การเปิดลิงก์ผลสแกนจากภายนอกแอป — deep-link ระดับ OS ยังไม่มีในรุ่นปัจจุบัน ย้ายเป็น change request แยก ไม่รวมใน TC นี้) | ประวัติเดิมยังแสดงครบ แตะแล้วเปิดผลเดิมได้ข้อมูลตรง<br>การนำทางภายในแอปไปหน้ารายงานผลและรายละเอียดยังทำงานปกติ | To Do | P2 (Medium) |

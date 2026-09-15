@@ -27,6 +27,7 @@
 │   │   ├── v/v1.0.x/         # กราฟ loss/metrics แยกตามเวอร์ชัน
 │   │   ├── test.sh           # สร้าง plot/report ทั้งหมดผ่าน plot_training.py
 │   │   ├── test_qualitative_onnx.sh # รัน ONNX qualitative test ทุกเวอร์ชัน
+│   │   ├── add.sh            # ถามข้อมูลโมเดลใหม่ทีละช่อง
 │   │   ├── add-v-mode.sh     # ลงทะเบียนและตรวจโมเดลเวอร์ชันใหม่
 │   │   └── README.md         # วิธีรันและกติกาการจัดเก็บผลทดสอบ
 │   ├── prepare_dataset/          # pipeline เดียว: clean_dataset.py + README

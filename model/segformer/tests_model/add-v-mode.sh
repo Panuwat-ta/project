@@ -5,6 +5,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SEGFORMER_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 PYTHON="${SEGFORMER_ROOT}/venv/bin/python"
+PROJECT_ROOT="$(cd "${SEGFORMER_ROOT}/../.." && pwd)"
+ONNX_TEST_PYTHON="${PROJECT_ROOT}/server/venv/bin/python"
 
 export MPLCONFIGDIR="${MPLCONFIGDIR:-/tmp/matplotlib-scamguard}"
 
@@ -62,6 +64,11 @@ for required in VERSION CHECKPOINT ONNX_MODEL TRAINING_LOG TRAINING_RUN_ID TEST_
         exit 2
     fi
 done
+
+if [[ ! -x "${ONNX_TEST_PYTHON}" ]]; then
+    echo "ONNX test environment not found: ${ONNX_TEST_PYTHON}" >&2
+    exit 1
+fi
 
 if [[ ! "${VERSION}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     echo "Invalid version '${VERSION}'; expected format such as v1.0.6" >&2
@@ -227,6 +234,7 @@ print(
 PY
 
 "${PYTHON}" -m unittest "${SCRIPT_DIR}/report/test_plot_training.py"
+"${ONNX_TEST_PYTHON}" -m unittest "${SCRIPT_DIR}/report/test_onnx_models.py"
 "${SCRIPT_DIR}/test.sh"
 
 echo "Added ${VERSION} successfully."

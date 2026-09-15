@@ -18,11 +18,13 @@
 - `output/` — inference output เฉพาะเครื่อง; ไม่ควร commit
 - `report/plot_training.py` — ตรวจ manifest/log แล้วสร้างรายงานทั้งหมด
 - `report/test_plot_training.py` — unit tests ของ parser และ metric regression
+- `report/test_onnx_models.py` — unit tests ของ ONNX contract ทุกเวอร์ชันใน manifest
 - `report/figs/` — common-test plots, diagnostics และ CSV summaries
 - `report/reportmodel.md` — รายงานสรุปภาษาไทย
 - `v/<version>/` — loss, validation และ Qualitative ONNX Example ของแต่ละเวอร์ชัน
 - `test.sh` — entry point สำหรับตรวจ log และสร้าง plot/report ทั้งหมดผ่าน `report/plot_training.py --clean`
 - `test_qualitative_onnx.sh` — เรียก `test_qualitative_onnx.py` ครบทุกเวอร์ชันตามลำดับ
+- `add.sh` — interactive entry point สำหรับถามข้อมูลโมเดลใหม่ทีละช่อง
 - `add-v-mode.sh` — ตรวจและลงทะเบียนโมเดลเวอร์ชันใหม่แบบอัตโนมัติ
 - `test_train/test-model.sh` — test-set evaluation ของ `v1.0.5`; ต้องมี dataset และ GPU ตามสคริปต์
 
@@ -32,6 +34,7 @@
 
 ```bash
 MPLCONFIGDIR=/tmp/matplotlib-scamguard venv/bin/python -m unittest tests_model/report/test_plot_training.py
+../../server/venv/bin/python -m unittest tests_model/report/test_onnx_models.py
 ./tests_model/test.sh
 ./tests_model/test_qualitative_onnx.sh
 ```
@@ -69,12 +72,18 @@ MPLCONFIGDIR=/tmp/matplotlib-scamguard venv/bin/python tests_model/v/v1.0.5/test
 
 1. รัน evaluation บน locked common test ชุดเดิมให้สำเร็จครบ 2,504/2,504 batches และเก็บ log
 2. เลือก checkpoint จาก validation ภายใน run; อย่าใช้ validation ต่างชุดจัดอันดับข้ามรุ่น
-3. รัน `add-v-mode.sh` โดยระบุ checkpoint, ONNX, training log/run ID และ test log/run ID
+3. รัน `./tests_model/add.sh` แล้วกรอก checkpoint, ONNX, training log/run ID และ test log/run ID ทีละช่อง
 4. สคริปต์จะตรวจ path, log completeness, checkpoint iteration และ path ซ้ำ ก่อนเพิ่ม manifest และ regression metrics
-5. สคริปต์จะสร้าง `v/<version>/test_qualitative_onnx.py`, รัน unit tests และสร้างรายงานทั้งหมด
+5. สคริปต์จะสร้าง `v/<version>/test_qualitative_onnx.py`, รัน parser/model unit tests และสร้างรายงานทั้งหมด
 6. ตรวจผลใน `report/figs/` และ `v/<version>/` แล้วอัปเดต `report/reportmodel.md` จาก `common_test_summary.csv`
 
-ตัวอย่าง:
+วิธีแนะนำแบบ interactive:
+
+```bash
+./tests_model/add.sh
+```
+
+หรือเรียก registration backend โดยส่ง arguments โดยตรง:
 
 ```bash
 ./tests_model/add-v-mode.sh \

@@ -85,6 +85,7 @@ Dataset identifier: `scamguard-locked-multisource-test-v1`
 - `evaluation_manifest.json` — source of truth สำหรับ version/checkpoint/ONNX/log/run/dataset
 - `report/figs/common_test_summary.csv` — overall และ per-class common-test metrics
 - `report/figs/training_validation_summary.csv` — จำนวน log points, validation runs และ best validation
+- `report/test_onnx_models.py` — ตรวจไฟล์, input/output contract, dynamic shape, deterministic output และ probability ของ ONNX ทุกรุ่น
 - `report/figs/*.png` — raster 200 DPI
 - `report/figs/*.svg` — vector สำหรับรายงาน
 - `tests_model/v/<version>/` — loss, validation และ Qualitative ONNX Example รายรุ่น
