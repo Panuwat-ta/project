@@ -3,7 +3,7 @@ title: "AI Model Training Workflow"
 category: concepts
 tags: [concepts, ai, training, onnx]
 sources: [design/training.md]
-updated: 2026-08-04
+updated: 2026-09-15
 ---
 
 # การออกแบบระบบฝึกสอนโมเดล (Model Training Design)
@@ -62,11 +62,41 @@ updated: 2026-08-04
   * **mDice**: การหาความสมดุลระหว่างความแม่นยำและความครอบคลุม
   * **mIoU**: สัดส่วนพิกเซลที่ทายถูกทั้งหมด
 
+> **ผลการเทรน v1.0.5 (config `segformer_mit-b2-v10.py`):** fine-tune จาก checkpoint `v1.0.0` (`best_mIoU_iter_112000.pth`) ครบ 200,000 iters (จบ 2026-09-12) ได้ best validation mIoU **91.31** / mDice **95.29** @iter 197,500 และเป็นอันดับหนึ่งบน locked common test (`scamguard-locked-multisource-test-v1`) ด้วย mIoU **91.24** / Forgery IoU **83.51** — เป็น candidate ดีที่สุด แต่ Production ยังคงเป็น `v1.0.0` (ดู [[concepts/ai-model-segformer]])
+
+### ผลรายเวอร์ชัน (Test Case ระดับโมเดล)
+
+**ตารางที่ 1 — คะแนน validation ตอนเทรน** (ที่มา: `model/segformer/tests_model/report/reportmodel.md` §ตาราง best mIoU):
+
+| เวอร์ชัน | best iter | val mIoU (%) | val mDice (%) |
+|---|---:|---:|---:|
+| `v1.0.0` | 112,000 | 72.42 | 81.40 |
+| `v1.0.1` | 152,000 | 75.48 | 83.79 |
+| `v1.0.2` | 132,000 | 67.99 | 76.55 |
+| `v1.0.3` | 160,000 | 72.62 | 81.30 |
+| `v1.0.4` | 495,000 | 86.38 | 92.22 |
+| `v1.0.5` | 197,500 | **91.31** | **95.29** |
+
+**ตารางที่ 2 — Locked common test** (`scamguard-locked-multisource-test-v1`, รัน 2026-09-15, ที่มา: reportmodel.md §1):
+
+| อันดับ | เวอร์ชัน | mIoU (%) | mDice (%) | Forgery IoU (%) |
+|:---:|---|---:|---:|---:|
+| **1** | **`v1.0.5`** | **91.24** | **95.25** | **83.51** |
+| 2 | `v1.0.4` | 81.21 | 88.74 | 64.94 |
+| 3 | `v1.0.0` | 48.70 | 51.42 | 2.92 |
+| 4 | `v1.0.3` | 47.99 | 50.08 | 1.53 |
+| 5 | `v1.0.2` | 47.81 | 49.72 | 1.16 |
+| 6 | `v1.0.1` | 47.80 | 49.69 | 1.12 |
+
+> [!NOTE]
+> มีชุดประเมินที่สามคือ local Test-Cases set (105 ตัวอย่าง ใน `spreadsheets/quantitative/overall.csv`): `v1.0.5` ได้ mIoU 75.96 / mDice 84.87 — ต่ำกว่าเกณฑ์ 85.00% อยู่ 0.13 (ดู gate ใน [[planning/task-tracking]]) อย่าสลับตัวเลขกันทั้งสามชุด: validation (ตาราง 1) ≠ locked common test (ตาราง 2) ≠ local set
+
 ## 11. Hyperparameters & Hardware Optimization
 
 * **VRAM Optimization**: ใช้ `AmpOptimWrapper` (Mixed Precision) เพื่อลดการใช้หน่วยความจำ ทำให้เทรนบนอุปกรณ์ที่มี VRAM จำกัดได้อย่างเต็มประสิทธิภาพ
 * **Optimizer & Scheduler**: ใช้ AdamW ร่วมกับ LinearLR (Warmup) และ PolyLR
 * **Loss Function**: ใช้ `Binary Cross-Entropy Loss (BCE)` ควบคู่กับ `DiceLoss` (`use_sigmoid=True`) เพื่อแก้ปัญหา Class Imbalance (พื้นที่รอยปลอมแปลงเล็กมากเมื่อเทียบกับพื้นหลัง — canonical ตรงกับ `design/training.md` และ `Document/model/training.md`)
+* **บทเรียนจาก config v10 (`segformer_mit-b2-v10.py`, โมเดล v1.0.5):** ชุดข้อมูล clean tree ฝั่ง PNG lossless (`img_suffix='.png'`, 7 แหล่ง: casia/authentic/splicing/inpainting/copymove/face/imd2020 รวมเป็น `ConcatDataset` ทั้ง val และ test) — `class_weight=[1.0, 2.5]` + `DiceLoss loss_weight=1.5` — batch 8 + `accumulative_counts=2` (effective 16 บน VRAM 8GB) — งบ 200,000 iters + `save_best='mIoU'` (ดู [[concepts/configs]])
 
 ## 12. Checkpoint & Version Management
 

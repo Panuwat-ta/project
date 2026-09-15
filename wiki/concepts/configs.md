@@ -3,7 +3,7 @@ title: "พารามิเตอร์และสมการคณิตศ
 category: concepts
 tags: [risk-score, equations, loss-function, SegFormer, parameters]
 sources: [Document/model/configs.md, Document/model/training.md]
-updated: 2026-08-08
+updated: 2026-09-15
 ---
 
 # การตั้งค่าพารามิเตอร์ อัลกอริทึมและสมการคณิตศาสตร์ที่ใช้ (Configuration, Algorithms, and Mathematical Equations)
@@ -91,6 +91,8 @@ $$ \theta_{head}^{(t+1)} = \theta_{head}^{(t)} - (\eta \times 10.0) \frac{\parti
   * $L_{BCE}$ ช่วยบังคับให้โมเดลประเมินค่าความน่าจะเป็นของแต่ละพิกเซลได้อย่างแม่นยำ 
   * $L_{Dice}$ ช่วยรักษารูปทรงและขอบเขต (Boundary) ของรอยตัดต่อให้คมชัด ลดปัญหาความไม่สมดุลของข้อมูลระหว่างบริเวณพิกเซลจริงที่มีมาก กับพิกเซลรอยแก้ที่มีน้อย
 * **Differential Learning Rates:** ระบบต้องการเก็บความสามารถเดิมในการสกัดจุดเด่นของภาพ (Feature Extraction) จากโมเดลที่พรีเทรนมาแล้วเอาไว้ (ป้องกัน Catastrophic Forgetting) จึงสั่งให้แกนหลัก (Backbone) เรียนรู้ช้าสุดๆ (`0.1`) แต่ขณะเดียวกันเราต้องการให้ส่วนประมวลผลปลายทาง (Classification Head) ปรับตัวเข้าหาความรู้ใหม่และข้อมูลภาพสลิปใบเสร็จใหม่ๆ จึงให้เรียนรู้เร็วถึง (`10.0`) เท่า
+
+> **ค่าที่ใช้จริงใน config v10 (`segformer_mit-b2-v10.py` → โมเดล v1.0.5):** `CrossEntropyLoss loss_weight=1.0, class_weight=[1.0, 2.5]` + `DiceLoss loss_weight=1.5` — batch 8 + `accumulative_counts=2` (effective 16 บน VRAM 8GB) — AdamW `lr=2e-5` + LinearLR warmup 3,000 iters + PolyLR — งบ `max_iters=200,000`, `val_interval=2,500`, `save_best='mIoU'` — ผล: best validation mIoU **91.31** @iter 197,500 (รายละเอียดผลดู [[concepts/model-training]])
 
 ---
 

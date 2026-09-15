@@ -126,3 +126,7 @@ grep "^## \[" wiki/log.md | tail -5
 ## [2026-09-11] fix | DOC-06: FCM Phase 2 — 02 + 03
 ## [2026-09-11] fix | DOC-13: 409, AC 104, CRUD→Read/Update — 05/06/AppA + wiki
 ## [2026-09-13] sync | database wiki ตรง schema ปัจจุบัน (er-diagram, schema, migrations)
+## [2026-09-15] update | เพิ่มหน้า testing/test-cases — ตาราง 10 คอลัมน์ IEEE 829/ISTQB, กฎ md-canonical + CSV, ยอดเคส 7 พื้นที่ และ tests_all/tests_report/
+## [2026-09-15] update | v1.0.5 training outcome + v10 config lessons → concepts/model-training, ai-model-segformer, configs (val 91.31 / common-test 91.24 แยกค่า)
+## [2026-09-15] fix | refresh เส้นทาง test artifacts + สถานะเทรน v1.0.5 — planning/task-tracking.md
+## [2026-09-15] update | ตารางผลรายเวอร์ชัน v1.0.0–v1.0.5 (val + locked common test + local set แยก 3 ชุด) — concepts/model-training

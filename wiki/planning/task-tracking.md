@@ -3,7 +3,7 @@ title: "การติดตามงานและการบริหาร
 category: planning
 tags: [planning, jira, task-tracking, scrum, kanban, project-management]
 sources: [Document/jira/Task-Tracking.md, Document/jira/to-do-list.md]
-updated: 2026-09-06
+updated: 2026-09-15
 ---
 
 # การติดตามงานและการบริหารโครงการ (Task Tracking & Jira)
@@ -33,7 +33,7 @@ updated: 2026-09-06
 | **เฟส 1: ข้อกำหนดและการวางแผน** | รวบรวม Requirement Candidates (RC), วิเคราะห์ SRS, กำหนด KPI และขอบเขตงาน | เสร็จสิ้น | 100% |
 | **เฟส 2: การออกแบบระบบและสถาปัตยกรรม** | ออกแบบ C1-C4 Diagrams, ER Diagram, UI/UX บน Figma และ Design System | เสร็จสิ้น | 100% |
 | **เฟส 3: การพัฒนาส่วนประกอบหลัก** | พัฒนา Mobile App, FastAPI Backend, AI SegFormer Model, Surya OCR และ Admin Portal | กำลังดำเนินการ | ~90%* |
-| **เฟส 4: การทดสอบและการผสานระบบ** | Automated Test Suites (Unit/Integration/E2E), Performance Load Test และ NFR Validation | กำลังดำเนินการ | ~85%* |
+| **เฟส 4: การทดสอบและการผสานระบบ** | Automated Test Suites (Unit/Integration/E2E), Performance Load Test และ NFR Validation (รายงานใน `tests_all/tests_report/`, เคส manual ใน `tests_all/manual_tests/`, สำเนา CSV ใน `spreadsheets/`, ต้นทางผลประเมินโมเดลใน `model/segformer/Test-Case/output/`) | กำลังดำเนินการ | ~85%* |
 | **เฟส 5: การส่งมอบและเอกสารสมบูรณ์** | รวบรวมเอกสารคู่มือ บันทึกการดำเนินงาน และรายงานผลการตรวจรับโครงงานวิศวกรรม | กำลังดำเนินการ | ~80%* |
 
 > \* ตัวเลขเป็นค่าประมาณจากสัดส่วนงาน Done/ทั้งหมดบนบอร์ด Jira SCM ณ 2026-09-06 — อัปเดตพร้อมวันที่ทุกครั้ง ไม่ใช้เป็นเกณฑ์ตัดสิน
@@ -55,7 +55,7 @@ updated: 2026-09-06
 - ติดตั้งระบบ Database Migration ด้วย Alembic เพื่อควบคุมการเปลี่ยนแปลงของสคีมา
 
 ### 3.3 AI Inference Engine & Pipelines
-- พัฒนาและส่งออกโมเดล SegFormer (MiT-B0 ถึง MiT-B2) ในรูปแบบ ONNX Runtime
+- พัฒนาและส่งออกโมเดล SegFormer (MiT-B0 ถึง MiT-B2) ในรูปแบบ ONNX Runtime — ฝึกและประเมินถึง v1.0.5 แล้ว (MiT-B2, 197.5k iters, checkpoint 20260915_084109; ดีที่สุดบน common test และ export ONNX แล้ว แต่ local set ได้ mDice 84.87% ยังไม่ผ่านเกณฑ์ 85.00%; คะแนนรายเวอร์ชัน v1.0.0–v1.0.5 ใน `spreadsheets/qualitative/` และ `spreadsheets/quantitative/`)
 - ใช้อัลกอริทึม Overlapping Tiling Inference ป้องกันรอยต่อของภาพขนาดใหญ่
 - ติดตั้ง Surya OCR v0.5.0 (Native PyTorch) สำหรับการสกัดข้อความภาษาไทยและอังกฤษ
 - ปรับแต่ง XAI Pipeline ร่วมกับ Qwen2.5 สำหรับสร้างคำอธิบายความผิดปกติ

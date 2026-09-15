@@ -91,3 +91,11 @@ updated: 2026-09-13
 | [[planning/team]] | สมาชิกทีม, ความรับผิดชอบ และข้อมูลอาจารย์ที่ปรึกษา |
 | [[planning/backend-documentation]] | Backend Documentation คู่มือการเริ่มพัฒนาโค้ดฝั่ง Server |
 | [[planning/task-tracking]] | การติดตามงานและการบริหารโครงการ: กระดาน Jira SCM, สถานะรายเฟส และ Work Packages |
+
+---
+
+## การทดสอบ
+
+| หน้า | สรุป |
+| :--- | :--- |
+| [[testing/test-cases]] | กรณีทดสอบ manual ตาราง 10 คอลัมน์ IEEE 829/ISTQB, กฎ md-canonical + CSV ใน spreadsheets/<area>/, จำนวนเคสต่อไฟล์ และที่เก็บผลรัน tests_all/tests_report/ |

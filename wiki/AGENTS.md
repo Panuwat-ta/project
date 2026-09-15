@@ -61,7 +61,7 @@ Every page MUST begin with the following YAML frontmatter:
 ```yaml
 ---
 title: "Page Title (Thai preferred)"
-category: concepts | architecture | entities | decisions | requirements | planning
+category: concepts | architecture | entities | decisions | requirements | planning | testing
 tags: [tag1, tag2]
 sources: [relative/path/to/source.md]
 updated: YYYY-MM-DD

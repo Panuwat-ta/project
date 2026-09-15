@@ -3,7 +3,7 @@ title: "โมเดล AI — SegFormer"
 category: concepts
 tags: [SegFormer, transformer, semantic-segmentation, MiT, ONNX, deep-learning]
 sources: [design/model.md]
-updated: 2026-08-02
+updated: 2026-09-15
 ---
 
 # โมเดล AI — SegFormer
@@ -88,6 +88,7 @@ updated: 2026-08-02
 - ONNX Runtime เป็นเป้าหมายเพิ่มความเร็ว Inference ≥2 เท่าเทียบ Native PyTorch รุ่นเดียวกัน (วิธีวัด: GPU T4 เฉลี่ย 100 ภาพ; ตัวเลขจริงต้องบันทึกจาก benchmark ก่อนอ้างเป็นผล)
 - น้ำหนักโมเดลเก็บใน **Model Registry** (Version-controlled file store)
 - Admin สามารถ deploy โมเดลเวอร์ชันใหม่ผ่าน Admin Portal โดยไม่ต้อง Redeploy service
+- **v1.0.5 (ล่าสุด, config v10):** MiT-B2 fine-tune จาก `v1.0.0` ครบ 200,000 iters (จบ 2026-09-12) best validation mIoU **91.31** @iter 197,500 — อันดับหนึ่งบน locked common test (mIoU **91.24**, Forgery IoU **83.51**) — export ONNX `segformer_v1_0_5_dynamic.onnx` แล้ว แต่ยังเป็น candidate (Production ยังเป็น `v1.0.0`; รายละเอียดการเทรนดู [[concepts/model-training]])
 
 ---
 
