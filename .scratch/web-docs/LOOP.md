@@ -19,7 +19,7 @@
 ## Memory/state (ไฟล์นี้)
 - [x] Loop 1 — design lock (DESIGN.md + commit 00e76a8; maker report ว่างแต่ checker ตรวจของครบ)
 - [x] Loop 2 — build pipeline TDD (build.py + check-i18n + overview.html + commit 4c0beeb)
-- [ ] Loop 3 — all content (35+ หน้า + i18n EN-WIP + commit)
+- [x] Loop 3 — all content (44 หน้า + i18n EN-WIP + commit 7c0650a)
 - [ ] Loop 4 — root index verify (curl 200, ไม่ commit ถ้าไม่เปลี่ยน)
 - [ ] Loop 5 — code-review 2 แกน (Standards + Spec)
 
