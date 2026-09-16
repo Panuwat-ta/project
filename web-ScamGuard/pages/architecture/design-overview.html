@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="th" data-theme="light" data-theme-mode="system">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="การออกแบบแอปพลิเคชันบนอุปกรณ์เคลื่อนที่ Mobile Application Design โครงงาน: แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง Scam Image Detection เอกสารฉบับนี้อธิบายรายละเอียดโครงสร้างการออกแบบส่วนหน้…">
+  <meta name="color-scheme" content="light dark">
+  <title>UX/UI &amp; System Design Overview | ScamGuard Documentation</title>
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <script>(()=>{let m='system';try{m=localStorage.getItem('scamguard-docs-theme')||'system'}catch(e){}if(!['system','light','dark'].includes(m))m='system';const t=m==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;document.documentElement.dataset.themeMode=m;document.documentElement.dataset.theme=t})();window.SC_DOCS_ROOT='../../';</script>
+</head>
+<body class="">
+  <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
+  <header class="masthead"><div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><nav class="top-tabs" aria-label="เมนูหลัก"><a href="../../index.html">Guide</a><a href="../../pages/architecture/system-architecture.html">Architecture</a><a href="../../pages/architecture/backend-api.html">API Reference</a></nav></div></header>
+  <div class="docs-shell">
+    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><div class="sidebar-head"><a class="sidebar-brand" href="../../index.html" aria-label="ScamGuard Documentation"><span class="brand brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z"/><path d="m9.2 12 1.8 1.8 3.9-4.2"/></svg></span><span class="sidebar-brand-name">ScamGuard Docs</span></a><div class="theme-switcher" role="group" aria-label="ธีมเว็บไซต์"><button type="button" data-theme-option="system" aria-label="ใช้ธีมตามระบบ" title="System"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></button><button type="button" data-theme-option="light" aria-label="ใช้โหมดสว่าง" title="Light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></button><button type="button" data-theme-option="dark" aria-label="ใช้โหมดมืด" title="Dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8 8 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/></svg></button></div></div><button class="control nav-close" type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button><button class="sidebar-search" type="button" data-search-open><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search...</span><kbd>Ctrl K</kbd></button><div class="sidebar-scroll"><details class="sidebar-group" ><summary>ภาพรวม</summary><ul class="sidebar-list"><li><a href="../overview.html" >ภาพรวมโปรเจค</a></li><li><a href="../index.html" >สารบัญ Wiki — โปรเจค Scam Image Detection</a></li></ul></details><details class="sidebar-group" ><summary>ความต้องการระบบ</summary><ul class="sidebar-list"><li><a href="../requirements/functional-requirements.html" >ความต้องการเชิงฟังก์ชัน (Functional Requirements)</a></li><li><a href="../requirements/non-functional-requirements.html" >ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements)</a></li><li><a href="../requirements/traceability-matrix.html" >เมทริกซ์การสืบย้อนความต้องการ</a></li><li><a href="../requirements/objectives-kpis.html" >วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp; KPIs)</a></li><li><a href="../requirements/srs.html" >Software Requirements Specification (SRS)</a></li><li><a href="../requirements/use-case-diagram.html" >Use Case Diagram</a></li></ul></details><details class="sidebar-group" open><summary>สถาปัตยกรรม</summary><ul class="sidebar-list"><li><a href="database-migrations.html" >การจัดการการย้ายฐานข้อมูล (Database Migrations)</a></li><li><a href="external-integrations.html" >การเชื่อมต่อบริการภายนอก (External Integrations)</a></li><li><a href="database-schema.html" >โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li><li><a href="system-architecture.html" >สถาปัตยกรรมระบบ (System Architecture)</a></li><li><a href="admin-portal.html" >สถาปัตยกรรมและการออกแบบ Admin Portal</a></li><li><a href="mobile-app.html" >สถาปัตยกรรม Mobile App</a></li><li><a href="ai-inference-service.html" >AI Inference Service</a></li><li><a href="backend-api.html" >Backend API — FastAPI Orchestrator</a></li><li><a href="c1-system-context-diagram.html" >C1 System Context Diagram</a></li><li><a href="c2-container-diagram.html" >C2 Container Diagram</a></li><li><a href="c3-component-diagram.html" >C3 Component Diagram - API Application</a></li><li><a href="c4-code-diagram.html" >C4 Code Diagram - Image Scanning Flow</a></li><li><a href="database-er-diagram.html" >Entity Relationship Diagram (ER Diagram)</a></li><li><a href="mobile-design.html" >Mobile App Architecture</a></li><li><a href="flowchart.html" >System Flowchart</a></li><li><a href="design-overview.html" aria-current="page">UX/UI &amp; System Design Overview</a></li></ul></details><details class="sidebar-group" ><summary>แนวคิดและเทคนิค</summary><ul class="sidebar-list"><li><a href="../concepts/risk-scoring.html" >การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li><li><a href="../concepts/multi-layer-analysis.html" >การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li><li><a href="../concepts/explainable-ai.html" >ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li><li><a href="../concepts/configs.html" >พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li><li><a href="../concepts/ai-model-segformer.html" >โมเดล AI — SegFormer</a></li><li><a href="../concepts/surya-ocr.html" >โมเดล AI — Surya OCR</a></li><li><a href="../concepts/model-training.html" >AI Model Training Workflow</a></li><li><a href="../concepts/mmsegmentation.html" >MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li><li><a href="../concepts/semantic-segmentation.html" >Semantic Segmentation</a></li></ul></details><details class="sidebar-group" ><summary>องค์ประกอบระบบ</summary><ul class="sidebar-list"><li><a href="../entities/tech-stack.html" >เทคโนโลยีที่ใช้ (Technology Stack)</a></li><li><a href="../entities/actors.html" >ผู้ใช้ระบบ (Actors)</a></li></ul></details><details class="sidebar-group" ><summary>การตัดสินใจ</summary><ul class="sidebar-list"><li><a href="../decisions/technology-choices.html" >การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li></ul></details><details class="sidebar-group" ><summary>การวางแผน</summary><ul class="sidebar-list"><li><a href="../planning/task-tracking.html" >การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a></li><li><a href="../planning/project-scope.html" >ขอบเขตโครงการ (Project Scope)</a></li><li><a href="../planning/team.html" >ทีมงานและผู้รับผิดชอบ (Team)</a></li><li><a href="../planning/backend-documentation.html" >Backend Documentation</a></li></ul></details><details class="sidebar-group" ><summary>การทดสอบ</summary><ul class="sidebar-list"><li><a href="../testing/test-cases.html" >กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li></ul></details><details class="sidebar-group" ><summary>คู่มือและภาคผนวก</summary><ul class="sidebar-list"><li><a href="../log.html" >บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li><li><a href="../howto.html" >วิธีใช้งาน Wiki (How to Use This Wiki)</a></li><li><a href="../runbook.html" >Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li><li><a href="../AGENTS.html" >Wiki Operating Guide</a></li></ul></details></div></aside><div class="nav-backdrop" data-nav-backdrop></div>
+    <main class="article" id="main-content"><nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span aria-hidden="true">/</span><span>สถาปัตยกรรม</span></nav><header class="article-header"><h1>UX/UI &amp; System Design Overview</h1><p class="article-lead">เอกสารฉบับนี้อธิบายรายละเอียดโครงสร้างการออกแบบส่วนหน้าบ้าน Frontend Mobile Application ที่พัฒนาด้วย Flutter ของระบบ Scam Image Detection โดยครอบคลุมสถาปัตยกรรมซอฟต์แวร์, ระบบการออกแบบ UI/UX, โครงสร้างหน้าจอ และแผนผังการไหลของข้อม…</p><div class="meta"><span>หมวด สถาปัตยกรรม</span><time datetime="2026-08-04">อัปเดต 2026-08-04</time><span>ต้นฉบับ architecture/design-overview.md</span></div><div class="tags"><span class="tag">architecture</span><span class="tag">design</span><span class="tag">ux</span><span class="tag">ui</span></div></header><div class="prose"><h1 id="การออกแบบแอปพลิเคชันบนอุปกรณ์เคลื่อนที่-mobile-application-design">การออกแบบแอปพลิเคชันบนอุปกรณ์เคลื่อนที่ (Mobile Application Design)</h1>
+<h2 id="โครงงาน-แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง-scam-image-detection">โครงงาน: แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง (Scam Image Detection)</h2>
+<p>เอกสารฉบับนี้อธิบายรายละเอียดโครงสร้างการออกแบบส่วนหน้าบ้าน (Frontend Mobile Application) ที่พัฒนาด้วย Flutter ของระบบ Scam Image Detection โดยครอบคลุมสถาปัตยกรรมซอฟต์แวร์, ระบบการออกแบบ UI/UX, โครงสร้างหน้าจอ และแผนผังการไหลของข้อมูลผู้ใช้งาน (User Flow)</p>
+<hr>
+<h2 id="1-สถาปัตยกรรมซอฟต์แวร์ฝั่ง-mobile-app-software-architecture">1. สถาปัตยกรรมซอฟต์แวร์ฝั่ง Mobile App (Software Architecture)</h2>
+<p>แอปพลิเคชันพัฒนาด้วย Flutter โดยยึดตามหลักการออกแบบ Clean Architecture และแบ่งการเขียนโค้ดตามรูปแบบ MVVM (Model-View-ViewModel) ร่วมกับ State Management ของ BLoC (Business Logic Component) เพื่อแยก Logic การทำงานออกจาก UI อย่างชัดเจน</p>
+<figure class="diagram-frame"><div class="diagram-toolbar"><span>แผนภาพ 13</span><button class="control" type="button" data-diagram-expand>ดูขนาดใหญ่</button></div><img src="../../assets/diagrams/architecture-design-overview-13.svg" alt="แผนภาพจาก UX/UI &amp; System Design Overview" loading="lazy"><details class="diagram-source"><summary>ดู Mermaid source</summary><pre><code>flowchart TD
+    subgraph UI_Layer [Presentation Layer / UI]
+        Views(&quot;Views (Widgets)&lt;br&gt;[UI Elements]&quot;)
+        Blocs(&quot;ViewModels (BLoC)&lt;br&gt;[State Management]&quot;)
+    end
+
+    subgraph Domain_Layer [Domain Layer / Business Rules]
+        Entities(&quot;Entities&lt;br&gt;[Data Models]&quot;)
+        UseCases(&quot;Use Cases&lt;br&gt;[Business Logic]&quot;)
+    end
+
+    subgraph Data_Layer [Data Layer / Source]
+        Repositories(&quot;Repositories Interface&lt;br&gt;&amp; Implementation&quot;)
+        DataSources(&quot;Data Sources&lt;br&gt;[Local Cache &amp; REST API via Dio]&quot;)
+    end
+
+    %% Connections
+    Views --&gt; Blocs
+    Blocs --&gt; UseCases
+    UseCases --&gt; Entities
+    UseCases --&gt; Repositories
+    Repositories --&gt; DataSources
+</code></pre></details><dialog aria-label="แผนภาพขนาดใหญ่"><div class="diagram-expanded-head"><button class="control" type="button" data-diagram-zoom="out">ย่อ</button><span class="zoom-status" data-zoom-status>100%</span><button class="control" type="button" data-diagram-zoom="in">ขยาย</button><button class="control" type="button" data-diagram-close>ปิด</button></div><div class="diagram-pan" data-diagram-pan data-zoom="1" tabindex="0" aria-label="พื้นที่แผนภาพ เลื่อนได้ทั้งแนวตั้งและแนวนอน"><img src="../../assets/diagrams/architecture-design-overview-13.svg" alt="แผนภาพจาก UX/UI &amp; System Design Overview"></div></dialog></figure><h3 id="รายละเอียดโครงสร้าง-layer">รายละเอียดโครงสร้าง Layer</h3>
+<ul>
+<li><strong>Presentation Layer:</strong> ประกอบด้วย Widget ต่าง ๆ ที่ทำหน้าที่แสดงผลหน้าตาแอป และ BLoC ที่ทำหน้าที่รับ Event จากหน้าจอ ประมวลผลเปลี่ยนสถานะ (State) แล้วส่งผลลัพธ์กลับไปอัปเดต UI</li>
+<li><strong>Domain Layer:</strong> แกนกลางที่ไม่ขึ้นตรงกับเฟรมเวิร์กใด ๆ ประกอบด้วยโมเดลข้อมูลหลัก (Entities) และคลาสคำสั่งธุรกิจ (Use Cases) เช่น การส่งตรวจวิเคราะห์ภาพ หรือการเรียกดูประวัติ</li>
+<li><strong>Data Layer:</strong> จัดการเชื่อมต่อกับแหล่งข้อมูลภายนอก โดยเชื่อมต่อ REST API ผ่าน HTTP Client (คลาส Dio) และการจัดเก็บโทเคนความปลอดภัยใน Secure Storage</li>
+</ul>
+<hr>
+<h2 id="2-ระบบการออกแบบ-ui-ux-และธีมสี-design-system-theme">2. ระบบการออกแบบ UI/UX และธีมสี (Design System &amp; Theme)</h2>
+<p>แอปพลิเคชันออกแบบภายใต้ธีม Dark Mode เพื่อเน้นความล้ำสมัย ปลอดภัย และลดอาการเมื่อยล้าสายตา โดยใช้สีและแบบอักษรที่คัดสรรเป็นพิเศษดังนี้:</p>
+<h3 id="โทนสีของระบบ-color-palette">โทนสีของระบบ (Color Palette)</h3>
+<ul>
+<li><strong>สีพื้นหลังหลัก (Primary Background):</strong> Slate Gray (#121824) ให้ความรู้สึกมั่นคง สบายตา</li>
+<li><strong>สีพื้นหลังรอง (Secondary Background):</strong> Navy Blue Gray (#1A2333) สำหรับการสร้างกล่องข้อความและส่วนประกอบย่อย</li>
+<li><strong>สีเน้นการทำงาน (Accent/Primary Color):</strong> Neon Cyan (#00E5FF) สีฟ้าสว่าง ใช้สำหรับปุ่มกดหลักและองค์ประกอบที่ต้องการเน้นสายตา</li>
+<li><strong>สีสถานะความเสี่ยง (Risk Indicators):</strong>
+<ul>
+<li>ความเสี่ยงต่ำ (Low Risk): Emerald Green (#00E676)</li>
+<li>ความเสี่ยงปานกลาง (Medium Risk): Amber Yellow (#FFD700)</li>
+<li>ความเสี่ยงสูง (High Risk): Crimson Red (#FF1744)</li>
+</ul>
+</li>
+</ul>
+<h3 id="ตัวอักษร-typography-canonical-ตรงกับ-design-design-md-และ-design-mobile-requirements-md-req-nf-004">ตัวอักษร (Typography — canonical ตรงกับ <code>design/design.md</code> และ <code>design/mobile/requirements.md</code> REQ-NF-004)</h3>
+<ul>
+<li>เลือกใช้แบบอักษร <strong>Sarabun</strong> สำหรับข้อความภาษาไทยและภาษาอังกฤษเพื่อให้อ่านง่ายและมีความเป็นทางการ</li>
+<li>ใช้แบบอักษร <strong>Inter</strong> (จาก Google Fonts) สำหรับตัวเลข ข้อมูล และข้อความเชิงเทคนิค</li>
+</ul>
+<hr>
+<h2 id="3-โครงสร้างหน้าจอและทางเดินของผู้ใช้-app-screen-structure-navigation">3. โครงสร้างหน้าจอและทางเดินของผู้ใช้ (App Screen Structure &amp; Navigation)</h2>
+<p>หน้าจอหลักของแอปพลิเคชันประกอบไปด้วย 5 หน้าจอหลักที่เชื่อมต่อผ่านระบบ Bottom Navigation Bar:</p>
+<figure class="diagram-frame"><div class="diagram-toolbar"><span>แผนภาพ 14</span><button class="control" type="button" data-diagram-expand>ดูขนาดใหญ่</button></div><img src="../../assets/diagrams/architecture-design-overview-14.svg" alt="แผนภาพจาก UX/UI &amp; System Design Overview" loading="lazy"><details class="diagram-source"><summary>ดู Mermaid source</summary><pre><code>flowchart LR
+    Splash[Splash Screen] --&gt; Login[Login / OAuth]
+    Login --&gt; Home[Home Screen]
+    
+    Home --&gt; Nav[Navigation Bar]
+    Nav --&gt; NavHome[Home / Scan Screen]
+    Nav --&gt; NavHistory[History Screen]
+    Nav --&gt; NavSettings[Settings &amp; PDPA Screen]
+
+    NavHome --&gt; Result[Analysis Result Screen]
+    Result --&gt; Report[Report Scam Screen]
+</code></pre></details><dialog aria-label="แผนภาพขนาดใหญ่"><div class="diagram-expanded-head"><button class="control" type="button" data-diagram-zoom="out">ย่อ</button><span class="zoom-status" data-zoom-status>100%</span><button class="control" type="button" data-diagram-zoom="in">ขยาย</button><button class="control" type="button" data-diagram-close>ปิด</button></div><div class="diagram-pan" data-diagram-pan data-zoom="1" tabindex="0" aria-label="พื้นที่แผนภาพ เลื่อนได้ทั้งแนวตั้งและแนวนอน"><img src="../../assets/diagrams/architecture-design-overview-14.svg" alt="แผนภาพจาก UX/UI &amp; System Design Overview"></div></dialog></figure><h3 id="รายละเอียดหน้าที่ของแต่ละหน้าจอ">รายละเอียดหน้าที่ของแต่ละหน้าจอ</h3>
+<h4 id="1-splash-screen">1. Splash Screen</h4>
+<ul>
+<li>ทำหน้าที่โหลดการตั้งค่าระบบ ตรวจเช็กโทเคนการเข้าสู่ระบบเดิม (Session Token)</li>
+<li>หากผู้ใช้เคยล็อกอินค้างไว้ ระบบจะข้ามไปหน้า Home ทันที หากไม่มีจะพาไปหน้า Login</li>
+</ul>
+<h4 id="2-login-authentication-screen">2. Login &amp; Authentication Screen</h4>
+<ul>
+<li>หน้าจอกรอก Email/Password (Google Login / Apple ID เป็น Phase 2)</li>
+<li>มีลิงก์สำหรับสมัครสมาชิกใหม่ และระบบขอเปลี่ยนรหัสผ่านใหม่ (Forgot Password)</li>
+</ul>
+<h4 id="3-home-scan-screen-หน้าแรกและนำเข้ารูปภาพ">3. Home / Scan Screen (หน้าแรกและนำเข้ารูปภาพ)</h4>
+<ul>
+<li>เป็นหน้าหลักเมื่อเปิดแอป ประกอบด้วย:
+<ul>
+<li>ปุ่มกดสำหรับ นำเข้ารูปภาพจากคลังภาพ (Gallery) เพื่ออัปโหลดเข้าสู่ระบบ</li>
+<li>เมนูแนะนำภัยออนไลน์ (Scam Alerts Feed) สำหรับอัปเดตกลโกงใหม่ ๆ จากผู้ดูแลระบบ</li>
+<li>เมื่อเลือกรูปภาพเสร็จ แอปจะส่งไปยังหน้าครอปตัดรูป (Image Cropper Widget) ก่อนจะเริ่มส่งขึ้น API และแสดงสถานะกำลังวิเคราะห์ (Loading Shimmer Effect)</li>
+</ul>
+</li>
+</ul>
+<h4 id="4-analysis-result-screen-หน้าแสดงผลลัพธ์">4. Analysis Result Screen (หน้าแสดงผลลัพธ์)</h4>
+<ul>
+<li>แสดงผลคะแนนความเสี่ยงรวม (Overall Risk Score) ในรูปของมาตรวัดวงกลมสี (Radial Risk Gauge) พร้อมผลแจกแจงแยก 3 มิติ (Multi-Factor Breakdown)</li>
+<li>ตัวเลือกระหว่าง:
+<ul>
+<li>หน้าแสดงข้อมูลภาพต้นฉบับ</li>
+<li>หน้าภาพ Heatmap (แสดง Heatmap ที่ชี้พิกเซลผิดปกติจาก AI)</li>
+</ul>
+</li>
+<li>รายละเอียดผลวิเคราะห์ 3 มิติ (Multi-layer Analysis Breakdown):
+<ul>
+<li>ผลตรวจสอบ OCR &amp; คำอันตราย (Textual Detection)</li>
+<li>ผลตรวจสอบข้อมูลไฟล์และอุปกรณ์ที่ใช้บันทึกภาพ (Metadata Check)</li>
+<li>ผลตรวจสอบแหล่งที่มาดั้งเดิม (Reverse Image Search Results)</li>
+</ul>
+</li>
+<li>ปุ่มกดรายงานเบาะแสเข้าระบบกลาง (Report to Scam DB) และปุ่มแชร์รูปภาพแจ้งเตือน (Share Scam Alert)</li>
+</ul>
+<h4 id="5-history-screen-หน้าประวัติการสแกน">5. History Screen (หน้าประวัติการสแกน)</h4>
+<ul>
+<li>หน้าแสดงรายการการสแกนที่ผ่านมา จัดเรียงตามวัน-เวลา</li>
+<li>แสดงข้อมูลสรุปย่อ เช่น รูปตัวอย่าง, วันที่สแกน, และระดับความเสี่ยง</li>
+<li>ฟังก์ชันการลบประวัติทีละรายการ (Slide to delete) หรือลบทั้งหมดในครั้งเดียว</li>
+</ul>
+<h4 id="6-settings-pdpa-screen-หน้าการตั้งค่าและสิทธิ์">6. Settings &amp; PDPA Screen (หน้าการตั้งค่าและสิทธิ์)</h4>
+<ul>
+<li>จัดการข้อมูลส่วนตัว และเปลี่ยนรหัสผ่าน</li>
+<li>ส่วนจัดการข้อตกลงความเป็นส่วนตัว (PDPA / Consent Management) ให้ผู้ใช้สามารถกดยกเลิกความยินยอมการส่งไฟล์ภาพเข้าคลังวิจัยย้อนหลังได้ตลอดเวลา</li>
+</ul>
+<hr>
+<h2 id="4-แผนผังการทำงานและการประมวลผลข้อมูล-sequence-flow">4. แผนผังการทำงานและการประมวลผลข้อมูล (Sequence Flow)</h2>
+<p>ขั้นตอนการส่งรูปภาพขึ้นไปประมวลผลและส่งการแจ้งเตือนกลับมายังแอปพลิเคชันมือถือ:</p>
+<figure class="diagram-frame"><div class="diagram-toolbar"><span>แผนภาพ 15</span><button class="control" type="button" data-diagram-expand>ดูขนาดใหญ่</button></div><img src="../../assets/diagrams/architecture-design-overview-15.svg" alt="แผนภาพจาก UX/UI &amp; System Design Overview" loading="lazy"><details class="diagram-source"><summary>ดู Mermaid source</summary><pre><code>sequenceDiagram
+    actor User as General User
+    participant App as Mobile App (Flutter)
+    participant API as API Application (FastAPI)
+    participant AI as AI Inference Service
+    participant Push as FCM Service
+
+    User-&gt;&gt;App: เลือก/อัปโหลดรูปภาพ
+    App-&gt;&gt;API: ส่งรูปภาพดิบ (POST Multipart/form-data)
+    Note over API: ดึงค่า Metadata &amp; รัน OCR ค้นหาคำอันตราย
+    API--&gt;&gt;App: ส่งรหัสติดตามงานสแกน (Scan Task ID)
+    Note over App: แสดงหน้า Loading ประมวลผลเบื้องหลัง
+    
+    API-&gt;&gt;AI: ส่งรูปภาพไปตรวจสอบระดับพิกเซล (Semantic Segmentation &amp; GenAI check)
+    Note over AI: ประมวลผลรูปภาพสร้างแผนที่ความร้อน (Heatmap)
+    AI--&gt;&gt;API: ส่งผลการคำนวณและรูปภาพ Heatmap
+    
+    Note over API: คำนวณ Overall Risk Score (Hybrid Approach) สรุปผลภาพรวม
+    API-&gt;&gt;Push: ส่งคำสั่งแจ้งเตือนพร้อมสแกนเสร็จสิ้น (Push Payload)
+    Push--&gt;&gt;App: เด้งหน้าต่างแจ้งเตือนที่เครื่องผู้ใช้ (Scan Completed)
+    
+    User-&gt;&gt;App: กดดูการแจ้งเตือน
+    App-&gt;&gt;API: เรียกข้อมูลผลลัพธ์ผ่าน Task ID
+    API--&gt;&gt;App: ส่งกลับข้อมูล Risk Score, Heatmap URL, และรายละเอียดวิเคราะห์
+    App-&gt;&gt;User: แสดงรายงานระดับความเสี่ยงบนหน้าจอ
+</code></pre></details><dialog aria-label="แผนภาพขนาดใหญ่"><div class="diagram-expanded-head"><button class="control" type="button" data-diagram-zoom="out">ย่อ</button><span class="zoom-status" data-zoom-status>100%</span><button class="control" type="button" data-diagram-zoom="in">ขยาย</button><button class="control" type="button" data-diagram-close>ปิด</button></div><div class="diagram-pan" data-diagram-pan data-zoom="1" tabindex="0" aria-label="พื้นที่แผนภาพ เลื่อนได้ทั้งแนวตั้งและแนวนอน"><img src="../../assets/diagrams/architecture-design-overview-15.svg" alt="แผนภาพจาก UX/UI &amp; System Design Overview"></div></dialog></figure></div></main>
+    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้"><p class="toc-title">ในหน้านี้</p><ol class="toc"><li class="toc-level-2"><a href="#%E0%B9%82%E0%B8%84%E0%B8%A3%E0%B8%87%E0%B8%87%E0%B8%B2%E0%B8%99-%E0%B9%81%E0%B8%AD%E0%B8%9B%E0%B8%95%E0%B8%A3%E0%B8%A7%E0%B8%88%E0%B8%AA%E0%B8%AD%E0%B8%9A%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%95%E0%B8%B1%E0%B8%94%E0%B8%95%E0%B9%88%E0%B8%AD%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%96%E0%B8%B9%E0%B8%81%E0%B8%99%E0%B8%B3%E0%B8%A1%E0%B8%B2%E0%B8%AB%E0%B8%A5%E0%B8%AD%E0%B8%81%E0%B8%A5%E0%B8%A7%E0%B8%87-scam-image-detection">โครงงาน: แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง (Scam Image Detection)</a></li><li class="toc-level-2"><a href="#1-%E0%B8%AA%E0%B8%96%E0%B8%B2%E0%B8%9B%E0%B8%B1%E0%B8%95%E0%B8%A2%E0%B8%81%E0%B8%A3%E0%B8%A3%E0%B8%A1%E0%B8%8B%E0%B8%AD%E0%B8%9F%E0%B8%95%E0%B9%8C%E0%B9%81%E0%B8%A7%E0%B8%A3%E0%B9%8C%E0%B8%9D%E0%B8%B1%E0%B9%88%E0%B8%87-mobile-app-software-architecture">1. สถาปัตยกรรมซอฟต์แวร์ฝั่ง Mobile App (Software Architecture)</a></li><li class="toc-level-3"><a href="#%E0%B8%A3%E0%B8%B2%E0%B8%A2%E0%B8%A5%E0%B8%B0%E0%B9%80%E0%B8%AD%E0%B8%B5%E0%B8%A2%E0%B8%94%E0%B9%82%E0%B8%84%E0%B8%A3%E0%B8%87%E0%B8%AA%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%87-layer">รายละเอียดโครงสร้าง Layer</a></li><li class="toc-level-2"><a href="#2-%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%AD%E0%B8%AD%E0%B8%81%E0%B9%81%E0%B8%9A%E0%B8%9A-ui-ux-%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%98%E0%B8%B5%E0%B8%A1%E0%B8%AA%E0%B8%B5-design-system-theme">2. ระบบการออกแบบ UI/UX และธีมสี (Design System &amp; Theme)</a></li><li class="toc-level-3"><a href="#%E0%B9%82%E0%B8%97%E0%B8%99%E0%B8%AA%E0%B8%B5%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A-color-palette">โทนสีของระบบ (Color Palette)</a></li><li class="toc-level-3"><a href="#%E0%B8%95%E0%B8%B1%E0%B8%A7%E0%B8%AD%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B8%A3-typography-canonical-%E0%B8%95%E0%B8%A3%E0%B8%87%E0%B8%81%E0%B8%B1%E0%B8%9A-design-design-md-%E0%B9%81%E0%B8%A5%E0%B8%B0-design-mobile-requirements-md-req-nf-004">ตัวอักษร (Typography — canonical ตรงกับ design/design.md และ design/mobile/requirements.md REQ-NF-004)</a></li><li class="toc-level-2"><a href="#3-%E0%B9%82%E0%B8%84%E0%B8%A3%E0%B8%87%E0%B8%AA%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%88%E0%B8%AD%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%97%E0%B8%B2%E0%B8%87%E0%B9%80%E0%B8%94%E0%B8%B4%E0%B8%99%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B8%9C%E0%B8%B9%E0%B9%89%E0%B9%83%E0%B8%8A%E0%B9%89-app-screen-structure-navigation">3. โครงสร้างหน้าจอและทางเดินของผู้ใช้ (App Screen Structure &amp; Navigation)</a></li><li class="toc-level-3"><a href="#%E0%B8%A3%E0%B8%B2%E0%B8%A2%E0%B8%A5%E0%B8%B0%E0%B9%80%E0%B8%AD%E0%B8%B5%E0%B8%A2%E0%B8%94%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B9%81%E0%B8%95%E0%B9%88%E0%B8%A5%E0%B8%B0%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%88%E0%B8%AD">รายละเอียดหน้าที่ของแต่ละหน้าจอ</a></li><li class="toc-level-2"><a href="#4-%E0%B9%81%E0%B8%9C%E0%B8%99%E0%B8%9C%E0%B8%B1%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%97%E0%B8%B3%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%A1%E0%B8%A7%E0%B8%A5%E0%B8%9C%E0%B8%A5%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B8%B9%E0%B8%A5-sequence-flow">4. แผนผังการทำงานและการประมวลผลข้อมูล (Sequence Flow)</a></li></ol></aside>
+  </div>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title"><div class="search-dialog-head"><label class="visually-hidden" id="search-title" for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…" autocomplete="off" data-search-input><button class="control" type="button" data-search-close aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div class="search-results" data-search-results aria-live="polite"></div></dialog>
+  <script src="../../assets/js/search-index.js"></script>
+  <script src="../../assets/js/site.js"></script>
+</body>
+</html>

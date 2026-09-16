@@ -19,17 +19,17 @@ flowchart TB
 
         subgraph Frontends [Frontend Layer]
             MobileApp("Mobile App<br>[Container: Flutter]<br>อัปโหลดและเลือกรูปภาพ,<br>แสดงผลคะแนนความเสี่ยง (Risk Score)")
-            AdminPortal("Admin Web Portal<br>[Container: React + Admin UI]<br>จัดการผู้ใช้ (ดู+เปิด/ปิดบัญชี), ตรวจสอบสแกมที่รายงาน,<br>จัดการชุดข้อมูล, อัปเดตโมเดล")
+            AdminPortal("Admin Web Portal<br>[Container: React 19 + Vite 8 + Tailwind v4]<br>จัดการผู้ใช้ (ดู+เปิด/ปิดบัญชี), ตรวจสอบสแกมที่รายงาน,<br>จัดการชุดข้อมูล, อัปเดตโมเดล")
         end
 
         subgraph Backends [Backend & API Layer]
             APIGateway("API Application<br>[Container: Python FastAPI]<br>จัดการ Logic หลัก, ดึง Metadata,<br>ตรวจสอบ OCR")
-            AIInference("AI Inference Service<br>[Container: PyTorch / ONNX]<br>ตรวจการตัดต่อ,<br>เช็คว่าเป็นภาพ AI")
+            AIInference("ONNX Worker<br>[Subprocess ของ FastAPI]<br>ตรวจการตัดต่อ,<br>เช็คว่าเป็นภาพ AI")
         end
 
         subgraph Storages [Storage & Cache Layer]
             Cache("Cache<br>[Container: Redis]<br>เก็บผลตรวจชั่วคราว (Cache Hit)<br>เพื่อลดเวลาประมวลผลซ้ำ")
-            ObjectStore("Object Storage<br>[Container: Cloud Storage]<br>เก็บไฟล์รูปภาพต้นฉบับ,<br>ภาพ Heatmap")
+            ObjectStore("File Storage<br>[Local filesystem: LOCAL_UPLOAD_DIR]<br>เก็บ PNG ต้นฉบับและ Heatmap<br>เสิร์ฟผ่าน /uploads")
             MainDB[("Main Database<br>[Container: PostgreSQL]<br>เก็บข้อมูลผู้ใช้, ประวัติการสแกน,<br>ผลลัพธ์ (Risk Score)")]
         end
     end
@@ -48,7 +48,7 @@ flowchart TB
     AdminPortal -- "API Calls<br>[HTTPS / JSON]" --> APIGateway
 
     APIGateway -- "เช็คประวัติการสแกน" --> Cache
-    APIGateway -- "ส่งตรวจร่องรอย / AI" --> AIInference
+    APIGateway -- "Subprocess IPC<br>ส่งตรวจร่องรอย / AI" --> AIInference
     APIGateway -- "จัดเก็บ / ดึงรูปภาพ" --> ObjectStore
     APIGateway -- "บันทึกผลลัพธ์ขั้นสุดท้าย" --> MainDB
     
@@ -67,7 +67,7 @@ flowchart TB
 
 ### คำอธิบาย Container Diagram
 
-สถาปัตยกรรมของระบบ Scam Image Detection ถูกออกแบบภายใต้แนวคิด **Microservices** และ **Cloud-Native Architecture** เพื่อให้ระบบสามารถรองรับการประมวลผลข้อมูลรูปภาพและโมเดลปัญญาประดิษฐ์ (ซึ่งใช้ทรัพยากรการคำนวณสูง) ได้อย่างมีประสิทธิภาพ โดยไม่ส่งผลกระทบต่อความเร็วในการตอบสนองของแอปพลิเคชัน ภายในขอบเขตของระบบ (System Boundary) ประกอบด้วยคอนเทนเนอร์หลัก 3 ส่วน ดังนี้:
+สถาปัตยกรรมที่ code v1 ใช้จริงเป็น **modular monolith**: FastAPI application เดียวเป็น API และ orchestrator โดยแยก SegFormer ONNX ไปรันใน worker subprocess เพื่อแยกปัญหา CUDA/runtime ไม่ได้ deploy เป็น microservices อิสระ
 
 ### 1. ส่วนติดต่อผู้ใช้งาน (Frontend Containers)
 
@@ -76,10 +76,10 @@ flowchart TB
   * **หน้าที่:** ส่งข้อมูลรูปภาพไปยัง API Application และรับการแสดงผลลัพธ์กลับมาเป็นคะแนนความเสี่ยง (Risk Score) พร้อมคำอธิบายและภาพแผนที่ความร้อน (Heatmap) แสดงจุดที่ผิดปกติ
   * **เทคโนโลยี:** Flutter (รองรับ Android)
 
-* **Admin Web Portal (React + Admin UI):**
+* **Admin Web Portal (React 19 + Vite 8 + Tailwind CSS v4):**
   * **บทบาท:** เว็บแอปพลิเคชันสำหรับผู้ดูแลระบบและนักวิจัย (Admin / Researcher)
   * **หน้าที่:** ใช้เป็นหน้าจอควบคุมและตรวจสอบสถานะระบบหลังบ้าน (Dashboard) การจัดการสิทธิ์ของผู้ใช้ (ดู + เปิด/ปิดบัญชี), ตรวจสอบรูปภาพสแกมที่ผู้ใช้ส่งรายงานเข้ามา (Scam Reports), จัดการคลังชุดข้อมูล (Dataset) และการอัปโหลดไฟล์น้ำหนักโมเดล AI (Model Weights)
-  * **เทคโนโลยี:** React.js + TailwindCSS (หรือ Admin Template สำเร็จรูป)
+  * **เทคโนโลยี:** React 19, Vite 8, Tailwind CSS v4
 
 ### 2. ส่วนประมวลผลหลัก (Backend Containers)
 
@@ -88,8 +88,8 @@ flowchart TB
   * **หน้าที่:** จัดการตรรกะทางธุรกิจหลัก (Core Business Logic) ทั้งหมด เช่น การยืนยันตัวตน, จัดการข้อมูลผู้ใช้, ดึงข้อมูลเมทาดาตาแฝงของรูปภาพ (Metadata/EXIF Extraction), และสั่งประมวลผลสกัดตัวอักษรในภาพ (OCR) จากนั้นประสานงานส่งข้อมูลไปยังบริการวิเคราะห์ตัวอื่น ๆ
   * **เทคโนโลยี:** Python FastAPI
 
-* **AI Inference Service (PyTorch / ONNX):**
-  * **บทบาท:** เซอร์วิสวิเคราะห์รูปภาพผ่านระบบปัญญาประดิษฐ์เชิงลึก (Deep Learning)
+* **ONNX Worker subprocess:**
+  * **บทบาท:** โปรเซสลูกของ FastAPI สำหรับวิเคราะห์รูปภาพ ไม่ใช่ service ที่ deploy แยก
   * **หน้าที่:** ประมวลผลรูปภาพเพื่อตรวจหาร่องรอยการแก้ไขภาพในระดับพิกเซล และตรวจสอบลักษณะทางกายภาพของภาพว่าถูกสร้างด้วยปัญญาประดิษฐ์ (AI-Generated Image) หรือไม่
   * **เทคโนโลยี:** PyTorch / ONNX Runtime (เพื่อเพิ่มประสิทธิภาพความเร็วในการ Inference โมเดล)
 
@@ -100,10 +100,10 @@ flowchart TB
   * **หน้าที่:** จัดเก็บแคชของรูปภาพที่เคยผ่านการสแกนตรวจสอบแล้วเพื่อลดการประมวลผลซ้ำ (Cache Hit) ช่วยให้อุปกรณ์ของผู้ใช้รายอื่นที่ส่งรูปภาพเดิมเข้ามาได้รับผลวิเคราะห์แทบจะทันทีโดยไม่ต้องรัน AI ซ้ำ
   * **เทคโนโลยี:** Redis Cache
 
-* **Object Storage (Cloud Storage):**
+* **Local Filesystem Storage:**
   * **บทบาท:** แหล่งจัดเก็บไฟล์รูปภาพขนาดใหญ่
   * **หน้าที่:** จัดเก็บไฟล์รูปภาพต้นฉบับที่ผู้ใช้อัปโหลดเข้ามา และรูปภาพแผนที่ความร้อนที่ส่งกลับมาจากบริการ AI เพื่อแสดงจุดผิดปกติ
-  * **เทคโนโลยี:** ระบบจัดเก็บไฟล์บนคลาวด์ (Cloud Storage)
+  * **เทคโนโลยี:** local filesystem ที่ `LOCAL_UPLOAD_DIR` (default `./uploads`) และ FastAPI static mount `/uploads`; Cloud Storage เป็น future deployment option
 
 * **Main Database (PostgreSQL):**
   * **บทบาท:** ฐานข้อมูลหลักเชิงสัมพันธ์ (Relational Database)

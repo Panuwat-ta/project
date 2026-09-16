@@ -76,7 +76,7 @@ flowchart TD
   * พัฒนาหน้าการเลือกและอัปโหลดรูปภาพเพื่อส่งประมวลผล รองรับคลังภาพ (Gallery)
   * เพิ่มระบบครอปตัดรูปภาพ (Image Cropper) ก่อนส่งประมวลผล
 * **งานพัฒนาการแสดงผลรายงานระดับความเสี่ยง (Risk Visualization Dashboard):**
-  * หน้าแสดงคะแนนความเสี่ยงโดยรวม (สูตร/เกณฑ์ตาม `Document/docs/05_Software_Requirement_Specification.md` FR-ANALYSIS-04 — ดูนิยามที่ Document ที่เดียว) ในรูปของเกจสี (เขียว-เหลือง-แดง)
+  * หน้าแสดงคะแนนความเสี่ยงโดยรวม (สูตร/เกณฑ์ตาม `Document/srs/05_Software_Requirement_Specification.md` FR-ANALYSIS-04 — ดูนิยามที่ Document ที่เดียว) ในรูปของเกจสี (เขียว-เหลือง-แดง)
   * แสดงข้อมูลเหตุผลที่เสี่ยง (เช่น จุดพิกเซลผิดปกติจาก mask overlay หรือคำ scam ที่ OCR พบ)
   * หน้าแสดงภาพผลลัพธ์แผนที่ความร้อนแบบ mask-to-heatmap overlay เพื่อระบุจุดผิดปกติ
 * **งานพัฒนาระบบจัดการประวัติและนโยบายความเป็นส่วนตัว (History & PDPA Control):**
@@ -105,7 +105,7 @@ flowchart TD
 * **งานพัฒนาฐานข้อมูลหลักและแคช (PostgreSQL & Redis Cache):**
   * ออกแบบฐานข้อมูล (Database Schema) จัดเก็บข้อมูลผู้ใช้งาน, ข้อมูลประวัติการตรวจเช็ก, และบันทึกรายงานสแกมเมอร์
   * พัฒนา Logic ระบบแคช (Redis) เก็บค่าคีย์รูปภาพ (Image Hash Index) เพื่อส่งข้อมูลที่ตรวจแล้วกลับทันทีโดยไม่ต้องรัน AI ซ้ำ
-  * พัฒนา Logic การเก็บอัปโหลดไฟล์รูปภาพและผลการวิเคราะห์ขึ้นระบบจัดเก็บไฟล์คลาวด์ (Cloud Storage)
+  * พัฒนา Logic การเก็บรูปภาพและ Heatmap ใน local `LOCAL_UPLOAD_DIR` และเสิร์ฟผ่าน `/uploads`; Cloud Object Storage เป็น future option
 
 ---
 
@@ -146,7 +146,7 @@ flowchart TD
 | ส่วนประกอบที่ต้องพัฒนา (Modules / Components) | ภานุวัฒน์ ต๋าคำ (70%) | เอกพันธ์ ทศทิศรังสรรค์ (30%) |
 | :--- | :---: | :---: |
 | **1. Mobile App (Flutter)**<br>- UI/UX Design, Gallery-only Image Integration (v1 รองรับเฉพาะ Gallery)<br>- Risk Score, History & Report System | **รับผิดชอบหลัก (Lead)** | ร่วมพัฒนาส่วนหน้าจอและทดสอบการใช้งาน |
-| **2. API Backend (FastAPI & Integrations)**<br>- API Gateway, User Auth (JWT)<br>- OCR Text Extraction, EXIF Extraction<br>- Cloud Storage, Redis Cache, PostgreSQL | **รับผิดชอบหลัก (Lead)** | สนับสนุนการออกแบบ Database & Schema |
+| **2. API Backend (FastAPI & Integrations)**<br>- API Gateway, User Auth (JWT)<br>- OCR Text Extraction, EXIF Extraction<br>- Local `/uploads`, Redis Cache, PostgreSQL | **รับผิดชอบหลัก (Lead)** | สนับสนุนการออกแบบ Database & Schema |
 | **3. AI Inference Service (PyTorch / ONNX)**<br>- Dataset Prep, SegFormer ONNX Detection + GenAI Detection<br>- ONNX conversion, Mask-to-Heatmap Overlay | **รับผิดชอบหลัก (Lead)** | - |
 | **4. Admin Web Portal (React)**<br>- User Controls & statistical dashboard<br>- Scam Reports approval queue, Model Weight Upload | ร่วมพัฒนาและเชื่อมต่อ Backend API | **รับผิดชอบหลัก (Lead)** |
 | **5. SIT, Performance & Security Testing**<br>- Verification of AI performance<br>- Load test & Security audit | **รับผิดชอบหลัก (Lead)** | ร่วมดำเนินการทดสอบระบบแบบ SIT และเขียนบันทึกผลการทดสอบ |

@@ -5,7 +5,7 @@
 - **System / Component**: ScamGuard Mobile Client
 - **Architecture**: Clean Architecture, BLoC/Cubit State Management, Repository Pattern
 - **Tech Stack**: Flutter 3.x, Dart, Dio HTTP Client, Flutter Secure Storage, Hive
-- **Target Platform**: Flutter cross-platform; ทดสอบหลักบน Android (5.0+ / API 21+, เน้น Android 10-14 / API 29-34)
+- **Target Platform**: Android-only สำหรับ code v1 (5.0+ / API 21+, เน้น Android 10-14 / API 29-34); iOS เป็น future release และไม่อยู่ใน test matrix นี้
 - **Document Version**: 1.0.1
 - **Date**: 2026-09-06
 - **Status**: Baseline

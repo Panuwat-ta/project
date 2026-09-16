@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="th" data-theme="light" data-theme-mode="system">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="ขอบเขตโครงการ Project Scope ชื่อผลิตภัณฑ์: ScamGuard ชื่อเต็ม: Scam Image Detection — แอปตรวจสอบรูปภาพตัดต่อเพื่อป้องกันการหลอกลวง กำหนดสิ่งที่จะพัฒนา กรอบการทำงานของ 4 Containers หลัก และกา…">
+  <meta name="color-scheme" content="light dark">
+  <title>ขอบเขตโครงการ (Project Scope) | ScamGuard Documentation</title>
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <script>(()=>{let m='system';try{m=localStorage.getItem('scamguard-docs-theme')||'system'}catch(e){}if(!['system','light','dark'].includes(m))m='system';const t=m==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;document.documentElement.dataset.themeMode=m;document.documentElement.dataset.theme=t})();window.SC_DOCS_ROOT='../../';</script>
+</head>
+<body class="">
+  <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
+  <header class="masthead"><div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><nav class="top-tabs" aria-label="เมนูหลัก"><a href="../../index.html">Guide</a><a href="../../pages/architecture/system-architecture.html">Architecture</a><a href="../../pages/architecture/backend-api.html">API Reference</a></nav></div></header>
+  <div class="docs-shell">
+    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><div class="sidebar-head"><a class="sidebar-brand" href="../../index.html" aria-label="ScamGuard Documentation"><span class="brand brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z"/><path d="m9.2 12 1.8 1.8 3.9-4.2"/></svg></span><span class="sidebar-brand-name">ScamGuard Docs</span></a><div class="theme-switcher" role="group" aria-label="ธีมเว็บไซต์"><button type="button" data-theme-option="system" aria-label="ใช้ธีมตามระบบ" title="System"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></button><button type="button" data-theme-option="light" aria-label="ใช้โหมดสว่าง" title="Light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></button><button type="button" data-theme-option="dark" aria-label="ใช้โหมดมืด" title="Dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8 8 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/></svg></button></div></div><button class="control nav-close" type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button><button class="sidebar-search" type="button" data-search-open><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search...</span><kbd>Ctrl K</kbd></button><div class="sidebar-scroll"><details class="sidebar-group" ><summary>ภาพรวม</summary><ul class="sidebar-list"><li><a href="../overview.html" >ภาพรวมโปรเจค</a></li><li><a href="../index.html" >สารบัญ Wiki — โปรเจค Scam Image Detection</a></li></ul></details><details class="sidebar-group" ><summary>ความต้องการระบบ</summary><ul class="sidebar-list"><li><a href="../requirements/functional-requirements.html" >ความต้องการเชิงฟังก์ชัน (Functional Requirements)</a></li><li><a href="../requirements/non-functional-requirements.html" >ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements)</a></li><li><a href="../requirements/traceability-matrix.html" >เมทริกซ์การสืบย้อนความต้องการ</a></li><li><a href="../requirements/objectives-kpis.html" >วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp; KPIs)</a></li><li><a href="../requirements/srs.html" >Software Requirements Specification (SRS)</a></li><li><a href="../requirements/use-case-diagram.html" >Use Case Diagram</a></li></ul></details><details class="sidebar-group" ><summary>สถาปัตยกรรม</summary><ul class="sidebar-list"><li><a href="../architecture/database-migrations.html" >การจัดการการย้ายฐานข้อมูล (Database Migrations)</a></li><li><a href="../architecture/external-integrations.html" >การเชื่อมต่อบริการภายนอก (External Integrations)</a></li><li><a href="../architecture/database-schema.html" >โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li><li><a href="../architecture/system-architecture.html" >สถาปัตยกรรมระบบ (System Architecture)</a></li><li><a href="../architecture/admin-portal.html" >สถาปัตยกรรมและการออกแบบ Admin Portal</a></li><li><a href="../architecture/mobile-app.html" >สถาปัตยกรรม Mobile App</a></li><li><a href="../architecture/ai-inference-service.html" >AI Inference Service</a></li><li><a href="../architecture/backend-api.html" >Backend API — FastAPI Orchestrator</a></li><li><a href="../architecture/c1-system-context-diagram.html" >C1 System Context Diagram</a></li><li><a href="../architecture/c2-container-diagram.html" >C2 Container Diagram</a></li><li><a href="../architecture/c3-component-diagram.html" >C3 Component Diagram - API Application</a></li><li><a href="../architecture/c4-code-diagram.html" >C4 Code Diagram - Image Scanning Flow</a></li><li><a href="../architecture/database-er-diagram.html" >Entity Relationship Diagram (ER Diagram)</a></li><li><a href="../architecture/mobile-design.html" >Mobile App Architecture</a></li><li><a href="../architecture/flowchart.html" >System Flowchart</a></li><li><a href="../architecture/design-overview.html" >UX/UI &amp; System Design Overview</a></li></ul></details><details class="sidebar-group" ><summary>แนวคิดและเทคนิค</summary><ul class="sidebar-list"><li><a href="../concepts/risk-scoring.html" >การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li><li><a href="../concepts/multi-layer-analysis.html" >การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li><li><a href="../concepts/explainable-ai.html" >ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li><li><a href="../concepts/configs.html" >พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li><li><a href="../concepts/ai-model-segformer.html" >โมเดล AI — SegFormer</a></li><li><a href="../concepts/surya-ocr.html" >โมเดล AI — Surya OCR</a></li><li><a href="../concepts/model-training.html" >AI Model Training Workflow</a></li><li><a href="../concepts/mmsegmentation.html" >MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li><li><a href="../concepts/semantic-segmentation.html" >Semantic Segmentation</a></li></ul></details><details class="sidebar-group" ><summary>องค์ประกอบระบบ</summary><ul class="sidebar-list"><li><a href="../entities/tech-stack.html" >เทคโนโลยีที่ใช้ (Technology Stack)</a></li><li><a href="../entities/actors.html" >ผู้ใช้ระบบ (Actors)</a></li></ul></details><details class="sidebar-group" ><summary>การตัดสินใจ</summary><ul class="sidebar-list"><li><a href="../decisions/technology-choices.html" >การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li></ul></details><details class="sidebar-group" open><summary>การวางแผน</summary><ul class="sidebar-list"><li><a href="task-tracking.html" >การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a></li><li><a href="project-scope.html" aria-current="page">ขอบเขตโครงการ (Project Scope)</a></li><li><a href="team.html" >ทีมงานและผู้รับผิดชอบ (Team)</a></li><li><a href="backend-documentation.html" >Backend Documentation</a></li></ul></details><details class="sidebar-group" ><summary>การทดสอบ</summary><ul class="sidebar-list"><li><a href="../testing/test-cases.html" >กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li></ul></details><details class="sidebar-group" ><summary>คู่มือและภาคผนวก</summary><ul class="sidebar-list"><li><a href="../log.html" >บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li><li><a href="../howto.html" >วิธีใช้งาน Wiki (How to Use This Wiki)</a></li><li><a href="../runbook.html" >Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li><li><a href="../AGENTS.html" >Wiki Operating Guide</a></li></ul></details></div></aside><div class="nav-backdrop" data-nav-backdrop></div>
+    <main class="article" id="main-content"><nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span aria-hidden="true">/</span><span>การวางแผน</span></nav><header class="article-header"><h1>ขอบเขตโครงการ (Project Scope)</h1><p class="article-lead">กำหนดสิ่งที่จะพัฒนา กรอบการทำงานของ 4 Containers หลัก และการแบ่งกลุ่มงานสำหรับสมาชิกทีม</p><div class="meta"><span>หมวด การวางแผน</span><time datetime="2026-09-16">อัปเดต 2026-09-16</time><span>ต้นฉบับ planning/project-scope.md</span></div><div class="tags"><span class="tag">scope</span><span class="tag">work-packages</span><span class="tag">tasks</span><span class="tag">roadmap</span><span class="tag">containers</span></div></header><div class="prose"><h1 id="ขอบเขตโครงการ-project-scope">ขอบเขตโครงการ (Project Scope)</h1>
+<blockquote>
+<p><strong>ชื่อผลิตภัณฑ์:</strong> ScamGuard (ชื่อเต็ม: Scam Image Detection — แอปตรวจสอบรูปภาพตัดต่อเพื่อป้องกันการหลอกลวง)</p>
+</blockquote>
+<p>กำหนดสิ่งที่จะพัฒนา กรอบการทำงานของ 4 Containers หลัก และการแบ่งกลุ่มงานสำหรับสมาชิกทีม</p>
+<blockquote>
+<p><strong>Canonical requirement catalog:</strong> <code>Document/srs/04_Requirement_Candidates.md</code>, <code>05_Software_Requirement_Specification.md</code> (FR/NFR/AC), <code>06_Requirement_Traceability.md</code>, <code>07_Appendix_A_Full_Traceability_Matrix.md</code> — เลข FR/NFR ที่อ้างในไฟล์นี้ใช้ชุดเดียวกับ Document</p>
+</blockquote>
+<p><strong>เวอร์ชันปัจจุบัน: v1 Android เท่านั้น</strong> (Flutter codebase เดียวกัน; ios/ + web/ เป็น future)</p>
+<hr>
+<h2 id="ภาพรวมระบบ-system-overview">ภาพรวมระบบ (System Overview)</h2>
+<p>โครงการนี้ถูกแบ่งการพัฒนาออกเป็น <strong>4 Development Containers</strong> บวกกับ <strong>1 Integration Layer</strong>:</p>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">Container</th>
+<th style="text-align:left">เทคโนโลยีหลัก</th>
+<th style="text-align:left">ความรับผิดชอบหลัก (Lead: ภานุวัฒน์ 70% / เอกพันธ์ 30%)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Mobile App</td>
+<td style="text-align:left">Flutter (v1: Android เท่านั้น; ios/ + web/ เป็น future)</td>
+<td style="text-align:left">ภานุวัฒน์ (Lead) + เอกพันธ์ (ร่วมพัฒนาหน้าจอ/ทดสอบ)</td>
+</tr>
+<tr>
+<td style="text-align:left">API Backend</td>
+<td style="text-align:left">Python FastAPI</td>
+<td style="text-align:left">ภานุวัฒน์</td>
+</tr>
+<tr>
+<td style="text-align:left">AI Inference Engine</td>
+<td style="text-align:left">PyTorch / ONNX (SegFormer ตัวเดียว)</td>
+<td style="text-align:left">ภานุวัฒน์</td>
+</tr>
+<tr>
+<td style="text-align:left">Admin Portal</td>
+<td style="text-align:left">React 19 + Vite 8 + Tailwind CSS v4</td>
+<td style="text-align:left">เอกพันธ์ (Lead) + ภานุวัฒน์ (ร่วมพัฒนา/เชื่อม Backend API)</td>
+</tr>
+<tr>
+<td style="text-align:left">External Integrations</td>
+<td style="text-align:left">Google Vision (optional), FCM (Phase 2; v1 = in-app/polling)</td>
+<td style="text-align:left">ภานุวัฒน์ (ออกแบบ)</td>
+</tr>
+</tbody>
+</table></div><hr>
+<h2 id="กลุ่มงาน-mobile-app">กลุ่มงาน Mobile App</h2>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">กลุ่มงาน (Task Group)</th>
+<th style="text-align:left">รายละเอียด (Tasks)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Authentication</td>
+<td style="text-align:left">สมัครและล็อกอินด้วยอีเมล/รหัสผ่าน และระบบ Secure Storage (code v1 ไม่มี OAuth)</td>
+</tr>
+<tr>
+<td style="text-align:left">Image Input</td>
+<td style="text-align:left">ส่วนการเลือกรูปภาพจาก Gallery และโหมด Crop ตัดรูปภาพก่อนส่งให้ระบบ</td>
+</tr>
+<tr>
+<td style="text-align:left">Risk Visualization</td>
+<td style="text-align:left">ส่วนแสดงผล Risk Score (เกจสี เขียว/เหลือง/แดง), ภาพ Heatmap ทับซ้อน, พร้อมรายละเอียดผลสแกน</td>
+</tr>
+<tr>
+<td style="text-align:left">History &amp; PDPA</td>
+<td style="text-align:left">แสดงหน้าต่างประวัติการตรวจสอบย้อนหลัง, หน้าต่างยอมรับข้อตกลง PDPA และการยกเลิกอนุญาตข้อมูล</td>
+</tr>
+<tr>
+<td style="text-align:left">Scam Report</td>
+<td style="text-align:left">แบบฟอร์มกดแจ้งเตือนภาพ Scam ให้ตรวจสอบเพิ่มเติม พร้อมคุณสมบัติ Share ข้อมูล</td>
+</tr>
+</tbody>
+</table></div><hr>
+<h2 id="กลุ่มงาน-api-backend">กลุ่มงาน API Backend</h2>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">กลุ่มงาน (Task Group)</th>
+<th style="text-align:left">รายละเอียด (Tasks)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">API Gateway</td>
+<td style="text-align:left">โครงสร้าง FastAPI พื้นฐาน, Routing, กฎ CORS, และตรวจสอบ JWT Middleware</td>
+</tr>
+<tr>
+<td style="text-align:left">Metadata / EXIF</td>
+<td style="text-align:left">โค้ดดึงรายละเอียดจากไฟล์ EXIF Metadata ของภาพที่อัปโหลด</td>
+</tr>
+<tr>
+<td style="text-align:left">OCR + NLP</td>
+<td style="text-align:left">บริหารและเชื่อมต่อ Surya-OCR สำหรับข้อความ (ไทย/อังกฤษ) และ NLP วิเคราะห์คีย์เวิร์ด</td>
+</tr>
+<tr>
+<td style="text-align:left">Redis Cache Logic</td>
+<td style="text-align:left">ค้นหารหัสรูป (Image Hash) และตัดสินใจดึงจาก Cache (Hit/Miss Routing)</td>
+</tr>
+<tr>
+<td style="text-align:left">PostgreSQL Schema</td>
+<td style="text-align:left">ดูแลโครงสร้างระบบตาราง: ผู้ใช้, รายงานสแกน, ระบบส่งรีพอร์ต และ Audit Log พร้อมทำระบบ Alembic Migrations</td>
+</tr>
+</tbody>
+</table></div><hr>
+<h2 id="กลุ่มงาน-ai-engine">กลุ่มงาน AI Engine</h2>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">กลุ่มงาน (Task Group)</th>
+<th style="text-align:left">รายละเอียด (Tasks)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Semantic Segmentation</td>
+<td style="text-align:left">พัฒนาโมเดล SegFormer (ONNX) ตัวเดียวสำหรับตรวจร่องรอยดัดแปลงระดับพิกเซล</td>
+</tr>
+<tr>
+<td style="text-align:left">GenAI Detection</td>
+<td style="text-align:left">พัฒนาและเชื่อมต่อระบบจำแนกและคัดกรองรูปภาพที่สร้างจาก AI อัตโนมัติ</td>
+</tr>
+<tr>
+<td style="text-align:left">PyTorch to ONNX</td>
+<td style="text-align:left">ขั้นตอนส่งออกตัว Model ให้อยู่ในมาตรฐานเปิด ONNX สำหรับการโหลดเข้าระบบในตอนรันจริง (Inference)</td>
+</tr>
+<tr>
+<td style="text-align:left">Heatmap</td>
+<td style="text-align:left">แปลงผลลัพธ์จาก Segmentation Mask เพื่อผลิตภาพ Heatmap แบบ mask-to-heatmap overlay ในขั้นสุดท้าย + คำอธิบาย Qwen2.5-1.5B</td>
+</tr>
+</tbody>
+</table></div><hr>
+<h2 id="กลุ่มงาน-admin-portal">กลุ่มงาน Admin Portal</h2>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">กลุ่มงาน (Task Group)</th>
+<th style="text-align:left">รายละเอียด (Tasks)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">RBAC + Dashboard</td>
+<td style="text-align:left">ตรวจสอบ Role ของ Admin แดชบอร์ดสรุปผลภาพรวม</td>
+</tr>
+<tr>
+<td style="text-align:left">User Management</td>
+<td style="text-align:left">บริหารข้อมูลผู้ใช้งานในระบบ</td>
+</tr>
+<tr>
+<td style="text-align:left">Scam Report Queue</td>
+<td style="text-align:left">ลำดับการอนุมัติ (Approve) หรือปฏิเสธ (Dismiss) เมื่อได้รับ Scam Report</td>
+</tr>
+<tr>
+<td style="text-align:left">Model Update Console</td>
+<td style="text-align:left">หน้าต่างสำหรับกดปุ่มรันเพื่อเปลี่ยนน้ำหนัก Model ไฟล์ตัวใหม่เข้าสู่ระบบ</td>
+</tr>
+</tbody>
+</table></div><hr>
+<h2 id="สิ่งที่อยู่นอกเหนือโครงการในเวลานี้-out-of-scope-v1">สิ่งที่อยู่นอกเหนือโครงการในเวลานี้ (Out of Scope v1)</h2>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">คุณสมบัติ (Feature)</th>
+<th style="text-align:left">สถานะ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Mobile cross-platform (iOS/Web)</td>
+<td style="text-align:left"><strong>นอกขอบเขต v1</strong> — v1 Android เท่านั้น (Flutter codebase เดียวกัน)</td>
+</tr>
+<tr>
+<td style="text-align:left">วิเคราะห์วิดีโอ (Video Analysis)</td>
+<td style="text-align:left">เก็บไว้ทำในอนาคต โดยการใช้ Keyframe Extraction</td>
+</tr>
+<tr>
+<td style="text-align:left">บนมือถือล้วนๆ (On-device Inference)</td>
+<td style="text-align:left">เก็บไว้ทำในอนาคต — ต้องผ่านกระบวนการทำ Model Quantization (INT8/FP16) เป็นหลักเสียก่อน</td>
+</tr>
+<tr>
+<td style="text-align:left">การแชร์ผลลัพธ์ (Share)</td>
+<td style="text-align:left"><strong>ในขอบเขตของ FR-HISTORY-02</strong> — แชร์ภาพเตือนภัยไปแอปภายนอก (GAP: ยังไม่มี TC)</td>
+</tr>
+<tr>
+<td style="text-align:left">การรีวิว/ตัดสินใจแบบ Real-time</td>
+<td style="text-align:left">นอกขอบเขต v1 (Not Planned)</td>
+</tr>
+<tr>
+<td style="text-align:left">ระบบของ Google SynthID</td>
+<td style="text-align:left">ระบุไว้ว่าน่าสนใจแต่ยังไม่มีกระบวนการดีไซน์ในเวลาปัจจุบัน</td>
+</tr>
+<tr>
+<td style="text-align:left">บริการ Google Gemini LLM</td>
+<td style="text-align:left">ระบุไว้ว่าน่าสนใจแต่ยังไม่มีกระบวนการดีไซน์ในเวลาปัจจุบัน</td>
+</tr>
+<tr>
+<td style="text-align:left">Google OAuth / Social Login</td>
+<td style="text-align:left">เลื่อนไป Phase 2 (RC-AUTH-06 deferred)</td>
+</tr>
+</tbody>
+</table></div><hr>
+<h2 id="ประเด็นสำคัญ-key-points">ประเด็นสำคัญ (Key Points)</h2>
+<ul>
+<li>ภาระงานมีขนาดกว้างมากสำหรับนักศึกษาทำร่วมกัน 2 คน โดย ภานุวัฒน์ แบกรับหน้าที่รับผิดชอบเกือบ 70% ในหลาย Containers พร้อมกัน</li>
+<li>Critical Path ของโครงการประกอบด้วย: การเทรนโมเดล AI (ต้องได้ Accuracy ขั้นต่ำ), API Backend (คือฐานหลักที่เชื่อมโยงทุกส่วน) และตัวแอป Mobile (ที่เป็นสิ่งที่ผู้ใช้สัมผัส)</li>
+<li>PDPA Compliance เป็นโจทย์สำคัญที่คลุมทับการพัฒนาทุกกระบวนการ ทั้ง Frontend, Backend และ AI</li>
+</ul>
+<hr>
+<h2 id="หน้าที่เกี่ยวข้อง">หน้าที่เกี่ยวข้อง</h2>
+<ul>
+<li><a href="team.html">planning/team</a></li>
+<li><a href="../requirements/objectives-kpis.html">requirements/objectives-kpis</a></li>
+<li><a href="../requirements/functional-requirements.html">requirements/functional-requirements</a></li>
+<li><a href="../architecture/system-architecture.html">architecture/system-architecture</a></li>
+<li><a href="../entities/actors.html">entities/actors</a></li>
+</ul>
+</div></main>
+    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้"><p class="toc-title">ในหน้านี้</p><ol class="toc"><li class="toc-level-2"><a href="#%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%A3%E0%B8%A7%E0%B8%A1%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A-system-overview">ภาพรวมระบบ (System Overview)</a></li><li class="toc-level-2"><a href="#%E0%B8%81%E0%B8%A5%E0%B8%B8%E0%B9%88%E0%B8%A1%E0%B8%87%E0%B8%B2%E0%B8%99-mobile-app">กลุ่มงาน Mobile App</a></li><li class="toc-level-2"><a href="#%E0%B8%81%E0%B8%A5%E0%B8%B8%E0%B9%88%E0%B8%A1%E0%B8%87%E0%B8%B2%E0%B8%99-api-backend">กลุ่มงาน API Backend</a></li><li class="toc-level-2"><a href="#%E0%B8%81%E0%B8%A5%E0%B8%B8%E0%B9%88%E0%B8%A1%E0%B8%87%E0%B8%B2%E0%B8%99-ai-engine">กลุ่มงาน AI Engine</a></li><li class="toc-level-2"><a href="#%E0%B8%81%E0%B8%A5%E0%B8%B8%E0%B9%88%E0%B8%A1%E0%B8%87%E0%B8%B2%E0%B8%99-admin-portal">กลุ่มงาน Admin Portal</a></li><li class="toc-level-2"><a href="#%E0%B8%AA%E0%B8%B4%E0%B9%88%E0%B8%87%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%AD%E0%B8%A2%E0%B8%B9%E0%B9%88%E0%B8%99%E0%B8%AD%E0%B8%81%E0%B9%80%E0%B8%AB%E0%B8%99%E0%B8%B7%E0%B8%AD%E0%B9%82%E0%B8%84%E0%B8%A3%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%83%E0%B8%99%E0%B9%80%E0%B8%A7%E0%B8%A5%E0%B8%B2%E0%B8%99%E0%B8%B5%E0%B9%89-out-of-scope-v1">สิ่งที่อยู่นอกเหนือโครงการในเวลานี้ (Out of Scope v1)</a></li><li class="toc-level-2"><a href="#%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%94%E0%B9%87%E0%B8%99%E0%B8%AA%E0%B8%B3%E0%B8%84%E0%B8%B1%E0%B8%8D-key-points">ประเด็นสำคัญ (Key Points)</a></li><li class="toc-level-2"><a href="#%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%87">หน้าที่เกี่ยวข้อง</a></li></ol></aside>
+  </div>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title"><div class="search-dialog-head"><label class="visually-hidden" id="search-title" for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…" autocomplete="off" data-search-input><button class="control" type="button" data-search-close aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div class="search-results" data-search-results aria-live="polite"></div></dialog>
+  <script src="../../assets/js/search-index.js"></script>
+  <script src="../../assets/js/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="th" data-theme="light" data-theme-mode="system">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="กรณีทดสอบและรูปแบบตาราง Manual Test Test Cases ศูนย์กลางกรณีทดสอบแบบ manual ของโปรเจค ScamGuard อยู่ที่ tests all/manual tests/ โดยใช้ตารางมาตรฐาน 10 คอลัมน์ตาม IEEE 829 / ISTQB และมีสำเนา C…">
+  <meta name="color-scheme" content="light dark">
+  <title>กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases) | ScamGuard Documentation</title>
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <script>(()=>{let m='system';try{m=localStorage.getItem('scamguard-docs-theme')||'system'}catch(e){}if(!['system','light','dark'].includes(m))m='system';const t=m==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;document.documentElement.dataset.themeMode=m;document.documentElement.dataset.theme=t})();window.SC_DOCS_ROOT='../../';</script>
+</head>
+<body class="">
+  <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
+  <header class="masthead"><div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><nav class="top-tabs" aria-label="เมนูหลัก"><a href="../../index.html">Guide</a><a href="../../pages/architecture/system-architecture.html">Architecture</a><a href="../../pages/architecture/backend-api.html">API Reference</a></nav></div></header>
+  <div class="docs-shell">
+    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><div class="sidebar-head"><a class="sidebar-brand" href="../../index.html" aria-label="ScamGuard Documentation"><span class="brand brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z"/><path d="m9.2 12 1.8 1.8 3.9-4.2"/></svg></span><span class="sidebar-brand-name">ScamGuard Docs</span></a><div class="theme-switcher" role="group" aria-label="ธีมเว็บไซต์"><button type="button" data-theme-option="system" aria-label="ใช้ธีมตามระบบ" title="System"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></button><button type="button" data-theme-option="light" aria-label="ใช้โหมดสว่าง" title="Light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></button><button type="button" data-theme-option="dark" aria-label="ใช้โหมดมืด" title="Dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8 8 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/></svg></button></div></div><button class="control nav-close" type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button><button class="sidebar-search" type="button" data-search-open><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search...</span><kbd>Ctrl K</kbd></button><div class="sidebar-scroll"><details class="sidebar-group" ><summary>ภาพรวม</summary><ul class="sidebar-list"><li><a href="../overview.html" >ภาพรวมโปรเจค</a></li><li><a href="../index.html" >สารบัญ Wiki — โปรเจค Scam Image Detection</a></li></ul></details><details class="sidebar-group" ><summary>ความต้องการระบบ</summary><ul class="sidebar-list"><li><a href="../requirements/functional-requirements.html" >ความต้องการเชิงฟังก์ชัน (Functional Requirements)</a></li><li><a href="../requirements/non-functional-requirements.html" >ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements)</a></li><li><a href="../requirements/traceability-matrix.html" >เมทริกซ์การสืบย้อนความต้องการ</a></li><li><a href="../requirements/objectives-kpis.html" >วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp; KPIs)</a></li><li><a href="../requirements/srs.html" >Software Requirements Specification (SRS)</a></li><li><a href="../requirements/use-case-diagram.html" >Use Case Diagram</a></li></ul></details><details class="sidebar-group" ><summary>สถาปัตยกรรม</summary><ul class="sidebar-list"><li><a href="../architecture/database-migrations.html" >การจัดการการย้ายฐานข้อมูล (Database Migrations)</a></li><li><a href="../architecture/external-integrations.html" >การเชื่อมต่อบริการภายนอก (External Integrations)</a></li><li><a href="../architecture/database-schema.html" >โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li><li><a href="../architecture/system-architecture.html" >สถาปัตยกรรมระบบ (System Architecture)</a></li><li><a href="../architecture/admin-portal.html" >สถาปัตยกรรมและการออกแบบ Admin Portal</a></li><li><a href="../architecture/mobile-app.html" >สถาปัตยกรรม Mobile App</a></li><li><a href="../architecture/ai-inference-service.html" >AI Inference Service</a></li><li><a href="../architecture/backend-api.html" >Backend API — FastAPI Orchestrator</a></li><li><a href="../architecture/c1-system-context-diagram.html" >C1 System Context Diagram</a></li><li><a href="../architecture/c2-container-diagram.html" >C2 Container Diagram</a></li><li><a href="../architecture/c3-component-diagram.html" >C3 Component Diagram - API Application</a></li><li><a href="../architecture/c4-code-diagram.html" >C4 Code Diagram - Image Scanning Flow</a></li><li><a href="../architecture/database-er-diagram.html" >Entity Relationship Diagram (ER Diagram)</a></li><li><a href="../architecture/mobile-design.html" >Mobile App Architecture</a></li><li><a href="../architecture/flowchart.html" >System Flowchart</a></li><li><a href="../architecture/design-overview.html" >UX/UI &amp; System Design Overview</a></li></ul></details><details class="sidebar-group" ><summary>แนวคิดและเทคนิค</summary><ul class="sidebar-list"><li><a href="../concepts/risk-scoring.html" >การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li><li><a href="../concepts/multi-layer-analysis.html" >การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li><li><a href="../concepts/explainable-ai.html" >ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li><li><a href="../concepts/configs.html" >พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li><li><a href="../concepts/ai-model-segformer.html" >โมเดล AI — SegFormer</a></li><li><a href="../concepts/surya-ocr.html" >โมเดล AI — Surya OCR</a></li><li><a href="../concepts/model-training.html" >AI Model Training Workflow</a></li><li><a href="../concepts/mmsegmentation.html" >MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li><li><a href="../concepts/semantic-segmentation.html" >Semantic Segmentation</a></li></ul></details><details class="sidebar-group" ><summary>องค์ประกอบระบบ</summary><ul class="sidebar-list"><li><a href="../entities/tech-stack.html" >เทคโนโลยีที่ใช้ (Technology Stack)</a></li><li><a href="../entities/actors.html" >ผู้ใช้ระบบ (Actors)</a></li></ul></details><details class="sidebar-group" ><summary>การตัดสินใจ</summary><ul class="sidebar-list"><li><a href="../decisions/technology-choices.html" >การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li></ul></details><details class="sidebar-group" ><summary>การวางแผน</summary><ul class="sidebar-list"><li><a href="../planning/task-tracking.html" >การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a></li><li><a href="../planning/project-scope.html" >ขอบเขตโครงการ (Project Scope)</a></li><li><a href="../planning/team.html" >ทีมงานและผู้รับผิดชอบ (Team)</a></li><li><a href="../planning/backend-documentation.html" >Backend Documentation</a></li></ul></details><details class="sidebar-group" open><summary>การทดสอบ</summary><ul class="sidebar-list"><li><a href="test-cases.html" aria-current="page">กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li></ul></details><details class="sidebar-group" ><summary>คู่มือและภาคผนวก</summary><ul class="sidebar-list"><li><a href="../log.html" >บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li><li><a href="../howto.html" >วิธีใช้งาน Wiki (How to Use This Wiki)</a></li><li><a href="../runbook.html" >Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li><li><a href="../AGENTS.html" >Wiki Operating Guide</a></li></ul></details></div></aside><div class="nav-backdrop" data-nav-backdrop></div>
+    <main class="article" id="main-content"><nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span aria-hidden="true">/</span><span>การทดสอบ</span></nav><header class="article-header"><h1>กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</h1><p class="article-lead">ศูนย์กลางกรณีทดสอบแบบ manual ของโปรเจค ScamGuard อยู่ที่ tests all/manual tests/ โดยใช้ตารางมาตรฐาน 10 คอลัมน์ตาม IEEE 829 / ISTQB และมีสำเนา CSV สำหรับสเปรดชีตแยกตามแต่ละพื้นที่</p><div class="meta"><span>หมวด การทดสอบ</span><time datetime="2026-09-16">อัปเดต 2026-09-16</time><span>ต้นฉบับ testing/test-cases.md</span></div><div class="tags"><span class="tag">testing</span><span class="tag">manual-tests</span><span class="tag">test-cases</span><span class="tag">ieee-829</span><span class="tag">istqb</span><span class="tag">traceability</span><span class="tag">spreadsheets</span></div></header><div class="prose"><h1 id="กรณีทดสอบและรูปแบบตาราง-manual-test-test-cases">กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</h1>
+<p>ศูนย์กลางกรณีทดสอบแบบ manual ของโปรเจค ScamGuard อยู่ที่ <code>tests_all/manual_tests/</code> โดยใช้ตารางมาตรฐาน 10 คอลัมน์ตาม IEEE 829 / ISTQB และมีสำเนา CSV สำหรับสเปรดชีตแยกตามแต่ละพื้นที่</p>
+<hr>
+<h2 id="1-รูปแบบตาราง-10-คอลัมน์-ieee-829-istqb">1. รูปแบบตาราง 10 คอลัมน์ (IEEE 829 / ISTQB)</h2>
+<p>กรณีทดสอบแบบ manual ใน <code>tests_all/manual_tests/</code> ทุกไฟล์ต้องใช้ตาราง Markdown ที่มี 10 คอลัมน์ตามลำดับนี้พอดี (อ้างอิง <code>.agents/AGENTS.md</code> ส่วนที่ 9):</p>
+<p><code>Test Case ID | Test Case name | Requirement ID | Preconditions | Test Data | Description | Test Steps | Expected Results | Actual Result / Status | Priority</code></p>
+<p>กฎของแต่ละคอลัมน์:</p>
+<ul>
+<li><strong>Test Case ID</strong> — รูปแบบ <code>TC-&lt;area&gt;-&lt;NN&gt;</code> (เช่น <code>TC-IMGM-01</code>, <code>TC-BE-AUTH-01</code>)</li>
+<li><strong>Requirement ID</strong> — ต้องอ้างอิง canonical FR/NFR จาก <code>Document/srs/05_Software_Requirement_Specification.md</code> (เช่น <code>FR-ANALYSIS-02</code>) เพื่อการสืบย้อนกลับ ห้ามสร้าง alias ใน Wiki</li>
+<li><strong>Preconditions</strong> — เป็นคอลัมน์แยกต่างหาก (สภาพแวดล้อม/สถานะก่อนทดสอบ) ห้ามฝังไว้ใน Description</li>
+<li><strong>Test Data</strong> — ต้องอ้างอิง path ของไฟล์หรือ ID ที่มีอยู่จริง ห้ามใช้ค่าที่แต่งขึ้น</li>
+<li><strong>Actual Result / Status</strong> — กรอกตอนรันจริง (<code>Pass</code> / <code>Fail</code> + พฤติกรรมที่พบ) ก่อนรันให้ใส่ <code>To Do</code></li>
+<li><strong>Priority</strong> — หนึ่งใน: High / Medium / Low (ในไฟล์ปัจจุบันบางพื้นที่ใช้ระดับ <code>P0 (Blocker)</code> / <code>P1 (High)</code> / <code>P2 (Medium)</code>)</li>
+<li>ต้องมีเคสล้มเหลว/เคสลบ (negative cases: input ไม่ถูกต้อง, คู่ข้อมูลไม่ตรงกัน, ไฟล์หาย) ควบคู่กับเคสสำเร็จ</li>
+</ul>
+<aside class="callout callout-note" aria-label="หมายเหตุ"><p class="callout-title">หมายเหตุ</p><p>ไฟล์ e2e (<code>test_cases_e2e.md</code>) เป็นข้อยกเว้นเชิงโครงสร้าง: ส่วน scenario ข้ามระบบใช้ตาราง <code>Scenario ID | Journey Name | Source System | Intermediate Systems | Target System | Priority</code> และมีตาราง traceability ย่อย (<code>กลุ่ม | TC ย่อย | Requirement ID</code>) แยกต่างหาก ไม่ใช่ตาราง 10 คอลัมน์</p>
+</aside>
+<hr>
+<h2 id="2-กฎ-md-canonical-csv-ใน-spreadsheets">2. กฎ md-canonical + CSV ใน spreadsheets/<area>/</h2>
+<p>ไฟล์ Markdown ใน <code>tests_all/manual_tests/</code> คือต้นฉบับหลัก (canonical) ส่วนสำเนา CSV ของตารางอยู่ใน <code>spreadsheets/&lt;area&gt;/</code> สำหรับเปิดในสเปรดชีต:</p>
+<ul>
+<li><strong>กฎ:</strong> md เป็น canonical — ทุกครั้งที่แก้ md ต้องสร้าง CSV ใหม่ให้ตรงกันเสมอ</li>
+<li>ผังไฟล์ต่อพื้นที่ (จำนวนแถว CSV ไม่นับแถว header ตรงกับจำนวนเคสใน md):</li>
+</ul>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">พื้นที่</th>
+<th style="text-align:left">ไฟล์ md (canonical)</th>
+<th style="text-align:left">ไฟล์ CSV</th>
+<th style="text-align:left">จำนวนเคส</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">admin</td>
+<td style="text-align:left"><code>tests_all/manual_tests/test_cases_admin.md</code></td>
+<td style="text-align:left"><code>spreadsheets/admin/test_cases_admin.csv</code></td>
+<td style="text-align:left">25</td>
+</tr>
+<tr>
+<td style="text-align:left">ai_model</td>
+<td style="text-align:left"><code>tests_all/manual_tests/test_cases_ai_model.md</code></td>
+<td style="text-align:left"><code>spreadsheets/ai_model/test_cases_ai_model.csv</code></td>
+<td style="text-align:left">24</td>
+</tr>
+<tr>
+<td style="text-align:left">backend</td>
+<td style="text-align:left"><code>tests_all/manual_tests/test_cases_backend.md</code></td>
+<td style="text-align:left"><code>spreadsheets/backend/test_cases_backend.csv</code></td>
+<td style="text-align:left">32</td>
+</tr>
+<tr>
+<td style="text-align:left">mobile</td>
+<td style="text-align:left"><code>tests_all/manual_tests/test_cases_mobile.md</code></td>
+<td style="text-align:left"><code>spreadsheets/mobile/test_cases_mobile.csv</code></td>
+<td style="text-align:left">43</td>
+</tr>
+<tr>
+<td style="text-align:left">nfr</td>
+<td style="text-align:left"><code>tests_all/manual_tests/test_cases_nfr.md</code></td>
+<td style="text-align:left"><code>spreadsheets/nfr/test_cases_nfr.csv</code></td>
+<td style="text-align:left">23</td>
+</tr>
+<tr>
+<td style="text-align:left">image_testset</td>
+<td style="text-align:left"><code>tests_all/manual_tests/test_cases_image_testset.md</code></td>
+<td style="text-align:left"><code>spreadsheets/image_testset/test_cases_image_testset.csv</code></td>
+<td style="text-align:left">6</td>
+</tr>
+<tr>
+<td style="text-align:left">e2e</td>
+<td style="text-align:left"><code>tests_all/manual_tests/test_cases_e2e.md</code></td>
+<td style="text-align:left"><code>spreadsheets/e2e/test_cases_e2e_scenarios.csv</code> + <code>spreadsheets/e2e/test_cases_e2e_traceability.csv</code></td>
+<td style="text-align:left">10 scenarios + 4 กลุ่ม traceability</td>
+</tr>
+</tbody>
+</table></div><ul>
+<li>โฟลเดอร์ <code>spreadsheets/qualitative/</code> และ <code>spreadsheets/quantitative/</code> ไม่ใช่กรณีทดสอบแบบ manual แต่เป็นสำเนาสำหรับคนอ่านของผลประเมินโมเดล SegFormer (ต้นฉบับจริงอยู่ที่ <code>model/segformer/Test-Case/output/</code>) หลังรันสคริปต์ประเมินใหม่ต้องคัดลอกมาที่ <code>spreadsheets/</code> อีกครั้งเพราะสคริปต์ไม่ได้เขียนลงที่นั่นโดยตรง</li>
+</ul>
+<hr>
+<h2 id="3-จำนวนเคสต่อไฟล์-นับจากไฟล์จริง">3. จำนวนเคสต่อไฟล์ (นับจากไฟล์จริง)</h2>
+<p>ยอดรวมนับจากแถวตารางในไฟล์ md (<code>grep -c &quot;^| TC-&quot;</code>) และยืนยันด้วยจำนวนแถว CSV:</p>
+<ul>
+<li><strong>admin — 25 เคส</strong> (<code>TC-ADM-*</code>): หมวด Admin Authentication, Dashboard, การจัดการผู้ใช้/โมเดล และการตรวจสอบ</li>
+<li><strong>ai_model — 24 เคส</strong> (<code>TC-AI-*</code>): หมวด Overlapping Tiling Inference, SegFormer/ONNX, Surya OCR, Qwen2.5 XAI และ Source Verification</li>
+<li><strong>backend — 32 เคส</strong> (<code>TC-BE-*</code>): หมวด Authentication &amp; RBAC, Scan API, ฐานข้อมูล PostgreSQL/Redis และ endpoint ฝั่งเซิร์ฟเวอร์</li>
+<li><strong>mobile — 43 เคส</strong> (<code>TC-MOB-*</code>): หมวด Authentication, หน้าจอสแกน/ผลลัพธ์, ประวัติ และการซิงก์กับ backend จริง</li>
+<li><strong>nfr — 23 เคส</strong> (<code>TC-NFR-*</code>): หมวด Performance &amp; Reliability, Security, PDPA และ Accessibility</li>
+<li><strong>image_testset — 6 เคส</strong> (<code>TC-IMGM-*</code> / <code>TC-IMGP-*</code>): เคส mask (ภาพปลอมที่มี ground-truth mask, ภาพจริง mask ดำล้วน, face morphing) และเคสคู่เทียบ (pairs) อ้างอิงข้อมูลจริงที่ <code>/home/panuwat/Pictures/Test-Cases/</code></li>
+<li><strong>e2e — 10 scenarios + 4 กลุ่ม traceability</strong>: scenario ข้ามระบบ (<code>TC-E2E-SCAN-01</code> ถึง <code>TC-E2E-HIST-10</code>) ครอบคลุม journey สแกนเต็มรูปแบบ, cache hit, รายงาน incident, deploy โมเดล, ban ผู้ใช้, offline sync, วงจร register-to-audit, token refresh, regression หลัง deploy และการลบประวัติ ส่วนตาราง traceability แยกย่อย scenario หลักเป็น 4 กลุ่ม (A: อัปโหลด+ตรวจไฟล์, B: ประมวลผล AI, C: แสดงผลลัพธ์, D: บันทึกประวัติ+เวลา)</li>
+</ul>
+<hr>
+<h2 id="4-ที่เก็บผลการรันทดสอบ-tests-all-tests-report">4. ที่เก็บผลการรันทดสอบ (<code>tests_all/tests_report/</code>)</h2>
+<p>ไดเรกทอรี <code>tests_all/tests_report/</code> สงวนไว้สำหรับ<strong>ผลการรันทดสอบอัตโนมัติจริงเท่านั้น</strong> (ห้ามบันทึกงาน review ด้วยสายตา, งานเอกสาร/wiki หรืองานทั่วไป — งานเหล่านั้นลงใน <code>.agents/log.md</code>):</p>
+<pre><code class="language-text"><div class="code-frame"><span class="visually-hidden">ภาษา text</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-text">tests_all/tests_report/
+├── README.md                 # ผังศูนย์กลางรายงาน + GAP ที่ทราบ
+├── automate_tests/
+│   ├── README.md             # กฎการบันทึก (ผลรันจริง + ภาษาไทย 4 มิติ)
+│   ├── server/               # ผลรัน Backend/API (api_suite, admin_api, qwen_xai, risk_calculator_hybrid, scan_xai_gpu, CI)
+│   ├── mobile/               # ผลรัน Mobile (api_base_url_env, history_refresh_fix, result_factors, xai_integration)
+│   ├── admin/                # GAP — ยังไม่มีรายงาน automate ของ Admin Portal
+│   └── model/                # GAP — ยังไม่มีรายงาน automate ของ Model
+└── manual_tests/
+    └── execution_log.md      # ผลรัน manual พร้อม Pass Rate ที่คำนวณได้
+</code></pre></div></code></pre>
+<ul>
+<li><strong>ภาษา:</strong> รายงานทุกไฟล์ต้องเขียนเป็นภาษาไทย (คงคำเทคนิค คำสั่ง และ code identifier เป็นภาษาอังกฤษ)</li>
+<li><strong>รูปแบบรายงาน:</strong> ห้ามเขียนแค่ &quot;PASS/FAIL&quot; อย่างเดียว ต้องแจกแจง 4 มิติเป็นภาษาไทย: (1) อะไรผ่านบ้าง (2) ผ่านอย่างไร/ทำไม (3) อะไรไม่ผ่านบ้าง (4) ไม่ผ่านอย่างไร/สาเหตุ พร้อม Expected vs Actual และ stack trace กรณี fail</li>
+<li><strong>GAP ที่ทราบ:</strong> <code>automate_tests/admin/</code> และ <code>automate_tests/model/</code> ยังไม่มีรายงานผลรันจริง — ต้องรันสคริปต์จริงก่อนจึงบันทึก (ดู <code>tests_all/tests_report/README.md</code>)</li>
+</ul>
+<hr>
+<h2 id="ประเด็นสำคัญ">ประเด็นสำคัญ</h2>
+<ul>
+<li>ตาราง manual test ทุกไฟล์ใช้ 10 คอลัมน์ตาม IEEE 829 / ISTQB โดย md เป็น canonical และ CSV ใน <code>spreadsheets/&lt;area&gt;/</code> ต้องสร้างใหม่ทุกครั้งที่ md เปลี่ยน</li>
+<li>ยอดเคสรวม: admin 25, ai_model 24, backend 32, mobile 43, nfr 23, image_testset 6, e2e 10 scenarios + 4 กลุ่ม traceability</li>
+<li>ผลการรันจริงเท่านั้นที่อยู่ใน <code>tests_all/tests_report/</code> และต้องแจกแจง 4 มิติเป็นภาษาไทย</li>
+</ul>
+<hr>
+<h2 id="หน้าที่เกี่ยวข้อง">หน้าที่เกี่ยวข้อง</h2>
+<ul>
+<li><a href="../requirements/traceability-matrix.html">เมทริกซ์การสืบย้อนความต้องการ (Traceability Matrix)</a></li>
+<li><a href="../requirements/functional-requirements.html">ความต้องการเชิงฟังก์ชัน</a></li>
+<li><a href="../requirements/non-functional-requirements.html">ความต้องการที่ไม่ใช่เชิงฟังก์ชัน</a></li>
+<li><a href="../overview.html">ภาพรวมโปรเจคทั้งหมด</a></li>
+<li><a href="../planning/task-tracking.html">การติดตามงานและการบริหารโครงการ</a></li>
+</ul>
+</div></main>
+    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้"><p class="toc-title">ในหน้านี้</p><ol class="toc"><li class="toc-level-2"><a href="#1-%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B9%81%E0%B8%9A%E0%B8%9A%E0%B8%95%E0%B8%B2%E0%B8%A3%E0%B8%B2%E0%B8%87-10-%E0%B8%84%E0%B8%AD%E0%B8%A5%E0%B8%B1%E0%B8%A1%E0%B8%99%E0%B9%8C-ieee-829-istqb">1. รูปแบบตาราง 10 คอลัมน์ (IEEE 829 / ISTQB)</a></li><li class="toc-level-2"><a href="#2-%E0%B8%81%E0%B8%8E-md-canonical-csv-%E0%B9%83%E0%B8%99-spreadsheets">2. กฎ md-canonical + CSV ใน spreadsheets//</a></li><li class="toc-level-2"><a href="#3-%E0%B8%88%E0%B8%B3%E0%B8%99%E0%B8%A7%E0%B8%99%E0%B9%80%E0%B8%84%E0%B8%AA%E0%B8%95%E0%B9%88%E0%B8%AD%E0%B9%84%E0%B8%9F%E0%B8%A5%E0%B9%8C-%E0%B8%99%E0%B8%B1%E0%B8%9A%E0%B8%88%E0%B8%B2%E0%B8%81%E0%B9%84%E0%B8%9F%E0%B8%A5%E0%B9%8C%E0%B8%88%E0%B8%A3%E0%B8%B4%E0%B8%87">3. จำนวนเคสต่อไฟล์ (นับจากไฟล์จริง)</a></li><li class="toc-level-2"><a href="#4-%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%80%E0%B8%81%E0%B9%87%E0%B8%9A%E0%B8%9C%E0%B8%A5%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%A3%E0%B8%B1%E0%B8%99%E0%B8%97%E0%B8%94%E0%B8%AA%E0%B8%AD%E0%B8%9A-tests-all-tests-report">4. ที่เก็บผลการรันทดสอบ (tests_all/tests_report/)</a></li><li class="toc-level-2"><a href="#%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%94%E0%B9%87%E0%B8%99%E0%B8%AA%E0%B8%B3%E0%B8%84%E0%B8%B1%E0%B8%8D">ประเด็นสำคัญ</a></li><li class="toc-level-2"><a href="#%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%87">หน้าที่เกี่ยวข้อง</a></li></ol></aside>
+  </div>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title"><div class="search-dialog-head"><label class="visually-hidden" id="search-title" for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…" autocomplete="off" data-search-input><button class="control" type="button" data-search-close aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div class="search-results" data-search-results aria-live="polite"></div></dialog>
+  <script src="../../assets/js/search-index.js"></script>
+  <script src="../../assets/js/site.js"></script>
+</body>
+</html>

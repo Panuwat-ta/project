@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="th" data-theme="light" data-theme-mode="system">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="การออกแบบระบบฝึกสอนโมเดล Model Training Design เอกสารนี้ตอบคำถามว่า โมเดลถูกสร้างและอัปเดตอย่างไร ครอบคลุมวงจรชีวิตของ AI ในการเทรน การปรับปรุงอย่างต่อเนื่อง และการนำขึ้นระบบ 1. ภาพรวมของระบ…">
+  <meta name="color-scheme" content="light dark">
+  <title>AI Model Training Workflow | ScamGuard Documentation</title>
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <script>(()=>{let m='system';try{m=localStorage.getItem('scamguard-docs-theme')||'system'}catch(e){}if(!['system','light','dark'].includes(m))m='system';const t=m==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;document.documentElement.dataset.themeMode=m;document.documentElement.dataset.theme=t})();window.SC_DOCS_ROOT='../../';</script>
+</head>
+<body class="">
+  <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
+  <header class="masthead"><div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><nav class="top-tabs" aria-label="เมนูหลัก"><a href="../../index.html">Guide</a><a href="../../pages/architecture/system-architecture.html">Architecture</a><a href="../../pages/architecture/backend-api.html">API Reference</a></nav></div></header>
+  <div class="docs-shell">
+    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><div class="sidebar-head"><a class="sidebar-brand" href="../../index.html" aria-label="ScamGuard Documentation"><span class="brand brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z"/><path d="m9.2 12 1.8 1.8 3.9-4.2"/></svg></span><span class="sidebar-brand-name">ScamGuard Docs</span></a><div class="theme-switcher" role="group" aria-label="ธีมเว็บไซต์"><button type="button" data-theme-option="system" aria-label="ใช้ธีมตามระบบ" title="System"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></button><button type="button" data-theme-option="light" aria-label="ใช้โหมดสว่าง" title="Light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></button><button type="button" data-theme-option="dark" aria-label="ใช้โหมดมืด" title="Dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8 8 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/></svg></button></div></div><button class="control nav-close" type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button><button class="sidebar-search" type="button" data-search-open><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search...</span><kbd>Ctrl K</kbd></button><div class="sidebar-scroll"><details class="sidebar-group" ><summary>ภาพรวม</summary><ul class="sidebar-list"><li><a href="../overview.html" >ภาพรวมโปรเจค</a></li><li><a href="../index.html" >สารบัญ Wiki — โปรเจค Scam Image Detection</a></li></ul></details><details class="sidebar-group" ><summary>ความต้องการระบบ</summary><ul class="sidebar-list"><li><a href="../requirements/functional-requirements.html" >ความต้องการเชิงฟังก์ชัน (Functional Requirements)</a></li><li><a href="../requirements/non-functional-requirements.html" >ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements)</a></li><li><a href="../requirements/traceability-matrix.html" >เมทริกซ์การสืบย้อนความต้องการ</a></li><li><a href="../requirements/objectives-kpis.html" >วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp; KPIs)</a></li><li><a href="../requirements/srs.html" >Software Requirements Specification (SRS)</a></li><li><a href="../requirements/use-case-diagram.html" >Use Case Diagram</a></li></ul></details><details class="sidebar-group" ><summary>สถาปัตยกรรม</summary><ul class="sidebar-list"><li><a href="../architecture/database-migrations.html" >การจัดการการย้ายฐานข้อมูล (Database Migrations)</a></li><li><a href="../architecture/external-integrations.html" >การเชื่อมต่อบริการภายนอก (External Integrations)</a></li><li><a href="../architecture/database-schema.html" >โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li><li><a href="../architecture/system-architecture.html" >สถาปัตยกรรมระบบ (System Architecture)</a></li><li><a href="../architecture/admin-portal.html" >สถาปัตยกรรมและการออกแบบ Admin Portal</a></li><li><a href="../architecture/mobile-app.html" >สถาปัตยกรรม Mobile App</a></li><li><a href="../architecture/ai-inference-service.html" >AI Inference Service</a></li><li><a href="../architecture/backend-api.html" >Backend API — FastAPI Orchestrator</a></li><li><a href="../architecture/c1-system-context-diagram.html" >C1 System Context Diagram</a></li><li><a href="../architecture/c2-container-diagram.html" >C2 Container Diagram</a></li><li><a href="../architecture/c3-component-diagram.html" >C3 Component Diagram - API Application</a></li><li><a href="../architecture/c4-code-diagram.html" >C4 Code Diagram - Image Scanning Flow</a></li><li><a href="../architecture/database-er-diagram.html" >Entity Relationship Diagram (ER Diagram)</a></li><li><a href="../architecture/mobile-design.html" >Mobile App Architecture</a></li><li><a href="../architecture/flowchart.html" >System Flowchart</a></li><li><a href="../architecture/design-overview.html" >UX/UI &amp; System Design Overview</a></li></ul></details><details class="sidebar-group" open><summary>แนวคิดและเทคนิค</summary><ul class="sidebar-list"><li><a href="risk-scoring.html" >การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li><li><a href="multi-layer-analysis.html" >การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li><li><a href="explainable-ai.html" >ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li><li><a href="configs.html" >พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li><li><a href="ai-model-segformer.html" >โมเดล AI — SegFormer</a></li><li><a href="surya-ocr.html" >โมเดล AI — Surya OCR</a></li><li><a href="model-training.html" aria-current="page">AI Model Training Workflow</a></li><li><a href="mmsegmentation.html" >MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li><li><a href="semantic-segmentation.html" >Semantic Segmentation</a></li></ul></details><details class="sidebar-group" ><summary>องค์ประกอบระบบ</summary><ul class="sidebar-list"><li><a href="../entities/tech-stack.html" >เทคโนโลยีที่ใช้ (Technology Stack)</a></li><li><a href="../entities/actors.html" >ผู้ใช้ระบบ (Actors)</a></li></ul></details><details class="sidebar-group" ><summary>การตัดสินใจ</summary><ul class="sidebar-list"><li><a href="../decisions/technology-choices.html" >การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li></ul></details><details class="sidebar-group" ><summary>การวางแผน</summary><ul class="sidebar-list"><li><a href="../planning/task-tracking.html" >การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a></li><li><a href="../planning/project-scope.html" >ขอบเขตโครงการ (Project Scope)</a></li><li><a href="../planning/team.html" >ทีมงานและผู้รับผิดชอบ (Team)</a></li><li><a href="../planning/backend-documentation.html" >Backend Documentation</a></li></ul></details><details class="sidebar-group" ><summary>การทดสอบ</summary><ul class="sidebar-list"><li><a href="../testing/test-cases.html" >กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li></ul></details><details class="sidebar-group" ><summary>คู่มือและภาคผนวก</summary><ul class="sidebar-list"><li><a href="../log.html" >บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li><li><a href="../howto.html" >วิธีใช้งาน Wiki (How to Use This Wiki)</a></li><li><a href="../runbook.html" >Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li><li><a href="../AGENTS.html" >Wiki Operating Guide</a></li></ul></details></div></aside><div class="nav-backdrop" data-nav-backdrop></div>
+    <main class="article" id="main-content"><nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span aria-hidden="true">/</span><span>แนวคิดและเทคนิค</span></nav><header class="article-header"><h1>AI Model Training Workflow</h1><p class="article-lead">เอกสารนี้ตอบคำถามว่า โมเดลถูกสร้างและอัปเดตอย่างไร ครอบคลุมวงจรชีวิตของ AI ในการเทรน การปรับปรุงอย่างต่อเนื่อง และการนำขึ้นระบบ</p><div class="meta"><span>หมวด แนวคิดและเทคนิค</span><time datetime="2026-09-16">อัปเดต 2026-09-16</time><span>ต้นฉบับ concepts/model-training.md</span></div><div class="tags"><span class="tag">concepts</span><span class="tag">ai</span><span class="tag">training</span><span class="tag">onnx</span></div></header><div class="prose"><h1 id="การออกแบบระบบฝึกสอนโมเดล-model-training-design">การออกแบบระบบฝึกสอนโมเดล (Model Training Design)</h1>
+<p>เอกสารนี้ตอบคำถามว่า <strong>โมเดลถูกสร้างและอัปเดตอย่างไร</strong> ครอบคลุมวงจรชีวิตของ AI ในการเทรน การปรับปรุงอย่างต่อเนื่อง และการนำขึ้นระบบ</p>
+<h2 id="1-ภาพรวมของระบบ-training">1. ภาพรวมของระบบ Training</h2>
+<p>ระบบถูกออกแบบเพื่อรองรับกระบวนการเตรียมข้อมูล การฝึกสอน (Training) การวัดผล และการแปลงโมเดลให้อยู่ในรูปแบบที่พร้อมใช้งาน โดยรองรับทั้งการเทรนรอบแรก (Initial Training) และการเรียนรู้เพิ่มเติม (Incremental Learning) ในอนาคต</p>
+<h2 id="2-dataset-design">2. Dataset Design</h2>
+<ul>
+<li>การคัดเลือกชุดข้อมูลภาพ (Dataset) ที่ประกอบไปด้วยภาพปกติและภาพตัดต่อ (Forged) หรือชุดข้อมูลมาตรฐาน (CASIA, IMD2020)</li>
+<li>การกำหนดโครงสร้าง Annotation ในรูปแบบ Segmentation Mask (ภาพขาวดำที่ชี้จุดดัดแปลง) เพื่อสอน AI ในระดับพิกเซล</li>
+</ul>
+<h2 id="3-data-preprocessing">3. Data Preprocessing</h2>
+<ul>
+<li><strong>การทำความสะอาดข้อมูล</strong>: การจัดระเบียบโครงสร้างโฟลเดอร์ให้สอดคล้องกับ Dataloader</li>
+<li><strong>Data Augmentation</strong>: ใช้เทคนิคต่างๆ เช่น <code>RandomResize</code>, <code>RandomCrop</code>, <code>RandomFlip</code> และที่สำคัญคือ <code>PhotoMetricDistortion</code> (ปรับแต่งแสง/สี) เพื่อให้โมเดลทนทานต่อการแต่งแสงหลอก</li>
+<li>การแบ่งชุดข้อมูลเป็น Train / Validation / Test Set แบบ <strong>stratified 80:10:10</strong> (คงสัดส่วน class แท้/ปลอม และแหล่งข้อมูลทุกชุด, กำหนด seed คงที่, test set ถูก freeze ห้ามนำมา tune)</li>
+</ul>
+<h2 id="4-initial-training">4. Initial Training</h2>
+<ul>
+<li>การนำน้ำหนักเริ่มต้น (Pre-trained Weights) ของโมเดล SegFormer มาใช้งานเพื่อย่นระยะเวลาการเรียนรู้</li>
+<li>การสอนบนชุดข้อมูลหลักทั้งหมด (Base Dataset) เพื่อปรับพื้นฐานโมเดลให้รู้จักลักษณะของรอยตัดต่อดิจิทัล</li>
+</ul>
+<h2 id="5-fine-tuning">5. Fine-tuning</h2>
+<ul>
+<li>การปรับจูนโมเดลกับชุดข้อมูลภาพหลอกลวงแบบเฉพาะเจาะจง</li>
+<li>ใช้ค่า Learning Rate ที่ต่ำลงกว่ารอบแรกเพื่อค่อย ๆ ปรับน้ำหนักโดยไม่ทำลายความรู้เดิม</li>
+</ul>
+<h2 id="6-incremental-fine-tuning">6. Incremental Fine-tuning</h2>
+<ul>
+<li>การอัปเดตโมเดลตามรอบทบทวน retrain: ทุก 30 วัน หรือเมื่อมีภาพกลโกงชนิดใหม่ที่ approved + research-consented สะสม ≥ 500 ภาพ (แล้วแต่เงื่อนไขใดถึงก่อน) — เป็นการเรียนรู้ต่อเนื่องโดยไม่ต้องเริ่มต้นเทรนใหม่ทั้งหมดจากศูนย์</li>
+</ul>
+<h2 id="7-parameter-wise-fine-tuning">7. Parameter-wise Fine-tuning</h2>
+<ul>
+<li>การกำหนดอัตราการเรียนรู้ (Learning Rate) แยกตามชิ้นส่วนโมเดล เพื่อรักษาฟีเจอร์เดิมแต่ยังปรับตัวเข้ากับโดเมนใหม่ได้</li>
+<li>Backbone (MiT Encoder): ปรับตัวช้าๆ (<code>lr_mult=0.1</code>) เพื่อไม่ให้ลืมความรู้การมองภาพรวม</li>
+<li>Decode Head (SegFormer Head): เรียนรู้อย่างรวดเร็ว (<code>lr_mult=10.0</code>) เพื่อจับรอยตัดต่อ</li>
+</ul>
+<h2 id="8-replay-dataset">8. Replay Dataset</h2>
+<ul>
+<li>กลยุทธ์การนำรูปภาพส่วนหนึ่งจากฐานข้อมูลดั้งเดิมมาผสมกับข้อมูลชุดใหม่ในระหว่างการทำ Incremental Training</li>
+<li>เพื่อป้องกันปัญหา Catastrophic Forgetting (การที่ AI ลืมวิธีตรวจจับกลโกงแบบเก่า หลังจากเรียนรู้กลโกงแบบใหม่)</li>
+</ul>
+<h2 id="9-validation">9. Validation</h2>
+<ul>
+<li>การประเมินผลระหว่างการเทรนในแต่ละรอบ (Epoch) ด้วยชุดข้อมูล Validation Set</li>
+<li>คอยตรวจสอบค่า Loss เพื่อดูพัฒนาการของโมเดลว่าไม่ได้กำลังจดจำคำตอบ (Overfitting)</li>
+</ul>
+<h2 id="10-model-evaluation">10. Model Evaluation</h2>
+<ul>
+<li>การวัดผลประสิทธิภาพบน Test Set เพื่อคัดเลือกโมเดลที่ดีที่สุด ด้วยมาตรวัด (Metrics) เช่น:
+<ul>
+<li><strong>IoU (Intersection over Union)</strong>: วัดความทับซ้อนของพื้นที่ตรวจพบเทียบกับพื้นที่จริง</li>
+<li><strong>mDice</strong>: การหาความสมดุลระหว่างความแม่นยำและความครอบคลุม</li>
+<li><strong>mIoU</strong>: ค่าเฉลี่ย IoU ของทุกคลาส โดย IoU วัดสัดส่วนพื้นที่ซ้อนทับระหว่าง mask ที่ทำนายกับ ground truth ต่อพื้นที่รวม (intersection / union); ไม่ใช่สัดส่วนพิกเซลที่ทายถูกทั้งหมด (pixel accuracy)</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p><strong>ผลการเทรน v1.0.5 (config <code>segformer_mit-b2-v10.py</code>):</strong> fine-tune จาก checkpoint <code>v1.0.0</code> (<code>best_mIoU_iter_112000.pth</code>) ครบ 200,000 iters (จบ 2026-09-12) ได้ best validation mIoU <strong>91.31</strong> / mDice <strong>95.29</strong> @iter 197,500 และเป็นอันดับหนึ่งบน locked common test (<code>scamguard-locked-multisource-test-v1</code>) ด้วย mIoU <strong>91.24</strong> / Forgery IoU <strong>83.51</strong> — เป็น candidate ดีที่สุด แต่ Production ยังคงเป็น <code>v1.0.0</code> (ดู <a href="ai-model-segformer.html">concepts/ai-model-segformer</a>)</p>
+</blockquote>
+<h3 id="ผลรายเวอร์ชัน-test-case-ระดับโมเดล">ผลรายเวอร์ชัน (Test Case ระดับโมเดล)</h3>
+<p><strong>ตารางที่ 1 — คะแนน validation ตอนเทรน</strong> (ที่มา: <code>model/segformer/tests_model/report/reportmodel.md</code> §ตาราง best mIoU):</p>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th>เวอร์ชัน</th>
+<th style="text-align:right">best iter</th>
+<th style="text-align:right">val mIoU (%)</th>
+<th style="text-align:right">val mDice (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v1.0.0</code></td>
+<td style="text-align:right">112,000</td>
+<td style="text-align:right">72.42</td>
+<td style="text-align:right">81.40</td>
+</tr>
+<tr>
+<td><code>v1.0.1</code></td>
+<td style="text-align:right">152,000</td>
+<td style="text-align:right">75.48</td>
+<td style="text-align:right">83.79</td>
+</tr>
+<tr>
+<td><code>v1.0.2</code></td>
+<td style="text-align:right">132,000</td>
+<td style="text-align:right">67.99</td>
+<td style="text-align:right">76.55</td>
+</tr>
+<tr>
+<td><code>v1.0.3</code></td>
+<td style="text-align:right">160,000</td>
+<td style="text-align:right">72.62</td>
+<td style="text-align:right">81.30</td>
+</tr>
+<tr>
+<td><code>v1.0.4</code></td>
+<td style="text-align:right">495,000</td>
+<td style="text-align:right">86.38</td>
+<td style="text-align:right">92.22</td>
+</tr>
+<tr>
+<td><code>v1.0.5</code></td>
+<td style="text-align:right">197,500</td>
+<td style="text-align:right"><strong>91.31</strong></td>
+<td style="text-align:right"><strong>95.29</strong></td>
+</tr>
+</tbody>
+</table></div><p><strong>ตารางที่ 2 — Locked common test</strong> (<code>scamguard-locked-multisource-test-v1</code>, รัน 2026-09-15, ที่มา: reportmodel.md §1):</p>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:center">อันดับ</th>
+<th>เวอร์ชัน</th>
+<th style="text-align:right">mIoU (%)</th>
+<th style="text-align:right">mDice (%)</th>
+<th style="text-align:right">Forgery IoU (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><strong>1</strong></td>
+<td><strong><code>v1.0.5</code></strong></td>
+<td style="text-align:right"><strong>91.24</strong></td>
+<td style="text-align:right"><strong>95.25</strong></td>
+<td style="text-align:right"><strong>83.51</strong></td>
+</tr>
+<tr>
+<td style="text-align:center">2</td>
+<td><code>v1.0.4</code></td>
+<td style="text-align:right">81.21</td>
+<td style="text-align:right">88.74</td>
+<td style="text-align:right">64.94</td>
+</tr>
+<tr>
+<td style="text-align:center">3</td>
+<td><code>v1.0.0</code></td>
+<td style="text-align:right">48.70</td>
+<td style="text-align:right">51.42</td>
+<td style="text-align:right">2.92</td>
+</tr>
+<tr>
+<td style="text-align:center">4</td>
+<td><code>v1.0.3</code></td>
+<td style="text-align:right">47.99</td>
+<td style="text-align:right">50.08</td>
+<td style="text-align:right">1.53</td>
+</tr>
+<tr>
+<td style="text-align:center">5</td>
+<td><code>v1.0.2</code></td>
+<td style="text-align:right">47.81</td>
+<td style="text-align:right">49.72</td>
+<td style="text-align:right">1.16</td>
+</tr>
+<tr>
+<td style="text-align:center">6</td>
+<td><code>v1.0.1</code></td>
+<td style="text-align:right">47.80</td>
+<td style="text-align:right">49.69</td>
+<td style="text-align:right">1.12</td>
+</tr>
+</tbody>
+</table></div><aside class="callout callout-note" aria-label="หมายเหตุ"><p class="callout-title">หมายเหตุ</p><p>มีชุดประเมินที่สามคือ local Test-Cases set (105 ตัวอย่าง ใน <code>spreadsheets/quantitative/overall.csv</code>): <code>v1.0.5</code> ได้ mIoU 75.96 / mDice 84.87 — ต่ำกว่าเกณฑ์ 85.00% อยู่ 0.13 (ดู gate ใน <a href="../planning/task-tracking.html">planning/task-tracking</a>) อย่าสลับตัวเลขกันทั้งสามชุด: validation (ตาราง 1) ≠ locked common test (ตาราง 2) ≠ local set</p>
+</aside>
+<h2 id="11-hyperparameters-hardware-optimization">11. Hyperparameters &amp; Hardware Optimization</h2>
+<ul>
+<li><strong>VRAM Optimization</strong>: ใช้ <code>AmpOptimWrapper</code> (Mixed Precision) เพื่อลดการใช้หน่วยความจำ ทำให้เทรนบนอุปกรณ์ที่มี VRAM จำกัดได้อย่างเต็มประสิทธิภาพ</li>
+<li><strong>Optimizer &amp; Scheduler</strong>: ใช้ AdamW ร่วมกับ LinearLR (Warmup) และ PolyLR</li>
+<li><strong>Loss Function</strong>: ใช้ <code>Binary Cross-Entropy Loss (BCE)</code> ควบคู่กับ <code>DiceLoss</code> (<code>use_sigmoid=True</code>) เพื่อแก้ปัญหา Class Imbalance (พื้นที่รอยปลอมแปลงเล็กมากเมื่อเทียบกับพื้นหลัง — canonical ตรงกับ <code>design/training.md</code> และ <code>Document/model/training.md</code>)</li>
+<li><strong>บทเรียนจาก config v10 (<code>segformer_mit-b2-v10.py</code>, โมเดล v1.0.5):</strong> ชุดข้อมูล clean tree ฝั่ง PNG lossless (<code>img_suffix='.png'</code>, 7 แหล่ง: casia/authentic/splicing/inpainting/copymove/face/imd2020 รวมเป็น <code>ConcatDataset</code> ทั้ง val และ test) — <code>class_weight=[1.0, 2.5]</code> + <code>DiceLoss loss_weight=1.5</code> — batch 8 + <code>accumulative_counts=2</code> (effective 16 บน VRAM 8GB) — งบ 200,000 iters + <code>save_best='mIoU'</code> (ดู <a href="configs.html">concepts/configs</a>)</li>
+</ul>
+<h2 id="12-checkpoint-version-management">12. Checkpoint &amp; Version Management</h2>
+<ul>
+<li>การจัดเก็บสถานะน้ำหนักโมเดล (Model State Dict) ทุกครั้งที่มีผลลัพธ์ที่ดีขึ้นบน Validation Set เป็นไฟล์นามสกุล <code>.pth</code> หรือ <code>.pt</code></li>
+<li><strong>Automated Version Increment</strong>: ระบบมีการจัดการเวอร์ชันของโมเดลอัตโนมัติ (เช่น <code>v1.0.1</code>, <code>v1.1.0</code>) โดยจะเข้าไปอ่านประวัติการเทรนใน <code>work_dirs</code> เพื่อหาเวอร์ชันที่สูงที่สุด แล้วบวกเพิ่ม 1 ให้เสมอ ช่วยป้องกันการเขียนทับผลรันรอบก่อนหน้า และรับประกันว่าจะไม่มีการย้อนกลับไปใช้เลขเวอร์ชันเดิมที่น้อยกว่า</li>
+</ul>
+<h2 id="13-export-onnx">13. Export ONNX</h2>
+<ul>
+<li>ขั้นตอนการนำไฟล์ Checkpoint (.pth) ที่ดีที่สุด มาแปลงร่าง (Export) ให้อยู่ในฟอร์แมต ONNX</li>
+<li>ช่วยเพิ่มความเร็วในการทำ Inference ลดการพึ่งพาไลบรารีขนาดใหญ่ในฝั่ง Backend</li>
+</ul>
+<h2 id="14-model-deployment">14. Model Deployment</h2>
+<ul>
+<li>กระบวนการนำไฟล์ ONNX และไฟล์การตั้งค่าที่เกี่ยวข้อง (Config) จัดเก็บลงใน Model Registry หรือส่งต่อให้ API Server</li>
+</ul>
+<h2 id="15-hot-reload">15. Hot Reload</h2>
+<ul>
+<li>กลไกของฝั่ง Backend Server ในการโหลดไฟล์โมเดลเวอร์ชันใหม่เข้าสู่ระบบ และนำไปใช้ประมวลผลคำขอใหม่ทันที โดยไม่ต้องปิด/เปิด Server ใหม่ (Zero-downtime)</li>
+</ul>
+<h2 id="16-rollback">16. Rollback</h2>
+<ul>
+<li>แผนสำรองในการปรับย้อน (Revert) ไปใช้งานโมเดลเวอร์ชันก่อนหน้าทันที หากพบว่าโมเดลตัวใหม่สร้างผลลัพธ์ผิดพลาด (False Positive) อย่างรุนแรงในสภาพแวดล้อมจริง (Production)</li>
+</ul>
+<h2 id="17-training-workflow">17. Training Workflow</h2>
+<ul>
+<li>ภาพรวมผังงาน (Workflow) แบบอัตโนมัติ (เช่น MLOps หรือ CI/CD สำหรับ AI) เพื่อจัดการตั้งแต่ การรับข้อมูลชุดใหม่ -&gt; การทดสอบการเทรน -&gt; การแพ็กเกจจิ้งไฟล์ -&gt; จนถึงการ Deploy อย่างเป็นระบบ</li>
+</ul>
+</div></main>
+    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้"><p class="toc-title">ในหน้านี้</p><ol class="toc"><li class="toc-level-2"><a href="#1-%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%A3%E0%B8%A7%E0%B8%A1%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A-training">1. ภาพรวมของระบบ Training</a></li><li class="toc-level-2"><a href="#2-dataset-design">2. Dataset Design</a></li><li class="toc-level-2"><a href="#3-data-preprocessing">3. Data Preprocessing</a></li><li class="toc-level-2"><a href="#4-initial-training">4. Initial Training</a></li><li class="toc-level-2"><a href="#5-fine-tuning">5. Fine-tuning</a></li><li class="toc-level-2"><a href="#6-incremental-fine-tuning">6. Incremental Fine-tuning</a></li><li class="toc-level-2"><a href="#7-parameter-wise-fine-tuning">7. Parameter-wise Fine-tuning</a></li><li class="toc-level-2"><a href="#8-replay-dataset">8. Replay Dataset</a></li><li class="toc-level-2"><a href="#9-validation">9. Validation</a></li><li class="toc-level-2"><a href="#10-model-evaluation">10. Model Evaluation</a></li><li class="toc-level-3"><a href="#%E0%B8%9C%E0%B8%A5%E0%B8%A3%E0%B8%B2%E0%B8%A2%E0%B9%80%E0%B8%A7%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B8%8A%E0%B8%B1%E0%B8%99-test-case-%E0%B8%A3%E0%B8%B0%E0%B8%94%E0%B8%B1%E0%B8%9A%E0%B9%82%E0%B8%A1%E0%B9%80%E0%B8%94%E0%B8%A5">ผลรายเวอร์ชัน (Test Case ระดับโมเดล)</a></li><li class="toc-level-2"><a href="#11-hyperparameters-hardware-optimization">11. Hyperparameters &amp; Hardware Optimization</a></li><li class="toc-level-2"><a href="#12-checkpoint-version-management">12. Checkpoint &amp; Version Management</a></li><li class="toc-level-2"><a href="#13-export-onnx">13. Export ONNX</a></li><li class="toc-level-2"><a href="#14-model-deployment">14. Model Deployment</a></li><li class="toc-level-2"><a href="#15-hot-reload">15. Hot Reload</a></li><li class="toc-level-2"><a href="#16-rollback">16. Rollback</a></li><li class="toc-level-2"><a href="#17-training-workflow">17. Training Workflow</a></li></ol></aside>
+  </div>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title"><div class="search-dialog-head"><label class="visually-hidden" id="search-title" for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…" autocomplete="off" data-search-input><button class="control" type="button" data-search-close aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div class="search-results" data-search-results aria-live="polite"></div></dialog>
+  <script src="../../assets/js/search-index.js"></script>
+  <script src="../../assets/js/site.js"></script>
+</body>
+</html>

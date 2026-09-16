@@ -6,6 +6,8 @@
 - Command: `server/venv/bin/pytest server/tests/api/test_admin_auth.py server/tests/api/test_admin_reports.py -v`
 - Result: PASS
 - Summary: Total: 8 | Passed: 8 | Failed: 0 | Skipped: 0 | Duration: 0.14s
+- Requirement/TC mapping (historical): ไม่ได้บันทึกในผลรันเดิม จึงไม่สามารถย้อนยืนยันได้โดยไม่สร้างข้อมูลสมมติ
+- Commit/Build/Env (historical): ไม่ได้บันทึกในผลรันเดิม จึงไม่สามารถระบุค่าแทนได้อย่างน่าเชื่อถือ
 
 ### 1. รายการที่ผ่าน (Passed Tests) และพฤติกรรมที่ผ่าน (How it Passed)
 - **test_login_creates_session_with_sid**:

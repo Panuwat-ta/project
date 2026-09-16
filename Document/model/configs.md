@@ -68,9 +68,9 @@ $$ S_{visual} = \text{Normalize}(\text{Confidence} \times \text{Mask Coverage}) 
 
 ## 4. สมการสำหรับการฝึกสอนโมเดลและการตั้งค่า Loss Function (Training Configurations)
 
-เพื่อเพิ่มความแม่นยำในการเทรนโมเดลจำแนกพิกเซล (Semantic Segmentation) ระบบใช้ **Loss Function** แบบผสมผสานระหว่าง Binary Cross-Entropy (BCE) และ Dice Loss:
+เพื่อเพิ่มความแม่นยำในการเทรนโมเดลจำแนกพิกเซล (Semantic Segmentation) config v10 ใช้ **weighted Cross-Entropy Loss** (`loss_weight=1.0`, `class_weight=[1.0, 2.5]`) และ **Dice Loss** (`loss_weight=1.5`):
 
-$$ L = L_{BCE} + L_{Dice} $$
+$$ L = L_{CE,\,class\_weight=[1.0,2.5]} + 1.5L_{Dice} $$
 
 การปรับน้ำหนักของโมเดล (Weight Update) ใช้เทคนิค **Differential Learning Rates** ผ่าน AdamW Optimizer โดยมีการตั้งค่าตัวคูณ (Multiplier) ที่แตกต่างกัน:
 
@@ -82,8 +82,8 @@ $$ \theta_{head}^{(t+1)} = \theta_{head}^{(t)} - (\eta \times 10.0) \frac{\parti
 *(โดย $\eta$ คือค่า Base Learning Rate ของระบบ)*
 
 **คำอธิบายและเหตุผลที่ใช้:**
-* **การผสม BCE และ Dice Loss:** 
-  * $L_{BCE}$ ช่วยบังคับให้โมเดลประเมินค่าความน่าจะเป็นของแต่ละพิกเซลได้อย่างแม่นยำ 
+* **การผสม weighted CE และ Dice Loss:**
+  * $L_{CE}$ ถ่วงน้ำหนักคลาส background:forgery เป็น 1.0:2.5 เพื่อลด class imbalance
   * $L_{Dice}$ ช่วยรักษารูปทรงและขอบเขต (Boundary) ของรอยตัดต่อให้คมชัด ลดปัญหาความไม่สมดุลของข้อมูลระหว่างบริเวณพิกเซลจริงที่มีมาก กับพิกเซลรอยแก้ที่มีน้อย
 * **Differential Learning Rates:** ระบบต้องการเก็บความสามารถเดิมในการสกัดจุดเด่นของภาพ (Feature Extraction) จากโมเดลที่พรีเทรนมาแล้วเอาไว้ (ป้องกัน Catastrophic Forgetting) จึงสั่งให้แกนหลัก (Backbone) เรียนรู้ช้าสุดๆ (`0.1`) แต่ขณะเดียวกันเราต้องการให้ส่วนประมวลผลปลายทาง (Classification Head) ปรับตัวเข้าหาความรู้ใหม่และข้อมูลภาพสลิปใบเสร็จใหม่ๆ จึงให้เรียนรู้เร็วถึง (`10.0`) เท่า
 

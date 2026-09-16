@@ -1,0 +1,4 @@
+2026/09/15 08:59:22 - mmengine - INFO - per class results:
+2026/09/15 08:59:22 - mmengine - INFO - | background | 98.97 | 99.61 | 99.48 |
+2026/09/15 08:59:22 - mmengine - INFO - | forgery | 83.51 | 89.01 | 91.01 |
+2026/09/15 08:59:22 - mmengine - INFO - Iter(test) [2500/2504] aAcc: 99.0200  mIoU: 91.2400  mAcc: 94.3100  mDice: 95.2500  data_time: 0.0112  time: 0.3289

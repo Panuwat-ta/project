@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="th" data-theme="light" data-theme-mode="system">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="ความต้องการที่ไม่ใช่ฟังก์ชัน Non-Functional Requirements ข้อกำหนดด้านประสิทธิภาพ, ความปลอดภัย, ความเป็นส่วนตัว, และกฎระเบียบต่างๆ Canonical catalog: Document/srs/05 Software Requirement Spec…">
+  <meta name="color-scheme" content="light dark">
+  <title>ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements) | ScamGuard Documentation</title>
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <script>(()=>{let m='system';try{m=localStorage.getItem('scamguard-docs-theme')||'system'}catch(e){}if(!['system','light','dark'].includes(m))m='system';const t=m==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;document.documentElement.dataset.themeMode=m;document.documentElement.dataset.theme=t})();window.SC_DOCS_ROOT='../../';</script>
+</head>
+<body class="">
+  <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
+  <header class="masthead"><div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><nav class="top-tabs" aria-label="เมนูหลัก"><a href="../../index.html">Guide</a><a href="../../pages/architecture/system-architecture.html">Architecture</a><a href="../../pages/architecture/backend-api.html">API Reference</a></nav></div></header>
+  <div class="docs-shell">
+    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><div class="sidebar-head"><a class="sidebar-brand" href="../../index.html" aria-label="ScamGuard Documentation"><span class="brand brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z"/><path d="m9.2 12 1.8 1.8 3.9-4.2"/></svg></span><span class="sidebar-brand-name">ScamGuard Docs</span></a><div class="theme-switcher" role="group" aria-label="ธีมเว็บไซต์"><button type="button" data-theme-option="system" aria-label="ใช้ธีมตามระบบ" title="System"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></button><button type="button" data-theme-option="light" aria-label="ใช้โหมดสว่าง" title="Light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></button><button type="button" data-theme-option="dark" aria-label="ใช้โหมดมืด" title="Dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8 8 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/></svg></button></div></div><button class="control nav-close" type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button><button class="sidebar-search" type="button" data-search-open><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search...</span><kbd>Ctrl K</kbd></button><div class="sidebar-scroll"><details class="sidebar-group" ><summary>ภาพรวม</summary><ul class="sidebar-list"><li><a href="../overview.html" >ภาพรวมโปรเจค</a></li><li><a href="../index.html" >สารบัญ Wiki — โปรเจค Scam Image Detection</a></li></ul></details><details class="sidebar-group" open><summary>ความต้องการระบบ</summary><ul class="sidebar-list"><li><a href="functional-requirements.html" >ความต้องการเชิงฟังก์ชัน (Functional Requirements)</a></li><li><a href="non-functional-requirements.html" aria-current="page">ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements)</a></li><li><a href="traceability-matrix.html" >เมทริกซ์การสืบย้อนความต้องการ</a></li><li><a href="objectives-kpis.html" >วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp; KPIs)</a></li><li><a href="srs.html" >Software Requirements Specification (SRS)</a></li><li><a href="use-case-diagram.html" >Use Case Diagram</a></li></ul></details><details class="sidebar-group" ><summary>สถาปัตยกรรม</summary><ul class="sidebar-list"><li><a href="../architecture/database-migrations.html" >การจัดการการย้ายฐานข้อมูล (Database Migrations)</a></li><li><a href="../architecture/external-integrations.html" >การเชื่อมต่อบริการภายนอก (External Integrations)</a></li><li><a href="../architecture/database-schema.html" >โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li><li><a href="../architecture/system-architecture.html" >สถาปัตยกรรมระบบ (System Architecture)</a></li><li><a href="../architecture/admin-portal.html" >สถาปัตยกรรมและการออกแบบ Admin Portal</a></li><li><a href="../architecture/mobile-app.html" >สถาปัตยกรรม Mobile App</a></li><li><a href="../architecture/ai-inference-service.html" >AI Inference Service</a></li><li><a href="../architecture/backend-api.html" >Backend API — FastAPI Orchestrator</a></li><li><a href="../architecture/c1-system-context-diagram.html" >C1 System Context Diagram</a></li><li><a href="../architecture/c2-container-diagram.html" >C2 Container Diagram</a></li><li><a href="../architecture/c3-component-diagram.html" >C3 Component Diagram - API Application</a></li><li><a href="../architecture/c4-code-diagram.html" >C4 Code Diagram - Image Scanning Flow</a></li><li><a href="../architecture/database-er-diagram.html" >Entity Relationship Diagram (ER Diagram)</a></li><li><a href="../architecture/mobile-design.html" >Mobile App Architecture</a></li><li><a href="../architecture/flowchart.html" >System Flowchart</a></li><li><a href="../architecture/design-overview.html" >UX/UI &amp; System Design Overview</a></li></ul></details><details class="sidebar-group" ><summary>แนวคิดและเทคนิค</summary><ul class="sidebar-list"><li><a href="../concepts/risk-scoring.html" >การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li><li><a href="../concepts/multi-layer-analysis.html" >การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li><li><a href="../concepts/explainable-ai.html" >ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li><li><a href="../concepts/configs.html" >พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li><li><a href="../concepts/ai-model-segformer.html" >โมเดล AI — SegFormer</a></li><li><a href="../concepts/surya-ocr.html" >โมเดล AI — Surya OCR</a></li><li><a href="../concepts/model-training.html" >AI Model Training Workflow</a></li><li><a href="../concepts/mmsegmentation.html" >MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li><li><a href="../concepts/semantic-segmentation.html" >Semantic Segmentation</a></li></ul></details><details class="sidebar-group" ><summary>องค์ประกอบระบบ</summary><ul class="sidebar-list"><li><a href="../entities/tech-stack.html" >เทคโนโลยีที่ใช้ (Technology Stack)</a></li><li><a href="../entities/actors.html" >ผู้ใช้ระบบ (Actors)</a></li></ul></details><details class="sidebar-group" ><summary>การตัดสินใจ</summary><ul class="sidebar-list"><li><a href="../decisions/technology-choices.html" >การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li></ul></details><details class="sidebar-group" ><summary>การวางแผน</summary><ul class="sidebar-list"><li><a href="../planning/task-tracking.html" >การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a></li><li><a href="../planning/project-scope.html" >ขอบเขตโครงการ (Project Scope)</a></li><li><a href="../planning/team.html" >ทีมงานและผู้รับผิดชอบ (Team)</a></li><li><a href="../planning/backend-documentation.html" >Backend Documentation</a></li></ul></details><details class="sidebar-group" ><summary>การทดสอบ</summary><ul class="sidebar-list"><li><a href="../testing/test-cases.html" >กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li></ul></details><details class="sidebar-group" ><summary>คู่มือและภาคผนวก</summary><ul class="sidebar-list"><li><a href="../log.html" >บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li><li><a href="../howto.html" >วิธีใช้งาน Wiki (How to Use This Wiki)</a></li><li><a href="../runbook.html" >Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li><li><a href="../AGENTS.html" >Wiki Operating Guide</a></li></ul></details></div></aside><div class="nav-backdrop" data-nav-backdrop></div>
+    <main class="article" id="main-content"><nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span aria-hidden="true">/</span><span>ความต้องการระบบ</span></nav><header class="article-header"><h1>ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements)</h1><p class="article-lead">ข้อกำหนดด้านประสิทธิภาพ, ความปลอดภัย, ความเป็นส่วนตัว, และกฎระเบียบต่างๆ</p><div class="meta"><span>หมวด ความต้องการระบบ</span><time datetime="2026-09-16">อัปเดต 2026-09-16</time><span>ต้นฉบับ requirements/non-functional-requirements.md</span></div><div class="tags"><span class="tag">NFR</span><span class="tag">performance</span><span class="tag">security</span><span class="tag">PDPA</span><span class="tag">availability</span><span class="tag">privacy</span><span class="tag">HTTPS</span><span class="tag">JWT</span></div></header><div class="prose"><h1 id="ความต้องการที่ไม่ใช่ฟังก์ชัน-non-functional-requirements">ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements)</h1>
+<p>ข้อกำหนดด้านประสิทธิภาพ, ความปลอดภัย, ความเป็นส่วนตัว, และกฎระเบียบต่างๆ</p>
+<blockquote>
+<p><strong>Canonical catalog:</strong> <code>Document/srs/05_Software_Requirement_Specification.md</code> §3 (NFR-01..09), <code>06_Requirement_Traceability.md</code> §5.5, <code>07_Appendix_A_Full_Traceability_Matrix.md</code> — นิยามตัวเลข/สูตร/เกณฑ์ทั้งหมดดูที่ Document ที่เดียว ไฟล์นี้เหลือแค่ลิงก์อ้าง + รายละเอียดระดับทดสอบที่ Document ไม่มี</p>
+</blockquote>
+<hr>
+<h2 id="ประสิทธิภาพ-เวลาตอบสนอง-canonical-document-nfr-01">ประสิทธิภาพ — เวลาตอบสนอง (canonical: Document NFR-01)</h2>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">ข้อกำหนด</th>
+<th style="text-align:left">เป้าหมาย (ตาม Document NFR-01)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">ความเร็วตอบสนอง — แบบ Cache Hit</td>
+<td style="text-align:left">&lt;= 3 วินาที (P95, End-to-End; เงื่อนไขภาพ 1080p/4G)</td>
+</tr>
+<tr>
+<td style="text-align:left">ความเร็วตอบสนอง — แบบ Full Inference (Cache Miss)</td>
+<td style="text-align:left">&lt;= 15 วินาทีต่อภาพ (P50; P95 &lt;= 25s, P99 &lt;= 35s)</td>
+</tr>
+<tr>
+<td style="text-align:left">AI Inference — GPU (NVIDIA T4+)</td>
+<td style="text-align:left">&lt;= 10 วินาที/ภาพ</td>
+</tr>
+<tr>
+<td style="text-align:left">AI Inference — CPU Fallback</td>
+<td style="text-align:left">&lt;= 60 วินาที/ภาพ (แสดงคำเตือน &quot;Processing may take longer (CPU mode)&quot;)</td>
+</tr>
+</tbody>
+</table></div><p><strong>หมายเหตุ:</strong></p>
+<ul>
+<li>เป้าหมาย Cache Hit 3 วินาที คิดจาก Redis Lookup + PostgreSQL Fetch โดยไม่ต้องมี AI Inference</li>
+<li>เป้าหมาย Full Inference 15 วินาที ครอบคลุมถึง: EXIF + OCR + ตรวจสอบผ่าน API + AI Inference + ผลิต Heatmap + จัดเก็บผลลัพธ์</li>
+<li>ค่าข้างต้นคือเกณฑ์ช่วงทดสอบ (test) ส่วนระดับ SLA ใน Production กำหนดแยกหลัง baseline; Uptime วัดต่อรอบ 30 วัน ไม่นับ Planned Maintenance ที่ประกาศล่วงหน้า</li>
+</ul>
+<hr>
+<h2 id="การขยายระบบ-canonical-document-nfr-02-รองรับผู้ใช้พร้อมกัน-100-คน">การขยายระบบ (canonical: Document NFR-02 — รองรับผู้ใช้พร้อมกัน ≥ 100 คน)</h2>
+<ul>
+<li>Load Testing 100 concurrent users: Cache Hit avg &lt;= 5 วินาที, Cache Miss avg &lt;= 20 วินาที, Error Rate &lt; 1%</li>
+<li>AI Inference scale 1→4 replicas, throughput ≥3x, เสร็จใน 5 นาที @100 concurrent users (รายละเอียดระดับทดสอบ)</li>
+<li>code v1 แยก SegFormer ONNX เป็น worker subprocess ภายใน FastAPI deployment เดียว; การ scale เป็น service/container อิสระเป็น future option</li>
+<li>ลดจำนวนการทำงานด้วย Redis Cache เป็นส่วนเสริมเพื่อตอบคำถามโดยไม่ต้องรัน AI (Graceful Degradation สำหรับคำถามเดิมๆ ช่วง High Load)</li>
+</ul>
+<hr>
+<h2 id="ความพร้อมใช้งาน-canonical-document-nfr-03-uptime-99-5-monitoring-alerting">ความพร้อมใช้งาน (canonical: Document NFR-03 — Uptime ≥ 99.5% + Monitoring/Alerting)</h2>
+<ul>
+<li>Uptime &gt;= 99.5% ต่อรอบ 30 วัน ไม่นับ Planned Maintenance (เกณฑ์ช่วงทดสอบ; SLA production กำหนดแยก) + crash-free sessions &gt;= 99.9% (รายละเอียดระดับทดสอบ)</li>
+<li>Monitoring: Prometheus + Grafana (Real-time Dashboard); Alerting: Grafana Alerts + Sentry → Slack/LINE/Email (Error Rate &gt; 5%, P95 &gt; 30s, Uptime &lt; 99.5%, GPU/CPU &gt; 90%)</li>
+</ul>
+<hr>
+<h2 id="ความแม่นยำของ-ai-canonical-document-nfr-05">ความแม่นยำของ AI (canonical: Document NFR-05)</h2>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">ตัวชี้วัด</th>
+<th style="text-align:left">เป้าหมาย (ตาม Document NFR-05)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">ความแม่นยำ (Accuracy) การตรวจจับภาพตัดต่อ</td>
+<td style="text-align:left">&gt;= 85% บน frozen test set 1,000 ภาพ (สคริปต์ประเมินเวอร์ชันคงที่)</td>
+</tr>
+<tr>
+<td style="text-align:left">ค่า mDice การตรวจจับภาพตัดต่อ</td>
+<td style="text-align:left">&gt;= 85% บน frozen test set เดียวกัน (mDice ใช้เฉพาะงาน segmentation)</td>
+</tr>
+<tr>
+<td style="text-align:left">Precision / Recall (เกณฑ์เสริม)</td>
+<td style="text-align:left">&gt;= 85% (Document NFR-05 AC-3/AC-4)</td>
+</tr>
+</tbody>
+</table></div><p>ตาราง metrics ของโมเดล (a_acc, m_iou, m_acc, m_dice) ดูรายละเอียดที่ตาราง model_versions</p>
+<hr>
+<h2 id="ความปลอดภัย-canonical-document-nfr-04">ความปลอดภัย (canonical: Document NFR-04)</h2>
+<h3 id="transport-security">Transport Security</h3>
+<ul>
+<li>
+<p>ช่องทาง Mobile↔Server ใช้ <strong>TLS 1.3</strong>; API production บังคับ HTTPS ห้ามส่ง password/token ผ่าน URL</p>
+</li>
+<li>
+<p>ทุกช่องทางการเชื่อมต่อระหว่าง Mobile App และ Server ใช้โปรโตคอล <strong>HTTPS/TLS Encryption</strong></p>
+</li>
+<li>
+<p>ไม่อนุญาตให้มีการส่งข้อมูลรูปภาพ หรือ รหัสผ่านแบบ Plaintext เด็ดขาด</p>
+</li>
+</ul>
+<h3 id="authentication-และ-authorization">Authentication และ Authorization</h3>
+<ul>
+<li><strong>JWT (JSON Web Token)</strong> — ออกให้เพื่อรับรองการ Login และบังคับตรวจสอบทุก Endpoint ป้องกันระดับสิทธิ์ (Access TTL 15 นาที / Refresh TTL 7 วัน)</li>
+<li>นำ Token ไปเก็บใน <strong>Secure Storage</strong> ของสมาร์ตโฟนผู้ใช้</li>
+<li><strong>RBAC (Role-Based Access Control)</strong> — แยกสิทธิ์ระหว่าง User ธรรมดา และ Admin ป้องกันการละเมิด</li>
+<li>Endpoint ของ Admin ทั้งหมดจะปฏิเสธ Token ผู้ใช้ระดับธรรมดาทันที</li>
+</ul>
+<h3 id="rate-limiting">Rate Limiting</h3>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">กลุ่มผู้ใช้</th>
+<th style="text-align:left">เป้าหมาย (ตาม Document RC-NFR-08)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Guest (ยังไม่ login)</td>
+<td style="text-align:left">10 requests/minute</td>
+</tr>
+<tr>
+<td style="text-align:left">Authenticated User</td>
+<td style="text-align:left">60 requests/minute</td>
+</tr>
+<tr>
+<td style="text-align:left">Admin</td>
+<td style="text-align:left">300 requests/minute</td>
+</tr>
+</tbody>
+</table></div><h3 id="ข้อมูล-data-security-รหัสผ่าน-argon2id-หรือ-bcrypt-salt-เท่านั้น-ห้าม-plaintext">ข้อมูล (Data Security; รหัสผ่าน: Argon2id หรือ bcrypt+salt เท่านั้น ห้าม plaintext)</h3>
+<ul>
+<li>ไฟล์ชั่วคราวของ worker (original/heatmap ชั่วคราว) ลบอัตโนมัติใน 1 ชม. หลังวิเคราะห์เสร็จ (Minimal Retention)</li>
+<li>code v1 เก็บไฟล์ใน <code>LOCAL_UPLOAD_DIR</code> และเสิร์ฟผ่าน FastAPI static mount <code>/uploads</code>; ยังไม่มี Presigned URL จึงต้องจำกัดการเปิดเผย path และวาง access control/reverse proxy ให้เหมาะสมก่อน Production</li>
+</ul>
+<h3 id="ความเป็นส่วนตัว-pdpa-canonical-document-fr-pdpa-01-nfr-04-rc-pdpa-04">ความเป็นส่วนตัว PDPA (canonical: Document FR-PDPA-01 + NFR-04 + RC-PDPA-04)</h3>
+<p>กฎหมายว่าด้วยการคุ้มครองข้อมูลส่วนบุคคลของไทย (PDPA) มีผลบังคับใช้กับโครงการนี้อย่างเคร่งครัด</p>
+<h3 id="privacy-by-design">Privacy by Design</h3>
+<ul>
+<li>ระบบออกแบบมาให้จัดเก็บข้อมูลน้อยที่สุดเท่าที่จำเป็น</li>
+<li>ไม่เก็บข้อมูลอื่นที่ไม่อยู่ในจุดประสงค์</li>
+</ul>
+<h3 id="การจัดการความยินยอม-consent-management-document-fr-pdpa-01">การจัดการความยินยอม (Consent Management — Document FR-PDPA-01)</h3>
+<p>ฝั่ง Backend รับและบันทึก Consent 2 ระดับจาก body ของ <code>POST /api/v1/auth/register</code>:</p>
+<ol>
+<li><strong>System Consent (บังคับ)</strong> — ต้องยินยอมให้ประมวลผลรูปภาพเพื่อการตรวจสอบ หากไม่ให้ จะไม่สามารถใช้งานระบบได้เลย</li>
+<li><strong>Research Consent (ไม่บังคับ/เลือกได้)</strong> — การยินยอมให้เก็บรวบรวมรูปภาพ (แบบนิรนาม) สู่ Dataset งานวิจัย AI สามารถเปิดและปิด (Opt-in / Opt-out) ภายหลังได้เสมอ (FR-PDPA-02/03; ถอนแล้วลบใน 72 ชม. — รายละเอียดระดับทดสอบ)</li>
+</ol>
+<h3 id="การทำข้อมูลนิรนาม-data-anonymization-รายละเอียดระดับทดสอบ">การทำข้อมูลนิรนาม (Data Anonymization — รายละเอียดระดับทดสอบ)</h3>
+<ul>
+<li>ระบบล้างข้อมูล EXIF GPS, รุ่นสมาร์ตโฟน และ Metadata ระบุพิกัดหรือตัวตนทั้งหมดก่อนเข้าฐานข้อมูล</li>
+<li>รูปทุกรูปในฝั่งวิจัยและพัฒนาจะไม่เชื่อมต่อกลับไปยังตัวบุคคล</li>
+</ul>
+<h3 id="การถอนความยินยอม-consent-revocation-document-fr-pdpa-01-ac-3">การถอนความยินยอม (Consent Revocation — Document FR-PDPA-01 AC-3)</h3>
+<ul>
+<li>ผู้ใช้สามารถกดถอนความยินยอมของงานวิจัยจากหน้าจอตั้งค่า</li>
+<li>การกดยกเลิก ส่งผลให้ระบบล้างข้อมูลรูปภาพของผู้ใช้ท่านนั้นๆ ออกจาก Research Dataset ภายใน 72 ชม.</li>
+</ul>
+<h3 id="นโยบายการเก็บข้อมูล-data-retention-rc-pdpa-04-deferred-phase-2-cron-รายวัน-02-00-น">นโยบายการเก็บข้อมูล (Data Retention — RC-PDPA-04 deferred Phase 2; Cron รายวัน 02:00 น.)</h3>
+<ul>
+<li>ผลสแกนที่ได้รับความยินยอม (System consent) เก็บ <strong>1 ปี</strong> แล้วลบอัตโนมัติ (Auto-delete ผ่าน Cron Job รายวัน); กรณีถอน consent ลบใน 72 ชม.</li>
+<li>Audit Logs ไม่ลบ (เก็บไว้เพื่อ Compliance)</li>
+</ul>
+<h3 id="กรณีวิเคราะห์ไม่ครบ-canonical-document-fr-analysis-03-ac-4-fallback">กรณีวิเคราะห์ไม่ครบ (canonical: Document FR-ANALYSIS-03 AC-4 fallback)</h3>
+<ul>
+<li>ระบบ shall ไม่สรุปว่าภาพปลอดภัยเมื่อวิเคราะห์ไม่ครบ — เมื่อ Reverse Search ล้มเหลว/ยังไม่ตั้งค่า ให้ตั้ง <code>source_status = &quot;unavailable&quot;</code> แจ้งผู้ใช้ว่าฟังก์ชันค้นหาแหล่งที่มายังไม่พร้อมใช้งาน และคำนวณคะแนนรวมจากมิติที่สำเร็จเท่านั้น (มติ DOC-01: ไม่ใช้ค่ากลางปลอม)</li>
+</ul>
+<hr>
+<h2 id="ความสามารถในการใช้งาน-canonical-document-nfr-06">ความสามารถในการใช้งาน (canonical: Document NFR-06)</h2>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">ข้อกำหนด</th>
+<th style="text-align:left">เป้าหมาย (ตาม Document NFR-06)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">ความสามารถในการอธิบายผล Heatmap</td>
+<td style="text-align:left">&gt;= 80% (n=100) เข้าใจบริเวณต้องสงสัยโดยไม่มีพื้นฐานเทคนิค (UAT protocol + rubric 3 ข้อ: ระบุบริเวณ/อธิบายเหตุผล/ตัดสินใจต่อได้; สุ่มตัวอย่าง)</td>
+</tr>
+<tr>
+<td style="text-align:left">ความพึงพอใจโดยรวมของผู้ใช้ (Likert 1-5)</td>
+<td style="text-align:left">ระดับคะแนน Mean &gt;= 4.00 (&quot;Good&quot; ขึ้นไป)</td>
+</tr>
+</tbody>
+</table></div><hr>
+<h2 id="ประสิทธิภาพแคช-canonical-document-nfr-07-cache-hit-rate-40">ประสิทธิภาพแคช (canonical: Document NFR-07 — Cache Hit Rate ≥ 40%)</h2>
+<ul>
+<li>Redis hit ≤3s (P95), hit-rate ≥40%/สัปดาห์ (alert เมื่อ &lt;35%)</li>
+<li>กลยุทธ์เมื่อต่ำกว่าเป้าหมาย (4 ขั้นตาม Document NFR-07 AC-2): เพิ่ม TTL 60–90 วันสำหรับภาพไวรัล/เสี่ยงสูง, Auto-Scaling AI Workers, Graceful Degradation, Monitoring Alert</li>
+</ul>
+<hr>
+<h2 id="ความเข้ากันได้-การบำรุงรักษา-canonical-document-nfr-08-nfr-09">ความเข้ากันได้ / การบำรุงรักษา (canonical: Document NFR-08/NFR-09)</h2>
+<ul>
+<li><strong>NFR-08 (Compatibility):</strong> key flows (สมัคร → สแกน → ดูผล) ผ่าน 100% บน Android 10–15 (API 29–35) ผ่าน emulator/device farm บน CI อย่างน้อยเวอร์ชัน 10/12/14/15; Mobile เรียก backend ผ่าน versioned REST (OpenAPI) JSON — SHA-256 ของไฟล์ round-trip ตรงต้นฉบับ 100% และ response ตรง OpenAPI schema (v1 Android เท่านั้น — CON-MOB-01)</li>
+<li><strong>NFR-09 (Maintainability):</strong> branch coverage ≥80% ทั้ง backend (<code>pytest --cov</code>) และ mobile (<code>flutter test --coverage</code>) วัดบน CI ทุก PR (ต่ำกว่าเกณฑ์ merge ไม่ได้); static analysis clean (backend: ruff + mypy; mobile: <code>flutter analyze</code>) — 0 errors และ warning ใหม่เป็น 0 ก่อน merge; แยก AI Inference Service อิสระ (CON-ARCH-01)</li>
+</ul>
+<h2 id="หน้าที่เกี่ยวข้อง">หน้าที่เกี่ยวข้อง</h2>
+<ul>
+<li><a href="objectives-kpis.html">requirements/objectives-kpis</a></li>
+<li><a href="functional-requirements.html">requirements/functional-requirements</a></li>
+<li><a href="../architecture/system-architecture.html">architecture/system-architecture</a></li>
+<li><a href="../architecture/database-schema.html">architecture/database-schema</a></li>
+<li><a href="../architecture/backend-api.html">architecture/backend-api</a></li>
+</ul>
+</div></main>
+    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้"><p class="toc-title">ในหน้านี้</p><ol class="toc"><li class="toc-level-2"><a href="#%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%AA%E0%B8%B4%E0%B8%97%E0%B8%98%E0%B8%B4%E0%B8%A0%E0%B8%B2%E0%B8%9E-%E0%B9%80%E0%B8%A7%E0%B8%A5%E0%B8%B2%E0%B8%95%E0%B8%AD%E0%B8%9A%E0%B8%AA%E0%B8%99%E0%B8%AD%E0%B8%87-canonical-document-nfr-01">ประสิทธิภาพ — เวลาตอบสนอง (canonical: Document NFR-01)</a></li><li class="toc-level-2"><a href="#%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%82%E0%B8%A2%E0%B8%B2%E0%B8%A2%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A-canonical-document-nfr-02-%E0%B8%A3%E0%B8%AD%E0%B8%87%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B8%9C%E0%B8%B9%E0%B9%89%E0%B9%83%E0%B8%8A%E0%B9%89%E0%B8%9E%E0%B8%A3%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B8%81%E0%B8%B1%E0%B8%99-100-%E0%B8%84%E0%B8%99">การขยายระบบ (canonical: Document NFR-02 — รองรับผู้ใช้พร้อมกัน ≥ 100 คน)</a></li><li class="toc-level-2"><a href="#%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%9E%E0%B8%A3%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B9%83%E0%B8%8A%E0%B9%89%E0%B8%87%E0%B8%B2%E0%B8%99-canonical-document-nfr-03-uptime-99-5-monitoring-alerting">ความพร้อมใช้งาน (canonical: Document NFR-03 — Uptime ≥ 99.5% + Monitoring/Alerting)</a></li><li class="toc-level-2"><a href="#%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B9%81%E0%B8%A1%E0%B9%88%E0%B8%99%E0%B8%A2%E0%B8%B3%E0%B8%82%E0%B8%AD%E0%B8%87-ai-canonical-document-nfr-05">ความแม่นยำของ AI (canonical: Document NFR-05)</a></li><li class="toc-level-2"><a href="#%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%9B%E0%B8%A5%E0%B8%AD%E0%B8%94%E0%B8%A0%E0%B8%B1%E0%B8%A2-canonical-document-nfr-04">ความปลอดภัย (canonical: Document NFR-04)</a></li><li class="toc-level-3"><a href="#transport-security">Transport Security</a></li><li class="toc-level-3"><a href="#authentication-%E0%B9%81%E0%B8%A5%E0%B8%B0-authorization">Authentication และ Authorization</a></li><li class="toc-level-3"><a href="#rate-limiting">Rate Limiting</a></li><li class="toc-level-3"><a href="#%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B8%B9%E0%B8%A5-data-security-%E0%B8%A3%E0%B8%AB%E0%B8%B1%E0%B8%AA%E0%B8%9C%E0%B9%88%E0%B8%B2%E0%B8%99-argon2id-%E0%B8%AB%E0%B8%A3%E0%B8%B7%E0%B8%AD-bcrypt-salt-%E0%B9%80%E0%B8%97%E0%B9%88%E0%B8%B2%E0%B8%99%E0%B8%B1%E0%B9%89%E0%B8%99-%E0%B8%AB%E0%B9%89%E0%B8%B2%E0%B8%A1-plaintext">ข้อมูล (Data Security; รหัสผ่าน: Argon2id หรือ bcrypt+salt เท่านั้น ห้าม plaintext)</a></li><li class="toc-level-3"><a href="#%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B9%80%E0%B8%9B%E0%B9%87%E0%B8%99%E0%B8%AA%E0%B9%88%E0%B8%A7%E0%B8%99%E0%B8%95%E0%B8%B1%E0%B8%A7-pdpa-canonical-document-fr-pdpa-01-nfr-04-rc-pdpa-04">ความเป็นส่วนตัว PDPA (canonical: Document FR-PDPA-01 + NFR-04 + RC-PDPA-04)</a></li><li class="toc-level-3"><a href="#privacy-by-design">Privacy by Design</a></li><li class="toc-level-3"><a href="#%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%A2%E0%B8%B4%E0%B8%99%E0%B8%A2%E0%B8%AD%E0%B8%A1-consent-management-document-fr-pdpa-01">การจัดการความยินยอม (Consent Management — Document FR-PDPA-01)</a></li><li class="toc-level-3"><a href="#%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%97%E0%B8%B3%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B8%B9%E0%B8%A5%E0%B8%99%E0%B8%B4%E0%B8%A3%E0%B8%99%E0%B8%B2%E0%B8%A1-data-anonymization-%E0%B8%A3%E0%B8%B2%E0%B8%A2%E0%B8%A5%E0%B8%B0%E0%B9%80%E0%B8%AD%E0%B8%B5%E0%B8%A2%E0%B8%94%E0%B8%A3%E0%B8%B0%E0%B8%94%E0%B8%B1%E0%B8%9A%E0%B8%97%E0%B8%94%E0%B8%AA%E0%B8%AD%E0%B8%9A">การทำข้อมูลนิรนาม (Data Anonymization — รายละเอียดระดับทดสอบ)</a></li><li class="toc-level-3"><a href="#%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%96%E0%B8%AD%E0%B8%99%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%A2%E0%B8%B4%E0%B8%99%E0%B8%A2%E0%B8%AD%E0%B8%A1-consent-revocation-document-fr-pdpa-01-ac-3">การถอนความยินยอม (Consent Revocation — Document FR-PDPA-01 AC-3)</a></li><li class="toc-level-3"><a href="#%E0%B8%99%E0%B9%82%E0%B8%A2%E0%B8%9A%E0%B8%B2%E0%B8%A2%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%81%E0%B9%87%E0%B8%9A%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B8%B9%E0%B8%A5-data-retention-rc-pdpa-04-deferred-phase-2-cron-%E0%B8%A3%E0%B8%B2%E0%B8%A2%E0%B8%A7%E0%B8%B1%E0%B8%99-02-00-%E0%B8%99">นโยบายการเก็บข้อมูล (Data Retention — RC-PDPA-04 deferred Phase 2; Cron รายวัน 02:00 น.)</a></li><li class="toc-level-3"><a href="#%E0%B8%81%E0%B8%A3%E0%B8%93%E0%B8%B5%E0%B8%A7%E0%B8%B4%E0%B9%80%E0%B8%84%E0%B8%A3%E0%B8%B2%E0%B8%B0%E0%B8%AB%E0%B9%8C%E0%B9%84%E0%B8%A1%E0%B9%88%E0%B8%84%E0%B8%A3%E0%B8%9A-canonical-document-fr-analysis-03-ac-4-fallback">กรณีวิเคราะห์ไม่ครบ (canonical: Document FR-ANALYSIS-03 AC-4 fallback)</a></li><li class="toc-level-2"><a href="#%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%AA%E0%B8%B2%E0%B8%A1%E0%B8%B2%E0%B8%A3%E0%B8%96%E0%B9%83%E0%B8%99%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%83%E0%B8%8A%E0%B9%89%E0%B8%87%E0%B8%B2%E0%B8%99-canonical-document-nfr-06">ความสามารถในการใช้งาน (canonical: Document NFR-06)</a></li><li class="toc-level-2"><a href="#%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%AA%E0%B8%B4%E0%B8%97%E0%B8%98%E0%B8%B4%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B9%81%E0%B8%84%E0%B8%8A-canonical-document-nfr-07-cache-hit-rate-40">ประสิทธิภาพแคช (canonical: Document NFR-07 — Cache Hit Rate ≥ 40%)</a></li><li class="toc-level-2"><a href="#%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B9%80%E0%B8%82%E0%B9%89%E0%B8%B2%E0%B8%81%E0%B8%B1%E0%B8%99%E0%B9%84%E0%B8%94%E0%B9%89-%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9A%E0%B8%B3%E0%B8%A3%E0%B8%B8%E0%B8%87%E0%B8%A3%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B8%B2-canonical-document-nfr-08-nfr-09">ความเข้ากันได้ / การบำรุงรักษา (canonical: Document NFR-08/NFR-09)</a></li><li class="toc-level-2"><a href="#%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%87">หน้าที่เกี่ยวข้อง</a></li></ol></aside>
+  </div>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title"><div class="search-dialog-head"><label class="visually-hidden" id="search-title" for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…" autocomplete="off" data-search-input><button class="control" type="button" data-search-close aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div class="search-results" data-search-results aria-live="polite"></div></dialog>
+  <script src="../../assets/js/search-index.js"></script>
+  <script src="../../assets/js/site.js"></script>
+</body>
+</html>

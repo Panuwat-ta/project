@@ -45,7 +45,7 @@
   - การสลับภาษา (Localization ภาษาไทยและอังกฤษ) และ Dark/Light Mode
 - **Backend API & Database (FastAPI & PostgreSQL)**:
   - Authentication Endpoints (POST /api/v1/auth/register|login|refresh|logout, GET /api/v1/auth/me)
-  - Image Scan Endpoint (`POST /api/v1/scan/`, GET /api/v1/scan/{id}) พร้อม Multipart Upload
+  - Image Scan Endpoint (`POST /api/v1/scan/`, `GET /api/v1/scan/{scan_id}`) พร้อม Multipart Upload
   - Magic Bytes Validation และ Image File Sanitization
   - Redis Caching Mechanism (SHA-256 image hash TTL 30 วัน)
   - Slowapi Rate Limiting แบบ tier ต่อนาที (guest 10 / user 60 / admin 300 / POST scan 5; admin login/refresh 5/minute) และ CORS Origin Filtering
@@ -78,11 +78,11 @@
 - การล็อกอินด้วย OAuth Social Login และการแจ้งเตือน Firebase Cloud Messaging (FCM) — Deferred เป็น Phase 2
 - การทดสอบการเชื่อมต่อกับ Payment Gateway ภายนอก (ระบบไม่มีธุรกรรมการเงิน)
 - การทดสอบฮาร์ดแวร์ Physical GPU ในระดับชิปเซ็ต (ทดสอบเฉพาะระดับ Driver / CUDA Container API)
-- การทดสอบบน Desktop OS (Windows/macOS/Linux) — แอปเป็น Flutter cross-platform (Android + iOS) ทดสอบหลักบน Android
+- การทดสอบบน iOS และ Desktop OS (Windows/macOS/Linux) — code v1 รองรับและทดสอบเฉพาะ Android; iOS เป็น future release
 
 ### 2.3 หมายเหตุ GAP ที่ห้ามเขียนแผนเทสของสิ่งที่ไม่มี (Anti-Hallucination)
 - เส้นทาง POST /api/v1/scan/upload ไม่มีอยู่จริง ต้องใช้ POST /api/v1/scan/ เท่านั้น
-- เส้นทาง DELETE /api/v1/scan/{id} ไม่มีอยู่จริง มีเฉพาะ DELETE /api/v1/history/{id}
+- เส้นทาง `DELETE /api/v1/scan/{scan_id}` ไม่มีอยู่จริง มีเฉพาะ `DELETE /api/v1/history/{scan_id}`
 - ชุดค่า category keys ฝั่ง Mobile กับ Backend ไม่ตรงกัน ให้ mark เป็น GAP ห้ามสมมติว่าตรงกัน
 
 ---
@@ -137,7 +137,7 @@
 | **Database Container** | PostgreSQL 15 (Alpine) | Port 5432, TZ=Asia/Bangkok, Shared Volume |
 | **Cache Container** | Redis 7 (Alpine) | Port 6379, Caching Image Hash SHA-256 |
 | **Backend API Node** | FastAPI (Python 3.10+ Virtual Environment) | Port 8000, Uvicorn Workers, Slowapi Limiter |
-| **Admin Portal Node** | React 18, Vite, Tailwind CSS | Port 5173, Vite Proxy to Backend |
+| **Admin Portal Node** | React 19 + Vite 8 + Tailwind CSS v4 | Port 5173, Vite Proxy to Backend |
 | **Mobile Test Bed** | Android Physical Devices (Pixel 6, Galaxy S21) / Android Emulator (API 33, 34) | Flutter SDK 3.x, Local Network Bridge |
 | **AI Inference Node** | ONNX Runtime (CPU / CUDA), PyTorch for Surya OCR | Subprocess Worker, Model Cache in `model/` |
 

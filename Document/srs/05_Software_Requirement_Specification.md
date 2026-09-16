@@ -40,6 +40,8 @@ Acceptance Criteria:
 
 ### 2.1 Authentication & Authorization (FR-AUTH)
 
+**Identity stores ใน code v1:** การสมัคร/เข้าสู่ระบบของ Mobile ใช้ตาราง `users` (role `user`/`researcher`); Admin Portal ใช้ตาราง `admins` และ `admin_sessions` แยกต่างหาก ทุก `/api/v1/admin/*` ตรวจ admin session และ `is_superadmin`
+
 #### FR-AUTH-01: การสมัครสมาชิก
 **Description:** ระบบต้องให้ผู้ใช้สมัครสมาชิกด้วย Email และ Password พร้อมยืนยันเงื่อนไขการใช้งาน  
 **Source:** RC-AUTH-01  
@@ -434,8 +436,8 @@ Acceptance Criteria:
   - คำอธิบายประกอบด้วย Qwen2.5-1.5B สำหรับสร้างคำอธิบายภาษาไทย (มติ DOC-12: ระบุรุ่นให้ชัด)
   - สร้างภาพ Heatmap พร้อม Color Map (แดง=เสี่ยงสูง, เหลือง=ปานกลาง, เขียว=ปลอดภัย) ที่ opacity 50%
   - บันทึก Heatmap เป็น heatmap.jpg
-  - อัปโหลดไปยัง Object Storage
-- **Expected Output:** `heatmap_url: "https://storage/scan_id/heatmap.jpg"`
+  - บันทึกลง local `LOCAL_UPLOAD_DIR`
+- **Expected Output:** `heatmap_url: "/uploads/{filename}"`
 
 **AC-2: แสดง Heatmap แบบ Overlay**
 - **Input:** scan_id, heatmap_url
@@ -502,7 +504,7 @@ Acceptance Criteria:
   - แสดง Confirmation Dialog
   - ผู้ใช้ยืนยัน
   - ลบข้อมูลจาก Database
-  - ลบไฟล์จาก Object Storage (original.jpg, heatmap.jpg)
+  - ลบไฟล์จาก local `LOCAL_UPLOAD_DIR` (original image และ heatmap) เมื่อไม่มี scan อื่นอ้างถึงไฟล์เดียวกัน
 - **Expected Output:** HTTP 200, `{message: "Scan deleted successfully"}` (ตรงกับ code)
 
 **AC-5: ลบประวัติทั้งหมด**
@@ -511,7 +513,7 @@ Acceptance Criteria:
   - แสดง Confirmation Dialog 2 ครั้ง
   - ผู้ใช้ยืนยัน
   - ลบข้อมูลทั้งหมดของผู้ใช้จาก Database
-  - ลบไฟล์ทั้งหมดจาก Object Storage
+  - ลบไฟล์ทั้งหมดของผู้ใช้จาก local `LOCAL_UPLOAD_DIR` เมื่อไม่มี scan อื่นอ้างถึงไฟล์เดียวกัน
 - **Expected Output:** HTTP 204
 
 ---
@@ -625,7 +627,7 @@ Acceptance Criteria:
 
 **AC-4: เปลี่ยนบทบาทผู้ใช้ — DEFERRED (Phase 2 backlog, candidate FR-ADMIN-05)**
 - **สถานะ:** code v1 มีแค่ `PATCH /admin/users/{user_id}` สำหรับเปิด/ปิดบัญชี (is_active + reason) ยังไม่มี endpoint เปลี่ยน role — AC นี้ย้ายไป Phase 2
-- **Requirement (Phase 2):** ระบบ shall ให้ Admin เปลี่ยน role ได้ (อนุญาตเฉพาะ user / researcher / admin; บทบาทอื่นต้อง HTTP 400) และ shall บันทึก Audit Log ทุกครั้ง
+- **Requirement (Phase 2):** หากเปิดให้เปลี่ยน role ของ Mobile user ให้จำกัดเฉพาะ `user` / `researcher`; บัญชี Admin ต้องอยู่ใน `admins` แยกจาก `users` และบันทึก Audit Log ทุกครั้ง
 - **Expected Output (Phase 2):** HTTP 200, `{user_id, role: "researcher"}`
 
 **AC-5: เปลี่ยนสถานะผู้ใช้**
@@ -666,7 +668,7 @@ Acceptance Criteria:
 - **Input:** PATCH /admin/reports/{report_id}, Body: `{status: "approved", version: 2}`
 - **Processing:** 
   - อัปเดต status = "approved"
-  - นำเข้า Dataset: คัดลอกไฟล์ภาพจาก Object Storage ไปยัง Dataset Storage พร้อมเพิ่ม Label
+  - นำเข้า Dataset: คัดลอกไฟล์ภาพจาก local `LOCAL_UPLOAD_DIR` ไปยัง Dataset Storage พร้อมเพิ่ม Label
   - บันทึก Audit Log (admin_id, action="approve_report", report_id)
 - **Expected Output:** HTTP 200, `{report_id, status: "approved"}`
 
@@ -701,7 +703,7 @@ Acceptance Criteria:
 **AC-2: อัปโหลดโมเดลใหม่ — Phase 2 (มติ DOC-07/2A)**
 - **สถานะ v1:** ยังไม่มี endpoint อัปโหลด ให้วางไฟล์ .onnx บน server เองแล้วสั่ง deploy ผ่าน API (AC-3) — endpoint อัปโหลดเลื่อนไป Phase 2
 - **Processing:** 
-  - บันทึกไฟล์ไปยัง Object Storage
+  - บันทึกไฟล์ไปยัง local model storage
   - บันทึกข้อมูลโมเดล (status = "inactive")
   - บันทึก Audit Log
 - **Expected Output:** HTTP 201, `{model_id, version: "2.0", status: "inactive"}`
@@ -969,7 +971,7 @@ Acceptance Criteria:
 - **Expected:** ติดตั้งได้และ key flows ผ่านบน Android 10, 12, 14, 15 อย่างน้อย
 
 **AC-2: API Interoperability**
-- **Test:** Mobile เรียก backend ผ่าน versioned REST (OpenAPI) JSON; round-trip อัปโหลด/ดาวน์โหลดภาพผ่าน presigned URL
+- **Test:** Mobile เรียก backend ผ่าน versioned REST (OpenAPI) JSON; round-trip อัปโหลดและอ่านภาพผ่าน static `/uploads` URL
 - **Measurement:** SHA-256 ของไฟล์ที่ round-trip ต้องตรงต้นฉบับ 100%; response ตรง OpenAPI schema
 - **Expected:** Integrity match 100% และ schema validation ผ่านทุก endpoint ที่ใช้ใน v1
 
@@ -1071,5 +1073,3 @@ Acceptance Criteria:
 - Consistency Check: ข้อขัดแย้งระหว่างเอกสาร?
 
 ---
-
-
