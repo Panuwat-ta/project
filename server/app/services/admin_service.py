@@ -730,15 +730,21 @@ async def dry_run_model(db: AsyncSession, model_id: int) -> Dict[str, Any]:
         }
 
 async def deploy_model(db: AsyncSession, model_id: int, admin_id: int, reason: str) -> ModelVersion:
+    import os
     stmt = select(ModelVersion).where(ModelVersion.id == model_id)
     result = await db.execute(stmt)
     model = result.scalars().first()
     if not model:
         raise HTTPException(status_code=404, detail="Model version not found")
-        
+
+    model_path = str(model.file_path or "")
+    if not model_path or not os.path.exists(model_path):
+        raise HTTPException(status_code=400, detail=f"Model file not found at {model_path or '-'}; cannot deploy")
+
     stmt = select(ModelVersion).where(ModelVersion.is_active == True)
     result = await db.execute(stmt)
     active_models = result.scalars().all()
+    previous = next((m.version_tag for m in active_models if m.id != model.id), None)
     for m in active_models:
         m.is_active = False
         m.status = "inactive"
@@ -766,13 +772,52 @@ async def deploy_model(db: AsyncSession, model_id: int, admin_id: int, reason: s
         reason=reason,
         ip_address="127.0.0.1",
         user_agent="System",
-        details=f"Deployed model version {model.version_tag}. Reason: {reason}"
+        details=f"Deployed model version {model.version_tag} ({previous or '-'} -> {model.version_tag}). Serving file: {model_path}. Reason: {reason}"
     )
     db.add(audit)
-    
+
     await db.commit()
     await db.refresh(model)
+    _switch_serving_model(model_path)
     return model
+
+
+def _switch_serving_model(model_path: str) -> None:
+    """Point inference at a new .onnx file immediately and persistently.
+
+    The ONNX worker spawns per scan reading ONNX_MODEL_PATH from settings,
+    so updating the live settings object switches serving on the next scan
+    with no restart. server/.env is updated too so restarts keep serving it.
+    Best-effort: a .env write failure never blocks the deploy itself.
+    """
+    import os
+    from app.core.config import SERVER_DIR, settings
+    try:
+        settings.ONNX_MODEL_PATH = model_path
+    except Exception:
+        pass
+    os.environ["ONNX_MODEL_PATH"] = model_path
+    # Persist to both env files: config loads .env.local AFTER .env,
+    # so a stale value there would silently override the switch.
+    try:
+        from pathlib import Path
+        for name in (".env", ".env.local"):
+            env_path = Path(SERVER_DIR) / name
+            if not env_path.exists():
+                continue
+            lines = env_path.read_text(encoding="utf-8").splitlines()
+            key = "ONNX_MODEL_PATH="
+            updated = False
+            for i, line in enumerate(lines):
+                if line.strip().startswith(key):
+                    lines[i] = f"ONNX_MODEL_PATH={model_path}"
+                    updated = True
+                    break
+            if not updated:
+                lines.append(f"ONNX_MODEL_PATH={model_path}")
+            env_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    except OSError:
+        pass
 
 
 async def global_search(db: AsyncSession, q: str) -> Dict[str, Any]:
