@@ -257,7 +257,7 @@ export function UsersList() {
                                   size="xs"
                                   icon={CheckCircle2}
                                   onClick={() => openStatusModal(user, true)}
-                                  className="text-emerald-500 border-emerald-500/30 hover:bg-emerald-500/10"
+                                  className="text-success border-success-border hover:bg-success-subtle"
                                 >
                                   ปลดแบน
                                 </Button>

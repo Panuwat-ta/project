@@ -45,7 +45,7 @@ export function Login() {
       <div className="w-full max-w-md bg-card rounded-2xl shadow-2xl border border-border p-8 backdrop-blur-xl relative z-10">
         {/* Header Branding */}
         <div className="flex flex-col items-center text-center mb-8">
-          <div className="size-14 rounded-2xl bg-primary-subtle border border-primary-border flex items-center justify-center mb-4 shadow-[0_0_20px_rgba(0,229,255,0.15)]">
+          <div className="size-14 rounded-2xl bg-primary-subtle border border-primary-border flex items-center justify-center mb-4">
             <Shield className="size-7 text-primary" />
           </div>
           <h1 className="text-xl font-bold tracking-tight text-foreground">

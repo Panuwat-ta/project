@@ -346,8 +346,8 @@ export function Dashboard() {
                 >
                   <defs>
                     <linearGradient id="scanGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={isDark ? "#00e5ff" : "#0891b2"} stopOpacity={0.4} />
-                      <stop offset="95%" stopColor={isDark ? "#00e5ff" : "#0891b2"} stopOpacity={0.0} />
+                      <stop offset="5%" stopColor={isDark ? "#00e5ff" : "#0e7490"} stopOpacity={0.4} />
+                      <stop offset="95%" stopColor={isDark ? "#00e5ff" : "#0e7490"} stopOpacity={0.0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#1e293b" : "#e2e8f0"} opacity={0.7} />
@@ -370,20 +370,20 @@ export function Dashboard() {
                       fontSize: "12px",
                       color: isDark ? "#f8fafc" : "#0f172a",
                       boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                      fontFamily: "monospace",
+                      fontFamily: "var(--font-mono)",
                     }}
                   />
                   <Area
                     type="monotone"
                     dataKey="count"
                     name="จำนวนสแกน"
-                    stroke={isDark ? "#00e5ff" : "#0891b2"}
+                    stroke={isDark ? "#00e5ff" : "#0e7490"}
                     strokeWidth={2}
                     fillOpacity={1}
                     fill="url(#scanGradient)"
                     isAnimationActive={false}
-                    dot={{ r: 3, fill: isDark ? "#00e5ff" : "#0891b2" }}
-                    activeDot={{ r: 5, fill: isDark ? "#00e5ff" : "#0891b2" }}
+                    dot={{ r: 3, fill: isDark ? "#00e5ff" : "#0e7490" }}
+                    activeDot={{ r: 5, fill: isDark ? "#00e5ff" : "#0e7490" }}
                   />
                 </AreaChart>
               </ResponsiveContainer>

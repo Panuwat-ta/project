@@ -232,7 +232,7 @@ export function ReportsList() {
                           setDebouncedSearch("");
                           handleTabChange("All");
                         }}
-                        className="mt-2 text-cyan-500"
+                        className="mt-2 text-primary"
                       >
                         ล้างตัวกรองทั้งหมด
                       </Button>

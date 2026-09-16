@@ -191,7 +191,7 @@ export function ModelsList() {
                 key={model.id}
                 className={
                   isActive
-                    ? "border-primary shadow-[0_0_20px_rgba(0,229,255,0.15)] ring-1 ring-primary/50 bg-primary-subtle/20 relative"
+                    ? "border-primary ring-1 ring-primary/50 bg-primary-subtle/20 relative"
                     : "hover:border-border transition-all"
                 }
               >
@@ -363,7 +363,7 @@ export function ModelsList() {
               size="sm"
               isLoading={isDeploying}
               onClick={handleExecuteDeploy}
-              className={deployModal.isRollback ? "bg-amber-600 hover:bg-amber-500" : ""}
+              className={deployModal.isRollback ? "bg-warning text-warning-foreground hover:bg-warning/90" : ""}
             >
               {deployModal.isRollback ? "ยืนยันสลับ Rollback" : "ยืนยัน Deploy โมเดล"}
             </Button>
@@ -371,7 +371,7 @@ export function ModelsList() {
         }
       >
         <div className="space-y-4 pt-2">
-          <div className="p-3 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-xs text-cyan-300 font-mono space-y-1">
+          <div className="p-3 rounded-lg bg-primary-subtle border border-primary-border text-xs text-primary font-mono space-y-1">
             <div>Target Model: {deployModal.model?.version_tag || deployModal.model?.name} (ID: #{deployModal.model?.id})</div>
             <div>Architecture: {deployModal.model?.framework_compatibility || "SegFormer (MiT-B2)"}</div>
             <div>mIoU Benchmark: {deployModal.model?.m_iou ? `${(deployModal.model.m_iou * 100).toFixed(2)}%` : "-"}</div>

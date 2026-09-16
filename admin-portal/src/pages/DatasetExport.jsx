@@ -335,7 +335,7 @@ export function DatasetExport() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Clock className="size-4 text-cyan-600 dark:text-cyan-400" />
+            <Clock className="size-4 text-primary" />
             <span>ประวัติงานส่งออกชุดข้อมูล (Export Jobs History)</span>
           </CardTitle>
         </CardHeader>

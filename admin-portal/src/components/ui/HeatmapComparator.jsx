@@ -144,7 +144,7 @@ export function HeatmapComparator({
 
             {/* Divider Line */}
             <div
-              className="absolute inset-y-0 w-0.5 bg-primary shadow-[0_0_10px_rgba(0,229,255,0.7)] pointer-events-none"
+              className="absolute inset-y-0 w-0.5 bg-primary shadow-[0_0_10px_color-mix(in_srgb,var(--primary)_70%,transparent)] pointer-events-none"
               style={{ left: `${sliderPosition}%` }}
             >
               <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 size-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg font-bold text-[9px]">

@@ -120,10 +120,10 @@
   --border: #cbd5e1;
   --border-subtle: #e2e8f0;
   --input: #cbd5e1;
-  --ring: #0891b2;
+  --ring: #0e7490;
 
   /* Brand Primary (Cyber Cyan) */
-  --primary: #0891b2;
+  --primary: #0e7490;
   --primary-foreground: #ffffff;
   --primary-subtle: #ecfeff;
   --primary-border: #a5f3fc;
@@ -144,7 +144,7 @@
   --danger-subtle: #fff1f2;
   --danger-border: #fecdd3;
 
-  --info: #0284c7;
+  --info: #0369a1;
   --info-foreground: #ffffff;
   --info-subtle: #f0f9ff;
   --info-border: #bae6fd;
@@ -208,7 +208,7 @@
   --warning-border: rgba(245, 158, 11, 0.25);
 
   --danger: #f43f5e;
-  --danger-foreground: #4c0519;
+  --danger-foreground: #3f0713;
   --danger-subtle: rgba(244, 63, 94, 0.12);
   --danger-border: rgba(244, 63, 94, 0.25);
 

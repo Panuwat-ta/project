@@ -7,19 +7,20 @@
 A high-density, precision-engineered security command station designed for Super Admins, fraud analysts, and AI researchers inspecting scam imagery.
 
 ## Visual Hierarchy & Ground
-- **Dark Tactical Ground (Default):** Deep slate/zinc surfaces (`#090d16`, `#0f1623`, `#131c2d`, `#172133`) paired with hairline structural borders (`#1e2b40`)
-- **Light Executive Ground:** Clean contrast surfaces (`#f8fafc`, `#ffffff`, `#f1f5f9`) with slate-200 borders
-- **Primary Accent:** Precision Electric Cyan (`#00e5ff` / `#0891b2`) used strictly for active states, focus rings, and primary workflow triggers
+- **Dark Tactical Ground (Default):** Deep slate/zinc surfaces (`#080c14`, `#0f1623`, `#131c2d`, `#172133`) paired with hairline structural borders (`#1e2b40`)
+- **Light Executive Ground:** Clean contrast surfaces (`#f8fafc`, `#ffffff`, `#f1f5f9`) with slate-300 borders (`#cbd5e1`)
+- **Primary Accent:** Precision Electric Cyan — light `#0e7490` (AA ≥4.5:1 with white), dark `#00e5ff` — used strictly for active states, focus rings, and primary workflow triggers. Charts mirror these exact values per theme. No raw `cyan-*`/`amber-*`/`emerald-*` palette classes; always use `primary`/`success`/`warning`/`danger`/`info` tokens
 - **No Cliché Slop:** No gratuitous blurred halos, no fake card stacks with giant isolated numbers, no emojis anywhere
 
 ## ScamGuard Risk Triad
-Strict adherence to the 3-level severity scale:
-- **Low Risk (0–39):** Crisp Emerald (`#10b981`)
-- **Medium Risk (40–69):** Warning Amber (`#f59e0b`)
-- **High Risk (70–100):** Alert Crimson/Rose (`#f43f5e`)
+Strict adherence to the 3-level severity scale (dark values; light mode uses darkened variants for AA contrast on light surfaces):
+- **Low Risk (0–39):** Crisp Emerald (dark `#10b981` / light `#047857`)
+- **Medium Risk (40–69):** Warning Amber (dark `#f59e0b` / light `#b45309`)
+- **High Risk (70–100):** Alert Crimson/Rose (dark `#f43f5e` / light `#be123c`)
+- Status tokens (`success`/`warning`/`danger`/`info`) follow the same values; light `info` is `#0369a1` (AA ≥4.5:1 with white)
 
 ## Typography & Numerals
-- **Typeface:** Geist Variable Sans
+- **Typeface:** Geist Variable Sans (`@fontsource-variable/geist`, `--font-sans`); `--font-mono` is the system monospace stack for data only — never raw `monospace` (charts use `var(--font-mono)`)
 - **Numerics:** `tabular-nums font-mono` for all statistics, scan IDs, hashes, timestamps, and confidence percentages to ensure vertical scanning alignment
 
 ## Component Vocabulary
