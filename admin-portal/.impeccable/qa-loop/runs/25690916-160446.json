@@ -1,0 +1,32 @@
+{
+ "run_id": "25690916-160446",
+ "overall": "FAIL",
+ "passed": 4,
+ "failed": 2,
+ "gates": {
+  "clean_tree": {
+   "result": "FAIL-dirty",
+   "duration_s": 0
+  },
+  "lint": {
+   "result": "PASS",
+   "duration_s": 1
+  },
+  "tests": {
+   "result": "FAIL",
+   "duration_s": 5
+  },
+  "build": {
+   "result": "PASS",
+   "duration_s": 0
+  },
+  "chunks": {
+   "result": "PASS",
+   "duration_s": 0
+  },
+  "live_contracts": {
+   "result": "PASS",
+   "duration_s": 0
+  }
+ }
+}

@@ -229,6 +229,73 @@ class InferenceService:
 
         return " ".join(parts)
 
+    def _run_ocr_fallback(self, run_ocr, image, langs: list[str]) -> str:
+        """OCR แบบลดหลั่น: GPU เต็ม → ล้าง cache + ย่อภาพ retry → ย้าย rec ลง CPU.
+
+        ขั้น recognition กิน VRAM แปรตามขนาดภาพ บนการ์ด 4GB ภาพใหญ่ล้นได้
+        ย่อภาพช่วยแบบกำลังสอง (ครึ่งหนึ่งของแต่ละด้าน = เหลือ ~1/4)
+        """
+        import torch
+
+        def _extract(predictions) -> str:
+            if predictions and len(predictions) > 0:
+                return "\n".join(line.text for line in predictions[0].text_lines)
+            return ""
+
+        def _is_oom(e: Exception) -> bool:
+            return "out of memory" in str(e).lower()
+
+        def _attempt(img) -> str:
+            return _extract(run_ocr(
+                [img], [langs],
+                self.det_model, self.det_processor,
+                self.rec_model, self.rec_processor,
+            ))
+
+        # รอบ 1: ภาพเต็มบน GPU
+        try:
+            return _attempt(image)
+        except Exception as e:
+            if not _is_oom(e):
+                raise
+            print(f"OCR OOM on full-size image ({image.size}), downscaling retry...")
+
+        # รอบ 2-3: ล้าง cache + ย่อภาพ (1536 → 1024) แล้วลอง GPU ใหม่
+        for max_dim in (1536, 1024):
+            try:
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+                img = image.copy()
+                img.thumbnail((max_dim, max_dim))
+                print(f"OCR retry at max-dim {max_dim} (actual {img.size})")
+                return _attempt(img)
+            except Exception as e:
+                if not _is_oom(e):
+                    raise
+                print(f"OCR still OOM at max-dim {max_dim}, trying smaller...")
+
+        # รอบสุดท้าย: ย้าย recognition ลง CPU (ช้าแต่ผ่านชัวร์) แล้วย้ายกลับ
+        print("OCR falling back to CPU")
+        assert self.det_model is not None and self.rec_model is not None
+        det_dev = next(self.det_model.parameters()).device
+        rec_dev = next(self.rec_model.parameters()).device
+        try:
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+            small = image.copy()
+            small.thumbnail((1024, 1024))
+            self.det_model.to("cpu")
+            self.rec_model.to("cpu")
+            return _attempt(small)
+        finally:
+            try:
+                self.det_model.to(det_dev)
+                self.rec_model.to(rec_dev)
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+            except Exception as e:
+                print(f"OCR failed to restore GPU models: {e}")
+
     def predict(self, image_bytes: bytes) -> dict:
         """
         Process image and run inference via isolated ONNX worker + LLaMA.
@@ -279,30 +346,20 @@ class InferenceService:
         except Exception as e:
             print(f"Failed to run ONNX worker: {e}")
             
-        # 2. Run Surya OCR
+        # 2. Run Surya OCR (GPU → ย่อภาพ retry → CPU ตามลำดับ)
         ocr_text = ""
         if self.det_model and self.rec_model:
             try:
                 from surya.ocr import run_ocr
                 import io
+                import torch
                 from PIL import Image
-                
+
                 image = Image.open(io.BytesIO(image_bytes))
-                
-                # run_ocr expects list of images and list of language lists
-                predictions = run_ocr(
-                    [image], 
-                    [["th", "en"]], # Thai and English
-                    self.det_model, 
-                    self.det_processor, 
-                    self.rec_model, 
-                    self.rec_processor
+
+                ocr_text = self._run_ocr_fallback(
+                    run_ocr, image, ["th", "en"]
                 )
-                
-                # Extract text from prediction results
-                if predictions and len(predictions) > 0:
-                    text_lines = [line.text for line in predictions[0].text_lines]
-                    ocr_text = "\n".join(text_lines)
             except Exception as e:
                 print(f"Surya OCR error: {e}")
                 

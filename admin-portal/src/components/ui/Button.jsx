@@ -1,64 +1,44 @@
-import { forwardRef } from "react";
-import { Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { forwardRef } from 'react';
+import { Loader2 } from 'lucide-react';
+import { cn } from '../../lib/utils.js';
 
-export const Button = forwardRef(
-  (
-    {
-      className,
-      variant = "primary",
-      size = "md",
-      isLoading = false,
-      disabled = false,
-      icon: Icon,
-      children,
-      type = "button",
-      ...props
-    },
-    ref
-  ) => {
-    const baseStyles =
-      "inline-flex items-center justify-center font-medium rounded-md transition-all duration-150 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none";
+const VARIANTS = {
+  primary: 'bg-action text-white hover:bg-action-hover border border-transparent',
+  secondary: 'bg-surface text-ink hover:bg-surface-2 border border-line-strong',
+  ghost: 'bg-transparent text-ink-2 hover:bg-surface-2 border border-transparent',
+  danger: 'bg-bad text-white hover:brightness-95 border border-transparent',
+};
 
-    const variants = {
-      primary:
-        "bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-sm focus-visible:ring-ring active:scale-[0.98]",
-      secondary:
-        "bg-secondary text-secondary-foreground hover:bg-secondary/80 focus-visible:ring-ring active:scale-[0.98]",
-      outline:
-        "border border-border bg-transparent text-foreground hover:bg-muted focus-visible:ring-ring",
-      ghost:
-        "bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted focus-visible:ring-ring",
-      danger:
-        "bg-danger hover:bg-danger/90 text-danger-foreground font-medium shadow-sm focus-visible:ring-danger active:scale-[0.98]",
-      dangerOutline:
-        "border border-danger-border text-danger hover:bg-danger-subtle focus-visible:ring-danger",
-    };
+const SIZES = {
+  sm: 'h-9 px-3 text-[13px]',
+  md: 'h-10 px-4 text-sm',
+};
 
-    const sizes = {
-      xs: "text-xs px-2.5 py-1 gap-1.5",
-      sm: "text-xs px-3 py-1.5 gap-1.5",
-      md: "text-sm px-4 py-2 gap-2",
-      lg: "text-base px-5 py-2.5 gap-2.5",
-    };
+const Button = forwardRef(function Button(
+  { variant = 'primary', size = 'md', loading = false, disabled, className, children, type = 'button', ...rest },
+  ref,
+) {
+  return (
+    <button
+      ref={ref}
+      type={type}
+      disabled={disabled || loading}
+      aria-busy={loading || undefined}
+      className={cn(
+        'inline-flex min-w-10 items-center justify-center gap-2 rounded-lg font-semibold transition-colors duration-150',
+        'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
+        'disabled:cursor-not-allowed disabled:opacity-60',
+        VARIANTS[variant],
+        SIZES[size],
+        loading && 'min-w-24',
+        className,
+      )}
+      {...rest}
+    >
+      {loading && <Loader2 size={16} className="animate-spin" aria-hidden="true" />}
+      {children}
+    </button>
+  );
+});
 
-    return (
-      <button
-        ref={ref}
-        type={type}
-        disabled={disabled || isLoading}
-        className={cn(baseStyles, variants[variant], sizes[size], className)}
-        {...props}
-      >
-        {isLoading ? (
-          <Loader2 className="size-4 animate-spin shrink-0" />
-        ) : Icon ? (
-          <Icon className="size-4 shrink-0" />
-        ) : null}
-        {children}
-      </button>
-    );
-  }
-);
-
-Button.displayName = "Button";
+export default Button;

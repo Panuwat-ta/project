@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comp B — Evidence Ledger (MOCK)</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  table.queue td { padding: 9px 10px; }
+  .ev-meta { display: flex; gap: 8px; align-items: center; margin-top: 4px; }
+</style>
+</head>
+<body class="comp-b">
+<div class="mock-banner">MOCK — Comp B: Evidence Ledger · ข้อมูลจำลองเพื่อเลือกทิศทาง visual เท่านั้น</div>
+<div class="app">
+  <nav class="sidebar" aria-label="หลัก">
+    <div class="brand"><span class="brand-mark">SG</span><span class="brand-name">ScamGuard</span></div>
+    <div class="nav-label">ภาพรวม</div>
+    <div class="nav-item active"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>แดชบอร์ด</div>
+    <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>รายงาน</div>
+    <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>ผู้ใช้</div>
+    <div class="nav-label">การดำเนินงาน</div>
+    <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>โมเดล</div>
+    <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg>ชุดข้อมูล</div>
+    <div class="nav-label">กำกับดูแล</div>
+    <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>บันทึกตรวจสอบ</div>
+    <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>โปรไฟล์</div>
+  </nav>
+  <div class="main">
+    <div class="topbar">
+      <span class="icon-btn menu-btn" aria-label="เปิดเมนู"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></span>
+      <div class="search-box"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>ค้นหารายงาน / ผู้ใช้… (Ctrl+K)</div>
+      <div class="topbar-right"><span class="live-dot"><i></i>Live</span><span class="avatar">บ</span></div>
+    </div>
+    <div class="content">
+      <div class="page-head">
+        <div>
+          <div class="eyebrow">ศูนย์ปฏิบัติการ</div>
+          <h1>คิวตรวจสอบความเสี่ยง</h1>
+          <p class="page-sub">หลักฐานทุกชิ้นพร้อมตรวจ — เปิดดูสแกนต้นฉบับก่อนรับเคส</p>
+          <div class="meta-line"><span>อัปเดตล่าสุด 2 นาทีที่แล้ว</span><span>18 เคสรอตรวจ</span></div>
+        </div>
+        <div class="actions">
+          <span class="icon-btn" aria-label="รีเฟรชข้อมูล"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg></span>
+          <span class="btn btn-secondary">ดูรายงานทั้งหมด<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg></span>
+        </div>
+      </div>
+      <div class="kpis">
+        <div class="kpi"><span class="kpi-icon" style="background:#FFFBEB;color:#B45309"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></span><div><div class="kpi-label">รอตรวจสอบ</div><div class="kpi-value">18</div><div class="kpi-sub">มีหลักฐานภาพ 16 เคส</div></div></div>
+        <div class="kpi"><span class="kpi-icon" style="background:#ECFEFF;color:#0E7490"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span><div><div class="kpi-label">กำลังตรวจสอบ</div><div class="kpi-value">6</div><div class="kpi-sub">โดยผู้ดูแล 3 คน</div></div></div>
+        <div class="kpi"><span class="kpi-icon" style="background:#EDF2F0;color:#16201D"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span><div><div class="kpi-label">สแกนวันนี้</div><div class="kpi-value">132</div><div class="kpi-sub">สัปดาห์นี้ 841 ครั้ง</div></div></div>
+        <div class="kpi"><span class="kpi-icon" style="background:#FFF1F2;color:#BE123C"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span><div><div class="kpi-label">ความเสี่ยงสูง</div><div class="kpi-value">9</div><div class="kpi-sub">จาก risk distribution</div></div></div>
+      </div>
+      <div class="grid">
+        <div class="queue-col">
+          <div class="card">
+            <div class="card-head"><h2>ทะเบียนหลักฐานรอตรวจ</h2><span class="link">ดูทั้งหมด 18 เคส<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg></span></div>
+            <table class="queue">
+              <thead><tr><th></th><th>ความเสี่ยง</th><th>รายงาน / หลักฐาน</th><th>หมวดหมู่ / แพลตฟอร์ม</th><th>รอ</th><th>สถานะ</th><th>ดำเนินการ</th></tr></thead>
+              <tbody>
+                <tr><td><span class="thumb"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg></span></td><td><span class="risk-pill r-high">92</span></td><td><span class="mono">#R-10482 · บาส ทดสอบ</span><div class="ev-meta"><span class="mono muted">scan 9f3a…c21d · v3</span></div></td><td>สลิปโอนเงิน<br><span class="muted">Mobile banking</span></td><td>2 ชม.</td><td><span class="badge b-pending">รอตรวจ</span></td><td><div class="row-actions"><span class="btn btn-sm btn-secondary">เปิด</span><span class="btn btn-sm btn-primary">รับเคส</span></div></td></tr>
+                <tr><td><span class="thumb"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg></span></td><td><span class="risk-pill r-high">87</span></td><td><span class="mono">#R-10477 · บาส ทดลอง</span><div class="ev-meta"><span class="mono muted">scan 71be…09aa · v1</span></div></td><td>แชทหลอกลงทุน<br><span class="muted">LINE</span></td><td>3 ชม.</td><td><span class="badge b-pending">รอตรวจ</span></td><td><div class="row-actions"><span class="btn btn-sm btn-secondary">เปิด</span><span class="btn btn-sm btn-primary">รับเคส</span></div></td></tr>
+                <tr><td><span class="thumb"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg></span></td><td><span class="risk-pill r-high">74</span></td><td><span class="mono">#R-10481 · bas test</span><div class="ev-meta"><span class="mono muted">scan d4c0…8f77 · v2</span></div></td><td>บัตรประชาชน<br><span class="muted">แนบไฟล์</span></td><td>1 ชม.</td><td><span class="badge b-reviewing">กำลังตรวจ</span></td><td><div class="row-actions"><span class="btn btn-sm btn-secondary">เปิด</span><span class="btn btn-sm btn-primary">รับเคส</span></div></td></tr>
+                <tr><td><span class="thumb"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg></span></td><td><span class="risk-pill r-medium">58</span></td><td><span class="mono">#R-10469 · ผู้ใช้ 88213</span><div class="ev-meta"><span class="mono muted">scan 55a1…b3e9 · v1</span></div></td><td>สลิป + QR<br><span class="muted">Facebook</span></td><td>5 ชม.</td><td><span class="badge b-pending">รอตรวจ</span></td><td><div class="row-actions"><span class="btn btn-sm btn-secondary">เปิด</span><span class="btn btn-sm btn-primary">รับเคส</span></div></td></tr>
+                <tr><td><span class="thumb"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg></span></td><td><span class="risk-pill r-medium">41</span></td><td><span class="mono">#R-10455 · ผู้ใช้ 77120</span><div class="ev-meta"><span class="mono muted">scan 18de…44c0 · v4</span></div></td><td>สลิปเงินกู้<br><span class="muted">TikTok</span></td><td>8 ชม.</td><td><span class="badge b-pending">รอตรวจ</span></td><td><div class="row-actions"><span class="btn btn-sm btn-secondary">เปิด</span><span class="btn btn-sm btn-primary">รับเคส</span></div></td></tr>
+              </tbody>
+            </table>
+            <div class="cards">
+              <div class="pcard"><div class="pcard-top"><span class="thumb"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg></span><span class="risk-pill r-high">92</span><span class="pcard-cat">สลิปโอนเงิน</span><span class="badge b-pending" style="margin-left:auto">รอตรวจ</span></div><div class="pcard-desc">ยอดโอนไม่ตรงฟอนต์ ตัวเลขบริเวณ QR มีรอยเบลอ…</div><div class="pcard-meta"><span>รอ 2 ชม. 14 น.</span><span class="mono">#R-10482 · scan 9f3a…c21d</span></div><div style="display:flex;gap:8px"><span class="btn btn-sm btn-secondary" style="flex:1;justify-content:center">เปิด</span><span class="btn btn-sm btn-primary" style="flex:2;justify-content:center">รับเคส</span></div></div>
+              <div class="pcard"><div class="pcard-top"><span class="thumb"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg></span><span class="risk-pill r-high">87</span><span class="pcard-cat">แชทหลอกลงทุน</span><span class="badge b-pending" style="margin-left:auto">รอตรวจ</span></div><div class="pcard-desc">ภาพผลกำไรปลอม ชวนลงทุนผ่าน LINE…</div><div class="pcard-meta"><span>รอ 3 ชม. 02 น.</span><span class="mono">#R-10477 · scan 71be…09aa</span></div><div style="display:flex;gap:8px"><span class="btn btn-sm btn-secondary" style="flex:1;justify-content:center">เปิด</span><span class="btn btn-sm btn-primary" style="flex:2;justify-content:center">รับเคส</span></div></div>
+              <div class="pcard"><div class="pcard-top"><span class="thumb"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg></span><span class="risk-pill r-medium">58</span><span class="pcard-cat">สลิป + QR พร้อมเพย์</span><span class="badge b-pending" style="margin-left:auto">รอตรวจ</span></div><div class="pcard-desc">QR ปลายทางไม่ตรงชื่อบัญชี…</div><div class="pcard-meta"><span>รอ 5 ชม. 20 น.</span><span class="mono">#R-10469 · scan 55a1…b3e9</span></div><div style="display:flex;gap:8px"><span class="btn btn-sm btn-secondary" style="flex:1;justify-content:center">เปิด</span><span class="btn btn-sm btn-primary" style="flex:2;justify-content:center">รับเคส</span></div></div>
+            </div>
+          </div>
+          <div class="card activity">
+            <div class="card-head"><h2>กิจกรรมการสแกน 14 วัน</h2><span class="muted" style="margin-left:auto">รวม 1,204 ครั้ง · 3–16 ก.ย.</span></div>
+            <div class="matrix" aria-hidden="true"><i></i><i class="l1"></i><i class="l2"></i><i></i><i class="l3"></i><i class="l1"></i><i class="l2"></i><i class="l4"></i><i class="l1"></i><i></i><i class="l2"></i><i class="l3"></i><i class="l1"></i><i></i><i class="l2"></i><i class="l1"></i><i class="l3"></i><i></i><i class="l1"></i><i class="l2"></i><i class="l4"></i><i class="l1"></i><i></i><i class="l3"></i><i class="l2"></i><i class="l1"></i><i></i><i class="l2"></i></div>
+          </div>
+        </div>
+        <div class="rail-col">
+          <div class="rail-card"><h2>การกระจายความเสี่ยง</h2>
+            <div class="dist-row"><span>สูง</span><span class="bar"><i style="width:14%;background:#BE123C"></i></span><span class="n">9</span></div>
+            <div class="dist-row"><span>กลาง</span><span class="bar"><i style="width:33%;background:#B45309"></i></span><span class="n">21</span></div>
+            <div class="dist-row"><span>ต่ำ</span><span class="bar"><i style="width:53%;background:#047857"></i></span><span class="n">34</span></div>
+          </div>
+          <div class="rail-card"><h2>สุขภาพระบบ</h2>
+            <div class="health-row">ฐานข้อมูล<span class="st"><span class="badge b-ok">ปกติ</span></span></div>
+            <div class="health-row">พื้นที่จัดเก็บ<span class="st"><span class="badge b-ok">ปกติ</span></span></div>
+            <div class="health-row">โมเดล<span class="st"><span class="badge b-ok">ปกติ</span></span></div>
+            <div class="health-row">คิวงาน<span class="st"><span class="badge b-ok">ปกติ</span></span></div>
+            <div class="muted" style="margin-top:8px">ตรวจล่าสุด 2 นาทีที่แล้ว</div>
+          </div>
+          <div class="rail-card"><h2>โมเดลที่ใช้งาน</h2>
+            <div class="model-ver">v1.0.4</div>
+            <div class="muted">deploy เมื่อ 12 ก.ย. 09:41</div>
+            <div class="metric-grid">
+              <div class="metric-cell"><div class="k">mIoU</div><div class="v">0.87</div></div>
+              <div class="metric-cell"><div class="k">aAcc</div><div class="v">0.94</div></div>
+              <div class="metric-cell"><div class="k">mAcc</div><div class="v">—</div></div>
+              <div class="metric-cell"><div class="k">mDice</div><div class="v">0.89</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
