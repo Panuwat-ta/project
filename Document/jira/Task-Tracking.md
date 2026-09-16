@@ -57,7 +57,7 @@
 - [ ] **TASK-4.6** (SCM-32): เขียนโมดูลสกัดค่า EXIF Metadata แฝง และพิกัด GPS ของรูปภาพ
 - [ ] **TASK-4.7** (SCM-33): บูรณาการ API ภายนอก (Google Vision API) สำหรับการสืบค้นประวัติการนำไปใช้ของรูปภาพ (Reverse Image Search)
 - [x] **TASK-4.8** (SCM-34): พัฒนาระบบแคชข้อมูลการสแกนด้วย Redis Cache (ตรวจสอบค่า SHA-256 ของรูปภาพเพื่อหลีกเลี่ยงการสแกนซ้ำซ้อน, TTL 30 วัน)
-- [ ] **TASK-4.9** (SCM-35): พัฒนาระบบอัปโหลดไฟล์ไปจัดเก็บอย่างถาวรใน Cloud Storage และเชื่อมต่อระบบสั่ง Push Alert ผ่าน Firebase Cloud Messaging (FCM)
+- [x] **TASK-4.9** (SCM-35): จัดเก็บไฟล์อย่างถาวรใน local `LOCAL_UPLOAD_DIR` และเสิร์ฟผ่าน `/uploads`; Mobile รับผลด้วย polling (Cloud Storage/FCM เลื่อนไป future)
 
 ###  เฟส 5: การพัฒนาแอปพลิเคชันมือถือ (Mobile Application - Flutter)
 - [x] **TASK-5.1** (SCM-36): ตั้งค่าแอปพลิเคชัน Flutter และสร้างโครงสร้างโฟลเดอร์ตามรูปแบบ Clean Architecture (Presentation/Domain/Data) + BLoC State Management
@@ -70,7 +70,7 @@
 - [ ] **TASK-5.8** (SCM-43): เชื่อมต่อ SDK Firebase Cloud Messaging (FCM) รองรับการแจ้งเตือนแบบพุชขณะเครื่องล็อกจอ
 
 ###  เฟส 6: การพัฒนาเว็บพอร์ทัลผู้ดูแลระบบ (Admin Web Portal - React)
-- [ ] **TASK-6.1** (SCM-44): ตั้งค่าระบบ React.js และสร้างโครงสร้างระบบ CSS ด้วย Tailwind CSS
+- [x] **TASK-6.1** (SCM-44): ตั้งค่า React 19 + Vite 8 และ Tailwind CSS v4 ตาม implementation ปัจจุบัน
 - [ ] **TASK-6.2** (SCM-45): พัฒนาระบบยืนยันตัวตนแอดมินและการเข้าถึง Dashboard สถิติหลัก (กราฟสถิติผู้ใช้, ความแม่นยำ AI)
 - [ ] **TASK-6.3** (SCM-46): พัฒนาหน้าจัดการรายชื่อผู้ใช้และสิทธิ์ผู้ใช้งาน (User Management CRUD)
 - [ ] **TASK-6.4** (SCM-47): พัฒนาหน้าจัดคิวรูปภาพที่มีรายงานสแกม (Scam Reports Queue) เพื่ออนุมัติเพิ่มเข้าระบบฐานข้อมูลการตรวจสอบ
@@ -88,4 +88,3 @@
 - [ ] **TASK-8.2** (SCM-55): ส่งออกแอปพลิเคชันและทดสอบการรันแบบ Production Build (.apk / .ipa / Web Build)
 - [ ] **TASK-8.3** (SCM-56): เขียนคู่มือการติดตั้งระบบหลังบ้านและคู่มือการใช้งานโมบายแอปพลิเคชันสำหรับผู้ใช้ทั่วไป
 - [ ] **TASK-8.4** (SCM-57): จัดทำรายงานวิศวกรรมซอฟต์แวร์เล่มโครงงานฉบับสมบูรณ์ (เอกสาร SE03) เพื่อส่งมอบสถาบันการศึกษา
-

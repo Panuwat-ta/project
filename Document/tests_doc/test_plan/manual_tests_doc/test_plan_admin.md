@@ -4,7 +4,7 @@
 
 - **System / Component**: ScamGuard Admin Portal & Forensic Console
 - **Architecture**: Single Page Application (SPA), Real-time WebSocket Client, Forensic Dashboard
-- **Tech Stack**: React 18, Vite, JavaScript (ESM), Tailwind CSS, Lucide React, Axios / Native WebSocket
+- **Tech Stack**: React 19, Vite 8, JavaScript (ESM), Tailwind CSS v4, Lucide React, Axios / Native WebSocket
 - **Target Browsers**: Chrome (v110+), Firefox (v110+), Edge (v110+), Safari (v16+)
 - **Document Version**: 1.0.1
 - **Date**: 2026-09-06

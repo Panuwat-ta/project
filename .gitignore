@@ -38,3 +38,7 @@ dist/
 
 uploads/
 logs/
+
+# Local SegFormer smoke-test artifacts
+/model/segformer/tests_model/output/
+/model/segformer/Test-Case/output/

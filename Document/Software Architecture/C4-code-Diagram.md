@@ -24,7 +24,7 @@ sequenceDiagram
     participant RiskCalc as RiskCalculator
     participant DB as PostgreSQL
 
-    Client->>Router: POST /api/v1/scan (Multipart)
+    Client->>Router: POST /api/v1/scan/ (Multipart)
     
     activate Router
     Router->>Service: analyze_image(file, user_id, db)

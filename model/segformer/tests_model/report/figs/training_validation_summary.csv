@@ -1,0 +1,7 @@
+version,checkpoint,training_run_id,training_log_points,validation_runs,best_checkpoint_iter,best_validation_mIoU,best_validation_mDice,best_validation_mAcc,best_validation_aAcc,minimum_training_loss,final_training_loss
+v1.0.0,work_dirs/v1.0.0/best_mIoU_iter_112000.pth,20260717_205331,3200,40,112000,72.42,81.40,75.69,98.02,0.0240,0.0411
+v1.0.1,work_dirs/v1.0.1/best_mIoU_iter_152000.pth,20260808_051906,3200,40,152000,75.48,83.79,79.90,99.84,0.0009,0.0237
+v1.0.2,work_dirs/v1.0.2/best_mIoU_iter_132000.pth,20260809_133842,3200,40,132000,67.99,76.55,70.84,99.70,0.0039,0.0126
+v1.0.3,work_dirs/v1.0.3/best_mIoU_iter_160000.pth,20260810_175651,3200,40,160000,72.62,81.30,76.45,99.32,0.0133,0.0582
+v1.0.4,work_dirs/v1.0.4/best_mIoU_iter_495000.pth,20260814_062529,10000,100,495000,86.38,92.22,88.76,98.70,0.0260,0.0812
+v1.0.5,work_dirs/v1.0.5/best_mIoU_iter_197500.pth,20260910_151223,4000,80,197500,91.31,95.29,94.36,99.02,0.0415,0.1129

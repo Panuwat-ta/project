@@ -1,0 +1,861 @@
+<!doctype html>
+<html lang="th" data-theme="light" data-theme-mode="system">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="แนวทางการเริ่มต้นพัฒนา Backend Server How to Start โครงงาน: แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง Scam Image Detection เอกสารฉบับนี้เป็นคู่มือปฏิบัติการสำหรับทีมพัฒนา อธิบายขั้นตอนการเริ่ม…">
+  <meta name="color-scheme" content="light dark">
+  <title>Backend Documentation | ScamGuard Documentation</title>
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <script>(()=>{let m='system';try{m=localStorage.getItem('scamguard-docs-theme')||'system'}catch(e){}if(!['system','light','dark'].includes(m))m='system';const t=m==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;document.documentElement.dataset.themeMode=m;document.documentElement.dataset.theme=t})();window.SC_DOCS_ROOT='../../';</script>
+</head>
+<body class="">
+  <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
+  <header class="masthead"><div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><nav class="top-tabs" aria-label="เมนูหลัก"><a href="../../index.html">Guide</a><a href="../../pages/architecture/system-architecture.html">Architecture</a><a href="../../pages/architecture/backend-api.html">API Reference</a></nav></div></header>
+  <div class="docs-shell">
+    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><div class="sidebar-head"><a class="sidebar-brand" href="../../index.html" aria-label="ScamGuard Documentation"><span class="brand brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z"/><path d="m9.2 12 1.8 1.8 3.9-4.2"/></svg></span><span class="sidebar-brand-name">ScamGuard Docs</span></a><div class="theme-switcher" role="group" aria-label="ธีมเว็บไซต์"><button type="button" data-theme-option="system" aria-label="ใช้ธีมตามระบบ" title="System"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></button><button type="button" data-theme-option="light" aria-label="ใช้โหมดสว่าง" title="Light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></button><button type="button" data-theme-option="dark" aria-label="ใช้โหมดมืด" title="Dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8 8 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/></svg></button></div></div><button class="control nav-close" type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button><button class="sidebar-search" type="button" data-search-open><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search...</span><kbd>Ctrl K</kbd></button><div class="sidebar-scroll"><details class="sidebar-group" ><summary>ภาพรวม</summary><ul class="sidebar-list"><li><a href="../overview.html" >ภาพรวมโปรเจค</a></li><li><a href="../index.html" >สารบัญ Wiki — โปรเจค Scam Image Detection</a></li></ul></details><details class="sidebar-group" ><summary>ความต้องการระบบ</summary><ul class="sidebar-list"><li><a href="../requirements/functional-requirements.html" >ความต้องการเชิงฟังก์ชัน (Functional Requirements)</a></li><li><a href="../requirements/non-functional-requirements.html" >ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements)</a></li><li><a href="../requirements/traceability-matrix.html" >เมทริกซ์การสืบย้อนความต้องการ</a></li><li><a href="../requirements/objectives-kpis.html" >วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp; KPIs)</a></li><li><a href="../requirements/srs.html" >Software Requirements Specification (SRS)</a></li><li><a href="../requirements/use-case-diagram.html" >Use Case Diagram</a></li></ul></details><details class="sidebar-group" ><summary>สถาปัตยกรรม</summary><ul class="sidebar-list"><li><a href="../architecture/database-migrations.html" >การจัดการการย้ายฐานข้อมูล (Database Migrations)</a></li><li><a href="../architecture/external-integrations.html" >การเชื่อมต่อบริการภายนอก (External Integrations)</a></li><li><a href="../architecture/database-schema.html" >โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li><li><a href="../architecture/system-architecture.html" >สถาปัตยกรรมระบบ (System Architecture)</a></li><li><a href="../architecture/admin-portal.html" >สถาปัตยกรรมและการออกแบบ Admin Portal</a></li><li><a href="../architecture/mobile-app.html" >สถาปัตยกรรม Mobile App</a></li><li><a href="../architecture/ai-inference-service.html" >AI Inference Service</a></li><li><a href="../architecture/backend-api.html" >Backend API — FastAPI Orchestrator</a></li><li><a href="../architecture/c1-system-context-diagram.html" >C1 System Context Diagram</a></li><li><a href="../architecture/c2-container-diagram.html" >C2 Container Diagram</a></li><li><a href="../architecture/c3-component-diagram.html" >C3 Component Diagram - API Application</a></li><li><a href="../architecture/c4-code-diagram.html" >C4 Code Diagram - Image Scanning Flow</a></li><li><a href="../architecture/database-er-diagram.html" >Entity Relationship Diagram (ER Diagram)</a></li><li><a href="../architecture/mobile-design.html" >Mobile App Architecture</a></li><li><a href="../architecture/flowchart.html" >System Flowchart</a></li><li><a href="../architecture/design-overview.html" >UX/UI &amp; System Design Overview</a></li></ul></details><details class="sidebar-group" ><summary>แนวคิดและเทคนิค</summary><ul class="sidebar-list"><li><a href="../concepts/risk-scoring.html" >การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li><li><a href="../concepts/multi-layer-analysis.html" >การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li><li><a href="../concepts/explainable-ai.html" >ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li><li><a href="../concepts/configs.html" >พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li><li><a href="../concepts/ai-model-segformer.html" >โมเดล AI — SegFormer</a></li><li><a href="../concepts/surya-ocr.html" >โมเดล AI — Surya OCR</a></li><li><a href="../concepts/model-training.html" >AI Model Training Workflow</a></li><li><a href="../concepts/mmsegmentation.html" >MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li><li><a href="../concepts/semantic-segmentation.html" >Semantic Segmentation</a></li></ul></details><details class="sidebar-group" ><summary>องค์ประกอบระบบ</summary><ul class="sidebar-list"><li><a href="../entities/tech-stack.html" >เทคโนโลยีที่ใช้ (Technology Stack)</a></li><li><a href="../entities/actors.html" >ผู้ใช้ระบบ (Actors)</a></li></ul></details><details class="sidebar-group" ><summary>การตัดสินใจ</summary><ul class="sidebar-list"><li><a href="../decisions/technology-choices.html" >การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li></ul></details><details class="sidebar-group" open><summary>การวางแผน</summary><ul class="sidebar-list"><li><a href="task-tracking.html" >การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a></li><li><a href="project-scope.html" >ขอบเขตโครงการ (Project Scope)</a></li><li><a href="team.html" >ทีมงานและผู้รับผิดชอบ (Team)</a></li><li><a href="backend-documentation.html" aria-current="page">Backend Documentation</a></li></ul></details><details class="sidebar-group" ><summary>การทดสอบ</summary><ul class="sidebar-list"><li><a href="../testing/test-cases.html" >กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li></ul></details><details class="sidebar-group" ><summary>คู่มือและภาคผนวก</summary><ul class="sidebar-list"><li><a href="../log.html" >บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li><li><a href="../howto.html" >วิธีใช้งาน Wiki (How to Use This Wiki)</a></li><li><a href="../runbook.html" >Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li><li><a href="../AGENTS.html" >Wiki Operating Guide</a></li></ul></details></div></aside><div class="nav-backdrop" data-nav-backdrop></div>
+    <main class="article" id="main-content"><nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span aria-hidden="true">/</span><span>การวางแผน</span></nav><header class="article-header"><h1>Backend Documentation</h1><p class="article-lead">เอกสารฉบับนี้เป็นคู่มือปฏิบัติการสำหรับทีมพัฒนา อธิบายขั้นตอนการเริ่มต้นสร้าง Backend Server จากศูนย์ โดยอ้างอิงจากเอกสารออกแบบที่จัดทำไว้แล้ว</p><div class="meta"><span>หมวด การวางแผน</span><time datetime="2026-09-16">อัปเดต 2026-09-16</time><span>ต้นฉบับ planning/backend-documentation.md</span></div><div class="tags"><span class="tag">planning</span><span class="tag">backend</span><span class="tag">fastapi</span><span class="tag">howto</span></div></header><div class="prose"><h1 id="แนวทางการเริ่มต้นพัฒนา-backend-server-how-to-start">แนวทางการเริ่มต้นพัฒนา Backend Server (How to Start)</h1>
+<h2 id="โครงงาน-แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง-scam-image-detection">โครงงาน: แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง (Scam Image Detection)</h2>
+<p>เอกสารฉบับนี้เป็นคู่มือปฏิบัติการสำหรับทีมพัฒนา อธิบายขั้นตอนการเริ่มต้นสร้าง Backend Server จากศูนย์ โดยอ้างอิงจากเอกสารออกแบบที่จัดทำไว้แล้ว</p>
+<h3 id="เอกสารออกแบบที่ต้องอ่านก่อนเริ่ม">เอกสารออกแบบที่ต้องอ่านก่อนเริ่ม</h3>
+<ul>
+<li><a href="../../sources/supporting/design/server.md">design/server.md</a> - สถาปัตยกรรม Backend, Database Schema, API Specs</li>
+<li><a href="../../sources/supporting/design/architecture.md">design/architecture.md</a> - สถาปัตยกรรมระบบรวม, Risk Scoring Pipeline</li>
+<li><a href="../../sources/supporting/design/model.md">design/model.md</a> - AI Model Design (SegFormer)</li>
+<li><a href="../../sources/supporting/design/training.md">design/training.md</a> - Training Workflow, ONNX Export</li>
+<li><a href="../../sources/supporting/Document/server/server.md">Document/server/server.md</a> - เอกสารสรุปภาพรวม Server</li>
+</ul>
+<hr>
+<h2 id="สารบัญ">สารบัญ</h2>
+<ol>
+<li><a href="#1-โครงสร้างโฟลเดอร์ที่ต้องสร้าง">โครงสร้างโฟลเดอร์ที่ต้องสร้าง</a></li>
+<li><a href="#2-ลำดับขั้นตอนการพัฒนา-roadmap">ลำดับขั้นตอนการพัฒนา (Roadmap)</a></li>
+<li><a href="#3-phase-1-foundation-ฐานรากของ-server">Phase 1 - Foundation: ฐานรากของ Server</a></li>
+<li><a href="#4-phase-2-auth-ระบบยืนยันตัวตน">Phase 2 - Auth: ระบบยืนยันตัวตน</a></li>
+<li><a href="#5-phase-3-scan-ท่อประมวลผลภาพ">Phase 3 - Scan: ท่อประมวลผลภาพ</a></li>
+<li><a href="#6-phase-4-ai-inference-เชื่อมต่อโมเดล">Phase 4 - AI Inference: เชื่อมต่อโมเดล</a></li>
+<li><a href="#7-phase-5-report-admin">Phase 5 - Report &amp; Admin</a></li>
+<li><a href="#8-phase-6-cache-storage-polish">Phase 6 - Cache, Storage &amp; Polish</a></li>
+<li><a href="#9-dependencies-ทั้งหมด">Dependencies ทั้งหมด</a></li>
+<li><a href="#10-api-endpoints-สรุปรวม">API Endpoints สรุปรวม</a></li>
+<li><a href="#11-database-schema-สรุปรวม">Database Schema สรุปรวม</a></li>
+<li><a href="#12-environment-variables">Environment Variables</a></li>
+<li><a href="#13-คำสั่งเริ่มต้นใช้งาน">คำสั่งเริ่มต้นใช้งาน</a></li>
+</ol>
+<hr>
+<h2 id="1-โครงสร้างโฟลเดอร์ที่ต้องสร้าง">1. โครงสร้างโฟลเดอร์ที่ต้องสร้าง</h2>
+<p>อ้างอิงจาก <code>design/server.md</code> Section 2.1:</p>
+<pre><code><div class="code-frame"><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-text">server/
+├── app/
+│   ├── __init__.py
+│   ├── main.py                 # FastAPI Initialization + Lifespan
+│   │
+│   ├── core/                   # การตั้งค่าหลัก, ระบบความปลอดภัย, DB Connection
+│   │   ├── __init__.py
+│   │   ├── config.py           # Pydantic Settings - อ่านค่าจาก .env
+│   │   ├── security.py         # Password Hashing (bcrypt) + JWT Token
+│   │   └── database.py         # SQLAlchemy AsyncEngine + AsyncSession
+│   │
+│   ├── models/                 # SQLAlchemy ORM Models (ตาราง DB)
+│   │   ├── __init__.py
+│   │   ├── user.py             # users table
+│   │   ├── scan.py             # scans table
+│   │   ├── consent.py          # consent_logs table
+│   │   └── report.py           # scam_reports table
+│   │
+│   ├── schemas/                # Pydantic Schemas (Request/Response Validation)
+│   │   ├── __init__.py
+│   │   ├── auth.py             # RegisterRequest, LoginRequest, TokenResponse
+│   │   ├── scan.py             # ScanResponse, RiskSummary, LayerDetail
+│   │   └── report.py           # ReportCreateRequest, ReportResponse
+│   │
+│   ├── repositories/           # Data Access Layer (Queries)
+│   │   ├── __init__.py
+│   │   ├── user_repo.py        # CRUD operations สำหรับ users
+│   │   └── scan_repo.py        # CRUD operations สำหรับ scans + reports
+│   │
+│   ├── services/               # Business Logic Layer
+│   │   ├── __init__.py
+│   │   ├── auth_service.py     # Register, Login, Token Verification
+│   │   ├── scan_service.py     # Multi-layer Analysis Orchestrator
+│   │   ├── ocr_service.py      # Surya-OCR + Scam Keywords Detection
+│   │   ├── exif_service.py     # EXIF Metadata Extraction
+│   │   ├── inference_service.py # เชื่อมต่อ AI Inference (ONNX Runtime)
+│   │   └── storage_service.py  # Local upload/heatmap files + /uploads URLs
+│   │
+│   ├── api/                    # Routing Layer (Controllers)
+│   │   ├── __init__.py
+│   │   ├── router.py           # รวม Router ทั้งหมดไว้ที่นี่
+│   │   └── v1/
+│   │       ├── __init__.py
+│   │       ├── auth.py         # POST /register, POST /login, POST /refresh, GET /me, POST /logout
+│   │       ├── scan.py         # POST /scan/, GET /scan/{scan_id} (เอกพจน์, prefix /api/v1)
+│   │       ├── report.py       # POST /reports, GET /reports/my, GET /reports/categories
+│   │       ├── history.py      # GET /history, GET /history/{scan_id}, DELETE /history/{scan_id}
+│   │       └── admin.py        # /admin/* (login/users/reports/models/deploy/audit-logs/export-jobs)
+│   │
+│   └── utils/                  # Utility Functions
+│       ├── __init__.py
+│       ├── hashing.py          # SHA-256 Image Hash
+│       └── risk_calculator.py  # Hybrid Risk Score Calculator (Worst-Case Trigger)
+│
+├── migrations/                 # Alembic Database Migrations
+│   ├── env.py
+│   ├── alembic.ini
+│   └── versions/               # Migration Scripts ที่ auto-generate
+│
+├── tests/                      # Unit Tests + Integration Tests
+│   ├── __init__.py
+│   ├── test_auth.py
+│   ├── test_scan.py
+│   └── conftest.py             # Fixtures (TestClient, TestDB)
+│
+├── .env                        # Environment Variables (ห้าม commit)
+├── .env.example                # ตัวอย่าง .env สำหรับทีมงาน
+├── .gitignore
+├── requirements.txt            # Python Dependencies
+├── Dockerfile                  # Docker Image สำหรับ Deploy
+├── docker-compose.yml          # Docker Compose (API + PostgreSQL + Redis)
+└── howto.md                    # เอกสารนี้
+</code></pre></div></code></pre>
+<hr>
+<h2 id="2-ลำดับขั้นตอนการพัฒนา-roadmap">2. ลำดับขั้นตอนการพัฒนา (Roadmap)</h2>
+<p>แบ่งการพัฒนาออกเป็น 6 Phase ตามลำดับ ควรทำให้เสร็จทีละ Phase:</p>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:center">Phase</th>
+<th>ชื่อ</th>
+<th>เป้าหมาย</th>
+<th style="text-align:center">ระยะเวลาประมาณ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">1</td>
+<td>Foundation</td>
+<td>สร้างโครงสร้าง, ตั้งค่า DB, รัน Server ได้</td>
+<td style="text-align:center">1-2 วัน</td>
+</tr>
+<tr>
+<td style="text-align:center">2</td>
+<td>Auth</td>
+<td>ระบบ Register / Login / JWT</td>
+<td style="text-align:center">2-3 วัน</td>
+</tr>
+<tr>
+<td style="text-align:center">3</td>
+<td>Scan</td>
+<td>รับรูปภาพ, EXIF, OCR, Risk Score (Mock AI)</td>
+<td style="text-align:center">3-4 วัน</td>
+</tr>
+<tr>
+<td style="text-align:center">4</td>
+<td>AI Inference</td>
+<td>เชื่อม ONNX Model จริง, สร้าง Heatmap</td>
+<td style="text-align:center">3-5 วัน</td>
+</tr>
+<tr>
+<td style="text-align:center">5</td>
+<td>Report &amp; Admin</td>
+<td>ระบบรายงานสแกม, Admin Endpoints</td>
+<td style="text-align:center">2-3 วัน</td>
+</tr>
+<tr>
+<td style="text-align:center">6</td>
+<td>Cache, Storage &amp; Polish</td>
+<td>Redis Cache, Local <code>/uploads</code>, Rate Limit, Tests</td>
+<td style="text-align:center">3-4 วัน</td>
+</tr>
+</tbody>
+</table></div><hr>
+<h2 id="3-phase-1-foundation-ฐานรากของ-server">3. Phase 1 - Foundation: ฐานรากของ Server</h2>
+<h3 id="3-1-สร้างโครงสร้างโฟลเดอร์">3.1 สร้างโครงสร้างโฟลเดอร์</h3>
+<pre><code class="language-bash"><div class="code-frame"><span class="visually-hidden">ภาษา bash</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-bash"><span class="hljs-built_in">cd</span> /home/panuwat/project/server
+<span class="hljs-built_in">mkdir</span> -p app/{core,models,schemas,repositories,services,api/v1,utils}
+<span class="hljs-built_in">mkdir</span> -p migrations/versions tests
+
+<span class="hljs-built_in">touch</span> app/__init__.py app/main.py
+<span class="hljs-built_in">touch</span> app/core/{__init__,config,security,database}.py
+<span class="hljs-built_in">touch</span> app/models/{__init__,user,scan,consent,report}.py
+<span class="hljs-built_in">touch</span> app/schemas/{__init__,auth,scan,report}.py
+<span class="hljs-built_in">touch</span> app/repositories/{__init__,user_repo,scan_repo}.py
+<span class="hljs-built_in">touch</span> app/services/{__init__,auth_service,scan_service,ocr_service,exif_service,inference_service,storage_service}.py
+<span class="hljs-built_in">touch</span> app/api/{__init__,router}.py
+<span class="hljs-built_in">touch</span> app/api/v1/{__init__,auth,scan,report,admin}.py
+<span class="hljs-built_in">touch</span> app/utils/{__init__,hashing,risk_calculator}.py
+<span class="hljs-built_in">touch</span> tests/{__init__,conftest,test_auth,test_scan}.py
+</code></pre></div></code></pre>
+<h3 id="3-2-สร้างไฟล์-app-core-config-py">3.2 สร้างไฟล์ <code>app/core/config.py</code></h3>
+<p>ใช้ <code>pydantic-settings</code> อ่านค่า Environment Variables:</p>
+<pre><code class="language-python"><div class="code-frame"><span class="visually-hidden">ภาษา python</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-python"><span class="hljs-keyword">from</span> pydantic_settings <span class="hljs-keyword">import</span> BaseSettings
+
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">Settings</span>(<span class="hljs-title class_ inherited__">BaseSettings</span>):
+    <span class="hljs-comment"># App</span>
+    APP_NAME: <span class="hljs-built_in">str</span> = <span class="hljs-string">&quot;ScamGuard API&quot;</span>
+    APP_VERSION: <span class="hljs-built_in">str</span> = <span class="hljs-string">&quot;0.1.0&quot;</span>
+    DEBUG: <span class="hljs-built_in">bool</span> = <span class="hljs-literal">True</span>
+
+    <span class="hljs-comment"># Database</span>
+    DATABASE_URL: <span class="hljs-built_in">str</span> = <span class="hljs-string">&quot;postgresql+asyncpg://scamguard:password@localhost:5432/scamguard_db&quot;</span>
+
+    <span class="hljs-comment"># JWT</span>
+    JWT_SECRET_KEY: <span class="hljs-built_in">str</span> = <span class="hljs-string">&quot;change-this-in-production&quot;</span>
+    JWT_ALGORITHM: <span class="hljs-built_in">str</span> = <span class="hljs-string">&quot;HS256&quot;</span>
+    JWT_ACCESS_TOKEN_EXPIRE_MINUTES: <span class="hljs-built_in">int</span> = <span class="hljs-number">60</span>
+
+    <span class="hljs-comment"># Redis</span>
+    REDIS_URL: <span class="hljs-built_in">str</span> = <span class="hljs-string">&quot;redis://localhost:6379/0&quot;</span>
+
+    <span class="hljs-comment"># Storage</span>
+    STORAGE_BACKEND: <span class="hljs-built_in">str</span> = <span class="hljs-string">&quot;local&quot;</span>  <span class="hljs-comment"># &quot;local&quot; สำหรับ dev, &quot;gcs&quot; สำหรับ production</span>
+    LOCAL_UPLOAD_DIR: <span class="hljs-built_in">str</span> = <span class="hljs-string">&quot;./uploads&quot;</span>
+
+    <span class="hljs-comment"># AI Inference</span>
+    ONNX_MODEL_PATH: <span class="hljs-built_in">str</span> = <span class="hljs-string">&quot;../model/segformer/work_dirs/latest.onnx&quot;</span>
+
+    <span class="hljs-comment"># Rate Limit (tiered per minute — มติ DOC-02)</span>
+    RATE_LIMIT_GUEST_PER_MINUTE: <span class="hljs-built_in">int</span> = <span class="hljs-number">10</span>
+    RATE_LIMIT_USER_PER_MINUTE: <span class="hljs-built_in">int</span> = <span class="hljs-number">60</span>
+    RATE_LIMIT_ADMIN_PER_MINUTE: <span class="hljs-built_in">int</span> = <span class="hljs-number">300</span>
+    RATE_LIMIT_SCAN_CREATE_PER_MINUTE: <span class="hljs-built_in">int</span> = <span class="hljs-number">5</span>
+
+    <span class="hljs-keyword">class</span> <span class="hljs-title class_">Config</span>:
+        env_file = <span class="hljs-string">&quot;.env&quot;</span>
+        env_file_encoding = <span class="hljs-string">&quot;utf-8&quot;</span>
+
+settings = Settings()
+</code></pre></div></code></pre>
+<h3 id="3-3-สร้างไฟล์-app-core-database-py">3.3 สร้างไฟล์ <code>app/core/database.py</code></h3>
+<p>ใช้ SQLAlchemy AsyncEngine:</p>
+<pre><code class="language-python"><div class="code-frame"><span class="visually-hidden">ภาษา python</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-python"><span class="hljs-keyword">from</span> sqlalchemy.ext.asyncio <span class="hljs-keyword">import</span> create_async_engine, async_sessionmaker, AsyncSession
+<span class="hljs-keyword">from</span> sqlalchemy.orm <span class="hljs-keyword">import</span> DeclarativeBase
+
+<span class="hljs-keyword">from</span> app.core.config <span class="hljs-keyword">import</span> settings
+
+engine = create_async_engine(settings.DATABASE_URL, echo=settings.DEBUG)
+async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=<span class="hljs-literal">False</span>)
+
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">Base</span>(<span class="hljs-title class_ inherited__">DeclarativeBase</span>):
+    <span class="hljs-keyword">pass</span>
+
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">get_db</span>() -&gt; AsyncSession:
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> async_session() <span class="hljs-keyword">as</span> session:
+        <span class="hljs-keyword">yield</span> session
+</code></pre></div></code></pre>
+<h3 id="3-4-สร้างไฟล์-app-main-py">3.4 สร้างไฟล์ <code>app/main.py</code></h3>
+<pre><code class="language-python"><div class="code-frame"><span class="visually-hidden">ภาษา python</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-python"><span class="hljs-keyword">from</span> contextlib <span class="hljs-keyword">import</span> asynccontextmanager
+<span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
+<span class="hljs-keyword">from</span> app.core.config <span class="hljs-keyword">import</span> settings
+<span class="hljs-keyword">from</span> app.api.router <span class="hljs-keyword">import</span> api_router
+
+<span class="hljs-meta">@asynccontextmanager</span>
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">lifespan</span>(<span class="hljs-params">app: FastAPI</span>):
+    <span class="hljs-comment"># Startup: สร้างตาราง DB, โหลด Model, etc.</span>
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;[Startup] <span class="hljs-subst">{settings.APP_NAME}</span> v<span class="hljs-subst">{settings.APP_VERSION}</span>&quot;</span>)
+    <span class="hljs-keyword">yield</span>
+    <span class="hljs-comment"># Shutdown: ปิด connections</span>
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;[Shutdown] Cleaning up...&quot;</span>)
+
+app = FastAPI(
+    title=settings.APP_NAME,
+    version=settings.APP_VERSION,
+    lifespan=lifespan,
+)
+
+app.include_router(api_router, prefix=<span class="hljs-string">&quot;/api/v1&quot;</span>)
+
+<span class="hljs-meta">@app.get(<span class="hljs-params"><span class="hljs-string">&quot;/health&quot;</span></span>)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">health_check</span>():
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">&quot;status&quot;</span>: <span class="hljs-string">&quot;ok&quot;</span>, <span class="hljs-string">&quot;version&quot;</span>: settings.APP_VERSION}
+</code></pre></div></code></pre>
+<h3 id="3-5-สร้างไฟล์-app-api-router-py">3.5 สร้างไฟล์ <code>app/api/router.py</code></h3>
+<pre><code class="language-python"><div class="code-frame"><span class="visually-hidden">ภาษา python</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-python"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> APIRouter
+<span class="hljs-keyword">from</span> app.api.v1 <span class="hljs-keyword">import</span> auth, scan, report, admin
+
+api_router = APIRouter()
+
+api_router.include_router(auth.router, prefix=<span class="hljs-string">&quot;/auth&quot;</span>, tags=[<span class="hljs-string">&quot;Authentication&quot;</span>])
+api_router.include_router(scan.router, prefix=<span class="hljs-string">&quot;/scan&quot;</span>, tags=[<span class="hljs-string">&quot;Scan &amp; Analysis&quot;</span>])
+api_router.include_router(report.router, prefix=<span class="hljs-string">&quot;/report&quot;</span>, tags=[<span class="hljs-string">&quot;Scam Reports&quot;</span>])
+api_router.include_router(admin.router, prefix=<span class="hljs-string">&quot;/admin&quot;</span>, tags=[<span class="hljs-string">&quot;Admin&quot;</span>])
+</code></pre></div></code></pre>
+<h3 id="3-6-ทดสอบรัน">3.6 ทดสอบรัน</h3>
+<pre><code class="language-bash"><div class="code-frame"><span class="visually-hidden">ภาษา bash</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-bash"><span class="hljs-comment"># ติดตั้ง dependencies เบื้องต้น</span>
+pip install fastapi uvicorn pydantic-settings
+
+<span class="hljs-comment"># รัน server</span>
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+</code></pre></div></code></pre>
+<p>เปิด <a href="http://localhost:8000/docs" rel="noreferrer">http://localhost:8000/docs</a> จะเห็น Swagger UI อัตโนมัติ
+เปิด <a href="http://localhost:8000/health" rel="noreferrer">http://localhost:8000/health</a> จะได้ <code>{&quot;status&quot;: &quot;ok&quot;}</code></p>
+<hr>
+<h2 id="4-phase-2-auth-ระบบยืนยันตัวตน">4. Phase 2 - Auth: ระบบยืนยันตัวตน</h2>
+<h3 id="4-1-orm-model-app-models-user-py">4.1 ORM Model - <code>app/models/user.py</code></h3>
+<p>อ้างอิงจาก <code>design/server.md</code> Section 4.1:</p>
+<pre><code class="language-python"><div class="code-frame"><span class="visually-hidden">ภาษา python</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-python"><span class="hljs-keyword">from</span> sqlalchemy <span class="hljs-keyword">import</span> Column, Integer, String, Boolean, DateTime
+<span class="hljs-keyword">from</span> sqlalchemy.sql <span class="hljs-keyword">import</span> func
+<span class="hljs-keyword">from</span> app.core.database <span class="hljs-keyword">import</span> Base
+
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">User</span>(<span class="hljs-title class_ inherited__">Base</span>):
+    __tablename__ = <span class="hljs-string">&quot;users&quot;</span>
+
+    <span class="hljs-built_in">id</span> = Column(Integer, primary_key=<span class="hljs-literal">True</span>, index=<span class="hljs-literal">True</span>)
+    email = Column(String(<span class="hljs-number">255</span>), unique=<span class="hljs-literal">True</span>, nullable=<span class="hljs-literal">False</span>, index=<span class="hljs-literal">True</span>)
+    hashed_password = Column(String(<span class="hljs-number">255</span>), nullable=<span class="hljs-literal">False</span>)
+    full_name = Column(String(<span class="hljs-number">100</span>))
+    role = Column(String(<span class="hljs-number">20</span>), nullable=<span class="hljs-literal">False</span>, default=<span class="hljs-string">&quot;user&quot;</span>)  <span class="hljs-comment"># user, researcher; admin แยกตาราง admins</span>
+    is_active = Column(Boolean, default=<span class="hljs-literal">True</span>)
+    created_at = Column(DateTime(timezone=<span class="hljs-literal">True</span>), server_default=func.now())
+    updated_at = Column(DateTime(timezone=<span class="hljs-literal">True</span>), server_default=func.now(), onupdate=func.now())
+</code></pre></div></code></pre>
+<h3 id="4-2-security-app-core-security-py">4.2 Security - <code>app/core/security.py</code></h3>
+<pre><code class="language-python"><div class="code-frame"><span class="visually-hidden">ภาษา python</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-python"><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime, timedelta, timezone
+<span class="hljs-keyword">from</span> passlib.context <span class="hljs-keyword">import</span> CryptContext
+<span class="hljs-keyword">from</span> jose <span class="hljs-keyword">import</span> jwt, JWTError
+<span class="hljs-keyword">from</span> app.core.config <span class="hljs-keyword">import</span> settings
+
+pwd_context = CryptContext(schemes=[<span class="hljs-string">&quot;bcrypt&quot;</span>])
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">hash_password</span>(<span class="hljs-params">password: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">str</span>:
+    <span class="hljs-keyword">return</span> pwd_context.<span class="hljs-built_in">hash</span>(password)
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">verify_password</span>(<span class="hljs-params">plain: <span class="hljs-built_in">str</span>, hashed: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">bool</span>:
+    <span class="hljs-keyword">return</span> pwd_context.verify(plain, hashed)
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">create_access_token</span>(<span class="hljs-params">data: <span class="hljs-built_in">dict</span></span>) -&gt; <span class="hljs-built_in">str</span>:
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + timedelta(minutes=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({<span class="hljs-string">&quot;exp&quot;</span>: expire})
+    <span class="hljs-keyword">return</span> jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">decode_access_token</span>(<span class="hljs-params">token: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">dict</span> | <span class="hljs-literal">None</span>:
+    <span class="hljs-keyword">try</span>:
+        <span class="hljs-keyword">return</span> jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
+    <span class="hljs-keyword">except</span> JWTError:
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">None</span>
+</code></pre></div></code></pre>
+<h3 id="4-3-pydantic-schemas-app-schemas-auth-py">4.3 Pydantic Schemas - <code>app/schemas/auth.py</code></h3>
+<p>อ้างอิง Request/Response จาก <code>design/server.md</code> Section 5.1:</p>
+<pre><code class="language-python"><div class="code-frame"><span class="visually-hidden">ภาษา python</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-python"><span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel, EmailStr
+
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">RegisterRequest</span>(<span class="hljs-title class_ inherited__">BaseModel</span>):
+    email: EmailStr
+    password: <span class="hljs-built_in">str</span>
+    full_name: <span class="hljs-built_in">str</span>
+    system_consent: <span class="hljs-built_in">bool</span> = <span class="hljs-literal">True</span>
+    research_consent: <span class="hljs-built_in">bool</span> = <span class="hljs-literal">False</span>
+
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">LoginRequest</span>(<span class="hljs-title class_ inherited__">BaseModel</span>):
+    username: <span class="hljs-built_in">str</span>  <span class="hljs-comment"># email</span>
+    password: <span class="hljs-built_in">str</span>
+
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">TokenResponse</span>(<span class="hljs-title class_ inherited__">BaseModel</span>):
+    access_token: <span class="hljs-built_in">str</span>
+    token_type: <span class="hljs-built_in">str</span> = <span class="hljs-string">&quot;bearer&quot;</span>
+    user: <span class="hljs-built_in">dict</span>
+
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">UserResponse</span>(<span class="hljs-title class_ inherited__">BaseModel</span>):
+    <span class="hljs-built_in">id</span>: <span class="hljs-built_in">int</span>
+    email: <span class="hljs-built_in">str</span>
+    full_name: <span class="hljs-built_in">str</span>
+    role: <span class="hljs-built_in">str</span>
+    message: <span class="hljs-built_in">str</span> = <span class="hljs-string">&quot;User registered successfully&quot;</span>
+</code></pre></div></code></pre>
+<h3 id="4-4-api-route-app-api-v1-auth-py">4.4 API Route - <code>app/api/v1/auth.py</code></h3>
+<pre><code class="language-python"><div class="code-frame"><span class="visually-hidden">ภาษา python</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-python"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> APIRouter, Depends, HTTPException, status
+<span class="hljs-keyword">from</span> sqlalchemy.ext.asyncio <span class="hljs-keyword">import</span> AsyncSession
+<span class="hljs-keyword">from</span> app.core.database <span class="hljs-keyword">import</span> get_db
+<span class="hljs-keyword">from</span> app.schemas.auth <span class="hljs-keyword">import</span> RegisterRequest, LoginRequest, TokenResponse, UserResponse
+<span class="hljs-comment"># ... import service functions</span>
+
+router = APIRouter()
+
+<span class="hljs-meta">@router.post(<span class="hljs-params"><span class="hljs-string">&quot;/register&quot;</span>, response_model=UserResponse, status_code=status.HTTP_201_CREATED</span>)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">register</span>(<span class="hljs-params">body: RegisterRequest, db: AsyncSession = Depends(<span class="hljs-params">get_db</span>)</span>):
+    <span class="hljs-comment"># 1. ตรวจสอบว่า email ซ้ำหรือไม่</span>
+    <span class="hljs-comment"># 2. สร้าง User ใหม่ + hash password</span>
+    <span class="hljs-comment"># 3. บันทึก consent_logs</span>
+    <span class="hljs-comment"># 4. return UserResponse</span>
+    ...
+
+<span class="hljs-meta">@router.post(<span class="hljs-params"><span class="hljs-string">&quot;/login&quot;</span>, response_model=TokenResponse</span>)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">login</span>(<span class="hljs-params">body: LoginRequest, db: AsyncSession = Depends(<span class="hljs-params">get_db</span>)</span>):
+    <span class="hljs-comment"># 1. ค้นหา user จาก email</span>
+    <span class="hljs-comment"># 2. ตรวจสอบ password</span>
+    <span class="hljs-comment"># 3. สร้าง JWT Token</span>
+    <span class="hljs-comment"># 4. return TokenResponse</span>
+    ...
+</code></pre></div></code></pre>
+<hr>
+<h2 id="5-phase-3-scan-ท่อประมวลผลภาพ">5. Phase 3 - Scan: ท่อประมวลผลภาพ</h2>
+<h3 id="5-1-orm-model-app-models-scan-py">5.1 ORM Model - <code>app/models/scan.py</code></h3>
+<p>อ้างอิงจาก <code>design/server.md</code> Section 4.2:</p>
+<pre><code class="language-python"><div class="code-frame"><span class="visually-hidden">ภาษา python</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-python"><span class="hljs-keyword">from</span> sqlalchemy <span class="hljs-keyword">import</span> Column, String, Integer, Float, Text, DateTime, ForeignKey
+<span class="hljs-keyword">from</span> sqlalchemy.dialects.postgresql <span class="hljs-keyword">import</span> UUID, JSONB
+<span class="hljs-keyword">from</span> sqlalchemy.sql <span class="hljs-keyword">import</span> func
+<span class="hljs-keyword">import</span> uuid
+<span class="hljs-keyword">from</span> app.core.database <span class="hljs-keyword">import</span> Base
+
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">Scan</span>(<span class="hljs-title class_ inherited__">Base</span>):
+    __tablename__ = <span class="hljs-string">&quot;scans&quot;</span>
+
+    <span class="hljs-built_in">id</span> = Column(UUID(as_uuid=<span class="hljs-literal">True</span>), primary_key=<span class="hljs-literal">True</span>, default=uuid.uuid4)
+    user_id = Column(Integer, ForeignKey(<span class="hljs-string">&quot;users.id&quot;</span>, ondelete=<span class="hljs-string">&quot;SET NULL&quot;</span>), nullable=<span class="hljs-literal">True</span>)
+    image_hash = Column(String(<span class="hljs-number">64</span>), nullable=<span class="hljs-literal">False</span>, index=<span class="hljs-literal">True</span>)  <span class="hljs-comment"># SHA-256</span>
+    raw_image_url = Column(String(<span class="hljs-number">512</span>), nullable=<span class="hljs-literal">False</span>)
+    heatmap_image_url = Column(String(<span class="hljs-number">512</span>))
+
+    <span class="hljs-comment"># Risk Scores (0-100)</span>
+    text_score = Column(Integer, nullable=<span class="hljs-literal">False</span>, default=<span class="hljs-number">0</span>)
+    visual_score = Column(Integer, nullable=<span class="hljs-literal">False</span>, default=<span class="hljs-number">0</span>)
+    source_score = Column(Integer, nullable=<span class="hljs-literal">False</span>, default=<span class="hljs-number">0</span>)
+    total_risk_score = Column(Integer, nullable=<span class="hljs-literal">False</span>, default=<span class="hljs-number">0</span>)
+
+    <span class="hljs-comment"># Analysis Details</span>
+    exif_data = Column(JSONB)
+    ocr_text = Column(Text)
+    scam_keywords_found = Column(JSONB)
+    reverse_search_results = Column(JSONB)
+    ai_gen_probability = Column(Float, default=<span class="hljs-number">0.0</span>)
+
+    status = Column(String(<span class="hljs-number">20</span>), nullable=<span class="hljs-literal">False</span>, default=<span class="hljs-string">&quot;pending&quot;</span>)
+    created_at = Column(DateTime(timezone=<span class="hljs-literal">True</span>), server_default=func.now())
+    completed_at = Column(DateTime(timezone=<span class="hljs-literal">True</span>))
+</code></pre></div></code></pre>
+<h3 id="5-2-risk-calculator">5.2 Risk Calculator</h3>
+<p>อ้างอิงจาก <code>design/architecture.md</code> Section 5.1:</p>
+<pre><code class="language-python"><div class="code-frame"><span class="visually-hidden">ภาษา python</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">calculate_risk_score</span>(<span class="hljs-params">text_score: <span class="hljs-built_in">int</span>, visual_score: <span class="hljs-built_in">int</span>, source_score: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">dict</span>:
+    <span class="hljs-string">&quot;&quot;&quot;
+    Recommended Hybrid Approach (Worst-Case Trigger with Multi-Factor Breakdown):
+    1. ประเมิน 3 มิติแยกอิสระ 0-100%
+    2. ยึดมิติที่เสี่ยงสูงสุดเป็นฐาน S_base = max(visual, text, source)
+    3. Multi-factor Compounding: +5 คะแนนต่อมิติรองที่มีคะแนน &gt;= 40 (สูงสุดไม่เกิน 100)
+    4. Visual &gt;= 80 บังคับเป็น High
+
+    Risk Grades:
+      0-39   = low
+      40-69  = medium
+      70-100 = high
+    &quot;&quot;&quot;</span>
+    text_score = <span class="hljs-built_in">max</span>(<span class="hljs-number">0</span>, <span class="hljs-built_in">min</span>(<span class="hljs-number">100</span>, <span class="hljs-built_in">int</span>(text_score)))
+    visual_score = <span class="hljs-built_in">max</span>(<span class="hljs-number">0</span>, <span class="hljs-built_in">min</span>(<span class="hljs-number">100</span>, <span class="hljs-built_in">int</span>(visual_score)))
+    source_score = <span class="hljs-built_in">max</span>(<span class="hljs-number">0</span>, <span class="hljs-built_in">min</span>(<span class="hljs-number">100</span>, <span class="hljs-built_in">int</span>(source_score)))
+
+    base_score = <span class="hljs-built_in">max</span>(text_score, visual_score, source_score)
+    scores = [text_score, visual_score, source_score]
+    secondary_high = <span class="hljs-built_in">sum</span>(<span class="hljs-number">1</span> <span class="hljs-keyword">for</span> s <span class="hljs-keyword">in</span> scores <span class="hljs-keyword">if</span> s &gt;= <span class="hljs-number">40</span>) - (<span class="hljs-number">1</span> <span class="hljs-keyword">if</span> base_score &gt;= <span class="hljs-number">40</span> <span class="hljs-keyword">else</span> <span class="hljs-number">0</span>)
+    compounding_bonus = secondary_high * <span class="hljs-number">5</span>
+    total = <span class="hljs-built_in">min</span>(<span class="hljs-number">100</span>, base_score + compounding_bonus)
+
+    <span class="hljs-keyword">if</span> total &gt;= <span class="hljs-number">70</span> <span class="hljs-keyword">or</span> visual_score &gt;= <span class="hljs-number">80</span>:
+        grade = <span class="hljs-string">&quot;high&quot;</span>
+        total = <span class="hljs-built_in">max</span>(<span class="hljs-number">70</span>, total)
+    <span class="hljs-keyword">elif</span> total &gt;= <span class="hljs-number">40</span>:
+        grade = <span class="hljs-string">&quot;medium&quot;</span>
+    <span class="hljs-keyword">else</span>:
+        grade = <span class="hljs-string">&quot;low&quot;</span>
+
+    <span class="hljs-keyword">return</span> {
+        <span class="hljs-string">&quot;total_risk_score&quot;</span>: total,
+        <span class="hljs-string">&quot;grade&quot;</span>: grade,
+        <span class="hljs-string">&quot;primary_factor&quot;</span>: <span class="hljs-string">&quot;visual&quot;</span> <span class="hljs-keyword">if</span> visual_score == base_score <span class="hljs-keyword">else</span> (<span class="hljs-string">&quot;textual&quot;</span> <span class="hljs-keyword">if</span> text_score == base_score <span class="hljs-keyword">else</span> <span class="hljs-string">&quot;source&quot;</span>),
+        <span class="hljs-string">&quot;is_multi_risk&quot;</span>: secondary_high &gt; <span class="hljs-number">0</span>,
+        <span class="hljs-string">&quot;breakdown&quot;</span>: {
+            <span class="hljs-string">&quot;visual&quot;</span>: {<span class="hljs-string">&quot;score&quot;</span>: visual_score, <span class="hljs-string">&quot;level&quot;</span>: <span class="hljs-string">&quot;high&quot;</span> <span class="hljs-keyword">if</span> visual_score &gt;= <span class="hljs-number">70</span> <span class="hljs-keyword">else</span> (<span class="hljs-string">&quot;medium&quot;</span> <span class="hljs-keyword">if</span> visual_score &gt;= <span class="hljs-number">40</span> <span class="hljs-keyword">else</span> <span class="hljs-string">&quot;low&quot;</span>)},
+            <span class="hljs-string">&quot;textual&quot;</span>: {<span class="hljs-string">&quot;score&quot;</span>: text_score, <span class="hljs-string">&quot;level&quot;</span>: <span class="hljs-string">&quot;high&quot;</span> <span class="hljs-keyword">if</span> text_score &gt;= <span class="hljs-number">70</span> <span class="hljs-keyword">else</span> (<span class="hljs-string">&quot;medium&quot;</span> <span class="hljs-keyword">if</span> text_score &gt;= <span class="hljs-number">40</span> <span class="hljs-keyword">else</span> <span class="hljs-string">&quot;low&quot;</span>)},
+            <span class="hljs-string">&quot;source&quot;</span>: {<span class="hljs-string">&quot;score&quot;</span>: source_score, <span class="hljs-string">&quot;level&quot;</span>: <span class="hljs-string">&quot;high&quot;</span> <span class="hljs-keyword">if</span> source_score &gt;= <span class="hljs-number">70</span> <span class="hljs-keyword">else</span> (<span class="hljs-string">&quot;medium&quot;</span> <span class="hljs-keyword">if</span> source_score &gt;= <span class="hljs-number">40</span> <span class="hljs-keyword">else</span> <span class="hljs-string">&quot;low&quot;</span>)},
+        },
+    }
+</code></pre></div></code></pre>
+<h3 id="5-3-scan-service-app-services-scan-service-py">5.3 Scan Service - <code>app/services/scan_service.py</code></h3>
+<p>ขั้นตอนการทำงานหลัก (อ้างอิงจาก <code>design/architecture.md</code> Section 5, Multi-layer Pipeline):</p>
+<pre><code class="language-python"><div class="code-frame"><span class="visually-hidden">ภาษา python</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-python"><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">analyze_image</span>(<span class="hljs-params">file_bytes: <span class="hljs-built_in">bytes</span>, user_id: <span class="hljs-built_in">int</span>, db</span>) -&gt; <span class="hljs-built_in">dict</span>:
+    <span class="hljs-string">&quot;&quot;&quot;
+    Multi-layer Analysis Pipeline:
+    1. Validate file type + size (max 10MB, JPG/PNG only)
+    2. คำนวณ SHA-256 Hash
+    3. ตรวจ Redis Cache (Cache Hit -&gt; return ผลเดิม)
+    4. Task 1: EXIF Metadata Extraction
+    5. Task 2: OCR + Scam Keywords Analysis
+    6. Task 3: Visual Forgery Detection (ส่งไป AI Inference)
+    7. Task 4: Reverse Image Search (optional)
+    8. Task 5: AI-Generated Image Detection
+    9. รวม Overall Risk Score (Hybrid Worst-Case Trigger + Multi-factor Compounding)
+    10. บันทึกลง PostgreSQL + เขียน Redis Cache
+    11. return ผลลัพธ์ JSON
+    &quot;&quot;&quot;</span>
+    <span class="hljs-keyword">pass</span>
+</code></pre></div></code></pre>
+<h3 id="5-4-api-route-app-api-v1-scan-py">5.4 API Route - <code>app/api/v1/scan.py</code></h3>
+<p>อ้างอิง Request/Response จาก <code>design/server.md</code> Section 5.2:</p>
+<pre><code class="language-python"><div class="code-frame"><span class="visually-hidden">ภาษา python</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-python"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> APIRouter, UploadFile, File, Depends
+
+router = APIRouter()
+
+<span class="hljs-meta">@router.post(<span class="hljs-params"><span class="hljs-string">&quot;/&quot;</span></span>)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">create_scan</span>(<span class="hljs-params">file: UploadFile = File(<span class="hljs-params">...</span>), ...</span>):
+    <span class="hljs-string">&quot;&quot;&quot;
+    POST /api/v1/scan/
+    Request: Multipart/Form-Data (file: binary JPG/PNG)
+    Response: JSON ตาม design/server.md Section 5.2.1
+    &quot;&quot;&quot;</span>
+    <span class="hljs-comment"># 1. Validate file type + size</span>
+    <span class="hljs-comment"># 2. อ่าน bytes</span>
+    <span class="hljs-comment"># 3. เรียก scan_service.analyze_image()</span>
+    <span class="hljs-comment"># 4. return ScanResponse</span>
+    ...
+
+<span class="hljs-meta">@router.get(<span class="hljs-params"><span class="hljs-string">&quot;/{scan_id}&quot;</span></span>)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">get_scan</span>(<span class="hljs-params">scan_id: <span class="hljs-built_in">str</span>, ...</span>):
+    <span class="hljs-string">&quot;&quot;&quot;
+    GET /api/v1/scan/{scan_id}
+    Response: JSON เดียวกับ POST /scan
+    &quot;&quot;&quot;</span>
+    ...
+</code></pre></div></code></pre>
+<hr>
+<h2 id="6-phase-4-ai-inference-เชื่อมต่อโมเดล">6. Phase 4 - AI Inference: เชื่อมต่อโมเดล</h2>
+<h3 id="6-1-onnx-runtime-service-app-services-inference-service-py">6.1 ONNX Runtime Service - <code>app/services/inference_service.py</code></h3>
+<p>เชื่อมต่อกับโมเดล SegFormer ที่ Export เป็น ONNX แล้ว (อ้างอิง <code>design/model.md</code> + <code>design/training.md</code> Section 13):</p>
+<pre><code class="language-python"><div class="code-frame"><span class="visually-hidden">ภาษา python</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-python"><span class="hljs-keyword">import</span> onnxruntime <span class="hljs-keyword">as</span> ort
+<span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+<span class="hljs-keyword">from</span> PIL <span class="hljs-keyword">import</span> Image
+
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">InferenceService</span>:
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, model_path: <span class="hljs-built_in">str</span></span>):
+        <span class="hljs-variable language_">self</span>.session = ort.InferenceSession(model_path)
+
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">predict</span>(<span class="hljs-params">self, image_bytes: <span class="hljs-built_in">bytes</span></span>) -&gt; <span class="hljs-built_in">dict</span>:
+        <span class="hljs-string">&quot;&quot;&quot;
+        Input:  ภาพ RGB -&gt; Tensor [1, 3, 512, 512]
+        Output: Probability Map (Heatmap) + Segmentation Mask + Risk Score
+        &quot;&quot;&quot;</span>
+        <span class="hljs-comment"># 1. Decode image from bytes</span>
+        <span class="hljs-comment"># 2. Resize to 512x512</span>
+        <span class="hljs-comment"># 3. Normalize (mean, std)</span>
+        <span class="hljs-comment"># 4. Run forward pass</span>
+        <span class="hljs-comment"># 5. Post-process: Mask, Heatmap, Score</span>
+        ...
+
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">generate_heatmap</span>(<span class="hljs-params">self, prob_map: np.ndarray, original_image</span>) -&gt; <span class="hljs-built_in">bytes</span>:
+        <span class="hljs-string">&quot;&quot;&quot;
+        แปลง Probability Map เป็นภาพ Heatmap (สีแดง=เสี่ยง, สีน้ำเงิน=ปลอดภัย)
+        ซ้อนทับ (Overlay) กับภาพต้นฉบับ
+        &quot;&quot;&quot;</span>
+        ...
+</code></pre></div></code></pre>
+<h3 id="6-2-การเตรียมไฟล์-onnx">6.2 การเตรียมไฟล์ ONNX</h3>
+<p>ก่อนใช้งานจริง ต้อง Export โมเดลจาก PyTorch Checkpoint:</p>
+<pre><code class="language-bash"><div class="code-frame"><span class="visually-hidden">ภาษา bash</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-bash"><span class="hljs-comment"># ใน environment ที่มี mmsegmentation</span>
+<span class="hljs-built_in">cd</span> /home/panuwat/project/model/segformer
+
+<span class="hljs-comment"># Export checkpoint เป็น ONNX (ดูเพิ่มเติมใน model/segformer/README.md)</span>
+python -m mmseg.tools.pytorch2onnx \
+    configs/segformer_mit-b2-v1.py \
+    work_dirs/latest.pth \
+    --output-file work_dirs/latest.onnx \
+    --input-img data/test_sample.jpg \
+    --shape 512 512
+</code></pre></div></code></pre>
+<hr>
+<h2 id="7-phase-5-report-admin">7. Phase 5 - Report &amp; Admin</h2>
+<h3 id="7-1-orm-models">7.1 ORM Models</h3>
+<p><strong>consent_logs</strong> (อ้างอิง <code>design/server.md</code> Section 4.3):</p>
+<pre><code class="language-python"><div class="code-frame"><span class="visually-hidden">ภาษา python</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">ConsentLog</span>(<span class="hljs-title class_ inherited__">Base</span>):
+    __tablename__ = <span class="hljs-string">&quot;consent_logs&quot;</span>
+    <span class="hljs-built_in">id</span> = Column(Integer, primary_key=<span class="hljs-literal">True</span>)
+    user_id = Column(Integer, ForeignKey(<span class="hljs-string">&quot;users.id&quot;</span>, ondelete=<span class="hljs-string">&quot;CASCADE&quot;</span>))
+    system_consent = Column(Boolean, nullable=<span class="hljs-literal">False</span>, default=<span class="hljs-literal">True</span>)
+    research_consent = Column(Boolean, nullable=<span class="hljs-literal">False</span>, default=<span class="hljs-literal">False</span>)
+    ip_address = Column(String(<span class="hljs-number">45</span>))
+    user_agent = Column(Text)
+    created_at = Column(DateTime(timezone=<span class="hljs-literal">True</span>), server_default=func.now())
+</code></pre></div></code></pre>
+<p><strong>scam_reports</strong> (อ้างอิง <code>design/server.md</code> Section 4.4):</p>
+<pre><code class="language-python"><div class="code-frame"><span class="visually-hidden">ภาษา python</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">ScamReport</span>(<span class="hljs-title class_ inherited__">Base</span>):
+    __tablename__ = <span class="hljs-string">&quot;scam_reports&quot;</span>
+    <span class="hljs-built_in">id</span> = Column(Integer, primary_key=<span class="hljs-literal">True</span>)
+    user_id = Column(Integer, ForeignKey(<span class="hljs-string">&quot;users.id&quot;</span>, ondelete=<span class="hljs-string">&quot;SET NULL&quot;</span>))
+    scan_id = Column(UUID(as_uuid=<span class="hljs-literal">True</span>), ForeignKey(<span class="hljs-string">&quot;scans.id&quot;</span>, ondelete=<span class="hljs-string">&quot;SET NULL&quot;</span>))
+    reason = Column(Text, nullable=<span class="hljs-literal">False</span>)
+    status = Column(String(<span class="hljs-number">20</span>), nullable=<span class="hljs-literal">False</span>, default=<span class="hljs-string">&quot;pending&quot;</span>)  <span class="hljs-comment"># pending, approved, rejected</span>
+    moderated_by = Column(Integer, ForeignKey(<span class="hljs-string">&quot;admins.id&quot;</span>))
+    moderated_at = Column(DateTime(timezone=<span class="hljs-literal">True</span>))
+    created_at = Column(DateTime(timezone=<span class="hljs-literal">True</span>), server_default=func.now())
+</code></pre></div></code></pre>
+<h3 id="7-2-api-routes">7.2 API Routes</h3>
+<pre><code class="language-python"><div class="code-frame"><span class="visually-hidden">ภาษา python</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-python"><span class="hljs-comment"># app/api/v1/report.py</span>
+<span class="hljs-meta">@router.post(<span class="hljs-params"><span class="hljs-string">&quot;/&quot;</span></span>)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">create_report</span>(<span class="hljs-params">body: ReportCreateRequest, ...</span>):
+    <span class="hljs-string">&quot;&quot;&quot;POST /api/v1/reports - ผู้ใช้รายงานภาพหลอกลวง&quot;&quot;&quot;</span>
+    ...
+
+<span class="hljs-comment"># app/api/v1/admin.py (มีเฉพาะ deploy/dry-run สำหรับจัดการโมเดล)</span>
+<span class="hljs-comment"># POST /api/v1/admin/models/{id}/deploy และ /dry-run สำหรับ deploy โมเดล</span>
+
+<span class="hljs-meta">@router.post(<span class="hljs-params"><span class="hljs-string">&quot;/model&quot;</span></span>)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">update_model</span>(<span class="hljs-params">...</span>):
+    <span class="hljs-string">&quot;&quot;&quot;POST /api/v1/admin/model - Admin อัปโหลด ONNX Model ใหม่ (Hot Reload)&quot;&quot;&quot;</span>
+    ...
+</code></pre></div></code></pre>
+<hr>
+<h2 id="8-phase-6-cache-storage-polish">8. Phase 6 - Cache, Storage &amp; Polish</h2>
+<h3 id="8-1-redis-cache-อ้างอิง-design-server-md-section-2-2-5">8.1 Redis Cache (อ้างอิง <code>design/server.md</code> Section 2.2.5)</h3>
+<pre><code class="language-python"><div class="code-frame"><span class="visually-hidden">ภาษา python</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-python"><span class="hljs-keyword">import</span> redis.asyncio <span class="hljs-keyword">as</span> redis
+
+<span class="hljs-comment"># Key pattern: scan:hash:{image_sha256}</span>
+<span class="hljs-comment"># TTL: 7 วัน (604800 วินาที)</span>
+
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">check_cache</span>(<span class="hljs-params">image_hash: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">dict</span> | <span class="hljs-literal">None</span>:
+    cached = <span class="hljs-keyword">await</span> redis_client.get(<span class="hljs-string">f&quot;scan:hash:<span class="hljs-subst">{image_hash}</span>&quot;</span>)
+    <span class="hljs-keyword">if</span> cached:
+        <span class="hljs-keyword">return</span> json.loads(cached)  <span class="hljs-comment"># Cache Hit</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">None</span>  <span class="hljs-comment"># Cache Miss</span>
+
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">set_cache</span>(<span class="hljs-params">image_hash: <span class="hljs-built_in">str</span>, result: <span class="hljs-built_in">dict</span></span>):
+    <span class="hljs-keyword">await</span> redis_client.setex(
+        <span class="hljs-string">f&quot;scan:hash:<span class="hljs-subst">{image_hash}</span>&quot;</span>,
+        <span class="hljs-number">604800</span>,  <span class="hljs-comment"># 7 days</span>
+        json.dumps(result)
+    )
+</code></pre></div></code></pre>
+<h3 id="8-2-local-file-storage-code-v1">8.2 Local File Storage (code v1)</h3>
+<p>อ้างอิง <code>design/server.md</code> Section 2.2.2:</p>
+<pre><code><div class="code-frame"><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-text">โครงสร้างไฟล์ปัจจุบัน:
+  LOCAL_UPLOAD_DIR/                         &lt;- default ./uploads
+  /uploads/{filename}                       &lt;- FastAPI static URL
+</code></pre></div></code></pre>
+<p>Cloud Object Storage/Presigned URL เป็น future deployment option ไม่ใช่ implementation ปัจจุบัน</p>
+<h3 id="8-3-rate-limiting-อ้างอิง-design-server-md-section-6">8.3 Rate Limiting (อ้างอิง <code>design/server.md</code> Section 6)</h3>
+<ul>
+<li>ผู้ใช้ทั่วไป: สแกนได้สูงสุด <strong>60 ครั้ง/ชั่วโมง</strong></li>
+<li>ใช้ <code>slowapi</code> หรือ custom middleware + Redis counter</li>
+</ul>
+<h3 id="8-4-input-validation-อ้างอิง-design-server-md-section-6">8.4 Input Validation (อ้างอิง <code>design/server.md</code> Section 6)</h3>
+<ul>
+<li>Allowed file types: <code>image/jpeg</code>, <code>image/png</code></li>
+<li>Max file size: <strong>10MB</strong></li>
+<li>ถ้าไม่ผ่าน -&gt; return HTTP 400 Bad Request</li>
+</ul>
+<h3 id="8-5-graceful-degradation">8.5 Graceful Degradation</h3>
+<p>หาก AI Inference หรือ Google Vision API Timeout ให้คำนวณ Risk Score จากมิติที่สำเร็จ (ตัดมิติที่ล้มเหลวทิ้ง — EXIF มีไว้แสดงผลเท่านั้น ไม่ร่วมคำนวณ) และบันทึก Error Log</p>
+<hr>
+<h2 id="9-dependencies-ทั้งหมด">9. Dependencies ทั้งหมด</h2>
+<h3 id="requirements-txt">requirements.txt</h3>
+<pre><code class="language-txt"><div class="code-frame"><span class="visually-hidden">ภาษา txt</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-txt"># Web Framework
+fastapi&gt;=0.115.0
+uvicorn[standard]&gt;=0.30.0
+pydantic[email]&gt;=2.0
+pydantic-settings&gt;=2.0
+
+# Database
+sqlalchemy[asyncio]&gt;=2.0
+asyncpg&gt;=0.30.0
+alembic&gt;=1.14.0
+
+# Auth &amp; Security
+python-jose[cryptography]&gt;=3.3.0
+passlib[bcrypt]&gt;=1.7.4
+
+# Redis
+redis[hiredis]&gt;=5.0
+
+# Image Processing
+Pillow&gt;=10.0
+python-multipart&gt;=0.0.9
+
+# AI Inference
+onnxruntime&gt;=1.18.0
+numpy&gt;=1.26,&lt;2
+
+# OCR (ติดตั้งแยก - ใช้ทรัพยากรสูง)
+# surya-ocr
+
+# EXIF
+piexif&gt;=1.1.3
+
+# Rate Limiting
+slowapi&gt;=0.1.9
+
+# Testing
+pytest&gt;=8.0
+pytest-asyncio&gt;=0.23
+httpx&gt;=0.27
+</code></pre></div></code></pre>
+<h3 id="การติดตั้ง">การติดตั้ง</h3>
+<pre><code class="language-bash"><div class="code-frame"><span class="visually-hidden">ภาษา bash</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-bash"><span class="hljs-built_in">cd</span> /home/panuwat/project/server
+
+<span class="hljs-comment"># สร้าง Virtual Environment</span>
+python -m venv venv
+<span class="hljs-built_in">source</span> venv/bin/activate
+
+<span class="hljs-comment"># ติดตั้ง dependencies</span>
+pip install -r requirements.txt
+</code></pre></div></code></pre>
+<hr>
+<h2 id="10-api-endpoints-สรุปรวม">10. API Endpoints สรุปรวม</h2>
+<p>อ้างอิงจาก <code>design/server.md</code> Section 5 และ <code>Document/server/server.md</code> Section 5:</p>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:center">Method</th>
+<th>Endpoint</th>
+<th>หน้าที่</th>
+<th style="text-align:center">Auth</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">GET</td>
+<td><code>/health</code></td>
+<td>Health Check</td>
+<td style="text-align:center">-</td>
+</tr>
+<tr>
+<td style="text-align:center">POST</td>
+<td><code>/api/v1/auth/register</code></td>
+<td>สมัครสมาชิก</td>
+<td style="text-align:center">-</td>
+</tr>
+<tr>
+<td style="text-align:center">POST</td>
+<td><code>/api/v1/auth/login</code></td>
+<td>เข้าสู่ระบบ รับ JWT Token</td>
+<td style="text-align:center">-</td>
+</tr>
+<tr>
+<td style="text-align:center">POST</td>
+<td><code>/api/v1/scan/</code></td>
+<td>อัปโหลดรูปภาพเพื่อตรวจวิเคราะห์ (เอกพจน์)</td>
+<td style="text-align:center">User</td>
+</tr>
+<tr>
+<td style="text-align:center">GET</td>
+<td><code>/api/v1/scan/{scan_id}</code></td>
+<td>ดูผลลัพธ์การสแกน</td>
+<td style="text-align:center">User</td>
+</tr>
+<tr>
+<td style="text-align:center">POST</td>
+<td><code>/api/v1/reports</code></td>
+<td>รายงานภาพหลอกลวง (พหูพจน์)</td>
+<td style="text-align:center">User</td>
+</tr>
+<tr>
+<td style="text-align:center">GET</td>
+<td><code>/api/v1/history</code></td>
+<td>ประวัติการสแกน</td>
+<td style="text-align:center">User</td>
+</tr>
+<tr>
+<td style="text-align:center">POST</td>
+<td><code>/api/v1/admin/models/{id}/deploy</code></td>
+<td>Deploy โมเดล</td>
+<td style="text-align:center">Admin (super)</td>
+</tr>
+</tbody>
+</table></div><hr>
+<h2 id="11-database-schema-สรุปรวม">11. Database Schema สรุปรวม</h2>
+<p>อ้างอิงจาก <code>design/server.md</code> Section 4:</p>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th>ตาราง</th>
+<th>หน้าที่</th>
+<th>คอลัมน์สำคัญ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>users</code></td>
+<td>บัญชีผู้ใช้</td>
+<td>id, email, hashed_password, role, is_active</td>
+</tr>
+<tr>
+<td><code>scans</code></td>
+<td>ประวัติการสแกน</td>
+<td>id(UUID), user_id, image_hash, scores, exif_data, ocr_text, status</td>
+</tr>
+<tr>
+<td><code>consent_logs</code></td>
+<td>การยินยอม PDPA</td>
+<td>user_id, system_consent, research_consent</td>
+</tr>
+<tr>
+<td><code>scam_reports</code></td>
+<td>รายงานภาพหลอกลวง</td>
+<td>user_id, scan_id, reason, status, moderated_by</td>
+</tr>
+</tbody>
+</table></div><hr>
+<h2 id="12-environment-variables">12. Environment Variables</h2>
+<p>สร้างไฟล์ <code>.env</code> (ห้าม commit ขึ้น git):</p>
+<pre><code class="language-env"><div class="code-frame"><span class="visually-hidden">ภาษา env</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-env"># App
+APP_NAME=ScamGuard API
+APP_VERSION=0.1.0
+DEBUG=true
+
+# Database (PostgreSQL)
+DATABASE_URL=postgresql+asyncpg://scamguard:password@localhost:5432/scamguard_db
+
+# JWT
+JWT_SECRET_KEY=your-super-secret-key-change-in-production
+JWT_ALGORITHM=HS256
+JWT_ACCESS_TOKEN_EXPIRE_MINUTES=60
+
+# Redis
+REDIS_URL=redis://localhost:6379/0
+
+# Storage
+STORAGE_BACKEND=local
+LOCAL_UPLOAD_DIR=./uploads
+
+# AI Model
+ONNX_MODEL_PATH=../model/segformer/work_dirs/latest.onnx
+
+# Rate Limit (tiered per minute — มติ DOC-02)
+RATE_LIMIT_GUEST_PER_MINUTE=10
+RATE_LIMIT_USER_PER_MINUTE=60
+RATE_LIMIT_ADMIN_PER_MINUTE=300
+RATE_LIMIT_SCAN_CREATE_PER_MINUTE=5
+</code></pre></div></code></pre>
+<hr>
+<h2 id="13-คำสั่งเริ่มต้นใช้งาน">13. คำสั่งเริ่มต้นใช้งาน</h2>
+<h3 id="ด้วย-docker-compose-แนะนำ">ด้วย Docker Compose (แนะนำ)</h3>
+<pre><code class="language-bash"><div class="code-frame"><span class="visually-hidden">ภาษา bash</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-bash"><span class="hljs-comment"># สร้าง docker-compose.yml ที่มี PostgreSQL + Redis + API</span>
+docker compose up -d
+
+<span class="hljs-comment"># ดู logs</span>
+docker compose logs -f api
+</code></pre></div></code></pre>
+<h3 id="ด้วย-manual-สำหรับ-dev">ด้วย Manual (สำหรับ Dev)</h3>
+<pre><code class="language-bash"><div class="code-frame"><span class="visually-hidden">ภาษา bash</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-bash"><span class="hljs-comment"># 1. ติดตั้ง PostgreSQL + Redis ในเครื่อง (หรือใช้ Docker แค่ DB)</span>
+docker run -d --name scamguard-db \
+  -e POSTGRES_USER=scamguard \
+  -e POSTGRES_PASSWORD=password \
+  -e POSTGRES_DB=scamguard_db \
+  -p 5432:5432 postgres:16
+
+docker run -d --name scamguard-redis \
+  -p 6379:6379 redis:7-alpine
+
+<span class="hljs-comment"># 2. Activate venv + install</span>
+<span class="hljs-built_in">cd</span> /home/panuwat/project/server
+<span class="hljs-built_in">source</span> venv/bin/activate
+pip install -r requirements.txt
+
+<span class="hljs-comment"># 3. Run DB migrations</span>
+alembic upgrade <span class="hljs-built_in">head</span>
+
+<span class="hljs-comment"># 4. Start server</span>
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+<span class="hljs-comment"># 5. เปิด Swagger UI</span>
+<span class="hljs-comment"># -&gt; http://localhost:8000/docs</span>
+</code></pre></div></code></pre>
+</div></main>
+    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้"><p class="toc-title">ในหน้านี้</p><ol class="toc"><li class="toc-level-2"><a href="#%E0%B9%82%E0%B8%84%E0%B8%A3%E0%B8%87%E0%B8%87%E0%B8%B2%E0%B8%99-%E0%B9%81%E0%B8%AD%E0%B8%9B%E0%B8%95%E0%B8%A3%E0%B8%A7%E0%B8%88%E0%B8%AA%E0%B8%AD%E0%B8%9A%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%95%E0%B8%B1%E0%B8%94%E0%B8%95%E0%B9%88%E0%B8%AD%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%96%E0%B8%B9%E0%B8%81%E0%B8%99%E0%B8%B3%E0%B8%A1%E0%B8%B2%E0%B8%AB%E0%B8%A5%E0%B8%AD%E0%B8%81%E0%B8%A5%E0%B8%A7%E0%B8%87-scam-image-detection">โครงงาน: แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง (Scam Image Detection)</a></li><li class="toc-level-3"><a href="#%E0%B9%80%E0%B8%AD%E0%B8%81%E0%B8%AA%E0%B8%B2%E0%B8%A3%E0%B8%AD%E0%B8%AD%E0%B8%81%E0%B9%81%E0%B8%9A%E0%B8%9A%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%95%E0%B9%89%E0%B8%AD%E0%B8%87%E0%B8%AD%E0%B9%88%E0%B8%B2%E0%B8%99%E0%B8%81%E0%B9%88%E0%B8%AD%E0%B8%99%E0%B9%80%E0%B8%A3%E0%B8%B4%E0%B9%88%E0%B8%A1">เอกสารออกแบบที่ต้องอ่านก่อนเริ่ม</a></li><li class="toc-level-2"><a href="#%E0%B8%AA%E0%B8%B2%E0%B8%A3%E0%B8%9A%E0%B8%B1%E0%B8%8D">สารบัญ</a></li><li class="toc-level-2"><a href="#1-%E0%B9%82%E0%B8%84%E0%B8%A3%E0%B8%87%E0%B8%AA%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B9%82%E0%B8%9F%E0%B8%A5%E0%B9%80%E0%B8%94%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%95%E0%B9%89%E0%B8%AD%E0%B8%87%E0%B8%AA%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%87">1. โครงสร้างโฟลเดอร์ที่ต้องสร้าง</a></li><li class="toc-level-2"><a href="#2-%E0%B8%A5%E0%B8%B3%E0%B8%94%E0%B8%B1%E0%B8%9A%E0%B8%82%E0%B8%B1%E0%B9%89%E0%B8%99%E0%B8%95%E0%B8%AD%E0%B8%99%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9E%E0%B8%B1%E0%B8%92%E0%B8%99%E0%B8%B2-roadmap">2. ลำดับขั้นตอนการพัฒนา (Roadmap)</a></li><li class="toc-level-2"><a href="#3-phase-1-foundation-%E0%B8%90%E0%B8%B2%E0%B8%99%E0%B8%A3%E0%B8%B2%E0%B8%81%E0%B8%82%E0%B8%AD%E0%B8%87-server">3. Phase 1 - Foundation: ฐานรากของ Server</a></li><li class="toc-level-3"><a href="#3-1-%E0%B8%AA%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B9%82%E0%B8%84%E0%B8%A3%E0%B8%87%E0%B8%AA%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B9%82%E0%B8%9F%E0%B8%A5%E0%B9%80%E0%B8%94%E0%B8%AD%E0%B8%A3%E0%B9%8C">3.1 สร้างโครงสร้างโฟลเดอร์</a></li><li class="toc-level-3"><a href="#3-2-%E0%B8%AA%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B9%84%E0%B8%9F%E0%B8%A5%E0%B9%8C-app-core-config-py">3.2 สร้างไฟล์ app/core/config.py</a></li><li class="toc-level-3"><a href="#3-3-%E0%B8%AA%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B9%84%E0%B8%9F%E0%B8%A5%E0%B9%8C-app-core-database-py">3.3 สร้างไฟล์ app/core/database.py</a></li><li class="toc-level-3"><a href="#3-4-%E0%B8%AA%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B9%84%E0%B8%9F%E0%B8%A5%E0%B9%8C-app-main-py">3.4 สร้างไฟล์ app/main.py</a></li><li class="toc-level-3"><a href="#3-5-%E0%B8%AA%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B9%84%E0%B8%9F%E0%B8%A5%E0%B9%8C-app-api-router-py">3.5 สร้างไฟล์ app/api/router.py</a></li><li class="toc-level-3"><a href="#3-6-%E0%B8%97%E0%B8%94%E0%B8%AA%E0%B8%AD%E0%B8%9A%E0%B8%A3%E0%B8%B1%E0%B8%99">3.6 ทดสอบรัน</a></li><li class="toc-level-2"><a href="#4-phase-2-auth-%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A%E0%B8%A2%E0%B8%B7%E0%B8%99%E0%B8%A2%E0%B8%B1%E0%B8%99%E0%B8%95%E0%B8%B1%E0%B8%A7%E0%B8%95%E0%B8%99">4. Phase 2 - Auth: ระบบยืนยันตัวตน</a></li><li class="toc-level-3"><a href="#4-1-orm-model-app-models-user-py">4.1 ORM Model - app/models/user.py</a></li><li class="toc-level-3"><a href="#4-2-security-app-core-security-py">4.2 Security - app/core/security.py</a></li><li class="toc-level-3"><a href="#4-3-pydantic-schemas-app-schemas-auth-py">4.3 Pydantic Schemas - app/schemas/auth.py</a></li><li class="toc-level-3"><a href="#4-4-api-route-app-api-v1-auth-py">4.4 API Route - app/api/v1/auth.py</a></li><li class="toc-level-2"><a href="#5-phase-3-scan-%E0%B8%97%E0%B9%88%E0%B8%AD%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%A1%E0%B8%A7%E0%B8%A5%E0%B8%9C%E0%B8%A5%E0%B8%A0%E0%B8%B2%E0%B8%9E">5. Phase 3 - Scan: ท่อประมวลผลภาพ</a></li><li class="toc-level-3"><a href="#5-1-orm-model-app-models-scan-py">5.1 ORM Model - app/models/scan.py</a></li><li class="toc-level-3"><a href="#5-2-risk-calculator">5.2 Risk Calculator</a></li><li class="toc-level-3"><a href="#5-3-scan-service-app-services-scan-service-py">5.3 Scan Service - app/services/scan_service.py</a></li><li class="toc-level-3"><a href="#5-4-api-route-app-api-v1-scan-py">5.4 API Route - app/api/v1/scan.py</a></li><li class="toc-level-2"><a href="#6-phase-4-ai-inference-%E0%B9%80%E0%B8%8A%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%A1%E0%B8%95%E0%B9%88%E0%B8%AD%E0%B9%82%E0%B8%A1%E0%B9%80%E0%B8%94%E0%B8%A5">6. Phase 4 - AI Inference: เชื่อมต่อโมเดล</a></li><li class="toc-level-3"><a href="#6-1-onnx-runtime-service-app-services-inference-service-py">6.1 ONNX Runtime Service - app/services/inference_service.py</a></li><li class="toc-level-3"><a href="#6-2-%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%95%E0%B8%A3%E0%B8%B5%E0%B8%A2%E0%B8%A1%E0%B9%84%E0%B8%9F%E0%B8%A5%E0%B9%8C-onnx">6.2 การเตรียมไฟล์ ONNX</a></li><li class="toc-level-2"><a href="#7-phase-5-report-admin">7. Phase 5 - Report &amp; Admin</a></li><li class="toc-level-3"><a href="#7-1-orm-models">7.1 ORM Models</a></li><li class="toc-level-3"><a href="#7-2-api-routes">7.2 API Routes</a></li><li class="toc-level-2"><a href="#8-phase-6-cache-storage-polish">8. Phase 6 - Cache, Storage &amp; Polish</a></li><li class="toc-level-3"><a href="#8-1-redis-cache-%E0%B8%AD%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B8%AD%E0%B8%B4%E0%B8%87-design-server-md-section-2-2-5">8.1 Redis Cache (อ้างอิง design/server.md Section 2.2.5)</a></li><li class="toc-level-3"><a href="#8-2-local-file-storage-code-v1">8.2 Local File Storage (code v1)</a></li><li class="toc-level-3"><a href="#8-3-rate-limiting-%E0%B8%AD%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B8%AD%E0%B8%B4%E0%B8%87-design-server-md-section-6">8.3 Rate Limiting (อ้างอิง design/server.md Section 6)</a></li><li class="toc-level-3"><a href="#8-4-input-validation-%E0%B8%AD%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B8%AD%E0%B8%B4%E0%B8%87-design-server-md-section-6">8.4 Input Validation (อ้างอิง design/server.md Section 6)</a></li><li class="toc-level-3"><a href="#8-5-graceful-degradation">8.5 Graceful Degradation</a></li><li class="toc-level-2"><a href="#9-dependencies-%E0%B8%97%E0%B8%B1%E0%B9%89%E0%B8%87%E0%B8%AB%E0%B8%A1%E0%B8%94">9. Dependencies ทั้งหมด</a></li><li class="toc-level-3"><a href="#requirements-txt">requirements.txt</a></li><li class="toc-level-3"><a href="#%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%95%E0%B8%B4%E0%B8%94%E0%B8%95%E0%B8%B1%E0%B9%89%E0%B8%87">การติดตั้ง</a></li><li class="toc-level-2"><a href="#10-api-endpoints-%E0%B8%AA%E0%B8%A3%E0%B8%B8%E0%B8%9B%E0%B8%A3%E0%B8%A7%E0%B8%A1">10. API Endpoints สรุปรวม</a></li><li class="toc-level-2"><a href="#11-database-schema-%E0%B8%AA%E0%B8%A3%E0%B8%B8%E0%B8%9B%E0%B8%A3%E0%B8%A7%E0%B8%A1">11. Database Schema สรุปรวม</a></li><li class="toc-level-2"><a href="#12-environment-variables">12. Environment Variables</a></li><li class="toc-level-2"><a href="#13-%E0%B8%84%E0%B8%B3%E0%B8%AA%E0%B8%B1%E0%B9%88%E0%B8%87%E0%B9%80%E0%B8%A3%E0%B8%B4%E0%B9%88%E0%B8%A1%E0%B8%95%E0%B9%89%E0%B8%99%E0%B9%83%E0%B8%8A%E0%B9%89%E0%B8%87%E0%B8%B2%E0%B8%99">13. คำสั่งเริ่มต้นใช้งาน</a></li><li class="toc-level-3"><a href="#%E0%B8%94%E0%B9%89%E0%B8%A7%E0%B8%A2-docker-compose-%E0%B9%81%E0%B8%99%E0%B8%B0%E0%B8%99%E0%B8%B3">ด้วย Docker Compose (แนะนำ)</a></li><li class="toc-level-3"><a href="#%E0%B8%94%E0%B9%89%E0%B8%A7%E0%B8%A2-manual-%E0%B8%AA%E0%B8%B3%E0%B8%AB%E0%B8%A3%E0%B8%B1%E0%B8%9A-dev">ด้วย Manual (สำหรับ Dev)</a></li></ol></aside>
+  </div>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title"><div class="search-dialog-head"><label class="visually-hidden" id="search-title" for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…" autocomplete="off" data-search-input><button class="control" type="button" data-search-close aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div class="search-results" data-search-results aria-live="polite"></div></dialog>
+  <script src="../../assets/js/search-index.js"></script>
+  <script src="../../assets/js/site.js"></script>
+</body>
+</html>

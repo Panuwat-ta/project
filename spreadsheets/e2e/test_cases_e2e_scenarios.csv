@@ -1,0 +1,11 @@
+Scenario ID,Journey Name,Source System,Intermediate Systems,Target System,Priority
+TC-E2E-SCAN-01,Full User Scam Detection Journey,Mobile (Flutter),"FastAPI, Redis, SegFormer, Surya OCR, Qwen2.5",Mobile Result Screen,P0 (Blocker)
+TC-E2E-CACHE-02,High-Speed Cache Hit Workflow,Mobile / API Client,FastAPI + Redis (SHA-256 Hash Cache),Client (Bypass AI),P0 (Blocker)
+TC-E2E-REPORT-03,User Incident Reporting to Admin Review,Mobile (User),FastAPI + PostgreSQL (scam_reports table),Admin Forensic Console,P1 (High)
+TC-E2E-MODEL-04,AI Model Deployment to Live Inference,Admin Portal,"FastAPI, Model Versions, AI Worker",Mobile Scan Engine,P1 (High)
+TC-E2E-BAN-05,Malicious Actor Ban and Session Revocation,Admin Portal,"FastAPI, DB Users, Mobile Dio Interceptor",Mobile Client Screen,P1 (High)
+TC-E2E-OFFLINE-06,Offline Storage and Reconnection Sync,Mobile Client,Local Cache (History/Result Local DataSource),FastAPI Backend,P2 (Medium)
+TC-E2E-FULL-07,Full Lifecycle Register to Audit Verification,Mobile (Flutter),"FastAPI, PostgreSQL (scans, scam_reports, audit_log), Admin Portal",Audit Logs Screen,P1 (High)
+TC-E2E-AUTH-08,Mid Journey Access Expiry With Refresh Resume,Mobile (Flutter),"FastAPI, Dio AuthInterceptor, Secure Storage",Mobile History and Scan Screen,P1 (High)
+TC-E2E-REG-09,Post Deploy Scan Regression Stability,Admin Portal,"FastAPI, Model Versions, AI Worker",Mobile Scan Engine,P1 (High)
+TC-E2E-HIST-10,History Delete Then Detail Not Found,Mobile (Flutter),"FastAPI, PostgreSQL (scans), Local Uploads",Mobile History Screen,P2 (Medium)

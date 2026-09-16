@@ -75,4 +75,4 @@
 
 ## 4. ความเชื่อมโยงไปยังชุดกรณีทดสอบจริง
 - **เอกสารกรณีทดสอบละเอียด**: `tests_all/manual_tests/test_cases_ai_model.md`
-- **ตารางความสอดคล้องความต้องการ**: `tests_all/rtm.md` (หมวดหมู่ FR-SYS-02, FR-SYS-05 ถึง FR-SYS-09, FR-SYS-11 [wiki baseline → Document FR-XAI-01 AC-1], หมวด NFR-01..09 ของ SRS ตาม Document 05 §3)
+- **ตารางความสอดคล้องความต้องการ**: `tests_all/rtm.md` (canonical Document IDs: FR-ANALYSIS-01..04, FR-XAI-01 และ NFR-01..09 ตาม Document 05 §2–3)

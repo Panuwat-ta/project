@@ -19,7 +19,7 @@
    - การออก JWT Token (Access Token และ Refresh Token)
    - การตรวจสอบสิทธิ์แยกบทบาท Admin จากตาราง admins แบบบังคับ is_superadmin กับ User จากตาราง users
 2. **Scan & Upload Pipeline**:
-   - `POST /api/v1/scan/` รองรับ Multipart/form-data พารามิเตอร์ file+title และ `GET /api/v1/scan/{id}` สำหรับดึงผลหรือ Poll สถานะ
+   - `POST /api/v1/scan/` รองรับ Multipart/form-data พารามิเตอร์ file+title และ `GET /api/v1/scan/{scan_id}` สำหรับดึงผลหรือ Poll สถานะ
     - การตรวจสอบขนาดไฟล์ (Server ปฏิเสธเกิน 20MB ด้วย HTTP 413 และปฏิเสธภาพเกิน 100M px ฝั่ง Mobile มีตัวชี้วัด isValidSize 10MB แต่ usecase ไม่ปฏิเสธให้ compress ต่อ) และ Magic Bytes (JPEG/PNG/WebP)
    - การคำนวณ SHA-256 Hash เพื่อทำ Redis Caching TTL 30 วัน
    - การสร้างงานส่งต่อไปยัง AI Subprocess Pipeline
@@ -45,7 +45,7 @@
 
 ### 1.3 หมายเหตุ GAP ที่ห้ามเขียนแผนเทสของสิ่งที่ไม่มี
 - เส้นทาง POST /api/v1/scan/upload ไม่มีอยู่จริง ต้องใช้ POST /api/v1/scan/ เท่านั้น
-- เส้นทาง DELETE /api/v1/scan/{id} ไม่มีอยู่จริง มีเฉพาะ DELETE /api/v1/history/{id}
+- เส้นทาง `DELETE /api/v1/scan/{scan_id}` ไม่มีอยู่จริง มีเฉพาะ `DELETE /api/v1/history/{scan_id}`
 - ชุดค่า category keys ฝั่ง Mobile กับ Backend ไม่ตรงกัน ให้ mark เป็น GAP
 
 ---

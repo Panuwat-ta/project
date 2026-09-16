@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="th" data-theme="light" data-theme-mode="system">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Use Case Diagram Use cases ผูกกับ canonical FR IDs จาก SRS โดยตรง คำอธิบาย Use Cases Use case Actor Canonical requirements พฤติกรรมปัจจุบัน :--- :--- :--- :--- Authentication General User FR…">
+  <meta name="color-scheme" content="light dark">
+  <title>Use Case Diagram | ScamGuard Documentation</title>
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <script>(()=>{let m='system';try{m=localStorage.getItem('scamguard-docs-theme')||'system'}catch(e){}if(!['system','light','dark'].includes(m))m='system';const t=m==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;document.documentElement.dataset.themeMode=m;document.documentElement.dataset.theme=t})();window.SC_DOCS_ROOT='../../';</script>
+</head>
+<body class="">
+  <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
+  <header class="masthead"><div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><nav class="top-tabs" aria-label="เมนูหลัก"><a href="../../index.html">Guide</a><a href="../../pages/architecture/system-architecture.html">Architecture</a><a href="../../pages/architecture/backend-api.html">API Reference</a></nav></div></header>
+  <div class="docs-shell">
+    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><div class="sidebar-head"><a class="sidebar-brand" href="../../index.html" aria-label="ScamGuard Documentation"><span class="brand brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z"/><path d="m9.2 12 1.8 1.8 3.9-4.2"/></svg></span><span class="sidebar-brand-name">ScamGuard Docs</span></a><div class="theme-switcher" role="group" aria-label="ธีมเว็บไซต์"><button type="button" data-theme-option="system" aria-label="ใช้ธีมตามระบบ" title="System"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></button><button type="button" data-theme-option="light" aria-label="ใช้โหมดสว่าง" title="Light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></button><button type="button" data-theme-option="dark" aria-label="ใช้โหมดมืด" title="Dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8 8 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/></svg></button></div></div><button class="control nav-close" type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button><button class="sidebar-search" type="button" data-search-open><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search...</span><kbd>Ctrl K</kbd></button><div class="sidebar-scroll"><details class="sidebar-group" ><summary>ภาพรวม</summary><ul class="sidebar-list"><li><a href="../overview.html" >ภาพรวมโปรเจค</a></li><li><a href="../index.html" >สารบัญ Wiki — โปรเจค Scam Image Detection</a></li></ul></details><details class="sidebar-group" open><summary>ความต้องการระบบ</summary><ul class="sidebar-list"><li><a href="functional-requirements.html" >ความต้องการเชิงฟังก์ชัน (Functional Requirements)</a></li><li><a href="non-functional-requirements.html" >ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements)</a></li><li><a href="traceability-matrix.html" >เมทริกซ์การสืบย้อนความต้องการ</a></li><li><a href="objectives-kpis.html" >วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp; KPIs)</a></li><li><a href="srs.html" >Software Requirements Specification (SRS)</a></li><li><a href="use-case-diagram.html" aria-current="page">Use Case Diagram</a></li></ul></details><details class="sidebar-group" ><summary>สถาปัตยกรรม</summary><ul class="sidebar-list"><li><a href="../architecture/database-migrations.html" >การจัดการการย้ายฐานข้อมูล (Database Migrations)</a></li><li><a href="../architecture/external-integrations.html" >การเชื่อมต่อบริการภายนอก (External Integrations)</a></li><li><a href="../architecture/database-schema.html" >โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li><li><a href="../architecture/system-architecture.html" >สถาปัตยกรรมระบบ (System Architecture)</a></li><li><a href="../architecture/admin-portal.html" >สถาปัตยกรรมและการออกแบบ Admin Portal</a></li><li><a href="../architecture/mobile-app.html" >สถาปัตยกรรม Mobile App</a></li><li><a href="../architecture/ai-inference-service.html" >AI Inference Service</a></li><li><a href="../architecture/backend-api.html" >Backend API — FastAPI Orchestrator</a></li><li><a href="../architecture/c1-system-context-diagram.html" >C1 System Context Diagram</a></li><li><a href="../architecture/c2-container-diagram.html" >C2 Container Diagram</a></li><li><a href="../architecture/c3-component-diagram.html" >C3 Component Diagram - API Application</a></li><li><a href="../architecture/c4-code-diagram.html" >C4 Code Diagram - Image Scanning Flow</a></li><li><a href="../architecture/database-er-diagram.html" >Entity Relationship Diagram (ER Diagram)</a></li><li><a href="../architecture/mobile-design.html" >Mobile App Architecture</a></li><li><a href="../architecture/flowchart.html" >System Flowchart</a></li><li><a href="../architecture/design-overview.html" >UX/UI &amp; System Design Overview</a></li></ul></details><details class="sidebar-group" ><summary>แนวคิดและเทคนิค</summary><ul class="sidebar-list"><li><a href="../concepts/risk-scoring.html" >การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li><li><a href="../concepts/multi-layer-analysis.html" >การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li><li><a href="../concepts/explainable-ai.html" >ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li><li><a href="../concepts/configs.html" >พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li><li><a href="../concepts/ai-model-segformer.html" >โมเดล AI — SegFormer</a></li><li><a href="../concepts/surya-ocr.html" >โมเดล AI — Surya OCR</a></li><li><a href="../concepts/model-training.html" >AI Model Training Workflow</a></li><li><a href="../concepts/mmsegmentation.html" >MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li><li><a href="../concepts/semantic-segmentation.html" >Semantic Segmentation</a></li></ul></details><details class="sidebar-group" ><summary>องค์ประกอบระบบ</summary><ul class="sidebar-list"><li><a href="../entities/tech-stack.html" >เทคโนโลยีที่ใช้ (Technology Stack)</a></li><li><a href="../entities/actors.html" >ผู้ใช้ระบบ (Actors)</a></li></ul></details><details class="sidebar-group" ><summary>การตัดสินใจ</summary><ul class="sidebar-list"><li><a href="../decisions/technology-choices.html" >การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li></ul></details><details class="sidebar-group" ><summary>การวางแผน</summary><ul class="sidebar-list"><li><a href="../planning/task-tracking.html" >การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a></li><li><a href="../planning/project-scope.html" >ขอบเขตโครงการ (Project Scope)</a></li><li><a href="../planning/team.html" >ทีมงานและผู้รับผิดชอบ (Team)</a></li><li><a href="../planning/backend-documentation.html" >Backend Documentation</a></li></ul></details><details class="sidebar-group" ><summary>การทดสอบ</summary><ul class="sidebar-list"><li><a href="../testing/test-cases.html" >กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li></ul></details><details class="sidebar-group" ><summary>คู่มือและภาคผนวก</summary><ul class="sidebar-list"><li><a href="../log.html" >บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li><li><a href="../howto.html" >วิธีใช้งาน Wiki (How to Use This Wiki)</a></li><li><a href="../runbook.html" >Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li><li><a href="../AGENTS.html" >Wiki Operating Guide</a></li></ul></details></div></aside><div class="nav-backdrop" data-nav-backdrop></div>
+    <main class="article" id="main-content"><nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span aria-hidden="true">/</span><span>ความต้องการระบบ</span></nav><header class="article-header"><h1>Use Case Diagram</h1><p class="article-lead">Use cases ผูกกับ canonical FR IDs จาก SRS โดยตรง</p><div class="meta"><span>หมวด ความต้องการระบบ</span><time datetime="2026-09-16">อัปเดต 2026-09-16</time><span>ต้นฉบับ requirements/use-case-diagram.md</span></div><div class="tags"><span class="tag">requirements</span><span class="tag">use-case</span><span class="tag">diagram</span><span class="tag">canonical</span></div></header><div class="prose"><h1 id="use-case-diagram">Use Case Diagram</h1>
+<p>Use cases ผูกกับ canonical FR IDs จาก SRS โดยตรง</p>
+<figure class="diagram-frame"><div class="diagram-toolbar"><span>แผนภาพ 2</span><button class="control" type="button" data-diagram-expand>ดูขนาดใหญ่</button></div><img src="../../assets/diagrams/requirements-use-case-diagram-2.svg" alt="แผนภาพจาก Use Case Diagram" loading="lazy"><details class="diagram-source"><summary>ดู Mermaid source</summary><pre><code>flowchart LR
+    classDef actorFill fill:#fff2cc,stroke:#d6b656,color:black
+    classDef ucFill fill:#dae8fc,stroke:#6c8ebf,color:black
+    classDef extFill fill:#f5f5f5,stroke:#666666,color:black
+
+    User(&quot;General User&lt;br&gt;[Actor]&quot;)
+    Admin(&quot;Admin&lt;br&gt;[Actor]&quot;)
+
+    subgraph SystemBoundary [Scam Image Detection System]
+        direction TB
+        UCAUTH(&quot;Authentication&lt;br&gt;FR-AUTH-01..04&quot;)
+        UCSCAN(&quot;Select, crop, upload, poll&lt;br&gt;FR-SCAN-01..03&quot;)
+        UCANALYZE(&quot;Textual / Visual / Source / Risk&lt;br&gt;FR-ANALYSIS-01..04&quot;)
+        UCXAI(&quot;View result &amp; Heatmap&lt;br&gt;FR-XAI-01&quot;)
+        UCHISTORY(&quot;History &amp; scam report&lt;br&gt;FR-HISTORY-01..02&quot;)
+        UCPDPA(&quot;Consent management&lt;br&gt;FR-PDPA-01&quot;)
+        UCADMIN(&quot;Dashboard, moderation, model, audit&lt;br&gt;FR-ADMIN-01..04&quot;)
+    end
+
+    GoogleVision(&quot;Google Vision API&lt;br&gt;[optional source analysis]&quot;)
+
+    User --&gt; UCAUTH
+    User --&gt; UCSCAN
+    User --&gt; UCXAI
+    User --&gt; UCHISTORY
+    User --&gt; UCPDPA
+    Admin --&gt; UCADMIN
+
+    UCSCAN -. &quot; &lt;&lt;include&gt;&gt; &quot; .-&gt; UCANALYZE
+    UCXAI -. &quot; &lt;&lt;include&gt;&gt; &quot; .-&gt; UCANALYZE
+    UCANALYZE --&gt; GoogleVision
+
+    class User,Admin actorFill
+    class UCAUTH,UCSCAN,UCANALYZE,UCXAI,UCHISTORY,UCPDPA,UCADMIN ucFill
+    class GoogleVision extFill
+</code></pre></details><dialog aria-label="แผนภาพขนาดใหญ่"><div class="diagram-expanded-head"><button class="control" type="button" data-diagram-zoom="out">ย่อ</button><span class="zoom-status" data-zoom-status>100%</span><button class="control" type="button" data-diagram-zoom="in">ขยาย</button><button class="control" type="button" data-diagram-close>ปิด</button></div><div class="diagram-pan" data-diagram-pan data-zoom="1" tabindex="0" aria-label="พื้นที่แผนภาพ เลื่อนได้ทั้งแนวตั้งและแนวนอน"><img src="../../assets/diagrams/requirements-use-case-diagram-2.svg" alt="แผนภาพจาก Use Case Diagram"></div></dialog></figure><h2 id="คำอธิบาย-use-cases">คำอธิบาย Use Cases</h2>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">Use case</th>
+<th style="text-align:left">Actor</th>
+<th style="text-align:left">Canonical requirements</th>
+<th style="text-align:left">พฤติกรรมปัจจุบัน</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Authentication</td>
+<td style="text-align:left">General User</td>
+<td style="text-align:left">FR-AUTH-01..04</td>
+<td style="text-align:left">Email/Password + JWT; consent ส่งใน register body; code v1 ไม่มี OAuth</td>
+</tr>
+<tr>
+<td style="text-align:left">Select, crop, upload</td>
+<td style="text-align:left">General User</td>
+<td style="text-align:left">FR-SCAN-01..02</td>
+<td style="text-align:left">Gallery, crop, <code>POST /api/v1/scan/</code></td>
+</tr>
+<tr>
+<td style="text-align:left">Wait for result</td>
+<td style="text-align:left">General User</td>
+<td style="text-align:left">FR-SCAN-03</td>
+<td style="text-align:left">Mobile poll <code>GET /api/v1/scan/{scan_id}</code> ทุก 3 วินาที; ไม่มี Mobile WebSocket client</td>
+</tr>
+<tr>
+<td style="text-align:left">Analyze image</td>
+<td style="text-align:left">System</td>
+<td style="text-align:left">FR-ANALYSIS-01..04</td>
+<td style="text-align:left">Textual, Visual และ Source ร่วมคำนวณ; EXIF แสดงผลเท่านั้น</td>
+</tr>
+<tr>
+<td style="text-align:left">View explainable result</td>
+<td style="text-align:left">General User</td>
+<td style="text-align:left">FR-XAI-01</td>
+<td style="text-align:left">Risk badge เขียว/amber/แดง, Breakdown 3 มิติ และ Heatmap</td>
+</tr>
+<tr>
+<td style="text-align:left">History &amp; report</td>
+<td style="text-align:left">General User</td>
+<td style="text-align:left">FR-HISTORY-01..02</td>
+<td style="text-align:left">ดู/ลบประวัติและส่ง Scam Report</td>
+</tr>
+<tr>
+<td style="text-align:left">Consent</td>
+<td style="text-align:left">General User</td>
+<td style="text-align:left">FR-PDPA-01</td>
+<td style="text-align:left">บันทึก <code>system_consent</code>/<code>research_consent</code> ใน <code>consent_logs</code></td>
+</tr>
+<tr>
+<td style="text-align:left">Admin operations</td>
+<td style="text-align:left">Admin</td>
+<td style="text-align:left">FR-ADMIN-01..04</td>
+<td style="text-align:left">บัญชี <code>admins</code> แยกจาก <code>users</code>; Dashboard, Report Queue, Model, Audit</td>
+</tr>
+</tbody>
+</table></div><h2 id="ประเด็นสำคัญ">ประเด็นสำคัญ</h2>
+<ul>
+<li>แผนภาพนี้ไม่ออก requirement IDs ใหม่</li>
+<li>FCM และ Social Login ไม่อยู่ใน implemented v1 use cases</li>
+<li>Admin authentication และ Mobile authentication ใช้คนละตาราง/คนละ session flow</li>
+</ul>
+<h2 id="หน้าที่เกี่ยวข้อง">หน้าที่เกี่ยวข้อง</h2>
+<ul>
+<li><a href="functional-requirements.html">requirements/functional-requirements</a></li>
+<li><a href="traceability-matrix.html">requirements/traceability-matrix</a></li>
+<li><a href="srs.html">requirements/srs</a></li>
+<li><a href="../entities/actors.html">entities/actors</a></li>
+<li><a href="../architecture/mobile-app.html">architecture/mobile-app</a></li>
+<li><a href="../architecture/backend-api.html">architecture/backend-api</a></li>
+</ul>
+</div></main>
+    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้"><p class="toc-title">ในหน้านี้</p><ol class="toc"><li class="toc-level-2"><a href="#%E0%B8%84%E0%B8%B3%E0%B8%AD%E0%B8%98%E0%B8%B4%E0%B8%9A%E0%B8%B2%E0%B8%A2-use-cases">คำอธิบาย Use Cases</a></li><li class="toc-level-2"><a href="#%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%94%E0%B9%87%E0%B8%99%E0%B8%AA%E0%B8%B3%E0%B8%84%E0%B8%B1%E0%B8%8D">ประเด็นสำคัญ</a></li><li class="toc-level-2"><a href="#%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%87">หน้าที่เกี่ยวข้อง</a></li></ol></aside>
+  </div>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title"><div class="search-dialog-head"><label class="visually-hidden" id="search-title" for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…" autocomplete="off" data-search-input><button class="control" type="button" data-search-close aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div class="search-results" data-search-results aria-live="polite"></div></dialog>
+  <script src="../../assets/js/search-index.js"></script>
+  <script src="../../assets/js/site.js"></script>
+</body>
+</html>

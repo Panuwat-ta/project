@@ -23,7 +23,7 @@ flowchart TD
         ReportForm[หน้ารายงานสแกม]
     end
 
-    subgraph AdminPortal [Admin Web Portal - React.js]
+    subgraph AdminPortal [Admin Web Portal - React 19 + Vite 8 + Tailwind CSS v4]
         Admin[ผู้ดูแลระบบ]
         Dashboard[Dashboard]
         ReportQueue[คิวรายงาน]
@@ -40,7 +40,7 @@ flowchart TD
     subgraph Storage [Data Layer]
         DB[(PostgreSQL)]
         Cache[(Redis)]
-        ObjStore[(Cloud Storage)]
+        ObjStore[(Local uploads directory)]
     end
 
     User --> ReportForm
@@ -64,15 +64,15 @@ flowchart TD
 
 ## 2. บทบาทและสิทธิ์การเข้าถึง (Roles & Permissions)
 
-ระบบแบ่งสิทธิ์ผู้ใช้ตาม Role-Based Access Control (RBAC) ผ่าน JWT Claims โดยมี 3 ระดับ:
+code v1 แยก identity store เป็น 2 กลุ่ม: ผู้ใช้ Mobile อยู่ใน `users` และผู้ดูแล Portal อยู่ใน `admins` พร้อม session แยกใน `admin_sessions`:
 
 | บทบาท | คำอธิบาย | สิทธิ์การเข้าถึง |
 |:---|:---|:---|
 | `user` | ผู้ใช้งานทั่วไป | สแกนภาพ, ดูประวัติตนเอง, ส่งรายงานสแกม, จัดการ Consent |
 | `researcher` | นักวิจัย/ทีมพัฒนา | สิทธิ์ `user` ทั้งหมด + เข้าถึง Anonymized Dataset สำหรับพัฒนาโมเดล AI |
-| `admin` | ผู้ดูแลระบบ | สิทธิ์ทั้งหมด + Dashboard, ตรวจสอบรายงานสแกม, จัดการผู้ใช้, อัปเดตโมเดล AI, Export Dataset |
+| `admin` | ผู้ดูแลระบบในตาราง `admins` | Dashboard, ตรวจสอบรายงานสแกม, จัดการผู้ใช้, อัปเดตโมเดล AI, Export Dataset; endpoint ใต้ `/admin/*` บังคับ `is_superadmin` |
 
-> **หมายเหตุความจริงของ code (มติ DOC-09):** บัญชีแอดมินพอร์ทัลอยู่ในตาราง `admins` แยกต่างหาก (มี `is_superadmin`, session ใน `admin_sessions`, login ผ่าน `POST /api/v1/admin/login`) ไม่ใช่ `users.role = admin` — ค่า `admin` ใน `users.role` เป็น legacy ที่ code ใช้อ่านแค่จุดเดียว (`GET /scan/{id}` ให้ดูสแกนของคนอื่นได้) ส่วน `scam_reports.moderated_by` อ้างอิง `admins(id)` ไม่ใช่ `users(id)`
+> **Canonical ตาม code v1:** `users.role` อนุญาตเฉพาะ `user` และ `researcher`; บัญชีแอดมินพอร์ทัลอยู่ใน `admins` (มี `is_superadmin`) และ `admin_sessions`, login ผ่าน `POST /api/v1/admin/login`; `scam_reports.moderated_by` อ้างอิง `admins(id)`
 
 ### 2.1 การตรวจสอบสิทธิ์ (Authorization Flow)
 
@@ -89,7 +89,8 @@ sequenceDiagram
     JWT-->>API: access_token
     API-->>Portal: {access_token, user: {role: "admin"}}
     Portal->>API: GET /api/v1/admin/dashboard (Bearer Token)
-    API->>JWT: ตรวจสอบ Token + role == "admin"
+    API->>JWT: ตรวจ claim role=admin + sid
+    API->>API: โหลด admins/admin_sessions + ตรวจ is_superadmin
     JWT-->>API: Authorized
     API-->>Portal: Dashboard Data
 ```
@@ -97,12 +98,19 @@ sequenceDiagram
 ทุก Admin Endpoint ใช้ FastAPI Dependency Injection เพื่อบังคับตรวจสอบ:
 
 ```python
-# app/api/deps.py
-async def get_current_admin(current_user: User = Depends(get_current_user)) -> User:
-    """ตรวจสอบว่าผู้ใช้ปัจจุบันเป็น Admin"""
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
-    return current_user
+# app/api/deps.py (ย่อจาก implementation)
+async def get_current_admin(token: str, db: AsyncSession) -> Admin:
+    payload = decode_access_token(token)
+    if payload is None or payload.get("role") != "admin":
+        raise HTTPException(status_code=401)
+    admin = await load_active_admin(db, payload["sub"])
+    await require_valid_admin_session(db, admin.id, payload["sid"])
+    return admin
+
+async def require_super_admin(admin: Admin = Depends(get_current_admin)) -> Admin:
+    if not admin.is_superadmin:
+        raise HTTPException(status_code=403, detail="Super Admin access required")
+    return admin
 ```
 
 ---
@@ -277,7 +285,7 @@ CREATE INDEX idx_scam_reports_created ON scam_reports(created_at DESC);
 
 ## 5. Admin API Endpoints (สำหรับผู้ดูแลระบบ)
 
-ทุก Endpoint ในหมวดนี้ต้องมี Bearer Token ที่มี `role = "admin"` ในทุกคำขอ หากไม่ใช่ Admin จะได้ HTTP 403
+ทุก endpoint ในหมวดนี้ต้องมี Bearer Token ที่มี `role = "admin"` และ `sid` ที่อ้างถึง `admin_sessions` ที่ยังใช้งานได้ จากนั้น dependency `require_super_admin` ตรวจ `admins.is_superadmin`; token ไม่ถูกต้องได้ HTTP 401 และบัญชีที่ไม่ใช่ Super Admin ได้ HTTP 403
 
 ### 5.1 Dashboard -- สถิติภาพรวมระบบ
 
@@ -500,11 +508,9 @@ Admin ตรวจสอบรายงานแล้วตัดสินใ�
 |:---|:---|:---|:---|
 | `page` | int | 1 | หน้าที่ต้องการ |
 | `limit` | int | 20 | จำนวนรายการต่อหน้า (สูงสุด 100) |
-| `role` | string | - | กรองตามบทบาท: `user`, `researcher`, `admin` |
-| `is_active` | boolean | - | กรองตามสถานะ: `true` = Active, `false` = Banned |
 | `search` | string | - | ค้นหาตาม email หรือ full_name |
-| `sort_by` | string | `created_at` | เรียงตาม: `created_at`, `email`, `role` |
-| `sort_order` | string | `desc` | ลำดับ: `asc`, `desc` |
+
+code v1 ยังไม่มี query parameter สำหรับ `role`, `is_active`, `sort_by` หรือ `sort_order`; service เรียง `created_at` จากใหม่ไปเก่า
 
 **Response (JSON - Status 200):**
 
@@ -564,21 +570,20 @@ Admin ตรวจสอบรายงานแล้วตัดสินใ�
 
 #### PATCH /api/v1/admin/users/{user_id} -- แก้ไขข้อมูลผู้ใช้
 
-ใช้สำหรับเปลี่ยน Role หรือ Ban/Unban ผู้ใช้
+ใช้สำหรับ Ban/Unban ผู้ใช้ Mobile; code v1 ไม่รองรับการเปลี่ยน role ผ่าน endpoint นี้
 
 **Request Body (JSON):**
 
 ```json
 {
-  "role": "researcher",
-  "is_active": true
+  "is_active": false,
+  "reason": "ละเมิดเงื่อนไขการใช้งาน"
 }
 ```
 
 **Validation:**
-- `role` ต้องเป็น `user`, `researcher`, หรือ `admin`
-- Admin ไม่สามารถ Ban ตัวเอง
-- Admin ไม่สามารถลดระดับ Admin คนสุดท้ายในระบบ
+- `is_active` และ `reason` เป็นฟิลด์บังคับ
+- endpoint นี้แก้เฉพาะบัญชีใน `users`; บัญชี Admin อยู่ใน `admins` จึงไม่สามารถ Ban ตัวเองผ่าน endpoint นี้
 - ทุกการเปลี่ยนแปลงจะบันทึกลง `audit_log`
 
 **Response (JSON - Status 200):**
@@ -587,16 +592,15 @@ Admin ตรวจสอบรายงานแล้วตัดสินใ�
 {
   "id": 101,
   "email": "user@example.com",
-  "role": "researcher",
-  "is_active": true,
+  "role": "user",
+  "is_active": false,
   "message": "อัปเดตข้อมูลผู้ใช้เรียบร้อยแล้ว"
 }
 ```
 
 **Side Effects:**
-1. เขียน Audit Log: `action = "user_role_changed"`, `details = "User #101 role changed from user to researcher"`
-2. หาก `is_active` เปลี่ยนเป็น `false`: เขียน Audit Log: `action = "user_banned"`, `details = "User #101 banned"`
-3. หาก `is_active` เปลี่ยนเป็น `true`: เขียน Audit Log: `action = "user_unbanned"`, `details = "User #101 unbanned"`
+1. เขียน Audit Log: `action = "update_user"` พร้อมค่า `active`
+2. บัญชี `users` คง role เดิม (`user` หรือ `researcher`)
 
 ---
 
@@ -659,7 +663,7 @@ Admin ตรวจสอบรายงานแล้วตัดสินใ�
 - ขนาดไฟล์สูงสุด 500 MB (ขีดจำกัดเชิงปฏิบัติ v1 สำหรับ ONNX artifact ผ่าน object-storage upload; ปรับได้เมื่อมี release ใหญ่กว่า)
 
 **Side Effects:**
-1. บันทึกไฟล์ลง Cloud Storage ที่ path `models/{version_tag}.onnx`
+1. บันทึกไฟล์ลง local model storage ที่ path `models/{version_tag}.onnx`
 2. สร้างแถวใหม่ในตาราง `model_versions`
 3. เขียน Audit Log: `action = "model_uploaded"`, `details = "Model v2.2.0 uploaded"`
 4. หาก `auto_deploy = true` จะสั่ง Deploy ตามขั้นตอน deploy ทันที (ดูหัวข้อถัดไป)
@@ -866,8 +870,8 @@ CREATE TABLE model_versions (
 ```mermaid
 erDiagram
     users ||--o{ scam_reports : "submits"
-    users ||--o{ scam_reports : "moderates"
-    users ||--o{ audit_log : "performs"
+    admins |o--o{ scam_reports : "moderates"
+    admins |o--o{ audit_log : "performs"
     scans ||--o{ scam_reports : "is reported in"
 
     users {
@@ -875,10 +879,18 @@ erDiagram
         string email UK
         string hashed_password
         string full_name
-        string role "user, researcher, admin"
+        string role "user, researcher"
         boolean is_active
         datetime created_at
         datetime updated_at
+    }
+
+    admins {
+        int id PK
+        string email UK
+        string hashed_password
+        boolean is_superadmin
+        boolean is_active
     }
 
     scam_reports {
@@ -1178,7 +1190,7 @@ async def deploy_model(db: AsyncSession, model_id: int, admin_id: int):
 | `PATCH` | `/api/v1/admin/reports/{id}` | อนุมัติหรือปัดตกรายงาน | Admin |
 | `GET` | `/api/v1/admin/users` | ดูรายชื่อผู้ใช้ทั้งหมด | Admin |
 | `GET` | `/api/v1/admin/users/{id}` | ดูรายละเอียดผู้ใช้ | Admin |
-| `PATCH` | `/api/v1/admin/users/{id}` | แก้ไขข้อมูลผู้ใช้ (Role, Ban) | Admin |
+| `PATCH` | `/api/v1/admin/users/{id}` | เปิด/ปิดบัญชีผู้ใช้พร้อมเหตุผล | Admin |
 | `GET` | `/api/v1/admin/models` | ดูรายการเวอร์ชันโมเดล | Admin |
 | `POST` | `/api/v1/admin/models` | อัปโหลดโมเดลใหม่ | Admin |
 | `POST` | `/api/v1/admin/models/{id}/deploy` | สั่ง Deploy โมเดล | Admin |
@@ -1192,8 +1204,8 @@ async def deploy_model(db: AsyncSession, model_id: int, admin_id: int):
 
 ### 11.1 การควบคุมการเข้าถึง
 
-- ทุก Admin Endpoint ต้องตรวจสอบ JWT Token และ `role == "admin"` ก่อนประมวลผล
-- ใช้ FastAPI Dependency Injection (`Depends(get_current_admin)`) เป็นกลไกบังคับ
+- ทุก Admin Endpoint ตรวจ JWT claim `role == "admin"`, session `sid`, บัญชีใน `admins` และ `is_superadmin` ก่อนประมวลผล
+- ใช้ FastAPI Dependency Injection (`Depends(require_super_admin)`) เป็นกลไกบังคับ
 - Admin ไม่สามารถ Ban ตัวเอง หรือลดสิทธิ์ Admin คนสุดท้ายในระบบ
 
 ### 11.2 Rate Limiting (canonical ตรงกับ `server/app/core/config.py` — guest 10 / user 60 / admin 300 / POST scan 5 ต่อนาที, key ตาม IP)
@@ -1205,7 +1217,7 @@ async def deploy_model(db: AsyncSession, model_id: int, admin_id: int):
 
 - ข้อมูลส่วนบุคคลของผู้รายงาน (email, full_name) ต้องถูกลบออกจาก Dataset ที่ Export (Anonymization)
 - ภาพที่ Export ต้องมาจากรายงานที่ผู้ใช้ยินยอมให้ใช้เพื่อวิจัย (`allow_research_use = true`) เท่านั้น
-- Presigned URLs สำหรับเข้าถึงภาพต้นฉบับมีอายุจำกัด 15 นาที
+- code v1 เก็บและเสิร์ฟไฟล์จาก `LOCAL_UPLOAD_DIR` ผ่าน static mount `/uploads`; ยังไม่มี Presigned URL หรือ Cloud Object Storage
 - บันทึกทุกการกระทำของ Admin ลง `audit_log` (Append-only, ไม่สามารถลบหรือแก้ไข)
 
 ### 11.4 Audit Trail

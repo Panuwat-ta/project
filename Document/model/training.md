@@ -17,8 +17,8 @@
 
 เนื่องจากระบบใช้แนวทางการ **Differential Learning Rates** ให้ $\theta_{backbone}$ แทนค่าน้ำหนักของเครือข่ายหลัก และ $\theta_{head}$ แทนค่าน้ำหนักของส่วนวิเคราะห์ผลลัพธ์ (Classification Head) 
 
-ฟังก์ชันสูญเสีย (Loss Function) สำหรับการแยกแยะรูปภาพตัดต่อ (Binary Classification) สำหรับทุกระดับพิกเซล จะใช้ **Binary Cross-Entropy Loss (BCE Loss)** ผสมกับ **Dice Loss**:
-$$ L = L_{BCE} + L_{Dice} $$
+ค่าที่ใช้จริงใน config v10 (`segformer_mit-b2-v10.py`, โมเดล v1.0.5) เป็น **weighted Cross-Entropy Loss** (`use_sigmoid=False`, `loss_weight=1.0`, `class_weight=[1.0, 2.5]`) ผสมกับ **Dice Loss** (`loss_weight=1.5`):
+$$ L = L_{CE,\,class\_weight=[1.0,2.5]} + 1.5L_{Dice} $$
 
 การอัปเดตน้ำหนัก (Weight Update) ของโมเดลจะใช้การคำนวณผ่านอัลกอริทึม **AdamW Optimization** โดยมีค่าตัวคูณอัตราการเรียนรู้ (Learning Rate Multiplier) ที่ต่างกัน:
 
@@ -77,5 +77,4 @@ $$ \text{Dice} = \frac{2 |A \cap B|}{|A| + |B|} = \frac{2TP}{2TP + FP + FN} $$
 *mDice คือการหาค่าเฉลี่ยของ Dice Coefficient ในทุกๆ คลาส*
 
 ---
-
 

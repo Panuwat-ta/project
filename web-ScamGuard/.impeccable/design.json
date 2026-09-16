@@ -1,0 +1,682 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-16T07:41:26+07:00",
+  "title": "Design System: ScamGuard Documentation",
+  "extensions": {
+    "colorMeta": {
+      "paper": {
+        "role": "neutral",
+        "displayName": "Cool Paper",
+        "canonical": "#f4f7f6",
+        "tonalRamp": [
+          "oklch(15% 0.012 185)",
+          "oklch(27% 0.012 185)",
+          "oklch(39% 0.012 185)",
+          "oklch(51% 0.012 185)",
+          "oklch(63% 0.012 185)",
+          "oklch(75% 0.012 185)",
+          "oklch(87% 0.012 185)",
+          "oklch(95% 0.012 185)"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Clean Surface",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "oklch(15% 0.004 185)",
+          "oklch(27% 0.004 185)",
+          "oklch(39% 0.004 185)",
+          "oklch(51% 0.004 185)",
+          "oklch(63% 0.004 185)",
+          "oklch(75% 0.004 185)",
+          "oklch(87% 0.004 185)",
+          "oklch(95% 0.004 185)"
+        ]
+      },
+      "surface-muted": {
+        "role": "neutral",
+        "displayName": "Muted Surface",
+        "canonical": "#eaf0ef",
+        "tonalRamp": [
+          "oklch(15% 0.014 185)",
+          "oklch(27% 0.014 185)",
+          "oklch(39% 0.014 185)",
+          "oklch(51% 0.014 185)",
+          "oklch(63% 0.014 185)",
+          "oklch(75% 0.014 185)",
+          "oklch(87% 0.014 185)",
+          "oklch(95% 0.014 185)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink Navy",
+        "canonical": "#142728",
+        "tonalRamp": [
+          "oklch(15% 0.025 190)",
+          "oklch(27% 0.025 190)",
+          "oklch(39% 0.025 190)",
+          "oklch(51% 0.025 190)",
+          "oklch(63% 0.025 190)",
+          "oklch(75% 0.025 190)",
+          "oklch(87% 0.025 190)",
+          "oklch(95% 0.025 190)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Reference Gray",
+        "canonical": "#5b6c6d",
+        "tonalRamp": [
+          "oklch(15% 0.018 190)",
+          "oklch(27% 0.018 190)",
+          "oklch(39% 0.018 190)",
+          "oklch(51% 0.018 190)",
+          "oklch(63% 0.018 190)",
+          "oklch(75% 0.018 190)",
+          "oklch(87% 0.018 190)",
+          "oklch(95% 0.018 190)"
+        ]
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Archive Rule",
+        "canonical": "#cdd9d7",
+        "tonalRamp": [
+          "oklch(15% 0.016 185)",
+          "oklch(27% 0.016 185)",
+          "oklch(39% 0.016 185)",
+          "oklch(51% 0.016 185)",
+          "oklch(63% 0.016 185)",
+          "oklch(75% 0.016 185)",
+          "oklch(87% 0.016 185)",
+          "oklch(95% 0.016 185)"
+        ]
+      },
+      "teal-index": {
+        "role": "primary",
+        "displayName": "Teal Index",
+        "canonical": "#087f78",
+        "tonalRamp": [
+          "oklch(15% 0.09 185)",
+          "oklch(27% 0.09 185)",
+          "oklch(39% 0.09 185)",
+          "oklch(51% 0.09 185)",
+          "oklch(63% 0.09 185)",
+          "oklch(75% 0.09 185)",
+          "oklch(87% 0.09 185)",
+          "oklch(95% 0.09 185)"
+        ]
+      },
+      "teal-ink": {
+        "role": "primary",
+        "displayName": "Teal Ink",
+        "canonical": "#05635e",
+        "tonalRamp": [
+          "oklch(15% 0.075 185)",
+          "oklch(27% 0.075 185)",
+          "oklch(39% 0.075 185)",
+          "oklch(51% 0.075 185)",
+          "oklch(63% 0.075 185)",
+          "oklch(75% 0.075 185)",
+          "oklch(87% 0.075 185)",
+          "oklch(95% 0.075 185)"
+        ]
+      },
+      "teal-wash": {
+        "role": "primary",
+        "displayName": "Teal Wash",
+        "canonical": "#d9f1ee",
+        "tonalRamp": [
+          "oklch(15% 0.035 185)",
+          "oklch(27% 0.035 185)",
+          "oklch(39% 0.035 185)",
+          "oklch(51% 0.035 185)",
+          "oklch(63% 0.035 185)",
+          "oklch(75% 0.035 185)",
+          "oklch(87% 0.035 185)",
+          "oklch(95% 0.035 185)"
+        ]
+      },
+      "warning-ink": {
+        "role": "secondary",
+        "displayName": "Evidence Warning Ink",
+        "canonical": "#8b5b10",
+        "tonalRamp": [
+          "oklch(15% 0.105 78)",
+          "oklch(27% 0.105 78)",
+          "oklch(39% 0.105 78)",
+          "oklch(51% 0.105 78)",
+          "oklch(63% 0.105 78)",
+          "oklch(75% 0.105 78)",
+          "oklch(87% 0.105 78)",
+          "oklch(95% 0.105 78)"
+        ]
+      },
+      "warning-wash": {
+        "role": "secondary",
+        "displayName": "Evidence Warning Wash",
+        "canonical": "#fff4d6",
+        "tonalRamp": [
+          "oklch(15% 0.045 82)",
+          "oklch(27% 0.045 82)",
+          "oklch(39% 0.045 82)",
+          "oklch(51% 0.045 82)",
+          "oklch(63% 0.045 82)",
+          "oklch(75% 0.045 82)",
+          "oklch(87% 0.045 82)",
+          "oklch(95% 0.045 82)"
+        ]
+      },
+      "danger-ink": {
+        "role": "tertiary",
+        "displayName": "Evidence Danger Ink",
+        "canonical": "#a33b35",
+        "tonalRamp": [
+          "oklch(15% 0.11 28)",
+          "oklch(27% 0.11 28)",
+          "oklch(39% 0.11 28)",
+          "oklch(51% 0.11 28)",
+          "oklch(63% 0.11 28)",
+          "oklch(75% 0.11 28)",
+          "oklch(87% 0.11 28)",
+          "oklch(95% 0.11 28)"
+        ]
+      },
+      "danger-wash": {
+        "role": "tertiary",
+        "displayName": "Evidence Danger Wash",
+        "canonical": "#ffebe8",
+        "tonalRamp": [
+          "oklch(15% 0.045 28)",
+          "oklch(27% 0.045 28)",
+          "oklch(39% 0.045 28)",
+          "oklch(51% 0.045 28)",
+          "oklch(63% 0.045 28)",
+          "oklch(75% 0.045 28)",
+          "oklch(87% 0.045 28)",
+          "oklch(95% 0.045 28)"
+        ]
+      },
+      "info-wash": {
+        "role": "secondary",
+        "displayName": "Evidence Information Wash",
+        "canonical": "#e6f1f7",
+        "tonalRamp": [
+          "oklch(15% 0.035 225)",
+          "oklch(27% 0.035 225)",
+          "oklch(39% 0.035 225)",
+          "oklch(51% 0.035 225)",
+          "oklch(63% 0.035 225)",
+          "oklch(75% 0.035 225)",
+          "oklch(87% 0.035 225)",
+          "oklch(95% 0.035 225)"
+        ]
+      },
+      "code-surface": {
+        "role": "neutral",
+        "displayName": "Code Night",
+        "canonical": "#102223",
+        "tonalRamp": [
+          "oklch(15% 0.025 190)",
+          "oklch(27% 0.025 190)",
+          "oklch(39% 0.025 190)",
+          "oklch(51% 0.025 190)",
+          "oklch(63% 0.025 190)",
+          "oklch(75% 0.025 190)",
+          "oklch(87% 0.025 190)",
+          "oklch(95% 0.025 190)"
+        ]
+      },
+      "code-ink": {
+        "role": "neutral",
+        "displayName": "Code Paper",
+        "canonical": "#e9f4f2",
+        "tonalRamp": [
+          "oklch(15% 0.015 185)",
+          "oklch(27% 0.015 185)",
+          "oklch(39% 0.015 185)",
+          "oklch(51% 0.015 185)",
+          "oklch(63% 0.015 185)",
+          "oklch(75% 0.015 185)",
+          "oklch(87% 0.015 185)",
+          "oklch(95% 0.015 185)"
+        ]
+      },
+      "dark-paper": {
+        "role": "neutral",
+        "displayName": "Dark Cool Paper",
+        "canonical": "#0c1516",
+        "tonalRamp": [
+          "oklch(15% 0.018 190)",
+          "oklch(27% 0.018 190)",
+          "oklch(39% 0.018 190)",
+          "oklch(51% 0.018 190)",
+          "oklch(63% 0.018 190)",
+          "oklch(75% 0.018 190)",
+          "oklch(87% 0.018 190)",
+          "oklch(95% 0.018 190)"
+        ]
+      },
+      "dark-surface": {
+        "role": "neutral",
+        "displayName": "Dark Clean Surface",
+        "canonical": "#111d1e",
+        "tonalRamp": [
+          "oklch(15% 0.018 190)",
+          "oklch(27% 0.018 190)",
+          "oklch(39% 0.018 190)",
+          "oklch(51% 0.018 190)",
+          "oklch(63% 0.018 190)",
+          "oklch(75% 0.018 190)",
+          "oklch(87% 0.018 190)",
+          "oklch(95% 0.018 190)"
+        ]
+      },
+      "dark-surface-muted": {
+        "role": "neutral",
+        "displayName": "Dark Muted Surface",
+        "canonical": "#182829",
+        "tonalRamp": [
+          "oklch(15% 0.022 190)",
+          "oklch(27% 0.022 190)",
+          "oklch(39% 0.022 190)",
+          "oklch(51% 0.022 190)",
+          "oklch(63% 0.022 190)",
+          "oklch(75% 0.022 190)",
+          "oklch(87% 0.022 190)",
+          "oklch(95% 0.022 190)"
+        ]
+      },
+      "dark-ink": {
+        "role": "neutral",
+        "displayName": "Dark Ink",
+        "canonical": "#e8f0ef",
+        "tonalRamp": [
+          "oklch(15% 0.012 185)",
+          "oklch(27% 0.012 185)",
+          "oklch(39% 0.012 185)",
+          "oklch(51% 0.012 185)",
+          "oklch(63% 0.012 185)",
+          "oklch(75% 0.012 185)",
+          "oklch(87% 0.012 185)",
+          "oklch(95% 0.012 185)"
+        ]
+      },
+      "dark-muted": {
+        "role": "neutral",
+        "displayName": "Dark Reference Gray",
+        "canonical": "#a5b7b5",
+        "tonalRamp": [
+          "oklch(15% 0.018 185)",
+          "oklch(27% 0.018 185)",
+          "oklch(39% 0.018 185)",
+          "oklch(51% 0.018 185)",
+          "oklch(63% 0.018 185)",
+          "oklch(75% 0.018 185)",
+          "oklch(87% 0.018 185)",
+          "oklch(95% 0.018 185)"
+        ]
+      },
+      "dark-rule": {
+        "role": "neutral",
+        "displayName": "Dark Archive Rule",
+        "canonical": "#304342",
+        "tonalRamp": [
+          "oklch(15% 0.022 185)",
+          "oklch(27% 0.022 185)",
+          "oklch(39% 0.022 185)",
+          "oklch(51% 0.022 185)",
+          "oklch(63% 0.022 185)",
+          "oklch(75% 0.022 185)",
+          "oklch(87% 0.022 185)",
+          "oklch(95% 0.022 185)"
+        ]
+      },
+      "dark-teal-index": {
+        "role": "primary",
+        "displayName": "Dark Teal Index",
+        "canonical": "#59c8be",
+        "tonalRamp": [
+          "oklch(15% 0.085 185)",
+          "oklch(27% 0.085 185)",
+          "oklch(39% 0.085 185)",
+          "oklch(51% 0.085 185)",
+          "oklch(63% 0.085 185)",
+          "oklch(75% 0.085 185)",
+          "oklch(87% 0.085 185)",
+          "oklch(95% 0.085 185)"
+        ]
+      },
+      "dark-teal-ink": {
+        "role": "primary",
+        "displayName": "Dark Teal Ink",
+        "canonical": "#86ddd5",
+        "tonalRamp": [
+          "oklch(15% 0.075 185)",
+          "oklch(27% 0.075 185)",
+          "oklch(39% 0.075 185)",
+          "oklch(51% 0.075 185)",
+          "oklch(63% 0.075 185)",
+          "oklch(75% 0.075 185)",
+          "oklch(87% 0.075 185)",
+          "oklch(95% 0.075 185)"
+        ]
+      },
+      "dark-teal-wash": {
+        "role": "primary",
+        "displayName": "Dark Teal Wash",
+        "canonical": "#163c3a",
+        "tonalRamp": [
+          "oklch(15% 0.045 185)",
+          "oklch(27% 0.045 185)",
+          "oklch(39% 0.045 185)",
+          "oklch(51% 0.045 185)",
+          "oklch(63% 0.045 185)",
+          "oklch(75% 0.045 185)",
+          "oklch(87% 0.045 185)",
+          "oklch(95% 0.045 185)"
+        ]
+      },
+      "dark-warning-ink": {
+        "role": "secondary",
+        "displayName": "Dark Evidence Warning Ink",
+        "canonical": "#f4c36a",
+        "tonalRamp": [
+          "oklch(15% 0.105 78)",
+          "oklch(27% 0.105 78)",
+          "oklch(39% 0.105 78)",
+          "oklch(51% 0.105 78)",
+          "oklch(63% 0.105 78)",
+          "oklch(75% 0.105 78)",
+          "oklch(87% 0.105 78)",
+          "oklch(95% 0.105 78)"
+        ]
+      },
+      "dark-warning-wash": {
+        "role": "secondary",
+        "displayName": "Dark Evidence Warning Wash",
+        "canonical": "#382b16",
+        "tonalRamp": [
+          "oklch(15% 0.045 78)",
+          "oklch(27% 0.045 78)",
+          "oklch(39% 0.045 78)",
+          "oklch(51% 0.045 78)",
+          "oklch(63% 0.045 78)",
+          "oklch(75% 0.045 78)",
+          "oklch(87% 0.045 78)",
+          "oklch(95% 0.045 78)"
+        ]
+      },
+      "dark-danger-ink": {
+        "role": "tertiary",
+        "displayName": "Dark Evidence Danger Ink",
+        "canonical": "#ff9b91",
+        "tonalRamp": [
+          "oklch(15% 0.10 28)",
+          "oklch(27% 0.10 28)",
+          "oklch(39% 0.10 28)",
+          "oklch(51% 0.10 28)",
+          "oklch(63% 0.10 28)",
+          "oklch(75% 0.10 28)",
+          "oklch(87% 0.10 28)",
+          "oklch(95% 0.10 28)"
+        ]
+      },
+      "dark-danger-wash": {
+        "role": "tertiary",
+        "displayName": "Dark Evidence Danger Wash",
+        "canonical": "#3a2220",
+        "tonalRamp": [
+          "oklch(15% 0.045 28)",
+          "oklch(27% 0.045 28)",
+          "oklch(39% 0.045 28)",
+          "oklch(51% 0.045 28)",
+          "oklch(63% 0.045 28)",
+          "oklch(75% 0.045 28)",
+          "oklch(87% 0.045 28)",
+          "oklch(95% 0.045 28)"
+        ]
+      },
+      "dark-info-wash": {
+        "role": "secondary",
+        "displayName": "Dark Evidence Information Wash",
+        "canonical": "#172d38",
+        "tonalRamp": [
+          "oklch(15% 0.04 225)",
+          "oklch(27% 0.04 225)",
+          "oklch(39% 0.04 225)",
+          "oklch(51% 0.04 225)",
+          "oklch(63% 0.04 225)",
+          "oklch(75% 0.04 225)",
+          "oklch(87% 0.04 225)",
+          "oklch(95% 0.04 225)"
+        ]
+      },
+      "dark-code-surface": {
+        "role": "neutral",
+        "displayName": "Deep Code Night",
+        "canonical": "#081112",
+        "tonalRamp": [
+          "oklch(15% 0.02 190)",
+          "oklch(27% 0.02 190)",
+          "oklch(39% 0.02 190)",
+          "oklch(51% 0.02 190)",
+          "oklch(63% 0.02 190)",
+          "oklch(75% 0.02 190)",
+          "oklch(87% 0.02 190)",
+          "oklch(95% 0.02 190)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Home Display",
+        "purpose": "One short-measure orientation statement on the documentation home page, scaling from 2.4rem to a 4rem ceiling."
+      },
+      "headline": {
+        "displayName": "Article Headline",
+        "purpose": "Thai and bilingual page titles capped at 2.75rem (44px) and 24ch, with a 1.75rem-to-2.25rem mobile range."
+      },
+      "headline-mobile": {
+        "displayName": "Mobile Article Headline",
+        "purpose": "The compact 1.75rem-to-2.25rem article-title range used below the single-column breakpoint."
+      },
+      "title": {
+        "displayName": "Evidence Section",
+        "purpose": "Major article sections separated by a crisp top rule."
+      },
+      "body": {
+        "displayName": "Reading Body",
+        "purpose": "Long-form technical prose held to a 72ch maximum."
+      },
+      "label": {
+        "displayName": "Index Label",
+        "purpose": "Compact uppercase labels for navigation and section-index regions."
+      },
+      "code": {
+        "displayName": "Technical Mono",
+        "purpose": "Code, inline source, tabular metadata, and diagram zoom status."
+      }
+    },
+    "shadows": [
+      {
+        "name": "ambient-overlay-light",
+        "value": "0 12px 32px rgba(20, 39, 40, .14)",
+        "purpose": "Temporary layers above the light evidence field: dialogs and the mobile navigation drawer."
+      },
+      {
+        "name": "ambient-overlay-dark",
+        "value": "0 12px 32px rgba(0, 0, 0, .34)",
+        "purpose": "The same temporary-layer separation in dark mode."
+      }
+    ],
+    "motion": [
+      {
+        "name": "state-ease",
+        "value": "180ms ease-out",
+        "purpose": "Border and tonal feedback on compact controls."
+      },
+      {
+        "name": "drawer-ease",
+        "value": "220ms ease-out",
+        "purpose": "Mobile category navigation entering and leaving the viewport."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "0.01ms",
+        "purpose": "Near-instant transitions and animations when the reader requests reduced motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "two-column",
+        "value": "1120px"
+      },
+      {
+        "name": "single-column",
+        "value": "760px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Masthead Control",
+      "kind": "button",
+      "refersTo": "control",
+      "description": "Compact action used for search, theme, navigation, and diagram controls.",
+      "html": "<button class=\"ds-control\" type=\"button\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"6.5\"/><path d=\"m16 16 4 4\"/></svg><span>ค้นหา</span></button>",
+      "css": ".ds-control { min-height: 2.6rem; border: 1px solid var(--rule); border-radius: .55rem; padding: .5rem .8rem; display: inline-flex; align-items: center; justify-content: center; gap: .5rem; color: var(--ink); background: var(--surface); font-family: var(--font-ui); cursor: pointer; transition: border-color 180ms ease-out, background 180ms ease-out; } .ds-control svg { width: 1.1rem; height: 1.1rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; } .ds-control:hover { border-color: var(--accent); background: var(--accent-soft); } .ds-control:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; } .ds-control:active { background: var(--surface-muted); }"
+    },
+    {
+      "name": "Current Navigation Item",
+      "kind": "nav",
+      "refersTo": "navigation-current",
+      "description": "The active location marker in the sticky category rail.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"หมวดเอกสาร\"><a href=\"#\" aria-current=\"page\">สถาปัตยกรรมระบบ</a></nav>",
+      "css": ".ds-nav { width: 100%; font-family: var(--font-ui); } .ds-nav a { display: block; padding: .42rem .55rem; border-radius: .45rem; color: var(--accent-strong); background: var(--accent-soft); font-size: .9rem; line-height: 1.45; font-weight: 670; text-decoration: none; } .ds-nav a:hover { color: var(--ink); background: var(--surface-muted); } .ds-nav a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }"
+    },
+    {
+      "name": "Search Field",
+      "kind": "input",
+      "refersTo": "search-field",
+      "description": "Thai-first query field used inside the global documentation search dialog.",
+      "html": "<label class=\"ds-search-label\" for=\"ds-search\">ค้นหาเอกสาร</label><input class=\"ds-search\" id=\"ds-search\" type=\"search\" placeholder=\"ค้นหาในเอกสารทั้งหมด…\">",
+      "css": ".ds-search-label { display: block; margin-bottom: .35rem; color: var(--muted); font-family: var(--font-ui); font-size: .78rem; font-weight: 700; } .ds-search { width: 100%; min-height: 2.8rem; border: 1px solid var(--rule); border-radius: .5rem; padding: .55rem .75rem; color: var(--ink); background: var(--paper); font-family: var(--font-ui); } .ds-search:hover { border-color: var(--accent); } .ds-search:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }"
+    },
+    {
+      "name": "Document Tag",
+      "kind": "chip",
+      "refersTo": "tag",
+      "description": "A non-interactive metadata label for article tags and catalog counts.",
+      "html": "<span class=\"ds-tag\">architecture</span>",
+      "css": ".ds-tag { display: inline-block; border: 1px solid var(--rule); border-radius: 999px; padding: .16rem .55rem; color: var(--muted); background: transparent; font-family: var(--font-ui); font-size: .75rem; line-height: 1.45; }"
+    },
+    {
+      "name": "Code Block",
+      "kind": "card",
+      "refersTo": "code-block",
+      "description": "Dark technical surface with a compact copy action and accessible focus treatment.",
+      "html": "<div class=\"ds-code-frame\"><button class=\"ds-copy\" type=\"button\">คัดลอก</button><pre><code>risk_score = max(layer_scores)</code></pre></div>",
+      "css": ".ds-code-frame { position: relative; margin: 0; font-family: var(--font-code); } .ds-code-frame pre { overflow-x: auto; margin: 0; padding: 1.2rem; border-radius: .65rem; color: var(--code-ink); background: var(--code); font-size: .84rem; line-height: 1.55; tab-size: 2; } .ds-copy { position: absolute; top: .55rem; right: .55rem; border: 1px solid #405454; border-radius: .4rem; padding: .25rem .55rem; color: #d7e7e5; background: #183031; font-family: var(--font-ui); font-size: .72rem; cursor: pointer; } .ds-copy:hover { background: #234443; } .ds-copy:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }"
+    },
+    {
+      "name": "Information Callout",
+      "kind": "card",
+      "refersTo": "info-callout",
+      "description": "Square evidence note separated by a semantic tonal field and rule.",
+      "html": "<aside class=\"ds-callout\"><strong>หมายเหตุ</strong><p>Source Verification อาจแสดงสถานะ unavailable ใน v1</p></aside>",
+      "css": ".ds-callout { margin: 0; padding: 1rem 1.1rem; border: 1px solid var(--rule); border-radius: 0; color: var(--ink); background: var(--info-bg); font-family: var(--font-ui); line-height: 1.72; } .ds-callout strong { display: block; margin-bottom: .35rem; font-weight: 760; } .ds-callout p { margin: 0; }"
+    },
+    {
+      "name": "Evidence Strip",
+      "kind": "custom",
+      "refersTo": "evidence-strip",
+      "description": "An unrounded three-part index summary used below the documentation home statement.",
+      "html": "<div class=\"ds-evidence-strip\" aria-label=\"สรุปคลังเอกสาร\"><div><strong>45</strong><span>หน้าเอกสาร</span></div><div><strong>20</strong><span>แผนภาพระบบ</span></div><div><strong>9</strong><span>หมวดความรู้</span></div></div>",
+      "css": ".ds-evidence-strip { padding: 1.1rem 0; display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); color: var(--ink); font-family: var(--font-ui); } .ds-evidence-strip div { padding: .3rem 1.2rem; border-right: 1px solid var(--rule); } .ds-evidence-strip div:first-child { padding-left: 0; } .ds-evidence-strip div:last-child { border-right: 0; } .ds-evidence-strip strong { display: block; font-size: 1.7rem; font-variant-numeric: tabular-nums; } .ds-evidence-strip span { color: var(--muted); font-size: .82rem; } @media (max-width: 760px) { .ds-evidence-strip { grid-template-columns: 1fr; } .ds-evidence-strip div, .ds-evidence-strip div:first-child { padding: .7rem 0; border-right: 0; border-bottom: 1px solid var(--rule); } .ds-evidence-strip div:last-child { border-bottom: 0; } }"
+    },
+    {
+      "name": "Diagram Frame",
+      "kind": "custom",
+      "refersTo": "diagram-frame",
+      "description": "White evidence paper with a restrained toolbar and source disclosure boundary.",
+      "html": "<figure class=\"ds-diagram\"><div class=\"ds-diagram-toolbar\"><span>แผนภาพระบบ</span><button type=\"button\">ขยาย</button></div><svg viewBox=\"0 0 320 120\" role=\"img\" aria-label=\"ตัวอย่างแผนภาพระบบ\"><rect x=\"20\" y=\"30\" width=\"100\" height=\"60\"/><rect x=\"200\" y=\"30\" width=\"100\" height=\"60\"/><path d=\"M120 60h80\"/><path d=\"m192 53 8 7-8 7\"/></svg></figure>",
+      "css": ".ds-diagram { margin: 0; border: 1px solid var(--rule); border-radius: 0; background: #fff; font-family: var(--font-ui); } .ds-diagram-toolbar { min-height: 2.6rem; padding: .45rem .65rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--rule); color: #425555; background: #edf4f3; font-size: .8rem; } .ds-diagram-toolbar button { border: 1px solid var(--rule); border-radius: .55rem; padding: .35rem .65rem; color: #273b3c; background: #fff; font: inherit; cursor: pointer; } .ds-diagram-toolbar button:hover { border-color: var(--accent); background: #d9f1ee; } .ds-diagram-toolbar button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; } .ds-diagram svg { display: block; width: 100%; height: auto; padding: 1rem; fill: #edf4f3; stroke: #425555; stroke-width: 2; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Evidence Field Manual",
+    "overview": "ScamGuard Documentation is a Read-mode technical record, not a product marketing page. Its world is a quiet evidence field: cool paper, dark ink, teal indexing marks, crisp dividers, and square data surfaces. The visual hierarchy helps developers and evaluators locate a system area, follow verified links, and retain source context while reading Thai-first material with English technical terms. The interface behaves like a workbench. Edge-anchored support rails surround a fluid middle track whose article and prose measures remain bounded; metadata, tags, tables, code, callouts, and diagrams are evidence instruments rather than decoration. Expression is restrained so the documentation can carry dense architecture and research material without feeling clinical or promotional. This design record applies only to the generated static documentation under web-ScamGuard. It does not replace or modify the design guidance for the Admin Portal or Mobile App.",
+    "keyCharacteristics": [
+      "Thai-first, self-hosted typography that remains fully usable offline.",
+      "A paper, ink, and restrained teal palette with a deliberately authored dark counterpart.",
+      "A full-width three-column desktop workbench with edge-anchored support rails and a centered article.",
+      "Crisp rules and tonal fills instead of generic card stacks.",
+      "Active reading position, source context, and technical diagrams treated as first-class evidence.",
+      "Accessible keyboard, focus, motion, responsive, and print behavior built into the reading system."
+    ],
+    "rules": [
+      {
+        "name": "The Teal Index Rule",
+        "body": "Teal marks location, action, or focus; it is never used as broad decoration.",
+        "section": "colors"
+      },
+      {
+        "name": "The Semantic Counterpart Rule",
+        "body": "Every light-scheme role has a purpose-built dark-scheme counterpart with the same meaning; do not generate dark mode with filters or blanket inversion.",
+        "section": "colors"
+      },
+      {
+        "name": "The Diagram Paper Rule",
+        "body": "Rendered diagrams stay on white so their exported labels, lines, and fills remain faithful in both themes.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Reading Voice Rule",
+        "body": "Sarabun carries both Thai and Latin prose; introduce no decorative display face into the documentation.",
+        "section": "typography"
+      },
+      {
+        "name": "The Evidence Measure Rule",
+        "body": "Long-form prose stays at or below 72 characters per line even when the surrounding shell has more room.",
+        "section": "typography"
+      },
+      {
+        "name": "The Workbench Collapse Rule",
+        "body": "Remove supporting rails before compressing the article; reading width and evidence legibility take priority.",
+        "section": "layout"
+      },
+      {
+        "name": "The Print Is Evidence Rule",
+        "body": "Printed output strips interaction but preserves semantic text, underlined links, tables, and diagrams.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat Evidence Rule",
+        "body": "Articles, tables, callouts, catalogs, and diagrams are structured by rules and tonal changes; shadows are reserved for temporary layers that sit above the document.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Square Data Rule",
+        "body": "Do not round containers whose job is to present evidence; reserve curvature for controls, code blocks, and lightweight tags.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "Do preserve the three-part reading model: category navigation, bounded article, and live section index where viewport width permits.",
+      "Do use Sarabun's local Thai and Latin files and retain the established monospaced fallback stack for code.",
+      "Do keep source path, update metadata, tags, diagrams, and tables visibly connected to the article they support.",
+      "Do preserve semantic HTML, skip navigation, visible focus, focus restoration, live announcements, reduced-motion handling, and keyboard-scrollable tables.",
+      "Do author light, dark, responsive, and print treatments together when adding a new documentation component."
+    ],
+    "donts": [
+      "Don't turn this Read-mode surface into a promotional landing page, dashboard, or floating-card gallery.",
+      "Don't use teal as decoration, use emojis, or add unverified claims to make the documentation feel more marketable.",
+      "Don't recolor technical diagrams for dark mode or sacrifice their white evidence paper.",
+      "Don't compress dense tables, code, or diagrams until they become illegible; preserve horizontal scrolling and expansion behavior.",
+      "Don't apply this documentation-specific system to the Admin Portal or Mobile App; those surfaces retain their own design guidance."
+    ]
+  }
+}

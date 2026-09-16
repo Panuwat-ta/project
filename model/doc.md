@@ -16,15 +16,20 @@
 │   ├── work_dirs/            # ผลเทรนรายเวอร์ชัน (สร้างโดย train.sh, auto-versioning)
 │   │   ├── segformer_v1.0.0(test-model)/, segformer_v2.0.0(test-model)/
 │   │   ├── v1.0.0/           # Production: best_mIoU_iter_112000.pth + .onnx
-│   │   └── v1.0.1/ ... v1.0.4/  # fine-tune ต่อ, v1.0.4 deprecated (forgetting)
+│   │   └── v1.0.1/ ... v1.0.5/  # fine-tune ต่อ; v1.0.5 ผ่าน common test และรอตรวจ deployment
 │   │       ├── <run>/vis_data/scalars.json  # log เทรน (JSON-lines)
 │   │       ├── best_mIoU_iter_*.pth / iter_*.pth
 │   │       └── *_dynamic.onnx (+ .data)
-│   ├── report/               # รายงาน + สคริปต์พล็อต
-│   │   ├── reportmodel.md    # สรุปผล/benchmark/root-cause ทุกรุ่น
-│   │   ├── plot_training.py  # พล็อต log v1.0.0-v1.0.4 (รันด้วย `model/segformer/.venv/bin/python`)
-│   │   └── figs/             # PNG ที่ส่งออก
-│   ├── tests_model/img/      # ภาพตัวอย่างทดสอบ (test.jpg) + test.sh
+│   ├── tests_model/          # ศูนย์รวม asset, สคริปต์ และรายงานการทดสอบ
+│   │   ├── img/              # ภาพตัวอย่างทดสอบ (test1.jpg, test2.png)
+│   │   ├── output/           # ผล inference เฉพาะเครื่อง (สร้างเมื่อรัน test.sh)
+│   │   ├── report/           # รายงาน, สคริปต์พล็อต และกราฟเปรียบเทียบ
+│   │   ├── v/v1.0.x/         # กราฟ loss/metrics แยกตามเวอร์ชัน
+│   │   ├── test.sh           # สร้าง plot/report ทั้งหมดผ่าน plot_training.py
+│   │   ├── test_qualitative_onnx.sh # รัน ONNX qualitative test ทุกเวอร์ชัน
+│   │   ├── add.sh            # ถามข้อมูลโมเดลใหม่ทีละช่อง
+│   │   ├── add-v-mode.sh     # ลงทะเบียนและตรวจโมเดลเวอร์ชันใหม่
+│   │   └── README.md         # วิธีรันและกติกาการจัดเก็บผลทดสอบ
 │   ├── prepare_dataset/          # pipeline เดียว: clean_dataset.py + README
 │   │   │                         # USB(/run/media/panuwat/USB/data) -> ~/Pictures/dataset
 │   │   │                         # PNG lossless + stratified split + manifest.json
@@ -48,5 +53,5 @@
 2. **จัดการข้อมูล:** รัน `prepare_dataset/clean_dataset.py` (ดู `prepare_dataset/README.md`) แปลงดิบจาก USB เป็น clean ใน `~/Pictures/dataset`
 3. **ปรับแต่ง:** แก้ไฟล์ใน `configs/` (num_classes=2, dataloader paths, LR แยก backbone/head)
 4. **สอนโมเดล (Train):** รัน `./train.sh [--load-from <pth> | --no-load]` (auto-versioning ไป `work_dirs/vX.Y.Z/`)
-5. **ทดสอบ:** (เมื่อ cwd คือ `model/segformer/`) รัน `./tests_model/test.sh` หรือ `python predict_test.py --checkpoint ... --image ...` ดู heatmap
+5. **ทดสอบ/รายงาน:** (เมื่อ cwd คือ `model/segformer/`) รัน `./tests_model/test.sh` เพื่อสร้างรายงานทั้งหมด หรือ `./tests_model/test_qualitative_onnx.sh` เพื่อทดสอบ ONNX ทุกรุ่น
 6. **นำไปใช้งาน (Deploy):** export ด้วย `export_onnx_dynamic.py` แล้วชี้ `ONNX_MODEL_PATH` ใน `server/.env` ไปที่ `.onnx` ตัวใหม่

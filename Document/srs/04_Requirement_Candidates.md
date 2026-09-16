@@ -367,13 +367,13 @@ Requirement Candidates ถูกสกัดจาก:
 - สร้างภาพ Heatmap ที่แสดงจุดพิกเซลที่มีความเสี่ยงสูง
 - ใช้ Color Map: สีแดง (เสี่ยงสูง), สีเหลือง (เสี่ยงปานกลาง), สีเขียว (ปลอดภัย)
 - บันทึก Heatmap เป็นไฟล์ภาพแยก (heatmap.jpg)
-- อัปโหลดไปยัง Object Storage
+- บันทึกลง local `LOCAL_UPLOAD_DIR` และเปิดผ่าน `/uploads`
 
 ---
 
 #### RC-XAI-02: Heatmap Display
 **Description:** ผู้ใช้ต้องสามารถดูแผนที่ความร้อนในแอปมือถือ  
-**Source:** scop.md, Section: SC01 — ระบบแสดงผลความเสี่ยง; wiki/architecture/mobile-design.md (line 550); wiki/requirements/functional-requirements.md (FR-REPORT-03)  
+**Source:** scop.md, Section: SC01 — ระบบแสดงผลความเสี่ยง; wiki/architecture/mobile-design.md; Document FR-XAI-01
 **Related Stakeholder:** ST01  
 **Related Objective:** OBJ-04  
 **Related Scope:** SC01  
@@ -452,7 +452,7 @@ Requirement Candidates ถูกสกัดจาก:
 **Details:**
 - ใช้ Slide to Delete Gesture
 - แสดง Confirmation Dialog ก่อนลบ
-- ลบข้อมูลจากฐานข้อมูลและ Object Storage
+- ลบข้อมูลจากฐานข้อมูลและ local `LOCAL_UPLOAD_DIR`
 - **ลบ Heatmap ด้วย** — ลบทั้ง original.jpg และ heatmap.jpg
 
 ---
@@ -469,7 +469,7 @@ Requirement Candidates ถูกสกัดจาก:
 - แสดงปุ่ม "ลบประวัติทั้งหมด"
 - แสดง Confirmation Dialog พร้อมคำเตือน "การกระทำนี้ไม่สามารถย้อนกลับได้"
 - ผู้ใช้ต้องกด "ยืนยัน" 2 ครั้ง
-- ลบข้อมูลทั้งหมดจากฐานข้อมูลและ Object Storage
+- ลบข้อมูลทั้งหมดจากฐานข้อมูลและ local `LOCAL_UPLOAD_DIR`
 
 ---
 
@@ -540,7 +540,7 @@ Requirement Candidates ถูกสกัดจาก:
   - ประวัติการสแกนทั้งหมด (scans table)
   - รายงานทั้งหมด (reports table)
   - Consent Logs (consent_logs table)
-  - ไฟล์ภาพทั้งหมดใน Object Storage (original.jpg, heatmap.jpg)
+  - ไฟล์ภาพทั้งหมดใน local `LOCAL_UPLOAD_DIR` (original image, heatmap)
 - **ข้อมูลที่ไม่ลบ:** Audit Logs (เก็บไว้เพื่อ Compliance)
 
 ---
@@ -559,7 +559,7 @@ Requirement Candidates ถูกสกัดจาก:
 - **Implementation:** Cron Job รันทุกวันเวลา 02:00 น. (Daily at 2 AM)
   - ตรวจสอบ scans ที่ created_at < (now() - interval '1 year')
   - ลบข้อมูลจาก Database (scans, reports)
-  - ลบไฟล์จาก Object Storage
+  - ลบไฟล์จาก local `LOCAL_UPLOAD_DIR`
   - บันทึก Audit Log
 
 ---
@@ -1007,5 +1007,3 @@ Requirement Candidates ถูกสกัดจาก:
 - Traceability (ST → OBJ → SC → RC → FR/NFR → AC)
 
 ---
-
-

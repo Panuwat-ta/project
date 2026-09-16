@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="th" data-theme="light" data-theme-mode="system">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Backend API — FastAPI Orchestrator Python FastAPI ทำหน้าที่เป็น Core Orchestrator ของระบบ เป็นจุดเข้าเดียวสำหรับ Request ทั้งหมดและประสานงาน Multi-layer Analysis Pipeline --- บทบาทในระบบ API…">
+  <meta name="color-scheme" content="light dark">
+  <title>Backend API — FastAPI Orchestrator | ScamGuard Documentation</title>
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <script>(()=>{let m='system';try{m=localStorage.getItem('scamguard-docs-theme')||'system'}catch(e){}if(!['system','light','dark'].includes(m))m='system';const t=m==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;document.documentElement.dataset.themeMode=m;document.documentElement.dataset.theme=t})();window.SC_DOCS_ROOT='../../';</script>
+</head>
+<body class="">
+  <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
+  <header class="masthead"><div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><nav class="top-tabs" aria-label="เมนูหลัก"><a href="../../index.html">Guide</a><a href="../../pages/architecture/system-architecture.html">Architecture</a><a href="../../pages/architecture/backend-api.html">API Reference</a></nav></div></header>
+  <div class="docs-shell">
+    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><div class="sidebar-head"><a class="sidebar-brand" href="../../index.html" aria-label="ScamGuard Documentation"><span class="brand brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z"/><path d="m9.2 12 1.8 1.8 3.9-4.2"/></svg></span><span class="sidebar-brand-name">ScamGuard Docs</span></a><div class="theme-switcher" role="group" aria-label="ธีมเว็บไซต์"><button type="button" data-theme-option="system" aria-label="ใช้ธีมตามระบบ" title="System"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></button><button type="button" data-theme-option="light" aria-label="ใช้โหมดสว่าง" title="Light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></button><button type="button" data-theme-option="dark" aria-label="ใช้โหมดมืด" title="Dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8 8 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/></svg></button></div></div><button class="control nav-close" type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button><button class="sidebar-search" type="button" data-search-open><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search...</span><kbd>Ctrl K</kbd></button><div class="sidebar-scroll"><details class="sidebar-group" ><summary>ภาพรวม</summary><ul class="sidebar-list"><li><a href="../overview.html" >ภาพรวมโปรเจค</a></li><li><a href="../index.html" >สารบัญ Wiki — โปรเจค Scam Image Detection</a></li></ul></details><details class="sidebar-group" ><summary>ความต้องการระบบ</summary><ul class="sidebar-list"><li><a href="../requirements/functional-requirements.html" >ความต้องการเชิงฟังก์ชัน (Functional Requirements)</a></li><li><a href="../requirements/non-functional-requirements.html" >ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements)</a></li><li><a href="../requirements/traceability-matrix.html" >เมทริกซ์การสืบย้อนความต้องการ</a></li><li><a href="../requirements/objectives-kpis.html" >วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp; KPIs)</a></li><li><a href="../requirements/srs.html" >Software Requirements Specification (SRS)</a></li><li><a href="../requirements/use-case-diagram.html" >Use Case Diagram</a></li></ul></details><details class="sidebar-group" open><summary>สถาปัตยกรรม</summary><ul class="sidebar-list"><li><a href="database-migrations.html" >การจัดการการย้ายฐานข้อมูล (Database Migrations)</a></li><li><a href="external-integrations.html" >การเชื่อมต่อบริการภายนอก (External Integrations)</a></li><li><a href="database-schema.html" >โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li><li><a href="system-architecture.html" >สถาปัตยกรรมระบบ (System Architecture)</a></li><li><a href="admin-portal.html" >สถาปัตยกรรมและการออกแบบ Admin Portal</a></li><li><a href="mobile-app.html" >สถาปัตยกรรม Mobile App</a></li><li><a href="ai-inference-service.html" >AI Inference Service</a></li><li><a href="backend-api.html" aria-current="page">Backend API — FastAPI Orchestrator</a></li><li><a href="c1-system-context-diagram.html" >C1 System Context Diagram</a></li><li><a href="c2-container-diagram.html" >C2 Container Diagram</a></li><li><a href="c3-component-diagram.html" >C3 Component Diagram - API Application</a></li><li><a href="c4-code-diagram.html" >C4 Code Diagram - Image Scanning Flow</a></li><li><a href="database-er-diagram.html" >Entity Relationship Diagram (ER Diagram)</a></li><li><a href="mobile-design.html" >Mobile App Architecture</a></li><li><a href="flowchart.html" >System Flowchart</a></li><li><a href="design-overview.html" >UX/UI &amp; System Design Overview</a></li></ul></details><details class="sidebar-group" ><summary>แนวคิดและเทคนิค</summary><ul class="sidebar-list"><li><a href="../concepts/risk-scoring.html" >การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li><li><a href="../concepts/multi-layer-analysis.html" >การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li><li><a href="../concepts/explainable-ai.html" >ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li><li><a href="../concepts/configs.html" >พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li><li><a href="../concepts/ai-model-segformer.html" >โมเดล AI — SegFormer</a></li><li><a href="../concepts/surya-ocr.html" >โมเดล AI — Surya OCR</a></li><li><a href="../concepts/model-training.html" >AI Model Training Workflow</a></li><li><a href="../concepts/mmsegmentation.html" >MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li><li><a href="../concepts/semantic-segmentation.html" >Semantic Segmentation</a></li></ul></details><details class="sidebar-group" ><summary>องค์ประกอบระบบ</summary><ul class="sidebar-list"><li><a href="../entities/tech-stack.html" >เทคโนโลยีที่ใช้ (Technology Stack)</a></li><li><a href="../entities/actors.html" >ผู้ใช้ระบบ (Actors)</a></li></ul></details><details class="sidebar-group" ><summary>การตัดสินใจ</summary><ul class="sidebar-list"><li><a href="../decisions/technology-choices.html" >การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li></ul></details><details class="sidebar-group" ><summary>การวางแผน</summary><ul class="sidebar-list"><li><a href="../planning/task-tracking.html" >การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a></li><li><a href="../planning/project-scope.html" >ขอบเขตโครงการ (Project Scope)</a></li><li><a href="../planning/team.html" >ทีมงานและผู้รับผิดชอบ (Team)</a></li><li><a href="../planning/backend-documentation.html" >Backend Documentation</a></li></ul></details><details class="sidebar-group" ><summary>การทดสอบ</summary><ul class="sidebar-list"><li><a href="../testing/test-cases.html" >กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li></ul></details><details class="sidebar-group" ><summary>คู่มือและภาคผนวก</summary><ul class="sidebar-list"><li><a href="../log.html" >บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li><li><a href="../howto.html" >วิธีใช้งาน Wiki (How to Use This Wiki)</a></li><li><a href="../runbook.html" >Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li><li><a href="../AGENTS.html" >Wiki Operating Guide</a></li></ul></details></div></aside><div class="nav-backdrop" data-nav-backdrop></div>
+    <main class="article" id="main-content"><nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span aria-hidden="true">/</span><span>สถาปัตยกรรม</span></nav><header class="article-header"><h1>Backend API — FastAPI Orchestrator</h1><p class="article-lead">Python FastAPI ทำหน้าที่เป็น Core Orchestrator ของระบบ เป็นจุดเข้าเดียวสำหรับ Request ทั้งหมดและประสานงาน Multi-layer Analysis Pipeline</p><div class="meta"><span>หมวด สถาปัตยกรรม</span><time datetime="2026-09-16">อัปเดต 2026-09-16</time><span>ต้นฉบับ architecture/backend-api.md</span></div><div class="tags"><span class="tag">FastAPI</span><span class="tag">backend</span><span class="tag">orchestrator</span><span class="tag">OCR</span><span class="tag">NLP</span><span class="tag">EXIF</span><span class="tag">auth</span><span class="tag">RBAC</span></div></header><div class="prose"><h1 id="backend-api-fastapi-orchestrator">Backend API — FastAPI Orchestrator</h1>
+<p>Python FastAPI ทำหน้าที่เป็น <strong>Core Orchestrator</strong> ของระบบ เป็นจุดเข้าเดียวสำหรับ Request ทั้งหมดและประสานงาน Multi-layer Analysis Pipeline</p>
+<hr>
+<h2 id="บทบาทในระบบ">บทบาทในระบบ</h2>
+<p>API Application อยู่ระหว่าง Client (Mobile App, Admin Portal) กับ Service ปลายทาง (AI Inference, Database, External API) โดยทำหน้าที่:</p>
+<ol>
+<li>ตรวจสอบ Authentication และ Authorization</li>
+<li>ดึง EXIF เป็นข้อมูลประกอบ และรัน OCR/NLP ใน FastAPI process</li>
+<li>รัน ONNX inference ผ่าน worker subprocess ภายใน Backend เดียวกัน</li>
+<li>จัดการ Cache Lookup และบันทึกผลลัพธ์</li>
+<li>เปิดให้ Mobile poll สถานะ Async Job ผ่าน REST; WebSocket มีเฉพาะ Admin Dashboard</li>
+</ol>
+<hr>
+<h2 id="โครงสร้างโฟลเดอร์โปรเจค">โครงสร้างโฟลเดอร์โปรเจค</h2>
+<pre><code><div class="code-frame"><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-text">server/
+  app/
+    core/
+      config.py       # อ่านค่า Environment Variables (.env)
+      security.py     # JWT Encoding/Decoding, Password Hashing
+      database.py     # SQLAlchemy Engine และ Session Factory
+    models/           # ORM Models (SQLAlchemy) — 9 ตาราง
+      user.py           # users (role: user/researcher)
+      admin.py          # admins (is_superadmin)
+      scan.py           # scans (UUID, SHA-256 image_hash, scores, exif/ocr/xai)
+      consent.py        # consent_logs (system_consent/research_consent)
+      report.py         # scam_reports
+      model_version.py  # model_versions (metrics a_acc/m_iou/m_acc/m_dice)
+      admin_session.py  # admin_sessions (refresh rotation)
+      audit_log.py      # audit_log (เอกพจน์)
+      export_job.py     # export_jobs (พหูพจน์)
+    services/         # Business Logic
+      scan_service          # Multi-layer Orchestration, Risk Aggregation
+      inference_service     # Surya OCR + Qwen XAI + เรียก Worker subprocess
+      worker                # SegFormer ONNX (tiling 512/overlap 64, mask-heatmap)
+      report_service.py / admin_service.py / export_service.py
+    api/
+      v1/
+        auth.py       # /auth: register/login/refresh/logout/me
+        scan.py       # /scan (เอกพจน์): POST /, GET /{scan_id}
+        report.py     # /reports (พหูพจน์): POST &quot;&quot;, GET /categories, GET /my
+        history.py    # /history: GET &quot;&quot;, GET/DELETE /{scan_id}
+        admin.py      # /admin/* (is_superadmin): login/refresh/logout/me/sessions/dashboard/health/search/reports/users/models/audit-logs/export-jobs
+        ws.py         # /ws/admin/dashboard (WS เดียว)
+      router.py       # รวม routers (prefix /api/v1)
+    main.py           # FastAPI Initialization
+  migrations/         # Alembic DB Migration Scripts
+  requirements.txt
+  Dockerfile
+</code></pre></div></code></pre>
+<hr>
+<h2 id="ความรับผิดชอบหลัก">ความรับผิดชอบหลัก</h2>
+<h3 id="1-authentication-และ-authorization">1. Authentication และ Authorization</h3>
+<ul>
+<li>ลงทะเบียนและ Login ด้วย Email/Password — consent ส่งมาใน body ของ register แล้วบันทึกเป็น consent logs</li>
+<li>JWT + refresh/logout/me สำหรับ Mobile; code v1 ไม่มี OAuth endpoint</li>
+<li>บัญชี Mobile อยู่ตาราง <code>users</code> (<code>user</code>/<code>researcher</code>) และบัญชี Admin Portal อยู่ตาราง <code>admins</code> แยกกัน; ทุก <code>/admin/*</code> ตรวจ admin session/<code>is_superadmin</code></li>
+<li>ตรวจสอบทุก Protected Endpoint ด้วยการยืนยันตัวตนและสิทธิ์</li>
+</ul>
+<h3 id="2-การดึง-exif-metadata">2. การดึง EXIF Metadata</h3>
+<ul>
+<li>ดึง Metadata ที่ซ่อนอยู่ในรูปภาพ (พิกัด GPS, รุ่นกล้อง, วันที่สร้าง, Software ที่ใช้)</li>
+<li>เก็บ EXIF ไว้เป็น display-only metadata; ไม่นำมาคำนวณ Risk Score ซึ่งใช้เฉพาะ Visual/Textual/Source</li>
+<li>รันใน Process เดียวกับ API Application ไม่ต้องเรียก External Service</li>
+</ul>
+<h3 id="3-ocr-และ-nlp-วิเคราะห์ข้อความ">3. OCR และ NLP วิเคราะห์ข้อความ</h3>
+<ul>
+<li><strong>OCR Engine:</strong> Surya-OCR (รองรับภาษาไทยและอังกฤษ)</li>
+<li>ข้อความที่ดึงได้ → ส่งให้ NLP Module (RegEx Pattern + โมเดล NLP ขนาดเล็ก)</li>
+<li>ตรวจจับคำหลอกลวง: คำแสดงความเร่งด่วน, สัญญาผลตอบแทนสูง, ชื่อที่อยู่ใน Blacklist</li>
+<li>สร้างคะแนน <code>S_text</code> (0–100%) เป็นมิติอิสระสำหรับการประเมินความเสี่ยง</li>
+</ul>
+<h3 id="4-ประสานงาน-job">4. ประสานงาน Job</h3>
+<ul>
+<li>ตรวจสอบ Redis Cache (TTL 30 วัน) สำหรับ Image Hash ที่เคยวิเคราะห์แล้ว</li>
+<li>Cache Miss: ประมวลผลผ่าน ONNX Worker subprocess แล้วรวมผลเป็น Hybrid max+bonus Risk Score</li>
+<li>เก็บผลลัพธ์ใน PostgreSQL + เขียนไฟล์รูปต้นฉบับและ Heatmap ลง Storage</li>
+<li>Mobile poll <code>GET /api/v1/scan/{scan_id}</code> ทุก 3 วินาที; code v1 ยังไม่มี FCM client</li>
+</ul>
+<hr>
+<h2 id="api-endpoints-v1-prefix-api-v1">API Endpoints (v1 — prefix /api/v1)</h2>
+<h3 id="auth-api-v1-auth">Auth (/api/v1/auth)</h3>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">Method</th>
+<th style="text-align:left">Path</th>
+<th style="text-align:left">คำอธิบาย</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">POST</td>
+<td style="text-align:left"><code>/api/v1/auth/register</code></td>
+<td style="text-align:left">สร้าง Account ใหม่ (consent ผ่าน body)</td>
+</tr>
+<tr>
+<td style="text-align:left">POST</td>
+<td style="text-align:left"><code>/api/v1/auth/login</code></td>
+<td style="text-align:left">ยืนยันตัวตน รับ JWT</td>
+</tr>
+<tr>
+<td style="text-align:left">POST</td>
+<td style="text-align:left"><code>/api/v1/auth/refresh</code></td>
+<td style="text-align:left">ต่ออายุ token ด้วย refresh token</td>
+</tr>
+<tr>
+<td style="text-align:left">POST</td>
+<td style="text-align:left"><code>/api/v1/auth/logout</code></td>
+<td style="text-align:left">ออกจากระบบ</td>
+</tr>
+<tr>
+<td style="text-align:left">GET</td>
+<td style="text-align:left"><code>/api/v1/auth/me</code></td>
+<td style="text-align:left">โปรไฟล์ผู้ใช้ปัจจุบัน</td>
+</tr>
+</tbody>
+</table></div><h3 id="scan-api-v1-scan-เอกพจน์">Scan (/api/v1/scan เอกพจน์)</h3>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">Method</th>
+<th style="text-align:left">Path</th>
+<th style="text-align:left">คำอธิบาย</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">POST</td>
+<td style="text-align:left"><code>/api/v1/scan/</code></td>
+<td style="text-align:left">อัปโหลดรูป (multipart file + title) เพื่อวิเคราะห์แบบ async</td>
+</tr>
+<tr>
+<td style="text-align:left">GET</td>
+<td style="text-align:left"><code>/api/v1/scan/{scan_id}</code></td>
+<td style="text-align:left">ดึงผลลัพธ์สแกนตาม ID / poll สถานะ</td>
+</tr>
+</tbody>
+</table></div><h3 id="reports-api-v1-reports-พหูพจน์">Reports (/api/v1/reports พหูพจน์)</h3>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">Method</th>
+<th style="text-align:left">Path</th>
+<th style="text-align:left">คำอธิบาย</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">POST</td>
+<td style="text-align:left"><code>/api/v1/reports</code></td>
+<td style="text-align:left">ส่งรายงาน Scam</td>
+</tr>
+<tr>
+<td style="text-align:left">GET</td>
+<td style="text-align:left"><code>/api/v1/reports/categories</code></td>
+<td style="text-align:left">รายการประเภทรายงาน</td>
+</tr>
+<tr>
+<td style="text-align:left">GET</td>
+<td style="text-align:left"><code>/api/v1/reports/my</code></td>
+<td style="text-align:left">รายงานที่ตนเองเคยส่ง</td>
+</tr>
+</tbody>
+</table></div><h3 id="history-api-v1-history">History (/api/v1/history)</h3>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">Method</th>
+<th style="text-align:left">Path</th>
+<th style="text-align:left">คำอธิบาย</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">GET</td>
+<td style="text-align:left"><code>/api/v1/history</code></td>
+<td style="text-align:left">ประวัติสแกนของผู้ใช้</td>
+</tr>
+<tr>
+<td style="text-align:left">GET</td>
+<td style="text-align:left"><code>/api/v1/history/{scan_id}</code></td>
+<td style="text-align:left">รายละเอียดประวัติ</td>
+</tr>
+<tr>
+<td style="text-align:left">DELETE</td>
+<td style="text-align:left"><code>/api/v1/history/{scan_id}</code></td>
+<td style="text-align:left">ลบประวัติ (ลบไฟล์จริงถ้าไม่มี scan อื่นใช้ hash เดียวกัน)</td>
+</tr>
+</tbody>
+</table></div><h3 id="admin-api-v1-admin-ต้อง-is-superadmin-ทั้งหมด">Admin (/api/v1/admin/* — ต้อง is_superadmin ทั้งหมด)</h3>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">Method</th>
+<th style="text-align:left">Path</th>
+<th style="text-align:left">คำอธิบาย</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">POST</td>
+<td style="text-align:left"><code>/api/v1/admin/login</code></td>
+<td style="text-align:left">Login admin</td>
+</tr>
+<tr>
+<td style="text-align:left">POST</td>
+<td style="text-align:left"><code>/api/v1/admin/refresh</code></td>
+<td style="text-align:left">Rotate admin session</td>
+</tr>
+<tr>
+<td style="text-align:left">POST</td>
+<td style="text-align:left"><code>/api/v1/admin/logout</code></td>
+<td style="text-align:left">เพิกถอน session ปัจจุบัน</td>
+</tr>
+<tr>
+<td style="text-align:left">GET/PATCH</td>
+<td style="text-align:left"><code>/api/v1/admin/me</code></td>
+<td style="text-align:left">โปรไฟล์ admin</td>
+</tr>
+<tr>
+<td style="text-align:left">GET/POST</td>
+<td style="text-align:left"><code>/api/v1/admin/sessions</code>, <code>/api/v1/admin/sessions/{id}/revoke</code></td>
+<td style="text-align:left">จัดการ sessions</td>
+</tr>
+<tr>
+<td style="text-align:left">GET</td>
+<td style="text-align:left"><code>/api/v1/admin/dashboard</code></td>
+<td style="text-align:left">สถิติภาพรวม</td>
+</tr>
+<tr>
+<td style="text-align:left">GET</td>
+<td style="text-align:left"><code>/api/v1/admin/health</code></td>
+<td style="text-align:left">สุขภาพระบบ</td>
+</tr>
+<tr>
+<td style="text-align:left">GET</td>
+<td style="text-align:left"><code>/api/v1/admin/search?q=</code></td>
+<td style="text-align:left">ค้นหาทั่ว</td>
+</tr>
+<tr>
+<td style="text-align:left">GET/PATCH/POST</td>
+<td style="text-align:left"><code>/api/v1/admin/reports</code>, <code>/{id}</code>, <code>/{id}/review</code></td>
+<td style="text-align:left">คิว moderation</td>
+</tr>
+<tr>
+<td style="text-align:left">GET/PATCH</td>
+<td style="text-align:left"><code>/api/v1/admin/users</code>, <code>/api/v1/admin/users/{id}</code></td>
+<td style="text-align:left">จัดการผู้ใช้</td>
+</tr>
+<tr>
+<td style="text-align:left">GET</td>
+<td style="text-align:left"><code>/api/v1/admin/models</code></td>
+<td style="text-align:left">รายการ model_versions</td>
+</tr>
+<tr>
+<td style="text-align:left">POST</td>
+<td style="text-align:left"><code>/api/v1/admin/models/{id}/deploy</code>, <code>/api/v1/admin/models/{id}/dry-run</code></td>
+<td style="text-align:left">deploy/dry-run โมเดล</td>
+</tr>
+<tr>
+<td style="text-align:left">GET</td>
+<td style="text-align:left"><code>/api/v1/admin/audit-logs</code></td>
+<td style="text-align:left">ตาราง audit_log</td>
+</tr>
+<tr>
+<td style="text-align:left">POST/GET</td>
+<td style="text-align:left"><code>/api/v1/admin/dataset/export-jobs</code>, <code>/{job_id}</code>, <code>/{job_id}/cancel</code>, <code>/{job_id}/download</code></td>
+<td style="text-align:left">export jobs</td>
+</tr>
+</tbody>
+</table></div><h3 id="websocket-api-v1-ws">WebSocket (/api/v1/ws)</h3>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">Method</th>
+<th style="text-align:left">Path</th>
+<th style="text-align:left">คำอธิบาย</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">WS</td>
+<td style="text-align:left"><code>/api/v1/ws/admin/dashboard</code></td>
+<td style="text-align:left">Dashboard realtime (role admin)</td>
+</tr>
+</tbody>
+</table></div><hr>
+<h2 id="ประสิทธิภาพ">ประสิทธิภาพ</h2>
+<ul>
+<li>FastAPI รัน <strong>Asynchronous</strong> — เหมาะสำหรับ Request พร้อมกันจำนวนมากขณะรอ I/O</li>
+<li>Throughput เทียบเท่า Go/Node.js สำหรับงาน I/O-bound</li>
+<li>Pydantic Validation อัตโนมัติสำหรับ Request/Response</li>
+<li>OpenAPI Documentation สร้างอัตโนมัติที่ <code>/docs</code></li>
+</ul>
+<hr>
+<h2 id="หน้าที่เกี่ยวข้อง">หน้าที่เกี่ยวข้อง</h2>
+<ul>
+<li><a href="system-architecture.html">architecture/system-architecture</a></li>
+<li><a href="ai-inference-service.html">architecture/ai-inference-service</a></li>
+<li><a href="database-schema.html">architecture/database-schema</a></li>
+<li><a href="external-integrations.html">architecture/external-integrations</a></li>
+<li><a href="../concepts/multi-layer-analysis.html">concepts/multi-layer-analysis</a></li>
+<li><a href="../concepts/risk-scoring.html">concepts/risk-scoring</a></li>
+<li><a href="../requirements/non-functional-requirements.html">requirements/non-functional-requirements</a></li>
+</ul>
+</div></main>
+    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้"><p class="toc-title">ในหน้านี้</p><ol class="toc"><li class="toc-level-2"><a href="#%E0%B8%9A%E0%B8%97%E0%B8%9A%E0%B8%B2%E0%B8%97%E0%B9%83%E0%B8%99%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A">บทบาทในระบบ</a></li><li class="toc-level-2"><a href="#%E0%B9%82%E0%B8%84%E0%B8%A3%E0%B8%87%E0%B8%AA%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B9%82%E0%B8%9F%E0%B8%A5%E0%B9%80%E0%B8%94%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B9%82%E0%B8%9B%E0%B8%A3%E0%B9%80%E0%B8%88%E0%B8%84">โครงสร้างโฟลเดอร์โปรเจค</a></li><li class="toc-level-2"><a href="#%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B8%9C%E0%B8%B4%E0%B8%94%E0%B8%8A%E0%B8%AD%E0%B8%9A%E0%B8%AB%E0%B8%A5%E0%B8%B1%E0%B8%81">ความรับผิดชอบหลัก</a></li><li class="toc-level-3"><a href="#1-authentication-%E0%B9%81%E0%B8%A5%E0%B8%B0-authorization">1. Authentication และ Authorization</a></li><li class="toc-level-3"><a href="#2-%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%94%E0%B8%B6%E0%B8%87-exif-metadata">2. การดึง EXIF Metadata</a></li><li class="toc-level-3"><a href="#3-ocr-%E0%B9%81%E0%B8%A5%E0%B8%B0-nlp-%E0%B8%A7%E0%B8%B4%E0%B9%80%E0%B8%84%E0%B8%A3%E0%B8%B2%E0%B8%B0%E0%B8%AB%E0%B9%8C%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1">3. OCR และ NLP วิเคราะห์ข้อความ</a></li><li class="toc-level-3"><a href="#4-%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%AA%E0%B8%B2%E0%B8%99%E0%B8%87%E0%B8%B2%E0%B8%99-job">4. ประสานงาน Job</a></li><li class="toc-level-2"><a href="#api-endpoints-v1-prefix-api-v1">API Endpoints (v1 — prefix /api/v1)</a></li><li class="toc-level-3"><a href="#auth-api-v1-auth">Auth (/api/v1/auth)</a></li><li class="toc-level-3"><a href="#scan-api-v1-scan-%E0%B9%80%E0%B8%AD%E0%B8%81%E0%B8%9E%E0%B8%88%E0%B8%99%E0%B9%8C">Scan (/api/v1/scan เอกพจน์)</a></li><li class="toc-level-3"><a href="#reports-api-v1-reports-%E0%B8%9E%E0%B8%AB%E0%B8%B9%E0%B8%9E%E0%B8%88%E0%B8%99%E0%B9%8C">Reports (/api/v1/reports พหูพจน์)</a></li><li class="toc-level-3"><a href="#history-api-v1-history">History (/api/v1/history)</a></li><li class="toc-level-3"><a href="#admin-api-v1-admin-%E0%B8%95%E0%B9%89%E0%B8%AD%E0%B8%87-is-superadmin-%E0%B8%97%E0%B8%B1%E0%B9%89%E0%B8%87%E0%B8%AB%E0%B8%A1%E0%B8%94">Admin (/api/v1/admin/* — ต้อง is_superadmin ทั้งหมด)</a></li><li class="toc-level-3"><a href="#websocket-api-v1-ws">WebSocket (/api/v1/ws)</a></li><li class="toc-level-2"><a href="#%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%AA%E0%B8%B4%E0%B8%97%E0%B8%98%E0%B8%B4%E0%B8%A0%E0%B8%B2%E0%B8%9E">ประสิทธิภาพ</a></li><li class="toc-level-2"><a href="#%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%87">หน้าที่เกี่ยวข้อง</a></li></ol></aside>
+  </div>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title"><div class="search-dialog-head"><label class="visually-hidden" id="search-title" for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…" autocomplete="off" data-search-input><button class="control" type="button" data-search-close aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div class="search-results" data-search-results aria-live="polite"></div></dialog>
+  <script src="../../assets/js/search-index.js"></script>
+  <script src="../../assets/js/site.js"></script>
+</body>
+</html>
