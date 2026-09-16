@@ -28,26 +28,30 @@
 <h2 id="อัลกอริทึมและสมการคณิตศาสตร์-mathematical-formulation">อัลกอริทึมและสมการคณิตศาสตร์ (Mathematical Formulation)</h2>
 <p>Surya-OCR อาศัยสถาปัตยกรรมระดับ Vision-Language Model โดยแบ่งการทำงานเป็นส่วนของการเข้ารหัสภาพ (Vision Encoder) และการถอดรหัสข้อความ (Text Decoder):</p>
 <ol>
-<li>
-<p><strong>Vision Encoder (Feature Extraction):</strong>
-ภาพอินพุต $I$ จะถูกแปลงเป็น Sequence ของ Vision Tokens $F_v$ ผ่านเครือข่าย Transformer/CNN:
-$$ F_v = \text{Encoder}_{\text{vision}}(I) $$</p>
-</li>
-<li>
-<p><strong>Text Decoder (Autoregressive Text Generation):</strong>
-การทำนายข้อความ $Y = (y_1, y_2, \dots, y_T)$ อาศัยความน่าจะเป็นแบบมีเงื่อนไข (Conditional Probability) ในการทำนายตัวอักษรถัดไป:
-$$ P(Y | I) = \prod_{t=1}^T P(y_t | y_{&lt;t}, F_v) $$
-ฟังก์ชันเป้าหมาย (Objective Function) เพื่อลดค่าข้อผิดพลาดระหว่างการเทรนคือ Cross-Entropy Loss ($L_{CE}$):
-$$ L_{CE} = - \sum_{t=1}^T \log P(y_t | y_{&lt;t}, F_v) $$</p>
-</li>
-<li>
-<p><strong>Layout Detection (Bounding Box Regression):</strong>
-เพื่อกำหนดขอบเขต (Bounding Box) ของตัวอักษร โมเดลใช้ฟังก์ชัน Smooth L1 Loss ในการเทียบพิกัด $(x, y, w, h)$:
-$$ L_{loc}(b, \hat{b}) = \sum_{i \in {x,y,w,h}} \text{smooth}<em>{L_1}(b_i - \hat{b}<em>i) $$
-เมื่อ $\text{smooth}</em>{L_1}(x)$ ถูกนิยามเป็น:
-$$ \text{smooth}</em>{L_1}(x) = \begin{cases} 0.5 x^2 &amp; \text{if } |x| &lt; 1 \ |x| - 0.5 &amp; \text{otherwise} \end{cases} $$</p>
+<li><strong>Vision Encoder (Feature Extraction):</strong>
+ภาพอินพุต <code>I</code> จะถูกแปลงเป็น Sequence ของ Vision Tokens <code>F_v</code> ผ่านเครือข่าย Transformer/CNN:<pre><code class="language-text"><div class="code-frame"><span class="visually-hidden">ภาษา text</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-text"></code></pre></div></code></pre>
 </li>
 </ol>
+<p>F_v = Encoder_vision(I)</p>
+<pre><code><div class="code-frame"><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-text">
+2. **Text Decoder (Autoregressive Text Generation):**
+   การทำนายข้อความ `Y = (y_1, y_2, …, y_T)` อาศัยความน่าจะเป็นแบบมีเงื่อนไข (Conditional Probability) ในการทำนายตัวอักษรถัดไป:
+   ```text
+P(Y | I) = Π_t=1^T P(y_t | y_&lt;t, F_v)
+</code></pre></div></code></pre>
+<p>ฟังก์ชันเป้าหมาย (Objective Function) เพื่อลดค่าข้อผิดพลาดระหว่างการเทรนคือ Cross-Entropy Loss (<code>L_CE</code>):</p>
+<pre><code class="language-text"><div class="code-frame"><span class="visually-hidden">ภาษา text</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-text">L_CE = - Σ_t=1^T log P(y_t | y_&lt;t, F_v)
+</code></pre></div></code></pre>
+<ol start="3">
+<li><strong>Layout Detection (Bounding Box Regression):</strong>
+เพื่อกำหนดขอบเขต (Bounding Box) ของตัวอักษร โมเดลใช้ฟังก์ชัน Smooth L1 Loss ในการเทียบพิกัด <code>(x, y, w, h)</code>:<pre><code class="language-text"><div class="code-frame"><span class="visually-hidden">ภาษา text</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-text"></code></pre></div></code></pre>
+</li>
+</ol>
+<p>L_loc(b, b̂) = Σ_{i ∈ {x,y,w,h}} smooth_L_1(b_i - b̂_i)</p>
+<pre><code><div class="code-frame"><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-text">   เมื่อ `smooth_L_1(x)` ถูกนิยามเป็น:
+   ```text
+smooth_L_1(x) = 0.5 x^2, if |x| &lt; 1; |x| - 0.5, otherwise
+</code></pre></div></code></pre>
 <hr>
 <h2 id="บทบาทในระบบ">บทบาทในระบบ</h2>
 <ol>

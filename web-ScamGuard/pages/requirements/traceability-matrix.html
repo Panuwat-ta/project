@@ -65,38 +65,311 @@
 </tbody>
 </table></div><hr>
 <h2 id="3-ตารางเมทริกซ์การสืบย้อนความต้องการ-requirement-traceability-matrix">3. ตารางเมทริกซ์การสืบย้อนความต้องการ (Requirement Traceability Matrix)</h2>
-<p>| ลำดับ | ST | OBJ | SC | รหัสความต้องการเบื้องต้น (RC) | รหัสข้อกำหนด (FR / NFR) | NFR ที่เกี่ยวข้อง | ลำดับความสำคัญ | สรุปพฤติกรรมของระบบ |</p>
 <aside class="callout callout-note" aria-label="หมายเหตุ"><p class="callout-title">หมายเหตุ</p><p>Canonical RC/FR/NFR catalog อยู่ที่ <code>Document/srs/05_Software_Requirement_Specification.md</code> / <code>06_Requirement_Traceability.md</code> (RC-ADMIN-03 = Report Queue → FR-ADMIN-02, RC-ADMIN-04 = Model Management → FR-ADMIN-03, RC-ADMIN-05 = Audit Logs → FR-ADMIN-04, RC-SCAN-05 = Cache → FR-SCAN-03, RC-ANALYSIS-01 = Textual → FR-ANALYSIS-01, RC-ANALYSIS-02/03/04 = Visual → FR-ANALYSIS-02, RC-ANALYSIS-07/08 = Risk calc/grade → FR-ANALYSIS-04, RC-HISTORY-01/02/03/04 → FR-HISTORY-01, RC-HISTORY-05 → FR-HISTORY-02, RC-XAI-01/02/03 → FR-XAI-01) — ตารางนี้ใช้เลขชุดเดียวกับ Document; สูตร/เกณฑ์ดูนิยามที่ Document FR-ANALYSIS-04 ที่เดียว
 ยกเลิกเลข wiki-local: เดิม <strong>NFR-10</strong> → map ไป Document <strong>NFR-04 + FR-PDPA-01</strong> (+ RC-PDPA-04 deferred สำหรับ retention); เดิม <strong>NFR-11</strong> → map ไป Document <strong>FR-ANALYSIS-03 AC-4</strong> (fallback, มติ DOC-01)</p>
 </aside>
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| 1 | ST01 | OBJ-01 | SC01 | RC-AUTH-01 | FR-AUTH-01 | NFR-04 | Must Have | สมัครสมาชิกผ่าน Mobile App ด้วย Email/Password พร้อมตรวจสอบความปลอดภัย |
-| 2 | ST01 | OBJ-01 | SC01 | RC-AUTH-02 | FR-AUTH-02 | NFR-04 | Must Have | เข้าสู่ระบบและรับ JWT Access Token / Refresh Token เพื่อรักษาเซสชั่น |
-| 3 | ST01 | OBJ-01 | SC01 | RC-SCAN-01/02 | FR-INPUT-01/02 (→ Document FR-SCAN-01) | NFR-08 | Must Have | เลือกรูปภาพจากแกลเลอรี พร้อมเครื่องมือครอบตัดภาพ (Crop) |
-| 4 | ST01 | OBJ-01 | SC02 | RC-SCAN-05 | FR-SYS-09 (→ Document FR-SCAN-03) | NFR-01, NFR-07 | Must Have | คำนวณ SHA-256 Hash และค้นหาผลลัพธ์จาก Redis Cache (< 3 วินาที) |
-| 5 | ST01 | OBJ-01 | SC03 | RC-ANALYSIS-01 | FR-SYS-02/FR-SYS-03 (→ Document FR-ANALYSIS-01) | NFR-05 | Must Have | สกัดข้อความภาษาไทยและอังกฤษด้วย Surya OCR v0.5.0 + ตรวจจับคีย์เวิร์ดหลอกลวง (NLP) |
-| 6 | ST01 | OBJ-01 | SC03 | RC-ANALYSIS-02 | FR-SYS-05 (→ Document FR-ANALYSIS-02) | NFR-05 | Must Have | ตรวจสอบร่องรอยการตัดต่อระดับพิกเซลด้วย SegFormer AI Model |
-| 7 | ST01 | OBJ-01 | SC03 | RC-ANALYSIS-03 | FR-SYS-06 (→ Document FR-ANALYSIS-02) | NFR-05 | Must Have | คัดกรองภาพที่สร้างด้วย Generative AI (AI-Generated Classifier) |
-| 8 | ST01 | OBJ-01 | SC03 | RC-ANALYSIS-04 | FR-SYS-05 (→ Document FR-ANALYSIS-02 AC-3) | NFR-05 | Must Have | คะแนน Visual จาก Normalize(Conf×Coverage) เป็นส่วนหนึ่งของ FR-ANALYSIS-02 (สูตรรวมดูนิยามที่ Document FR-ANALYSIS-04 ที่เดียว) |
-| 9 | ST01 | OBJ-02 | SC02 | RC-ANALYSIS-05 | FR-SYS-04 (→ Document FR-ANALYSIS-03) | — (fallback → FR-ANALYSIS-03 AC-4) | Should Have | ค้นหาประวัติรูปภาพย้อนกลับผ่าน Google Vision Search API |
-| 10 | ST01 | OBJ-03 | SC02 | RC-ANALYSIS-07/08 | FR-SYS-07 (→ Document FR-ANALYSIS-04) | NFR-01 | Must Have | คำนวณ Overall Risk Score (สูตร/เกณฑ์ดูนิยามที่ Document FR-ANALYSIS-04 ที่เดียว) |
-| 11 | ST01 | OBJ-03 | SC01 | RC-XAI-02/03 | FR-REPORT-01 (→ Document FR-XAI-01) | NFR-06 | Must Have | แสดงผลรายงานความเสี่ยง (Risk Badge 3 ระดับ, มิติคะแนน, Heatmap Toggle; เกณฑ์ดูนิยามที่ Document FR-ANALYSIS-04 ที่เดียว) |
-| 12 | ST01 | OBJ-04 | SC01 | RC-HISTORY-01/02/03/04 | FR-HIST-01 (→ Document FR-HISTORY-01) | NFR-04 | Must Have | บันทึกประวัติการสแกนและเรียกดูย้อนหลังพร้อมภาพตัวอย่าง (Thumbnails) |
-| 13 | ST01 | OBJ-04 | SC01 | RC-HISTORY-05 | FR-RPT-01 (→ Document FR-HISTORY-02) | NFR-04 | Should Have | ผู้ใช้แจ้งยืนยันว่าภาพเป็น Scam เพื่อส่งต่อไปยังคิวตรวจสอบของผู้ดูแลระบบ |
-| 14 | ST02 | OBJ-04 | SC04 | RC-ADMIN-01/02 | FR-ADM-01/FR-ADM-05 (→ Document FR-ADMIN-01) | NFR-03 | Must Have | แดชบอร์ดสรุปสถิติระบบ (จำนวนสแกน, ความแม่นยำ, ยอดใช้งาน) + จัดการผู้ใช้ (ดู/ค้นหา/เปลี่ยนบทบาท/สถานะ) บน Admin Portal |
-| 15 | ST02 | OBJ-04 | SC04 | RC-ADMIN-03 | FR-ADM-02 (→ Document FR-ADMIN-02) | NFR-04 | Must Have | ส่วนตรวจสอบรายงานข้อร้องเรียน (Moderation) เพื่อ Approve เข้า Research Dataset |
-| 16 | ST02 | OBJ-04 | SC04 | RC-ADMIN-04 | FR-ADM-04 (→ Document FR-ADMIN-03) | NFR-02, NFR-09 | Must Have | แอดมินอัปโหลดไฟล์น้ำหนัก SegFormer (ONNX) เวอร์ชันใหม่และสั่ง Deploy (มีเพียงเวอร์ชัน active เดียว; ไม่มี Model Registry แยกใน v1) |
-| 17 | ST02 | OBJ-04 | SC04 | RC-ADMIN-05 | FR-AUDIT-01 (→ Document FR-ADMIN-04) | NFR-04 | Must Have | บันทึกกิจกรรมของผู้ดูแลระบบลง Audit Log แบบ Append-only |
-| 18 | ST03 | OBJ-04 | SC01 | RC-PDPA-01 | FR-PDPA-01/02/03 | NFR-04 | Must Have | ขอความยินยอม (Consent Screen) ก่อนใช้งาน และรองรับการถอนความยินยอม |
-| 19 | ST01 | OBJ-04 | SC02 | RC-NFR-08 | — | NFR-04 | Must Have | Rate limiting: Guest 10/min, User 60/min, Admin 300/min; TLS 1.3 + Argon2id/bcrypt |
-| 20 | ST01 | OBJ-04 | SC02 | RC-NFR-04 | — | NFR-03 | Must Have | Uptime ≥99.5%/30 วัน + crash-free ≥99.9% (ไม่นับ Planned Maintenance) |
-| 21 | ST03 | OBJ-04 | SC01 | RC-PDPA-01 | FR-PDPA-03 | NFR-04 | Must Have | Retention: temp worker 1 ชม. / ยินยอม 1 ปี / ถอน consent 72 ชม.; Audit Log ไม่ลบ |
-| 22 | ST01 | OBJ-04 | SC02 | RC-NFR-07 | FR-SYS-09 | NFR-07 | Must Have | Cache Hit ≤3s (P95), hit-rate ≥40%/สัปดาห์ (FR-INPUT-05 ยุบรวมเข้า FR-SYS-09 แล้ว) |
-| 23 | ST01, ST03 | OBJ-02, OBJ-04 | SC01, SC03 | RC-XAI-01/02/03 | FR-SYS-08/FR-SYS-11 (+ FR-REPORT-02/03) (→ Document FR-XAI-01) | NFR-05, NFR-06 | Must Have | Mask-to-Heatmap overlay + toggle/opacity + คำอธิบาย Qwen2.5-1.5B |
-| 24 | ST01 | OBJ-04 | SC01, SC02 | RC-NOTIFY-01/02 | FR-SYS-10 | — (Phase 2) | Should Have (Phase 2) | FCM push เมื่อ async เสร็จ (v1 = in-app/polling; deferred) |
-| 25 | ST01 | OBJ-01 | SC01 | RC-AUTH-06 | FR-AUTH-06 | NFR-04 | Should Have (Phase 2) | Google OAuth (Phase 2 backlog; Document FR-AUTH-03 = ต่ออายุ Token) |
-| 26 | ST01 | OBJ-04 | SC01 | — (หลักฐาน 02 SC01 §5 Share) | FR-SHARE-01 | NFR-04 | Must Have (GAP: ยังไม่มี TC) | แชร์ภาพผลลัพธ์/คำเตือนไปยังแอปภายนอก (trace → SRS BR-07/FR-08) |
-<hr>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">ลำดับ</th>
+<th style="text-align:left">ST</th>
+<th style="text-align:left">OBJ</th>
+<th style="text-align:left">SC</th>
+<th style="text-align:left">รหัสความต้องการเบื้องต้น (RC)</th>
+<th style="text-align:left">รหัสข้อกำหนด (FR / NFR)</th>
+<th style="text-align:left">NFR ที่เกี่ยวข้อง</th>
+<th style="text-align:left">ลำดับความสำคัญ</th>
+<th style="text-align:left">สรุปพฤติกรรมของระบบ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">1</td>
+<td style="text-align:left">ST01</td>
+<td style="text-align:left">OBJ-01</td>
+<td style="text-align:left">SC01</td>
+<td style="text-align:left">RC-AUTH-01</td>
+<td style="text-align:left">FR-AUTH-01</td>
+<td style="text-align:left">NFR-04</td>
+<td style="text-align:left">Must Have</td>
+<td style="text-align:left">สมัครสมาชิกผ่าน Mobile App ด้วย Email/Password พร้อมตรวจสอบความปลอดภัย</td>
+</tr>
+<tr>
+<td style="text-align:left">2</td>
+<td style="text-align:left">ST01</td>
+<td style="text-align:left">OBJ-01</td>
+<td style="text-align:left">SC01</td>
+<td style="text-align:left">RC-AUTH-02</td>
+<td style="text-align:left">FR-AUTH-02</td>
+<td style="text-align:left">NFR-04</td>
+<td style="text-align:left">Must Have</td>
+<td style="text-align:left">เข้าสู่ระบบและรับ JWT Access Token / Refresh Token เพื่อรักษาเซสชั่น</td>
+</tr>
+<tr>
+<td style="text-align:left">3</td>
+<td style="text-align:left">ST01</td>
+<td style="text-align:left">OBJ-01</td>
+<td style="text-align:left">SC01</td>
+<td style="text-align:left">RC-SCAN-01/02</td>
+<td style="text-align:left">FR-INPUT-01/02 (→ Document FR-SCAN-01)</td>
+<td style="text-align:left">NFR-08</td>
+<td style="text-align:left">Must Have</td>
+<td style="text-align:left">เลือกรูปภาพจากแกลเลอรี พร้อมเครื่องมือครอบตัดภาพ (Crop)</td>
+</tr>
+<tr>
+<td style="text-align:left">4</td>
+<td style="text-align:left">ST01</td>
+<td style="text-align:left">OBJ-01</td>
+<td style="text-align:left">SC02</td>
+<td style="text-align:left">RC-SCAN-05</td>
+<td style="text-align:left">FR-SYS-09 (→ Document FR-SCAN-03)</td>
+<td style="text-align:left">NFR-01, NFR-07</td>
+<td style="text-align:left">Must Have</td>
+<td style="text-align:left">คำนวณ SHA-256 Hash และค้นหาผลลัพธ์จาก Redis Cache (&lt; 3 วินาที)</td>
+</tr>
+<tr>
+<td style="text-align:left">5</td>
+<td style="text-align:left">ST01</td>
+<td style="text-align:left">OBJ-01</td>
+<td style="text-align:left">SC03</td>
+<td style="text-align:left">RC-ANALYSIS-01</td>
+<td style="text-align:left">FR-SYS-02/FR-SYS-03 (→ Document FR-ANALYSIS-01)</td>
+<td style="text-align:left">NFR-05</td>
+<td style="text-align:left">Must Have</td>
+<td style="text-align:left">สกัดข้อความภาษาไทยและอังกฤษด้วย Surya OCR v0.5.0 + ตรวจจับคีย์เวิร์ดหลอกลวง (NLP)</td>
+</tr>
+<tr>
+<td style="text-align:left">6</td>
+<td style="text-align:left">ST01</td>
+<td style="text-align:left">OBJ-01</td>
+<td style="text-align:left">SC03</td>
+<td style="text-align:left">RC-ANALYSIS-02</td>
+<td style="text-align:left">FR-SYS-05 (→ Document FR-ANALYSIS-02)</td>
+<td style="text-align:left">NFR-05</td>
+<td style="text-align:left">Must Have</td>
+<td style="text-align:left">ตรวจสอบร่องรอยการตัดต่อระดับพิกเซลด้วย SegFormer AI Model</td>
+</tr>
+<tr>
+<td style="text-align:left">7</td>
+<td style="text-align:left">ST01</td>
+<td style="text-align:left">OBJ-01</td>
+<td style="text-align:left">SC03</td>
+<td style="text-align:left">RC-ANALYSIS-03</td>
+<td style="text-align:left">FR-SYS-06 (→ Document FR-ANALYSIS-02)</td>
+<td style="text-align:left">NFR-05</td>
+<td style="text-align:left">Must Have</td>
+<td style="text-align:left">คัดกรองภาพที่สร้างด้วย Generative AI (AI-Generated Classifier)</td>
+</tr>
+<tr>
+<td style="text-align:left">8</td>
+<td style="text-align:left">ST01</td>
+<td style="text-align:left">OBJ-01</td>
+<td style="text-align:left">SC03</td>
+<td style="text-align:left">RC-ANALYSIS-04</td>
+<td style="text-align:left">FR-SYS-05 (→ Document FR-ANALYSIS-02 AC-3)</td>
+<td style="text-align:left">NFR-05</td>
+<td style="text-align:left">Must Have</td>
+<td style="text-align:left">คะแนน Visual จาก Normalize(Conf×Coverage) เป็นส่วนหนึ่งของ FR-ANALYSIS-02 (สูตรรวมดูนิยามที่ Document FR-ANALYSIS-04 ที่เดียว)</td>
+</tr>
+<tr>
+<td style="text-align:left">9</td>
+<td style="text-align:left">ST01</td>
+<td style="text-align:left">OBJ-02</td>
+<td style="text-align:left">SC02</td>
+<td style="text-align:left">RC-ANALYSIS-05</td>
+<td style="text-align:left">FR-SYS-04 (→ Document FR-ANALYSIS-03)</td>
+<td style="text-align:left">— (fallback → FR-ANALYSIS-03 AC-4)</td>
+<td style="text-align:left">Should Have</td>
+<td style="text-align:left">ค้นหาประวัติรูปภาพย้อนกลับผ่าน Google Vision Search API</td>
+</tr>
+<tr>
+<td style="text-align:left">10</td>
+<td style="text-align:left">ST01</td>
+<td style="text-align:left">OBJ-03</td>
+<td style="text-align:left">SC02</td>
+<td style="text-align:left">RC-ANALYSIS-07/08</td>
+<td style="text-align:left">FR-SYS-07 (→ Document FR-ANALYSIS-04)</td>
+<td style="text-align:left">NFR-01</td>
+<td style="text-align:left">Must Have</td>
+<td style="text-align:left">คำนวณ Overall Risk Score (สูตร/เกณฑ์ดูนิยามที่ Document FR-ANALYSIS-04 ที่เดียว)</td>
+</tr>
+<tr>
+<td style="text-align:left">11</td>
+<td style="text-align:left">ST01</td>
+<td style="text-align:left">OBJ-03</td>
+<td style="text-align:left">SC01</td>
+<td style="text-align:left">RC-XAI-02/03</td>
+<td style="text-align:left">FR-REPORT-01 (→ Document FR-XAI-01)</td>
+<td style="text-align:left">NFR-06</td>
+<td style="text-align:left">Must Have</td>
+<td style="text-align:left">แสดงผลรายงานความเสี่ยง (Risk Badge 3 ระดับ, มิติคะแนน, Heatmap Toggle; เกณฑ์ดูนิยามที่ Document FR-ANALYSIS-04 ที่เดียว)</td>
+</tr>
+<tr>
+<td style="text-align:left">12</td>
+<td style="text-align:left">ST01</td>
+<td style="text-align:left">OBJ-04</td>
+<td style="text-align:left">SC01</td>
+<td style="text-align:left">RC-HISTORY-01/02/03/04</td>
+<td style="text-align:left">FR-HIST-01 (→ Document FR-HISTORY-01)</td>
+<td style="text-align:left">NFR-04</td>
+<td style="text-align:left">Must Have</td>
+<td style="text-align:left">บันทึกประวัติการสแกนและเรียกดูย้อนหลังพร้อมภาพตัวอย่าง (Thumbnails)</td>
+</tr>
+<tr>
+<td style="text-align:left">13</td>
+<td style="text-align:left">ST01</td>
+<td style="text-align:left">OBJ-04</td>
+<td style="text-align:left">SC01</td>
+<td style="text-align:left">RC-HISTORY-05</td>
+<td style="text-align:left">FR-RPT-01 (→ Document FR-HISTORY-02)</td>
+<td style="text-align:left">NFR-04</td>
+<td style="text-align:left">Should Have</td>
+<td style="text-align:left">ผู้ใช้แจ้งยืนยันว่าภาพเป็น Scam เพื่อส่งต่อไปยังคิวตรวจสอบของผู้ดูแลระบบ</td>
+</tr>
+<tr>
+<td style="text-align:left">14</td>
+<td style="text-align:left">ST02</td>
+<td style="text-align:left">OBJ-04</td>
+<td style="text-align:left">SC04</td>
+<td style="text-align:left">RC-ADMIN-01/02</td>
+<td style="text-align:left">FR-ADM-01/FR-ADM-05 (→ Document FR-ADMIN-01)</td>
+<td style="text-align:left">NFR-03</td>
+<td style="text-align:left">Must Have</td>
+<td style="text-align:left">แดชบอร์ดสรุปสถิติระบบ (จำนวนสแกน, ความแม่นยำ, ยอดใช้งาน) + จัดการผู้ใช้ (ดู/ค้นหา/เปลี่ยนบทบาท/สถานะ) บน Admin Portal</td>
+</tr>
+<tr>
+<td style="text-align:left">15</td>
+<td style="text-align:left">ST02</td>
+<td style="text-align:left">OBJ-04</td>
+<td style="text-align:left">SC04</td>
+<td style="text-align:left">RC-ADMIN-03</td>
+<td style="text-align:left">FR-ADM-02 (→ Document FR-ADMIN-02)</td>
+<td style="text-align:left">NFR-04</td>
+<td style="text-align:left">Must Have</td>
+<td style="text-align:left">ส่วนตรวจสอบรายงานข้อร้องเรียน (Moderation) เพื่อ Approve เข้า Research Dataset</td>
+</tr>
+<tr>
+<td style="text-align:left">16</td>
+<td style="text-align:left">ST02</td>
+<td style="text-align:left">OBJ-04</td>
+<td style="text-align:left">SC04</td>
+<td style="text-align:left">RC-ADMIN-04</td>
+<td style="text-align:left">FR-ADM-04 (→ Document FR-ADMIN-03)</td>
+<td style="text-align:left">NFR-02, NFR-09</td>
+<td style="text-align:left">Must Have</td>
+<td style="text-align:left">แอดมินอัปโหลดไฟล์น้ำหนัก SegFormer (ONNX) เวอร์ชันใหม่และสั่ง Deploy (มีเพียงเวอร์ชัน active เดียว; ไม่มี Model Registry แยกใน v1)</td>
+</tr>
+<tr>
+<td style="text-align:left">17</td>
+<td style="text-align:left">ST02</td>
+<td style="text-align:left">OBJ-04</td>
+<td style="text-align:left">SC04</td>
+<td style="text-align:left">RC-ADMIN-05</td>
+<td style="text-align:left">FR-AUDIT-01 (→ Document FR-ADMIN-04)</td>
+<td style="text-align:left">NFR-04</td>
+<td style="text-align:left">Must Have</td>
+<td style="text-align:left">บันทึกกิจกรรมของผู้ดูแลระบบลง Audit Log แบบ Append-only</td>
+</tr>
+<tr>
+<td style="text-align:left">18</td>
+<td style="text-align:left">ST03</td>
+<td style="text-align:left">OBJ-04</td>
+<td style="text-align:left">SC01</td>
+<td style="text-align:left">RC-PDPA-01</td>
+<td style="text-align:left">FR-PDPA-01/02/03</td>
+<td style="text-align:left">NFR-04</td>
+<td style="text-align:left">Must Have</td>
+<td style="text-align:left">ขอความยินยอม (Consent Screen) ก่อนใช้งาน และรองรับการถอนความยินยอม</td>
+</tr>
+<tr>
+<td style="text-align:left">19</td>
+<td style="text-align:left">ST01</td>
+<td style="text-align:left">OBJ-04</td>
+<td style="text-align:left">SC02</td>
+<td style="text-align:left">RC-NFR-08</td>
+<td style="text-align:left">—</td>
+<td style="text-align:left">NFR-04</td>
+<td style="text-align:left">Must Have</td>
+<td style="text-align:left">Rate limiting: Guest 10/min, User 60/min, Admin 300/min; TLS 1.3 + Argon2id/bcrypt</td>
+</tr>
+<tr>
+<td style="text-align:left">20</td>
+<td style="text-align:left">ST01</td>
+<td style="text-align:left">OBJ-04</td>
+<td style="text-align:left">SC02</td>
+<td style="text-align:left">RC-NFR-04</td>
+<td style="text-align:left">—</td>
+<td style="text-align:left">NFR-03</td>
+<td style="text-align:left">Must Have</td>
+<td style="text-align:left">Uptime ≥99.5%/30 วัน + crash-free ≥99.9% (ไม่นับ Planned Maintenance)</td>
+</tr>
+<tr>
+<td style="text-align:left">21</td>
+<td style="text-align:left">ST03</td>
+<td style="text-align:left">OBJ-04</td>
+<td style="text-align:left">SC01</td>
+<td style="text-align:left">RC-PDPA-01</td>
+<td style="text-align:left">FR-PDPA-03</td>
+<td style="text-align:left">NFR-04</td>
+<td style="text-align:left">Must Have</td>
+<td style="text-align:left">Retention: temp worker 1 ชม. / ยินยอม 1 ปี / ถอน consent 72 ชม.; Audit Log ไม่ลบ</td>
+</tr>
+<tr>
+<td style="text-align:left">22</td>
+<td style="text-align:left">ST01</td>
+<td style="text-align:left">OBJ-04</td>
+<td style="text-align:left">SC02</td>
+<td style="text-align:left">RC-NFR-07</td>
+<td style="text-align:left">FR-SYS-09</td>
+<td style="text-align:left">NFR-07</td>
+<td style="text-align:left">Must Have</td>
+<td style="text-align:left">Cache Hit ≤3s (P95), hit-rate ≥40%/สัปดาห์ (FR-INPUT-05 ยุบรวมเข้า FR-SYS-09 แล้ว)</td>
+</tr>
+<tr>
+<td style="text-align:left">23</td>
+<td style="text-align:left">ST01, ST03</td>
+<td style="text-align:left">OBJ-02, OBJ-04</td>
+<td style="text-align:left">SC01, SC03</td>
+<td style="text-align:left">RC-XAI-01/02/03</td>
+<td style="text-align:left">FR-SYS-08/FR-SYS-11 (+ FR-REPORT-02/03) (→ Document FR-XAI-01)</td>
+<td style="text-align:left">NFR-05, NFR-06</td>
+<td style="text-align:left">Must Have</td>
+<td style="text-align:left">Mask-to-Heatmap overlay + toggle/opacity + คำอธิบาย Qwen2.5-1.5B</td>
+</tr>
+<tr>
+<td style="text-align:left">24</td>
+<td style="text-align:left">ST01</td>
+<td style="text-align:left">OBJ-04</td>
+<td style="text-align:left">SC01, SC02</td>
+<td style="text-align:left">RC-NOTIFY-01/02</td>
+<td style="text-align:left">FR-SYS-10</td>
+<td style="text-align:left">— (Phase 2)</td>
+<td style="text-align:left">Should Have (Phase 2)</td>
+<td style="text-align:left">FCM push เมื่อ async เสร็จ (v1 = in-app/polling; deferred)</td>
+</tr>
+<tr>
+<td style="text-align:left">25</td>
+<td style="text-align:left">ST01</td>
+<td style="text-align:left">OBJ-01</td>
+<td style="text-align:left">SC01</td>
+<td style="text-align:left">RC-AUTH-06</td>
+<td style="text-align:left">FR-AUTH-06</td>
+<td style="text-align:left">NFR-04</td>
+<td style="text-align:left">Should Have (Phase 2)</td>
+<td style="text-align:left">Google OAuth (Phase 2 backlog; Document FR-AUTH-03 = ต่ออายุ Token)</td>
+</tr>
+<tr>
+<td style="text-align:left">26</td>
+<td style="text-align:left">ST01</td>
+<td style="text-align:left">OBJ-04</td>
+<td style="text-align:left">SC01</td>
+<td style="text-align:left">— (หลักฐาน 02 SC01 §5 Share)</td>
+<td style="text-align:left">FR-SHARE-01</td>
+<td style="text-align:left">NFR-04</td>
+<td style="text-align:left">Must Have (GAP: ยังไม่มี TC)</td>
+<td style="text-align:left">แชร์ภาพผลลัพธ์/คำเตือนไปยังแอปภายนอก (trace → SRS BR-07/FR-08)</td>
+</tr>
+</tbody>
+</table></div><hr>
 <h2 id="4-ข้อสังเกตความสอดคล้องทางวิศวกรรม-engineering-consistency-note">4. ข้อสังเกตความสอดคล้องทางวิศวกรรม (Engineering Consistency Note)</h2>
 <p>ระบบใช้เกณฑ์ความเสี่ยง 3 ระดับตาม Document FR-ANALYSIS-04 (ดูนิยามที่ Document ที่เดียว)</p>
 <hr>

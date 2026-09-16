@@ -29,32 +29,34 @@
 <tbody>
 <tr>
 <td style="text-align:left"><strong>Visual Anomaly</strong></td>
-<td style="text-align:left">$S_{visual}$</td>
+<td style="text-align:left"><code>S_visual</code></td>
 <td style="text-align:left">0–100%</td>
 <td style="text-align:left">วัดระดับการตัดต่อ/สังเคราะห์ภาพโดยตรง (Splicing, Copy-Move, AI Diffusion) ด้วย SegFormer และ Heatmap (สูตร canonical ดู <code>Document/model/configs.md</code> §3)</td>
 </tr>
 <tr>
 <td style="text-align:left"><strong>Textual Analysis</strong></td>
-<td style="text-align:left">$S_{textual}$</td>
+<td style="text-align:left"><code>S_textual</code></td>
 <td style="text-align:left">0–100%</td>
 <td style="text-align:left">วัดความอันตรายของข้อความ/คีย์เวิร์ดหลอกลวง (Blacklist, คำเร่งโอนเงิน, สัญญาผลตอบแทนสูง) ด้วย Surya-OCR</td>
 </tr>
 <tr>
 <td style="text-align:left"><strong>Source Verification</strong></td>
-<td style="text-align:left">$S_{source}$</td>
+<td style="text-align:left"><code>S_source</code></td>
 <td style="text-align:left">0–100%</td>
 <td style="text-align:left">วัดประวัติการถูกนำไปใช้ซ้ำบนอินเทอร์เน็ต (Reverse Image Search) ผ่าน Google Vision API (ที่มา: นโยบาย heuristic v1 — พบ ≥3 แหล่ง = สูง, =2 = ปานกลาง/ไม่แน่ชัด, ≤1 = ต่ำ)</td>
 </tr>
 </tbody>
 </table></div><hr>
 <h2 id="2-สูตรคำนวณคะแนนรวม-overall-risk-score-formulation">2. สูตรคำนวณคะแนนรวม (Overall Risk Score Formulation)</h2>
-<p>ระบบใช้หลักการ <strong>Maximum Impact (Worst-Case Trigger)</strong> ร่วมกับ <strong>Multi-Factor Compounding Penalty</strong> เพื่อป้องกันปัญหาคะแนนเจือจาง (Dilution Problem) เช่น ภาพตัดต่อชัดเจนแต่ไม่มีข้อความ ($S_{text} = 0$) คะแนนรวมจะไม่ถูกดึงลง:</p>
-<p>$$ S_{base} = \max(S_{visual}, S_{textual}, S_{source}) $$</p>
-<p>$$ S_{total} = \min\left(100, S_{base} + \sum_{i \in \text{secondary}} [S_i \ge 40] \times 5\right) $$</p>
+<p>ระบบใช้หลักการ <strong>Maximum Impact (Worst-Case Trigger)</strong> ร่วมกับ <strong>Multi-Factor Compounding Penalty</strong> เพื่อป้องกันปัญหาคะแนนเจือจาง (Dilution Problem) เช่น ภาพตัดต่อชัดเจนแต่ไม่มีข้อความ (<code>S_text = 0</code>) คะแนนรวมจะไม่ถูกดึงลง:</p>
+<pre><code class="language-text"><div class="code-frame"><span class="visually-hidden">ภาษา text</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-text">S_base = max(S_visual, S_textual, S_source)
+</code></pre></div></code></pre>
+<pre><code class="language-text"><div class="code-frame"><span class="visually-hidden">ภาษา text</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-text">S_total = min(100, S_base + Σ_i ∈ secondary [S_i ≥ 40] × 5)
+</code></pre></div></code></pre>
 <ul>
-<li><strong>$S_{base}$</strong>: คะแนนความเสี่ยงของมิติที่รุนแรงที่สุด</li>
-<li><strong>Multi-Factor Compounding</strong>: หากตรวจพบความเสี่ยงระดับปานกลางขึ้นไปในมิติอื่น ($\ge 40$) จะบวกคะแนนเพิ่ม $+5$ ต่อมิติ (สูงสุดไม่เกิน 100)</li>
-<li><strong>Visual Override Rule</strong>: หากตรวจพบร่องรอยการดัดแปลงภาพในระดับวิกฤต ($S_{visual} \ge 80$) ระบบจะบังคับระดับผลลัพธ์เป็น <strong>High Risk</strong> ทันที</li>
+<li><strong><code>S_base</code></strong>: คะแนนความเสี่ยงของมิติที่รุนแรงที่สุด</li>
+<li><strong>Multi-Factor Compounding</strong>: หากตรวจพบความเสี่ยงระดับปานกลางขึ้นไปในมิติอื่น (<code>≥ 40</code>) จะบวกคะแนนเพิ่ม <code>+5</code> ต่อมิติ (สูงสุดไม่เกิน 100)</li>
+<li><strong>Visual Override Rule</strong>: หากตรวจพบร่องรอยการดัดแปลงภาพในระดับวิกฤต (<code>S_visual ≥ 80</code>) ระบบจะบังคับระดับผลลัพธ์เป็น <strong>High Risk</strong> ทันที</li>
 </ul>
 <hr>
 <h2 id="3-ระดับความเสี่ยง-risk-grade">3. ระดับความเสี่ยง (Risk Grade)</h2>
@@ -84,7 +86,7 @@
 <td style="text-align:left">70 – 100</td>
 <td style="text-align:left"><strong>High</strong> (อันตราย)</td>
 <td style="text-align:left">แดง</td>
-<td style="text-align:left">พบหลักฐานการตัดต่อชัดเจน ข้อความหลอกลวงรุนแรง หรือภาพถูกใช้ซ้ำในหลายแหล่ง ($S_{visual} \ge 80$ ปรับเป็น High อัตโนมัติ)</td>
+<td style="text-align:left">พบหลักฐานการตัดต่อชัดเจน ข้อความหลอกลวงรุนแรง หรือภาพถูกใช้ซ้ำในหลายแหล่ง (<code>S_visual ≥ 80</code> ปรับเป็น High อัตโนมัติ)</td>
 </tr>
 </tbody>
 </table></div><hr>
@@ -93,9 +95,9 @@
 <li><strong>ระดับภาพรวม (Overview Banner)</strong>: แสดง Risk Level สูงสุดที่พบ (Low / Medium / High) พร้อมคะแนนรวม Overall Score</li>
 <li><strong>รายละเอียดการวิเคราะห์ (Breakdown Cards)</strong>: แสดง Progress Bar และคำอธิบายแยกแต่ละมิติตามที่ตรวจพบจริง:
 <ul>
-<li>ตรวจพบร่องรอยตัดต่อภาพ: $S_{visual}$% (ระดับความเสี่ยงของภาพ)</li>
-<li>ตรวจพบข้อความน่าสงสัย: $S_{textual}$% (หรือ &quot;ไม่พบข้อความ&quot;)</li>
-<li>ประวัติแหล่งที่มา: $S_{source}$% (จำนวนแหล่งที่พบบนอินเทอร์เน็ต)</li>
+<li>ตรวจพบร่องรอยตัดต่อภาพ: <code>S_visual</code>% (ระดับความเสี่ยงของภาพ)</li>
+<li>ตรวจพบข้อความน่าสงสัย: <code>S_textual</code>% (หรือ &quot;ไม่พบข้อความ&quot;)</li>
+<li>ประวัติแหล่งที่มา: <code>S_source</code>% (จำนวนแหล่งที่พบบนอินเทอร์เน็ต)</li>
 </ul>
 </li>
 <li><strong>หลักฐานเชิงภาพ (Explainable Heatmap)</strong>: แสดง Mask จุดที่โมเดลตรวจพบความผิดปกติซ้อนทับภาพต้นฉบับ</li>

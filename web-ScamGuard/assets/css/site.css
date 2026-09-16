@@ -1558,14 +1558,11 @@ body {
 
   .prose {
     max-width: calc(84ch + 60px);
-    margin-inline: auto;
   }
 
   .article-lead,
   .home-hero p {
     max-width: calc(78ch + 60px);
-    margin-left: auto;
-    margin-right: auto;
   }
 
   .article-header h1,

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-16T01:38:23.978Z",
+  "generatedAt": "2026-09-16T02:27:01.929Z",
   "sourceMarkdownCount": 45,
   "renderedPageCount": 45,
   "mermaidSourceCount": 20,
@@ -208,7 +208,7 @@
       "output": "pages/concepts/ai-model-segformer.html",
       "title": "โมเดล AI — SegFormer",
       "category": "concepts",
-      "headings": 8
+      "headings": 3
     },
     {
       "source": "concepts/surya-ocr.md",
@@ -229,7 +229,7 @@
       "output": "pages/concepts/mmsegmentation.html",
       "title": "MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์",
       "category": "concepts",
-      "headings": 6
+      "headings": 4
     },
     {
       "source": "concepts/semantic-segmentation.md",

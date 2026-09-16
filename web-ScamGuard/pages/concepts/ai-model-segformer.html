@@ -54,94 +54,74 @@
 </code></pre></div></code></pre>
 <h3 id="อัลกอริทึมและสมการคณิตศาสตร์-mathematical-formulation">อัลกอริทึมและสมการคณิตศาสตร์ (Mathematical Formulation)</h3>
 <ol>
-<li>
-<p><strong>Efficient Self-Attention:</strong>
-$X \in \mathbb{R}^{H \times W \times C}$ จะถูกแปลงให้แบนราบ (Flatten) เป็น Sequence $N = H \times W$
-โดยลดมิติของ Key และ Value ด้วยอัตราส่วน $R$ เพื่อลดภาระการคำนวณ:
-$$K' = \text{Reshape}\left(\frac{N}{R}, C \cdot R\right)(K) \cdot W_K$$
-$$V' = \text{Reshape}\left(\frac{N}{R}, C \cdot R\right)(V) \cdot W_V$$
-$$ \text{Attention}(Q, K', V') = \text{Softmax}\left( \frac{Q (K')^T}{\sqrt{d_k}} \right) V' $$</p>
-</li>
-<li>
-<p><strong>Mix-FFN (Mix Feed-Forward Network):</strong>
-ใช้ 3x3 Convolution แทน Positional Encoding แบบตายตัว เพื่อพิจารณาตำแหน่งจากบริบทภาพ:
-$$x_{out} = \text{MLP}(\text{GELU}(\text{Conv}<em>{3\times3}(\text{MLP}(x</em>{in})))) + x_{in}$$</p>
+<li><strong>Efficient Self-Attention:</strong>
+<code>X ∈ R^H × W × C</code> จะถูกแปลงให้แบนราบ (Flatten) เป็น Sequence <code>N = H × W</code>
+โดยลดมิติของ Key และ Value ด้วยอัตราส่วน <code>R</code> เพื่อลดภาระการคำนวณ:<pre><code class="language-text"><div class="code-frame"><span class="visually-hidden">ภาษา text</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-text"></code></pre></div></code></pre>
 </li>
 </ol>
-<hr>
-<h2 id="รูปแบบข้อมูล">รูปแบบข้อมูล</h2>
-<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
-<tr>
-<th style="text-align:left">ขั้นตอน</th>
-<th style="text-align:left">รูปแบบ</th>
-<th style="text-align:left">คำอธิบาย</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left">Input</td>
-<td style="text-align:left">Tensor <code>[B, 3, H, W]</code></td>
-<td style="text-align:left">เช่น <code>[1, 3, 512, 512]</code> สำหรับ 1 ภาพ</td>
-</tr>
-<tr>
-<td style="text-align:left">Encoder output</td>
-<td style="text-align:left">Multi-scale feature maps</td>
-<td style="text-align:left">การแทนค่าแบบลำดับชั้น</td>
-</tr>
-<tr>
-<td style="text-align:left">Decoder output</td>
-<td style="text-align:left">Tensor <code>[B, 2, H, W]</code></td>
-<td style="text-align:left">ความน่าจะเป็นต่อพิกเซลทุก class</td>
-</tr>
-<tr>
-<td style="text-align:left">Segmentation Mask</td>
-<td style="text-align:left">PNG ขาวดำ</td>
-<td style="text-align:left">ขาว = ถูกดัดแปลง, ดำ = ดั้งเดิม</td>
-</tr>
-<tr>
-<td style="text-align:left">Heatmap</td>
-<td style="text-align:left">Float array</td>
-<td style="text-align:left">ค่าความเชื่อมั่นต่อพิกเซล (0.0–1.0)</td>
-</tr>
-<tr>
-<td style="text-align:left">Risk Score</td>
-<td style="text-align:left">Float 0–100</td>
-<td style="text-align:left">คำนวณจาก mask coverage และ confidence</td>
-</tr>
-</tbody>
-</table></div><hr>
-<h2 id="versioning-และการ-deploy">Versioning และการ Deploy</h2>
-<ul>
-<li>Version โมเดลใช้ Semantic Versioning เช่น <code>segformer_v1.0.0</code></li>
-<li>Train ใน PyTorch แล้ว export เป็น <strong>ONNX format</strong> สำหรับ Production Inference</li>
-<li>ONNX Runtime เป็นเป้าหมายเพิ่มความเร็ว Inference ≥2 เท่าเทียบ Native PyTorch รุ่นเดียวกัน (วิธีวัด: GPU T4 เฉลี่ย 100 ภาพ; ตัวเลขจริงต้องบันทึกจาก benchmark ก่อนอ้างเป็นผล)</li>
-<li>น้ำหนักโมเดลเก็บใน <strong>Model Registry</strong> (Version-controlled file store)</li>
-<li>Admin สามารถ deploy โมเดลเวอร์ชันใหม่ผ่าน Admin Portal โดยไม่ต้อง Redeploy service</li>
-<li><strong>v1.0.5 (ล่าสุด, config v10):</strong> MiT-B2 fine-tune จาก <code>v1.0.0</code> ครบ 200,000 iters (จบ 2026-09-12) best validation mIoU <strong>91.31</strong> @iter 197,500 — อันดับหนึ่งบน locked common test (mIoU <strong>91.24</strong>, Forgery IoU <strong>83.51</strong>) — export ONNX <code>segformer_v1_0_5_dynamic.onnx</code> แล้ว แต่ยังเป็น candidate (Production ยังเป็น <code>v1.0.0</code>; รายละเอียดการเทรนดู <a href="model-training.html">concepts/model-training</a>)</li>
-</ul>
-<hr>
-<h2 id="ข้อจำกัดที่รู้จัก">ข้อจำกัดที่รู้จัก</h2>
-<ol>
-<li><strong>การ Re-compress ซ้ำหลายครั้ง</strong> — ความแม่นยำลดลงถ้าภาพถูก compress หลายรอบ (เช่น ส่งต่อผ่านแอปแชท) เพราะ artifact จาก compression บดบัง Semantic Segmentation signal</li>
-<li><strong>ภาพ AI-Generated ทั้งหมด</strong> — SegFormer ตรวจจับ <em>การตัดต่อ</em> ระดับพิกเซล ภาพ synthetic ทั้งหมดไม่มี splice artifact แบบดั้งเดิม ต้องใช้ AI-Gen classifier แยกต่างหาก</li>
+<p>K' = Reshape((N/R), C · R)(K) · W_K</p>
+<pre><code><div class="code-frame"><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-text">   ```text
+V&#39; = Reshape((N/R), C · R)(V) · W_V
+</code></pre></div></code></pre>
+<pre><code class="language-text"><div class="code-frame"><span class="visually-hidden">ภาษา text</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-text">Attention(Q, K&#x27;, V&#x27;) = Softmax((Q (K&#x27;)^T) / √(d_k)) V&#x27;
+</code></pre></div></code></pre>
+<ol start="2">
+<li><strong>Mix-FFN (Mix Feed-Forward Network):</strong>
+ใช้ 3x3 Convolution แทน Positional Encoding แบบตายตัว เพื่อพิจารณาตำแหน่งจากบริบทภาพ:<pre><code class="language-text"><div class="code-frame"><span class="visually-hidden">ภาษา text</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-text"></code></pre></div></code></pre>
+</li>
 </ol>
-<hr>
-<h2 id="แผนพัฒนาในอนาคต">แผนพัฒนาในอนาคต</h2>
-<ul>
-<li><strong>Ensemble Model</strong> — เพิ่มโมเดลตรวจจับภาพ AI-Generated ควบคู่กับ SegFormer</li>
-<li><strong>Model Quantization</strong> (INT8/FP16) — เพื่อ Inference บนอุปกรณ์มือถือโดยตรง ขจัดการรอ Network Round-trip</li>
-</ul>
-<hr>
-<h2 id="หน้าที่เกี่ยวข้อง">หน้าที่เกี่ยวข้อง</h2>
-<ul>
-<li><a href="semantic-segmentation.html">concepts/semantic-segmentation</a></li>
-<li><a href="explainable-ai.html">concepts/explainable-ai</a></li>
-<li><a href="multi-layer-analysis.html">concepts/multi-layer-analysis</a></li>
-<li><a href="../architecture/ai-inference-service.html">architecture/ai-inference-service</a></li>
-<li><a href="../decisions/technology-choices.html">decisions/technology-choices</a></li>
-</ul>
+<p>x_out = MLP(GELU(Conv_3×3(MLP(x_in)))) + x_in</p>
+<pre><code><div class="code-frame"><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-text">
+---
+
+## รูปแบบข้อมูล
+
+| ขั้นตอน | รูปแบบ | คำอธิบาย |
+| :--- | :--- | :--- |
+| Input | Tensor `[B, 3, H, W]` | เช่น `[1, 3, 512, 512]` สำหรับ 1 ภาพ |
+| Encoder output | Multi-scale feature maps | การแทนค่าแบบลำดับชั้น |
+| Decoder output | Tensor `[B, 2, H, W]` | ความน่าจะเป็นต่อพิกเซลทุก class |
+| Segmentation Mask | PNG ขาวดำ | ขาว = ถูกดัดแปลง, ดำ = ดั้งเดิม |
+| Heatmap | Float array | ค่าความเชื่อมั่นต่อพิกเซล (0.0–1.0) |
+| Risk Score | Float 0–100 | คำนวณจาก mask coverage และ confidence |
+
+---
+
+## Versioning และการ Deploy
+
+- Version โมเดลใช้ Semantic Versioning เช่น `segformer_v1.0.0`
+- Train ใน PyTorch แล้ว export เป็น **ONNX format** สำหรับ Production Inference
+- ONNX Runtime เป็นเป้าหมายเพิ่มความเร็ว Inference ≥2 เท่าเทียบ Native PyTorch รุ่นเดียวกัน (วิธีวัด: GPU T4 เฉลี่ย 100 ภาพ; ตัวเลขจริงต้องบันทึกจาก benchmark ก่อนอ้างเป็นผล)
+- น้ำหนักโมเดลเก็บใน **Model Registry** (Version-controlled file store)
+- Admin สามารถ deploy โมเดลเวอร์ชันใหม่ผ่าน Admin Portal โดยไม่ต้อง Redeploy service
+- **v1.0.5 (ล่าสุด, config v10):** MiT-B2 fine-tune จาก `v1.0.0` ครบ 200,000 iters (จบ 2026-09-12) best validation mIoU **91.31** @iter 197,500 — อันดับหนึ่งบน locked common test (mIoU **91.24**, Forgery IoU **83.51**) — export ONNX `segformer_v1_0_5_dynamic.onnx` แล้ว แต่ยังเป็น candidate (Production ยังเป็น `v1.0.0`; รายละเอียดการเทรนดู [[concepts/model-training]])
+
+---
+
+## ข้อจำกัดที่รู้จัก
+
+1. **การ Re-compress ซ้ำหลายครั้ง** — ความแม่นยำลดลงถ้าภาพถูก compress หลายรอบ (เช่น ส่งต่อผ่านแอปแชท) เพราะ artifact จาก compression บดบัง Semantic Segmentation signal
+2. **ภาพ AI-Generated ทั้งหมด** — SegFormer ตรวจจับ *การตัดต่อ* ระดับพิกเซล ภาพ synthetic ทั้งหมดไม่มี splice artifact แบบดั้งเดิม ต้องใช้ AI-Gen classifier แยกต่างหาก
+
+---
+
+## แผนพัฒนาในอนาคต
+
+- **Ensemble Model** — เพิ่มโมเดลตรวจจับภาพ AI-Generated ควบคู่กับ SegFormer
+- **Model Quantization** (INT8/FP16) — เพื่อ Inference บนอุปกรณ์มือถือโดยตรง ขจัดการรอ Network Round-trip
+
+---
+
+## หน้าที่เกี่ยวข้อง
+
+- [[concepts/semantic-segmentation]]
+- [[concepts/explainable-ai]]
+- [[concepts/multi-layer-analysis]]
+- [[architecture/ai-inference-service]]
+- [[decisions/technology-choices]]
+</code></pre></div></code></pre>
 </div></main>
-    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้"><p class="toc-title">ในหน้านี้</p><ol class="toc"><li class="toc-level-2"><a href="#%E0%B8%97%E0%B8%B3%E0%B9%84%E0%B8%A1%E0%B8%96%E0%B8%B6%E0%B8%87%E0%B9%80%E0%B8%A5%E0%B8%B7%E0%B8%AD%E0%B8%81-segformer">ทำไมถึงเลือก SegFormer?</a></li><li class="toc-level-2"><a href="#%E0%B8%AA%E0%B8%96%E0%B8%B2%E0%B8%9B%E0%B8%B1%E0%B8%95%E0%B8%A2%E0%B8%81%E0%B8%A3%E0%B8%A3%E0%B8%A1">สถาปัตยกรรม</a></li><li class="toc-level-3"><a href="#%E0%B8%AD%E0%B8%B1%E0%B8%A5%E0%B8%81%E0%B8%AD%E0%B8%A3%E0%B8%B4%E0%B8%97%E0%B8%B6%E0%B8%A1%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%AA%E0%B8%A1%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%84%E0%B8%93%E0%B8%B4%E0%B8%95%E0%B8%A8%E0%B8%B2%E0%B8%AA%E0%B8%95%E0%B8%A3%E0%B9%8C-mathematical-formulation">อัลกอริทึมและสมการคณิตศาสตร์ (Mathematical Formulation)</a></li><li class="toc-level-2"><a href="#%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B9%81%E0%B8%9A%E0%B8%9A%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B8%B9%E0%B8%A5">รูปแบบข้อมูล</a></li><li class="toc-level-2"><a href="#versioning-%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%81%E0%B8%B2%E0%B8%A3-deploy">Versioning และการ Deploy</a></li><li class="toc-level-2"><a href="#%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%88%E0%B8%B3%E0%B8%81%E0%B8%B1%E0%B8%94%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%A3%E0%B8%B9%E0%B9%89%E0%B8%88%E0%B8%B1%E0%B8%81">ข้อจำกัดที่รู้จัก</a></li><li class="toc-level-2"><a href="#%E0%B9%81%E0%B8%9C%E0%B8%99%E0%B8%9E%E0%B8%B1%E0%B8%92%E0%B8%99%E0%B8%B2%E0%B9%83%E0%B8%99%E0%B8%AD%E0%B8%99%E0%B8%B2%E0%B8%84%E0%B8%95">แผนพัฒนาในอนาคต</a></li><li class="toc-level-2"><a href="#%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%87">หน้าที่เกี่ยวข้อง</a></li></ol></aside>
+    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้"><p class="toc-title">ในหน้านี้</p><ol class="toc"><li class="toc-level-2"><a href="#%E0%B8%97%E0%B8%B3%E0%B9%84%E0%B8%A1%E0%B8%96%E0%B8%B6%E0%B8%87%E0%B9%80%E0%B8%A5%E0%B8%B7%E0%B8%AD%E0%B8%81-segformer">ทำไมถึงเลือก SegFormer?</a></li><li class="toc-level-2"><a href="#%E0%B8%AA%E0%B8%96%E0%B8%B2%E0%B8%9B%E0%B8%B1%E0%B8%95%E0%B8%A2%E0%B8%81%E0%B8%A3%E0%B8%A3%E0%B8%A1">สถาปัตยกรรม</a></li><li class="toc-level-3"><a href="#%E0%B8%AD%E0%B8%B1%E0%B8%A5%E0%B8%81%E0%B8%AD%E0%B8%A3%E0%B8%B4%E0%B8%97%E0%B8%B6%E0%B8%A1%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%AA%E0%B8%A1%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%84%E0%B8%93%E0%B8%B4%E0%B8%95%E0%B8%A8%E0%B8%B2%E0%B8%AA%E0%B8%95%E0%B8%A3%E0%B9%8C-mathematical-formulation">อัลกอริทึมและสมการคณิตศาสตร์ (Mathematical Formulation)</a></li></ol></aside>
   </div>
   <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title"><div class="search-dialog-head"><label class="visually-hidden" id="search-title" for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…" autocomplete="off" data-search-input><button class="control" type="button" data-search-close aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div class="search-results" data-search-results aria-live="polite"></div></dialog>
   <script src="../../assets/js/search-index.js"></script>
