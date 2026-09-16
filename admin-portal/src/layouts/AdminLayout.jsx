@@ -7,7 +7,7 @@ import { CommandPalette } from "@/components/ui/CommandPalette";
 export function AdminLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCommandOpen, setIsCommandOpen] = useState(false);
-  const [isWsConnected, setIsWsConnected] = useState(true);
+  const [isWsConnected, setIsWsConnected] = useState(false);
 
   // Global Ctrl+K / Cmd+K listener
   useEffect(() => {

@@ -11,6 +11,8 @@ import { Modal } from "@/components/ui/Modal";
 import { Textarea } from "@/components/ui/Input";
 import { useToast } from "@/components/ui/ToastContext";
 import { formatDate, formatNumber } from "@/lib/utils";
+import { useAutoRefresh } from "@/lib/use-auto-refresh";
+import { useDashboardWebSocket } from "@/lib/use-dashboard-ws";
 
 const LIMIT = 15;
 
@@ -47,10 +49,10 @@ export function UsersList() {
   }, [search]);
 
   const loadUsers = useCallback(
-    async (manual = false) => {
+    async (manual = false, quiet = false) => {
       try {
         if (manual) setIsRefreshing(true);
-        else setIsLoading(true);
+        else if (!quiet) setIsLoading(true);
 
         const data = await fetchUsers(page, LIMIT, debouncedSearch);
         setUsers(data.items || []);
@@ -58,6 +60,7 @@ export function UsersList() {
 
         if (manual) toast.success("รีเฟรชรายชื่อผู้ใช้สำเร็จ");
       } catch (err) {
+        if (quiet) return;
         console.error("Load users error:", err);
         toast.error("ไม่สามารถโหลดรายชื่อผู้ใช้ได้: " + err.message);
         setUsers([]);
@@ -73,6 +76,12 @@ export function UsersList() {
   useEffect(() => {
     loadUsers();
   }, [loadUsers]);
+
+  // Silent auto-refresh every 30s (visible tab only)
+  useAutoRefresh(() => loadUsers(false, true), 30000);
+
+  // Instant refresh on server push (ban/unban by another admin)
+  useDashboardWebSocket({ onRefresh: () => loadUsers(false, true) });
 
   const openStatusModal = (user, targetActive) => {
     setModalState({ isOpen: true, user, targetActive });

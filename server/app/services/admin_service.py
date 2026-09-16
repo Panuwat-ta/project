@@ -621,8 +621,9 @@ async def update_user(db: AsyncSession, user_id: int, admin_id: int, req, ip: st
     )
     db.add(audit)
     await db.commit()
+    await db.refresh(user)
     await manager.broadcast({"type": "refresh_dashboard"})
-    
+
     return {
         "id": user.id,
         "email": user.email,
@@ -729,15 +730,21 @@ async def dry_run_model(db: AsyncSession, model_id: int) -> Dict[str, Any]:
         }
 
 async def deploy_model(db: AsyncSession, model_id: int, admin_id: int, reason: str) -> ModelVersion:
+    import os
     stmt = select(ModelVersion).where(ModelVersion.id == model_id)
     result = await db.execute(stmt)
     model = result.scalars().first()
     if not model:
         raise HTTPException(status_code=404, detail="Model version not found")
-        
+
+    model_path = str(model.file_path or "")
+    if not model_path or not os.path.exists(model_path):
+        raise HTTPException(status_code=400, detail=f"Model file not found at {model_path or '-'}; cannot deploy")
+
     stmt = select(ModelVersion).where(ModelVersion.is_active == True)
     result = await db.execute(stmt)
     active_models = result.scalars().all()
+    previous = next((m.version_tag for m in active_models if m.id != model.id), None)
     for m in active_models:
         m.is_active = False
         m.status = "inactive"
@@ -765,13 +772,52 @@ async def deploy_model(db: AsyncSession, model_id: int, admin_id: int, reason: s
         reason=reason,
         ip_address="127.0.0.1",
         user_agent="System",
-        details=f"Deployed model version {model.version_tag}. Reason: {reason}"
+        details=f"Deployed model version {model.version_tag} ({previous or '-'} -> {model.version_tag}). Serving file: {model_path}. Reason: {reason}"
     )
     db.add(audit)
-    
+
     await db.commit()
     await db.refresh(model)
+    _switch_serving_model(model_path)
     return model
+
+
+def _switch_serving_model(model_path: str) -> None:
+    """Point inference at a new .onnx file immediately and persistently.
+
+    The ONNX worker spawns per scan reading ONNX_MODEL_PATH from settings,
+    so updating the live settings object switches serving on the next scan
+    with no restart. server/.env is updated too so restarts keep serving it.
+    Best-effort: a .env write failure never blocks the deploy itself.
+    """
+    import os
+    from app.core.config import SERVER_DIR, settings
+    try:
+        settings.ONNX_MODEL_PATH = model_path
+    except Exception:
+        pass
+    os.environ["ONNX_MODEL_PATH"] = model_path
+    # Persist to both env files: config loads .env.local AFTER .env,
+    # so a stale value there would silently override the switch.
+    try:
+        from pathlib import Path
+        for name in (".env", ".env.local"):
+            env_path = Path(SERVER_DIR) / name
+            if not env_path.exists():
+                continue
+            lines = env_path.read_text(encoding="utf-8").splitlines()
+            key = "ONNX_MODEL_PATH="
+            updated = False
+            for i, line in enumerate(lines):
+                if line.strip().startswith(key):
+                    lines[i] = f"ONNX_MODEL_PATH={model_path}"
+                    updated = True
+                    break
+            if not updated:
+                lines.append(f"ONNX_MODEL_PATH={model_path}")
+            env_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    except OSError:
+        pass
 
 
 async def global_search(db: AsyncSession, q: str) -> Dict[str, Any]:
@@ -910,4 +956,115 @@ async def get_audit_logs(
     items = result.scalars().all()
 
     return items, total
+
+
+def _iter_local_model_versions():
+    """Scan model/segformer/work_dirs/vX.Y.Z/ for deployable .onnx artifacts.
+
+    Yields (version_tag, onnx_path, version_dir). Skips non-version dirs
+    (e.g. test models) and versions without an .onnx file.
+    Pure filesystem read, no DB access.
+    """
+    import re
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[3] / "model" / "segformer" / "work_dirs"
+    if not root.is_dir():
+        return
+    for child in sorted(root.iterdir()):
+        if not child.is_dir() or not re.fullmatch(r"v\d+\.\d+\.\d+", child.name):
+            continue
+        onnx = sorted(child.glob("*.onnx"))
+        if not onnx:
+            continue
+        yield child.name, str(onnx[0]), child
+
+
+def _read_eval_metrics(version_dir):
+    """Read latest test_eval/<timestamp>/<timestamp>.json (percent 0-100).
+
+    Returns dict with fractional metrics or all-None when unavailable.
+    Never raises: missing/invalid eval data simply means no metrics.
+    """
+    import json
+    metrics: Dict[str, Optional[float]] = {"a_acc": None, "m_iou": None, "m_acc": None, "m_dice": None}
+    try:
+        eval_root = version_dir / "test_eval"
+        if not eval_root.is_dir():
+            return metrics
+        runs = sorted(
+            (d for d in eval_root.iterdir() if d.is_dir()),
+            key=lambda d: d.name,
+        )
+        for run in reversed(runs):
+            candidates = sorted(run.glob("*.json"))
+            for path in candidates:
+                try:
+                    data = json.loads(path.read_text(encoding="utf-8"))
+                except (OSError, ValueError):
+                    continue
+                if not isinstance(data, dict) or "mIoU" not in data:
+                    continue
+                for src, dst in (("aAcc", "a_acc"), ("mIoU", "m_iou"), ("mAcc", "m_acc"), ("mDice", "m_dice")):
+                    try:
+                        metrics[dst] = float(data[src]) / 100.0 if data.get(src) is not None else None
+                    except (TypeError, ValueError):
+                        metrics[dst] = None
+                return metrics
+        return metrics
+    except OSError:
+        return metrics
+
+
+async def sync_model_registry(db: AsyncSession) -> List[str]:
+    """Auto-register local model versions missing from the registry.
+
+    New rows are inactive with null metrics (shown as no-data in the portal);
+    activation stays an explicit admin Deploy action. Never modifies or
+    deactivates existing rows. Returns the version_tags that were added.
+    """
+    import hashlib
+    result = await db.execute(select(ModelVersion))
+    existing: Dict[str, ModelVersion] = {str(m.version_tag): m for m in result.scalars().all()}
+    known = set(existing)
+    added = []
+    for version_tag, onnx_path, version_dir in _iter_local_model_versions():
+        eval_metrics = _read_eval_metrics(version_dir)
+        model = existing.get(version_tag)
+        if model is not None:
+            # Backfill null metrics when eval data appears later.
+            updated = False
+            for field in ("a_acc", "m_iou", "m_acc", "m_dice"):
+                if getattr(model, field) is None and eval_metrics[field] is not None:
+                    setattr(model, field, eval_metrics[field])
+                    updated = True
+            if updated:
+                added.append(version_tag + " (metrics)")
+            continue
+        checksum = None
+        try:
+            h = hashlib.sha256()
+            with open(onnx_path, "rb") as f:
+                for chunk in iter(lambda: f.read(8 * 1024 * 1024), b""):
+                    h.update(chunk)
+            checksum = "sha256:" + h.hexdigest()
+        except OSError:
+            pass
+        eval_metrics = _read_eval_metrics(version_dir)
+        db.add(ModelVersion(
+            version_tag=version_tag,
+            file_path=onnx_path,
+            is_active=False,
+            artifact_checksum=checksum,
+            framework_compatibility="onnx",
+            a_acc=eval_metrics["a_acc"],
+            m_iou=eval_metrics["m_iou"],
+            m_acc=eval_metrics["m_acc"],
+            m_dice=eval_metrics["m_dice"],
+            status="inactive",
+        ))
+        known.add(version_tag)
+        added.append(version_tag)
+    if added:
+        await db.commit()
+    return added
 

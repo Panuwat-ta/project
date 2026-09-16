@@ -165,6 +165,7 @@ export async function adminLogin(username, password) {
   const res = await fetch(`${API_BASE}/admin/login`, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    credentials: "include",
     body: body.toString(),
   });
 

@@ -23,7 +23,9 @@ import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell, TableEmp
 import { StatusBadge } from "@/components/ui/Badge";
 import { TableSkeleton } from "@/components/ui/Skeleton";
 import { useToast } from "@/components/ui/ToastContext";
-import { formatDate, formatNumber } from "@/lib/utils";
+import { formatDate, formatNumber, formatFileSize } from "@/lib/utils";
+import { useAutoRefresh } from "@/lib/use-auto-refresh";
+import { useDashboardWebSocket } from "@/lib/use-dashboard-ws";
 
 const CATEGORIES = [
   { key: "romance_scam", label: "หลอกลวงความรัก (Romance)" },
@@ -63,10 +65,10 @@ export function DatasetExport() {
     }
   }, []);
 
-  const loadJobs = useCallback(async (manual = false) => {
+  const loadJobs = useCallback(async (manual = false, quiet = false) => {
     try {
       if (manual) setIsRefreshingJobs(true);
-      else setJobsLoading(true);
+      else if (!quiet) setJobsLoading(true);
 
       const data = await fetchExportJobs({ page, limit: 10 });
       setJobs(data.items || []);
@@ -74,6 +76,7 @@ export function DatasetExport() {
 
       if (manual) toast.success("รีเฟรชประวัติงานส่งออกสำเร็จ");
     } catch (err) {
+      if (quiet) return;
       console.error("Load export jobs failed:", err);
       toast.error("ไม่สามารถโหลดประวัติงานส่งออกได้");
     } finally {
@@ -86,6 +89,12 @@ export function DatasetExport() {
     loadApprovedOverview();
     loadJobs();
   }, [loadApprovedOverview, loadJobs]);
+
+  // Silent auto-refresh of the job list every 30s (visible tab only)
+  useAutoRefresh(() => loadJobs(false, true), 30000);
+
+  // Instant refresh on server push (job completed / failed)
+  useDashboardWebSocket({ onRefresh: () => loadJobs(false, true) });
 
   // Polling for active jobs
   useEffect(() => {
@@ -339,7 +348,7 @@ export function DatasetExport() {
                 <TableHeader>
                   <TableRow isHoverable={false}>
                     <TableHead>Job ID</TableHead>
-                    <TableHead>หมวดหมู่ที่เลือก</TableHead>
+                    <TableHead>ความคืบหน้า / จำนวนแถว</TableHead>
                     <TableHead>จำนวนภาพ / ขนาด</TableHead>
                     <TableHead>สถานะงาน</TableHead>
                     <TableHead>วันที่สร้างงาน</TableHead>
@@ -363,15 +372,12 @@ export function DatasetExport() {
 
                           <TableCell>
                             <span className="text-xs font-medium text-foreground">
-                              {job.categories && job.categories.length > 0
-                                ? job.categories.join(", ")
-                                : "ทุกหมวดหมู่"}
+                              {Math.round(Number(job.progress ?? 0))}%{job.total_rows != null ? ` · ${formatNumber(job.total_rows)} แถว` : ""}
                             </span>
                           </TableCell>
 
                           <TableCell className="font-mono text-xs font-semibold text-foreground">
-                            {job.file_count ? `${formatNumber(job.file_count)} ไฟล์` : "-"}
-                            {job.file_size_mb ? ` (${job.file_size_mb} MB)` : ""}
+                            {job.file_size_bytes != null ? formatFileSize(job.file_size_bytes) : "-"}
                           </TableCell>
 
                           <TableCell>

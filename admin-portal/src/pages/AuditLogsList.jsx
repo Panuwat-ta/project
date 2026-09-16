@@ -15,6 +15,8 @@ import { Badge } from "@/components/ui/Badge";
 import { TableSkeleton } from "@/components/ui/Skeleton";
 import { useToast } from "@/components/ui/ToastContext";
 import { formatDate, formatNumber } from "@/lib/utils";
+import { useAutoRefresh } from "@/lib/use-auto-refresh";
+import { useDashboardWebSocket } from "@/lib/use-dashboard-ws";
 
 const LIMIT = 25;
 
@@ -50,10 +52,10 @@ export function AuditLogsList() {
   }, [search]);
 
   const loadLogs = useCallback(
-    async (manual = false) => {
+    async (manual = false, quiet = false) => {
       try {
         if (manual) setIsRefreshing(true);
-        else setIsLoading(true);
+        else if (!quiet) setIsLoading(true);
 
         const data = await fetchAuditLogs({
           page,
@@ -68,6 +70,7 @@ export function AuditLogsList() {
 
         if (manual) toast.success("รีเฟรชบันทึก Audit Logs สำเร็จ");
       } catch (err) {
+        if (quiet) return;
         console.error("Load audit logs failed:", err);
         toast.error("ไม่สามารถโหลดบันทึก Audit Log ได้: " + err.message);
         setLogs([]);
@@ -83,6 +86,12 @@ export function AuditLogsList() {
   useEffect(() => {
     loadLogs();
   }, [loadLogs]);
+
+  // Silent auto-refresh every 30s (visible tab only)
+  useAutoRefresh(() => loadLogs(false, true), 30000);
+
+  // Instant refresh on server push (any admin action appends a log)
+  useDashboardWebSocket({ onRefresh: () => loadLogs(false, true) });
 
   const toggleExpand = (id) => {
     setExpandedLogId((prev) => (prev === id ? null : id));
@@ -230,7 +239,7 @@ export function AuditLogsList() {
                           </TableCell>
 
                           <TableCell className="font-mono text-xs text-foreground">
-                            <div>{log.ip_address || log.ip || "127.0.0.1"}</div>
+                            <div>{log.ip_address || "-"}</div>
                             {log.user_agent && (
                               <div className="text-[10px] text-muted-foreground truncate max-w-[140px]">
                                 {log.user_agent}

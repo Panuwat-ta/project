@@ -10,6 +10,8 @@ import { TableSkeleton } from "@/components/ui/Skeleton";
 import { Card } from "@/components/ui/Card";
 import { useToast } from "@/components/ui/ToastContext";
 import { formatDate } from "@/lib/utils";
+import { useAutoRefresh } from "@/lib/use-auto-refresh";
+import { useDashboardWebSocket } from "@/lib/use-dashboard-ws";
 
 const LIMIT = 15;
 
@@ -31,6 +33,8 @@ const CATEGORIES = [
   { key: "ai_deepfake", label: "ภาพ AI / Deepfake" },
   { key: "other", label: "อื่น ๆ (Other)" },
 ];
+
+const CATEGORY_LABELS = Object.fromEntries(CATEGORIES.filter((c) => c.key !== "All").map((c) => [c.key, c.label]));
 
 export function ReportsList() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -75,10 +79,10 @@ export function ReportsList() {
   );
 
   const loadReports = useCallback(
-    async (manual = false) => {
+    async (manual = false, quiet = false) => {
       try {
         if (manual) setIsRefreshing(true);
-        else setIsLoading(true);
+        else if (!quiet) setIsLoading(true);
 
         const data = await fetchReports({
           page,
@@ -95,6 +99,7 @@ export function ReportsList() {
           toast.success("รีเฟรชคิวรายงานสำเร็จ");
         }
       } catch (err) {
+        if (quiet) return;
         console.error("Load reports error:", err);
         toast.error("ไม่สามารถโหลดรายการรายงานได้: " + err.message);
         setReports([]);
@@ -111,6 +116,12 @@ export function ReportsList() {
     updateUrlParams(activeTab, category, page, debouncedSearch);
     loadReports();
   }, [activeTab, category, page, debouncedSearch, updateUrlParams, loadReports]);
+
+  // Silent auto-refresh every 30s (visible tab only)
+  useAutoRefresh(() => loadReports(false, true), 30000);
+
+  // Instant refresh on server push (new report / decision by another admin)
+  useDashboardWebSocket({ onRefresh: () => loadReports(false, true) });
 
   const handleTabChange = (newTab) => {
     setPage(1);
@@ -229,7 +240,7 @@ export function ReportsList() {
                   </TableEmpty>
                 ) : (
                   reports.map((report) => {
-                    const thumbUrl = report.image_url || report.thumbnail_url;
+                    const thumbUrl = report.scan?.thumbnail_url;
                     return (
                       <TableRow
                         key={report.id}
@@ -251,37 +262,32 @@ export function ReportsList() {
                           </div>
                         </TableCell>
 
-                        {/* ID and Hash */}
+                        {/* ID */}
                         <TableCell>
                           <div className="font-mono text-xs font-semibold text-foreground">
                             #{report.id}
                           </div>
-                          {report.image_hash && (
-                            <div className="text-[10px] font-mono text-muted-foreground truncate max-w-[140px]" title={report.image_hash}>
-                              {report.image_hash.substring(0, 16)}...
-                            </div>
-                          )}
                         </TableCell>
 
                         {/* Category */}
                         <TableCell>
                           <span className="text-xs font-medium text-foreground">
-                            {report.category_label || report.category || "ไม่ระบุ"}
+                            {CATEGORY_LABELS[report.category] || report.category || "ไม่ระบุ"}
                           </span>
                         </TableCell>
 
                         {/* Risk Score */}
                         <TableCell>
-                          <RiskBadge score={report.risk_score} />
+                          <RiskBadge score={report.scan?.total_risk_score} />
                         </TableCell>
 
                         {/* Submitter */}
                         <TableCell>
                           <div className="text-xs text-foreground font-medium">
-                            {report.user_name || "ผู้ใช้ทั่วไป"}
+                            {report.user?.full_name || report.user?.email || "ผู้ใช้ทั่วไป"}
                           </div>
                           <div className="text-[10px] text-muted-foreground font-mono truncate max-w-[150px]">
-                            {report.user_email || "-"}
+                            {report.user?.email || "-"}
                           </div>
                         </TableCell>
 

@@ -1,4 +1,5 @@
 import os
+import asyncio
 import json
 from fastapi import UploadFile, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -158,15 +159,7 @@ async def process_image_background(scan_id, file_bytes: bytes, image_hash: str):
 
             risk_result = calculate_risk_score(text_score, visual_score, source_score)
 
-            # Generate Explainable AI (XAI) explanation using Qwen2.5-1.5B
-            xai_explanation = await run_in_threadpool(
-                inference_service.generate_xai_explanation,
-                region=anomaly_region,
-                visual_score=visual_score,
-                ai_gen_probability=ai_gen_probability,
-                scam_keywords=found_keywords
-            )
-
+            # Phase 1: ส่งผล visual/OCR/cscore ให้ client ก่อน XAI (Qwen รันบน CPU ช้ากว่า)
             scan.text_score = text_score
             scan.visual_score = visual_score
             scan.source_score = source_score
@@ -174,11 +167,42 @@ async def process_image_background(scan_id, file_bytes: bytes, image_hash: str):
             scan.ocr_text = ocr_text
             scan.scam_keywords_found = found_keywords
             scan.ai_gen_probability = ai_gen_probability
+            scan.xai_explanation = None
+            scan.status = "processing_text"
+            scan.progress = 90
+            await db.commit()
+
+            # Broadcast ให้ dashboard/client เห็นผลรอบแรกทันที
+            await manager.broadcast({"type": "refresh_dashboard"})
+
+            # Phase 2: XAI explanation ตามมาทีหลัง — พัง/หมดเวลาก็ไม่ล้มสแกน ใช้ fallback แทน
+            try:
+                xai_explanation = await asyncio.wait_for(
+                    run_in_threadpool(
+                        inference_service.generate_xai_explanation,
+                        region=anomaly_region,
+                        visual_score=visual_score,
+                        ai_gen_probability=ai_gen_probability,
+                        scam_keywords=found_keywords
+                    ),
+                    timeout=settings.XAI_TIMEOUT,
+                )
+            except (asyncio.TimeoutError, TimeoutError):
+                print(f"XAI timeout after {settings.XAI_TIMEOUT}s, using fallback")
+                xai_explanation = inference_service._fallback_xai_explanation(
+                    anomaly_region, visual_score, ai_gen_probability, found_keywords
+                )
+            except Exception as e:
+                print(f"XAI phase failed, using fallback: {e}")
+                xai_explanation = inference_service._fallback_xai_explanation(
+                    anomaly_region, visual_score, ai_gen_probability, found_keywords
+                )
+
             scan.xai_explanation = xai_explanation
             scan.status = "completed"
             scan.progress = 100
             scan.completed_at = datetime.now(TH_TIMEZONE)
-            
+
             await db.commit()
             
             # Broadcast to admin dashboard

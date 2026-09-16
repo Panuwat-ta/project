@@ -28,7 +28,9 @@ import {
   Bar,
   CartesianGrid,
 } from "recharts";
-import { fetchDashboard, fetchHealth, getAccessToken, getWebSocketUrl } from "@/lib/api";
+import { fetchDashboard, fetchHealth } from "@/lib/api";
+import { useDashboardWebSocket } from "@/lib/use-dashboard-ws";
+import { useAutoRefresh } from "@/lib/use-auto-refresh";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -71,11 +73,11 @@ export function Dashboard() {
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-color-scheme: dark)").matches);
 
-  const loadData = useCallback(async (manual = false) => {
+  const loadData = useCallback(async (manual = false, quiet = false) => {
     try {
       if (manual) setIsRefreshing(true);
-      else setIsLoading(true);
-      setError(null);
+      else if (!quiet) setIsLoading(true);
+      if (!quiet) setError(null);
 
       const [dash, hlth] = await Promise.all([fetchDashboard(), fetchHealth()]);
       setData(dash);
@@ -86,6 +88,7 @@ export function Dashboard() {
         toast.success("อัปเดตข้อมูลสถิติล่าสุดเรียบร้อยแล้ว");
       }
     } catch (err) {
+      if (quiet) return;
       console.error("Dashboard data load error:", err);
       setError(err.message || "ไม่สามารถเรียกข้อมูลแดชบอร์ดได้");
       toast.error("เกิดข้อผิดพลาดในการโหลดข้อมูล: " + err.message);
@@ -95,47 +98,21 @@ export function Dashboard() {
     }
   }, [toast]);
 
-  // WebSocket Live Updates
+  // Initial load once; live updates arrive via the persistent WebSocket below.
   useEffect(() => {
     loadData();
+  }, [loadData]);
 
-    const token = getAccessToken();
-    const wsUrl = getWebSocketUrl("/admin/dashboard", token);
+  // WebSocket Live Updates (single connection + backoff reconnect)
+  useDashboardWebSocket({
+    onRefresh: () => loadData(false, true),
+    onStatusChange: (ok) => {
+      if (setIsWsConnected) setIsWsConnected(ok);
+    },
+  });
 
-    let ws;
-    try {
-      ws = new WebSocket(wsUrl);
-
-      ws.onopen = () => {
-        if (setIsWsConnected) setIsWsConnected(true);
-      };
-
-      ws.onmessage = (event) => {
-        try {
-          const msg = JSON.parse(event.data);
-          if (msg.type === "refresh_dashboard") {
-            loadData(false);
-          }
-        } catch (e) {
-          console.error("WS Parse error", e);
-        }
-      };
-
-      ws.onerror = () => {
-        if (setIsWsConnected) setIsWsConnected(false);
-      };
-
-      ws.onclose = () => {
-        if (setIsWsConnected) setIsWsConnected(false);
-      };
-    } catch {
-      if (setIsWsConnected) setIsWsConnected(false);
-    }
-
-    return () => {
-      if (ws) ws.close();
-    };
-  }, [loadData, setIsWsConnected]);
+  // Polling fallback: backend pushes WS only on review/decision/deploy events.
+  useAutoRefresh(() => loadData(false, true), 30000);
 
   if (error && !data) {
     return (
@@ -201,14 +178,14 @@ export function Dashboard() {
       {/* Top Header & Telemetry Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2.5">
+           <h2 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2.5">
             <span>ศูนย์ควบคุมและตรวจจับการหลอกลวง</span>
             <Badge variant="primary" size="sm" withDot>
               Real-time
             </Badge>
           </h2>
-          <p className="text-xs text-muted-foreground mt-1 font-mono">
-            {lastUpdated ? `อัปเดตล่าสุด: ${lastUpdated.toLocaleTimeString("th-TH")}` : ""}
+          <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed font-mono">
+            {lastUpdated ? `อัปเดตข้อมูลล่าสุด: ${lastUpdated.toLocaleTimeString("th-TH")}` : ""}
           </p>
         </div>
 
@@ -424,74 +401,68 @@ export function Dashboard() {
               </p>
             </div>
           </CardHeader>
-          <CardContent className="p-4 pt-0 flex flex-col items-center">
-            <div className="h-52 w-full flex items-center justify-center relative">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={riskDonut}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={55}
-                    outerRadius={80}
-                    paddingAngle={3}
-                    dataKey="value"
-                    isAnimationActive={false}
-                  >
-                    {riskDonut.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "var(--card)",
-                      borderColor: "var(--border)",
-                      borderRadius: "0.5rem",
-                      fontSize: "12px",
-                      color: "var(--foreground)",
-                      boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                    }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-xl font-bold font-mono text-foreground">
-                  {formatNumber(riskTotal)}
-                </span>
-                <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">ทั้งหมด</span>
-              </div>
-            </div>
-
-            {/* Legend */}
-            <div className="w-full grid grid-cols-3 gap-2 mt-2 pt-3 border-t border-border-subtle text-center font-mono">
-              <div className="space-y-0.5">
-                <div className="flex items-center justify-center gap-1 text-[11px] text-success font-semibold">
-                  <span className="size-2 rounded-full bg-success" />
-                  <span>Low</span>
-                </div>
-                <div className="text-xs font-bold text-foreground">
-                  {formatNumber(data.risk_distribution.low)}
+          <CardContent className="p-4 pt-0">
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <div className="h-44 w-44 shrink-0 flex items-center justify-center relative">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={riskDonut}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={48}
+                      outerRadius={70}
+                      paddingAngle={3}
+                      dataKey="value"
+                      isAnimationActive={false}
+                    >
+                      {riskDonut.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "var(--card)",
+                        borderColor: "var(--border)",
+                        borderRadius: "0.5rem",
+                        fontSize: "12px",
+                        color: "var(--foreground)",
+                        boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                      }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                  <span className="text-xl font-bold font-mono text-foreground">
+                    {formatNumber(riskTotal)}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">ทั้งหมด</span>
                 </div>
               </div>
 
-              <div className="space-y-0.5">
-                <div className="flex items-center justify-center gap-1 text-[11px] text-warning font-semibold">
-                  <span className="size-2 rounded-full bg-warning" />
-                  <span>Med</span>
-                </div>
-                <div className="text-xs font-bold text-foreground">
-                  {formatNumber(data.risk_distribution.medium)}
-                </div>
-              </div>
-
-              <div className="space-y-0.5">
-                <div className="flex items-center justify-center gap-1 text-[11px] text-danger font-semibold">
-                  <span className="size-2 rounded-full bg-danger" />
-                  <span>High</span>
-                </div>
-                <div className="text-xs font-bold text-foreground">
-                  {formatNumber(data.risk_distribution.high)}
-                </div>
+              {/* Level bars */}
+              <div className="flex-1 w-full space-y-3 font-mono">
+                {[
+                  { label: "สูง", value: data.risk_distribution.high || 0, color: RISK_PALETTE.high },
+                  { label: "กลาง", value: data.risk_distribution.medium || 0, color: RISK_PALETTE.medium },
+                  { label: "ต่ำ", value: data.risk_distribution.low || 0, color: RISK_PALETTE.low },
+                ].map((row) => (
+                  <div key={row.label} className="flex items-center gap-3">
+                    <span className="w-8 shrink-0 text-xs text-muted-foreground font-sans">{row.label}</span>
+                    <div className="flex-1 h-2.5 rounded-full bg-muted overflow-hidden">
+                      <div
+                        className="h-full rounded-full"
+                        style={{
+                          width: `${riskTotal > 0 ? Math.max((row.value / riskTotal) * 100, row.value > 0 ? 4 : 0) : 0}%`,
+                          backgroundColor: row.color,
+                        }}
+                      />
+                    </div>
+                    <span className="w-8 shrink-0 text-right text-sm font-bold text-foreground">
+                      {formatNumber(row.value)}
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
           </CardContent>

@@ -75,11 +75,11 @@ graph TD
     
     %% Processing Tasks (ส่วนที่เป็นข้อความสีดำบนพื้นเทา)
     NodeCache -- Miss_ไม่เคย --> Task1[Task 1 Metadata]
-    Task1 --> Task2[Task 2 OCR]
-    Task2 --> Task3[Task 3 Forgery]
+    Task1 --> Task2[Task 2 Forgery]
+    Task2 --> Task3[Task 3 OCR]
     
     %% Error Handling & Logic Branching
-    Task3 --> PartialFail[Partial Failure Timeout 5s]
+    Task3 --> PartialFail[Partial Failure Timeout 120/180/300s]
     PartialFail --> NodeKeyword{เจอ Keyword อันตราย}
     
     NodeKeyword -- ไม่เจอความเสี่ยงชัดเจน --> Task4[Task 4 Source]
@@ -139,9 +139,9 @@ graph TD
    - **Miss**: ไม่เคยตรวจ ให้เข้าสู่ Pipeline การตรวจสอบ
 5. **Analysis Tasks**:
    - **Task 1 Metadata**: ดึงข้อมูล EXIF/GPS (สกัด+แสดงผลเท่านั้น ไม่นำไปคำนวณ Risk Score — มติ DOC-10)
-   - **Task 2 OCR**: อ่านข้อความในภาพ
-   - **Task 3 Forgery**: ตรวจสอบการตัดต่อ (Semantic Segmentation)
-   - **Partial Failure**: ดักจับกรณี Timeout
+   - **Task 2 Forgery**: ตรวจสอบการตัดต่อ (Semantic Segmentation)
+   - **Task 3 OCR**: อ่านข้อความในภาพ
+   - **Partial Failure**: ดักจับกรณี Timeout (ONNX 120s / OCR 180s / XAI 300s เกินแล้วใช้ค่า default ไปต่อ ไม่ล้มสแกน)
    - **Keyword Check**: ตรวจสอบคำเสี่ยงสูง
    - **Task 4 Source**: ค้นหาที่มาของภาพ
      - หากพบน้อย (<=1): ความเสี่ยงต่ำ ส่งไปตรวจ AI-Gen (Task 5)

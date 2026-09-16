@@ -15,6 +15,7 @@ from pydantic import UUID4
 from app.models import ExportJob, ScamReport, Scan, AuditLog
 from app.core.config import settings, TH_TIMEZONE
 from app.core.database import async_session
+from app.core.websocket import manager
 
 SERVER_DIR = Path(__file__).resolve().parents[2]
 STORAGE_DIR = os.getenv("EXPORT_STORAGE_DIR", str(SERVER_DIR / "private_storage" / "exports"))
@@ -161,9 +162,11 @@ async def process_export_job(job_id: str):
             )
             db.add(audit)
             await db.commit()
+            await manager.broadcast({"type": "refresh_dashboard"})
             
         except Exception as e:
             job.status = "failed"
             job.error_message = str(e)
             job.completed_at = datetime.now(TH_TIMEZONE)
             await db.commit()
+            await manager.broadcast({"type": "refresh_dashboard"})

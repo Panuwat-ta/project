@@ -132,7 +132,16 @@ def main():
         return
     image_bytes = base64.b64decode(input_data)
 
-    session = ort.InferenceSession(MODEL_PATH, providers=['CUDAExecutionProvider'])
+    # จำกัด CUDA arena ของ ORT: default กวาด VRAM ว่างทั้งใบ (gpu_mem_limit=SIZE_MAX)
+    # ชนกับ Surya (process หลัก) ตอนสแกนซ้อนกัน -> OOM. โมเดลเล็ก (2MB + 95MB data,
+    # tile 512) 512MB เหลือเฟือ
+    session = ort.InferenceSession(
+        MODEL_PATH,
+        providers=[('CUDAExecutionProvider', {
+            'gpu_mem_limit': 512 * 1024 * 1024,
+            'arena_extend_strategy': 'kSameAsRequested',
+        })],
+    )
     input_name = session.get_inputs()[0].name
 
     image = Image.open(io.BytesIO(image_bytes)).convert("RGB")

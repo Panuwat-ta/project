@@ -8,7 +8,9 @@ import {
   AlertTriangle,
   Play,
 } from "lucide-react";
-import { fetchModels, deployModel, dryRunModel, getAccessToken, getWebSocketUrl } from "@/lib/api";
+import { fetchModels, deployModel, dryRunModel } from "@/lib/api";
+import { useDashboardWebSocket } from "@/lib/use-dashboard-ws";
+import { useAutoRefresh } from "@/lib/use-auto-refresh";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import { Modal } from "@/components/ui/Modal";
@@ -41,10 +43,10 @@ export function ModelsList() {
 
   const toast = useToast();
 
-  const loadModels = useCallback(async (manual = false) => {
+  const loadModels = useCallback(async (manual = false, quiet = false) => {
     try {
       if (manual) setIsRefreshing(true);
-      else setLoading(true);
+      else if (!quiet) setLoading(true);
 
       const data = await fetchModels();
       const sortedItems = (data.items || []).slice().sort((a, b) => {
@@ -61,6 +63,7 @@ export function ModelsList() {
       setModels(sortedItems);
       if (manual) toast.success("รีเฟรชข้อมูลโมเดล AI สำเร็จ");
     } catch (err) {
+      if (quiet) return;
       console.error("Load models failed:", err);
       toast.error("ไม่สามารถโหลดข้อมูลโมเดลได้: " + err.message);
     } finally {
@@ -71,32 +74,15 @@ export function ModelsList() {
 
   useEffect(() => {
     loadModels();
-
-    // WebSocket real-time updates
-    const token = getAccessToken();
-    const wsUrl = getWebSocketUrl("/admin/dashboard", token);
-
-    let ws;
-    try {
-      ws = new WebSocket(wsUrl);
-      ws.onmessage = (event) => {
-        try {
-          const msg = JSON.parse(event.data);
-          if (msg.type === "refresh_dashboard") {
-            loadModels();
-          }
-        } catch (e) {
-          console.error("WS Parse error", e);
-        }
-      };
-    } catch {
-      // ignore
-    }
-
-    return () => {
-      if (ws) ws.close();
-    };
   }, [loadModels]);
+
+  // WebSocket real-time updates (single connection + backoff reconnect)
+  useDashboardWebSocket({
+    onRefresh: () => loadModels(false, true),
+  });
+
+  // Polling fallback every 30s (visible tab only, silent)
+  useAutoRefresh(() => loadModels(false, true), 30000);
 
   const handleDryRun = async (model) => {
     setDryRunState({ isLoading: true, modelId: model.id, result: null });
@@ -234,25 +220,25 @@ export function ModelsList() {
                     <div>
                       <span className="text-muted-foreground text-[11px] font-medium">Mean IoU (mIoU):</span>
                       <div className="text-sm font-bold text-primary">
-                        {model.m_iou != null ? `${(model.m_iou * 100).toFixed(2)}%` : (model.accuracy ? `${(model.accuracy * 100).toFixed(1)}%` : "-")}
+                        {model.m_iou != null ? `${(model.m_iou * 100).toFixed(2)}%` : "-"}
                       </div>
                     </div>
                     <div>
                       <span className="text-muted-foreground text-[11px] font-medium">All Acc (aAcc):</span>
                       <div className="text-sm font-bold text-success">
-                        {model.a_acc != null ? `${(model.a_acc * 100).toFixed(2)}%` : "98.5%"}
+                        {model.a_acc != null ? `${(model.a_acc * 100).toFixed(2)}%` : "-"}
                       </div>
                     </div>
                     <div>
                       <span className="text-muted-foreground text-[11px] font-medium">Mean Acc (mAcc):</span>
                       <div className="text-sm font-bold text-foreground">
-                        {model.m_acc != null ? `${(model.m_acc * 100).toFixed(2)}%` : "84.2%"}
+                        {model.m_acc != null ? `${(model.m_acc * 100).toFixed(2)}%` : "-"}
                       </div>
                     </div>
                     <div>
                       <span className="text-muted-foreground text-[11px] font-medium">Mean Dice (mDice):</span>
                       <div className="text-sm font-bold text-info">
-                        {model.m_dice != null ? `${(model.m_dice * 100).toFixed(2)}%` : "82.6%"}
+                        {model.m_dice != null ? `${(model.m_dice * 100).toFixed(2)}%` : "-"}
                       </div>
                     </div>
                   </div>
@@ -261,12 +247,12 @@ export function ModelsList() {
                   <div className="space-y-1.5 font-mono text-[11px] text-muted-foreground">
                     <div className="flex items-center justify-between">
                       <span className="font-medium">Dataset Reference:</span>
-                      <span className="text-foreground font-semibold truncate max-w-[150px]">{model.dataset_reference || model.dataset_ref || "ScamGuard-v2.1"}</span>
+                      <span className="text-foreground font-semibold truncate max-w-[150px]">{model.dataset_reference || "ไม่ระบุ"}</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="font-medium">Checksum:</span>
-                      <span className="text-foreground font-semibold truncate max-w-[140px]" title={model.artifact_checksum || model.checksum}>
-                        {model.artifact_checksum || model.checksum || "sha256:verified"}
+                      <span className="text-foreground font-semibold truncate max-w-[140px]" title={model.artifact_checksum}>
+                        {model.artifact_checksum || "-"}
                       </span>
                     </div>
                     <div className="flex items-center justify-between">

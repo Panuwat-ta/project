@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useState, useCallback } from "react";
+import { createContext, useContext, useState, useCallback, useMemo } from "react";
 import { CheckCircle2, AlertTriangle, AlertCircle, Info, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -25,13 +25,19 @@ export function ToastProvider({ children }) {
     return id;
   }, [removeToast]);
 
-  const toast = {
-    success: (msg, title) => addToast("success", msg, title),
-    error: (msg, title) => addToast("error", msg, title, 5000),
-    warning: (msg, title) => addToast("warning", msg, title),
-    info: (msg, title) => addToast("info", msg, title),
-    dismiss: removeToast,
-  };
+  // Memoized so consumers' useCallback/useEffect deps stay stable.
+  // Without this, every toast render recreates the object and any
+  // WebSocket effect depending on it reconnects in a loop.
+  const toast = useMemo(
+    () => ({
+      success: (msg, title) => addToast("success", msg, title),
+      error: (msg, title) => addToast("error", msg, title, 5000),
+      warning: (msg, title) => addToast("warning", msg, title),
+      info: (msg, title) => addToast("info", msg, title),
+      dismiss: removeToast,
+    }),
+    [addToast, removeToast]
+  );
 
   return (
     <ToastContext.Provider value={toast}>

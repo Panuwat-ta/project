@@ -19,6 +19,8 @@ import { Textarea } from "@/components/ui/Input";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell, TableEmpty } from "@/components/ui/Table";
 import { useToast } from "@/components/ui/ToastContext";
 import { formatDate, formatNumber } from "@/lib/utils";
+import { useAutoRefresh } from "@/lib/use-auto-refresh";
+import { useDashboardWebSocket } from "@/lib/use-dashboard-ws";
 
 export function UserDetail() {
   const { id } = useParams();
@@ -35,13 +37,14 @@ export function UserDetail() {
   const [reasonError, setReasonError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const fetchUserData = useCallback(async () => {
+  const fetchUserData = useCallback(async (quiet = false) => {
     try {
-      setLoading(true);
-      setError(null);
+      if (!quiet) setLoading(true);
+      if (!quiet) setError(null);
       const data = await getUser(id);
       setUser(data);
     } catch (err) {
+      if (quiet) return;
       console.error("Fetch user detail error:", err);
       setError(err.message || "ไม่สามารถโหลดข้อมูลผู้ใช้ได้");
       toast.error("เกิดข้อผิดพลาดในการโหลดข้อมูลผู้ใช้");
@@ -53,6 +56,12 @@ export function UserDetail() {
   useEffect(() => {
     fetchUserData();
   }, [fetchUserData]);
+
+  // Silent auto-refresh every 30s (visible tab only)
+  useAutoRefresh(() => fetchUserData(true), 30000);
+
+  // Instant refresh on server push (ban/unban by another admin)
+  useDashboardWebSocket({ onRefresh: () => fetchUserData(true) });
 
   const handleToggleStatus = async () => {
     if (!reason.trim()) {
@@ -233,11 +242,11 @@ export function UserDetail() {
               </span>
             </div>
 
-            {user.banned_reason && (
+            {user.ban_reason && (
               <div className="py-2 space-y-1">
                 <span className="text-danger font-semibold">เหตุผลการระงับล่าสุด:</span>
                 <p className="text-danger font-sans bg-danger-subtle p-2 rounded border border-danger-border">
-                  {user.banned_reason}
+                  {user.ban_reason}
                 </p>
               </div>
             )}
@@ -272,14 +281,14 @@ export function UserDetail() {
                         #{scan.id}
                       </TableCell>
                       <TableCell className="font-mono text-xs font-bold text-foreground">
-                        {scan.risk_score}%
+                        {scan.total_risk_score ?? 0}%
                       </TableCell>
                       <TableCell>
                         <Badge
-                          variant={scan.risk_score >= 70 ? "danger" : scan.risk_score >= 40 ? "warning" : "success"}
+                          variant={(scan.total_risk_score ?? 0) >= 70 ? "danger" : (scan.total_risk_score ?? 0) >= 40 ? "warning" : "success"}
                           size="sm"
                         >
-                          {scan.risk_level || (scan.risk_score >= 70 ? "HIGH" : scan.risk_score >= 40 ? "MEDIUM" : "LOW")}
+                          {scan.risk_grade ? scan.risk_grade.toUpperCase() : ((scan.total_risk_score ?? 0) >= 70 ? "HIGH" : (scan.total_risk_score ?? 0) >= 40 ? "MEDIUM" : "LOW")}
                         </Badge>
                       </TableCell>
                       <TableCell className="font-mono text-xs text-muted-foreground">

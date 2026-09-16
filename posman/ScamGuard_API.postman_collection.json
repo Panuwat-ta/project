@@ -22,7 +22,20 @@
                 "health"
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         }
       ]
     },
@@ -55,7 +68,21 @@
                 "register"
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});",
+                  "pm.test('Register returns id+email', function(){if(pm.response.code===201){var j=pm.response.json();pm.expect(j.email).to.eql('test@scamguard.com');}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Login",
@@ -68,7 +95,13 @@
                   "if (jsonData.access_token) {",
                   "    pm.collectionVariables.set(\"access_token\", jsonData.access_token);",
                   "    console.log(\"Token saved to collection variables\");",
-                  "}"
+                  "}",
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});",
+                  "if (jsonData.access_token) { pm.collectionVariables.set('access_token', jsonData.access_token); }",
+                  "if (jsonData.refresh_token) { pm.collectionVariables.set('refresh_token', jsonData.refresh_token); }",
+                  "pm.test('Has access_token', function(){var j=pm.response.json();pm.expect(j.access_token).to.be.a('string');});"
                 ],
                 "type": "text/javascript"
               }
@@ -137,7 +170,20 @@
                 "refresh"
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Get Me",
@@ -166,7 +212,20 @@
                 "me"
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Logout",
@@ -195,7 +254,20 @@
                 "logout"
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         }
       ]
     },
@@ -213,7 +285,11 @@
                   "if (jsonData.id) {",
                   "    pm.collectionVariables.set(\"scan_id\", jsonData.id);",
                   "    console.log(\"Scan ID saved to collection variables\");",
-                  "}"
+                  "}",
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});",
+                  "pm.test('Scan returns id', function(){if(pm.response.code===200){var j=pm.response.json();pm.expect(j.id||j.scan_id).to.exist;}});"
                 ],
                 "type": "text/javascript"
               }
@@ -283,7 +359,20 @@
                 "{{scan_id}}"
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         }
       ]
     },
@@ -334,7 +423,20 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Get History Detail",
@@ -363,7 +465,20 @@
                 "{{scan_id}}"
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Delete History",
@@ -392,7 +507,60 @@
                 "{{scan_id}}"
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete All History",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/history",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "history"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Delete all returns 204', function(){pm.expect(pm.response.code).to.eql(204);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         }
       ]
     },
@@ -434,7 +602,22 @@
                 "reports"
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});",
+                  "var j2=pm.response.json(); if(j2.id){pm.collectionVariables.set('report_id',j2.id);}",
+                  "pm.test('Report pending', function(){if(pm.response.code===201){pm.expect(pm.response.json().status).to.eql('pending');}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Get Categories",
@@ -453,7 +636,20 @@
                 "categories"
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Get My Reports",
@@ -496,7 +692,20 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         }
       ]
     },
@@ -514,7 +723,11 @@
                   "if (jsonData.access_token) {",
                   "    pm.collectionVariables.set(\"admin_token\", jsonData.access_token);",
                   "    console.log(\"Admin token saved to collection variables\");",
-                  "}"
+                  "}",
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});",
+                  "var a=pm.response.json(); if(a.refresh_token){pm.collectionVariables.set('admin_refresh_token',a.refresh_token);}"
                 ],
                 "type": "text/javascript"
               }
@@ -574,7 +787,20 @@
                 "refresh"
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Admin Me",
@@ -603,7 +829,20 @@
                 "me"
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Admin Logout",
@@ -632,7 +871,20 @@
                 "logout"
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Get Dashboard",
@@ -661,7 +913,20 @@
                 "dashboard"
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Get Health",
@@ -690,7 +955,20 @@
                 "health"
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Global Search",
@@ -725,7 +1003,20 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "List Reports",
@@ -776,7 +1067,21 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});",
+                  "var r=pm.response.json(); if(r.items&&r.items.length){pm.collectionVariables.set('report_id',r.items[0].id);}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Get Report Detail",
@@ -812,7 +1117,20 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Start Review",
@@ -858,7 +1176,20 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Review Report",
@@ -903,7 +1234,20 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "List Users",
@@ -946,7 +1290,21 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});",
+                  "var u=pm.response.json(); if(u.items&&u.items.length){pm.collectionVariables.set('user_id',u.items[0].id);}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Get User Detail",
@@ -982,7 +1340,20 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Ban Unban User",
@@ -1027,7 +1398,20 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "List Models",
@@ -1056,7 +1440,20 @@
                 "models"
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Deploy Model",
@@ -1102,7 +1499,20 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Dry-Run Model",
@@ -1139,7 +1549,20 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "List Audit Logs",
@@ -1190,7 +1613,20 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Create Export Job",
@@ -1229,7 +1665,21 @@
                 "export-jobs"
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});",
+                  "var c=pm.response.json(); if(c.id){pm.collectionVariables.set('export_job_id',c.id);}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "List Export Jobs",
@@ -1269,7 +1719,21 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});",
+                  "var e=pm.response.json(); if(e.items&&e.items.length){pm.collectionVariables.set('export_job_id',e.items[0].id);}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Get Export Job",
@@ -1306,7 +1770,511 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Me",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "me"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"full_name\": \"Admin Updated\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Sessions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/sessions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "sessions"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});",
+                  "var s=pm.response.json(); if(s.items&&s.items.length){pm.collectionVariables.set('session_id',s.items[0].id);}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Revoke Session",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/sessions/{{session_id}}/revoke",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "sessions",
+                "{{session_id}}",
+                "revoke"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cancel Export Job",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/dataset/export-jobs/{{export_job_id}}/cancel",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "dataset",
+                "export-jobs",
+                "{{export_job_id}}",
+                "cancel"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Has JSON body', function(){if(pm.response.code!==204){pm.response.to.have.jsonBody();}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Download Export Job",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/dataset/export-jobs/{{export_job_id}}/download",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "dataset",
+                "export-jobs",
+                "{{export_job_id}}",
+                "download"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Download ready or pending', function(){pm.expect(pm.response.code).to.be.oneOf([200,404,409]);});",
+                  "pm.test('Response time < 10s', function(){pm.expect(pm.response.responseTime).to.be.below(10000);});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Delete My Account",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/users/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "me"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"password\": \"password123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is success', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,204]);});",
+                  "pm.test('Response time < 5s', function(){pm.expect(pm.response.responseTime).to.be.below(5000);});",
+                  "pm.test('Delete msg', function(){if(pm.response.code===200){pm.expect(pm.response.json().message).to.exist;}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Negative",
+      "item": [
+        {
+          "name": "Register Duplicate Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"test@scamguard.com\",\n    \"password\": \"password123\",\n    \"full_name\": \"Test User\",\n    \"system_consent\": true,\n    \"research_consent\": false\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Register Duplicate Email -> 400', function(){pm.expect(pm.response.code).to.eql(400);});",
+                  "pm.test('Has error detail', function(){if(pm.response.code>=400){pm.expect(pm.response.json().detail).to.exist;}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register Short Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"short@scamguard.com\",\n    \"password\": \"abc\",\n    \"full_name\": \"Short\",\n    \"system_consent\": true,\n    \"research_consent\": false\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Register Short Password -> 422', function(){pm.expect(pm.response.code).to.eql(422);});",
+                  "pm.test('Has error detail', function(){if(pm.response.code>=400){pm.expect(pm.response.json().detail).to.exist;}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login Wrong Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "username",
+                  "value": "test@scamguard.com",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "WrongPassword999",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Login Wrong Password -> 401', function(){pm.expect(pm.response.code).to.eql(401);});",
+                  "pm.test('Has error detail', function(){if(pm.response.code>=400){pm.expect(pm.response.json().detail).to.exist;}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Me Without Token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Get Me Without Token -> 401', function(){pm.expect(pm.response.code).to.eql(401);});",
+                  "pm.test('Has error detail', function(){if(pm.response.code>=400){pm.expect(pm.response.json().detail).to.exist;}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "User Token on Admin Endpoint",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/users?page=1&limit=5",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('User Token on Admin Endpoint -> 403', function(){pm.expect(pm.response.code).to.eql(403);});",
+                  "pm.test('Has error detail', function(){if(pm.response.code>=400){pm.expect(pm.response.json().detail).to.exist;}});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         }
       ]
     }
@@ -1327,6 +2295,34 @@
     {
       "key": "admin_token",
       "value": ""
+    },
+    {
+      "key": "report_id",
+      "value": ""
+    },
+    {
+      "key": "user_id",
+      "value": ""
+    },
+    {
+      "key": "session_id",
+      "value": ""
+    },
+    {
+      "key": "export_job_id",
+      "value": ""
+    },
+    {
+      "key": "refresh_token",
+      "value": ""
+    },
+    {
+      "key": "admin_refresh_token",
+      "value": ""
+    },
+    {
+      "key": "report_version",
+      "value": "1"
     }
   ]
 }

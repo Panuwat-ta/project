@@ -19,6 +19,8 @@ import { Textarea } from "@/components/ui/Input";
 import { HeatmapComparator } from "@/components/ui/HeatmapComparator";
 import { useToast } from "@/components/ui/ToastContext";
 import { formatDate } from "@/lib/utils";
+import { useAutoRefresh } from "@/lib/use-auto-refresh";
+import { useDashboardWebSocket } from "@/lib/use-dashboard-ws";
 
 export function ReportDetail() {
   const { id } = useParams();
@@ -40,16 +42,18 @@ export function ReportDetail() {
   const [adminNote, setAdminNote] = useState("");
   const [noteError, setNoteError] = useState("");
 
-  const loadReport = useCallback(async () => {
-    setIsLoading(true);
-    setError("");
+  const loadReport = useCallback(async (quiet = false) => {
+    if (!quiet) setIsLoading(true);
+    if (!quiet) setError("");
     try {
       const data = await fetchReportDetail(id);
       setReport(data);
-      if (data.admin_note) {
+      // Don't clobber the note the admin may be typing during background polls.
+      if (!quiet && data.admin_note) {
         setAdminNote(data.admin_note);
       }
     } catch (err) {
+      if (quiet) return;
       console.error("Load report detail failed:", err);
       setError(err.message || "ไม่สามารถโหลดข้อมูลรายงานได้");
       toast.error("เกิดข้อผิดพลาดในการโหลดรายงาน: " + err.message);
@@ -61,6 +65,12 @@ export function ReportDetail() {
   useEffect(() => {
     loadReport();
   }, [loadReport]);
+
+  // Silent auto-refresh every 30s (visible tab only, never touches the typed note)
+  useAutoRefresh(() => loadReport(true), 30000);
+
+  // Instant refresh on server push (decision by another admin)
+  useDashboardWebSocket({ onRefresh: () => loadReport(true) });
 
   // Handle "Start Review" transition: pending -> reviewing
   const handleStartReview = async () => {
@@ -186,7 +196,7 @@ export function ReportDetail() {
                 รายงานตรวจสอบ #{report.id}
               </h2>
               <StatusBadge status={report.status} />
-              <RiskBadge score={report.risk_score} />
+              <RiskBadge score={report.scan?.total_risk_score} />
             </div>
             <p className="text-xs text-muted-foreground mt-0.5 font-mono">
               ส่งตรวจเมื่อ: {formatDate(report.created_at)}
@@ -237,8 +247,8 @@ export function ReportDetail() {
         {/* Left: Dual Layer Heatmap & Visual Anomaly Visualizer (7 cols) */}
         <div className="lg:col-span-7 space-y-6">
           <HeatmapComparator
-            originalUrl={report.image_url}
-            heatmapUrl={report.heatmap_url}
+            originalUrl={report.scan?.raw_image_url}
+            heatmapUrl={report.scan?.heatmap_image_url}
             title="การพิสูจน์ภาพตัดต่อ / AI Deepfake (SegFormer Anomaly)"
           />
 
@@ -285,7 +295,7 @@ export function ReportDetail() {
                     1. Visual Anomaly (SegFormer AI)
                   </span>
                   <Badge variant={multiLayer.visual_anomaly?.score >= 70 ? "danger" : "primary"} size="sm">
-                    {multiLayer.visual_anomaly?.score ?? report.risk_score}%
+                    {multiLayer.visual_anomaly?.score ?? report.scan?.total_risk_score ?? 0}%
                   </Badge>
                 </div>
                 <p className="text-xs text-muted-foreground">
@@ -341,14 +351,14 @@ export function ReportDetail() {
             <CardContent className="space-y-3 font-mono text-xs">
               <div className="flex items-center justify-between py-1.5 border-b border-border-subtle">
                 <span className="text-muted-foreground font-medium">Image Hash (SHA-256):</span>
-                <span className="text-foreground font-semibold truncate max-w-[180px]" title={report.image_hash}>
-                  {report.image_hash || "-"}
+                <span className="text-foreground font-semibold truncate max-w-[180px]" title={report.scan?.image_hash}>
+                  {report.scan?.image_hash || "-"}
                 </span>
               </div>
 
               <div className="flex items-center justify-between py-1.5 border-b border-border-subtle">
                 <span className="text-muted-foreground font-medium">ขนาดความละเอียด:</span>
-                <span className="text-foreground font-semibold">{report.metadata?.dimensions || "1080 x 1920"}</span>
+                <span className="text-foreground font-semibold">{report.scan?.exif_data?.dimensions || report.metadata?.dimensions || "ไม่ระบุ"}</span>
               </div>
 
               <div className="flex items-center justify-between py-1.5 border-b border-border-subtle">
@@ -365,7 +375,7 @@ export function ReportDetail() {
 
               <div className="flex items-center justify-between py-1.5">
                 <span className="text-muted-foreground font-medium">ผู้ส่งรายงาน:</span>
-                <span className="text-foreground font-semibold">{report.user_email || "ไม่ระบุ"}</span>
+                <span className="text-foreground font-semibold">{report.user?.email || "ไม่ระบุ"}</span>
               </div>
             </CardContent>
           </Card>
