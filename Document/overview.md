@@ -19,13 +19,13 @@
 ```mermaid
 flowchart LR
     U[ผู้ใช้] --> M[ScamGuard Mobile App<br/>Flutter]
-    A[ผู้ดูแล] --> W[Admin Portal<br/>React]
+    A[ผู้ดูแล] --> W[Admin Portal<br/>React 19 + Vite 8 + Tailwind CSS v4]
     M -->|HTTPS: JSON / multipart| API[FastAPI API]
     W -->|HTTPS: JSON| API
     API --> AI[AI inference<br/>Surya OCR + ONNX/SegFormer]
     API --> DB[(PostgreSQL)]
     API --> CACHE[(Redis cache)]
-    API --> STORE[(Object/Local storage<br/>ภาพและ heatmap)]
+    API --> STORE[(Local /uploads<br/>ภาพและ heatmap)]
     API -. optional (ปิดได้) .-> EXT[Reverse image search / FCM]
 ```
 
@@ -36,7 +36,7 @@ flowchart LR
 | AI inference | OCR ไทย/อังกฤษ, ตรวจความผิดปกติของภาพ, สร้าง heatmap |
 | PostgreSQL | เก็บผู้ใช้ consent scan report รุ่นโมเดล และ audit log |
 | Redis | เก็บผลที่อ้างอิงจาก hash ของภาพเพื่อลดการรัน AI ซ้ำ |
-| Storage | เก็บภาพต้นฉบับและภาพ heatmap โดยต้องจำกัดสิทธิ์การเข้าถึง |
+| Storage | เก็บภาพต้นฉบับและภาพ heatmap ใน `LOCAL_UPLOAD_DIR` และเสิร์ฟผ่าน `/uploads` |
 | Admin Portal | แดชบอร์ด คิวรายงาน จัดการผู้ใช้ รุ่นโมเดล และ audit log |
 
 ## 3. ลอจิกการสแกนภาพ (แกนหลักของระบบ)
@@ -58,7 +58,7 @@ sequenceDiagram
     else ไม่พบผล
         API->>AI: OCR + วิเคราะห์ความผิดปกติของภาพ
         AI-->>API: ข้อความ, คะแนนภาพ, heatmap
-        API->>API: วิเคราะห์คำเสี่ยง/metadata และรวมคะแนน
+        API->>API: วิเคราะห์คำเสี่ยง; รวมคะแนน Visual/Textual/Source (EXIF แสดงผลเท่านั้น)
         API->>C: บันทึก scan และผล cache
     end
     API-->>M: คะแนน ระดับความเสี่ยง ปัจจัย และ URL heatmap
@@ -74,7 +74,7 @@ sequenceDiagram
 5. ระบบรวมคะแนน แปลงเป็นระดับความเสี่ยง บันทึก `Scan` และส่งผลให้แอปแสดงแก่เจ้าของภาพ
 6. หาก OCR, โมเดล หรือบริการภายนอกล้มเหลว ระบบต้องแสดงสถานะ/ผลบางส่วนอย่างชัดเจน ไม่บันทึกว่า “สำเร็จ” ทั้งที่วิเคราะห์ไม่ครบ
 
-งาน AI ที่หนักต้องรันนอก event loop ของ FastAPI (thread pool หรือ worker แยก) เพื่อไม่ให้ API อื่นหยุดรอ โดยแผนงานกำหนดให้ ONNX worker ทำงานแบบ subprocess แยกและสื่อสารผ่าน standard input/output
+code v1 เป็น FastAPI application เดียวและรัน SegFormer ONNX ใน worker subprocess ที่สื่อสารผ่าน standard input/output เพื่อไม่ให้ inference บล็อก event loop; ไม่ได้ deploy เป็น microservices แยกกัน
 
 ## 4. การวิเคราะห์แบบหลายชั้น
 
@@ -126,8 +126,10 @@ $$
 การเทรน semantic segmentation ใช้ loss แบบผสม เพื่อให้โมเดลเรียนรู้ทั้งความถูกต้องรายพิกเซลและขอบเขตของรอยตัดต่อ:
 
 $$
-L = L_{BCE} + L_{Dice}
+L = L_{CE,\,class\_weight=[1.0,2.5]} + 1.5L_{Dice}
 $$
+
+ตาม config v10 จริง Cross-Entropy ใช้ `loss_weight=1.0`, `class_weight=[1.0, 2.5]` และ Dice Loss ใช้ `loss_weight=1.5`
 
 ใช้ AdamW พร้อม differential learning rates: backbone ใช้ `lr_mult = 0.1` เพื่อคงความรู้จากโมเดล pre-trained ไว้ ส่วน classification head ใช้ `lr_mult = 10.0` เพื่อปรับเข้ากับข้อมูลสแกมใหม่ได้เร็วขึ้น
 

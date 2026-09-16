@@ -28,28 +28,28 @@ Surya-OCR อาศัยสถาปัตยกรรมระดับ Vision
 1. **Vision Encoder (Feature Extraction):**
    ภาพอินพุต `I` จะถูกแปลงเป็น Sequence ของ Vision Tokens `F_v` ผ่านเครือข่าย Transformer/CNN:
    ```text
-F_v = Encoder_vision(I)
-```
+   F_v = Encoder_vision(I)
+   ```
 
 2. **Text Decoder (Autoregressive Text Generation):**
    การทำนายข้อความ `Y = (y_1, y_2, …, y_T)` อาศัยความน่าจะเป็นแบบมีเงื่อนไข (Conditional Probability) ในการทำนายตัวอักษรถัดไป:
    ```text
-P(Y | I) = Π_t=1^T P(y_t | y_<t, F_v)
-```
+   P(Y | I) = Π_t=1^T P(y_t | y_<t, F_v)
+   ```
    ฟังก์ชันเป้าหมาย (Objective Function) เพื่อลดค่าข้อผิดพลาดระหว่างการเทรนคือ Cross-Entropy Loss (`L_CE`):
    ```text
-L_CE = - Σ_t=1^T log P(y_t | y_<t, F_v)
-```
+   L_CE = - Σ_t=1^T log P(y_t | y_<t, F_v)
+   ```
 
 3. **Layout Detection (Bounding Box Regression):**
    เพื่อกำหนดขอบเขต (Bounding Box) ของตัวอักษร โมเดลใช้ฟังก์ชัน Smooth L1 Loss ในการเทียบพิกัด `(x, y, w, h)`:
    ```text
-L_loc(b, b̂) = Σ_{i ∈ {x,y,w,h}} smooth_L_1(b_i - b̂_i)
-```
+   L_loc(b, b̂) = Σ_{i ∈ {x,y,w,h}} smooth_L_1(b_i - b̂_i)
+   ```
    เมื่อ `smooth_L_1(x)` ถูกนิยามเป็น:
    ```text
-smooth_L_1(x) = 0.5 x^2, if |x| < 1; |x| - 0.5, otherwise
-```
+   smooth_L_1(x) = 0.5 x^2, if |x| < 1; |x| - 0.5, otherwise
+   ```
 
 ---
 

@@ -3,7 +3,7 @@ title: "สถาปัตยกรรม Mobile App"
 category: architecture
 tags: [Flutter, BLoC, Clean-Architecture, MVVM, Android, image-upload]
 sources: [design/architecture.md, design/mobile.md, design/design.md]
-updated: 2026-08-02
+updated: 2026-09-16
 ---
 
 # สถาปัตยกรรม Mobile App
@@ -34,19 +34,19 @@ updated: 2026-08-02
 
 ---
 
-## หน้าจอหลัก / User Flow
+## Routes และ User Flow ที่มีใน code
 
-1. **หน้าจอ Authentication** — สมัครสมาชิก, Login (email/password; Google OAuth เป็น Phase 2)
-2. **หน้าจอรับรูปภาพ** — เลือกจาก Gallery พร้อม Image Cropper เพื่อโฟกัสบริเวณที่ต้องการตรวจก่อนส่ง
-3. **หน้าจอรอประมวลผล** — แสดงระหว่าง Pipeline ทำงาน (สูงสุด 15 วินาที หรือเกือบทันทีสำหรับ Cache Hit)
-4. **หน้าจอรายงานความเสี่ยง** — แสดง:
-   - Overall Risk Score แบบ color badge 3 ระดับ (Low / Medium / High)
-   - Heatmap ซ้อนทับรูป — toggle เปิด/ปิดได้
-   - คำหลอกลวงที่พบ (ถ้ามี)
-   - ผลการ Reverse Image Search
-   - คะแนนและระดับความเสี่ยงแยกแต่ละมิติ (Multi-Factor Breakdown: Visual, Textual, Source)
-5. **หน้าจอประวัติสแกน** — รายการสแกนก่อนหน้าพร้อม timestamp และคะแนน พร้อมการควบคุม PDPA
-6. **หน้าจอรายงาน Scam** — ผู้ใช้แจ้งว่าภาพนี้เป็น Scam จริงเพื่อให้ Admin ตรวจสอบ
+`app_router.dart` ประกาศ 16 routes (ไม่ใช่ 6 หน้าจอ):
+
+| กลุ่ม | Route |
+| :--- | :--- |
+| Entry/Auth | `/splash`, `/onboarding`, `/login`, `/register` |
+| Main shell | `/main/home`, `/main/history`, `/main/report`, `/main/settings` |
+| Settings | `/main/settings/profile`, `/main/settings/privacy` |
+| Scan/Result | `/crop`, `/loading`, `/result/:scanId`, `/heatmap/:scanId` |
+| Other | `/notifications`, `/detail/:scanId` |
+
+หน้าผลลัพธ์แสดง Overall Risk Score, badge 3 ระดับ (เขียว/amber/แดง), Heatmap, OCR, Source Verification และ Breakdown 3 มิติ Visual/Textual/Source
 
 ---
 
@@ -59,8 +59,7 @@ updated: 2026-08-02
         |
   Multipart HTTP POST → API Gateway
         |
-  Polling หรือ WebSocket รอผลลัพธ์
-  (หรือรับ FCM Push Notification เมื่อ Async Job เสร็จ)
+  Polling GET /api/v1/scan/{scan_id} ทุก 3 วินาที
         |
   แสดงหน้าจอรายงานความเสี่ยง
 ```
@@ -71,7 +70,7 @@ updated: 2026-08-02
 
 - JWT Token เก็บใน **Secure Storage**
 - ไม่เก็บข้อมูลรูปภาพบนอุปกรณ์หลังส่งประมวลผลแล้ว
-- แสดงหน้าจอยินยอม PDPA ตอน Launch ครั้งแรก สามารถถอนยินยอมได้ในหน้าตั้งค่า
+- Backend บันทึก `system_consent` และ `research_consent` จาก body ของ `POST /api/v1/auth/register`; onboarding เป็นการรับทราบฝั่ง UI ไม่ใช่จุดบันทึก consent ลง server
 
 ---
 
@@ -90,7 +89,7 @@ lib/
 
 ## Admin Portal (แยกต่างหาก)
 
-Admin Web Portal เป็น React.js + Tailwind CSS แยกต่างหากสำหรับใช้งานภายใน ดู [[architecture/backend-api]] สำหรับ Endpoint ที่ใช้
+Admin Web Portal เป็น React 19 + Vite 8 + Tailwind CSS v4 แยกต่างหากสำหรับใช้งานภายใน ดู [[architecture/backend-api]] สำหรับ Endpoint ที่ใช้
 
 **ความสามารถของ Admin Portal:**
 

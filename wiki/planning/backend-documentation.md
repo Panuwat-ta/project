@@ -3,7 +3,7 @@ title: "Backend Documentation"
 category: planning
 tags: [planning, backend, fastapi, howto]
 sources: [server/howto.md]
-updated: 2026-08-04
+updated: 2026-09-16
 ---
 
 # แนวทางการเริ่มต้นพัฒนา Backend Server (How to Start)
@@ -81,7 +81,7 @@ server/
 │   │   ├── ocr_service.py      # Surya-OCR + Scam Keywords Detection
 │   │   ├── exif_service.py     # EXIF Metadata Extraction
 │   │   ├── inference_service.py # เชื่อมต่อ AI Inference (ONNX Runtime)
-│   │   └── storage_service.py  # Cloud Storage Upload/Download + Presigned URL
+│   │   └── storage_service.py  # Local upload/heatmap files + /uploads URLs
 │   │
 │   ├── api/                    # Routing Layer (Controllers)
 │   │   ├── __init__.py
@@ -91,7 +91,7 @@ server/
 │   │       ├── auth.py         # POST /register, POST /login, POST /refresh, GET /me, POST /logout
 │   │       ├── scan.py         # POST /scan/, GET /scan/{scan_id} (เอกพจน์, prefix /api/v1)
 │   │       ├── report.py       # POST /reports, GET /reports/my, GET /reports/categories
-│   │       ├── history.py      # GET /history, GET /history/{id}, DELETE /history/{id}
+│   │       ├── history.py      # GET /history, GET /history/{scan_id}, DELETE /history/{scan_id}
 │   │       └── admin.py        # /admin/* (login/users/reports/models/deploy/audit-logs/export-jobs)
 │   │
 │   └── utils/                  # Utility Functions
@@ -132,7 +132,7 @@ server/
 | 3 | Scan | รับรูปภาพ, EXIF, OCR, Risk Score (Mock AI) | 3-4 วัน |
 | 4 | AI Inference | เชื่อม ONNX Model จริง, สร้าง Heatmap | 3-5 วัน |
 | 5 | Report & Admin | ระบบรายงานสแกม, Admin Endpoints | 2-3 วัน |
-| 6 | Cache, Storage & Polish | Redis Cache, Cloud Storage, Rate Limit, Tests | 3-4 วัน |
+| 6 | Cache, Storage & Polish | Redis Cache, Local `/uploads`, Rate Limit, Tests | 3-4 วัน |
 
 ---
 
@@ -298,7 +298,7 @@ class User(Base):
     email = Column(String(255), unique=True, nullable=False, index=True)
     hashed_password = Column(String(255), nullable=False)
     full_name = Column(String(100))
-    role = Column(String(20), nullable=False, default="user")  # user, researcher, admin
+    role = Column(String(20), nullable=False, default="user")  # user, researcher; admin แยกตาราง admins
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
@@ -518,7 +518,7 @@ router = APIRouter()
 @router.post("/")
 async def create_scan(file: UploadFile = File(...), ...):
     """
-    POST /api/v1/scan
+    POST /api/v1/scan/
     Request: Multipart/Form-Data (file: binary JPG/PNG)
     Response: JSON ตาม design/server.md Section 5.2.1
     """
@@ -531,7 +531,7 @@ async def create_scan(file: UploadFile = File(...), ...):
 @router.get("/{scan_id}")
 async def get_scan(scan_id: str, ...):
     """
-    GET /api/v1/scan/{id}
+    GET /api/v1/scan/{scan_id}
     Response: JSON เดียวกับ POST /scan
     """
     ...
@@ -670,19 +670,17 @@ async def set_cache(image_hash: str, result: dict):
     )
 ```
 
-### 8.2 Cloud Storage (Presigned URLs)
+### 8.2 Local File Storage (code v1)
 
 อ้างอิง `design/server.md` Section 2.2.2:
 
 ```
-โครงสร้างไฟล์บน Storage:
-  raw-images/{user_id}/{scan_id}.jpg        <- ภาพต้นฉบับ
-  heatmap-images/{user_id}/{scan_id}_heatmap.jpg  <- ภาพ Heatmap
-
-Presigned URL มีอายุ 15 นาที (เพื่อ PDPA Compliance)
+โครงสร้างไฟล์ปัจจุบัน:
+  LOCAL_UPLOAD_DIR/                         <- default ./uploads
+  /uploads/{filename}                       <- FastAPI static URL
 ```
 
-สำหรับ Development ให้ใช้ Local File Storage ก่อน แล้วเปลี่ยนเป็น Cloud (GCS/S3) ตอน Deploy
+Cloud Object Storage/Presigned URL เป็น future deployment option ไม่ใช่ implementation ปัจจุบัน
 
 ### 8.3 Rate Limiting (อ้างอิง `design/server.md` Section 6)
 

@@ -3,7 +3,7 @@ title: "AI Model Training Workflow"
 category: concepts
 tags: [concepts, ai, training, onnx]
 sources: [design/training.md]
-updated: 2026-09-15
+updated: 2026-09-16
 ---
 
 # การออกแบบระบบฝึกสอนโมเดล (Model Training Design)
@@ -60,7 +60,7 @@ updated: 2026-09-15
 * การวัดผลประสิทธิภาพบน Test Set เพื่อคัดเลือกโมเดลที่ดีที่สุด ด้วยมาตรวัด (Metrics) เช่น:
   * **IoU (Intersection over Union)**: วัดความทับซ้อนของพื้นที่ตรวจพบเทียบกับพื้นที่จริง
   * **mDice**: การหาความสมดุลระหว่างความแม่นยำและความครอบคลุม
-  * **mIoU**: สัดส่วนพิกเซลที่ทายถูกทั้งหมด
+  * **mIoU**: ค่าเฉลี่ย IoU ของทุกคลาส โดย IoU วัดสัดส่วนพื้นที่ซ้อนทับระหว่าง mask ที่ทำนายกับ ground truth ต่อพื้นที่รวม (intersection / union); ไม่ใช่สัดส่วนพิกเซลที่ทายถูกทั้งหมด (pixel accuracy)
 
 > **ผลการเทรน v1.0.5 (config `segformer_mit-b2-v10.py`):** fine-tune จาก checkpoint `v1.0.0` (`best_mIoU_iter_112000.pth`) ครบ 200,000 iters (จบ 2026-09-12) ได้ best validation mIoU **91.31** / mDice **95.29** @iter 197,500 และเป็นอันดับหนึ่งบน locked common test (`scamguard-locked-multisource-test-v1`) ด้วย mIoU **91.24** / Forgery IoU **83.51** — เป็น candidate ดีที่สุด แต่ Production ยังคงเป็น `v1.0.0` (ดู [[concepts/ai-model-segformer]])
 

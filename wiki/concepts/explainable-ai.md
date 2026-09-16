@@ -3,7 +3,7 @@ title: "ปัญญาประดิษฐ์ที่อธิบายได
 category: concepts
 tags: [XAI, Heatmap, heatmap, overlay, transparency]
 sources: [design/model.md, design/architecture.md, Document/objective.md]
-updated: 2026-08-02
+updated: 2026-09-16
 ---
 
 # ปัญญาประดิษฐ์ที่อธิบายได้ (XAI)
@@ -28,7 +28,7 @@ updated: 2026-08-02
 2. บริเวณที่มีความเสี่ยงสูง → แสดงเป็น **สีแดง/โทนร้อน**
 3. บริเวณที่ปลอดภัย → แสดงเป็น **สีน้ำเงิน/โทนเย็น**
 4. Heatmap ถูกผสม (blend) ด้วยค่าความโปร่งใสทับลงบนรูปภาพต้นฉบับ
-5. ภาพ overlay ที่ได้ถูกเก็บใน Cloud Object Storage และส่งให้ Mobile App แสดงผล
+5. ภาพ overlay ที่ได้ถูกเก็บใน `{LOCAL_UPLOAD_DIR}/heatmaps/` และเสิร์ฟผ่าน FastAPI `/uploads`
 
 ---
 

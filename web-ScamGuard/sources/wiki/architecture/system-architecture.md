@@ -1,20 +1,20 @@
 ---
 title: "สถาปัตยกรรมระบบ (System Architecture)"
 category: architecture
-tags: [architecture, cloud-native, decoupled, C1, C2, layers]
+tags: [architecture, modular-monolith, C1, C2, layers]
 sources: [design/architecture.md, Document/C1-System-Context-Diagram.md, Document/C2-Container-Diagram.md]
-updated: 2026-08-02
+updated: 2026-09-16
 ---
 
 # สถาปัตยกรรมระบบ
 
-สถาปัตยกรรมแบบ Cloud-Native และ Decoupled 3 ชั้น สำหรับระบบ Scam Image Detection
+สถาปัตยกรรม 3 ชั้นแบบ modular monolith: FastAPI เดียวร่วมกับ ONNX worker subprocess
 
 ---
 
 ## หลักการออกแบบ
 
-- **Cloud-Native Architecture** — บริการรันบน Cloud Container; Storage อยู่บน Cloud
+- **Current deployment shape** — API, orchestration, OCR และ XAI อยู่ใน FastAPI application เดียว; SegFormer ONNX รันแยก subprocess
 - **Decoupled Architecture** — Mobile Frontend แยกจาก Business Logic; งาน AI หนักแยกเป็น ONNX Worker subprocess เพื่อไม่บล็อกการตอบสนองของ FastAPI
 
 ---
@@ -24,7 +24,7 @@ updated: 2026-08-02
 ```
 +---------------------------+
 |   ชั้นการแสดงผล          |   Flutter Mobile App (Android)
-|   (Presentation Layer)    |   React.js Admin Portal (Tailwind CSS)
+|   (Presentation Layer)    |   React 19 Admin Portal (Vite 8, Tailwind v4)
 +---------------------------+
             |  HTTPS/REST
 +---------------------------+
@@ -58,7 +58,7 @@ updated: 2026-08-02
 | Container | เทคโนโลยี | ความรับผิดชอบ |
 | :--- | :--- | :--- |
 | Mobile App | Flutter | แอปผู้ใช้: อัปโหลดรูป, แสดงผลลัพธ์ |
-| Admin Portal | React.js + Tailwind CSS | Dashboard, จัดการรายงาน, Deploy โมเดล |
+| Admin Portal | React 19 + Vite 8 + Tailwind CSS v4 | Dashboard, จัดการรายงาน, Deploy โมเดล |
 | API Application | Python FastAPI | Orchestrator, Auth, OCR/NLP, ประสานงาน Job |
 | ONNX Worker (subprocess) | ONNX Runtime + Surya OCR + Qwen XAI | SegFormer segmentation, AI-Gen prob, แผนที่ความร้อนแบบ mask-to-heatmap overlay |
 | Main DB | PostgreSQL | ผู้ใช้, ประวัติสแกน, รายงาน, Log |

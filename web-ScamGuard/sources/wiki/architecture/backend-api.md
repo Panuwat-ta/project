@@ -3,7 +3,7 @@ title: "Backend API — FastAPI Orchestrator"
 category: architecture
 tags: [FastAPI, backend, orchestrator, OCR, NLP, EXIF, auth, RBAC]
 sources: [design/architecture.md, design/server.md]
-updated: 2026-08-02
+updated: 2026-09-16
 ---
 
 # Backend API — FastAPI Orchestrator
@@ -17,10 +17,10 @@ Python FastAPI ทำหน้าที่เป็น **Core Orchestrator** ข
 API Application อยู่ระหว่าง Client (Mobile App, Admin Portal) กับ Service ปลายทาง (AI Inference, Database, External API) โดยทำหน้าที่:
 
 1. ตรวจสอบ Authentication และ Authorization
-2. รัน Analysis ที่ทำได้รวดเร็วใน Process เดียว (EXIF, OCR/NLP)
-3. ส่งงานหนักไปยัง AI Inference Service
+2. ดึง EXIF เป็นข้อมูลประกอบ และรัน OCR/NLP ใน FastAPI process
+3. รัน ONNX inference ผ่าน worker subprocess ภายใน Backend เดียวกัน
 4. จัดการ Cache Lookup และบันทึกผลลัพธ์
-5. ส่ง Push Notification เมื่อ Async Job เสร็จ
+5. เปิดให้ Mobile poll สถานะ Async Job ผ่าน REST; WebSocket มีเฉพาะ Admin Dashboard
 
 ---
 
@@ -34,7 +34,7 @@ server/
       security.py     # JWT Encoding/Decoding, Password Hashing
       database.py     # SQLAlchemy Engine และ Session Factory
     models/           # ORM Models (SQLAlchemy) — 9 ตาราง
-      user.py           # users (role: user/researcher/admin)
+      user.py           # users (role: user/researcher)
       admin.py          # admins (is_superadmin)
       scan.py           # scans (UUID, SHA-256 image_hash, scores, exif/ocr/xai)
       consent.py        # consent_logs (system_consent/research_consent)
@@ -70,14 +70,14 @@ server/
 ### 1. Authentication และ Authorization
 
 - ลงทะเบียนและ Login ด้วย Email/Password — consent ส่งมาใน body ของ register แล้วบันทึกเป็น consent logs
-- JWT + refresh/logout/me; Google/Apple OAuth เป็น Phase 2
-- แยกบทบาท user/researcher/admin ออกจากบัญชี admins; ทุก /admin/* ต้องเป็น is_superadmin
+- JWT + refresh/logout/me สำหรับ Mobile; code v1 ไม่มี OAuth endpoint
+- บัญชี Mobile อยู่ตาราง `users` (`user`/`researcher`) และบัญชี Admin Portal อยู่ตาราง `admins` แยกกัน; ทุก `/admin/*` ตรวจ admin session/`is_superadmin`
 - ตรวจสอบทุก Protected Endpoint ด้วยการยืนยันตัวตนและสิทธิ์
 
 ### 2. การดึง EXIF Metadata
 
 - ดึง Metadata ที่ซ่อนอยู่ในรูปภาพ (พิกัด GPS, รุ่นกล้อง, วันที่สร้าง, Software ที่ใช้)
-- ความไม่สอดคล้องของ Metadata (เช่น มี "Photoshop" ใน Software Field, GPS ไม่ตรง) มีส่วนในการประเมินความเสี่ยง
+- เก็บ EXIF ไว้เป็น display-only metadata; ไม่นำมาคำนวณ Risk Score ซึ่งใช้เฉพาะ Visual/Textual/Source
 - รันใน Process เดียวกับ API Application ไม่ต้องเรียก External Service
 
 ### 3. OCR และ NLP วิเคราะห์ข้อความ
@@ -92,7 +92,7 @@ server/
 - ตรวจสอบ Redis Cache (TTL 30 วัน) สำหรับ Image Hash ที่เคยวิเคราะห์แล้ว
 - Cache Miss: ประมวลผลผ่าน ONNX Worker subprocess แล้วรวมผลเป็น Hybrid max+bonus Risk Score
 - เก็บผลลัพธ์ใน PostgreSQL + เขียนไฟล์รูปต้นฉบับและ Heatmap ลง Storage
-- ส่ง FCM Push Notification เมื่อ Async Processing เสร็จ
+- Mobile poll `GET /api/v1/scan/{scan_id}` ทุก 3 วินาที; code v1 ยังไม่มี FCM client
 
 ---
 

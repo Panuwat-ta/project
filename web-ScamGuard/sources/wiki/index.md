@@ -39,7 +39,7 @@ updated: 2026-09-13
 | [[architecture/backend-api]] | FastAPI Orchestrator: auth, OCR/NLP, ดึง metadata และประสานงาน job |
 | [[architecture/admin-portal]] | Admin Portal: เว็บคอนโซล React/Vite, UI Design System, Model Registry & Telemetry |
 | [[architecture/ai-inference-service]] | PyTorch/ONNX AI Node: Semantic Segmentation, ตรวจจับภาพ AI-Gen, สร้าง Heatmap |
-| [[architecture/database-schema]] | PostgreSQL schema, Redis cache strategy, Cloud Object Storage layout |
+| [[architecture/database-schema]] | PostgreSQL schema, Redis cache strategy, local `/uploads` storage layout |
 | [[architecture/database-migrations]] | การจัดการการย้ายฐานข้อมูล (Database Migrations) ด้วย Alembic และ SQLAlchemy |
 | [[architecture/external-integrations]] | Google Vision API (reverse search), Firebase FCM และ integration อื่นๆ ในอนาคต |
 | [[architecture/c1-system-context-diagram]] | C1 System Context Diagram ภาพรวมระบบระดับกว้าง |

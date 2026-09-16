@@ -3,7 +3,7 @@ title: "Mobile App Architecture"
 category: architecture
 tags: [architecture, mobile, flutter, app]
 sources: [design/mobile.md]
-updated: 2026-08-04
+updated: 2026-09-16
 ---
 
 # การออกแบบโมบายแอปพลิเคชัน (Mobile Application Design)
@@ -823,7 +823,7 @@ GET /api/v1/auth/me
 
 ```http
 POST /api/v1/scan/
-GET /api/v1/scan/{scanId}
+GET /api/v1/scan/{scan_id}
 ```
 
 `POST /api/v1/scan/` ใช้ `multipart/form-data`

@@ -22,13 +22,13 @@
 <hr>
 <h2 id="2-โครงสร้างสถาปัตยกรรมแบบโมดูลาร์-modular-decomposition">2. โครงสร้างสถาปัตยกรรมแบบโมดูลาร์ (Modular Decomposition)</h2>
 <p>MMSegmentation แบ่งส่วนประกอบภายในของโมเดลออกเป็น 4 ชั้นหลัก:</p>
-<figure class="diagram-frame"><div class="diagram-toolbar"><span>แผนภาพ 20</span><button class="control" type="button" data-diagram-expand>ดูขนาดใหญ่</button></div><img src="../../assets/diagrams/concepts-mmsegmentation-20.svg" alt="แผนภาพจาก MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์" loading="lazy"><details class="diagram-source"><summary>ดู Mermaid source</summary><pre><code>flowchart TD
+<figure class="diagram-frame"><div class="diagram-toolbar"><span>แผนภาพ 16</span><button class="control" type="button" data-diagram-expand>ดูขนาดใหญ่</button></div><img src="../../assets/diagrams/concepts-mmsegmentation-16.svg" alt="แผนภาพจาก MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์" loading="lazy"><details class="diagram-source"><summary>ดู Mermaid source</summary><pre><code>flowchart TD
     Input[&quot;Input Image (B x 3 x H x W)&quot;] --&gt; Backbone[&quot;Backbone (Feature Extractor)&quot;]
     Backbone --&gt; Neck[&quot;Neck (Feature Aggregator - Optional)&quot;]
     Neck --&gt; DecodeHead[&quot;Decode Head (Segmentation Prediction)&quot;]
     Backbone -.-&gt; AuxHead[&quot;Auxiliary Head (Training Loss Only)&quot;]
     DecodeHead --&gt; Output[&quot;Prediction Mask / Heatmap (B x C x H x W)&quot;]
-</code></pre></details><dialog aria-label="แผนภาพขนาดใหญ่"><div class="diagram-expanded-head"><button class="control" type="button" data-diagram-zoom="out">ย่อ</button><span class="zoom-status" data-zoom-status>100%</span><button class="control" type="button" data-diagram-zoom="in">ขยาย</button><button class="control" type="button" data-diagram-close>ปิด</button></div><div class="diagram-pan" data-diagram-pan data-zoom="1" tabindex="0" aria-label="พื้นที่แผนภาพ เลื่อนได้ทั้งแนวตั้งและแนวนอน"><img src="../../assets/diagrams/concepts-mmsegmentation-20.svg" alt="แผนภาพจาก MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์"></div></dialog></figure><ol>
+</code></pre></details><dialog aria-label="แผนภาพขนาดใหญ่"><div class="diagram-expanded-head"><button class="control" type="button" data-diagram-zoom="out">ย่อ</button><span class="zoom-status" data-zoom-status>100%</span><button class="control" type="button" data-diagram-zoom="in">ขยาย</button><button class="control" type="button" data-diagram-close>ปิด</button></div><div class="diagram-pan" data-diagram-pan data-zoom="1" tabindex="0" aria-label="พื้นที่แผนภาพ เลื่อนได้ทั้งแนวตั้งและแนวนอน"><img src="../../assets/diagrams/concepts-mmsegmentation-16.svg" alt="แผนภาพจาก MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์"></div></dialog></figure><ol>
 <li><strong>Backbone (ส่วนสกัดลักษณะเด่น):</strong> ทำหน้าที่รับภาพนำเข้าและสร้าง Feature Maps หลายระดับความละเอียด (Multi-scale Feature Maps) ในระบบ ScamGuard ใช้ <strong>Mix Vision Transformer (MiT-B0 ถึง MiT-B2)</strong></li>
 <li><strong>Neck (ส่วนเชื่อมประสานลักษณะเด่น):</strong> ทำหน้าที่รวมลักษณะเด่นจากหลายชั้นความลึกของ Backbone เข้าด้วยกัน เช่น Feature Pyramid Network (FPN) เพื่อรวบรวมทั้งรายละเอียดระดับต่ำ (Low-level Details) และความหมายเชิงลึก (High-level Semantics)</li>
 <li><strong>Decode Head (ส่วนถอดรหัสและทำนายผล):</strong> ส่วนปลายที่รับ Feature Maps ที่รวมแล้วมาแปลงเป็นหน้ากากการทำนายความน่าจะเป็นของแต่ละพิกเซล (Class Probability Mask) เช่น <strong>SegformerHead</strong> ที่ใช้ All-MLP Decoder น้ำหนักเบา</li>
@@ -62,31 +62,28 @@
 <h2 id="4-การประยุกต์ใช้ในระบบ-scamguard">4. การประยุกต์ใช้ในระบบ ScamGuard</h2>
 <p>ในระบบ ScamGuard ได้เลือกใช้ MMSegmentation ในการเทรนโมเดล SegFormer ดังนี้:</p>
 <ul>
-<li><strong>การแก้ปัญหา Class Imbalance:</strong> บริเวณที่ถูกตัดต่อ มักมีสัดส่วนพื้นที่น้อยมากเมื่อเทียบกับพื้นที่ภาพทั้งหมด ระบบจึงกำหนด Loss Function แบบผสมผสานระหว่าง Cross-Entropy Loss และ Dice Loss:<pre><code class="language-text"><div class="code-frame"><span class="visually-hidden">ภาษา text</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-text"></code></pre></div></code></pre>
-</li>
-</ul>
-<p>L_total = α L_CE + β L_Dice</p>
-<pre><code><div class="code-frame"><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-text">- **การส่งออกไปยัง ONNX Runtime:** โมเดลที่เทรนเสร็จสมบูรณ์จาก MMSegmentation จะถูกส่งออกเป็นไฟล์ `.onnx` ผ่านสคริปต์ `pytorch2onnx` เพื่อนำไปโหลดใช้งานในสภาพแวดล้อมจริง (Inference Engine) บน FastAPI Backend ทำให้สามารถทำนายผลได้รวดเร็วโดยไม่ต้องพึ่งพา PyTorch Runtime ตัวเต็ม
-
----
-
-## 5. ประเด็นสำคัญ
-
-- MMSegmentation ช่วยให้การทดลองเปรียบเทียบสถาปัตยกรรม (เช่น ResNet vs MiT) ทำได้บนมาตรฐานเดียวกัน
-- โครงสร้าง All-MLP Decoder ของ SegFormer บน MMSegmentation ให้ความเร็วในการทำนายระดับมิลลิวินาที
-- การฝึกสอนโมเดลรองรับการจำลองภาพตัดต่อ (Copy-Move, Splicing, Inpainting, AI-Gen artifacts) หลากหลายรูปแบบ
-
----
-
-## หน้าที่เกี่ยวข้อง
-
-- [[concepts/ai-model-segformer|โมเดล AI — SegFormer]]
-- [[concepts/semantic-segmentation|การแบ่งส่วนภาพเชิงความหมาย (Semantic Segmentation)]]
-- [[concepts/model-training|การออกแบบระบบฝึกสอนโมเดล (Model Training Design)]]
-- [[architecture/ai-inference-service|AI Inference Service]]
+<li><strong>การแก้ปัญหา Class Imbalance:</strong> บริเวณที่ถูกตัดต่อ มักมีสัดส่วนพื้นที่น้อยมากเมื่อเทียบกับพื้นที่ภาพทั้งหมด ระบบจึงกำหนด Loss Function แบบผสมผสานระหว่าง Cross-Entropy Loss และ Dice Loss:<pre><code class="language-text"><div class="code-frame"><span class="visually-hidden">ภาษา text</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-text">L_total = α L_CE + β L_Dice
 </code></pre></div></code></pre>
+</li>
+<li><strong>การส่งออกไปยัง ONNX Runtime:</strong> โมเดลที่เทรนเสร็จสมบูรณ์จาก MMSegmentation จะถูกส่งออกเป็นไฟล์ <code>.onnx</code> ผ่านสคริปต์ <code>pytorch2onnx</code> เพื่อนำไปโหลดใช้งานในสภาพแวดล้อมจริง (Inference Engine) บน FastAPI Backend ทำให้สามารถทำนายผลได้รวดเร็วโดยไม่ต้องพึ่งพา PyTorch Runtime ตัวเต็ม</li>
+</ul>
+<hr>
+<h2 id="5-ประเด็นสำคัญ">5. ประเด็นสำคัญ</h2>
+<ul>
+<li>MMSegmentation ช่วยให้การทดลองเปรียบเทียบสถาปัตยกรรม (เช่น ResNet vs MiT) ทำได้บนมาตรฐานเดียวกัน</li>
+<li>โครงสร้าง All-MLP Decoder ของ SegFormer บน MMSegmentation ให้ความเร็วในการทำนายระดับมิลลิวินาที</li>
+<li>การฝึกสอนโมเดลรองรับการจำลองภาพตัดต่อ (Copy-Move, Splicing, Inpainting, AI-Gen artifacts) หลากหลายรูปแบบ</li>
+</ul>
+<hr>
+<h2 id="หน้าที่เกี่ยวข้อง">หน้าที่เกี่ยวข้อง</h2>
+<ul>
+<li><a href="ai-model-segformer.html">โมเดล AI — SegFormer</a></li>
+<li><a href="semantic-segmentation.html">การแบ่งส่วนภาพเชิงความหมาย (Semantic Segmentation)</a></li>
+<li><a href="model-training.html">การออกแบบระบบฝึกสอนโมเดล (Model Training Design)</a></li>
+<li><a href="../architecture/ai-inference-service.html">AI Inference Service</a></li>
+</ul>
 </div></main>
-    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้"><p class="toc-title">ในหน้านี้</p><ol class="toc"><li class="toc-level-2"><a href="#1-%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%A3%E0%B8%A7%E0%B8%A1%E0%B8%82%E0%B8%AD%E0%B8%87-mmsegmentation">1. ภาพรวมของ MMSegmentation</a></li><li class="toc-level-2"><a href="#2-%E0%B9%82%E0%B8%84%E0%B8%A3%E0%B8%87%E0%B8%AA%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B8%AA%E0%B8%96%E0%B8%B2%E0%B8%9B%E0%B8%B1%E0%B8%95%E0%B8%A2%E0%B8%81%E0%B8%A3%E0%B8%A3%E0%B8%A1%E0%B9%81%E0%B8%9A%E0%B8%9A%E0%B9%82%E0%B8%A1%E0%B8%94%E0%B8%B9%E0%B8%A5%E0%B8%B2%E0%B8%A3%E0%B9%8C-modular-decomposition">2. โครงสร้างสถาปัตยกรรมแบบโมดูลาร์ (Modular Decomposition)</a></li><li class="toc-level-2"><a href="#3-%E0%B8%81%E0%B8%A5%E0%B8%B8%E0%B9%88%E0%B8%A1%E0%B8%AD%E0%B8%B1%E0%B8%A5%E0%B8%81%E0%B8%AD%E0%B8%A3%E0%B8%B4%E0%B8%97%E0%B8%B6%E0%B8%A1%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%A7%E0%B8%B4%E0%B8%A7%E0%B8%B1%E0%B8%92%E0%B8%99%E0%B8%B2%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%83%E0%B8%99-mmsegmentation">3. กลุ่มอัลกอริทึมและวิวัฒนาการใน MMSegmentation</a></li><li class="toc-level-2"><a href="#4-%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%A2%E0%B8%B8%E0%B8%81%E0%B8%95%E0%B9%8C%E0%B9%83%E0%B8%8A%E0%B9%89%E0%B9%83%E0%B8%99%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A-scamguard">4. การประยุกต์ใช้ในระบบ ScamGuard</a></li></ol></aside>
+    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้"><p class="toc-title">ในหน้านี้</p><ol class="toc"><li class="toc-level-2"><a href="#1-%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%A3%E0%B8%A7%E0%B8%A1%E0%B8%82%E0%B8%AD%E0%B8%87-mmsegmentation">1. ภาพรวมของ MMSegmentation</a></li><li class="toc-level-2"><a href="#2-%E0%B9%82%E0%B8%84%E0%B8%A3%E0%B8%87%E0%B8%AA%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B8%AA%E0%B8%96%E0%B8%B2%E0%B8%9B%E0%B8%B1%E0%B8%95%E0%B8%A2%E0%B8%81%E0%B8%A3%E0%B8%A3%E0%B8%A1%E0%B9%81%E0%B8%9A%E0%B8%9A%E0%B9%82%E0%B8%A1%E0%B8%94%E0%B8%B9%E0%B8%A5%E0%B8%B2%E0%B8%A3%E0%B9%8C-modular-decomposition">2. โครงสร้างสถาปัตยกรรมแบบโมดูลาร์ (Modular Decomposition)</a></li><li class="toc-level-2"><a href="#3-%E0%B8%81%E0%B8%A5%E0%B8%B8%E0%B9%88%E0%B8%A1%E0%B8%AD%E0%B8%B1%E0%B8%A5%E0%B8%81%E0%B8%AD%E0%B8%A3%E0%B8%B4%E0%B8%97%E0%B8%B6%E0%B8%A1%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%A7%E0%B8%B4%E0%B8%A7%E0%B8%B1%E0%B8%92%E0%B8%99%E0%B8%B2%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%83%E0%B8%99-mmsegmentation">3. กลุ่มอัลกอริทึมและวิวัฒนาการใน MMSegmentation</a></li><li class="toc-level-2"><a href="#4-%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%A2%E0%B8%B8%E0%B8%81%E0%B8%95%E0%B9%8C%E0%B9%83%E0%B8%8A%E0%B9%89%E0%B9%83%E0%B8%99%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A-scamguard">4. การประยุกต์ใช้ในระบบ ScamGuard</a></li><li class="toc-level-2"><a href="#5-%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%94%E0%B9%87%E0%B8%99%E0%B8%AA%E0%B8%B3%E0%B8%84%E0%B8%B1%E0%B8%8D">5. ประเด็นสำคัญ</a></li><li class="toc-level-2"><a href="#%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%87">หน้าที่เกี่ยวข้อง</a></li></ol></aside>
   </div>
   <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title"><div class="search-dialog-head"><label class="visually-hidden" id="search-title" for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…" autocomplete="off" data-search-input><button class="control" type="button" data-search-close aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div class="search-results" data-search-results aria-live="polite"></div></dialog>
   <script src="../../assets/js/search-index.js"></script>

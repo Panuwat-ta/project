@@ -110,7 +110,7 @@
 </ul>
 <hr>
 <h2 id="5-ความปลอดภัยและการเชื่อมต่อ-security-integration">5. ความปลอดภัยและการเชื่อมต่อ (Security &amp; Integration)</h2>
-<figure class="diagram-frame"><div class="diagram-toolbar"><span>แผนภาพ 7</span><button class="control" type="button" data-diagram-expand>ดูขนาดใหญ่</button></div><img src="../../assets/diagrams/architecture-admin-portal-7.svg" alt="แผนภาพจาก สถาปัตยกรรมและการออกแบบ Admin Portal" loading="lazy"><details class="diagram-source"><summary>ดู Mermaid source</summary><pre><code>flowchart LR
+<figure class="diagram-frame"><div class="diagram-toolbar"><span>แผนภาพ 3</span><button class="control" type="button" data-diagram-expand>ดูขนาดใหญ่</button></div><img src="../../assets/diagrams/architecture-admin-portal-3.svg" alt="แผนภาพจาก สถาปัตยกรรมและการออกแบบ Admin Portal" loading="lazy"><details class="diagram-source"><summary>ดู Mermaid source</summary><pre><code>flowchart LR
     Browser[&quot;Admin Web Browser (React SPA)&quot;]
     ViteProxy[&quot;Vite Dev / Nginx Gateway&quot;]
     FastAPI[&quot;Backend API (/api/v1/admin/*)&quot;]
@@ -121,7 +121,7 @@
     ViteProxy --&gt; FastAPI
     FastAPI --&gt; AdminDB
     FastAPI --&gt; RedisCache
-</code></pre></details><dialog aria-label="แผนภาพขนาดใหญ่"><div class="diagram-expanded-head"><button class="control" type="button" data-diagram-zoom="out">ย่อ</button><span class="zoom-status" data-zoom-status>100%</span><button class="control" type="button" data-diagram-zoom="in">ขยาย</button><button class="control" type="button" data-diagram-close>ปิด</button></div><div class="diagram-pan" data-diagram-pan data-zoom="1" tabindex="0" aria-label="พื้นที่แผนภาพ เลื่อนได้ทั้งแนวตั้งและแนวนอน"><img src="../../assets/diagrams/architecture-admin-portal-7.svg" alt="แผนภาพจาก สถาปัตยกรรมและการออกแบบ Admin Portal"></div></dialog></figure><ul>
+</code></pre></details><dialog aria-label="แผนภาพขนาดใหญ่"><div class="diagram-expanded-head"><button class="control" type="button" data-diagram-zoom="out">ย่อ</button><span class="zoom-status" data-zoom-status>100%</span><button class="control" type="button" data-diagram-zoom="in">ขยาย</button><button class="control" type="button" data-diagram-close>ปิด</button></div><div class="diagram-pan" data-diagram-pan data-zoom="1" tabindex="0" aria-label="พื้นที่แผนภาพ เลื่อนได้ทั้งแนวตั้งและแนวนอน"><img src="../../assets/diagrams/architecture-admin-portal-3.svg" alt="แผนภาพจาก สถาปัตยกรรมและการออกแบบ Admin Portal"></div></dialog></figure><ul>
 <li><strong>แยกการยืนยันตัวตนออกจากผู้ใช้ทั่วไป:</strong> ผู้ดูแลระบบต้องลงชื่อเข้าใช้ผ่าน Endpoint POST /api/v1/admin/login โดยตรวจสอบบัญชีและรหัสผ่านกับตาราง admins โดยเฉพาะ</li>
 <li><strong>Role-Based Access Control (RBAC):</strong> ทุก /admin/* ต้องเป็น <strong>Super Admin</strong></li>
 <li><strong>Reverse Proxy Protection:</strong> ในโหมดพัฒนาและ Production มีการซ่อนเบื้องหลังผ่าน Proxy เพื่อควบคุม CORS และป้องกันการเปิดเผย Endpoint ภายใน</li>

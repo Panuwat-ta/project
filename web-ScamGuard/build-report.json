@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-09-16T02:27:01.929Z",
+  "generatedAt": "2026-09-16T04:09:56.930Z",
   "sourceMarkdownCount": 45,
   "renderedPageCount": 45,
-  "mermaidSourceCount": 20,
-  "mermaidRenderedCount": 20,
+  "mermaidSourceCount": 17,
+  "mermaidRenderedCount": 17,
   "unresolvedLinks": [],
   "diagramFailures": [],
   "pages": [
@@ -26,7 +26,7 @@
       "output": "pages/requirements/functional-requirements.html",
       "title": "ความต้องการเชิงฟังก์ชัน (Functional Requirements)",
       "category": "requirements",
-      "headings": 12
+      "headings": 8
     },
     {
       "source": "requirements/non-functional-requirements.md",
@@ -54,14 +54,14 @@
       "output": "pages/requirements/srs.html",
       "title": "Software Requirements Specification (SRS)",
       "category": "requirements",
-      "headings": 30
+      "headings": 6
     },
     {
       "source": "requirements/use-case-diagram.md",
       "output": "pages/requirements/use-case-diagram.html",
       "title": "Use Case Diagram",
       "category": "requirements",
-      "headings": 2
+      "headings": 3
     },
     {
       "source": "architecture/database-migrations.md",
@@ -208,7 +208,7 @@
       "output": "pages/concepts/ai-model-segformer.html",
       "title": "โมเดล AI — SegFormer",
       "category": "concepts",
-      "headings": 3
+      "headings": 8
     },
     {
       "source": "concepts/surya-ocr.md",
@@ -229,7 +229,7 @@
       "output": "pages/concepts/mmsegmentation.html",
       "title": "MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์",
       "category": "concepts",
-      "headings": 4
+      "headings": 6
     },
     {
       "source": "concepts/semantic-segmentation.md",
@@ -264,7 +264,7 @@
       "output": "pages/planning/task-tracking.html",
       "title": "การติดตามงานและการบริหารโครงการ (Task Tracking & Jira)",
       "category": "planning",
-      "headings": 9
+      "headings": 10
     },
     {
       "source": "planning/project-scope.md",
@@ -299,7 +299,7 @@
       "output": "pages/log.html",
       "title": "บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection",
       "category": "guide",
-      "headings": 16
+      "headings": 18
     },
     {
       "source": "howto.md",

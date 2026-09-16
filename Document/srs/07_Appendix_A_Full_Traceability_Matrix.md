@@ -19,7 +19,7 @@
 - **FR/NFR**: Functional/Non-Functional Requirement ID
 - **AC**: Acceptance Criterion Number
 - **Priority**: Must / Should / Could
-- **Status**: ✅ Complete / ⏸️ Deferred / ⚠️ In Progress (⚠️ ที่ Row 34–37 = AC ครบแต่ยังไม่มี TC — ตรงกับ `tests_all/rtm.md` FR-SYS-04 GAP)
+- **Status**: ✅ Complete / ⏸️ Deferred / ⚠️ In Progress (⚠️ ที่ Row 34–37 = AC ครบแต่ยังไม่มี TC ตาม `tests_all/rtm.md`)
 - **Evidence**: แหล่งที่มาของข้อมูล
 
 ### 1.2 Total Rows

@@ -3,7 +3,7 @@ title: "C2 Container Diagram"
 category: architecture
 tags: [architecture, c4, container, diagram]
 sources: [Document/C2-Container-Diagram.md]
-updated: 2026-08-04
+updated: 2026-09-16
 ---
 
 # C2: Container Diagram
@@ -27,7 +27,7 @@ flowchart TB
 
         subgraph Frontends [Frontend Layer]
             MobileApp("Mobile App<br>[Container: Flutter]<br>อัปโหลดและเลือกรูปภาพ,<br>แสดงผลคะแนนความเสี่ยง (Risk Score)")
-            AdminPortal("Admin Web Portal<br>[Container: React + Admin UI]<br>จัดการผู้ใช้ (ดู+เปิด/ปิดบัญชี), ตรวจสอบสแกมที่รายงาน,<br>จัดการชุดข้อมูล, อัปเดตโมเดล")
+            AdminPortal("Admin Web Portal<br>[Container: React 19 + Vite 8 + Tailwind CSS v4]<br>จัดการผู้ใช้ (ดู+เปิด/ปิดบัญชี), ตรวจสอบสแกมที่รายงาน,<br>จัดการชุดข้อมูล, อัปเดตโมเดล")
         end
 
         subgraph Backends [Backend & API Layer]
@@ -37,7 +37,7 @@ flowchart TB
 
         subgraph Storages [Storage & Cache Layer]
             Cache("Cache<br>[Container: Redis]<br>เก็บผลตรวจชั่วคราว (Cache Hit)<br>เพื่อลดเวลาประมวลผลซ้ำ")
-            ObjectStore("Object Storage<br>[Container: Cloud Storage]<br>เก็บไฟล์รูปภาพต้นฉบับ,<br>ภาพ Heatmap")
+            ObjectStore("Local File Storage<br>[LOCAL_UPLOAD_DIR + /uploads]<br>เก็บไฟล์รูปภาพต้นฉบับ,<br>ภาพ Heatmap")
             MainDB[("Main Database<br>[Container: PostgreSQL]<br>เก็บข้อมูลผู้ใช้, ประวัติการสแกน,<br>ผลลัพธ์ (Risk Score)")]
         end
     end
@@ -75,7 +75,7 @@ flowchart TB
 
 ### คำอธิบาย Container Diagram
 
-สถาปัตยกรรมของระบบ Scam Image Detection ถูกออกแบบภายใต้แนวคิด **Cloud-Native Architecture** โดยงาน AI หนักแยกเป็น ONNX Worker subprocess เพื่อให้ระบบสามารถรองรับการประมวลผลข้อมูลรูปภาพและโมเดลปัญญาประดิษฐ์ (ซึ่งใช้ทรัพยากรการคำนวณสูง) ได้อย่างมีประสิทธิภาพ โดยไม่ส่งผลกระทบต่อความเร็วในการตอบสนองของแอปพลิเคชัน ภายในขอบเขตของระบบ (System Boundary) ประกอบด้วยคอนเทนเนอร์หลัก 3 ส่วน ดังนี้:
+code v1 ใช้ **FastAPI modular monolith** หนึ่งแอป โดยแยกงาน SegFormer ONNX เป็น worker subprocess ภายใน deployment เดียวกันเพื่อไม่ให้บล็อก event loop ไม่ได้ deploy เป็น microservices อิสระ ภายในขอบเขตของระบบประกอบด้วยส่วนหลักดังนี้:
 
 ### 1. ส่วนติดต่อผู้ใช้งาน (Frontend Containers)
 
@@ -87,7 +87,7 @@ flowchart TB
 * **Admin Web Portal (React + Admin UI):**
   * **บทบาท:** เว็บแอปพลิเคชันสำหรับผู้ดูแลระบบและนักวิจัย (Admin / Researcher)
   * **หน้าที่:** ใช้เป็นหน้าจอควบคุมและตรวจสอบสถานะระบบหลังบ้าน (Dashboard) การจัดการสิทธิ์ของผู้ใช้ (ดู + เปิด/ปิดบัญชี), ตรวจสอบรูปภาพสแกมที่ผู้ใช้ส่งรายงานเข้ามา (Scam Reports), จัดการคลังชุดข้อมูล (Dataset) และการอัปโหลดไฟล์น้ำหนักโมเดล AI (Model Weights)
-  * **เทคโนโลยี:** React.js + TailwindCSS (หรือ Admin Template สำเร็จรูป)
+  * **เทคโนโลยี:** React 19 + Vite 8 + Tailwind CSS v4
 
 ### 2. ส่วนประมวลผลหลัก (Backend Containers)
 
@@ -108,10 +108,10 @@ flowchart TB
   * **หน้าที่:** จัดเก็บแคชของรูปภาพที่เคยผ่านการสแกนตรวจสอบแล้วเพื่อลดการประมวลผลซ้ำ (Cache Hit) ช่วยให้อุปกรณ์ของผู้ใช้รายอื่นที่ส่งรูปภาพเดิมเข้ามาได้รับผลวิเคราะห์แทบจะทันทีโดยไม่ต้องรัน AI ซ้ำ
   * **เทคโนโลยี:** Redis Cache
 
-* **Object Storage (Cloud Storage):**
+* **Local File Storage:**
   * **บทบาท:** แหล่งจัดเก็บไฟล์รูปภาพขนาดใหญ่
   * **หน้าที่:** จัดเก็บไฟล์รูปภาพต้นฉบับที่ผู้ใช้อัปโหลดเข้ามา และรูปภาพแผนที่ความร้อน (Heatmap) ที่ส่งกลับมาจากบริการ AI เพื่อแสดงจุดผิดปกติ
-  * **เทคโนโลยี:** ระบบจัดเก็บไฟล์บนคลาวด์ (Cloud Storage)
+  * **เทคโนโลยี:** local filesystem ที่ `LOCAL_UPLOAD_DIR` (default `./uploads`) และ FastAPI static mount `/uploads`; Cloud Object Storage เป็น future option
 
 * **Main Database (PostgreSQL):**
   * **บทบาท:** ฐานข้อมูลหลักเชิงสัมพันธ์ (Relational Database)

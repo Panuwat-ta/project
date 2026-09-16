@@ -53,8 +53,8 @@ flowchart TD
 
 - **การแก้ปัญหา Class Imbalance:** บริเวณที่ถูกตัดต่อ มักมีสัดส่วนพื้นที่น้อยมากเมื่อเทียบกับพื้นที่ภาพทั้งหมด ระบบจึงกำหนด Loss Function แบบผสมผสานระหว่าง Cross-Entropy Loss และ Dice Loss:
   ```text
-L_total = α L_CE + β L_Dice
-```
+  L_total = α L_CE + β L_Dice
+  ```
 - **การส่งออกไปยัง ONNX Runtime:** โมเดลที่เทรนเสร็จสมบูรณ์จาก MMSegmentation จะถูกส่งออกเป็นไฟล์ `.onnx` ผ่านสคริปต์ `pytorch2onnx` เพื่อนำไปโหลดใช้งานในสภาพแวดล้อมจริง (Inference Engine) บน FastAPI Backend ทำให้สามารถทำนายผลได้รวดเร็วโดยไม่ต้องพึ่งพา PyTorch Runtime ตัวเต็ม
 
 ---

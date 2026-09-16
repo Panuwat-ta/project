@@ -59,20 +59,20 @@ updated: 2026-09-15
    `X ∈ R^H × W × C` จะถูกแปลงให้แบนราบ (Flatten) เป็น Sequence `N = H × W`
    โดยลดมิติของ Key และ Value ด้วยอัตราส่วน `R` เพื่อลดภาระการคำนวณ:
    ```text
-K' = Reshape((N/R), C · R)(K) · W_K
-```
+   K' = Reshape((N/R), C · R)(K) · W_K
+   ```
    ```text
-V' = Reshape((N/R), C · R)(V) · W_V
-```
+   V' = Reshape((N/R), C · R)(V) · W_V
+   ```
    ```text
-Attention(Q, K', V') = Softmax((Q (K')^T) / √(d_k)) V'
-```
+   Attention(Q, K', V') = Softmax((Q (K')^T) / √(d_k)) V'
+   ```
 
 2. **Mix-FFN (Mix Feed-Forward Network):**
    ใช้ 3x3 Convolution แทน Positional Encoding แบบตายตัว เพื่อพิจารณาตำแหน่งจากบริบทภาพ:
    ```text
-x_out = MLP(GELU(Conv_3×3(MLP(x_in)))) + x_in
-```
+   x_out = MLP(GELU(Conv_3×3(MLP(x_in)))) + x_in
+   ```
 
 ---
 

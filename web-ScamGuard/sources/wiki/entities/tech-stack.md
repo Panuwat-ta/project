@@ -3,7 +3,7 @@ title: "เทคโนโลยีที่ใช้ (Technology Stack)"
 category: entities
 tags: [tech-stack, Flutter, FastAPI, PyTorch, ONNX, PostgreSQL, Redis]
 sources: [design/architecture.md]
-updated: 2026-08-02
+updated: 2026-09-16
 ---
 
 # เทคโนโลยีที่ใช้ (Technology Stack)
@@ -17,15 +17,17 @@ updated: 2026-08-02
 | ส่วนประกอบ | เทคโนโลยี | เหตุผล |
 | :--- | :--- | :--- |
 | **Mobile App** | Flutter (Dart) | รองรับ Android (และ iOS ในอนาคต) ด้วย Codebase เดียว; รองรับ Dark Mode ดีเยี่ยม; ใช้ BLoC State Management |
-| **Admin Portal** | React.js + Tailwind CSS | โหลดข้อมูล Dynamic รวดเร็ว; จัดการ State สำหรับ Dashboard ได้ดี; เขียนแบบ Component-based |
+| **Admin Portal** | React 19 + Vite 8 + Tailwind CSS v4 | SPA แบบ Component-based; build/dev server ด้วย Vite |
 | **API Backend** | Python FastAPI | Async I/O ประสิทธิภาพเทียบเท่า Go/Node.js; ตรวจสอบ Pydantic อัตโนมัติ; Auto-generated OpenAPI Docs |
 | **AI Training** | PyTorch | Framework มาตรฐานอุตสาหกรรมสำหรับ Deep Learning; มี Ecosystem ของ SegFormer รองรับดี |
 | **AI Inference** | ONNX Runtime | เป้าหมายเร็วกว่า PyTorch baseline รุ่นเดียวกัน ≥ 2 เท่า (ภาพ 1080p เฉลี่ย 100 ภาพ บน T4; ยืนยันด้วย benchmark ก่อนอ้างภายนอก); ไม่ยึดติดกับ Framework |
 | **Primary Database** | PostgreSQL | ACID Transactions; ความถูกต้องของ Relational Data; รองรับ PostGIS สำหรับฟีเจอร์พิกัดในอนาคต |
 | **Cache** | Redis | ค้นหา Image Hash ไวระดับ Sub-millisecond; ลดโหลด AI Inference สำหรับรูปซ้ำได้มหาศาล |
-| **File Storage** | Cloud Object Storage | ขยายได้ไม่จำกัด; ใช้ Presigned URL เพื่อความปลอดภัยของ Client |
+| **File Storage** | Local filesystem (`LOCAL_UPLOAD_DIR`, default `./uploads`) | เก็บ PNG ต้นฉบับและ Heatmap; FastAPI mount ที่ `/uploads` ตาม code v1 |
 | **Reverse Image Search** | Google Vision API | ค้นหาภาพย้อนกลับครอบคลุมและแม่นยำที่สุด |
 | **Push Notifications** | Firebase Cloud Messaging (FCM) | ฟรี, เสถียรบน Android, ไม่ต้องบริหาร Infrastructure เอง |
+
+> Cloud Object Storage เป็นเป้าหมายในอนาคต ไม่ใช่ storage backend ที่ implementation ปัจจุบันใช้อยู่
 
 ---
 

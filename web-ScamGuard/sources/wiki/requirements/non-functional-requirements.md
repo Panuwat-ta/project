@@ -3,7 +3,7 @@ title: "ความต้องการที่ไม่ใช่ฟังก
 category: requirements
 tags: [NFR, performance, security, PDPA, availability, privacy, HTTPS, JWT]
 sources: [Document/srs.md, design/architecture.md, Document/objective.md]
-updated: 2026-08-02
+updated: 2026-09-16
 ---
 
 # ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements)
@@ -35,7 +35,7 @@ updated: 2026-08-02
 
 - Load Testing 100 concurrent users: Cache Hit avg <= 5 วินาที, Cache Miss avg <= 20 วินาที, Error Rate < 1%
 - AI Inference scale 1→4 replicas, throughput ≥3x, เสร็จใน 5 นาที @100 concurrent users (รายละเอียดระดับทดสอบ)
-- AI Inference Service ออกแบบโครงสร้างให้เป็น Container อิสระ เผื่อรับมือช่วงที่ระบบต้องประมวลผลเยอะจนมีอาการหน่วงได้
+- code v1 แยก SegFormer ONNX เป็น worker subprocess ภายใน FastAPI deployment เดียว; การ scale เป็น service/container อิสระเป็น future option
 - ลดจำนวนการทำงานด้วย Redis Cache เป็นส่วนเสริมเพื่อตอบคำถามโดยไม่ต้องรัน AI (Graceful Degradation สำหรับคำถามเดิมๆ ช่วง High Load)
 
 ---
@@ -86,9 +86,9 @@ updated: 2026-08-02
 ### ข้อมูล (Data Security; รหัสผ่าน: Argon2id หรือ bcrypt+salt เท่านั้น ห้าม plaintext)
 
 - ไฟล์ชั่วคราวของ worker (original/heatmap ชั่วคราว) ลบอัตโนมัติใน 1 ชม. หลังวิเคราะห์เสร็จ (Minimal Retention)
-- ใช้ Presigned URL ซึ่งเป็นลิงก์แบบมีอายุจำกัด เพื่อส่งมอบข้อมูลที่เข้ารหัสให้เฉพาะ Client ไม่มีการเปิดเผย Credential พื้นฐานออกไป
+- code v1 เก็บไฟล์ใน `LOCAL_UPLOAD_DIR` และเสิร์ฟผ่าน FastAPI static mount `/uploads`; ยังไม่มี Presigned URL จึงต้องจำกัดการเปิดเผย path และวาง access control/reverse proxy ให้เหมาะสมก่อน Production
 
-### ความเป็นส่วนตัว PDPA (canonical: Document FR-PDPA-01 + RC-PDPA-04; เดิมเรียก NFR-10 wiki-local — ยกเลิกเลขนี้แล้ว)
+### ความเป็นส่วนตัว PDPA (canonical: Document FR-PDPA-01 + NFR-04 + RC-PDPA-04)
 
 กฎหมายว่าด้วยการคุ้มครองข้อมูลส่วนบุคคลของไทย (PDPA) มีผลบังคับใช้กับโครงการนี้อย่างเคร่งครัด
 
@@ -99,7 +99,7 @@ updated: 2026-08-02
 
 ### การจัดการความยินยอม (Consent Management — Document FR-PDPA-01)
 
-มีกระบวนการแสดง Consent ให้ยินยอม 2 ระดับ ตอนที่เปิดแอปพลิเคชันครั้งแรก:
+ฝั่ง Backend รับและบันทึก Consent 2 ระดับจาก body ของ `POST /api/v1/auth/register`:
 
 1. **System Consent (บังคับ)** — ต้องยินยอมให้ประมวลผลรูปภาพเพื่อการตรวจสอบ หากไม่ให้ จะไม่สามารถใช้งานระบบได้เลย
 2. **Research Consent (ไม่บังคับ/เลือกได้)** — การยินยอมให้เก็บรวบรวมรูปภาพ (แบบนิรนาม) สู่ Dataset งานวิจัย AI สามารถเปิดและปิด (Opt-in / Opt-out) ภายหลังได้เสมอ (FR-PDPA-02/03; ถอนแล้วลบใน 72 ชม. — รายละเอียดระดับทดสอบ)
@@ -119,7 +119,7 @@ updated: 2026-08-02
 - ผลสแกนที่ได้รับความยินยอม (System consent) เก็บ **1 ปี** แล้วลบอัตโนมัติ (Auto-delete ผ่าน Cron Job รายวัน); กรณีถอน consent ลบใน 72 ชม.
 - Audit Logs ไม่ลบ (เก็บไว้เพื่อ Compliance)
 
-### กรณีวิเคราะห์ไม่ครบ (canonical: Document FR-ANALYSIS-03 AC-4 fallback; เดิมเรียก NFR-11 wiki-local — ยกเลิกเลขนี้แล้ว)
+### กรณีวิเคราะห์ไม่ครบ (canonical: Document FR-ANALYSIS-03 AC-4 fallback)
 
 - ระบบ shall ไม่สรุปว่าภาพปลอดภัยเมื่อวิเคราะห์ไม่ครบ — เมื่อ Reverse Search ล้มเหลว/ยังไม่ตั้งค่า ให้ตั้ง `source_status = "unavailable"` แจ้งผู้ใช้ว่าฟังก์ชันค้นหาแหล่งที่มายังไม่พร้อมใช้งาน และคำนวณคะแนนรวมจากมิติที่สำเร็จเท่านั้น (มติ DOC-01: ไม่ใช้ค่ากลางปลอม)
 

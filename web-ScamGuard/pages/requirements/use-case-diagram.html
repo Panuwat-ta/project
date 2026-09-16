@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Use Case Diagram --- คำอธิบายรายละเอียดกรณีการใช้งาน Use Case Details UC-01: เข้าสู่ระบบ / ยืนยันตัวตน Login &amp; Authentication : ผู้เกี่ยวข้อง Actors : General User, Admin รายละเอียด: กระบวนก…">
+  <meta name="description" content="Use Case Diagram Use cases ผูกกับ canonical FR IDs จาก SRS โดยตรง คำอธิบาย Use Cases Use case Actor Canonical requirements พฤติกรรมปัจจุบัน :--- :--- :--- :--- Authentication General User FR…">
   <meta name="color-scheme" content="light dark">
   <title>Use Case Diagram | ScamGuard Documentation</title>
   <link rel="stylesheet" href="../../assets/css/site.css">
@@ -14,160 +14,119 @@
   <header class="masthead"><div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><nav class="top-tabs" aria-label="เมนูหลัก"><a href="../../index.html">Guide</a><a href="../../pages/architecture/system-architecture.html">Architecture</a><a href="../../pages/architecture/backend-api.html">API Reference</a></nav></div></header>
   <div class="docs-shell">
     <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><div class="sidebar-head"><a class="sidebar-brand" href="../../index.html" aria-label="ScamGuard Documentation"><span class="brand brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z"/><path d="m9.2 12 1.8 1.8 3.9-4.2"/></svg></span><span class="sidebar-brand-name">ScamGuard Docs</span></a><div class="theme-switcher" role="group" aria-label="ธีมเว็บไซต์"><button type="button" data-theme-option="system" aria-label="ใช้ธีมตามระบบ" title="System"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></button><button type="button" data-theme-option="light" aria-label="ใช้โหมดสว่าง" title="Light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></button><button type="button" data-theme-option="dark" aria-label="ใช้โหมดมืด" title="Dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8 8 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/></svg></button></div></div><button class="control nav-close" type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button><button class="sidebar-search" type="button" data-search-open><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search...</span><kbd>Ctrl K</kbd></button><div class="sidebar-scroll"><details class="sidebar-group" ><summary>ภาพรวม</summary><ul class="sidebar-list"><li><a href="../overview.html" >ภาพรวมโปรเจค</a></li><li><a href="../index.html" >สารบัญ Wiki — โปรเจค Scam Image Detection</a></li></ul></details><details class="sidebar-group" open><summary>ความต้องการระบบ</summary><ul class="sidebar-list"><li><a href="functional-requirements.html" >ความต้องการเชิงฟังก์ชัน (Functional Requirements)</a></li><li><a href="non-functional-requirements.html" >ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements)</a></li><li><a href="traceability-matrix.html" >เมทริกซ์การสืบย้อนความต้องการ</a></li><li><a href="objectives-kpis.html" >วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp; KPIs)</a></li><li><a href="srs.html" >Software Requirements Specification (SRS)</a></li><li><a href="use-case-diagram.html" aria-current="page">Use Case Diagram</a></li></ul></details><details class="sidebar-group" ><summary>สถาปัตยกรรม</summary><ul class="sidebar-list"><li><a href="../architecture/database-migrations.html" >การจัดการการย้ายฐานข้อมูล (Database Migrations)</a></li><li><a href="../architecture/external-integrations.html" >การเชื่อมต่อบริการภายนอก (External Integrations)</a></li><li><a href="../architecture/database-schema.html" >โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li><li><a href="../architecture/system-architecture.html" >สถาปัตยกรรมระบบ (System Architecture)</a></li><li><a href="../architecture/admin-portal.html" >สถาปัตยกรรมและการออกแบบ Admin Portal</a></li><li><a href="../architecture/mobile-app.html" >สถาปัตยกรรม Mobile App</a></li><li><a href="../architecture/ai-inference-service.html" >AI Inference Service</a></li><li><a href="../architecture/backend-api.html" >Backend API — FastAPI Orchestrator</a></li><li><a href="../architecture/c1-system-context-diagram.html" >C1 System Context Diagram</a></li><li><a href="../architecture/c2-container-diagram.html" >C2 Container Diagram</a></li><li><a href="../architecture/c3-component-diagram.html" >C3 Component Diagram - API Application</a></li><li><a href="../architecture/c4-code-diagram.html" >C4 Code Diagram - Image Scanning Flow</a></li><li><a href="../architecture/database-er-diagram.html" >Entity Relationship Diagram (ER Diagram)</a></li><li><a href="../architecture/mobile-design.html" >Mobile App Architecture</a></li><li><a href="../architecture/flowchart.html" >System Flowchart</a></li><li><a href="../architecture/design-overview.html" >UX/UI &amp; System Design Overview</a></li></ul></details><details class="sidebar-group" ><summary>แนวคิดและเทคนิค</summary><ul class="sidebar-list"><li><a href="../concepts/risk-scoring.html" >การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li><li><a href="../concepts/multi-layer-analysis.html" >การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li><li><a href="../concepts/explainable-ai.html" >ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li><li><a href="../concepts/configs.html" >พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li><li><a href="../concepts/ai-model-segformer.html" >โมเดล AI — SegFormer</a></li><li><a href="../concepts/surya-ocr.html" >โมเดล AI — Surya OCR</a></li><li><a href="../concepts/model-training.html" >AI Model Training Workflow</a></li><li><a href="../concepts/mmsegmentation.html" >MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li><li><a href="../concepts/semantic-segmentation.html" >Semantic Segmentation</a></li></ul></details><details class="sidebar-group" ><summary>องค์ประกอบระบบ</summary><ul class="sidebar-list"><li><a href="../entities/tech-stack.html" >เทคโนโลยีที่ใช้ (Technology Stack)</a></li><li><a href="../entities/actors.html" >ผู้ใช้ระบบ (Actors)</a></li></ul></details><details class="sidebar-group" ><summary>การตัดสินใจ</summary><ul class="sidebar-list"><li><a href="../decisions/technology-choices.html" >การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li></ul></details><details class="sidebar-group" ><summary>การวางแผน</summary><ul class="sidebar-list"><li><a href="../planning/task-tracking.html" >การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a></li><li><a href="../planning/project-scope.html" >ขอบเขตโครงการ (Project Scope)</a></li><li><a href="../planning/team.html" >ทีมงานและผู้รับผิดชอบ (Team)</a></li><li><a href="../planning/backend-documentation.html" >Backend Documentation</a></li></ul></details><details class="sidebar-group" ><summary>การทดสอบ</summary><ul class="sidebar-list"><li><a href="../testing/test-cases.html" >กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li></ul></details><details class="sidebar-group" ><summary>คู่มือและภาคผนวก</summary><ul class="sidebar-list"><li><a href="../log.html" >บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li><li><a href="../howto.html" >วิธีใช้งาน Wiki (How to Use This Wiki)</a></li><li><a href="../runbook.html" >Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li><li><a href="../AGENTS.html" >Wiki Operating Guide</a></li></ul></details></div></aside><div class="nav-backdrop" data-nav-backdrop></div>
-    <main class="article" id="main-content"><nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span aria-hidden="true">/</span><span>ความต้องการระบบ</span></nav><header class="article-header"><h1>Use Case Diagram</h1><div class="meta"><span>หมวด ความต้องการระบบ</span><time datetime="2026-08-04">อัปเดต 2026-08-04</time><span>ต้นฉบับ requirements/use-case-diagram.md</span></div><div class="tags"><span class="tag">requirements</span><span class="tag">use-case</span><span class="tag">diagram</span><span class="tag">uml</span></div></header><div class="prose"><h1 id="use-case-diagram">Use Case Diagram</h1>
-<figure class="diagram-frame"><div class="diagram-toolbar"><span>แผนภาพ 6</span><button class="control" type="button" data-diagram-expand>ดูขนาดใหญ่</button></div><img src="../../assets/diagrams/requirements-use-case-diagram-6.svg" alt="แผนภาพจาก Use Case Diagram" loading="lazy"><details class="diagram-source"><summary>ดู Mermaid source</summary><pre><code>flowchart LR
-    %% การตั้งค่า Class สีต่างๆ (กำหนด color:black ตามมาตรฐานเดิม)
+    <main class="article" id="main-content"><nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span aria-hidden="true">/</span><span>ความต้องการระบบ</span></nav><header class="article-header"><h1>Use Case Diagram</h1><p class="article-lead">Use cases ผูกกับ canonical FR IDs จาก SRS โดยตรง</p><div class="meta"><span>หมวด ความต้องการระบบ</span><time datetime="2026-09-16">อัปเดต 2026-09-16</time><span>ต้นฉบับ requirements/use-case-diagram.md</span></div><div class="tags"><span class="tag">requirements</span><span class="tag">use-case</span><span class="tag">diagram</span><span class="tag">canonical</span></div></header><div class="prose"><h1 id="use-case-diagram">Use Case Diagram</h1>
+<p>Use cases ผูกกับ canonical FR IDs จาก SRS โดยตรง</p>
+<figure class="diagram-frame"><div class="diagram-toolbar"><span>แผนภาพ 2</span><button class="control" type="button" data-diagram-expand>ดูขนาดใหญ่</button></div><img src="../../assets/diagrams/requirements-use-case-diagram-2.svg" alt="แผนภาพจาก Use Case Diagram" loading="lazy"><details class="diagram-source"><summary>ดู Mermaid source</summary><pre><code>flowchart LR
     classDef actorFill fill:#fff2cc,stroke:#d6b656,color:black
     classDef ucFill fill:#dae8fc,stroke:#6c8ebf,color:black
     classDef extFill fill:#f5f5f5,stroke:#666666,color:black
 
-    %% Actors Boundary (มีเฉพาะ human actors; ขั้นตอนอัตโนมัติใช้ &lt;&lt;include&gt;&gt;)
-    subgraph Actors [ผู้เกี่ยวข้อง / Actors]
-        User(&quot;General User&lt;br&gt;[Actor]&quot;)
-        Admin(&quot;Admin&lt;br&gt;[Actor]&quot;)
-    end
+    User(&quot;General User&lt;br&gt;[Actor]&quot;)
+    Admin(&quot;Admin&lt;br&gt;[Actor]&quot;)
 
-    %% System Boundary
     subgraph SystemBoundary [Scam Image Detection System]
         direction TB
-        
-        UC01(&quot;UC-01: เข้าสู่ระบบ / ยืนยันตัวตน&lt;br&gt;(Login &amp; Authentication)&quot;)
-        UC02(&quot;UC-02: นำเข้ารูปภาพ&lt;br&gt;(Upload Image)&quot;)
-        UC03(&quot;UC-03: ประมวลผลภาพขั้นต้น&lt;br&gt;(Primary Analysis)&quot;)
-        UC04(&quot;UC-04: วิเคราะห์ด้วย AI&lt;br&gt;(AI Inference)&quot;)
-        UC05(&quot;UC-05: ตรวจสอบผลลัพธ์และแผนที่ความร้อน&lt;br&gt;(View Result &amp; Heatmap)&quot;)
-        UC06(&quot;UC-06: รับการแจ้งเตือน&lt;br&gt;(Receive Notification; FCM = Phase 2)&quot;)
-        UC07(&quot;UC-07: จัดการประวัติการสแกน&lt;br&gt;(History Management)&quot;)
-        UC08(&quot;UC-08: รายงานและแชร์ผลลัพธ์&lt;br&gt;(Report &amp; Share)&quot;)
-        UC09(&quot;UC-09: จัดการผู้ใช้และแดชบอร์ด&lt;br&gt;(Admin Dashboard &amp; RBAC)&quot;)
-        UC10(&quot;UC-10: จัดการชุดข้อมูลและอัปเดตโมเดล&lt;br&gt;(Dataset &amp; Model Management)&quot;)
+        UCAUTH(&quot;Authentication&lt;br&gt;FR-AUTH-01..04&quot;)
+        UCSCAN(&quot;Select, crop, upload, poll&lt;br&gt;FR-SCAN-01..03&quot;)
+        UCANALYZE(&quot;Textual / Visual / Source / Risk&lt;br&gt;FR-ANALYSIS-01..04&quot;)
+        UCXAI(&quot;View result &amp; Heatmap&lt;br&gt;FR-XAI-01&quot;)
+        UCHISTORY(&quot;History &amp; scam report&lt;br&gt;FR-HISTORY-01..02&quot;)
+        UCPDPA(&quot;Consent management&lt;br&gt;FR-PDPA-01&quot;)
+        UCADMIN(&quot;Dashboard, moderation, model, audit&lt;br&gt;FR-ADMIN-01..04&quot;)
     end
 
-    %% External Services
-    subgraph ExternalServices [External Services]
-        GoogleVision(&quot;Google Vision API&lt;br&gt;[Reverse Search]&quot;)
-        FCM(&quot;Firebase Cloud Messaging&lt;br&gt;[FCM, Phase 2]&quot;)
-    end
+    GoogleVision(&quot;Google Vision API&lt;br&gt;[optional source analysis]&quot;)
 
-    %% Relationships / Associations
-    User --&gt; UC01
-    User --&gt; UC02
-    User --&gt; UC05
-    User --&gt; UC06
-    User --&gt; UC07
-    User --&gt; UC08
+    User --&gt; UCAUTH
+    User --&gt; UCSCAN
+    User --&gt; UCXAI
+    User --&gt; UCHISTORY
+    User --&gt; UCPDPA
+    Admin --&gt; UCADMIN
 
-    Admin --&gt; UC01
-    Admin --&gt; UC09
-    Admin --&gt; UC10
+    UCSCAN -. &quot; &lt;&lt;include&gt;&gt; &quot; .-&gt; UCANALYZE
+    UCXAI -. &quot; &lt;&lt;include&gt;&gt; &quot; .-&gt; UCANALYZE
+    UCANALYZE --&gt; GoogleVision
 
-    %% ขั้นตอนอัตโนมัติเป็น &lt;&lt;include&gt;&gt; ใต้ General User (ไม่มี System Actor)
-    UC02 -. &quot; &lt;&lt;include&gt;&gt; &quot; .-&gt; UC03
-    UC03 -. &quot; &lt;&lt;include&gt;&gt; &quot; .-&gt; UC04
-    UC05 -. &quot; &lt;&lt;include&gt;&gt; &quot; .-&gt; UC03
-    UC05 -. &quot; &lt;&lt;include&gt;&gt; &quot; .-&gt; UC04
-
-    %% External Connections (optional; ล้มเหลวให้คืนผลบางส่วน ไม่สรุปว่าปลอดภัย)
-    UC03 --&gt; GoogleVision
-    UC06 --&gt; FCM
-
-    %% Apply Styles
     class User,Admin actorFill
-    class UC01,UC02,UC03,UC04,UC05,UC06,UC07,UC08,UC09,UC10 ucFill
-    class GoogleVision,FCM extFill
-</code></pre></details><dialog aria-label="แผนภาพขนาดใหญ่"><div class="diagram-expanded-head"><button class="control" type="button" data-diagram-zoom="out">ย่อ</button><span class="zoom-status" data-zoom-status>100%</span><button class="control" type="button" data-diagram-zoom="in">ขยาย</button><button class="control" type="button" data-diagram-close>ปิด</button></div><div class="diagram-pan" data-diagram-pan data-zoom="1" tabindex="0" aria-label="พื้นที่แผนภาพ เลื่อนได้ทั้งแนวตั้งและแนวนอน"><img src="../../assets/diagrams/requirements-use-case-diagram-6.svg" alt="แผนภาพจาก Use Case Diagram"></div></dialog></figure><hr>
-<h3 id="คำอธิบายรายละเอียดกรณีการใช้งาน-use-case-details">คำอธิบายรายละเอียดกรณีการใช้งาน (Use Case Details)</h3>
+    class UCAUTH,UCSCAN,UCANALYZE,UCXAI,UCHISTORY,UCPDPA,UCADMIN ucFill
+    class GoogleVision extFill
+</code></pre></details><dialog aria-label="แผนภาพขนาดใหญ่"><div class="diagram-expanded-head"><button class="control" type="button" data-diagram-zoom="out">ย่อ</button><span class="zoom-status" data-zoom-status>100%</span><button class="control" type="button" data-diagram-zoom="in">ขยาย</button><button class="control" type="button" data-diagram-close>ปิด</button></div><div class="diagram-pan" data-diagram-pan data-zoom="1" tabindex="0" aria-label="พื้นที่แผนภาพ เลื่อนได้ทั้งแนวตั้งและแนวนอน"><img src="../../assets/diagrams/requirements-use-case-diagram-2.svg" alt="แผนภาพจาก Use Case Diagram"></div></dialog></figure><h2 id="คำอธิบาย-use-cases">คำอธิบาย Use Cases</h2>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">Use case</th>
+<th style="text-align:left">Actor</th>
+<th style="text-align:left">Canonical requirements</th>
+<th style="text-align:left">พฤติกรรมปัจจุบัน</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Authentication</td>
+<td style="text-align:left">General User</td>
+<td style="text-align:left">FR-AUTH-01..04</td>
+<td style="text-align:left">Email/Password + JWT; consent ส่งใน register body; code v1 ไม่มี OAuth</td>
+</tr>
+<tr>
+<td style="text-align:left">Select, crop, upload</td>
+<td style="text-align:left">General User</td>
+<td style="text-align:left">FR-SCAN-01..02</td>
+<td style="text-align:left">Gallery, crop, <code>POST /api/v1/scan/</code></td>
+</tr>
+<tr>
+<td style="text-align:left">Wait for result</td>
+<td style="text-align:left">General User</td>
+<td style="text-align:left">FR-SCAN-03</td>
+<td style="text-align:left">Mobile poll <code>GET /api/v1/scan/{scan_id}</code> ทุก 3 วินาที; ไม่มี Mobile WebSocket client</td>
+</tr>
+<tr>
+<td style="text-align:left">Analyze image</td>
+<td style="text-align:left">System</td>
+<td style="text-align:left">FR-ANALYSIS-01..04</td>
+<td style="text-align:left">Textual, Visual และ Source ร่วมคำนวณ; EXIF แสดงผลเท่านั้น</td>
+</tr>
+<tr>
+<td style="text-align:left">View explainable result</td>
+<td style="text-align:left">General User</td>
+<td style="text-align:left">FR-XAI-01</td>
+<td style="text-align:left">Risk badge เขียว/amber/แดง, Breakdown 3 มิติ และ Heatmap</td>
+</tr>
+<tr>
+<td style="text-align:left">History &amp; report</td>
+<td style="text-align:left">General User</td>
+<td style="text-align:left">FR-HISTORY-01..02</td>
+<td style="text-align:left">ดู/ลบประวัติและส่ง Scam Report</td>
+</tr>
+<tr>
+<td style="text-align:left">Consent</td>
+<td style="text-align:left">General User</td>
+<td style="text-align:left">FR-PDPA-01</td>
+<td style="text-align:left">บันทึก <code>system_consent</code>/<code>research_consent</code> ใน <code>consent_logs</code></td>
+</tr>
+<tr>
+<td style="text-align:left">Admin operations</td>
+<td style="text-align:left">Admin</td>
+<td style="text-align:left">FR-ADMIN-01..04</td>
+<td style="text-align:left">บัญชี <code>admins</code> แยกจาก <code>users</code>; Dashboard, Report Queue, Model, Audit</td>
+</tr>
+</tbody>
+</table></div><h2 id="ประเด็นสำคัญ">ประเด็นสำคัญ</h2>
 <ul>
-<li>
-<p><strong>UC-01: เข้าสู่ระบบ / ยืนยันตัวตน (Login &amp; Authentication):</strong></p>
-<ul>
-<li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User, Admin</li>
-<li><strong>รายละเอียด:</strong> กระบวนการยืนยันตัวตนเพื่อรักษาความปลอดภัยก่อนเข้าใช้งานระบบ โดยเข้าผ่าน Email/Password + JWT เพื่อทำการตรวจสอบและกำหนดสิทธิ์การดูข้อมูลตามบทบาท (Role-Based Access Control; Social Login / Google OAuth = Phase 2 deferred)</li>
-<li><strong>ความต้องการทางระบบ (FR):</strong> FR-01 - ระบบเข้าสู่ระบบและยืนยันตัวตน (Authentication): ผู้ใช้และผู้ดูแลระบบเข้าสู่ระบบด้วย Email/Password + JWT (Social Login = Phase 2 deferred)</li>
+<li>แผนภาพนี้ไม่ออก requirement IDs ใหม่</li>
+<li>FCM และ Social Login ไม่อยู่ใน implemented v1 use cases</li>
+<li>Admin authentication และ Mobile authentication ใช้คนละตาราง/คนละ session flow</li>
 </ul>
-</li>
-<li>
-<p><strong>UC-02: นำเข้ารูปภาพ (Upload Image):</strong></p>
+<h2 id="หน้าที่เกี่ยวข้อง">หน้าที่เกี่ยวข้อง</h2>
 <ul>
-<li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User</li>
-<li><strong>รายละเอียด:</strong> ผู้ใช้งานสามารถอัปโหลดภาพที่ต้องการตรวจสอบ เช่น สลิปโอนเงิน หรือรูปโปรไฟล์บุคคลอื่น โดยเลือกรูปที่มีอยู่แล้วในคลังรูปภาพของอุปกรณ์เคลื่อนที่</li>
-<li><strong>ความต้องการทางระบบ (FR):</strong> FR-02 - ระบบนำเข้ารูปภาพ (Image Input): ผู้ใช้เลือกรูปจากคลังภาพ แล้วอัปโหลดไฟล์ภาพเข้าสู่ระบบ</li>
-</ul>
-</li>
-<li>
-<p><strong>UC-03: ประมวลผลภาพขั้นต้น (Primary Analysis):</strong></p>
-<ul>
-<li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User (ผ่าน &lt;<include>&gt; จาก UC-02)</li>
-<li><strong>รายละเอียด:</strong> การดึงข้อมูลเมทาดาตา (Metadata/EXIF) ของภาพ, การสกัดตัวอักษรด้วยเทคนิค OCR เพื่อวิเคราะห์ Keyword อันตรายร่วมกับเทคนิค NLP และการส่งข้อมูลรูปภาพไปสืบค้นหาแหล่งที่มาดั้งเดิมด้วย Google Vision API</li>
-<li><strong>ความต้องการทางระบบ (FR):</strong> FR-03 - ระบบวิเคราะห์ข้อมูลชั้นต้น (Primary Analysis): ระบบสามารถดึงข้อมูลแฝง (Metadata/EXIF), สกัดข้อความในภาพ (OCR), และค้นหาแหล่งที่มาของภาพ (Reverse Image Search) ได้โดยอัตโนมัติ</li>
-</ul>
-</li>
-<li>
-<p><strong>UC-04: วิเคราะห์ด้วย AI (AI Inference):</strong></p>
-<ul>
-<li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User (ผ่าน &lt;<include>&gt; จาก UC-03)</li>
-<li><strong>รายละเอียด:</strong> ส่งรูปภาพเพื่อนำเข้าโมเดลปัญญาประดิษฐ์เชิงลึก (Deep Learning) ในการตรวจสอบการแก้ไขระดับพิกเซล (Semantic Segmentation) เพื่อหาร่องรอยการตัดต่อ (Image Forgery) และตรวจสอบลักษณะว่าภาพถูกสังเคราะห์ด้วย Generative AI หรือไม่</li>
-<li><strong>ความต้องการทางระบบ (FR):</strong> FR-04 - ระบบวิเคราะห์ด้วยปัญญาประดิษฐ์ (AI Inference): ระบบส่งภาพเข้าสู่โมเดล Deep Learning เพื่อตรวจสอบร่องรอยการตัดต่อ (Image Forgery/Semantic Segmentation) และตรวจสอบภาพที่สร้างด้วยปัญญาประดิษฐ์ (AI-Generated)</li>
-</ul>
-</li>
-<li>
-<p><strong>UC-05: ตรวจสอบผลลัพธ์และแผนที่ความร้อน (View Result &amp; Heatmap):</strong></p>
-<ul>
-<li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User</li>
-<li><strong>รายละเอียด:</strong> หน้าจอแสดงค่าคะแนนความเสี่ยงรวม (Overall Risk Score) พร้อมแสดงผลสรุปเหตุผลความผิดปกติ และแสดงแผนที่ความร้อน (Heatmap) บนจุดที่น่าสงสัยของภาพ เพื่อตอบโจทย์ความโปร่งใสของปัญญาประดิษฐ์ (XAI)</li>
-<li><strong>ความต้องการทางระบบ (FR):</strong> FR-05 - ระบบแสดงผลลัพธ์ (Result &amp; Visualization): ระบบคำนวณคะแนนความเสี่ยงรวม (Overall Risk Score) และสร้างแผนที่ความร้อน (Heatmap) เพื่ออธิบายผลลัพธ์ให้ผู้ใช้เข้าใจ</li>
-</ul>
-</li>
-<li>
-<p><strong>UC-06: รับการแจ้งเตือน (Receive Notification; FCM = Phase 2):</strong></p>
-<ul>
-<li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User</li>
-<li><strong>รายละเอียด:</strong> การรับการแจ้งเตือนแบบ in-app/polling ภายใน 60 วินาทีเมื่อระบบตรวจสอบวิเคราะห์รูปภาพบนเซิร์ฟเวอร์เบื้องหลัง (Background Task) เสร็จสิ้นสมบูรณ์ (FCM push = Phase 2)</li>
-<li><strong>ความต้องการทางระบบ (FR):</strong> FR-06 - ระบบแจ้งเตือน: v1 ใช้ polling + in-app notification ภายใน 60 วินาทีหลังงานเบื้องหลังเสร็จ (FCM push = Phase 2)</li>
-</ul>
-</li>
-<li>
-<p><strong>UC-07: จัดการประวัติการสแกน (History Management):</strong></p>
-<ul>
-<li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User</li>
-<li><strong>รายละเอียด:</strong> ผู้ใช้งานทั่วไปสามารถเรียกดูประวัติรูปภาพและผลคะแนนความเสี่ยงย้อนหลังที่เคยส่งตรวจสอบ เพื่อเก็บบันทึกข้อมูลหรือเรียกดูใหม่ และผู้ใช้สามารถกดลบข้อมูลการสแกนประวัติตนเองได้ตามนโยบาย PDPA</li>
-<li><strong>ความต้องการทางระบบ (FR):</strong> FR-07 - ระบบจัดการประวัติการสแกน (History Management): ระบบบันทึกประวัติการตรวจสอบภาพของผู้ใช้โดยสามารถเรียกดูผลลัพธ์ย้อนหลัง หรือลบประวัติได้</li>
-</ul>
-</li>
-<li>
-<p><strong>UC-08: รายงานและแชร์ผลลัพธ์ (Report &amp; Share):</strong></p>
-<ul>
-<li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User</li>
-<li><strong>รายละเอียด:</strong> การกดรายงาน (Report) ส่งยืนยันภาพหลอกลวงเข้าคลังสแกมเมอร์ส่วนกลางเพื่อเป็นประโยชน์ในอนาคต และสามารถกดแชร์ภาพสรุปความเสี่ยงหรือคำเตือนภัยไปยังสื่อโซเชียลภายนอก (เช่น LINE) เพื่อเตือนภัยบุคคลใกล้ชิด</li>
-<li><strong>ความต้องการทางระบบ (FR):</strong> FR-08 - ระบบรายงานและแชร์ข้อมูล (Report &amp; Share): ผู้ใช้สามารถกดรายงาน (Report) ภาพหลอกลวงเข้าสู่ฐานข้อมูลกลาง และสามารถแชร์ภาพผลลัพธ์/คำเตือนไปยังแอปพลิเคชันภายนอกได้</li>
-</ul>
-</li>
-<li>
-<p><strong>UC-09: จัดการผู้ใช้และแดชบอร์ด (Admin Dashboard &amp; RBAC):</strong></p>
-<ul>
-<li><strong>ผู้เกี่ยวข้อง (Actors):</strong> Admin</li>
-<li><strong>รายละเอียด:</strong> แอดมินเข้าใช้งานหน้าเว็บแผงควบคุมระบบ (Admin Panel) เพื่อติดตามกราฟสถิติการใช้งาน, จัดการข้อมูลของผู้ใช้งาน (เปลี่ยนสถานะเท่านั้น ห้าม hard-delete), ตรวจสอบสิทธิ์การเข้าถึง และการอนุมัติจัดการรายงานต่าง ๆ</li>
-<li><strong>ความต้องการทางระบบ (FR):</strong> FR-09 - ระบบผู้ดูแลและการจัดการสิทธิ์ (Admin &amp; RBAC): มีหน้าแดชบอร์ดให้ผู้ดูแลระบบตรวจสอบสถิติการใช้งาน, จัดการข้อมูลผู้ใช้, และกำหนดสิทธิ์การเข้าถึงระบบตามบทบาท</li>
-</ul>
-</li>
-<li>
-<p><strong>UC-10: จัดการชุดข้อมูลและอัปเดตโมเดล (Dataset &amp; Model Management):</strong></p>
-<ul>
-<li><strong>ผู้เกี่ยวข้อง (Actors):</strong> Admin</li>
-<li><strong>รายละเอียด:</strong> แอดมินทำหน้าที่ตรวจสอบรูปภาพสแกมที่ผู้ใช้รายงาน ตรวจจัดหมวดหมู่เพื่อส่งเข้าชุดข้อมูล (Scam Dataset) สำหรับนำไปเทรนและวิเคราะห์เพิ่มเติม พร้อมทำการอัปโหลดไฟล์น้ำหนักโมเดล (Model Weights) เวอร์ชันใหม่ขึ้นระบบ</li>
-<li><strong>ความต้องการทางระบบ (FR):</strong> FR-10 - ระบบจัดการข้อมูลและโมเดล (Dataset &amp; Model Management): ผู้ดูแลระบบสามารถตรวจสอบรูปภาพที่ถูกผู้ใช้รายงาน นำไปจัดหมวดหมู่ชุดข้อมูล และอัปโหลดโมเดล AI (Weights) เวอร์ชันใหม่เข้าสู่ระบบได้</li>
-</ul>
-</li>
-</ul>
-<h3 id="exception-flows-ทุก-uc">Exception flows (ทุก UC)</h3>
-<ul>
-<li>ไฟล์ผิดชนิด/เกินขนาด (FR-02) → ปฏิเสธพร้อมข้อความ ไม่บีบอัดใน v1</li>
-<li>OCR/โมเดล/External ล้มเหลว → คืนผลบางส่วนพร้อม confidence + สถานะชัดเจน</li>
-<li>Reverse search/FCM ไม่พร้อม → แจ้ง &quot;ไม่มีข้อมูล&quot; (optional) ไม่สรุปว่าภาพปลอดภัย</li>
-<li>Token หมดอายุ/สิทธิ์ไม่พอ → 401 + ต่ออายุหรือล็อกอินใหม่; ตรวจ ownership เสมอ</li>
+<li><a href="functional-requirements.html">requirements/functional-requirements</a></li>
+<li><a href="traceability-matrix.html">requirements/traceability-matrix</a></li>
+<li><a href="srs.html">requirements/srs</a></li>
+<li><a href="../entities/actors.html">entities/actors</a></li>
+<li><a href="../architecture/mobile-app.html">architecture/mobile-app</a></li>
+<li><a href="../architecture/backend-api.html">architecture/backend-api</a></li>
 </ul>
 </div></main>
-    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้"><p class="toc-title">ในหน้านี้</p><ol class="toc"><li class="toc-level-3"><a href="#%E0%B8%84%E0%B8%B3%E0%B8%AD%E0%B8%98%E0%B8%B4%E0%B8%9A%E0%B8%B2%E0%B8%A2%E0%B8%A3%E0%B8%B2%E0%B8%A2%E0%B8%A5%E0%B8%B0%E0%B9%80%E0%B8%AD%E0%B8%B5%E0%B8%A2%E0%B8%94%E0%B8%81%E0%B8%A3%E0%B8%93%E0%B8%B5%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%83%E0%B8%8A%E0%B9%89%E0%B8%87%E0%B8%B2%E0%B8%99-use-case-details">คำอธิบายรายละเอียดกรณีการใช้งาน (Use Case Details)</a></li><li class="toc-level-3"><a href="#exception-flows-%E0%B8%97%E0%B8%B8%E0%B8%81-uc">Exception flows (ทุก UC)</a></li></ol></aside>
+    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้"><p class="toc-title">ในหน้านี้</p><ol class="toc"><li class="toc-level-2"><a href="#%E0%B8%84%E0%B8%B3%E0%B8%AD%E0%B8%98%E0%B8%B4%E0%B8%9A%E0%B8%B2%E0%B8%A2-use-cases">คำอธิบาย Use Cases</a></li><li class="toc-level-2"><a href="#%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%94%E0%B9%87%E0%B8%99%E0%B8%AA%E0%B8%B3%E0%B8%84%E0%B8%B1%E0%B8%8D">ประเด็นสำคัญ</a></li><li class="toc-level-2"><a href="#%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%87">หน้าที่เกี่ยวข้อง</a></li></ol></aside>
   </div>
   <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title"><div class="search-dialog-head"><label class="visually-hidden" id="search-title" for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…" autocomplete="off" data-search-input><button class="control" type="button" data-search-close aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div class="search-results" data-search-results aria-live="polite"></div></dialog>
   <script src="../../assets/js/search-index.js"></script>

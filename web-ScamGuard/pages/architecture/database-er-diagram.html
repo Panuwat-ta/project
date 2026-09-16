@@ -20,7 +20,7 @@
 <p>หมายเหตุ: constraints ตรงกับ <code>server/app/models/*.py</code> — ข้อความใน <code>&quot;...&quot;</code> ของแต่ละฟิลด์
 ระบุ nullable / default / unique / index / FK ondelete</p>
 </blockquote>
-<figure class="diagram-frame"><div class="diagram-toolbar"><span>แผนภาพ 12</span><button class="control" type="button" data-diagram-expand>ดูขนาดใหญ่</button></div><img src="../../assets/diagrams/architecture-database-er-diagram-12.svg" alt="แผนภาพจาก Entity Relationship Diagram (ER Diagram)" loading="lazy"><details class="diagram-source"><summary>ดู Mermaid source</summary><pre><code>erDiagram
+<figure class="diagram-frame"><div class="diagram-toolbar"><span>แผนภาพ 8</span><button class="control" type="button" data-diagram-expand>ดูขนาดใหญ่</button></div><img src="../../assets/diagrams/architecture-database-er-diagram-8.svg" alt="แผนภาพจาก Entity Relationship Diagram (ER Diagram)" loading="lazy"><details class="diagram-source"><summary>ดู Mermaid source</summary><pre><code>erDiagram
     users {
         int id PK &quot;index&quot;
         string email &quot;NOT NULL, unique, index&quot;
@@ -180,7 +180,7 @@
         int user_id &quot;nullable, index&quot;
         datetime archived_at &quot;server_default now()&quot;
     }
-</code></pre></details><dialog aria-label="แผนภาพขนาดใหญ่"><div class="diagram-expanded-head"><button class="control" type="button" data-diagram-zoom="out">ย่อ</button><span class="zoom-status" data-zoom-status>100%</span><button class="control" type="button" data-diagram-zoom="in">ขยาย</button><button class="control" type="button" data-diagram-close>ปิด</button></div><div class="diagram-pan" data-diagram-pan data-zoom="1" tabindex="0" aria-label="พื้นที่แผนภาพ เลื่อนได้ทั้งแนวตั้งและแนวนอน"><img src="../../assets/diagrams/architecture-database-er-diagram-12.svg" alt="แผนภาพจาก Entity Relationship Diagram (ER Diagram)"></div></dialog></figure><h2 id="รายละเอียดแต่ละตาราง">รายละเอียดแต่ละตาราง</h2>
+</code></pre></details><dialog aria-label="แผนภาพขนาดใหญ่"><div class="diagram-expanded-head"><button class="control" type="button" data-diagram-zoom="out">ย่อ</button><span class="zoom-status" data-zoom-status>100%</span><button class="control" type="button" data-diagram-zoom="in">ขยาย</button><button class="control" type="button" data-diagram-close>ปิด</button></div><div class="diagram-pan" data-diagram-pan data-zoom="1" tabindex="0" aria-label="พื้นที่แผนภาพ เลื่อนได้ทั้งแนวตั้งและแนวนอน"><img src="../../assets/diagrams/architecture-database-er-diagram-8.svg" alt="แผนภาพจาก Entity Relationship Diagram (ER Diagram)"></div></dialog></figure><h2 id="รายละเอียดแต่ละตาราง">รายละเอียดแต่ละตาราง</h2>
 <ul>
 <li><strong>users</strong>: เก็บข้อมูลบัญชีผู้ใช้ (role: user/researcher; admin แยกตาราง admins); consent เก็บใน consent_logs</li>
 <li><strong>admins</strong>: เก็บข้อมูลบัญชีผู้ดูแลระบบแยกตาราง (is_superadmin, default False)</li>

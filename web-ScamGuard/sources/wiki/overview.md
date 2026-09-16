@@ -3,7 +3,7 @@ title: "ภาพรวมโปรเจค — Scam Image Detection"
 category: overview
 tags: [ภาพรวม, synthesis, scam-detection, mobile-app, AI]
 sources: [README.md, Document/objective.md, design/architecture.md]
-updated: 2026-08-02
+updated: 2026-09-16
 ---
 
 # ภาพรวมโปรเจค: Scam Image Detection
@@ -22,9 +22,6 @@ updated: 2026-08-02
 - **การแอบอ้างตัวตน** — นำรูปจากบริบทหนึ่งไปใช้อ้างตัวตนในอีกบริบท
 
 ผู้ใช้ทั่วไปไม่สามารถตรวจจับสิ่งเหล่านี้ได้ด้วยตาเปล่า แอปนี้คือเครื่องมือนิติวิทยาศาสตร์ดิจิทัลในกระเป๋า
-
-> [!IMPORTANT]
-> โปรเจคนี้ตรวจจับ **ภาพหลอกลวงในวงกว้าง** ไม่ใช่เฉพาะ "สลิปปลอม" การแยกแยะประเภทการปลอมแปลง (splicing, copy-move, AI-generation, reverse image identity theft) คือฟีเจอร์หลักของระบบ
 
 ---
 
@@ -45,11 +42,11 @@ updated: 2026-08-02
 
 ## สรุปสถาปัตยกรรมระบบ
 
-ระบบเป็นแบบ Cloud-Native และแยกส่วนออกเป็น 3 ชั้น:
+ระบบปัจจุบันเป็น modular FastAPI backend แบ่งออกเป็น 3 ชั้น:
 
-1. **Frontend** — Flutter Mobile App (v1: Android; iOS เป็น future) สำหรับผู้ใช้ทั่วไป; React.js Admin Portal สำหรับนักวิจัยและเจ้าหน้าที่
+1. **Frontend** — Flutter Mobile App (v1: Android) สำหรับผู้ใช้ทั่วไป; React 19 + Vite 8 + Tailwind CSS v4 Admin Portal สำหรับนักวิจัยและเจ้าหน้าที่
 2. **Backend** — Python FastAPI ทำหน้าที่เป็น Orchestrator/API Gateway; ONNX Worker subprocess สำหรับประมวลผลโมเดล
-3. **Storage** — PostgreSQL สำหรับข้อมูลเชิงสัมพันธ์; Redis สำหรับ cache; Cloud Storage สำหรับไฟล์รูปภาพและ Heatmap
+3. **Storage** — PostgreSQL สำหรับข้อมูลเชิงสัมพันธ์; Redis สำหรับ cache; local filesystem สำหรับไฟล์รูปภาพและ Heatmap ที่เสิร์ฟผ่าน `/uploads`
 
 ดูสถาปัตยกรรมเต็มที่ [[architecture/system-architecture]]
 
@@ -60,12 +57,12 @@ updated: 2026-08-02
 | งาน | เทคโนโลยี |
 | :--- | :--- |
 | Mobile App | Flutter (Dart) — v1 Android, iOS ในอนาคต |
-| Admin Portal | React.js + Tailwind CSS |
+| Admin Portal | React 19 + Vite 8 + Tailwind CSS v4 |
 | API Backend | Python FastAPI |
 | โมเดล AI | SegFormer (PyTorch → ONNX) |
 | ฐานข้อมูล | PostgreSQL |
 | Cache | Redis |
-| เก็บไฟล์ | Cloud Object Storage |
+| เก็บไฟล์ | Local filesystem (`./uploads`, FastAPI static mount `/uploads`) |
 | ค้นหาภาพย้อนกลับ | Google Vision API |
 | Push Notification | Firebase Cloud Messaging (FCM) — **Phase 2** (v1 ใช้ polling + in-app notification) |
 

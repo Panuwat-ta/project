@@ -130,3 +130,5 @@ grep "^## \[" wiki/log.md | tail -5
 ## [2026-09-15] update | v1.0.5 training outcome + v10 config lessons → concepts/model-training, ai-model-segformer, configs (val 91.31 / common-test 91.24 แยกค่า)
 ## [2026-09-15] fix | refresh เส้นทาง test artifacts + สถานะเทรน v1.0.5 — planning/task-tracking.md
 ## [2026-09-15] update | ตารางผลรายเวอร์ชัน v1.0.0–v1.0.5 (val + locked common test + local set แยก 3 ชุด) — concepts/model-training
+## [2026-09-16] fix | สูตร LaTeX $/$$ → Unicode อ่านได้ 65 จุด (mmsegmentation, risk-scoring, surya-ocr, ai-model-segformer, configs) + ลบ NOTE คั่นตาราง traceability-matrix (ตาราง render ปกติแล้ว)
+## [2026-09-16] fix | sync wiki/Document กับ code: canonical FR catalog, 3-factor risk, badge colors, consent/register, polling, 16 mobile routes, mIoU, scan_id, weighted loss, admin auth split, modular monolith, React 19 stack, Android-only, local /uploads; retire NFR-10/11 และลบ Jira to-do เก่า

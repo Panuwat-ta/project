@@ -3,7 +3,7 @@ title: "การวิเคราะห์หลายชั้น (Multi-laye
 category: concepts
 tags: [การวิเคราะห์, OCR, NLP, reverse-image-search, visual-anomaly, pipeline]
 sources: [Document/srs.md, design/architecture.md, README.md]
-updated: 2026-08-02
+updated: 2026-09-16
 ---
 
 # การวิเคราะห์หลายชั้น (Multi-layer Analysis)
@@ -99,13 +99,14 @@ updated: 2026-08-02
 
 ## EXIF Metadata กับ Pipeline
 
-ก่อนรัน 3 ชั้นหลัก API Gateway จะดึง **EXIF Metadata** (พิกัด GPS, รุ่นกล้อง, Software ที่ใช้, วันเวลา) เพื่อตรวจหาความไม่สอดคล้องเบื้องต้น เช่น ไม่มีข้อมูล GPS ทั้งที่อ้างว่าถ่ายที่ใดที่หนึ่ง หรือ metadata แสดงว่าใช้โปรแกรมแต่งภาพ
+API Gateway ดึง **EXIF Metadata** (เช่น พิกัด GPS, รุ่นกล้อง, Software และวันเวลา) และเก็บไว้เป็นข้อมูลประกอบเพื่อแสดงผลเท่านั้น **EXIF ไม่ถูกแปลงเป็นคะแนนและไม่เข้าสูตร Overall Risk Score** โค้ดปัจจุบันคำนวณจาก 3 มิติเท่านั้น: `S_visual`, `S_textual` และ `S_source`
 
 ---
 
 ## ประเด็นสำคัญ
 
 - ทั้ง 3 มิติประเมินคะแนนแยกกันเป็นอิสระ (0–100%) ตามหลัก Fraud Detection & Forensics
+- EXIF เป็น display-only metadata ไม่ใช่มิติที่ 4 ของ Risk Score
 - สรุปคะแนนรวมด้วยหลัก **Worst-Case Trigger**: $S_{base} = \max(S_{visual}, S_{text}, S_{source})$ เพื่อป้องกันปัญหา Dilution ไม่ให้ด้านที่ปลอดภัยมาฉุดคะแนนด้านที่อันตรายลง
 - เสริมคะแนนด้วย **Multi-Factor Compounding**: หากพบความเสี่ยงปานกลางขึ้นไปในมิติอื่น ($\ge 40$) จะเพิ่มคะแนนความเสี่ยง +5 ต่อมิติ
 - การ Cache ด้วย Redis image hash ทำให้การส่งรูปซ้ำได้รับคำตอบทันทีโดยไม่ต้องรัน AI ซ้ำ

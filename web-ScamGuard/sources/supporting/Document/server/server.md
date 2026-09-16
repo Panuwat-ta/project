@@ -17,8 +17,8 @@
 * **เว็บเฟรมเวิร์ก (Web Framework):** FastAPI (มีความรวดเร็วสูงและรองรับ Asynchronous)
 * **ระบบฐานข้อมูล (Database):** PostgreSQL (ใช้ SQLAlchemy เป็น ORM ในการจัดการ Schema)
 * **ระบบแคช (Caching):** Redis (สำหรับเก็บผลลัพธ์รูปภาพที่มีคนสแกนซ้ำเพื่อลดเวลาประมวลผล)
-* **การจัดการไฟล์ (Storage):** Local Storage (สำหรับเก็บรูปต้นฉบับและภาพ Heatmap ในโหมด Development) โดยสามารถตั้งค่าเป็น Cloud Object Storage ได้สำหรับ Production
-* **สถาปัตยกรรมการรัน AI:** ONNX Runtime (แยก Service ย่อยเพื่อรันโมเดล Deep Learning)
+* **การจัดการไฟล์ (Storage):** code v1 ใช้ Local Storage สำหรับรูปต้นฉบับและ Heatmap (`LOCAL_UPLOAD_DIR`, default `./uploads`) และ FastAPI static mount `/uploads`; Cloud Object Storage เป็น future deployment option
+* **สถาปัตยกรรมการรัน AI:** ONNX Runtime ผ่าน worker subprocess ภายใน FastAPI application เดียว (ไม่ใช่ microservice แยก deploy)
 
 ---
 
@@ -28,15 +28,13 @@
 
 ### 3.1 การยืนยันตัวตนและการจัดการสิทธิ์ (Authentication & RBAC)
 * ใช้ **JWT (JSON Web Token)** ในการยืนยันตัวตนเมื่อมีการร้องขอ API
-* มีการจำกัดสิทธิ์ (Role-Based Access Control) ออกเป็น 3 ระดับ:
-  1. **User (ผู้ใช้งานทั่วไป):** ส่งรูปตรวจสอบ ดูประวัติ และรายงานสแกม
-  2. **Researcher (นักวิจัย):** สามารถเข้าถึง Dataset แบบนิรนามเพื่อนำไปพัฒนา AI
-  3. **Admin (ผู้ดูแลระบบ):** ควบคุมบัญชีผู้ใช้ อนุมัติรายงาน และกดสั่งเทรน/อัปเดตโมเดล AI เพิ่มเติม
+* บัญชี Mobile เก็บในตาราง `users` และมี role `user` หรือ `researcher`
+* บัญชี Admin Portal เก็บในตาราง `admins` แยกจาก `users` และใช้ `admin_sessions`; ทุก Admin endpoint ตรวจ admin session/`is_superadmin`
 
 ### 3.2 การจัดการและตรวจสอบรูปภาพ (Image Processing & Validation)
 * ตรวจสอบชนิดไฟล์ (client ประกาศ JPG/PNG/WebP; server verify ด้วยการ decode จริง ไม่เชื่อ content-type), ขนาดไฟล์ (server ปฏิเสธ > 20MB ด้วย 413, decode ≤ 100M px — รายละเอียดดู `design/server.md` มติ DOC-03)
 * แปลงไฟล์รูปภาพเป็นค่า Hash (SHA-256) เพื่อใช้ค้นหาในแคช (Redis)
-* สร้าง URL ชั่วคราว (Presigned URL อายุคงที่ 15 นาที) ในการดึงรูปภาพกลับไปแสดงผล ป้องกันการเข้าถึงไฟล์โดยตรง
+* code v1 เก็บไฟล์ใน `LOCAL_UPLOAD_DIR` (default `./uploads`) และเสิร์ฟด้วย FastAPI static mount `/uploads`; ยังไม่มี Presigned URL หรือ Cloud Object Storage
 
 ### 3.3 การประสานงานกับ AI Inference Pipeline
 * ทำการดึงข้อมูล EXIF จากภาพ เช่น รุ่นกล้อง, ซอฟต์แวร์ที่แต่งภาพ, พิกัด 
@@ -50,7 +48,7 @@
 ## 4. โครงสร้างข้อมูลที่จัดเก็บ (Data Management)
 
 ข้อมูลที่เซิร์ฟเวอร์เก็บรักษาประกอบด้วย:
-1. **ข้อมูลผู้ใช้ (Users):** บัญชี อีเมล รหัสผ่าน(ที่ถูกแฮชแล้ว) และสิทธิ์การเข้าถึง
+1. **บัญชีผู้ใช้และผู้ดูแล:** `users` เก็บบัญชี Mobile (`user`/`researcher`); `admins` เก็บบัญชี Admin Portal แยกกัน
 2. **ประวัติการสแกน (Scans):** วันเวลาที่สแกน, รูปต้นฉบับ, รูป Heatmap, ผลคะแนนความเสี่ยงแต่ละด้าน
 3. **ประวัติการยินยอม (Consent Logs):** การยินยอม PDPA หรือการให้นำข้อมูลไปใช้วิจัย
 4. **รายงานสแกมเมอร์ (Scam Reports):** ประวัติที่ผู้ใช้กดรายงานเข้ามาเพื่อแจ้งว่าเป็นภาพหลอกลวง
@@ -63,8 +61,8 @@
 
 * `POST /api/v1/auth/register` - ลงทะเบียนผู้ใช้
 * `POST /api/v1/auth/login` - ล็อกอินเพื่อรับ JWT Token
-* `POST /api/v1/scan` - อัปโหลดรูปภาพเพื่อตรวจหาการหลอกลวง (multipart: `file` บังคับ + `title` ไม่บังคับ; async — POST คืน record พร้อม `status` แล้ว poll `GET` จน `completed`; spec ฉบับเต็มดู `design/server.md` §5.2.1)
-* `GET /api/v1/scan/{id}` - ดูผลลัพธ์การสแกนย้อนหลัง / poll สถานะ (`pending` → `processing` → `completed`/`failed`; poll ทุก 3 วินาที, timeout 120 วินาที)
+* `POST /api/v1/scan/` - อัปโหลดรูปภาพเพื่อตรวจหาการหลอกลวง (multipart: `file` บังคับ + `title` ไม่บังคับ; async)
+* `GET /api/v1/scan/{scan_id}` - ดูผลลัพธ์หรือ poll สถานะด้วย UUID ของ scan
 * `POST /api/v1/reports` - ส่งรายงานรูปภาพหลอกลวง
 * `POST /api/v1/admin/train` - แอดมินสั่งเทรนโมเดลเพิ่มเติม (Incremental Training)
 

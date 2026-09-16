@@ -2,8 +2,8 @@
 title: "การติดตามงานและการบริหารโครงการ (Task Tracking & Jira)"
 category: planning
 tags: [planning, jira, task-tracking, scrum, kanban, project-management]
-sources: [Document/jira/Task-Tracking.md, Document/jira/to-do-list.md]
-updated: 2026-09-15
+sources: [Document/jira/Task-Tracking.md]
+updated: 2026-09-16
 ---
 
 # การติดตามงานและการบริหารโครงการ (Task Tracking & Jira)
@@ -37,6 +37,28 @@ updated: 2026-09-15
 | **เฟส 5: การส่งมอบและเอกสารสมบูรณ์** | รวบรวมเอกสารคู่มือ บันทึกการดำเนินงาน และรายงานผลการตรวจรับโครงงานวิศวกรรม | กำลังดำเนินการ | ~80%* |
 
 > \* ตัวเลขเป็นค่าประมาณจากสัดส่วนงาน Done/ทั้งหมดบนบอร์ด Jira SCM ณ 2026-09-06 — อัปเดตพร้อมวันที่ทุกครั้ง ไม่ใช้เป็นเกณฑ์ตัดสิน
+
+### แผนไทม์ไลน์ (พ.ย. 2568 – มิ.ย. 2569)
+
+```mermaid
+gantt
+    title แผนการดำเนินโครงงานวิศวกรรมซอฟต์แวร์ (พ.ย. 2568 - มิ.ย. 2569)
+    dateFormat  YYYY-MM-DD
+    section วางแผน & วิเคราะห์ความต้องการ
+    การวางแผนและวิเคราะห์ความต้องการ (Planning & Requirements) :active, p1, 2025-11-01, 2025-12-31
+    section การออกแบบระบบ
+    การออกแบบสถาปัตยกรรม & ระบบ (System Architecture Design) : p2, 2025-12-01, 2026-01-31
+    section การพัฒนาซอฟต์แวร์
+    พัฒนา Mobile App (Flutter) : p3_1, 2026-02-01, 2026-04-30
+    พัฒนาและ Fine-tune โมเดล AI : p3_2, 2026-02-01, 2026-04-30
+    พัฒนา Backend API & Caching (FastAPI & Redis) : p3_3, 2026-02-01, 2026-04-30
+    section การบูรณาการ & ทดสอบ
+    รวมระบบและทดสอบการทำงาน (SIT & Performance Testing) : p4, 2026-05-01, 2026-05-31
+    section การติดตั้ง & ประเมินผล
+    ติดตั้งขึ้นระบบจริง & UAT (Deployment & UAT) : p5, 2026-05-01, 2026-05-31
+    section สรุปผลโครงงาน
+    สรุปผลการวิจัยและจัดทำเล่มรายงานฉบับสมบูรณ์ : p6, 2026-06-01, 2026-06-30
+```
 
 ---
 

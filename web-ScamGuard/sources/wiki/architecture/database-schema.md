@@ -1,14 +1,14 @@
 ---
 title: "โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล"
 category: architecture
-tags: [PostgreSQL, Redis, cache, cloud-storage, schema, ACID]
+tags: [PostgreSQL, Redis, cache, local-storage, schema, ACID]
 sources: [design/architecture.md, design/server.md, database/ER_Diagram.md]
-updated: 2026-09-13
+updated: 2026-09-16
 ---
 
 # โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล
 
-ระบบใช้ Storage 3 ประเภทร่วมกัน: PostgreSQL สำหรับข้อมูลเชิงสัมพันธ์, Redis สำหรับ Cache และ Cloud Object Storage สำหรับไฟล์
+ระบบใช้ Storage 3 ประเภทร่วมกัน: PostgreSQL สำหรับข้อมูลเชิงสัมพันธ์, Redis สำหรับ Cache และ local filesystem ใน `LOCAL_UPLOAD_DIR` สำหรับไฟล์รูปกับ Heatmap
 
 ---
 

@@ -3,7 +3,7 @@ title: "System Flowchart"
 category: architecture
 tags: [architecture, flowchart, workflow]
 sources: [Document/flowchart.md]
-updated: 2026-08-04
+updated: 2026-09-16
 ---
 
 # Mobile App: Scam Image Detection
@@ -18,7 +18,7 @@ graph TD
     
     Image -- "PNG" --> Preview[แสดง Preview รูปภาพ]
     Preview -- "upload images" --> CheckBtn[/กดปุ่มตรวจสอบ/]
-    CheckBtn --> S3(("upload img Cloud Storage"))
+    CheckBtn --> S3(("upload img /uploads"))
     
     S3 --> Analyzing{"ระบบกำลังวิเคราะห์... (System Logic)"}
     
@@ -60,7 +60,7 @@ graph TD
 3. **นำเข้าภาพ (Import)**: เลือกรูปภาพที่น่าสงสัยจากคลังภาพ (Gallery) เพื่อเตรียมอัปโหลด
 4. **ปรับแต่ง (Edit)**: Crop หรือปรับขนาดภาพก่อนส่ง (PNG)
 5. **ตรวจสอบ (Check)**: กดปุ่มตรวจสอบเพื่อส่งข้อมูล
-6. **ประมวลผล (Processing)**: อัปโหลดภาพไปยังระบบจัดเก็บคลาวด์ (Cloud Storage) และเข้าสู่กระบวนการวิเคราะห์ System Logic
+6. **ประมวลผล (Processing)**: ส่งภาพด้วย `POST /api/v1/scan/`; Backend บันทึกไฟล์ใน `LOCAL_UPLOAD_DIR` และเสิร์ฟผ่าน `/uploads` ก่อนเข้าสู่กระบวนการวิเคราะห์
 7. **ผลลัพธ์ (Result)**:
    - **สำเร็จ**: แสดงคะแนนความเสี่ยง (Risk Score) และหลักฐาน (Evidence) จากนั้น Auto-Save ลงฐานข้อมูล
    - **ล้มเหลว**: แจ้งเตือนข้อผิดพลาด และให้ทางเลือก (ลองใหม่ หรือ ยกเลิก)
@@ -73,7 +73,7 @@ graph TD
 ```mermaid
 graph TD
     %% Source & Initial Validation
-    S3([Cloud Storage]) -- import_image --> Receive[/รับไฟล์รูปภาพ/]
+    S3([Local /uploads]) -- import_image --> Receive[/รับไฟล์รูปภาพ/]
     Receive --> NodeValidate{ตรวจสอบไฟล์ Valid Image}
     
     NodeValidate -- ไม่ใช่รูปหรือไฟล์เสีย --> Reject[คืนค่า Error]
@@ -140,7 +140,7 @@ graph TD
 
 ### คำอธิบาย System Logic
 
-1. **Input**: รับไฟล์รูปภาพจากระบบคลาวด์สตอเรจ (Cloud Storage)
+1. **Input**: รับไฟล์รูปภาพจาก local `LOCAL_UPLOAD_DIR` ผ่านเส้นทาง `/uploads`
 2. **Validation**: ตรวจสอบว่าไฟล์รูปภาพถูกต้องหรือไม่
    - หากเสีย/ไม่ใช่รูป: Reject คืนค่า Error
    - หากถูกต้อง: ส่งไป Preprocessing

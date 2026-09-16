@@ -3,7 +3,7 @@ title: "ผู้ใช้ระบบ (Actors)"
 category: entities
 tags: [users, admin, researcher, roles, RBAC]
 sources: [design/architecture.md, Document/srs.md, Document/Use-Case-Diagram.md]
-updated: 2026-08-02
+updated: 2026-09-16
 ---
 
 # ผู้ใช้ระบบ (Actors)
@@ -27,7 +27,7 @@ updated: 2026-08-02
 
 **สิ่งที่ทำได้:**
 
-- สมัครสมาชิกและเข้าสู่ระบบ (Email/Password หรือ Google OAuth)
+- สมัครสมาชิกและเข้าสู่ระบบด้วย Email/Password (code v1 ไม่มี OAuth)
 - เลือกรูปจากคลังภาพเพื่อตรวจสอบ
 - ตัดภาพ (Crop) ก่อนส่งเพื่อโฟกัสบริเวณใดบริเวณหนึ่ง
 - ดู Risk Score และ Heatmap overlay
@@ -47,7 +47,7 @@ updated: 2026-08-02
 
 **ผู้คือ:** เจ้าหน้าที่ภายใน, นักวิจัย AI หรือทีมสนับสนุนของโปรเจค
 
-**ส่วนติดต่อผู้ใช้ (Interface):** React.js Admin Web Portal
+**ส่วนติดต่อผู้ใช้ (Interface):** React 19 + Vite 8 + Tailwind CSS v4 Admin Web Portal
 
 **สิ่งที่ทำได้:**
 

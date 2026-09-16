@@ -3,7 +3,7 @@ title: "ขอบเขตโครงการ (Project Scope)"
 category: planning
 tags: [scope, work-packages, tasks, roadmap, containers]
 sources: [Document/scop.md, README.md]
-updated: 2026-08-02
+updated: 2026-09-16
 ---
 
 # ขอบเขตโครงการ (Project Scope)
@@ -27,7 +27,7 @@ updated: 2026-08-02
 | Mobile App | Flutter (v1: Android เท่านั้น; ios/ + web/ เป็น future) | ภานุวัฒน์ (Lead) + เอกพันธ์ (ร่วมพัฒนาหน้าจอ/ทดสอบ) |
 | API Backend | Python FastAPI | ภานุวัฒน์ |
 | AI Inference Engine | PyTorch / ONNX (SegFormer ตัวเดียว) | ภานุวัฒน์ |
-| Admin Portal | React.js | เอกพันธ์ (Lead) + ภานุวัฒน์ (ร่วมพัฒนา/เชื่อม Backend API) |
+| Admin Portal | React 19 + Vite 8 + Tailwind CSS v4 | เอกพันธ์ (Lead) + ภานุวัฒน์ (ร่วมพัฒนา/เชื่อม Backend API) |
 | External Integrations | Google Vision (optional), FCM (Phase 2; v1 = in-app/polling) | ภานุวัฒน์ (ออกแบบ) |
 
 ---
@@ -36,7 +36,7 @@ updated: 2026-08-02
 
 | กลุ่มงาน (Task Group) | รายละเอียด (Tasks) |
 | :--- | :--- |
-| Authentication | สมัครและล็อกอินด้วยอีเมล/รหัสผ่าน (Google OAuth = Phase 2 deferred), และระบบ Secure Storage |
+| Authentication | สมัครและล็อกอินด้วยอีเมล/รหัสผ่าน และระบบ Secure Storage (code v1 ไม่มี OAuth) |
 | Image Input | ส่วนการเลือกรูปภาพจาก Gallery และโหมด Crop ตัดรูปภาพก่อนส่งให้ระบบ |
 | Risk Visualization | ส่วนแสดงผล Risk Score (เกจสี เขียว/เหลือง/แดง), ภาพ Heatmap ทับซ้อน, พร้อมรายละเอียดผลสแกน |
 | History & PDPA | แสดงหน้าต่างประวัติการตรวจสอบย้อนหลัง, หน้าต่างยอมรับข้อตกลง PDPA และการยกเลิกอนุญาตข้อมูล |
@@ -85,7 +85,7 @@ updated: 2026-08-02
 | Mobile cross-platform (iOS/Web) | **นอกขอบเขต v1** — v1 Android เท่านั้น (Flutter codebase เดียวกัน) |
 | วิเคราะห์วิดีโอ (Video Analysis) | เก็บไว้ทำในอนาคต โดยการใช้ Keyframe Extraction |
 | บนมือถือล้วนๆ (On-device Inference) | เก็บไว้ทำในอนาคต — ต้องผ่านกระบวนการทำ Model Quantization (INT8/FP16) เป็นหลักเสียก่อน |
-| การแชร์ผลลัพธ์ (Share) | **ในขอบเขต** — แชร์ภาพเตือนภัยไปแอปภายนอก (Document FR-HISTORY-02; wiki test-scheme FR-SHARE-01, GAP ยังไม่มี TC) |
+| การแชร์ผลลัพธ์ (Share) | **ในขอบเขตของ FR-HISTORY-02** — แชร์ภาพเตือนภัยไปแอปภายนอก (GAP: ยังไม่มี TC) |
 | การรีวิว/ตัดสินใจแบบ Real-time | นอกขอบเขต v1 (Not Planned) |
 | ระบบของ Google SynthID | ระบุไว้ว่าน่าสนใจแต่ยังไม่มีกระบวนการดีไซน์ในเวลาปัจจุบัน |
 | บริการ Google Gemini LLM | ระบุไว้ว่าน่าสนใจแต่ยังไม่มีกระบวนการดีไซน์ในเวลาปัจจุบัน |

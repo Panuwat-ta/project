@@ -3,7 +3,7 @@ title: "กรณีทดสอบและรูปแบบตาราง Ma
 category: testing
 tags: [testing, manual-tests, test-cases, ieee-829, istqb, traceability, spreadsheets]
 sources: [.agents/AGENTS.md, tests_all/README.md, tests_all/manual_tests/test_cases_admin.md, tests_all/manual_tests/test_cases_ai_model.md, tests_all/manual_tests/test_cases_backend.md, tests_all/manual_tests/test_cases_mobile.md, tests_all/manual_tests/test_cases_nfr.md, tests_all/manual_tests/test_cases_image_testset.md, tests_all/manual_tests/test_cases_e2e.md, tests_all/tests_report/README.md]
-updated: 2026-09-15
+updated: 2026-09-16
 ---
 
 # กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)
@@ -21,7 +21,7 @@ updated: 2026-09-15
 กฎของแต่ละคอลัมน์:
 
 - **Test Case ID** — รูปแบบ `TC-<area>-<NN>` (เช่น `TC-IMGM-01`, `TC-BE-AUTH-01`)
-- **Requirement ID** — ต้องอ้างอิง FR/NFR ที่มีอยู่จริง (เช่น `FR-SYS-05`) เพื่อการสืบย้อนกลับ ห้ามแต่งขึ้นเอง
+- **Requirement ID** — ต้องอ้างอิง canonical FR/NFR จาก `Document/srs/05_Software_Requirement_Specification.md` (เช่น `FR-ANALYSIS-02`) เพื่อการสืบย้อนกลับ ห้ามสร้าง alias ใน Wiki
 - **Preconditions** — เป็นคอลัมน์แยกต่างหาก (สภาพแวดล้อม/สถานะก่อนทดสอบ) ห้ามฝังไว้ใน Description
 - **Test Data** — ต้องอ้างอิง path ของไฟล์หรือ ID ที่มีอยู่จริง ห้ามใช้ค่าที่แต่งขึ้น
 - **Actual Result / Status** — กรอกตอนรันจริง (`Pass` / `Fail` + พฤติกรรมที่พบ) ก่อนรันให้ใส่ `To Do`

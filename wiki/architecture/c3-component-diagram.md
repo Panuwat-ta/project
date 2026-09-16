@@ -53,7 +53,7 @@ flowchart TB
     %% Storage & Externals (จาก C2)
     Cache("Redis Cache")
     MainDB[("PostgreSQL Database")]
-    ObjectStore("Cloud Storage (Local / S3)")
+    ObjectStore("Local File Storage (/uploads)")
     AIWorker("ONNX Worker (Subprocess)")
 
     %% Relationships - External to API
