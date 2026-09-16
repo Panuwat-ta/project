@@ -1,383 +1,135 @@
 <!doctype html>
-<html lang="th" data-theme="light">
-
+<html lang="th" data-theme="light" data-theme-mode="system">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description"
-    content="บันทึกการดำเนินงาน Wiki บันทึกตามลำดับเวลาของทุกการดำเนินงานใน wiki แบบ append-only ห้ามลบหรือแก้ไข entry เก่า --- 2026-09-13 update แก้ความขัดแย้ง Source Verification และลิงก์เอกสาร - ยึดมต…">
+  <meta name="description" content="บันทึกการดำเนินงาน Wiki บันทึกตามลำดับเวลาของทุกการดำเนินงานใน wiki แบบ append-only ห้ามลบหรือแก้ไข entry เก่า --- 2026-09-13 update แก้ความขัดแย้ง Source Verification และลิงก์เอกสาร - ยึดมต…">
   <meta name="color-scheme" content="light dark">
   <title>บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection | ScamGuard Documentation</title>
   <link rel="stylesheet" href="../assets/css/site.css">
-  <script>document.documentElement.dataset.theme = (() => { try { return localStorage.getItem('scamguard-docs-theme') || 'light' } catch (e) { return 'light' } })(); window.SC_DOCS_ROOT = '../';</script>
+  <script>(()=>{let m='system';try{m=localStorage.getItem('scamguard-docs-theme')||'system'}catch(e){}if(!['system','light','dark'].includes(m))m='system';const t=m==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;document.documentElement.dataset.themeMode=m;document.documentElement.dataset.theme=t})();window.SC_DOCS_ROOT='../';</script>
 </head>
-
 <body class="">
   <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
-  <header class="masthead">
-    <div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false"
-        aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M4 7h16M4 12h16M4 17h16" />
-        </svg></button><a class="brand" href="../index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z" />
-          <path d="m9.2 12 1.8 1.8 3.9-4.2" />
-        </svg><span>ScamGuard <small>Documentation</small></span></a>
-      <div class="masthead-actions"><button class="control" type="button" data-search-open><svg viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
-            aria-hidden="true">
-            <circle cx="11" cy="11" r="6.5" />
-            <path d="m16 16 4 4" />
-          </svg><span>ค้นหา</span><span class="search-shortcut">Ctrl K</span></button><button class="control"
-          type="button" data-theme-toggle aria-label="เปลี่ยนเป็นโหมดมืด"><svg viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.5A7 7 0 0 1 12 3Z" />
-          </svg><span class="theme-label" data-theme-label>โหมดมืด</span></button></div>
-    </div>
-  </header>
+  <header class="masthead"><div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><nav class="top-tabs" aria-label="เมนูหลัก"><a href="../index.html">Guide</a><a href="../pages/architecture/system-architecture.html">Architecture</a><a href="../pages/architecture/backend-api.html">API Reference</a></nav></div></header>
   <div class="docs-shell">
-    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><button class="control nav-close"
-        type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="m6 6 12 12M18 6 6 18" />
-        </svg></button>
-      <p class="sidebar-title">เอกสารทั้งหมด</p>
-      <details class="sidebar-group">
-        <summary>ภาพรวม</summary>
-        <ul class="sidebar-list">
-          <li><a href="overview.html">ภาพรวมโปรเจค</a></li>
-          <li><a href="index.html">สารบัญ Wiki — โปรเจค Scam Image Detection</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>ความต้องการระบบ</summary>
-        <ul class="sidebar-list">
-          <li><a href="requirements/functional-requirements.html">ความต้องการเชิงฟังก์ชัน (Functional Requirements)</a>
-          </li>
-          <li><a href="requirements/non-functional-requirements.html">ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional
-              Requirements)</a></li>
-          <li><a href="requirements/traceability-matrix.html">เมทริกซ์การสืบย้อนความต้องการ</a></li>
-          <li><a href="requirements/objectives-kpis.html">วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp; KPIs)</a>
-          </li>
-          <li><a href="requirements/srs.html">Software Requirements Specification (SRS)</a></li>
-          <li><a href="requirements/use-case-diagram.html">Use Case Diagram</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>สถาปัตยกรรม</summary>
-        <ul class="sidebar-list">
-          <li><a href="architecture/database-migrations.html">การจัดการการย้ายฐานข้อมูล (Database Migrations)</a></li>
-          <li><a href="architecture/external-integrations.html">การเชื่อมต่อบริการภายนอก (External Integrations)</a>
-          </li>
-          <li><a href="architecture/database-schema.html">โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li>
-          <li><a href="architecture/system-architecture.html">สถาปัตยกรรมระบบ (System Architecture)</a></li>
-          <li><a href="architecture/admin-portal.html">สถาปัตยกรรมและการออกแบบ Admin Portal</a></li>
-          <li><a href="architecture/mobile-app.html">สถาปัตยกรรม Mobile App</a></li>
-          <li><a href="architecture/ai-inference-service.html">AI Inference Service</a></li>
-          <li><a href="architecture/backend-api.html">Backend API — FastAPI Orchestrator</a></li>
-          <li><a href="architecture/c1-system-context-diagram.html">C1 System Context Diagram</a></li>
-          <li><a href="architecture/c2-container-diagram.html">C2 Container Diagram</a></li>
-          <li><a href="architecture/c3-component-diagram.html">C3 Component Diagram - API Application</a></li>
-          <li><a href="architecture/c4-code-diagram.html">C4 Code Diagram - Image Scanning Flow</a></li>
-          <li><a href="architecture/database-er-diagram.html">Entity Relationship Diagram (ER Diagram)</a></li>
-          <li><a href="architecture/mobile-design.html">Mobile App Architecture</a></li>
-          <li><a href="architecture/flowchart.html">System Flowchart</a></li>
-          <li><a href="architecture/design-overview.html">UX/UI &amp; System Design Overview</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>แนวคิดและเทคนิค</summary>
-        <ul class="sidebar-list">
-          <li><a href="concepts/risk-scoring.html">การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li>
-          <li><a href="concepts/multi-layer-analysis.html">การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li>
-          <li><a href="concepts/explainable-ai.html">ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li>
-          <li><a href="concepts/configs.html">พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li>
-          <li><a href="concepts/ai-model-segformer.html">โมเดล AI — SegFormer</a></li>
-          <li><a href="concepts/surya-ocr.html">โมเดล AI — Surya OCR</a></li>
-          <li><a href="concepts/model-training.html">AI Model Training Workflow</a></li>
-          <li><a href="concepts/mmsegmentation.html">MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li>
-          <li><a href="concepts/semantic-segmentation.html">Semantic Segmentation</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>องค์ประกอบระบบ</summary>
-        <ul class="sidebar-list">
-          <li><a href="entities/tech-stack.html">เทคโนโลยีที่ใช้ (Technology Stack)</a></li>
-          <li><a href="entities/actors.html">ผู้ใช้ระบบ (Actors)</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>การตัดสินใจ</summary>
-        <ul class="sidebar-list">
-          <li><a href="decisions/technology-choices.html">การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>การวางแผน</summary>
-        <ul class="sidebar-list">
-          <li><a href="planning/task-tracking.html">การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a></li>
-          <li><a href="planning/project-scope.html">ขอบเขตโครงการ (Project Scope)</a></li>
-          <li><a href="planning/team.html">ทีมงานและผู้รับผิดชอบ (Team)</a></li>
-          <li><a href="planning/backend-documentation.html">Backend Documentation</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>การทดสอบ</summary>
-        <ul class="sidebar-list">
-          <li><a href="testing/test-cases.html">กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group" open>
-        <summary>คู่มือและภาคผนวก</summary>
-        <ul class="sidebar-list">
-          <li><a href="log.html" aria-current="page">บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li>
-          <li><a href="howto.html">วิธีใช้งาน Wiki (How to Use This Wiki)</a></li>
-          <li><a href="runbook.html">Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li>
-          <li><a href="AGENTS.html">Wiki Operating Guide</a></li>
-        </ul>
-      </details>
-    </aside>
-    <div class="nav-backdrop" data-nav-backdrop></div>
-    <main class="article" id="main-content">
-      <nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../index.html">หน้าแรก</a><span
-          aria-hidden="true">/</span><span>คู่มือและภาคผนวก</span></nav>
-      <header class="article-header">
-        <h1>บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</h1>
-        <p class="article-lead">บันทึกตามลำดับเวลาของทุกการดำเนินงานใน wiki แบบ append-only ห้ามลบหรือแก้ไข entry เก่า
-        </p>
-        <div class="meta"><span>หมวด คู่มือและภาคผนวก</span><span>ต้นฉบับ log.md</span></div>
-      </header>
-      <div class="prose">
-        <h1 id="บันทึกการดำเนินงาน-wiki">บันทึกการดำเนินงาน Wiki</h1>
-        <p>บันทึกตามลำดับเวลาของทุกการดำเนินงานใน wiki แบบ append-only ห้ามลบหรือแก้ไข entry เก่า</p>
-        <pre><code class="language-bash"><div class="code-frame"><span class="visually-hidden">ภาษา bash</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-bash"><span class="hljs-comment"># ดู 5 entry ล่าสุด:</span>
+    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><div class="sidebar-head"><a class="sidebar-brand" href="../index.html" aria-label="ScamGuard Documentation"><span class="brand brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z"/><path d="m9.2 12 1.8 1.8 3.9-4.2"/></svg></span><span class="sidebar-brand-name">ScamGuard Docs</span></a><div class="theme-switcher" role="group" aria-label="ธีมเว็บไซต์"><button type="button" data-theme-option="system" aria-label="ใช้ธีมตามระบบ" title="System"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></button><button type="button" data-theme-option="light" aria-label="ใช้โหมดสว่าง" title="Light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></button><button type="button" data-theme-option="dark" aria-label="ใช้โหมดมืด" title="Dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8 8 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/></svg></button></div></div><button class="control nav-close" type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button><button class="sidebar-search" type="button" data-search-open><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search...</span><kbd>Ctrl K</kbd></button><div class="sidebar-scroll"><details class="sidebar-group" ><summary>ภาพรวม</summary><ul class="sidebar-list"><li><a href="overview.html" >ภาพรวมโปรเจค</a></li><li><a href="index.html" >สารบัญ Wiki — โปรเจค Scam Image Detection</a></li></ul></details><details class="sidebar-group" ><summary>ความต้องการระบบ</summary><ul class="sidebar-list"><li><a href="requirements/functional-requirements.html" >ความต้องการเชิงฟังก์ชัน (Functional Requirements)</a></li><li><a href="requirements/non-functional-requirements.html" >ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements)</a></li><li><a href="requirements/traceability-matrix.html" >เมทริกซ์การสืบย้อนความต้องการ</a></li><li><a href="requirements/objectives-kpis.html" >วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp; KPIs)</a></li><li><a href="requirements/srs.html" >Software Requirements Specification (SRS)</a></li><li><a href="requirements/use-case-diagram.html" >Use Case Diagram</a></li></ul></details><details class="sidebar-group" ><summary>สถาปัตยกรรม</summary><ul class="sidebar-list"><li><a href="architecture/database-migrations.html" >การจัดการการย้ายฐานข้อมูล (Database Migrations)</a></li><li><a href="architecture/external-integrations.html" >การเชื่อมต่อบริการภายนอก (External Integrations)</a></li><li><a href="architecture/database-schema.html" >โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li><li><a href="architecture/system-architecture.html" >สถาปัตยกรรมระบบ (System Architecture)</a></li><li><a href="architecture/admin-portal.html" >สถาปัตยกรรมและการออกแบบ Admin Portal</a></li><li><a href="architecture/mobile-app.html" >สถาปัตยกรรม Mobile App</a></li><li><a href="architecture/ai-inference-service.html" >AI Inference Service</a></li><li><a href="architecture/backend-api.html" >Backend API — FastAPI Orchestrator</a></li><li><a href="architecture/c1-system-context-diagram.html" >C1 System Context Diagram</a></li><li><a href="architecture/c2-container-diagram.html" >C2 Container Diagram</a></li><li><a href="architecture/c3-component-diagram.html" >C3 Component Diagram - API Application</a></li><li><a href="architecture/c4-code-diagram.html" >C4 Code Diagram - Image Scanning Flow</a></li><li><a href="architecture/database-er-diagram.html" >Entity Relationship Diagram (ER Diagram)</a></li><li><a href="architecture/mobile-design.html" >Mobile App Architecture</a></li><li><a href="architecture/flowchart.html" >System Flowchart</a></li><li><a href="architecture/design-overview.html" >UX/UI &amp; System Design Overview</a></li></ul></details><details class="sidebar-group" ><summary>แนวคิดและเทคนิค</summary><ul class="sidebar-list"><li><a href="concepts/risk-scoring.html" >การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li><li><a href="concepts/multi-layer-analysis.html" >การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li><li><a href="concepts/explainable-ai.html" >ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li><li><a href="concepts/configs.html" >พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li><li><a href="concepts/ai-model-segformer.html" >โมเดล AI — SegFormer</a></li><li><a href="concepts/surya-ocr.html" >โมเดล AI — Surya OCR</a></li><li><a href="concepts/model-training.html" >AI Model Training Workflow</a></li><li><a href="concepts/mmsegmentation.html" >MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li><li><a href="concepts/semantic-segmentation.html" >Semantic Segmentation</a></li></ul></details><details class="sidebar-group" ><summary>องค์ประกอบระบบ</summary><ul class="sidebar-list"><li><a href="entities/tech-stack.html" >เทคโนโลยีที่ใช้ (Technology Stack)</a></li><li><a href="entities/actors.html" >ผู้ใช้ระบบ (Actors)</a></li></ul></details><details class="sidebar-group" ><summary>การตัดสินใจ</summary><ul class="sidebar-list"><li><a href="decisions/technology-choices.html" >การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li></ul></details><details class="sidebar-group" ><summary>การวางแผน</summary><ul class="sidebar-list"><li><a href="planning/task-tracking.html" >การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a></li><li><a href="planning/project-scope.html" >ขอบเขตโครงการ (Project Scope)</a></li><li><a href="planning/team.html" >ทีมงานและผู้รับผิดชอบ (Team)</a></li><li><a href="planning/backend-documentation.html" >Backend Documentation</a></li></ul></details><details class="sidebar-group" ><summary>การทดสอบ</summary><ul class="sidebar-list"><li><a href="testing/test-cases.html" >กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li></ul></details><details class="sidebar-group" open><summary>คู่มือและภาคผนวก</summary><ul class="sidebar-list"><li><a href="log.html" aria-current="page">บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li><li><a href="howto.html" >วิธีใช้งาน Wiki (How to Use This Wiki)</a></li><li><a href="runbook.html" >Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li><li><a href="AGENTS.html" >Wiki Operating Guide</a></li></ul></details></div></aside><div class="nav-backdrop" data-nav-backdrop></div>
+    <main class="article" id="main-content"><nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../index.html">หน้าแรก</a><span aria-hidden="true">/</span><span>คู่มือและภาคผนวก</span></nav><header class="article-header"><h1>บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</h1><p class="article-lead">บันทึกตามลำดับเวลาของทุกการดำเนินงานใน wiki แบบ append-only ห้ามลบหรือแก้ไข entry เก่า</p><div class="meta"><span>หมวด คู่มือและภาคผนวก</span><span>ต้นฉบับ log.md</span></div></header><div class="prose"><h1 id="บันทึกการดำเนินงาน-wiki">บันทึกการดำเนินงาน Wiki</h1>
+<p>บันทึกตามลำดับเวลาของทุกการดำเนินงานใน wiki แบบ append-only ห้ามลบหรือแก้ไข entry เก่า</p>
+<pre><code class="language-bash"><div class="code-frame"><span class="visually-hidden">ภาษา bash</span><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-bash"><span class="hljs-comment"># ดู 5 entry ล่าสุด:</span>
 grep <span class="hljs-string">&quot;^## \[&quot;</span> wiki/log.md | <span class="hljs-built_in">tail</span> -5
-</code></pre>
-      </div></code></pre>
-      <hr>
-      <h2 id="2026-09-13-update-แก้ความขัดแย้ง-source-verification-และลิงก์เอกสาร">[2026-09-13] update | แก้ความขัดแย้ง
-        Source Verification และลิงก์เอกสาร</h2>
-      <ul>
-        <li>ยึดมติ DOC-01: เมื่อ Google Vision API ยังไม่เชื่อมต่อหรือล้มเหลว ให้คืน
-          <code>source_status = &quot;unavailable&quot;</code> และตัดมิติ source ออกจากการคำนวณ โดยไม่ใช้ neutral score
-          50</li>
-        <li>ระบุสถานะ Google Vision API ในหน้า Technology Choices และ External Integrations ให้ตรงกับ SRS
-          และแก้ลิงก์เอกสาร Backend ที่เสีย 4 รายการ</li>
-      </ul>
-      <h2 id="2026-08-02-init-สร้าง-wiki-ครั้งแรกจากเอกสารต้นฉบับทั้งหมด">[2026-08-02] init | สร้าง Wiki
-        ครั้งแรกจากเอกสารต้นฉบับทั้งหมด</h2>
-      <p><strong>ประเภทงาน:</strong> สร้าง wiki ครั้งแรก — นำเข้าเอกสารต้นฉบับที่มีอยู่ทั้งหมด</p>
-      <p><strong>เอกสารที่ประมวลผล:</strong></p>
-      <ul>
-        <li><code>README.md</code> — ภาพรวมโปรเจค, ทีม, ลิงก์ workspace</li>
-        <li><code>Document/objective.md</code> — วัตถุประสงค์ (OBJ-01 ถึง OBJ-04) และ KPI</li>
-        <li><code>Document/scop.md</code> — ขอบเขตโปรเจคและ Work Package</li>
-        <li><code>design/architecture.md</code> — สถาปัตยกรรมระบบ, Risk Scoring Pipeline, Tech Stack</li>
-        <li><code>design/model.md</code> — การออกแบบโมเดล AI (SegFormer, Semantic Segmentation, Heatmap)</li>
-        <li><code>design/server.md</code> — โครงสร้าง Backend FastAPI และ Database</li>
-      </ul>
-      <p><strong>หน้าที่สร้าง:</strong></p>
-      <ul>
-        <li><code>AGENTS.md</code> — schema และคู่มือการดำเนินงานสำหรับ LLM</li>
-        <li><code>index.md</code> — สารบัญทุกหน้า</li>
-        <li><code>log.md</code> — ไฟล์นี้</li>
-        <li><code>howto.md</code> — คู่มือการใช้งาน wiki</li>
-        <li><code>overview.md</code> — ภาพรวมโปรเจค</li>
-        <li><code>concepts/multi-layer-analysis.md</code></li>
-        <li><code>concepts/risk-scoring.md</code></li>
-        <li><code>concepts/explainable-ai.md</code></li>
-        <li><code>concepts/ai-model-segformer.md</code></li>
-        <li><code>concepts/semantic-segmentation.md</code></li>
-        <li><code>architecture/system-architecture.md</code></li>
-        <li><code>architecture/mobile-app.md</code></li>
-        <li><code>architecture/backend-api.md</code></li>
-        <li><code>architecture/ai-inference-service.md</code></li>
-        <li><code>architecture/database-schema.md</code></li>
-        <li><code>architecture/external-integrations.md</code></li>
-        <li><code>entities/actors.md</code></li>
-        <li><code>entities/tech-stack.md</code></li>
-        <li><code>decisions/technology-choices.md</code></li>
-        <li><code>requirements/objectives-kpis.md</code></li>
-        <li><code>requirements/functional-requirements.md</code></li>
-        <li><code>requirements/non-functional-requirements.md</code></li>
-        <li><code>planning/project-scope.md</code></li>
-        <li><code>planning/team.md</code></li>
-      </ul>
-      <p><strong>หมายเหตุ:</strong> เอกสารที่ยังไม่ได้ ingest ครบ: <code>Document/srs.md</code> (ฉบับเต็ม),
-        <code>Document/Use-Case-Diagram.md</code>, <code>Document/flowchart.md</code>,
-        <code>Document/C1-System-Context-Diagram.md</code>, <code>Document/C2-Container-Diagram.md</code>,
-        <code>design/design.md</code>, <code>design/mobile.md</code>, <code>design/training.md</code></p>
-      <hr>
-      <h2 id="2026-08-02-update-แปลทุกหน้าเป็นภาษาไทย">[2026-08-02] update | แปลทุกหน้าเป็นภาษาไทย</h2>
-      <p><strong>ประเภทงาน:</strong> แปลเนื้อหาทั้งหมดเป็นภาษาไทย คงคำศัพท์เทคนิคภาษาอังกฤษตามมาตรฐานวิชาชีพ</p>
-      <hr>
-      <h2 id="2026-08-04-update-phase-4-ocr-integration-qwen2-5-vl-fix">[2026-08-04] update | Phase 4 OCR Integration
-        &amp; Qwen2.5-VL Fix</h2>
-      <p><strong>ประเภทงาน:</strong> ติดตั้งและปรับแต่งโมเดล Surya OCR 2 (GGUF)</p>
-      <p><strong>รายละเอียด:</strong></p>
-      <ul>
-        <li>ปรับปรุงไฟล์ <code>inference_service.py</code> ให้โหลด <code>surya-2.gguf</code> ผ่าน
-          <code>llama-cpp-python</code></li>
-        <li>อัปเดต <code>scan_service.py</code> เพื่อนำ <code>ocr_text</code> ที่อ่านได้มาคิดคะแนน
-          <code>text_score</code> ร่วมกับ Scam Keywords (เช่น ด่วน, โบนัส, ลงทุน)</li>
-        <li><strong>Problem Solving:</strong> แก้บั๊ก Context Memory ของ Qwen2-VL โดยการเปลี่ยน Chat Handler ไปใช้
-          <code>Qwen25VLChatHandler</code> แทน <code>Llava15ChatHandler</code> และขยาย <code>n_ctx=8192</code>
-          ทำให้สามารถประมวลผลรูปภาพความละเอียดสูงได้สมบูรณ์</li>
-        <li><strong>GPU Optimization:</strong> แนะนำและวางแนวทางการติดตั้ง <code>cuda-toolkit</code> OS-level
-          เพื่อนำเข้าไดรเวอร์ <code>libcudart</code> ให้ <code>llama-cpp-python</code> รันบน VRAM (RTX 3050) ได้ 100%
-          (n_gpu_layers=-1)</li>
-      </ul>
-      <hr>
-      <h2 id="2026-08-04-mass-ingest-ย้ายเอกสารต้นฉบับเข้า-wiki">[2026-08-04] mass_ingest | ย้ายเอกสารต้นฉบับเข้า Wiki
-      </h2>
-      <p><strong>ประเภทงาน:</strong> รวบรวมเอกสารจากโฟลเดอร์ <code>Document/</code>, <code>design/</code>,
-        <code>database/</code>, และ <code>server/</code> เข้าสู่สารบบ Wiki แบบอัตโนมัติ</p>
-      <p><strong>รายการไฟล์ที่นำเข้า (พร้อมเพิ่ม Frontmatter):</strong></p>
-      <ul>
-        <li><strong>Requirements:</strong> <code>srs.md</code>, <code>use-case-diagram.md</code></li>
-        <li><strong>Architecture:</strong> <code>c1-system-context-diagram.md</code>,
-          <code>c2-container-diagram.md</code>, <code>flowchart.md</code>, <code>design-overview.md</code>,
-          <code>mobile-design.md</code>, <code>database-er-diagram.md</code></li>
-        <li><strong>Concepts:</strong> <code>model-training.md</code></li>
-        <li><strong>Planning:</strong> <code>backend-howto.md</code></li>
-      </ul>
-      <p><strong>รายละเอียด:</strong></p>
-      <ul>
-        <li>ใช้สคริปต์ <code>mass_ingest.py</code> จัดการคัดลอกไฟล์ทั้งหมดและแทรก YAML Frontmatter
-          ด้านบนของไฟล์โดยอัตโนมัติ เพื่อรักษาโครงสร้างเดิมของโปรเจคไว้</li>
-        <li>สั่ง Build HTML ใหม่ เพื่อให้เอกสารทั้งหมดเข้าไปอยู่ใน Web Portal (<code>web-ScamGuard</code>) อย่างสมบูรณ์
-        </li>
-      </ul>
-      <h2 id="2026-08-06-ingest-document-model-model-md">[2026-08-06] ingest | /Document/model/model.md</h2>
-      <hr>
-      <h2 id="2026-09-06-sync-อัปเดต-wiki-ให้สอดคล้องกับ-document-design-และระบบจริง">[2026-09-06] sync | อัปเดต Wiki
-        ให้สอดคล้องกับ Document, design และระบบจริง</h2>
-      <p><strong>ประเภทงาน:</strong> ซิงค์และเติมเต็มเอกสาร Wiki จาก Document, design และโครงสร้างระบบจริงล่าสุด</p>
-      <p><strong>หน้าที่สร้างใหม่:</strong></p>
-      <ul>
-        <li><code>architecture/admin-portal.md</code> — สถาปัตยกรรมและการออกแบบ Admin Portal (React/Vite, UI Design
-          System, Model Registry, Telemetry) จาก <code>design/admin.md</code> และ <code>Document/admin/admin.md</code>
-        </li>
-        <li><code>architecture/database-migrations.md</code> — คู่มือและขั้นตอนการย้ายฐานข้อมูล (Database Migrations)
-          ด้วย Alembic จาก <code>Document/database/alembic.md</code></li>
-        <li><code>concepts/mmsegmentation.md</code> — สถาปัตยกรรมโมดูลาร์ MMSegmentation (Backbone MiT, Decode Head,
-          Training Loss) จาก <code>Document/model/mmsegmentation.md</code></li>
-        <li><code>requirements/traceability-matrix.md</code> — เมทริกซ์การสืบย้อนความต้องการ (Requirement Traceability
-          Matrix - RTM) เชื่อมโยง ST -&gt; OBJ -&gt; SC -&gt; RC -&gt; FR/NFR จาก
-          <code>Document/log_docs/06_Requirement_Traceability.md</code> และ
-          <code>07_Appendix_A_Full_Traceability_Matrix.md</code></li>
-        <li><code>planning/task-tracking.md</code> — การติดตามงานและการบริหารโครงการผ่านกระดาน Jira SCM และสถานะรายเฟส
-          จาก <code>Document/jira/Task-Tracking.md</code> และ <code>Document/jira/to-do-list.md</code></li>
-      </ul>
-      <p><strong>หน้าที่ปรับปรุง:</strong></p>
-      <ul>
-        <li><code>architecture/database-er-diagram.md</code> — อัปเดต Mermaid ER Diagram เพิ่มตาราง <code>admins</code>
-          แยกเดี่ยว, เพิ่มฟิลด์ <code>title</code> และ <code>progress</code> ใน <code>scans</code>, ปรับ Foreign Key
-          ให้ชี้ไปยัง <code>admins</code> ตาม <code>database/ER_Diagram.md</code> ล่าสุด</li>
-        <li><code>architecture/database-schema.md</code> — อัปเดตคำอธิบายตารางหลักใน PostgreSQL ให้มี
-          <code>admins</code>, <code>scam_reports</code>, <code>consent_logs</code> และเชื่อมโยงหน้ารายละเอียด</li>
-        <li><code>index.md</code> — เพิ่มรายการหน้าใหม่ทั้งหมด 5 หน้าลงในสารบัญครบทุกหมวดหมู่</li>
-      </ul>
-      <p><strong>ผลการตรวจสอบ:</strong></p>
-      <ul>
-        <li>สถาปัตยกรรมครอบคลุมครบทั้ง 4 คอนเทนเนอร์หลัก (Mobile App, Backend API, AI Inference, Admin Portal)</li>
-        <li>โครงสร้างฐานข้อมูลใน Wiki สอดคล้องกับ PostgreSQL และ <code>database/ER_Diagram.md</code> ล่าสุด</li>
-        <li>เอกสารทั้งหมดไม่มีสัญลักษณ์ Emoji และรันคอมไพล์เว็บ <code>web-ScamGuard</code> ผ่านสมบูรณ์</li>
-      </ul>
-      <h2 id="2026-09-11-fix-doc-04-v1-android-only-ios-web-future-overview-md-planning-project-scope-md">[2026-09-11]
-        fix | DOC-04: v1 Android-only (iOS/Web future) — overview.md, planning/project-scope.md</h2>
-      <h2 id="2026-09-11-fix-doc-05-gallery-only-product-md">[2026-09-11] fix | DOC-05: gallery-only — PRODUCT.md</h2>
-      <h2 id="2026-09-11-fix-doc-06-fcm-phase-2-02-03">[2026-09-11] fix | DOC-06: FCM Phase 2 — 02 + 03</h2>
-      <h2 id="2026-09-11-fix-doc-13-409-ac-104-crud-read-update-05-06-appa-wiki">[2026-09-11] fix | DOC-13: 409, AC 104,
-        CRUD→Read/Update — 05/06/AppA + wiki</h2>
-      <h2 id="2026-09-13-sync-database-wiki-ตรง-schema-ปัจจุบัน-er-diagram-schema-migrations">[2026-09-13] sync |
-        database wiki ตรง schema ปัจจุบัน (er-diagram, schema, migrations)</h2>
-      <h2
-        id="2026-09-15-update-เพิ่มหน้า-testing-test-cases-ตาราง-10-คอลัมน์-ieee-829-istqb-กฎ-md-canonical-csv-ยอดเคส-7-พื้นที่-และ-tests-all-tests-report">
-        [2026-09-15] update | เพิ่มหน้า testing/test-cases — ตาราง 10 คอลัมน์ IEEE 829/ISTQB, กฎ md-canonical + CSV,
-        ยอดเคส 7 พื้นที่ และ tests_all/tests_report/</h2>
-      <h2
-        id="2026-09-15-update-v1-0-5-training-outcome-v10-config-lessons-concepts-model-training-ai-model-segformer-configs-val-91-31-common-test-91-24-แยกค่า">
-        [2026-09-15] update | v1.0.5 training outcome + v10 config lessons → concepts/model-training,
-        ai-model-segformer, configs (val 91.31 / common-test 91.24 แยกค่า)</h2>
-      <h2 id="2026-09-15-fix-refresh-เส้นทาง-test-artifacts-สถานะเทรน-v1-0-5-planning-task-tracking-md">[2026-09-15] fix
-        | refresh เส้นทาง test artifacts + สถานะเทรน v1.0.5 — planning/task-tracking.md</h2>
-      <h2
-        id="2026-09-15-update-ตารางผลรายเวอร์ชัน-v1-0-0-v1-0-5-val-locked-common-test-local-set-แยก-3-ชุด-concepts-model-training">
-        [2026-09-15] update | ตารางผลรายเวอร์ชัน v1.0.0–v1.0.5 (val + locked common test + local set แยก 3 ชุด) —
-        concepts/model-training</h2>
+</code></pre></div></code></pre>
+<hr>
+<h2 id="2026-09-13-update-แก้ความขัดแย้ง-source-verification-และลิงก์เอกสาร">[2026-09-13] update | แก้ความขัดแย้ง Source Verification และลิงก์เอกสาร</h2>
+<ul>
+<li>ยึดมติ DOC-01: เมื่อ Google Vision API ยังไม่เชื่อมต่อหรือล้มเหลว ให้คืน <code>source_status = &quot;unavailable&quot;</code> และตัดมิติ source ออกจากการคำนวณ โดยไม่ใช้ neutral score 50</li>
+<li>ระบุสถานะ Google Vision API ในหน้า Technology Choices และ External Integrations ให้ตรงกับ SRS และแก้ลิงก์เอกสาร Backend ที่เสีย 4 รายการ</li>
+</ul>
+<h2 id="2026-08-02-init-สร้าง-wiki-ครั้งแรกจากเอกสารต้นฉบับทั้งหมด">[2026-08-02] init | สร้าง Wiki ครั้งแรกจากเอกสารต้นฉบับทั้งหมด</h2>
+<p><strong>ประเภทงาน:</strong> สร้าง wiki ครั้งแรก — นำเข้าเอกสารต้นฉบับที่มีอยู่ทั้งหมด</p>
+<p><strong>เอกสารที่ประมวลผล:</strong></p>
+<ul>
+<li><code>README.md</code> — ภาพรวมโปรเจค, ทีม, ลิงก์ workspace</li>
+<li><code>Document/objective.md</code> — วัตถุประสงค์ (OBJ-01 ถึง OBJ-04) และ KPI</li>
+<li><code>Document/scop.md</code> — ขอบเขตโปรเจคและ Work Package</li>
+<li><code>design/architecture.md</code> — สถาปัตยกรรมระบบ, Risk Scoring Pipeline, Tech Stack</li>
+<li><code>design/model.md</code> — การออกแบบโมเดล AI (SegFormer, Semantic Segmentation, Heatmap)</li>
+<li><code>design/server.md</code> — โครงสร้าง Backend FastAPI และ Database</li>
+</ul>
+<p><strong>หน้าที่สร้าง:</strong></p>
+<ul>
+<li><code>AGENTS.md</code> — schema และคู่มือการดำเนินงานสำหรับ LLM</li>
+<li><code>index.md</code> — สารบัญทุกหน้า</li>
+<li><code>log.md</code> — ไฟล์นี้</li>
+<li><code>howto.md</code> — คู่มือการใช้งาน wiki</li>
+<li><code>overview.md</code> — ภาพรวมโปรเจค</li>
+<li><code>concepts/multi-layer-analysis.md</code></li>
+<li><code>concepts/risk-scoring.md</code></li>
+<li><code>concepts/explainable-ai.md</code></li>
+<li><code>concepts/ai-model-segformer.md</code></li>
+<li><code>concepts/semantic-segmentation.md</code></li>
+<li><code>architecture/system-architecture.md</code></li>
+<li><code>architecture/mobile-app.md</code></li>
+<li><code>architecture/backend-api.md</code></li>
+<li><code>architecture/ai-inference-service.md</code></li>
+<li><code>architecture/database-schema.md</code></li>
+<li><code>architecture/external-integrations.md</code></li>
+<li><code>entities/actors.md</code></li>
+<li><code>entities/tech-stack.md</code></li>
+<li><code>decisions/technology-choices.md</code></li>
+<li><code>requirements/objectives-kpis.md</code></li>
+<li><code>requirements/functional-requirements.md</code></li>
+<li><code>requirements/non-functional-requirements.md</code></li>
+<li><code>planning/project-scope.md</code></li>
+<li><code>planning/team.md</code></li>
+</ul>
+<p><strong>หมายเหตุ:</strong> เอกสารที่ยังไม่ได้ ingest ครบ: <code>Document/srs.md</code> (ฉบับเต็ม), <code>Document/Use-Case-Diagram.md</code>, <code>Document/flowchart.md</code>, <code>Document/C1-System-Context-Diagram.md</code>, <code>Document/C2-Container-Diagram.md</code>, <code>design/design.md</code>, <code>design/mobile.md</code>, <code>design/training.md</code></p>
+<hr>
+<h2 id="2026-08-02-update-แปลทุกหน้าเป็นภาษาไทย">[2026-08-02] update | แปลทุกหน้าเป็นภาษาไทย</h2>
+<p><strong>ประเภทงาน:</strong> แปลเนื้อหาทั้งหมดเป็นภาษาไทย คงคำศัพท์เทคนิคภาษาอังกฤษตามมาตรฐานวิชาชีพ</p>
+<hr>
+<h2 id="2026-08-04-update-phase-4-ocr-integration-qwen2-5-vl-fix">[2026-08-04] update | Phase 4 OCR Integration &amp; Qwen2.5-VL Fix</h2>
+<p><strong>ประเภทงาน:</strong> ติดตั้งและปรับแต่งโมเดล Surya OCR 2 (GGUF)</p>
+<p><strong>รายละเอียด:</strong></p>
+<ul>
+<li>ปรับปรุงไฟล์ <code>inference_service.py</code> ให้โหลด <code>surya-2.gguf</code> ผ่าน <code>llama-cpp-python</code></li>
+<li>อัปเดต <code>scan_service.py</code> เพื่อนำ <code>ocr_text</code> ที่อ่านได้มาคิดคะแนน <code>text_score</code> ร่วมกับ Scam Keywords (เช่น ด่วน, โบนัส, ลงทุน)</li>
+<li><strong>Problem Solving:</strong> แก้บั๊ก Context Memory ของ Qwen2-VL โดยการเปลี่ยน Chat Handler ไปใช้ <code>Qwen25VLChatHandler</code> แทน <code>Llava15ChatHandler</code> และขยาย <code>n_ctx=8192</code> ทำให้สามารถประมวลผลรูปภาพความละเอียดสูงได้สมบูรณ์</li>
+<li><strong>GPU Optimization:</strong> แนะนำและวางแนวทางการติดตั้ง <code>cuda-toolkit</code> OS-level เพื่อนำเข้าไดรเวอร์ <code>libcudart</code> ให้ <code>llama-cpp-python</code> รันบน VRAM (RTX 3050) ได้ 100% (n_gpu_layers=-1)</li>
+</ul>
+<hr>
+<h2 id="2026-08-04-mass-ingest-ย้ายเอกสารต้นฉบับเข้า-wiki">[2026-08-04] mass_ingest | ย้ายเอกสารต้นฉบับเข้า Wiki</h2>
+<p><strong>ประเภทงาน:</strong> รวบรวมเอกสารจากโฟลเดอร์ <code>Document/</code>, <code>design/</code>, <code>database/</code>, และ <code>server/</code> เข้าสู่สารบบ Wiki แบบอัตโนมัติ</p>
+<p><strong>รายการไฟล์ที่นำเข้า (พร้อมเพิ่ม Frontmatter):</strong></p>
+<ul>
+<li><strong>Requirements:</strong> <code>srs.md</code>, <code>use-case-diagram.md</code></li>
+<li><strong>Architecture:</strong> <code>c1-system-context-diagram.md</code>, <code>c2-container-diagram.md</code>, <code>flowchart.md</code>, <code>design-overview.md</code>, <code>mobile-design.md</code>, <code>database-er-diagram.md</code></li>
+<li><strong>Concepts:</strong> <code>model-training.md</code></li>
+<li><strong>Planning:</strong> <code>backend-howto.md</code></li>
+</ul>
+<p><strong>รายละเอียด:</strong></p>
+<ul>
+<li>ใช้สคริปต์ <code>mass_ingest.py</code> จัดการคัดลอกไฟล์ทั้งหมดและแทรก YAML Frontmatter ด้านบนของไฟล์โดยอัตโนมัติ เพื่อรักษาโครงสร้างเดิมของโปรเจคไว้</li>
+<li>สั่ง Build HTML ใหม่ เพื่อให้เอกสารทั้งหมดเข้าไปอยู่ใน Web Portal (<code>web-ScamGuard</code>) อย่างสมบูรณ์</li>
+</ul>
+<h2 id="2026-08-06-ingest-document-model-model-md">[2026-08-06] ingest | /Document/model/model.md</h2>
+<hr>
+<h2 id="2026-09-06-sync-อัปเดต-wiki-ให้สอดคล้องกับ-document-design-และระบบจริง">[2026-09-06] sync | อัปเดต Wiki ให้สอดคล้องกับ Document, design และระบบจริง</h2>
+<p><strong>ประเภทงาน:</strong> ซิงค์และเติมเต็มเอกสาร Wiki จาก Document, design และโครงสร้างระบบจริงล่าสุด</p>
+<p><strong>หน้าที่สร้างใหม่:</strong></p>
+<ul>
+<li><code>architecture/admin-portal.md</code> — สถาปัตยกรรมและการออกแบบ Admin Portal (React/Vite, UI Design System, Model Registry, Telemetry) จาก <code>design/admin.md</code> และ <code>Document/admin/admin.md</code></li>
+<li><code>architecture/database-migrations.md</code> — คู่มือและขั้นตอนการย้ายฐานข้อมูล (Database Migrations) ด้วย Alembic จาก <code>Document/database/alembic.md</code></li>
+<li><code>concepts/mmsegmentation.md</code> — สถาปัตยกรรมโมดูลาร์ MMSegmentation (Backbone MiT, Decode Head, Training Loss) จาก <code>Document/model/mmsegmentation.md</code></li>
+<li><code>requirements/traceability-matrix.md</code> — เมทริกซ์การสืบย้อนความต้องการ (Requirement Traceability Matrix - RTM) เชื่อมโยง ST -&gt; OBJ -&gt; SC -&gt; RC -&gt; FR/NFR จาก <code>Document/log_docs/06_Requirement_Traceability.md</code> และ <code>07_Appendix_A_Full_Traceability_Matrix.md</code></li>
+<li><code>planning/task-tracking.md</code> — การติดตามงานและการบริหารโครงการผ่านกระดาน Jira SCM และสถานะรายเฟส จาก <code>Document/jira/Task-Tracking.md</code> และ <code>Document/jira/to-do-list.md</code></li>
+</ul>
+<p><strong>หน้าที่ปรับปรุง:</strong></p>
+<ul>
+<li><code>architecture/database-er-diagram.md</code> — อัปเดต Mermaid ER Diagram เพิ่มตาราง <code>admins</code> แยกเดี่ยว, เพิ่มฟิลด์ <code>title</code> และ <code>progress</code> ใน <code>scans</code>, ปรับ Foreign Key ให้ชี้ไปยัง <code>admins</code> ตาม <code>database/ER_Diagram.md</code> ล่าสุด</li>
+<li><code>architecture/database-schema.md</code> — อัปเดตคำอธิบายตารางหลักใน PostgreSQL ให้มี <code>admins</code>, <code>scam_reports</code>, <code>consent_logs</code> และเชื่อมโยงหน้ารายละเอียด</li>
+<li><code>index.md</code> — เพิ่มรายการหน้าใหม่ทั้งหมด 5 หน้าลงในสารบัญครบทุกหมวดหมู่</li>
+</ul>
+<p><strong>ผลการตรวจสอบ:</strong></p>
+<ul>
+<li>สถาปัตยกรรมครอบคลุมครบทั้ง 4 คอนเทนเนอร์หลัก (Mobile App, Backend API, AI Inference, Admin Portal)</li>
+<li>โครงสร้างฐานข้อมูลใน Wiki สอดคล้องกับ PostgreSQL และ <code>database/ER_Diagram.md</code> ล่าสุด</li>
+<li>เอกสารทั้งหมดไม่มีสัญลักษณ์ Emoji และรันคอมไพล์เว็บ <code>web-ScamGuard</code> ผ่านสมบูรณ์</li>
+</ul>
+<h2 id="2026-09-11-fix-doc-04-v1-android-only-ios-web-future-overview-md-planning-project-scope-md">[2026-09-11] fix | DOC-04: v1 Android-only (iOS/Web future) — overview.md, planning/project-scope.md</h2>
+<h2 id="2026-09-11-fix-doc-05-gallery-only-product-md">[2026-09-11] fix | DOC-05: gallery-only — PRODUCT.md</h2>
+<h2 id="2026-09-11-fix-doc-06-fcm-phase-2-02-03">[2026-09-11] fix | DOC-06: FCM Phase 2 — 02 + 03</h2>
+<h2 id="2026-09-11-fix-doc-13-409-ac-104-crud-read-update-05-06-appa-wiki">[2026-09-11] fix | DOC-13: 409, AC 104, CRUD→Read/Update — 05/06/AppA + wiki</h2>
+<h2 id="2026-09-13-sync-database-wiki-ตรง-schema-ปัจจุบัน-er-diagram-schema-migrations">[2026-09-13] sync | database wiki ตรง schema ปัจจุบัน (er-diagram, schema, migrations)</h2>
+<h2 id="2026-09-15-update-เพิ่มหน้า-testing-test-cases-ตาราง-10-คอลัมน์-ieee-829-istqb-กฎ-md-canonical-csv-ยอดเคส-7-พื้นที่-และ-tests-all-tests-report">[2026-09-15] update | เพิ่มหน้า testing/test-cases — ตาราง 10 คอลัมน์ IEEE 829/ISTQB, กฎ md-canonical + CSV, ยอดเคส 7 พื้นที่ และ tests_all/tests_report/</h2>
+<h2 id="2026-09-15-update-v1-0-5-training-outcome-v10-config-lessons-concepts-model-training-ai-model-segformer-configs-val-91-31-common-test-91-24-แยกค่า">[2026-09-15] update | v1.0.5 training outcome + v10 config lessons → concepts/model-training, ai-model-segformer, configs (val 91.31 / common-test 91.24 แยกค่า)</h2>
+<h2 id="2026-09-15-fix-refresh-เส้นทาง-test-artifacts-สถานะเทรน-v1-0-5-planning-task-tracking-md">[2026-09-15] fix | refresh เส้นทาง test artifacts + สถานะเทรน v1.0.5 — planning/task-tracking.md</h2>
+<h2 id="2026-09-15-update-ตารางผลรายเวอร์ชัน-v1-0-0-v1-0-5-val-locked-common-test-local-set-แยก-3-ชุด-concepts-model-training">[2026-09-15] update | ตารางผลรายเวอร์ชัน v1.0.0–v1.0.5 (val + locked common test + local set แยก 3 ชุด) — concepts/model-training</h2>
+</div></main>
+    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้"><p class="toc-title">ในหน้านี้</p><ol class="toc"><li class="toc-level-2"><a href="#2026-09-13-update-%E0%B9%81%E0%B8%81%E0%B9%89%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%82%E0%B8%B1%E0%B8%94%E0%B9%81%E0%B8%A2%E0%B9%89%E0%B8%87-source-verification-%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%A5%E0%B8%B4%E0%B8%87%E0%B8%81%E0%B9%8C%E0%B9%80%E0%B8%AD%E0%B8%81%E0%B8%AA%E0%B8%B2%E0%B8%A3">[2026-09-13] update | แก้ความขัดแย้ง Source Verification และลิงก์เอกสาร</a></li><li class="toc-level-2"><a href="#2026-08-02-init-%E0%B8%AA%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%87-wiki-%E0%B8%84%E0%B8%A3%E0%B8%B1%E0%B9%89%E0%B8%87%E0%B9%81%E0%B8%A3%E0%B8%81%E0%B8%88%E0%B8%B2%E0%B8%81%E0%B9%80%E0%B8%AD%E0%B8%81%E0%B8%AA%E0%B8%B2%E0%B8%A3%E0%B8%95%E0%B9%89%E0%B8%99%E0%B8%89%E0%B8%9A%E0%B8%B1%E0%B8%9A%E0%B8%97%E0%B8%B1%E0%B9%89%E0%B8%87%E0%B8%AB%E0%B8%A1%E0%B8%94">[2026-08-02] init | สร้าง Wiki ครั้งแรกจากเอกสารต้นฉบับทั้งหมด</a></li><li class="toc-level-2"><a href="#2026-08-02-update-%E0%B9%81%E0%B8%9B%E0%B8%A5%E0%B8%97%E0%B8%B8%E0%B8%81%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B9%80%E0%B8%9B%E0%B9%87%E0%B8%99%E0%B8%A0%E0%B8%B2%E0%B8%A9%E0%B8%B2%E0%B9%84%E0%B8%97%E0%B8%A2">[2026-08-02] update | แปลทุกหน้าเป็นภาษาไทย</a></li><li class="toc-level-2"><a href="#2026-08-04-update-phase-4-ocr-integration-qwen2-5-vl-fix">[2026-08-04] update | Phase 4 OCR Integration &amp; Qwen2.5-VL Fix</a></li><li class="toc-level-2"><a href="#2026-08-04-mass-ingest-%E0%B8%A2%E0%B9%89%E0%B8%B2%E0%B8%A2%E0%B9%80%E0%B8%AD%E0%B8%81%E0%B8%AA%E0%B8%B2%E0%B8%A3%E0%B8%95%E0%B9%89%E0%B8%99%E0%B8%89%E0%B8%9A%E0%B8%B1%E0%B8%9A%E0%B9%80%E0%B8%82%E0%B9%89%E0%B8%B2-wiki">[2026-08-04] mass_ingest | ย้ายเอกสารต้นฉบับเข้า Wiki</a></li><li class="toc-level-2"><a href="#2026-08-06-ingest-document-model-model-md">[2026-08-06] ingest | /Document/model/model.md</a></li><li class="toc-level-2"><a href="#2026-09-06-sync-%E0%B8%AD%E0%B8%B1%E0%B8%9B%E0%B9%80%E0%B8%94%E0%B8%95-wiki-%E0%B9%83%E0%B8%AB%E0%B9%89%E0%B8%AA%E0%B8%AD%E0%B8%94%E0%B8%84%E0%B8%A5%E0%B9%89%E0%B8%AD%E0%B8%87%E0%B8%81%E0%B8%B1%E0%B8%9A-document-design-%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A%E0%B8%88%E0%B8%A3%E0%B8%B4%E0%B8%87">[2026-09-06] sync | อัปเดต Wiki ให้สอดคล้องกับ Document, design และระบบจริง</a></li><li class="toc-level-2"><a href="#2026-09-11-fix-doc-04-v1-android-only-ios-web-future-overview-md-planning-project-scope-md">[2026-09-11] fix | DOC-04: v1 Android-only (iOS/Web future) — overview.md, planning/project-scope.md</a></li><li class="toc-level-2"><a href="#2026-09-11-fix-doc-05-gallery-only-product-md">[2026-09-11] fix | DOC-05: gallery-only — PRODUCT.md</a></li><li class="toc-level-2"><a href="#2026-09-11-fix-doc-06-fcm-phase-2-02-03">[2026-09-11] fix | DOC-06: FCM Phase 2 — 02 + 03</a></li><li class="toc-level-2"><a href="#2026-09-11-fix-doc-13-409-ac-104-crud-read-update-05-06-appa-wiki">[2026-09-11] fix | DOC-13: 409, AC 104, CRUD→Read/Update — 05/06/AppA + wiki</a></li><li class="toc-level-2"><a href="#2026-09-13-sync-database-wiki-%E0%B8%95%E0%B8%A3%E0%B8%87-schema-%E0%B8%9B%E0%B8%B1%E0%B8%88%E0%B8%88%E0%B8%B8%E0%B8%9A%E0%B8%B1%E0%B8%99-er-diagram-schema-migrations">[2026-09-13] sync | database wiki ตรง schema ปัจจุบัน (er-diagram, schema, migrations)</a></li><li class="toc-level-2"><a href="#2026-09-15-update-%E0%B9%80%E0%B8%9E%E0%B8%B4%E0%B9%88%E0%B8%A1%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2-testing-test-cases-%E0%B8%95%E0%B8%B2%E0%B8%A3%E0%B8%B2%E0%B8%87-10-%E0%B8%84%E0%B8%AD%E0%B8%A5%E0%B8%B1%E0%B8%A1%E0%B8%99%E0%B9%8C-ieee-829-istqb-%E0%B8%81%E0%B8%8E-md-canonical-csv-%E0%B8%A2%E0%B8%AD%E0%B8%94%E0%B9%80%E0%B8%84%E0%B8%AA-7-%E0%B8%9E%E0%B8%B7%E0%B9%89%E0%B8%99%E0%B8%97%E0%B8%B5%E0%B9%88-%E0%B9%81%E0%B8%A5%E0%B8%B0-tests-all-tests-report">[2026-09-15] update | เพิ่มหน้า testing/test-cases — ตาราง 10 คอลัมน์ IEEE 829/ISTQB, กฎ md-canonical + CSV, ยอดเคส 7 พื้นที่ และ tests_all/tests_report/</a></li><li class="toc-level-2"><a href="#2026-09-15-update-v1-0-5-training-outcome-v10-config-lessons-concepts-model-training-ai-model-segformer-configs-val-91-31-common-test-91-24-%E0%B9%81%E0%B8%A2%E0%B8%81%E0%B8%84%E0%B9%88%E0%B8%B2">[2026-09-15] update | v1.0.5 training outcome + v10 config lessons → concepts/model-training, ai-model-segformer, configs (val 91.31 / common-test 91.24 แยกค่า)</a></li><li class="toc-level-2"><a href="#2026-09-15-fix-refresh-%E0%B9%80%E0%B8%AA%E0%B9%89%E0%B8%99%E0%B8%97%E0%B8%B2%E0%B8%87-test-artifacts-%E0%B8%AA%E0%B8%96%E0%B8%B2%E0%B8%99%E0%B8%B0%E0%B9%80%E0%B8%97%E0%B8%A3%E0%B8%99-v1-0-5-planning-task-tracking-md">[2026-09-15] fix | refresh เส้นทาง test artifacts + สถานะเทรน v1.0.5 — planning/task-tracking.md</a></li><li class="toc-level-2"><a href="#2026-09-15-update-%E0%B8%95%E0%B8%B2%E0%B8%A3%E0%B8%B2%E0%B8%87%E0%B8%9C%E0%B8%A5%E0%B8%A3%E0%B8%B2%E0%B8%A2%E0%B9%80%E0%B8%A7%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B8%8A%E0%B8%B1%E0%B8%99-v1-0-0-v1-0-5-val-locked-common-test-local-set-%E0%B9%81%E0%B8%A2%E0%B8%81-3-%E0%B8%8A%E0%B8%B8%E0%B8%94-concepts-model-training">[2026-09-15] update | ตารางผลรายเวอร์ชัน v1.0.0–v1.0.5 (val + locked common test + local set แยก 3 ชุด) — concepts/model-training</a></li></ol></aside>
   </div>
-  <footer class="source-panel"><strong>แหล่งข้อมูลของหน้านี้</strong>
-    <ul>
-      <li><a href="../sources/wiki/log.md">Markdown ต้นฉบับ: log.md</a></li>
-    </ul>
-  </footer>
-  </main>
-  <aside class="toc-wrap" aria-label="สารบัญในหน้านี้">
-    <p class="toc-title">ในหน้านี้</p>
-    <ol class="toc">
-      <li class="toc-level-2"><a
-          href="#2026-09-13-update-%E0%B9%81%E0%B8%81%E0%B9%89%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%82%E0%B8%B1%E0%B8%94%E0%B9%81%E0%B8%A2%E0%B9%89%E0%B8%87-source-verification-%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%A5%E0%B8%B4%E0%B8%87%E0%B8%81%E0%B9%8C%E0%B9%80%E0%B8%AD%E0%B8%81%E0%B8%AA%E0%B8%B2%E0%B8%A3">[2026-09-13]
-          update | แก้ความขัดแย้ง Source Verification และลิงก์เอกสาร</a></li>
-      <li class="toc-level-2"><a
-          href="#2026-08-02-init-%E0%B8%AA%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%87-wiki-%E0%B8%84%E0%B8%A3%E0%B8%B1%E0%B9%89%E0%B8%87%E0%B9%81%E0%B8%A3%E0%B8%81%E0%B8%88%E0%B8%B2%E0%B8%81%E0%B9%80%E0%B8%AD%E0%B8%81%E0%B8%AA%E0%B8%B2%E0%B8%A3%E0%B8%95%E0%B9%89%E0%B8%99%E0%B8%89%E0%B8%9A%E0%B8%B1%E0%B8%9A%E0%B8%97%E0%B8%B1%E0%B9%89%E0%B8%87%E0%B8%AB%E0%B8%A1%E0%B8%94">[2026-08-02]
-          init | สร้าง Wiki ครั้งแรกจากเอกสารต้นฉบับทั้งหมด</a></li>
-      <li class="toc-level-2"><a
-          href="#2026-08-02-update-%E0%B9%81%E0%B8%9B%E0%B8%A5%E0%B8%97%E0%B8%B8%E0%B8%81%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B9%80%E0%B8%9B%E0%B9%87%E0%B8%99%E0%B8%A0%E0%B8%B2%E0%B8%A9%E0%B8%B2%E0%B9%84%E0%B8%97%E0%B8%A2">[2026-08-02]
-          update | แปลทุกหน้าเป็นภาษาไทย</a></li>
-      <li class="toc-level-2"><a href="#2026-08-04-update-phase-4-ocr-integration-qwen2-5-vl-fix">[2026-08-04] update |
-          Phase 4 OCR Integration &amp; Qwen2.5-VL Fix</a></li>
-      <li class="toc-level-2"><a
-          href="#2026-08-04-mass-ingest-%E0%B8%A2%E0%B9%89%E0%B8%B2%E0%B8%A2%E0%B9%80%E0%B8%AD%E0%B8%81%E0%B8%AA%E0%B8%B2%E0%B8%A3%E0%B8%95%E0%B9%89%E0%B8%99%E0%B8%89%E0%B8%9A%E0%B8%B1%E0%B8%9A%E0%B9%80%E0%B8%82%E0%B9%89%E0%B8%B2-wiki">[2026-08-04]
-          mass_ingest | ย้ายเอกสารต้นฉบับเข้า Wiki</a></li>
-      <li class="toc-level-2"><a href="#2026-08-06-ingest-document-model-model-md">[2026-08-06] ingest |
-          /Document/model/model.md</a></li>
-      <li class="toc-level-2"><a
-          href="#2026-09-06-sync-%E0%B8%AD%E0%B8%B1%E0%B8%9B%E0%B9%80%E0%B8%94%E0%B8%95-wiki-%E0%B9%83%E0%B8%AB%E0%B9%89%E0%B8%AA%E0%B8%AD%E0%B8%94%E0%B8%84%E0%B8%A5%E0%B9%89%E0%B8%AD%E0%B8%87%E0%B8%81%E0%B8%B1%E0%B8%9A-document-design-%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A%E0%B8%88%E0%B8%A3%E0%B8%B4%E0%B8%87">[2026-09-06]
-          sync | อัปเดต Wiki ให้สอดคล้องกับ Document, design และระบบจริง</a></li>
-      <li class="toc-level-2"><a
-          href="#2026-09-11-fix-doc-04-v1-android-only-ios-web-future-overview-md-planning-project-scope-md">[2026-09-11]
-          fix | DOC-04: v1 Android-only (iOS/Web future) — overview.md, planning/project-scope.md</a></li>
-      <li class="toc-level-2"><a href="#2026-09-11-fix-doc-05-gallery-only-product-md">[2026-09-11] fix | DOC-05:
-          gallery-only — PRODUCT.md</a></li>
-      <li class="toc-level-2"><a href="#2026-09-11-fix-doc-06-fcm-phase-2-02-03">[2026-09-11] fix | DOC-06: FCM Phase 2
-          — 02 + 03</a></li>
-      <li class="toc-level-2"><a href="#2026-09-11-fix-doc-13-409-ac-104-crud-read-update-05-06-appa-wiki">[2026-09-11]
-          fix | DOC-13: 409, AC 104, CRUD→Read/Update — 05/06/AppA + wiki</a></li>
-      <li class="toc-level-2"><a
-          href="#2026-09-13-sync-database-wiki-%E0%B8%95%E0%B8%A3%E0%B8%87-schema-%E0%B8%9B%E0%B8%B1%E0%B8%88%E0%B8%88%E0%B8%B8%E0%B8%9A%E0%B8%B1%E0%B8%99-er-diagram-schema-migrations">[2026-09-13]
-          sync | database wiki ตรง schema ปัจจุบัน (er-diagram, schema, migrations)</a></li>
-      <li class="toc-level-2"><a
-          href="#2026-09-15-update-%E0%B9%80%E0%B8%9E%E0%B8%B4%E0%B9%88%E0%B8%A1%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2-testing-test-cases-%E0%B8%95%E0%B8%B2%E0%B8%A3%E0%B8%B2%E0%B8%87-10-%E0%B8%84%E0%B8%AD%E0%B8%A5%E0%B8%B1%E0%B8%A1%E0%B8%99%E0%B9%8C-ieee-829-istqb-%E0%B8%81%E0%B8%8E-md-canonical-csv-%E0%B8%A2%E0%B8%AD%E0%B8%94%E0%B9%80%E0%B8%84%E0%B8%AA-7-%E0%B8%9E%E0%B8%B7%E0%B9%89%E0%B8%99%E0%B8%97%E0%B8%B5%E0%B9%88-%E0%B9%81%E0%B8%A5%E0%B8%B0-tests-all-tests-report">[2026-09-15]
-          update | เพิ่มหน้า testing/test-cases — ตาราง 10 คอลัมน์ IEEE 829/ISTQB, กฎ md-canonical + CSV, ยอดเคส 7
-          พื้นที่ และ tests_all/tests_report/</a></li>
-      <li class="toc-level-2"><a
-          href="#2026-09-15-update-v1-0-5-training-outcome-v10-config-lessons-concepts-model-training-ai-model-segformer-configs-val-91-31-common-test-91-24-%E0%B9%81%E0%B8%A2%E0%B8%81%E0%B8%84%E0%B9%88%E0%B8%B2">[2026-09-15]
-          update | v1.0.5 training outcome + v10 config lessons → concepts/model-training, ai-model-segformer, configs
-          (val 91.31 / common-test 91.24 แยกค่า)</a></li>
-      <li class="toc-level-2"><a
-          href="#2026-09-15-fix-refresh-%E0%B9%80%E0%B8%AA%E0%B9%89%E0%B8%99%E0%B8%97%E0%B8%B2%E0%B8%87-test-artifacts-%E0%B8%AA%E0%B8%96%E0%B8%B2%E0%B8%99%E0%B8%B0%E0%B9%80%E0%B8%97%E0%B8%A3%E0%B8%99-v1-0-5-planning-task-tracking-md">[2026-09-15]
-          fix | refresh เส้นทาง test artifacts + สถานะเทรน v1.0.5 — planning/task-tracking.md</a></li>
-      <li class="toc-level-2"><a
-          href="#2026-09-15-update-%E0%B8%95%E0%B8%B2%E0%B8%A3%E0%B8%B2%E0%B8%87%E0%B8%9C%E0%B8%A5%E0%B8%A3%E0%B8%B2%E0%B8%A2%E0%B9%80%E0%B8%A7%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B8%8A%E0%B8%B1%E0%B8%99-v1-0-0-v1-0-5-val-locked-common-test-local-set-%E0%B9%81%E0%B8%A2%E0%B8%81-3-%E0%B8%8A%E0%B8%B8%E0%B8%94-concepts-model-training">[2026-09-15]
-          update | ตารางผลรายเวอร์ชัน v1.0.0–v1.0.5 (val + locked common test + local set แยก 3 ชุด) —
-          concepts/model-training</a></li>
-    </ol>
-  </aside>
-  </div>
-  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title">
-    <div class="search-dialog-head"><label class="visually-hidden" id="search-title"
-        for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…"
-        autocomplete="off" data-search-input><button class="control" type="button" data-search-close
-        aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="m6 6 12 12M18 6 6 18" />
-        </svg></button></div>
-    <div class="search-results" data-search-results aria-live="polite"></div>
-  </dialog>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title"><div class="search-dialog-head"><label class="visually-hidden" id="search-title" for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…" autocomplete="off" data-search-input><button class="control" type="button" data-search-close aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div class="search-results" data-search-results aria-live="polite"></div></dialog>
   <script src="../assets/js/search-index.js"></script>
   <script src="../assets/js/site.js"></script>
 </body>
-
 </html>

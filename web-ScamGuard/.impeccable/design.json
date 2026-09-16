@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-15T20:13:42+07:00",
+  "generatedAt": "2026-09-16T07:41:26+07:00",
   "title": "Design System: ScamGuard Documentation",
   "extensions": {
     "colorMeta": {
@@ -473,11 +473,15 @@
     "typographyMeta": {
       "display": {
         "displayName": "Home Display",
-        "purpose": "One orientation statement on the documentation home page."
+        "purpose": "One short-measure orientation statement on the documentation home page, scaling from 2.4rem to a 4rem ceiling."
       },
       "headline": {
         "displayName": "Article Headline",
-        "purpose": "Short-measure page titles for Thai and bilingual technical documents."
+        "purpose": "Thai and bilingual page titles capped at 2.75rem (44px) and 24ch, with a 1.75rem-to-2.25rem mobile range."
+      },
+      "headline-mobile": {
+        "displayName": "Mobile Article Headline",
+        "purpose": "The compact 1.75rem-to-2.25rem article-title range used below the single-column breakpoint."
       },
       "title": {
         "displayName": "Evidence Section",
@@ -551,7 +555,7 @@
       "refersTo": "navigation-current",
       "description": "The active location marker in the sticky category rail.",
       "html": "<nav class=\"ds-nav\" aria-label=\"หมวดเอกสาร\"><a href=\"#\" aria-current=\"page\">สถาปัตยกรรมระบบ</a></nav>",
-      "css": ".ds-nav { width: 17rem; font-family: var(--font-ui); } .ds-nav a { display: block; padding: .42rem .55rem; border-radius: .45rem; color: var(--accent-strong); background: var(--accent-soft); font-size: .9rem; line-height: 1.45; font-weight: 670; text-decoration: none; } .ds-nav a:hover { color: var(--ink); background: var(--surface-muted); } .ds-nav a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }"
+      "css": ".ds-nav { width: 100%; font-family: var(--font-ui); } .ds-nav a { display: block; padding: .42rem .55rem; border-radius: .45rem; color: var(--accent-strong); background: var(--accent-soft); font-size: .9rem; line-height: 1.45; font-weight: 670; text-decoration: none; } .ds-nav a:hover { color: var(--ink); background: var(--surface-muted); } .ds-nav a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }"
     },
     {
       "name": "Search Field",
@@ -604,11 +608,11 @@
   ],
   "narrative": {
     "northStar": "The Evidence Field Manual",
-    "overview": "ScamGuard Documentation is a Read-mode technical record, not a product marketing page. Its world is a quiet evidence field: cool paper, dark ink, teal indexing marks, crisp dividers, and square data surfaces. The visual hierarchy helps developers and evaluators locate a system area, follow verified links, and retain source context while reading Thai-first material with English technical terms. The interface behaves like a workbench. Persistent navigation surrounds a deliberately narrow article column; metadata, tags, tables, code, callouts, and diagrams are evidence instruments rather than decoration. Expression is restrained so the documentation can carry dense architecture and research material without feeling clinical or promotional. This design record applies only to the generated static documentation under web-ScamGuard. It does not replace or modify the design guidance for the Admin Portal or Mobile App.",
+    "overview": "ScamGuard Documentation is a Read-mode technical record, not a product marketing page. Its world is a quiet evidence field: cool paper, dark ink, teal indexing marks, crisp dividers, and square data surfaces. The visual hierarchy helps developers and evaluators locate a system area, follow verified links, and retain source context while reading Thai-first material with English technical terms. The interface behaves like a workbench. Edge-anchored support rails surround a fluid middle track whose article and prose measures remain bounded; metadata, tags, tables, code, callouts, and diagrams are evidence instruments rather than decoration. Expression is restrained so the documentation can carry dense architecture and research material without feeling clinical or promotional. This design record applies only to the generated static documentation under web-ScamGuard. It does not replace or modify the design guidance for the Admin Portal or Mobile App.",
     "keyCharacteristics": [
       "Thai-first, self-hosted typography that remains fully usable offline.",
       "A paper, ink, and restrained teal palette with a deliberately authored dark counterpart.",
-      "A three-column desktop workbench centered on a readable article measure.",
+      "A full-width three-column desktop workbench with edge-anchored support rails and a centered article.",
       "Crisp rules and tonal fills instead of generic card stacks.",
       "Active reading position, source context, and technical diagrams treated as first-class evidence.",
       "Accessible keyboard, focus, motion, responsive, and print behavior built into the reading system."

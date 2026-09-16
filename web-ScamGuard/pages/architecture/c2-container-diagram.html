@@ -1,176 +1,21 @@
 <!doctype html>
-<html lang="th" data-theme="light">
-
+<html lang="th" data-theme="light" data-theme-mode="system">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description"
-        content="C2: Container Diagram --- คำอธิบาย Container Diagram สถาปัตยกรรมของระบบ Scam Image Detection ถูกออกแบบภายใต้แนวคิด Cloud-Native Architecture โดยงาน AI หนักแยกเป็น ONNX Worker subprocess เพื่…">
-    <meta name="color-scheme" content="light dark">
-    <title>C2 Container Diagram | ScamGuard Documentation</title>
-    <link rel="stylesheet" href="../../assets/css/site.css">
-    <script>document.documentElement.dataset.theme = (() => { try { return localStorage.getItem('scamguard-docs-theme') || 'light' } catch (e) { return 'light' } })(); window.SC_DOCS_ROOT = '../../';</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="C2: Container Diagram --- คำอธิบาย Container Diagram สถาปัตยกรรมของระบบ Scam Image Detection ถูกออกแบบภายใต้แนวคิด Cloud-Native Architecture โดยงาน AI หนักแยกเป็น ONNX Worker subprocess เพื่…">
+  <meta name="color-scheme" content="light dark">
+  <title>C2 Container Diagram | ScamGuard Documentation</title>
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <script>(()=>{let m='system';try{m=localStorage.getItem('scamguard-docs-theme')||'system'}catch(e){}if(!['system','light','dark'].includes(m))m='system';const t=m==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;document.documentElement.dataset.themeMode=m;document.documentElement.dataset.theme=t})();window.SC_DOCS_ROOT='../../';</script>
 </head>
-
 <body class="">
-    <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
-    <header class="masthead">
-        <div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle
-                aria-expanded="false" aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
-                    aria-hidden="true">
-                    <path d="M4 7h16M4 12h16M4 17h16" />
-                </svg></button><a class="brand" href="../../index.html"><svg viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
-                    aria-hidden="true">
-                    <path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z" />
-                    <path d="m9.2 12 1.8 1.8 3.9-4.2" />
-                </svg><span>ScamGuard <small>Documentation</small></span></a>
-            <div class="masthead-actions"><button class="control" type="button" data-search-open><svg
-                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                        stroke-linejoin="round" aria-hidden="true">
-                        <circle cx="11" cy="11" r="6.5" />
-                        <path d="m16 16 4 4" />
-                    </svg><span>ค้นหา</span><span class="search-shortcut">Ctrl K</span></button><button class="control"
-                    type="button" data-theme-toggle aria-label="เปลี่ยนเป็นโหมดมืด"><svg viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
-                        aria-hidden="true">
-                        <path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.5A7 7 0 0 1 12 3Z" />
-                    </svg><span class="theme-label" data-theme-label>โหมดมืด</span></button></div>
-        </div>
-    </header>
-    <div class="docs-shell">
-        <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><button class="control nav-close"
-                type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="m6 6 12 12M18 6 6 18" />
-                </svg></button>
-            <p class="sidebar-title">เอกสารทั้งหมด</p>
-            <details class="sidebar-group">
-                <summary>ภาพรวม</summary>
-                <ul class="sidebar-list">
-                    <li><a href="../overview.html">ภาพรวมโปรเจค</a></li>
-                    <li><a href="../index.html">สารบัญ Wiki — โปรเจค Scam Image Detection</a></li>
-                </ul>
-            </details>
-            <details class="sidebar-group">
-                <summary>ความต้องการระบบ</summary>
-                <ul class="sidebar-list">
-                    <li><a href="../requirements/functional-requirements.html">ความต้องการเชิงฟังก์ชัน (Functional
-                            Requirements)</a></li>
-                    <li><a href="../requirements/non-functional-requirements.html">ความต้องการที่ไม่ใช่ฟังก์ชัน
-                            (Non-Functional Requirements)</a></li>
-                    <li><a href="../requirements/traceability-matrix.html">เมทริกซ์การสืบย้อนความต้องการ</a></li>
-                    <li><a href="../requirements/objectives-kpis.html">วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives
-                            &amp; KPIs)</a></li>
-                    <li><a href="../requirements/srs.html">Software Requirements Specification (SRS)</a></li>
-                    <li><a href="../requirements/use-case-diagram.html">Use Case Diagram</a></li>
-                </ul>
-            </details>
-            <details class="sidebar-group" open>
-                <summary>สถาปัตยกรรม</summary>
-                <ul class="sidebar-list">
-                    <li><a href="database-migrations.html">การจัดการการย้ายฐานข้อมูล (Database Migrations)</a></li>
-                    <li><a href="external-integrations.html">การเชื่อมต่อบริการภายนอก (External Integrations)</a></li>
-                    <li><a href="database-schema.html">โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li>
-                    <li><a href="system-architecture.html">สถาปัตยกรรมระบบ (System Architecture)</a></li>
-                    <li><a href="admin-portal.html">สถาปัตยกรรมและการออกแบบ Admin Portal</a></li>
-                    <li><a href="mobile-app.html">สถาปัตยกรรม Mobile App</a></li>
-                    <li><a href="ai-inference-service.html">AI Inference Service</a></li>
-                    <li><a href="backend-api.html">Backend API — FastAPI Orchestrator</a></li>
-                    <li><a href="c1-system-context-diagram.html">C1 System Context Diagram</a></li>
-                    <li><a href="c2-container-diagram.html" aria-current="page">C2 Container Diagram</a></li>
-                    <li><a href="c3-component-diagram.html">C3 Component Diagram - API Application</a></li>
-                    <li><a href="c4-code-diagram.html">C4 Code Diagram - Image Scanning Flow</a></li>
-                    <li><a href="database-er-diagram.html">Entity Relationship Diagram (ER Diagram)</a></li>
-                    <li><a href="mobile-design.html">Mobile App Architecture</a></li>
-                    <li><a href="flowchart.html">System Flowchart</a></li>
-                    <li><a href="design-overview.html">UX/UI &amp; System Design Overview</a></li>
-                </ul>
-            </details>
-            <details class="sidebar-group">
-                <summary>แนวคิดและเทคนิค</summary>
-                <ul class="sidebar-list">
-                    <li><a href="../concepts/risk-scoring.html">การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li>
-                    <li><a href="../concepts/multi-layer-analysis.html">การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a>
-                    </li>
-                    <li><a href="../concepts/explainable-ai.html">ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a>
-                    </li>
-                    <li><a href="../concepts/configs.html">พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a>
-                    </li>
-                    <li><a href="../concepts/ai-model-segformer.html">โมเดล AI — SegFormer</a></li>
-                    <li><a href="../concepts/surya-ocr.html">โมเดล AI — Surya OCR</a></li>
-                    <li><a href="../concepts/model-training.html">AI Model Training Workflow</a></li>
-                    <li><a href="../concepts/mmsegmentation.html">MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a>
-                    </li>
-                    <li><a href="../concepts/semantic-segmentation.html">Semantic Segmentation</a></li>
-                </ul>
-            </details>
-            <details class="sidebar-group">
-                <summary>องค์ประกอบระบบ</summary>
-                <ul class="sidebar-list">
-                    <li><a href="../entities/tech-stack.html">เทคโนโลยีที่ใช้ (Technology Stack)</a></li>
-                    <li><a href="../entities/actors.html">ผู้ใช้ระบบ (Actors)</a></li>
-                </ul>
-            </details>
-            <details class="sidebar-group">
-                <summary>การตัดสินใจ</summary>
-                <ul class="sidebar-list">
-                    <li><a href="../decisions/technology-choices.html">การตัดสินใจเลือกเทคโนโลยี (Technology
-                            Choices)</a></li>
-                </ul>
-            </details>
-            <details class="sidebar-group">
-                <summary>การวางแผน</summary>
-                <ul class="sidebar-list">
-                    <li><a href="../planning/task-tracking.html">การติดตามงานและการบริหารโครงการ (Task Tracking &amp;
-                            Jira)</a></li>
-                    <li><a href="../planning/project-scope.html">ขอบเขตโครงการ (Project Scope)</a></li>
-                    <li><a href="../planning/team.html">ทีมงานและผู้รับผิดชอบ (Team)</a></li>
-                    <li><a href="../planning/backend-documentation.html">Backend Documentation</a></li>
-                </ul>
-            </details>
-            <details class="sidebar-group">
-                <summary>การทดสอบ</summary>
-                <ul class="sidebar-list">
-                    <li><a href="../testing/test-cases.html">กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li>
-                </ul>
-            </details>
-            <details class="sidebar-group">
-                <summary>คู่มือและภาคผนวก</summary>
-                <ul class="sidebar-list">
-                    <li><a href="../log.html">บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li>
-                    <li><a href="../howto.html">วิธีใช้งาน Wiki (How to Use This Wiki)</a></li>
-                    <li><a href="../runbook.html">Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li>
-                    <li><a href="../AGENTS.html">Wiki Operating Guide</a></li>
-                </ul>
-            </details>
-        </aside>
-        <div class="nav-backdrop" data-nav-backdrop></div>
-        <main class="article" id="main-content">
-            <nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span
-                    aria-hidden="true">/</span><span>สถาปัตยกรรม</span></nav>
-            <header class="article-header">
-                <h1>C2 Container Diagram</h1>
-                <p class="article-lead">สถาปัตยกรรมของระบบ Scam Image Detection ถูกออกแบบภายใต้แนวคิด Cloud-Native
-                    Architecture โดยงาน AI หนักแยกเป็น ONNX Worker subprocess
-                    เพื่อให้ระบบสามารถรองรับการประมวลผลข้อมูลรูปภาพและโมเดลปัญญาประดิษฐ์ ซึ่งใช้ทรัพยากรการคำนวณสูง ไ…
-                </p>
-                <div class="meta"><span>หมวด สถาปัตยกรรม</span><time datetime="2026-08-04">อัปเดต
-                        2026-08-04</time><span>ต้นฉบับ architecture/c2-container-diagram.md</span></div>
-                <div class="tags"><span class="tag">architecture</span><span class="tag">c4</span><span
-                        class="tag">container</span><span class="tag">diagram</span></div>
-            </header>
-            <div class="prose">
-                <h1 id="c2-container-diagram">C2: Container Diagram</h1>
-                <figure class="diagram-frame">
-                    <div class="diagram-toolbar"><span>แผนภาพ 9</span><button class="control" type="button"
-                            data-diagram-expand>ดูขนาดใหญ่</button></div><img
-                        src="../../assets/diagrams/architecture-c2-container-diagram-9.svg"
-                        alt="แผนภาพจาก C2 Container Diagram" loading="lazy">
-                    <details class="diagram-source">
-                        <summary>ดู Mermaid source</summary>
-                        <pre><code>flowchart TB
+  <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
+  <header class="masthead"><div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><nav class="top-tabs" aria-label="เมนูหลัก"><a href="../../index.html">Guide</a><a href="../../pages/architecture/system-architecture.html">Architecture</a><a href="../../pages/architecture/backend-api.html">API Reference</a></nav></div></header>
+  <div class="docs-shell">
+    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><div class="sidebar-head"><a class="sidebar-brand" href="../../index.html" aria-label="ScamGuard Documentation"><span class="brand brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z"/><path d="m9.2 12 1.8 1.8 3.9-4.2"/></svg></span><span class="sidebar-brand-name">ScamGuard Docs</span></a><div class="theme-switcher" role="group" aria-label="ธีมเว็บไซต์"><button type="button" data-theme-option="system" aria-label="ใช้ธีมตามระบบ" title="System"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></button><button type="button" data-theme-option="light" aria-label="ใช้โหมดสว่าง" title="Light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></button><button type="button" data-theme-option="dark" aria-label="ใช้โหมดมืด" title="Dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8 8 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/></svg></button></div></div><button class="control nav-close" type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button><button class="sidebar-search" type="button" data-search-open><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search...</span><kbd>Ctrl K</kbd></button><div class="sidebar-scroll"><details class="sidebar-group" ><summary>ภาพรวม</summary><ul class="sidebar-list"><li><a href="../overview.html" >ภาพรวมโปรเจค</a></li><li><a href="../index.html" >สารบัญ Wiki — โปรเจค Scam Image Detection</a></li></ul></details><details class="sidebar-group" ><summary>ความต้องการระบบ</summary><ul class="sidebar-list"><li><a href="../requirements/functional-requirements.html" >ความต้องการเชิงฟังก์ชัน (Functional Requirements)</a></li><li><a href="../requirements/non-functional-requirements.html" >ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements)</a></li><li><a href="../requirements/traceability-matrix.html" >เมทริกซ์การสืบย้อนความต้องการ</a></li><li><a href="../requirements/objectives-kpis.html" >วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp; KPIs)</a></li><li><a href="../requirements/srs.html" >Software Requirements Specification (SRS)</a></li><li><a href="../requirements/use-case-diagram.html" >Use Case Diagram</a></li></ul></details><details class="sidebar-group" open><summary>สถาปัตยกรรม</summary><ul class="sidebar-list"><li><a href="database-migrations.html" >การจัดการการย้ายฐานข้อมูล (Database Migrations)</a></li><li><a href="external-integrations.html" >การเชื่อมต่อบริการภายนอก (External Integrations)</a></li><li><a href="database-schema.html" >โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li><li><a href="system-architecture.html" >สถาปัตยกรรมระบบ (System Architecture)</a></li><li><a href="admin-portal.html" >สถาปัตยกรรมและการออกแบบ Admin Portal</a></li><li><a href="mobile-app.html" >สถาปัตยกรรม Mobile App</a></li><li><a href="ai-inference-service.html" >AI Inference Service</a></li><li><a href="backend-api.html" >Backend API — FastAPI Orchestrator</a></li><li><a href="c1-system-context-diagram.html" >C1 System Context Diagram</a></li><li><a href="c2-container-diagram.html" aria-current="page">C2 Container Diagram</a></li><li><a href="c3-component-diagram.html" >C3 Component Diagram - API Application</a></li><li><a href="c4-code-diagram.html" >C4 Code Diagram - Image Scanning Flow</a></li><li><a href="database-er-diagram.html" >Entity Relationship Diagram (ER Diagram)</a></li><li><a href="mobile-design.html" >Mobile App Architecture</a></li><li><a href="flowchart.html" >System Flowchart</a></li><li><a href="design-overview.html" >UX/UI &amp; System Design Overview</a></li></ul></details><details class="sidebar-group" ><summary>แนวคิดและเทคนิค</summary><ul class="sidebar-list"><li><a href="../concepts/risk-scoring.html" >การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li><li><a href="../concepts/multi-layer-analysis.html" >การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li><li><a href="../concepts/explainable-ai.html" >ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li><li><a href="../concepts/configs.html" >พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li><li><a href="../concepts/ai-model-segformer.html" >โมเดล AI — SegFormer</a></li><li><a href="../concepts/surya-ocr.html" >โมเดล AI — Surya OCR</a></li><li><a href="../concepts/model-training.html" >AI Model Training Workflow</a></li><li><a href="../concepts/mmsegmentation.html" >MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li><li><a href="../concepts/semantic-segmentation.html" >Semantic Segmentation</a></li></ul></details><details class="sidebar-group" ><summary>องค์ประกอบระบบ</summary><ul class="sidebar-list"><li><a href="../entities/tech-stack.html" >เทคโนโลยีที่ใช้ (Technology Stack)</a></li><li><a href="../entities/actors.html" >ผู้ใช้ระบบ (Actors)</a></li></ul></details><details class="sidebar-group" ><summary>การตัดสินใจ</summary><ul class="sidebar-list"><li><a href="../decisions/technology-choices.html" >การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li></ul></details><details class="sidebar-group" ><summary>การวางแผน</summary><ul class="sidebar-list"><li><a href="../planning/task-tracking.html" >การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a></li><li><a href="../planning/project-scope.html" >ขอบเขตโครงการ (Project Scope)</a></li><li><a href="../planning/team.html" >ทีมงานและผู้รับผิดชอบ (Team)</a></li><li><a href="../planning/backend-documentation.html" >Backend Documentation</a></li></ul></details><details class="sidebar-group" ><summary>การทดสอบ</summary><ul class="sidebar-list"><li><a href="../testing/test-cases.html" >กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li></ul></details><details class="sidebar-group" ><summary>คู่มือและภาคผนวก</summary><ul class="sidebar-list"><li><a href="../log.html" >บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li><li><a href="../howto.html" >วิธีใช้งาน Wiki (How to Use This Wiki)</a></li><li><a href="../runbook.html" >Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li><li><a href="../AGENTS.html" >Wiki Operating Guide</a></li></ul></details></div></aside><div class="nav-backdrop" data-nav-backdrop></div>
+    <main class="article" id="main-content"><nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span aria-hidden="true">/</span><span>สถาปัตยกรรม</span></nav><header class="article-header"><h1>C2 Container Diagram</h1><p class="article-lead">สถาปัตยกรรมของระบบ Scam Image Detection ถูกออกแบบภายใต้แนวคิด Cloud-Native Architecture โดยงาน AI หนักแยกเป็น ONNX Worker subprocess เพื่อให้ระบบสามารถรองรับการประมวลผลข้อมูลรูปภาพและโมเดลปัญญาประดิษฐ์ ซึ่งใช้ทรัพยากรการคำนวณสูง ไ…</p><div class="meta"><span>หมวด สถาปัตยกรรม</span><time datetime="2026-08-04">อัปเดต 2026-08-04</time><span>ต้นฉบับ architecture/c2-container-diagram.md</span></div><div class="tags"><span class="tag">architecture</span><span class="tag">c4</span><span class="tag">container</span><span class="tag">diagram</span></div></header><div class="prose"><h1 id="c2-container-diagram">C2: Container Diagram</h1>
+<figure class="diagram-frame"><div class="diagram-toolbar"><span>แผนภาพ 9</span><button class="control" type="button" data-diagram-expand>ดูขนาดใหญ่</button></div><img src="../../assets/diagrams/architecture-c2-container-diagram-9.svg" alt="แผนภาพจาก C2 Container Diagram" loading="lazy"><details class="diagram-source"><summary>ดู Mermaid source</summary><pre><code>flowchart TB
     %% การตั้งค่า Class สีต่างๆ
     classDef userFill fill:#fff2cc,stroke:#d6b656,color:black
     classDef clientFill fill:#dae8fc,stroke:#6c8ebf,color:black
@@ -230,183 +75,98 @@
     class APIGateway,AIInference backendFill
     class Cache,ObjectStore,MainDB storageFill
     class PushService,ReverseSearch extFill
-</code></pre>
-                    </details>
-                    <dialog aria-label="แผนภาพขนาดใหญ่">
-                        <div class="diagram-expanded-head"><button class="control" type="button"
-                                data-diagram-zoom="out">ย่อ</button><span class="zoom-status"
-                                data-zoom-status>100%</span><button class="control" type="button"
-                                data-diagram-zoom="in">ขยาย</button><button class="control" type="button"
-                                data-diagram-close>ปิด</button></div>
-                        <div class="diagram-pan" data-diagram-pan data-zoom="1" tabindex="0"
-                            aria-label="พื้นที่แผนภาพ เลื่อนได้ทั้งแนวตั้งและแนวนอน"><img
-                                src="../../assets/diagrams/architecture-c2-container-diagram-9.svg"
-                                alt="แผนภาพจาก C2 Container Diagram"></div>
-                    </dialog>
-                </figure>
-                <hr>
-                <h3 id="คำอธิบาย-container-diagram">คำอธิบาย Container Diagram</h3>
-                <p>สถาปัตยกรรมของระบบ Scam Image Detection ถูกออกแบบภายใต้แนวคิด <strong>Cloud-Native
-                        Architecture</strong> โดยงาน AI หนักแยกเป็น ONNX Worker subprocess
-                    เพื่อให้ระบบสามารถรองรับการประมวลผลข้อมูลรูปภาพและโมเดลปัญญาประดิษฐ์ (ซึ่งใช้ทรัพยากรการคำนวณสูง)
-                    ได้อย่างมีประสิทธิภาพ โดยไม่ส่งผลกระทบต่อความเร็วในการตอบสนองของแอปพลิเคชัน ภายในขอบเขตของระบบ
-                    (System Boundary) ประกอบด้วยคอนเทนเนอร์หลัก 3 ส่วน ดังนี้:</p>
-                <h3 id="1-ส่วนติดต่อผู้ใช้งาน-frontend-containers">1. ส่วนติดต่อผู้ใช้งาน (Frontend Containers)</h3>
-                <ul>
-                    <li>
-                        <p><strong>Mobile App (Flutter):</strong></p>
-                        <ul>
-                            <li><strong>บทบาท:</strong> แอปพลิเคชันบนสมาร์ทโฟนสำหรับผู้ใช้งานทั่วไป (General User)
-                                ทำหน้าที่เป็นส่วนเชื่อมต่อหลักให้ผู้ใช้สามารถเลือกและอัปโหลดรูปภาพที่น่าสงสัย</li>
-                            <li><strong>หน้าที่:</strong> ส่งข้อมูลรูปภาพไปยัง API Application
-                                และรับการแสดงผลลัพธ์กลับมาเป็นคะแนนความเสี่ยง (Risk Score)
-                                พร้อมคำอธิบายและภาพแผนที่ความร้อน (Heatmap) แสดงจุดที่ผิดปกติ</li>
-                            <li><strong>เทคโนโลยี:</strong> Flutter (รองรับ Android)</li>
-                        </ul>
-                    </li>
-                    <li>
-                        <p><strong>Admin Web Portal (React + Admin UI):</strong></p>
-                        <ul>
-                            <li><strong>บทบาท:</strong> เว็บแอปพลิเคชันสำหรับผู้ดูแลระบบและนักวิจัย (Admin / Researcher)
-                            </li>
-                            <li><strong>หน้าที่:</strong> ใช้เป็นหน้าจอควบคุมและตรวจสอบสถานะระบบหลังบ้าน (Dashboard)
-                                การจัดการสิทธิ์ของผู้ใช้ (ดู + เปิด/ปิดบัญชี), ตรวจสอบรูปภาพสแกมที่ผู้ใช้ส่งรายงานเข้ามา
-                                (Scam Reports), จัดการคลังชุดข้อมูล (Dataset) และการอัปโหลดไฟล์น้ำหนักโมเดล AI (Model
-                                Weights)</li>
-                            <li><strong>เทคโนโลยี:</strong> React.js + TailwindCSS (หรือ Admin Template สำเร็จรูป)</li>
-                        </ul>
-                    </li>
-                </ul>
-                <h3 id="2-ส่วนประมวลผลหลัก-backend-containers">2. ส่วนประมวลผลหลัก (Backend Containers)</h3>
-                <ul>
-                    <li>
-                        <p><strong>API Application (Python FastAPI):</strong></p>
-                        <ul>
-                            <li><strong>บทบาท:</strong> ทำหน้าที่เป็น API Gateway และตัวควบคุมการประสานงานหลัก
-                                (Orchestrator)</li>
-                            <li><strong>หน้าที่:</strong> จัดการตรรกะทางธุรกิจหลัก (Core Business Logic) ทั้งหมด เช่น
-                                การยืนยันตัวตน, จัดการข้อมูลผู้ใช้, ดึงข้อมูลเมทาดาตาแฝงของรูปภาพ (Metadata/EXIF
-                                Extraction), และสั่งประมวลผลสกัดตัวอักษรในภาพ (OCR)
-                                จากนั้นประสานงานส่งข้อมูลไปยังบริการวิเคราะห์ตัวอื่น ๆ</li>
-                            <li><strong>เทคโนโลยี:</strong> Python FastAPI</li>
-                        </ul>
-                    </li>
-                    <li>
-                        <p><strong>ONNX Worker (subprocess):</strong></p>
-                        <ul>
-                            <li><strong>บทบาท:</strong> งานวิเคราะห์รูปภาพผ่านระบบปัญญาประดิษฐ์เชิงลึก (Deep Learning)
-                                รันแยกโปรเซสจาก FastAPI event loop</li>
-                            <li><strong>หน้าที่:</strong> ประมวลผลรูปภาพเพื่อตรวจหาร่องรอยการแก้ไขภาพในระดับพิกเซลด้วย
-                                SegFormer ONNX (tiling 512/overlap 64)
-                                และตรวจสอบลักษณะทางกายภาพของภาพว่าถูกสร้างด้วยปัญญาประดิษฐ์ (AI-Generated Image) หรือไม่
-                                พร้อมสร้างแผนที่ความร้อนแบบ mask-to-heatmap overlay</li>
-                            <li><strong>เทคโนโลยี:</strong> ONNX Runtime; เรียกผ่าน IPC ภายใน Backend</li>
-                        </ul>
-                    </li>
-                </ul>
-                <h3 id="3-ส่วนจัดเก็บข้อมูล-storage-containers">3. ส่วนจัดเก็บข้อมูล (Storage Containers)</h3>
-                <ul>
-                    <li>
-                        <p><strong>Cache (Redis):</strong></p>
-                        <ul>
-                            <li><strong>บทบาท:</strong> ฐานข้อมูลในหน่วยความจำชั่วคราวความเร็วสูง</li>
-                            <li><strong>หน้าที่:</strong>
-                                จัดเก็บแคชของรูปภาพที่เคยผ่านการสแกนตรวจสอบแล้วเพื่อลดการประมวลผลซ้ำ (Cache Hit)
-                                ช่วยให้อุปกรณ์ของผู้ใช้รายอื่นที่ส่งรูปภาพเดิมเข้ามาได้รับผลวิเคราะห์แทบจะทันทีโดยไม่ต้องรัน
-                                AI ซ้ำ</li>
-                            <li><strong>เทคโนโลยี:</strong> Redis Cache</li>
-                        </ul>
-                    </li>
-                    <li>
-                        <p><strong>Object Storage (Cloud Storage):</strong></p>
-                        <ul>
-                            <li><strong>บทบาท:</strong> แหล่งจัดเก็บไฟล์รูปภาพขนาดใหญ่</li>
-                            <li><strong>หน้าที่:</strong> จัดเก็บไฟล์รูปภาพต้นฉบับที่ผู้ใช้อัปโหลดเข้ามา
-                                และรูปภาพแผนที่ความร้อน (Heatmap) ที่ส่งกลับมาจากบริการ AI เพื่อแสดงจุดผิดปกติ</li>
-                            <li><strong>เทคโนโลยี:</strong> ระบบจัดเก็บไฟล์บนคลาวด์ (Cloud Storage)</li>
-                        </ul>
-                    </li>
-                    <li>
-                        <p><strong>Main Database (PostgreSQL):</strong></p>
-                        <ul>
-                            <li><strong>บทบาท:</strong> ฐานข้อมูลหลักเชิงสัมพันธ์ (Relational Database)</li>
-                            <li><strong>หน้าที่:</strong> จัดเก็บข้อมูลที่มีโครงสร้าง เช่น ข้อมูลบัญชีผู้ใช้,
-                                บันทึกสิทธิ์การเข้าใช้งาน (RBAC), รายการประวัติสแกน, และข้อมูลการรายงานรูปภาพต้องสงสัย
-                            </li>
-                            <li><strong>เทคโนโลยี:</strong> PostgreSQL</li>
-                        </ul>
-                    </li>
-                </ul>
-                <h3 id="4-การเชื่อมต่อกับระบบภายนอก-external-systems">4. การเชื่อมต่อกับระบบภายนอก (External Systems)
-                </h3>
-                <ul>
-                    <li>
-                        <p><strong>Reverse Image Search (Google Vision API):</strong></p>
-                        <ul>
-                            <li><strong>บทบาท:</strong> บริการสืบค้นหาแหล่งที่มาของภาพย้อนกลับ</li>
-                            <li><strong>หน้าที่:</strong> API Application
-                                จะส่งคำขอเพื่อตรวจสอบว่ารูปภาพที่ผู้ใช้อัปโหลดมานั้น
-                                เคยถูกเผยแพร่ในอินเทอร์เน็ตที่เว็บไซต์ใดมาก่อนหน้านี้หรือไม่
-                                เพื่อตรวจสอบบริบทความสอดคล้อง (เช่น รูปโปรไฟล์จริง หรือรูปดาราที่มิจฉาชีพนำมาแอบอ้าง)
-                            </li>
-                            <li><strong>เทคโนโลยี:</strong> Google Vision API / Bing Visual Search</li>
-                        </ul>
-                    </li>
-                    <li>
-                        <p><strong>Push Notification Service (Firebase Cloud Messaging - FCM):</strong></p>
-                        <ul>
-                            <li><strong>บทบาท:</strong> ระบบส่งการแจ้งเตือนพุชไปยังผู้ใช้</li>
-                            <li><strong>หน้าที่:</strong> ในกรณีที่การสแกนตรวจสอบภาพในฝั่ง AI Inference Service
-                                ใช้เวลาประมวลผลนานกว่าปกติ หรือเกิดปัญหารอคิว ระบบจะทำงานเป็นแบบ Asynchronous โดย API
-                                Application จะส่ง Payload ไปยัง FCM เพื่อแจ้งเตือนกลับไปยัง Mobile App
-                                ของผู้ใช้งานเมื่อประมวลผลวิเคราะห์เสร็จสมบูรณ์</li>
-                            <li><strong>เทคโนโลยี:</strong> Firebase Cloud Messaging</li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-            <footer class="source-panel"><strong>แหล่งข้อมูลของหน้านี้</strong>
-                <ul>
-                    <li><a href="../../sources/wiki/architecture/c2-container-diagram.md">Markdown ต้นฉบับ:
-                            architecture/c2-container-diagram.md</a></li>
-                    <li>Document/C2-Container-Diagram.md</li>
-                </ul>
-            </footer>
-        </main>
-        <aside class="toc-wrap" aria-label="สารบัญในหน้านี้">
-            <p class="toc-title">ในหน้านี้</p>
-            <ol class="toc">
-                <li class="toc-level-3"><a
-                        href="#%E0%B8%84%E0%B8%B3%E0%B8%AD%E0%B8%98%E0%B8%B4%E0%B8%9A%E0%B8%B2%E0%B8%A2-container-diagram">คำอธิบาย
-                        Container Diagram</a></li>
-                <li class="toc-level-3"><a
-                        href="#1-%E0%B8%AA%E0%B9%88%E0%B8%A7%E0%B8%99%E0%B8%95%E0%B8%B4%E0%B8%94%E0%B8%95%E0%B9%88%E0%B8%AD%E0%B8%9C%E0%B8%B9%E0%B9%89%E0%B9%83%E0%B8%8A%E0%B9%89%E0%B8%87%E0%B8%B2%E0%B8%99-frontend-containers">1.
-                        ส่วนติดต่อผู้ใช้งาน (Frontend Containers)</a></li>
-                <li class="toc-level-3"><a
-                        href="#2-%E0%B8%AA%E0%B9%88%E0%B8%A7%E0%B8%99%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%A1%E0%B8%A7%E0%B8%A5%E0%B8%9C%E0%B8%A5%E0%B8%AB%E0%B8%A5%E0%B8%B1%E0%B8%81-backend-containers">2.
-                        ส่วนประมวลผลหลัก (Backend Containers)</a></li>
-                <li class="toc-level-3"><a
-                        href="#3-%E0%B8%AA%E0%B9%88%E0%B8%A7%E0%B8%99%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B9%80%E0%B8%81%E0%B9%87%E0%B8%9A%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B8%B9%E0%B8%A5-storage-containers">3.
-                        ส่วนจัดเก็บข้อมูล (Storage Containers)</a></li>
-                <li class="toc-level-3"><a
-                        href="#4-%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%8A%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%A1%E0%B8%95%E0%B9%88%E0%B8%AD%E0%B8%81%E0%B8%B1%E0%B8%9A%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A%E0%B8%A0%E0%B8%B2%E0%B8%A2%E0%B8%99%E0%B8%AD%E0%B8%81-external-systems">4.
-                        การเชื่อมต่อกับระบบภายนอก (External Systems)</a></li>
-            </ol>
-        </aside>
-    </div>
-    <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title">
-        <div class="search-dialog-head"><label class="visually-hidden" id="search-title"
-                for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search"
-                placeholder="ค้นหาในเอกสารทั้งหมด…" autocomplete="off" data-search-input><button class="control"
-                type="button" data-search-close aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
-                    aria-hidden="true">
-                    <path d="m6 6 12 12M18 6 6 18" />
-                </svg></button></div>
-        <div class="search-results" data-search-results aria-live="polite"></div>
-    </dialog>
-    <script src="../../assets/js/search-index.js"></script>
-    <script src="../../assets/js/site.js"></script>
+</code></pre></details><dialog aria-label="แผนภาพขนาดใหญ่"><div class="diagram-expanded-head"><button class="control" type="button" data-diagram-zoom="out">ย่อ</button><span class="zoom-status" data-zoom-status>100%</span><button class="control" type="button" data-diagram-zoom="in">ขยาย</button><button class="control" type="button" data-diagram-close>ปิด</button></div><div class="diagram-pan" data-diagram-pan data-zoom="1" tabindex="0" aria-label="พื้นที่แผนภาพ เลื่อนได้ทั้งแนวตั้งและแนวนอน"><img src="../../assets/diagrams/architecture-c2-container-diagram-9.svg" alt="แผนภาพจาก C2 Container Diagram"></div></dialog></figure><hr>
+<h3 id="คำอธิบาย-container-diagram">คำอธิบาย Container Diagram</h3>
+<p>สถาปัตยกรรมของระบบ Scam Image Detection ถูกออกแบบภายใต้แนวคิด <strong>Cloud-Native Architecture</strong> โดยงาน AI หนักแยกเป็น ONNX Worker subprocess เพื่อให้ระบบสามารถรองรับการประมวลผลข้อมูลรูปภาพและโมเดลปัญญาประดิษฐ์ (ซึ่งใช้ทรัพยากรการคำนวณสูง) ได้อย่างมีประสิทธิภาพ โดยไม่ส่งผลกระทบต่อความเร็วในการตอบสนองของแอปพลิเคชัน ภายในขอบเขตของระบบ (System Boundary) ประกอบด้วยคอนเทนเนอร์หลัก 3 ส่วน ดังนี้:</p>
+<h3 id="1-ส่วนติดต่อผู้ใช้งาน-frontend-containers">1. ส่วนติดต่อผู้ใช้งาน (Frontend Containers)</h3>
+<ul>
+<li>
+<p><strong>Mobile App (Flutter):</strong></p>
+<ul>
+<li><strong>บทบาท:</strong> แอปพลิเคชันบนสมาร์ทโฟนสำหรับผู้ใช้งานทั่วไป (General User) ทำหน้าที่เป็นส่วนเชื่อมต่อหลักให้ผู้ใช้สามารถเลือกและอัปโหลดรูปภาพที่น่าสงสัย</li>
+<li><strong>หน้าที่:</strong> ส่งข้อมูลรูปภาพไปยัง API Application และรับการแสดงผลลัพธ์กลับมาเป็นคะแนนความเสี่ยง (Risk Score) พร้อมคำอธิบายและภาพแผนที่ความร้อน (Heatmap) แสดงจุดที่ผิดปกติ</li>
+<li><strong>เทคโนโลยี:</strong> Flutter (รองรับ Android)</li>
+</ul>
+</li>
+<li>
+<p><strong>Admin Web Portal (React + Admin UI):</strong></p>
+<ul>
+<li><strong>บทบาท:</strong> เว็บแอปพลิเคชันสำหรับผู้ดูแลระบบและนักวิจัย (Admin / Researcher)</li>
+<li><strong>หน้าที่:</strong> ใช้เป็นหน้าจอควบคุมและตรวจสอบสถานะระบบหลังบ้าน (Dashboard) การจัดการสิทธิ์ของผู้ใช้ (ดู + เปิด/ปิดบัญชี), ตรวจสอบรูปภาพสแกมที่ผู้ใช้ส่งรายงานเข้ามา (Scam Reports), จัดการคลังชุดข้อมูล (Dataset) และการอัปโหลดไฟล์น้ำหนักโมเดล AI (Model Weights)</li>
+<li><strong>เทคโนโลยี:</strong> React.js + TailwindCSS (หรือ Admin Template สำเร็จรูป)</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-ส่วนประมวลผลหลัก-backend-containers">2. ส่วนประมวลผลหลัก (Backend Containers)</h3>
+<ul>
+<li>
+<p><strong>API Application (Python FastAPI):</strong></p>
+<ul>
+<li><strong>บทบาท:</strong> ทำหน้าที่เป็น API Gateway และตัวควบคุมการประสานงานหลัก (Orchestrator)</li>
+<li><strong>หน้าที่:</strong> จัดการตรรกะทางธุรกิจหลัก (Core Business Logic) ทั้งหมด เช่น การยืนยันตัวตน, จัดการข้อมูลผู้ใช้, ดึงข้อมูลเมทาดาตาแฝงของรูปภาพ (Metadata/EXIF Extraction), และสั่งประมวลผลสกัดตัวอักษรในภาพ (OCR) จากนั้นประสานงานส่งข้อมูลไปยังบริการวิเคราะห์ตัวอื่น ๆ</li>
+<li><strong>เทคโนโลยี:</strong> Python FastAPI</li>
+</ul>
+</li>
+<li>
+<p><strong>ONNX Worker (subprocess):</strong></p>
+<ul>
+<li><strong>บทบาท:</strong> งานวิเคราะห์รูปภาพผ่านระบบปัญญาประดิษฐ์เชิงลึก (Deep Learning) รันแยกโปรเซสจาก FastAPI event loop</li>
+<li><strong>หน้าที่:</strong> ประมวลผลรูปภาพเพื่อตรวจหาร่องรอยการแก้ไขภาพในระดับพิกเซลด้วย SegFormer ONNX (tiling 512/overlap 64) และตรวจสอบลักษณะทางกายภาพของภาพว่าถูกสร้างด้วยปัญญาประดิษฐ์ (AI-Generated Image) หรือไม่ พร้อมสร้างแผนที่ความร้อนแบบ mask-to-heatmap overlay</li>
+<li><strong>เทคโนโลยี:</strong> ONNX Runtime; เรียกผ่าน IPC ภายใน Backend</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-ส่วนจัดเก็บข้อมูล-storage-containers">3. ส่วนจัดเก็บข้อมูล (Storage Containers)</h3>
+<ul>
+<li>
+<p><strong>Cache (Redis):</strong></p>
+<ul>
+<li><strong>บทบาท:</strong> ฐานข้อมูลในหน่วยความจำชั่วคราวความเร็วสูง</li>
+<li><strong>หน้าที่:</strong> จัดเก็บแคชของรูปภาพที่เคยผ่านการสแกนตรวจสอบแล้วเพื่อลดการประมวลผลซ้ำ (Cache Hit) ช่วยให้อุปกรณ์ของผู้ใช้รายอื่นที่ส่งรูปภาพเดิมเข้ามาได้รับผลวิเคราะห์แทบจะทันทีโดยไม่ต้องรัน AI ซ้ำ</li>
+<li><strong>เทคโนโลยี:</strong> Redis Cache</li>
+</ul>
+</li>
+<li>
+<p><strong>Object Storage (Cloud Storage):</strong></p>
+<ul>
+<li><strong>บทบาท:</strong> แหล่งจัดเก็บไฟล์รูปภาพขนาดใหญ่</li>
+<li><strong>หน้าที่:</strong> จัดเก็บไฟล์รูปภาพต้นฉบับที่ผู้ใช้อัปโหลดเข้ามา และรูปภาพแผนที่ความร้อน (Heatmap) ที่ส่งกลับมาจากบริการ AI เพื่อแสดงจุดผิดปกติ</li>
+<li><strong>เทคโนโลยี:</strong> ระบบจัดเก็บไฟล์บนคลาวด์ (Cloud Storage)</li>
+</ul>
+</li>
+<li>
+<p><strong>Main Database (PostgreSQL):</strong></p>
+<ul>
+<li><strong>บทบาท:</strong> ฐานข้อมูลหลักเชิงสัมพันธ์ (Relational Database)</li>
+<li><strong>หน้าที่:</strong> จัดเก็บข้อมูลที่มีโครงสร้าง เช่น ข้อมูลบัญชีผู้ใช้, บันทึกสิทธิ์การเข้าใช้งาน (RBAC), รายการประวัติสแกน, และข้อมูลการรายงานรูปภาพต้องสงสัย</li>
+<li><strong>เทคโนโลยี:</strong> PostgreSQL</li>
+</ul>
+</li>
+</ul>
+<h3 id="4-การเชื่อมต่อกับระบบภายนอก-external-systems">4. การเชื่อมต่อกับระบบภายนอก (External Systems)</h3>
+<ul>
+<li>
+<p><strong>Reverse Image Search (Google Vision API):</strong></p>
+<ul>
+<li><strong>บทบาท:</strong> บริการสืบค้นหาแหล่งที่มาของภาพย้อนกลับ</li>
+<li><strong>หน้าที่:</strong> API Application จะส่งคำขอเพื่อตรวจสอบว่ารูปภาพที่ผู้ใช้อัปโหลดมานั้น เคยถูกเผยแพร่ในอินเทอร์เน็ตที่เว็บไซต์ใดมาก่อนหน้านี้หรือไม่ เพื่อตรวจสอบบริบทความสอดคล้อง (เช่น รูปโปรไฟล์จริง หรือรูปดาราที่มิจฉาชีพนำมาแอบอ้าง)</li>
+<li><strong>เทคโนโลยี:</strong> Google Vision API / Bing Visual Search</li>
+</ul>
+</li>
+<li>
+<p><strong>Push Notification Service (Firebase Cloud Messaging - FCM):</strong></p>
+<ul>
+<li><strong>บทบาท:</strong> ระบบส่งการแจ้งเตือนพุชไปยังผู้ใช้</li>
+<li><strong>หน้าที่:</strong> ในกรณีที่การสแกนตรวจสอบภาพในฝั่ง AI Inference Service ใช้เวลาประมวลผลนานกว่าปกติ หรือเกิดปัญหารอคิว ระบบจะทำงานเป็นแบบ Asynchronous โดย API Application จะส่ง Payload ไปยัง FCM เพื่อแจ้งเตือนกลับไปยัง Mobile App ของผู้ใช้งานเมื่อประมวลผลวิเคราะห์เสร็จสมบูรณ์</li>
+<li><strong>เทคโนโลยี:</strong> Firebase Cloud Messaging</li>
+</ul>
+</li>
+</ul>
+</div></main>
+    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้"><p class="toc-title">ในหน้านี้</p><ol class="toc"><li class="toc-level-3"><a href="#%E0%B8%84%E0%B8%B3%E0%B8%AD%E0%B8%98%E0%B8%B4%E0%B8%9A%E0%B8%B2%E0%B8%A2-container-diagram">คำอธิบาย Container Diagram</a></li><li class="toc-level-3"><a href="#1-%E0%B8%AA%E0%B9%88%E0%B8%A7%E0%B8%99%E0%B8%95%E0%B8%B4%E0%B8%94%E0%B8%95%E0%B9%88%E0%B8%AD%E0%B8%9C%E0%B8%B9%E0%B9%89%E0%B9%83%E0%B8%8A%E0%B9%89%E0%B8%87%E0%B8%B2%E0%B8%99-frontend-containers">1. ส่วนติดต่อผู้ใช้งาน (Frontend Containers)</a></li><li class="toc-level-3"><a href="#2-%E0%B8%AA%E0%B9%88%E0%B8%A7%E0%B8%99%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%A1%E0%B8%A7%E0%B8%A5%E0%B8%9C%E0%B8%A5%E0%B8%AB%E0%B8%A5%E0%B8%B1%E0%B8%81-backend-containers">2. ส่วนประมวลผลหลัก (Backend Containers)</a></li><li class="toc-level-3"><a href="#3-%E0%B8%AA%E0%B9%88%E0%B8%A7%E0%B8%99%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B9%80%E0%B8%81%E0%B9%87%E0%B8%9A%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B8%B9%E0%B8%A5-storage-containers">3. ส่วนจัดเก็บข้อมูล (Storage Containers)</a></li><li class="toc-level-3"><a href="#4-%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%8A%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%A1%E0%B8%95%E0%B9%88%E0%B8%AD%E0%B8%81%E0%B8%B1%E0%B8%9A%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A%E0%B8%A0%E0%B8%B2%E0%B8%A2%E0%B8%99%E0%B8%AD%E0%B8%81-external-systems">4. การเชื่อมต่อกับระบบภายนอก (External Systems)</a></li></ol></aside>
+  </div>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title"><div class="search-dialog-head"><label class="visually-hidden" id="search-title" for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…" autocomplete="off" data-search-input><button class="control" type="button" data-search-close aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div class="search-results" data-search-results aria-live="polite"></div></dialog>
+  <script src="../../assets/js/search-index.js"></script>
+  <script src="../../assets/js/site.js"></script>
 </body>
-
 </html>

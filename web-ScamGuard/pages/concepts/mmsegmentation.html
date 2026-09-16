@@ -1,322 +1,91 @@
 <!doctype html>
-<html lang="th" data-theme="light">
-
+<html lang="th" data-theme="light" data-theme-mode="system">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description"
-    content="MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์ เฟรมเวิร์กโอเพนซอร์สบน PyTorch สำหรับงาน Semantic Segmentation ที่ใช้ในการพัฒนา ฝึกสอน และส่งออกโมเดล SegFormer ในระบบ ScamGuard --- 1. ภาพ…">
+  <meta name="description" content="MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์ เฟรมเวิร์กโอเพนซอร์สบน PyTorch สำหรับงาน Semantic Segmentation ที่ใช้ในการพัฒนา ฝึกสอน และส่งออกโมเดล SegFormer ในระบบ ScamGuard --- 1. ภาพ…">
   <meta name="color-scheme" content="light dark">
   <title>MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์ | ScamGuard Documentation</title>
   <link rel="stylesheet" href="../../assets/css/site.css">
-  <script>document.documentElement.dataset.theme = (() => { try { return localStorage.getItem('scamguard-docs-theme') || 'light' } catch (e) { return 'light' } })(); window.SC_DOCS_ROOT = '../../';</script>
+  <script>(()=>{let m='system';try{m=localStorage.getItem('scamguard-docs-theme')||'system'}catch(e){}if(!['system','light','dark'].includes(m))m='system';const t=m==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;document.documentElement.dataset.themeMode=m;document.documentElement.dataset.theme=t})();window.SC_DOCS_ROOT='../../';</script>
 </head>
-
 <body class="">
   <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
-  <header class="masthead">
-    <div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false"
-        aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M4 7h16M4 12h16M4 17h16" />
-        </svg></button><a class="brand" href="../../index.html"><svg viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z" />
-          <path d="m9.2 12 1.8 1.8 3.9-4.2" />
-        </svg><span>ScamGuard <small>Documentation</small></span></a>
-      <div class="masthead-actions"><button class="control" type="button" data-search-open><svg viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
-            aria-hidden="true">
-            <circle cx="11" cy="11" r="6.5" />
-            <path d="m16 16 4 4" />
-          </svg><span>ค้นหา</span><span class="search-shortcut">Ctrl K</span></button><button class="control"
-          type="button" data-theme-toggle aria-label="เปลี่ยนเป็นโหมดมืด"><svg viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.5A7 7 0 0 1 12 3Z" />
-          </svg><span class="theme-label" data-theme-label>โหมดมืด</span></button></div>
-    </div>
-  </header>
+  <header class="masthead"><div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><nav class="top-tabs" aria-label="เมนูหลัก"><a href="../../index.html">Guide</a><a href="../../pages/architecture/system-architecture.html">Architecture</a><a href="../../pages/architecture/backend-api.html">API Reference</a></nav></div></header>
   <div class="docs-shell">
-    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><button class="control nav-close"
-        type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="m6 6 12 12M18 6 6 18" />
-        </svg></button>
-      <p class="sidebar-title">เอกสารทั้งหมด</p>
-      <details class="sidebar-group">
-        <summary>ภาพรวม</summary>
-        <ul class="sidebar-list">
-          <li><a href="../overview.html">ภาพรวมโปรเจค</a></li>
-          <li><a href="../index.html">สารบัญ Wiki — โปรเจค Scam Image Detection</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>ความต้องการระบบ</summary>
-        <ul class="sidebar-list">
-          <li><a href="../requirements/functional-requirements.html">ความต้องการเชิงฟังก์ชัน (Functional
-              Requirements)</a></li>
-          <li><a href="../requirements/non-functional-requirements.html">ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional
-              Requirements)</a></li>
-          <li><a href="../requirements/traceability-matrix.html">เมทริกซ์การสืบย้อนความต้องการ</a></li>
-          <li><a href="../requirements/objectives-kpis.html">วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp;
-              KPIs)</a></li>
-          <li><a href="../requirements/srs.html">Software Requirements Specification (SRS)</a></li>
-          <li><a href="../requirements/use-case-diagram.html">Use Case Diagram</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>สถาปัตยกรรม</summary>
-        <ul class="sidebar-list">
-          <li><a href="../architecture/database-migrations.html">การจัดการการย้ายฐานข้อมูล (Database Migrations)</a>
-          </li>
-          <li><a href="../architecture/external-integrations.html">การเชื่อมต่อบริการภายนอก (External Integrations)</a>
-          </li>
-          <li><a href="../architecture/database-schema.html">โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li>
-          <li><a href="../architecture/system-architecture.html">สถาปัตยกรรมระบบ (System Architecture)</a></li>
-          <li><a href="../architecture/admin-portal.html">สถาปัตยกรรมและการออกแบบ Admin Portal</a></li>
-          <li><a href="../architecture/mobile-app.html">สถาปัตยกรรม Mobile App</a></li>
-          <li><a href="../architecture/ai-inference-service.html">AI Inference Service</a></li>
-          <li><a href="../architecture/backend-api.html">Backend API — FastAPI Orchestrator</a></li>
-          <li><a href="../architecture/c1-system-context-diagram.html">C1 System Context Diagram</a></li>
-          <li><a href="../architecture/c2-container-diagram.html">C2 Container Diagram</a></li>
-          <li><a href="../architecture/c3-component-diagram.html">C3 Component Diagram - API Application</a></li>
-          <li><a href="../architecture/c4-code-diagram.html">C4 Code Diagram - Image Scanning Flow</a></li>
-          <li><a href="../architecture/database-er-diagram.html">Entity Relationship Diagram (ER Diagram)</a></li>
-          <li><a href="../architecture/mobile-design.html">Mobile App Architecture</a></li>
-          <li><a href="../architecture/flowchart.html">System Flowchart</a></li>
-          <li><a href="../architecture/design-overview.html">UX/UI &amp; System Design Overview</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group" open>
-        <summary>แนวคิดและเทคนิค</summary>
-        <ul class="sidebar-list">
-          <li><a href="risk-scoring.html">การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li>
-          <li><a href="multi-layer-analysis.html">การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li>
-          <li><a href="explainable-ai.html">ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li>
-          <li><a href="configs.html">พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li>
-          <li><a href="ai-model-segformer.html">โมเดล AI — SegFormer</a></li>
-          <li><a href="surya-ocr.html">โมเดล AI — Surya OCR</a></li>
-          <li><a href="model-training.html">AI Model Training Workflow</a></li>
-          <li><a href="mmsegmentation.html" aria-current="page">MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a>
-          </li>
-          <li><a href="semantic-segmentation.html">Semantic Segmentation</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>องค์ประกอบระบบ</summary>
-        <ul class="sidebar-list">
-          <li><a href="../entities/tech-stack.html">เทคโนโลยีที่ใช้ (Technology Stack)</a></li>
-          <li><a href="../entities/actors.html">ผู้ใช้ระบบ (Actors)</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>การตัดสินใจ</summary>
-        <ul class="sidebar-list">
-          <li><a href="../decisions/technology-choices.html">การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>การวางแผน</summary>
-        <ul class="sidebar-list">
-          <li><a href="../planning/task-tracking.html">การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a>
-          </li>
-          <li><a href="../planning/project-scope.html">ขอบเขตโครงการ (Project Scope)</a></li>
-          <li><a href="../planning/team.html">ทีมงานและผู้รับผิดชอบ (Team)</a></li>
-          <li><a href="../planning/backend-documentation.html">Backend Documentation</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>การทดสอบ</summary>
-        <ul class="sidebar-list">
-          <li><a href="../testing/test-cases.html">กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>คู่มือและภาคผนวก</summary>
-        <ul class="sidebar-list">
-          <li><a href="../log.html">บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li>
-          <li><a href="../howto.html">วิธีใช้งาน Wiki (How to Use This Wiki)</a></li>
-          <li><a href="../runbook.html">Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li>
-          <li><a href="../AGENTS.html">Wiki Operating Guide</a></li>
-        </ul>
-      </details>
-    </aside>
-    <div class="nav-backdrop" data-nav-backdrop></div>
-    <main class="article" id="main-content">
-      <nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span
-          aria-hidden="true">/</span><span>แนวคิดและเทคนิค</span></nav>
-      <header class="article-header">
-        <h1>MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</h1>
-        <p class="article-lead">เฟรมเวิร์กโอเพนซอร์สบน PyTorch สำหรับงาน Semantic Segmentation ที่ใช้ในการพัฒนา ฝึกสอน
-          และส่งออกโมเดล SegFormer ในระบบ ScamGuard</p>
-        <div class="meta"><span>หมวด แนวคิดและเทคนิค</span><time datetime="2026-09-06">อัปเดต
-            2026-09-06</time><span>ต้นฉบับ concepts/mmsegmentation.md</span></div>
-        <div class="tags"><span class="tag">AI</span><span class="tag">deep-learning</span><span
-            class="tag">semantic-segmentation</span><span class="tag">mmsegmentation</span><span
-            class="tag">pytorch</span><span class="tag">SegFormer</span></div>
-      </header>
-      <div class="prose">
-        <h1 id="mmsegmentation-framework-และสถาปัตยกรรมแบบโมดูลาร์">MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์
-        </h1>
-        <p>เฟรมเวิร์กโอเพนซอร์สบน PyTorch สำหรับงาน Semantic Segmentation ที่ใช้ในการพัฒนา ฝึกสอน และส่งออกโมเดล
-          SegFormer ในระบบ ScamGuard</p>
-        <hr>
-        <h2 id="1-ภาพรวมของ-mmsegmentation">1. ภาพรวมของ MMSegmentation</h2>
-        <p><strong>MMSegmentation</strong> เป็นส่วนหนึ่งของโครงการ OpenMMLab
-          ที่รวบรวมอัลกอริทึมและสถาปัตยกรรมเครือข่ายประสาทเทียมชั้นนำสำหรับงานวิเคราะห์และแบ่งส่วนรูปภาพระดับพิกเซล
-          (Pixel-level Semantic Segmentation) โครงสร้างของเฟรมเวิร์กถูกออกแบบให้เป็นโมดูลาร์ (Modular Architecture)
-          ช่วยให้นักวิจัยและวิศวกร AI สามารถสลับ ปรับเปลี่ยน
-          หรือผสมผสานชิ้นส่วนของโมเดลได้อย่างอิสระโดยไม่ต้องเขียนโค้ดโครงสร้างใหม่ทั้งหมด</p>
-        <hr>
-        <h2 id="2-โครงสร้างสถาปัตยกรรมแบบโมดูลาร์-modular-decomposition">2. โครงสร้างสถาปัตยกรรมแบบโมดูลาร์ (Modular
-          Decomposition)</h2>
-        <p>MMSegmentation แบ่งส่วนประกอบภายในของโมเดลออกเป็น 4 ชั้นหลัก:</p>
-        <figure class="diagram-frame">
-          <div class="diagram-toolbar"><span>แผนภาพ 20</span><button class="control" type="button"
-              data-diagram-expand>ดูขนาดใหญ่</button></div><img
-            src="../../assets/diagrams/concepts-mmsegmentation-20.svg"
-            alt="แผนภาพจาก MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์" loading="lazy">
-          <details class="diagram-source">
-            <summary>ดู Mermaid source</summary>
-            <pre><code>flowchart TD
+    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><div class="sidebar-head"><a class="sidebar-brand" href="../../index.html" aria-label="ScamGuard Documentation"><span class="brand brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z"/><path d="m9.2 12 1.8 1.8 3.9-4.2"/></svg></span><span class="sidebar-brand-name">ScamGuard Docs</span></a><div class="theme-switcher" role="group" aria-label="ธีมเว็บไซต์"><button type="button" data-theme-option="system" aria-label="ใช้ธีมตามระบบ" title="System"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></button><button type="button" data-theme-option="light" aria-label="ใช้โหมดสว่าง" title="Light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></button><button type="button" data-theme-option="dark" aria-label="ใช้โหมดมืด" title="Dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8 8 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/></svg></button></div></div><button class="control nav-close" type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button><button class="sidebar-search" type="button" data-search-open><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search...</span><kbd>Ctrl K</kbd></button><div class="sidebar-scroll"><details class="sidebar-group" ><summary>ภาพรวม</summary><ul class="sidebar-list"><li><a href="../overview.html" >ภาพรวมโปรเจค</a></li><li><a href="../index.html" >สารบัญ Wiki — โปรเจค Scam Image Detection</a></li></ul></details><details class="sidebar-group" ><summary>ความต้องการระบบ</summary><ul class="sidebar-list"><li><a href="../requirements/functional-requirements.html" >ความต้องการเชิงฟังก์ชัน (Functional Requirements)</a></li><li><a href="../requirements/non-functional-requirements.html" >ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements)</a></li><li><a href="../requirements/traceability-matrix.html" >เมทริกซ์การสืบย้อนความต้องการ</a></li><li><a href="../requirements/objectives-kpis.html" >วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp; KPIs)</a></li><li><a href="../requirements/srs.html" >Software Requirements Specification (SRS)</a></li><li><a href="../requirements/use-case-diagram.html" >Use Case Diagram</a></li></ul></details><details class="sidebar-group" ><summary>สถาปัตยกรรม</summary><ul class="sidebar-list"><li><a href="../architecture/database-migrations.html" >การจัดการการย้ายฐานข้อมูล (Database Migrations)</a></li><li><a href="../architecture/external-integrations.html" >การเชื่อมต่อบริการภายนอก (External Integrations)</a></li><li><a href="../architecture/database-schema.html" >โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li><li><a href="../architecture/system-architecture.html" >สถาปัตยกรรมระบบ (System Architecture)</a></li><li><a href="../architecture/admin-portal.html" >สถาปัตยกรรมและการออกแบบ Admin Portal</a></li><li><a href="../architecture/mobile-app.html" >สถาปัตยกรรม Mobile App</a></li><li><a href="../architecture/ai-inference-service.html" >AI Inference Service</a></li><li><a href="../architecture/backend-api.html" >Backend API — FastAPI Orchestrator</a></li><li><a href="../architecture/c1-system-context-diagram.html" >C1 System Context Diagram</a></li><li><a href="../architecture/c2-container-diagram.html" >C2 Container Diagram</a></li><li><a href="../architecture/c3-component-diagram.html" >C3 Component Diagram - API Application</a></li><li><a href="../architecture/c4-code-diagram.html" >C4 Code Diagram - Image Scanning Flow</a></li><li><a href="../architecture/database-er-diagram.html" >Entity Relationship Diagram (ER Diagram)</a></li><li><a href="../architecture/mobile-design.html" >Mobile App Architecture</a></li><li><a href="../architecture/flowchart.html" >System Flowchart</a></li><li><a href="../architecture/design-overview.html" >UX/UI &amp; System Design Overview</a></li></ul></details><details class="sidebar-group" open><summary>แนวคิดและเทคนิค</summary><ul class="sidebar-list"><li><a href="risk-scoring.html" >การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li><li><a href="multi-layer-analysis.html" >การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li><li><a href="explainable-ai.html" >ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li><li><a href="configs.html" >พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li><li><a href="ai-model-segformer.html" >โมเดล AI — SegFormer</a></li><li><a href="surya-ocr.html" >โมเดล AI — Surya OCR</a></li><li><a href="model-training.html" >AI Model Training Workflow</a></li><li><a href="mmsegmentation.html" aria-current="page">MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li><li><a href="semantic-segmentation.html" >Semantic Segmentation</a></li></ul></details><details class="sidebar-group" ><summary>องค์ประกอบระบบ</summary><ul class="sidebar-list"><li><a href="../entities/tech-stack.html" >เทคโนโลยีที่ใช้ (Technology Stack)</a></li><li><a href="../entities/actors.html" >ผู้ใช้ระบบ (Actors)</a></li></ul></details><details class="sidebar-group" ><summary>การตัดสินใจ</summary><ul class="sidebar-list"><li><a href="../decisions/technology-choices.html" >การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li></ul></details><details class="sidebar-group" ><summary>การวางแผน</summary><ul class="sidebar-list"><li><a href="../planning/task-tracking.html" >การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a></li><li><a href="../planning/project-scope.html" >ขอบเขตโครงการ (Project Scope)</a></li><li><a href="../planning/team.html" >ทีมงานและผู้รับผิดชอบ (Team)</a></li><li><a href="../planning/backend-documentation.html" >Backend Documentation</a></li></ul></details><details class="sidebar-group" ><summary>การทดสอบ</summary><ul class="sidebar-list"><li><a href="../testing/test-cases.html" >กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li></ul></details><details class="sidebar-group" ><summary>คู่มือและภาคผนวก</summary><ul class="sidebar-list"><li><a href="../log.html" >บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li><li><a href="../howto.html" >วิธีใช้งาน Wiki (How to Use This Wiki)</a></li><li><a href="../runbook.html" >Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li><li><a href="../AGENTS.html" >Wiki Operating Guide</a></li></ul></details></div></aside><div class="nav-backdrop" data-nav-backdrop></div>
+    <main class="article" id="main-content"><nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span aria-hidden="true">/</span><span>แนวคิดและเทคนิค</span></nav><header class="article-header"><h1>MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</h1><p class="article-lead">เฟรมเวิร์กโอเพนซอร์สบน PyTorch สำหรับงาน Semantic Segmentation ที่ใช้ในการพัฒนา ฝึกสอน และส่งออกโมเดล SegFormer ในระบบ ScamGuard</p><div class="meta"><span>หมวด แนวคิดและเทคนิค</span><time datetime="2026-09-06">อัปเดต 2026-09-06</time><span>ต้นฉบับ concepts/mmsegmentation.md</span></div><div class="tags"><span class="tag">AI</span><span class="tag">deep-learning</span><span class="tag">semantic-segmentation</span><span class="tag">mmsegmentation</span><span class="tag">pytorch</span><span class="tag">SegFormer</span></div></header><div class="prose"><h1 id="mmsegmentation-framework-และสถาปัตยกรรมแบบโมดูลาร์">MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</h1>
+<p>เฟรมเวิร์กโอเพนซอร์สบน PyTorch สำหรับงาน Semantic Segmentation ที่ใช้ในการพัฒนา ฝึกสอน และส่งออกโมเดล SegFormer ในระบบ ScamGuard</p>
+<hr>
+<h2 id="1-ภาพรวมของ-mmsegmentation">1. ภาพรวมของ MMSegmentation</h2>
+<p><strong>MMSegmentation</strong> เป็นส่วนหนึ่งของโครงการ OpenMMLab ที่รวบรวมอัลกอริทึมและสถาปัตยกรรมเครือข่ายประสาทเทียมชั้นนำสำหรับงานวิเคราะห์และแบ่งส่วนรูปภาพระดับพิกเซล (Pixel-level Semantic Segmentation) โครงสร้างของเฟรมเวิร์กถูกออกแบบให้เป็นโมดูลาร์ (Modular Architecture) ช่วยให้นักวิจัยและวิศวกร AI สามารถสลับ ปรับเปลี่ยน หรือผสมผสานชิ้นส่วนของโมเดลได้อย่างอิสระโดยไม่ต้องเขียนโค้ดโครงสร้างใหม่ทั้งหมด</p>
+<hr>
+<h2 id="2-โครงสร้างสถาปัตยกรรมแบบโมดูลาร์-modular-decomposition">2. โครงสร้างสถาปัตยกรรมแบบโมดูลาร์ (Modular Decomposition)</h2>
+<p>MMSegmentation แบ่งส่วนประกอบภายในของโมเดลออกเป็น 4 ชั้นหลัก:</p>
+<figure class="diagram-frame"><div class="diagram-toolbar"><span>แผนภาพ 20</span><button class="control" type="button" data-diagram-expand>ดูขนาดใหญ่</button></div><img src="../../assets/diagrams/concepts-mmsegmentation-20.svg" alt="แผนภาพจาก MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์" loading="lazy"><details class="diagram-source"><summary>ดู Mermaid source</summary><pre><code>flowchart TD
     Input[&quot;Input Image (B x 3 x H x W)&quot;] --&gt; Backbone[&quot;Backbone (Feature Extractor)&quot;]
     Backbone --&gt; Neck[&quot;Neck (Feature Aggregator - Optional)&quot;]
     Neck --&gt; DecodeHead[&quot;Decode Head (Segmentation Prediction)&quot;]
     Backbone -.-&gt; AuxHead[&quot;Auxiliary Head (Training Loss Only)&quot;]
     DecodeHead --&gt; Output[&quot;Prediction Mask / Heatmap (B x C x H x W)&quot;]
-</code></pre>
-          </details>
-          <dialog aria-label="แผนภาพขนาดใหญ่">
-            <div class="diagram-expanded-head"><button class="control" type="button"
-                data-diagram-zoom="out">ย่อ</button><span class="zoom-status" data-zoom-status>100%</span><button
-                class="control" type="button" data-diagram-zoom="in">ขยาย</button><button class="control" type="button"
-                data-diagram-close>ปิด</button></div>
-            <div class="diagram-pan" data-diagram-pan data-zoom="1" tabindex="0"
-              aria-label="พื้นที่แผนภาพ เลื่อนได้ทั้งแนวตั้งและแนวนอน"><img
-                src="../../assets/diagrams/concepts-mmsegmentation-20.svg"
-                alt="แผนภาพจาก MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์"></div>
-          </dialog>
-        </figure>
-        <ol>
-          <li><strong>Backbone (ส่วนสกัดลักษณะเด่น):</strong> ทำหน้าที่รับภาพนำเข้าและสร้าง Feature Maps
-            หลายระดับความละเอียด (Multi-scale Feature Maps) ในระบบ ScamGuard ใช้ <strong>Mix Vision Transformer (MiT-B0
-              ถึง MiT-B2)</strong></li>
-          <li><strong>Neck (ส่วนเชื่อมประสานลักษณะเด่น):</strong> ทำหน้าที่รวมลักษณะเด่นจากหลายชั้นความลึกของ Backbone
-            เข้าด้วยกัน เช่น Feature Pyramid Network (FPN) เพื่อรวบรวมทั้งรายละเอียดระดับต่ำ (Low-level Details)
-            และความหมายเชิงลึก (High-level Semantics)</li>
-          <li><strong>Decode Head (ส่วนถอดรหัสและทำนายผล):</strong> ส่วนปลายที่รับ Feature Maps
-            ที่รวมแล้วมาแปลงเป็นหน้ากากการทำนายความน่าจะเป็นของแต่ละพิกเซล (Class Probability Mask) เช่น
-            <strong>SegformerHead</strong> ที่ใช้ All-MLP Decoder น้ำหนักเบา</li>
-          <li><strong>Auxiliary Head (ส่วนเสริมการเรียนรู้):</strong> ชั้นประมวลผลเสริมที่ใช้เฉพาะช่วงการฝึกสอน
-            (Training Phase) เพื่อช่วยส่งผ่าน Gradient ลึกลงไปยังชั้นต้นๆ ของ Backbone ผ่าน Auxiliary Loss ลดปัญหา
-            Vanishing Gradient</li>
-        </ol>
-        <hr>
-        <h2 id="3-กลุ่มอัลกอริทึมและวิวัฒนาการใน-mmsegmentation">3. กลุ่มอัลกอริทึมและวิวัฒนาการใน MMSegmentation</h2>
-        <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
-          <table>
-            <thead>
-              <tr>
-                <th style="text-align:left">กลุ่มอัลกอริทึม</th>
-                <th style="text-align:left">โมเดลตัวอย่าง</th>
-                <th style="text-align:left">จุดเด่น</th>
-                <th style="text-align:left">ข้อจำกัดสำหรับงานตรวจจับภาพตัดต่อ</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style="text-align:left"><strong>CNN-based</strong></td>
-                <td style="text-align:left">FCN, PSPNet, DeepLabV3+</td>
-                <td style="text-align:left">ประมวลผลแบบ Local Receptive Field มีความคงทนต่อการเลื่อนตำแหน่ง (Translation
-                  Invariance)</td>
-                <td style="text-align:left">ขาดความสามารถในการจับความสัมพันธ์ระยะไกล (Long-range Context)
-                  ทำให้พลาดร่องรอยการผสมผสานแสงเงาที่ไม่สอดคล้องกันข้ามบริเวณ</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><strong>Transformer-based</strong></td>
-                <td style="text-align:left">SegFormer, Swin Transformer, MaskFormer</td>
-                <td style="text-align:left">ใช้กลไก Self-Attention
-                  เพื่อจับความสัมพันธ์ของบริบททั่วทั้งภาพพร้อมกันในทุกระดับความละเอียด</td>
-                <td style="text-align:left">ต้องการการจัดเตรียมข้อมูลและการคำนวณที่เหมาะสม ซึ่งแก้ไขได้ด้วย Overlapping
-                  Tiling Inference</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <hr>
-        <h2 id="4-การประยุกต์ใช้ในระบบ-scamguard">4. การประยุกต์ใช้ในระบบ ScamGuard</h2>
-        <p>ในระบบ ScamGuard ได้เลือกใช้ MMSegmentation ในการเทรนโมเดล SegFormer ดังนี้:</p>
-        <ul>
-          <li><strong>การแก้ปัญหา Class Imbalance:</strong> บริเวณที่ถูกตัดต่อ
-            มักมีสัดส่วนพื้นที่น้อยมากเมื่อเทียบกับพื้นที่ภาพทั้งหมด ระบบจึงกำหนด Loss Function แบบผสมผสานระหว่าง
-            Cross-Entropy Loss และ Dice Loss:
-            $$\mathcal{L}<em>{total} = \alpha \mathcal{L}</em>{CE} + \beta \mathcal{L}_{Dice}$$</li>
-          <li><strong>การส่งออกไปยัง ONNX Runtime:</strong> โมเดลที่เทรนเสร็จสมบูรณ์จาก MMSegmentation
-            จะถูกส่งออกเป็นไฟล์ <code>.onnx</code> ผ่านสคริปต์ <code>pytorch2onnx</code>
-            เพื่อนำไปโหลดใช้งานในสภาพแวดล้อมจริง (Inference Engine) บน FastAPI Backend
-            ทำให้สามารถทำนายผลได้รวดเร็วโดยไม่ต้องพึ่งพา PyTorch Runtime ตัวเต็ม</li>
-        </ul>
-        <hr>
-        <h2 id="5-ประเด็นสำคัญ">5. ประเด็นสำคัญ</h2>
-        <ul>
-          <li>MMSegmentation ช่วยให้การทดลองเปรียบเทียบสถาปัตยกรรม (เช่น ResNet vs MiT) ทำได้บนมาตรฐานเดียวกัน</li>
-          <li>โครงสร้าง All-MLP Decoder ของ SegFormer บน MMSegmentation ให้ความเร็วในการทำนายระดับมิลลิวินาที</li>
-          <li>การฝึกสอนโมเดลรองรับการจำลองภาพตัดต่อ (Copy-Move, Splicing, Inpainting, AI-Gen artifacts) หลากหลายรูปแบบ
-          </li>
-        </ul>
-        <hr>
-        <h2 id="หน้าที่เกี่ยวข้อง">หน้าที่เกี่ยวข้อง</h2>
-        <ul>
-          <li><a href="ai-model-segformer.html">โมเดล AI — SegFormer</a></li>
-          <li><a href="semantic-segmentation.html">การแบ่งส่วนภาพเชิงความหมาย (Semantic Segmentation)</a></li>
-          <li><a href="model-training.html">การออกแบบระบบฝึกสอนโมเดล (Model Training Design)</a></li>
-          <li><a href="../architecture/ai-inference-service.html">AI Inference Service</a></li>
-        </ul>
-      </div>
-      <footer class="source-panel"><strong>แหล่งข้อมูลของหน้านี้</strong>
-        <ul>
-          <li><a href="../../sources/wiki/concepts/mmsegmentation.md">Markdown ต้นฉบับ: concepts/mmsegmentation.md</a>
-          </li>
-          <li>Document/model/mmsegmentation.md</li>
-        </ul>
-      </footer>
-    </main>
-    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้">
-      <p class="toc-title">ในหน้านี้</p>
-      <ol class="toc">
-        <li class="toc-level-2"><a
-            href="#1-%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%A3%E0%B8%A7%E0%B8%A1%E0%B8%82%E0%B8%AD%E0%B8%87-mmsegmentation">1.
-            ภาพรวมของ MMSegmentation</a></li>
-        <li class="toc-level-2"><a
-            href="#2-%E0%B9%82%E0%B8%84%E0%B8%A3%E0%B8%87%E0%B8%AA%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B8%AA%E0%B8%96%E0%B8%B2%E0%B8%9B%E0%B8%B1%E0%B8%95%E0%B8%A2%E0%B8%81%E0%B8%A3%E0%B8%A3%E0%B8%A1%E0%B9%81%E0%B8%9A%E0%B8%9A%E0%B9%82%E0%B8%A1%E0%B8%94%E0%B8%B9%E0%B8%A5%E0%B8%B2%E0%B8%A3%E0%B9%8C-modular-decomposition">2.
-            โครงสร้างสถาปัตยกรรมแบบโมดูลาร์ (Modular Decomposition)</a></li>
-        <li class="toc-level-2"><a
-            href="#3-%E0%B8%81%E0%B8%A5%E0%B8%B8%E0%B9%88%E0%B8%A1%E0%B8%AD%E0%B8%B1%E0%B8%A5%E0%B8%81%E0%B8%AD%E0%B8%A3%E0%B8%B4%E0%B8%97%E0%B8%B6%E0%B8%A1%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%A7%E0%B8%B4%E0%B8%A7%E0%B8%B1%E0%B8%92%E0%B8%99%E0%B8%B2%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%83%E0%B8%99-mmsegmentation">3.
-            กลุ่มอัลกอริทึมและวิวัฒนาการใน MMSegmentation</a></li>
-        <li class="toc-level-2"><a
-            href="#4-%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%A2%E0%B8%B8%E0%B8%81%E0%B8%95%E0%B9%8C%E0%B9%83%E0%B8%8A%E0%B9%89%E0%B9%83%E0%B8%99%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A-scamguard">4.
-            การประยุกต์ใช้ในระบบ ScamGuard</a></li>
-        <li class="toc-level-2"><a
-            href="#5-%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%94%E0%B9%87%E0%B8%99%E0%B8%AA%E0%B8%B3%E0%B8%84%E0%B8%B1%E0%B8%8D">5.
-            ประเด็นสำคัญ</a></li>
-        <li class="toc-level-2"><a
-            href="#%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%87">หน้าที่เกี่ยวข้อง</a>
-        </li>
-      </ol>
-    </aside>
+</code></pre></details><dialog aria-label="แผนภาพขนาดใหญ่"><div class="diagram-expanded-head"><button class="control" type="button" data-diagram-zoom="out">ย่อ</button><span class="zoom-status" data-zoom-status>100%</span><button class="control" type="button" data-diagram-zoom="in">ขยาย</button><button class="control" type="button" data-diagram-close>ปิด</button></div><div class="diagram-pan" data-diagram-pan data-zoom="1" tabindex="0" aria-label="พื้นที่แผนภาพ เลื่อนได้ทั้งแนวตั้งและแนวนอน"><img src="../../assets/diagrams/concepts-mmsegmentation-20.svg" alt="แผนภาพจาก MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์"></div></dialog></figure><ol>
+<li><strong>Backbone (ส่วนสกัดลักษณะเด่น):</strong> ทำหน้าที่รับภาพนำเข้าและสร้าง Feature Maps หลายระดับความละเอียด (Multi-scale Feature Maps) ในระบบ ScamGuard ใช้ <strong>Mix Vision Transformer (MiT-B0 ถึง MiT-B2)</strong></li>
+<li><strong>Neck (ส่วนเชื่อมประสานลักษณะเด่น):</strong> ทำหน้าที่รวมลักษณะเด่นจากหลายชั้นความลึกของ Backbone เข้าด้วยกัน เช่น Feature Pyramid Network (FPN) เพื่อรวบรวมทั้งรายละเอียดระดับต่ำ (Low-level Details) และความหมายเชิงลึก (High-level Semantics)</li>
+<li><strong>Decode Head (ส่วนถอดรหัสและทำนายผล):</strong> ส่วนปลายที่รับ Feature Maps ที่รวมแล้วมาแปลงเป็นหน้ากากการทำนายความน่าจะเป็นของแต่ละพิกเซล (Class Probability Mask) เช่น <strong>SegformerHead</strong> ที่ใช้ All-MLP Decoder น้ำหนักเบา</li>
+<li><strong>Auxiliary Head (ส่วนเสริมการเรียนรู้):</strong> ชั้นประมวลผลเสริมที่ใช้เฉพาะช่วงการฝึกสอน (Training Phase) เพื่อช่วยส่งผ่าน Gradient ลึกลงไปยังชั้นต้นๆ ของ Backbone ผ่าน Auxiliary Loss ลดปัญหา Vanishing Gradient</li>
+</ol>
+<hr>
+<h2 id="3-กลุ่มอัลกอริทึมและวิวัฒนาการใน-mmsegmentation">3. กลุ่มอัลกอริทึมและวิวัฒนาการใน MMSegmentation</h2>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">กลุ่มอัลกอริทึม</th>
+<th style="text-align:left">โมเดลตัวอย่าง</th>
+<th style="text-align:left">จุดเด่น</th>
+<th style="text-align:left">ข้อจำกัดสำหรับงานตรวจจับภาพตัดต่อ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>CNN-based</strong></td>
+<td style="text-align:left">FCN, PSPNet, DeepLabV3+</td>
+<td style="text-align:left">ประมวลผลแบบ Local Receptive Field มีความคงทนต่อการเลื่อนตำแหน่ง (Translation Invariance)</td>
+<td style="text-align:left">ขาดความสามารถในการจับความสัมพันธ์ระยะไกล (Long-range Context) ทำให้พลาดร่องรอยการผสมผสานแสงเงาที่ไม่สอดคล้องกันข้ามบริเวณ</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Transformer-based</strong></td>
+<td style="text-align:left">SegFormer, Swin Transformer, MaskFormer</td>
+<td style="text-align:left">ใช้กลไก Self-Attention เพื่อจับความสัมพันธ์ของบริบททั่วทั้งภาพพร้อมกันในทุกระดับความละเอียด</td>
+<td style="text-align:left">ต้องการการจัดเตรียมข้อมูลและการคำนวณที่เหมาะสม ซึ่งแก้ไขได้ด้วย Overlapping Tiling Inference</td>
+</tr>
+</tbody>
+</table></div><hr>
+<h2 id="4-การประยุกต์ใช้ในระบบ-scamguard">4. การประยุกต์ใช้ในระบบ ScamGuard</h2>
+<p>ในระบบ ScamGuard ได้เลือกใช้ MMSegmentation ในการเทรนโมเดล SegFormer ดังนี้:</p>
+<ul>
+<li><strong>การแก้ปัญหา Class Imbalance:</strong> บริเวณที่ถูกตัดต่อ มักมีสัดส่วนพื้นที่น้อยมากเมื่อเทียบกับพื้นที่ภาพทั้งหมด ระบบจึงกำหนด Loss Function แบบผสมผสานระหว่าง Cross-Entropy Loss และ Dice Loss:
+$$\mathcal{L}<em>{total} = \alpha \mathcal{L}</em>{CE} + \beta \mathcal{L}_{Dice}$$</li>
+<li><strong>การส่งออกไปยัง ONNX Runtime:</strong> โมเดลที่เทรนเสร็จสมบูรณ์จาก MMSegmentation จะถูกส่งออกเป็นไฟล์ <code>.onnx</code> ผ่านสคริปต์ <code>pytorch2onnx</code> เพื่อนำไปโหลดใช้งานในสภาพแวดล้อมจริง (Inference Engine) บน FastAPI Backend ทำให้สามารถทำนายผลได้รวดเร็วโดยไม่ต้องพึ่งพา PyTorch Runtime ตัวเต็ม</li>
+</ul>
+<hr>
+<h2 id="5-ประเด็นสำคัญ">5. ประเด็นสำคัญ</h2>
+<ul>
+<li>MMSegmentation ช่วยให้การทดลองเปรียบเทียบสถาปัตยกรรม (เช่น ResNet vs MiT) ทำได้บนมาตรฐานเดียวกัน</li>
+<li>โครงสร้าง All-MLP Decoder ของ SegFormer บน MMSegmentation ให้ความเร็วในการทำนายระดับมิลลิวินาที</li>
+<li>การฝึกสอนโมเดลรองรับการจำลองภาพตัดต่อ (Copy-Move, Splicing, Inpainting, AI-Gen artifacts) หลากหลายรูปแบบ</li>
+</ul>
+<hr>
+<h2 id="หน้าที่เกี่ยวข้อง">หน้าที่เกี่ยวข้อง</h2>
+<ul>
+<li><a href="ai-model-segformer.html">โมเดล AI — SegFormer</a></li>
+<li><a href="semantic-segmentation.html">การแบ่งส่วนภาพเชิงความหมาย (Semantic Segmentation)</a></li>
+<li><a href="model-training.html">การออกแบบระบบฝึกสอนโมเดล (Model Training Design)</a></li>
+<li><a href="../architecture/ai-inference-service.html">AI Inference Service</a></li>
+</ul>
+</div></main>
+    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้"><p class="toc-title">ในหน้านี้</p><ol class="toc"><li class="toc-level-2"><a href="#1-%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%A3%E0%B8%A7%E0%B8%A1%E0%B8%82%E0%B8%AD%E0%B8%87-mmsegmentation">1. ภาพรวมของ MMSegmentation</a></li><li class="toc-level-2"><a href="#2-%E0%B9%82%E0%B8%84%E0%B8%A3%E0%B8%87%E0%B8%AA%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B8%AA%E0%B8%96%E0%B8%B2%E0%B8%9B%E0%B8%B1%E0%B8%95%E0%B8%A2%E0%B8%81%E0%B8%A3%E0%B8%A3%E0%B8%A1%E0%B9%81%E0%B8%9A%E0%B8%9A%E0%B9%82%E0%B8%A1%E0%B8%94%E0%B8%B9%E0%B8%A5%E0%B8%B2%E0%B8%A3%E0%B9%8C-modular-decomposition">2. โครงสร้างสถาปัตยกรรมแบบโมดูลาร์ (Modular Decomposition)</a></li><li class="toc-level-2"><a href="#3-%E0%B8%81%E0%B8%A5%E0%B8%B8%E0%B9%88%E0%B8%A1%E0%B8%AD%E0%B8%B1%E0%B8%A5%E0%B8%81%E0%B8%AD%E0%B8%A3%E0%B8%B4%E0%B8%97%E0%B8%B6%E0%B8%A1%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%A7%E0%B8%B4%E0%B8%A7%E0%B8%B1%E0%B8%92%E0%B8%99%E0%B8%B2%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%83%E0%B8%99-mmsegmentation">3. กลุ่มอัลกอริทึมและวิวัฒนาการใน MMSegmentation</a></li><li class="toc-level-2"><a href="#4-%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%A2%E0%B8%B8%E0%B8%81%E0%B8%95%E0%B9%8C%E0%B9%83%E0%B8%8A%E0%B9%89%E0%B9%83%E0%B8%99%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A-scamguard">4. การประยุกต์ใช้ในระบบ ScamGuard</a></li><li class="toc-level-2"><a href="#5-%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%94%E0%B9%87%E0%B8%99%E0%B8%AA%E0%B8%B3%E0%B8%84%E0%B8%B1%E0%B8%8D">5. ประเด็นสำคัญ</a></li><li class="toc-level-2"><a href="#%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%87">หน้าที่เกี่ยวข้อง</a></li></ol></aside>
   </div>
-  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title">
-    <div class="search-dialog-head"><label class="visually-hidden" id="search-title"
-        for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…"
-        autocomplete="off" data-search-input><button class="control" type="button" data-search-close
-        aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="m6 6 12 12M18 6 6 18" />
-        </svg></button></div>
-    <div class="search-results" data-search-results aria-live="polite"></div>
-  </dialog>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title"><div class="search-dialog-head"><label class="visually-hidden" id="search-title" for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…" autocomplete="off" data-search-input><button class="control" type="button" data-search-close aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div class="search-results" data-search-results aria-live="polite"></div></dialog>
   <script src="../../assets/js/search-index.js"></script>
   <script src="../../assets/js/site.js"></script>
 </body>
-
 </html>

@@ -36,13 +36,19 @@ colors:
 typography:
   display:
     fontFamily: "Sarabun, Tahoma, sans-serif"
-    fontSize: "clamp(2.8rem, 8vw, 5.7rem)"
+    fontSize: "clamp(2.4rem, 5vw, 4rem)"
     fontWeight: 700
     lineHeight: 0.98
     letterSpacing: "-0.04em"
   headline:
     fontFamily: "Sarabun, Tahoma, sans-serif"
-    fontSize: "clamp(2rem, 5vw, 3.75rem)"
+    fontSize: "clamp(1.75rem, 3vw, 2.75rem)"
+    fontWeight: 700
+    lineHeight: 1.1
+    letterSpacing: "-0.035em"
+  headline-mobile:
+    fontFamily: "Sarabun, Tahoma, sans-serif"
+    fontSize: "clamp(1.75rem, 7vw, 2.25rem)"
     fontWeight: 700
     lineHeight: 1.1
     letterSpacing: "-0.035em"
@@ -80,6 +86,7 @@ rounded:
   dialog: "0.8rem"
   pill: "999px"
 spacing:
+  viewport-edge: "10px"
   xs: "0.35rem"
   sm: "0.55rem"
   md: "0.8rem"
@@ -139,7 +146,7 @@ components:
 
 ScamGuard Documentation is a Read-mode technical record, not a product marketing page. Its world is a quiet evidence field: cool paper, dark ink, teal indexing marks, crisp dividers, and square data surfaces. The visual hierarchy helps developers and evaluators locate a system area, follow verified links, and retain source context while reading Thai-first material with English technical terms.
 
-The interface behaves like a workbench. Persistent navigation surrounds a deliberately narrow article column; metadata, tags, tables, code, callouts, and diagrams are evidence instruments rather than decoration. Expression is restrained so the documentation can carry dense architecture and research material without feeling clinical or promotional.
+The interface behaves like a workbench. Edge-anchored support rails surround a fluid middle track whose article and prose measures remain bounded; metadata, tags, tables, code, callouts, and diagrams are evidence instruments rather than decoration. Expression is restrained so the documentation can carry dense architecture and research material without feeling clinical or promotional.
 
 This design record applies only to the generated static documentation under `web-ScamGuard`. It does not replace or modify the design guidance for the Admin Portal or Mobile App.
 
@@ -147,7 +154,7 @@ This design record applies only to the generated static documentation under `web
 
 - Thai-first, self-hosted typography that remains fully usable offline.
 - A paper, ink, and restrained teal palette with a deliberately authored dark counterpart.
-- A three-column desktop workbench centered on a readable article measure.
+- A full-width three-column desktop workbench with edge-anchored support rails and a centered article.
 - Crisp rules and tonal fills instead of generic card stacks.
 - Active reading position, source context, and technical diagrams treated as first-class evidence.
 - Accessible keyboard, focus, motion, responsive, and print behavior built into the reading system.
@@ -198,8 +205,8 @@ The light scheme reads as cool archival paper marked with ink navy and restraine
 
 ### Hierarchy
 
-- **Display:** Reserved for the home-page statement; its tight line-height, negative tracking, balanced wrap, and short measure create one strong orientation moment.
-- **Headline:** Used for article titles, capped at a short measure so long Thai and bilingual titles remain scannable.
+- **Display:** Reserved for the home-page statement; its tight line-height, negative tracking, balanced wrap, short measure, and 4rem ceiling create one strong orientation moment.
+- **Headline:** Used for article titles and capped at 2.75rem (44px) and 24ch so long Thai and bilingual titles remain scannable. On mobile it follows a separate clamp(1.75rem, 7vw, 2.25rem) range.
 - **Title:** Used for major article sections; a top rule and generous preceding space make section boundaries explicit.
 - **Body:** The default reading rhythm is spacious, with prose held to a maximum of 72 characters and article leads held to 64 characters.
 - **Label:** Small uppercase text with wider tracking identifies navigation and section-index regions; it is not used for body copy.
@@ -213,9 +220,11 @@ The light scheme reads as cool archival paper marked with ink navy and restraine
 
 ## Layout
 
-The desktop shell is a centered workbench up to 98rem wide with 1.5rem outer padding. It uses a 17rem category rail, a flexible article column capped at 48rem, and a 15rem live section index, separated by a fluid 2rem-to-4.5rem gap. The reading column itself is capped at 72ch. The masthead, category rail, and section index remain in view while the article scrolls.
+The desktop masthead and document shell span the full viewport width with exactly 10px of horizontal padding and no centering margin or global width cap. The three-column grid uses a fluid 15rem-to-18rem category rail, a minmax(0, 1fr) middle track, and a fluid 16rem-to-20rem live section index, separated by a clamp(1.5rem, 2.5vw, 3rem) gap. This puts both support rails exactly 10px from their respective viewport edges.
 
-At 1120px and below, the shell becomes two columns: a 15rem category rail and the article; the live section index disappears. At 760px and below, the shell becomes one column, the masthead contracts, secondary labels disappear, and the category rail becomes a fixed off-canvas drawer no wider than 20rem or 88vw. Homepage evidence counters stack, path metadata drops away, and the document catalog changes from two columns to one.
+Within the middle track, the article is centered and capped at 72rem while long-form prose remains capped at 72ch. The masthead, category rail, and section index remain in view while the article scrolls.
+
+At 1120px and below, the shell becomes two columns: a 15rem category rail and the article; the live section index disappears. At 760px and below, the shell becomes one column while both the masthead and document shell retain the exact 10px side padding. The masthead contracts, secondary labels disappear, and the category rail becomes a fixed off-canvas drawer no wider than 20rem or 88vw. Homepage evidence counters stack, path metadata drops away, and the document catalog changes from two columns to one.
 
 Spacing follows the content hierarchy rather than a card grid: compact spacing inside controls and metadata, about one article rhythm between related blocks, and large 2.4rem-to-3.6rem pauses before headings. Tables and code remain horizontally scrollable instead of shrinking into unreadable text.
 

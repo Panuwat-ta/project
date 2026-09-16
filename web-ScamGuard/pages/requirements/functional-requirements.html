@@ -1,370 +1,120 @@
 <!doctype html>
-<html lang="th" data-theme="light">
-
+<html lang="th" data-theme="light" data-theme-mode="system">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description"
-    content="ความต้องการเชิงฟังก์ชัน Functional Requirements ความสามารถหลักที่ระบบต้องทำได้ จัดกลุ่มตามผู้ใช้และระบบย่อย ชื่อผลิตภัณฑ์: ScamGuard ชื่อเต็ม: Scam Image Detection — แอปตรวจสอบรูปภาพตัดต่อเพ…">
+  <meta name="description" content="ความต้องการเชิงฟังก์ชัน Functional Requirements ความสามารถหลักที่ระบบต้องทำได้ จัดกลุ่มตามผู้ใช้และระบบย่อย ชื่อผลิตภัณฑ์: ScamGuard ชื่อเต็ม: Scam Image Detection — แอปตรวจสอบรูปภาพตัดต่อเพ…">
   <meta name="color-scheme" content="light dark">
   <title>ความต้องการเชิงฟังก์ชัน (Functional Requirements) | ScamGuard Documentation</title>
   <link rel="stylesheet" href="../../assets/css/site.css">
-  <script>document.documentElement.dataset.theme = (() => { try { return localStorage.getItem('scamguard-docs-theme') || 'light' } catch (e) { return 'light' } })(); window.SC_DOCS_ROOT = '../../';</script>
+  <script>(()=>{let m='system';try{m=localStorage.getItem('scamguard-docs-theme')||'system'}catch(e){}if(!['system','light','dark'].includes(m))m='system';const t=m==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;document.documentElement.dataset.themeMode=m;document.documentElement.dataset.theme=t})();window.SC_DOCS_ROOT='../../';</script>
 </head>
-
 <body class="">
   <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
-  <header class="masthead">
-    <div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false"
-        aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M4 7h16M4 12h16M4 17h16" />
-        </svg></button><a class="brand" href="../../index.html"><svg viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z" />
-          <path d="m9.2 12 1.8 1.8 3.9-4.2" />
-        </svg><span>ScamGuard <small>Documentation</small></span></a>
-      <div class="masthead-actions"><button class="control" type="button" data-search-open><svg viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
-            aria-hidden="true">
-            <circle cx="11" cy="11" r="6.5" />
-            <path d="m16 16 4 4" />
-          </svg><span>ค้นหา</span><span class="search-shortcut">Ctrl K</span></button><button class="control"
-          type="button" data-theme-toggle aria-label="เปลี่ยนเป็นโหมดมืด"><svg viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.5A7 7 0 0 1 12 3Z" />
-          </svg><span class="theme-label" data-theme-label>โหมดมืด</span></button></div>
-    </div>
-  </header>
+  <header class="masthead"><div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><nav class="top-tabs" aria-label="เมนูหลัก"><a href="../../index.html">Guide</a><a href="../../pages/architecture/system-architecture.html">Architecture</a><a href="../../pages/architecture/backend-api.html">API Reference</a></nav></div></header>
   <div class="docs-shell">
-    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><button class="control nav-close"
-        type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="m6 6 12 12M18 6 6 18" />
-        </svg></button>
-      <p class="sidebar-title">เอกสารทั้งหมด</p>
-      <details class="sidebar-group">
-        <summary>ภาพรวม</summary>
-        <ul class="sidebar-list">
-          <li><a href="../overview.html">ภาพรวมโปรเจค</a></li>
-          <li><a href="../index.html">สารบัญ Wiki — โปรเจค Scam Image Detection</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group" open>
-        <summary>ความต้องการระบบ</summary>
-        <ul class="sidebar-list">
-          <li><a href="functional-requirements.html" aria-current="page">ความต้องการเชิงฟังก์ชัน (Functional
-              Requirements)</a></li>
-          <li><a href="non-functional-requirements.html">ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements)</a>
-          </li>
-          <li><a href="traceability-matrix.html">เมทริกซ์การสืบย้อนความต้องการ</a></li>
-          <li><a href="objectives-kpis.html">วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp; KPIs)</a></li>
-          <li><a href="srs.html">Software Requirements Specification (SRS)</a></li>
-          <li><a href="use-case-diagram.html">Use Case Diagram</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>สถาปัตยกรรม</summary>
-        <ul class="sidebar-list">
-          <li><a href="../architecture/database-migrations.html">การจัดการการย้ายฐานข้อมูล (Database Migrations)</a>
-          </li>
-          <li><a href="../architecture/external-integrations.html">การเชื่อมต่อบริการภายนอก (External Integrations)</a>
-          </li>
-          <li><a href="../architecture/database-schema.html">โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li>
-          <li><a href="../architecture/system-architecture.html">สถาปัตยกรรมระบบ (System Architecture)</a></li>
-          <li><a href="../architecture/admin-portal.html">สถาปัตยกรรมและการออกแบบ Admin Portal</a></li>
-          <li><a href="../architecture/mobile-app.html">สถาปัตยกรรม Mobile App</a></li>
-          <li><a href="../architecture/ai-inference-service.html">AI Inference Service</a></li>
-          <li><a href="../architecture/backend-api.html">Backend API — FastAPI Orchestrator</a></li>
-          <li><a href="../architecture/c1-system-context-diagram.html">C1 System Context Diagram</a></li>
-          <li><a href="../architecture/c2-container-diagram.html">C2 Container Diagram</a></li>
-          <li><a href="../architecture/c3-component-diagram.html">C3 Component Diagram - API Application</a></li>
-          <li><a href="../architecture/c4-code-diagram.html">C4 Code Diagram - Image Scanning Flow</a></li>
-          <li><a href="../architecture/database-er-diagram.html">Entity Relationship Diagram (ER Diagram)</a></li>
-          <li><a href="../architecture/mobile-design.html">Mobile App Architecture</a></li>
-          <li><a href="../architecture/flowchart.html">System Flowchart</a></li>
-          <li><a href="../architecture/design-overview.html">UX/UI &amp; System Design Overview</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>แนวคิดและเทคนิค</summary>
-        <ul class="sidebar-list">
-          <li><a href="../concepts/risk-scoring.html">การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li>
-          <li><a href="../concepts/multi-layer-analysis.html">การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li>
-          <li><a href="../concepts/explainable-ai.html">ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li>
-          <li><a href="../concepts/configs.html">พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li>
-          <li><a href="../concepts/ai-model-segformer.html">โมเดล AI — SegFormer</a></li>
-          <li><a href="../concepts/surya-ocr.html">โมเดล AI — Surya OCR</a></li>
-          <li><a href="../concepts/model-training.html">AI Model Training Workflow</a></li>
-          <li><a href="../concepts/mmsegmentation.html">MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li>
-          <li><a href="../concepts/semantic-segmentation.html">Semantic Segmentation</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>องค์ประกอบระบบ</summary>
-        <ul class="sidebar-list">
-          <li><a href="../entities/tech-stack.html">เทคโนโลยีที่ใช้ (Technology Stack)</a></li>
-          <li><a href="../entities/actors.html">ผู้ใช้ระบบ (Actors)</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>การตัดสินใจ</summary>
-        <ul class="sidebar-list">
-          <li><a href="../decisions/technology-choices.html">การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>การวางแผน</summary>
-        <ul class="sidebar-list">
-          <li><a href="../planning/task-tracking.html">การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a>
-          </li>
-          <li><a href="../planning/project-scope.html">ขอบเขตโครงการ (Project Scope)</a></li>
-          <li><a href="../planning/team.html">ทีมงานและผู้รับผิดชอบ (Team)</a></li>
-          <li><a href="../planning/backend-documentation.html">Backend Documentation</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>การทดสอบ</summary>
-        <ul class="sidebar-list">
-          <li><a href="../testing/test-cases.html">กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>คู่มือและภาคผนวก</summary>
-        <ul class="sidebar-list">
-          <li><a href="../log.html">บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li>
-          <li><a href="../howto.html">วิธีใช้งาน Wiki (How to Use This Wiki)</a></li>
-          <li><a href="../runbook.html">Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li>
-          <li><a href="../AGENTS.html">Wiki Operating Guide</a></li>
-        </ul>
-      </details>
-    </aside>
-    <div class="nav-backdrop" data-nav-backdrop></div>
-    <main class="article" id="main-content">
-      <nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span
-          aria-hidden="true">/</span><span>ความต้องการระบบ</span></nav>
-      <header class="article-header">
-        <h1>ความต้องการเชิงฟังก์ชัน (Functional Requirements)</h1>
-        <p class="article-lead">ความสามารถหลักที่ระบบต้องทำได้ จัดกลุ่มตามผู้ใช้และระบบย่อย</p>
-        <div class="meta"><span>หมวด ความต้องการระบบ</span><time datetime="2026-08-02">อัปเดต
-            2026-08-02</time><span>ต้นฉบับ requirements/functional-requirements.md</span></div>
-        <div class="tags"><span class="tag">functional</span><span class="tag">FR</span><span
-            class="tag">use-case</span><span class="tag">features</span></div>
-      </header>
-      <div class="prose">
-        <h1 id="ความต้องการเชิงฟังก์ชัน-functional-requirements">ความต้องการเชิงฟังก์ชัน (Functional Requirements)</h1>
-        <p>ความสามารถหลักที่ระบบต้องทำได้ จัดกลุ่มตามผู้ใช้และระบบย่อย</p>
-        <blockquote>
-          <p><strong>ชื่อผลิตภัณฑ์:</strong> ScamGuard (ชื่อเต็ม: Scam Image Detection —
-            แอปตรวจสอบรูปภาพตัดต่อเพื่อป้องกันการหลอกลวง)</p>
-        </blockquote>
-        <blockquote>
-          <p><strong>Canonical catalog:</strong> <code>Document/srs/05_Software_Requirement_Specification.md</code>
-            (FR/NFR/AC), <code>06_Requirement_Traceability.md</code>,
-            <code>07_Appendix_A_Full_Traceability_Matrix.md</code>, <code>04_Requirement_Candidates.md</code> (RC) —
-            ไฟล์นี้ใช้เลขชุดเดียวกับ Document; ID กลุ่ม
-            <code>FR-INPUT/FR-SYS/FR-REPORT/FR-HIST/FR-RPT/FR-ADM/FR-AUDIT/FR-SHARE/FR-SET</code> เป็น test-scheme ฝั่ง
-            wiki (baseline งานทดสอบใน <code>tests_all/rtm.md</code>) โดยแต่ละข้อมี canonical mapping กำกับไว้</p>
-        </blockquote>
-        <hr>
-        <h2 id="ฟังก์ชันฝั่งผู้ใช้-mobile-app">ฟังก์ชันฝั่งผู้ใช้ (Mobile App)</h2>
-        <h3 id="การยืนยันตัวตน-authentication-canonical-fr-auth-01-04-document-05-2-1">การยืนยันตัวตน (Authentication) —
-          canonical: FR-AUTH-01..04 (Document 05 §2.1)</h3>
-        <ul>
-          <li><strong>FR-AUTH-01:</strong> ผู้ใช้สมัครสมาชิกด้วย Email/Password ได้ (→ Document FR-AUTH-01)</li>
-          <li><strong>FR-AUTH-02:</strong> ผู้ใช้เข้าสู่ระบบด้วย Email/Password + JWT ได้; โทเค็นเก็บใน Secure Storage
-            ของเครื่อง (Secure Storage = Document FR-AUTH-02 AC-4)</li>
-          <li><strong>FR-AUTH-03:</strong> ผู้ใช้ต่ออายุ Access Token ด้วย Refresh Token ได้ (→ Document FR-AUTH-03)
-          </li>
-          <li><strong>FR-AUTH-04:</strong> ผู้ใช้ออกจากระบบ (Logout) เพื่อล้างค่าเซสชั่นได้ (→ Document FR-AUTH-04;
-            รวมเพิกถอน Refresh Token ฝั่ง server ภายใน 60 วินาที)</li>
-          <li><strong>FR-AUTH-06:</strong> (Phase 2 backlog, RC-AUTH-06 deferred — ไม่ใช่ baseline v1)
-            ผู้ใช้เข้าสู่ระบบด้วย Google OAuth (canonical FR-AUTH-03 = ต่ออายุ Token ตาม Document/log_docs/05)</li>
-        </ul>
-        <blockquote>
-          <p>Alias ประวัติ: test-scheme เดิมเรียก Secure Storage+Refresh ว่า FR-AUTH-04 และ Logout ว่า FR-AUTH-05 —
-            ยุบ/ย้ายเป็น FR-AUTH-02/03/04 ตาม Document แล้ว (TC ที่เคยอ้างเลขเก่าอัปเดตตามใน
-            <code>tests_all/rtm.md</code> และ <code>tests_all/manual_tests/</code>)</p>
-        </blockquote>
-        <h3 id="การรับภาพ-image-input-test-scheme-canonical-document-fr-scan-01-02-03">การรับภาพ (Image Input) —
-          test-scheme (canonical: Document FR-SCAN-01/02/03)</h3>
-        <ul>
-          <li><strong>FR-INPUT-01:</strong> ผู้ใช้เลือกรูปจากคลังภาพ (Gallery) ในเครื่องได้ (→ FR-SCAN-01)</li>
-          <li><strong>FR-INPUT-02:</strong> ผู้ใช้ปรับขนาดและครอบตัด (Crop) ภาพก่อนส่งได้ เพื่อเน้นจุดสนใจ (→
-            FR-SCAN-01)</li>
-          <li><strong>FR-INPUT-03:</strong> แอปอัปโหลดภาพผ่าน Multipart HTTP เพื่อส่งไปวิเคราะห์ (→ FR-SCAN-02)</li>
-          <li><strong>FR-INPUT-04:</strong> แอปตรวจสอบประเภท/ขนาดไฟล์ก่อนอัปโหลด (jpg/jpeg/png/webp; Mobile ≤ 10MB / API
-            Server ≤ 20MB; decode แล้ว ≤ 100M พิกเซล; trace → SRS FR-02) (→ FR-SCAN-02)</li>
-        </ul>
-        <h3 id="การแสดงรายงานความเสี่ยง-risk-report-display-test-scheme-canonical-document-fr-xai-01-fr-analysis-04">
-          การแสดงรายงานความเสี่ยง (Risk Report Display) — test-scheme (canonical: Document FR-XAI-01 + FR-ANALYSIS-04)
-        </h3>
-        <ul>
-          <li><strong>FR-REPORT-01:</strong> แอปแสดงคะแนนความเสี่ยงรวม Overall Risk Score (0-100) พร้อม Color Badge 3
-            ระดับ (Low/Medium/High; เกณฑ์ตาม Document FR-ANALYSIS-04 — ดูนิยามที่ Document ที่เดียว)</li>
-          <li><strong>FR-REPORT-02:</strong> แอปแสดงภาพ Heatmap ซ้อนทับรูปจริง (→ FR-XAI-01)</li>
-          <li><strong>FR-REPORT-03:</strong> ผู้ใช้กดเปิด/ปิด (Toggle) ภาพ Heatmap ซ้อนทับได้ (→ FR-XAI-01)</li>
-          <li><strong>FR-REPORT-04:</strong> แอปแสดงคะแนนความเสี่ยงแยกย่อยแต่ละชั้น (Textual, Source, Visual) (→
-            FR-XAI-01 AC-5)</li>
-          <li><strong>FR-REPORT-05:</strong> แอปแสดงคำที่เข้าข่ายน่าสงสัย/หลอกลวง (ถ้าพบโดยโมดูล OCR/NLP) (→
-            FR-ANALYSIS-01)</li>
-          <li><strong>FR-REPORT-06:</strong> แอปแสดงผล Source Verification (จำนวนเว็บไซต์ที่พบภาพเดียวกัน) (→
-            FR-ANALYSIS-03)</li>
-        </ul>
-        <h3 id="ประวัติการสแกน-scan-history-test-scheme-canonical-document-fr-history-01">ประวัติการสแกน (Scan History)
-          — test-scheme (canonical: Document FR-HISTORY-01)</h3>
-        <ul>
-          <li><strong>FR-HIST-01:</strong> ผู้ใช้ดูประวัติผลการสแกนย้อนหลังตามลำดับเวลาได้ (→ FR-HISTORY-01)</li>
-          <li><strong>FR-HIST-02:</strong> ผู้ใช้กดเปิดดูรายงานแบบละเอียดของการสแกนเก่าได้ (→ FR-HISTORY-01)</li>
-          <li><strong>FR-HIST-03:</strong> ผู้ใช้ลบประวัติการสแกนได้ (ทีละรายการ + ลบทั้งหมด; ลบไฟล์ original/heatmap ใน
-            Object Storage ด้วย — ตาม PDPA Right to Delete) (→ FR-HISTORY-01)</li>
-        </ul>
-        <h3 id="แจ้งรายงานหลอกลวง-scam-reporting-test-scheme-canonical-document-fr-history-02">แจ้งรายงานหลอกลวง (Scam
-          Reporting) — test-scheme (canonical: Document FR-HISTORY-02)</h3>
-        <ul>
-          <li><strong>FR-RPT-01:</strong> ผู้ใช้แจ้งยืนยันว่าผลสแกนคือการหลอกลวงจริง เพื่อส่งให้แอดมินตรวจสอบได้ (→
-            FR-HISTORY-02)</li>
-        </ul>
-        <h3
-          id="การแชร์ผลลัพธ์-result-sharing-test-scheme-ฝั่ง-wiki-ไม่มี-fr-แยกใน-document-อยู่ใต้-fr-history-02-fr-08-มุมมอง-coarse">
-          การแชร์ผลลัพธ์ (Result Sharing) — test-scheme ฝั่ง wiki (ไม่มี FR แยกใน Document; อยู่ใต้ FR-HISTORY-02/FR-08
-          มุมมอง coarse)</h3>
-        <ul>
-          <li><strong>FR-SHARE-01:</strong> ผู้ใช้แชร์ภาพผลลัพธ์/คำเตือนความเสี่ยงไปยังแอปพลิเคชันภายนอกได้ (trace → SRS
-            BR-07/FR-08; หลักฐาน 02 SC01 §5; GAP: ยังไม่มี TC)</li>
-        </ul>
-        <h3 id="การจัดการข้อมูลส่วนบุคคล-pdpa-controls-test-scheme-canonical-document-fr-pdpa-01">
-          การจัดการข้อมูลส่วนบุคคล (PDPA Controls) — test-scheme (canonical: Document FR-PDPA-01)</h3>
-        <ul>
-          <li><strong>FR-PDPA-01:</strong> แสดงหน้าความยินยอม (Consent Screen) การประมวลผลข้อมูลในครั้งแรกที่เปิดแอป (→
-            Document FR-PDPA-01)</li>
-          <li><strong>FR-PDPA-02:</strong> ผู้ใช้สามารถถอนความยินยอมในการเข้าร่วมวิจัยได้จากหน้าการตั้งค่าตลอดเวลา (→
-            Document FR-PDPA-01 AC-3)</li>
-          <li><strong>FR-PDPA-03:</strong> หากถอนความยินยอม ระบบต้องลบภาพ/ข้อมูลของผู้ใช้ออกจาก Research Dataset ภายใน
-            72 ชม. (→ Document FR-PDPA-01; retention 1 ปี = RC-PDPA-04 deferred Phase 2)</li>
-        </ul>
-        <hr>
-        <h2 id="ฟังก์ชันฝั่งแอดมิน-admin-portal-test-scheme-canonical-document-fr-admin-01-04">ฟังก์ชันฝั่งแอดมิน (Admin
-          Portal) — test-scheme (canonical: Document FR-ADMIN-01..04)</h2>
-        <ul>
-          <li><strong>FR-ADM-01:</strong> แอดมินดูสถิติภาพรวมระบบ (จำนวนการสแกน, สถิติความแม่นยำ, ยอดใช้งาน) ได้ (→
-            FR-ADMIN-01)</li>
-          <li><strong>FR-ADM-02:</strong> แอดมินตรวจสอบรายการ Scam Report จากผู้ใช้ และอนุมัติ/ปัดตก ได้ (→ FR-ADMIN-02)
-          </li>
-          <li><strong>FR-ADM-03:</strong> แอดมิน Export ภาพ Scam ที่ถูกยืนยันแล้ว ไปทำ Dataset ได้ (→ FR-ADMIN-02 AC-3)
-          </li>
-          <li><strong>FR-ADM-04:</strong> แอดมินอัปโหลดไฟล์น้ำหนัก AI Model ล่าสุด และสั่ง Deploy ได้ (→ FR-ADMIN-03;
-            อัปโหลดไฟล์ = Phase 2, v1 วางไฟล์บน server แล้ว deploy ผ่าน API)</li>
-          <li><strong>FR-ADM-05:</strong> แอดมินจัดการบัญชีผู้ใช้งาน (ดูข้อมูล, แบนผู้ใช้) ได้ (→ FR-ADMIN-01;
-            เปลี่ยนสถานะเท่านั้น ห้าม hard-delete)</li>
-          <li><strong>FR-ADM-06:</strong> → ดู <strong>FR-AUDIT-01</strong> (ID เดียวสำหรับ Audit Log; ยุบรวมกันแล้ว
-            ไม่นิยามซ้ำ) (→ FR-ADMIN-04)</li>
-        </ul>
-        <h3 id="การตรวจสอบย้อนหลัง-audit-test-scheme-canonical-document-fr-admin-04">การตรวจสอบย้อนหลัง (Audit) —
-          test-scheme (canonical: Document FR-ADMIN-04)</h3>
-        <ul>
-          <li><strong>FR-AUDIT-01:</strong> ระบบบันทึกกิจกรรมของผู้ดูแลระบบลง Audit Log แบบ Append-only (แยกจาก
-            FR-SYS-10 ซึ่งคือการแจ้งเตือน; FCM push = Phase 2) (→ FR-ADMIN-04)</li>
-        </ul>
-        <hr>
-        <h2 id="ฟังก์ชันระบบอัตโนมัติ-backend-ai-test-scheme-canonical-document-fr-scan-fr-analysis-fr-xai">
-          ฟังก์ชันระบบอัตโนมัติ (Backend / AI) — test-scheme (canonical: Document FR-SCAN/FR-ANALYSIS/FR-XAI)</h2>
-        <ul>
-          <li><strong>FR-SYS-01:</strong> ระบบดึงข้อมูล EXIF Metadata ออกจากรูปที่อัปโหลด (→ RC-ANALYSIS-06
-            แสดงผลเท่านั้น ไม่ใช้คำนวณ Risk; ไม่มี FR แยกใน Document)</li>
-          <li><strong>FR-SYS-02:</strong> ระบบสกัดข้อความ (OCR) รองรับภาษาไทยและอังกฤษ (→ FR-ANALYSIS-01)</li>
-          <li><strong>FR-SYS-03:</strong> ระบบตรวจจับคำหลอกลวงหรือคีย์เวิร์ดเฝ้าระวังด้วย NLP (→ FR-ANALYSIS-01)</li>
-          <li><strong>FR-SYS-04:</strong> ระบบสแกนหาที่มาภาพย้อนกลับด้วย Google Vision API (→ FR-ANALYSIS-03)</li>
-          <li><strong>FR-SYS-05:</strong> ระบบตรวจสอบร่องรอยการดัดแปลงภาพระดับพิกเซลด้วย Deep Learning (SegFormer) (→
-            FR-ANALYSIS-02)</li>
-          <li><strong>FR-SYS-06:</strong> ระบบคัดกรองรูปภาพที่สร้างจาก AI ด้วย Classifier (→ FR-ANALYSIS-02)</li>
-          <li><strong>FR-SYS-07:</strong> ระบบประมวลผลคะแนนความเสี่ยงรวม Overall Risk Score พร้อม Multi-Factor Breakdown
-            (สูตร/เกณฑ์ตาม Document FR-ANALYSIS-04 — ดูนิยามที่ Document ที่เดียว)</li>
-          <li><strong>FR-SYS-08:</strong> ระบบสร้างภาพ Heatmap แบบ mask-to-heatmap overlay (→ FR-XAI-01)</li>
-          <li><strong>FR-SYS-09:</strong> ระบบคำนวณ SHA-256 Hash ของภาพและเก็บผลสแกนลง Cache (Redis, TTL 30 วัน)
-            เพื่อตอบกลับคำขอที่ซ้ำกันให้เร็วขึ้น (เป้าหมายเวลา: NFR-01; ยุบรวม FR-INPUT-05 แล้ว — ไม่นิยามซ้ำ) (→
-            FR-SCAN-03)</li>
-          <li><strong>FR-SYS-10:</strong> ระบบแจ้งเตือนแบบ in-app/polling ภายใน 60 วินาทีเมื่อประมวลผลเบื้องหลัง (Async)
-            เสร็จ (FCM push = Phase 2, RC-NOTIFY deferred; ไม่มี FR แยกใน Document)</li>
-          <li><strong>FR-SYS-11:</strong> ระบบสร้างคำอธิบายภาษาไทยประกอบ Heatmap ด้วย Qwen2.5-1.5B (XAI; trace →
-            Document FR-XAI-01 AC-1)</li>
-        </ul>
-        <hr>
-        <h2 id="หน้าที่เกี่ยวข้อง">หน้าที่เกี่ยวข้อง</h2>
-        <ul>
-          <li><a href="objectives-kpis.html">requirements/objectives-kpis</a></li>
-          <li><a href="non-functional-requirements.html">requirements/non-functional-requirements</a></li>
-          <li><a href="../entities/actors.html">entities/actors</a></li>
-          <li><a href="../architecture/mobile-app.html">architecture/mobile-app</a></li>
-          <li><a href="../architecture/backend-api.html">architecture/backend-api</a></li>
-          <li><a href="../concepts/multi-layer-analysis.html">concepts/multi-layer-analysis</a></li>
-        </ul>
-      </div>
-      <footer class="source-panel"><strong>แหล่งข้อมูลของหน้านี้</strong>
-        <ul>
-          <li><a href="../../sources/wiki/requirements/functional-requirements.md">Markdown ต้นฉบับ:
-              requirements/functional-requirements.md</a></li>
-          <li>Document/srs.md</li>
-          <li>Document/Use-Case-Diagram.md</li>
-          <li>Document/scop.md</li>
-        </ul>
-      </footer>
-    </main>
-    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้">
-      <p class="toc-title">ในหน้านี้</p>
-      <ol class="toc">
-        <li class="toc-level-2"><a
-            href="#%E0%B8%9F%E0%B8%B1%E0%B8%87%E0%B8%81%E0%B9%8C%E0%B8%8A%E0%B8%B1%E0%B8%99%E0%B8%9D%E0%B8%B1%E0%B9%88%E0%B8%87%E0%B8%9C%E0%B8%B9%E0%B9%89%E0%B9%83%E0%B8%8A%E0%B9%89-mobile-app">ฟังก์ชันฝั่งผู้ใช้
-            (Mobile App)</a></li>
-        <li class="toc-level-3"><a
-            href="#%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%A2%E0%B8%B7%E0%B8%99%E0%B8%A2%E0%B8%B1%E0%B8%99%E0%B8%95%E0%B8%B1%E0%B8%A7%E0%B8%95%E0%B8%99-authentication-canonical-fr-auth-01-04-document-05-2-1">การยืนยันตัวตน
-            (Authentication) — canonical: FR-AUTH-01..04 (Document 05 §2.1)</a></li>
-        <li class="toc-level-3"><a
-            href="#%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B8%A0%E0%B8%B2%E0%B8%9E-image-input-test-scheme-canonical-document-fr-scan-01-02-03">การรับภาพ
-            (Image Input) — test-scheme (canonical: Document FR-SCAN-01/02/03)</a></li>
-        <li class="toc-level-3"><a
-            href="#%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%81%E0%B8%AA%E0%B8%94%E0%B8%87%E0%B8%A3%E0%B8%B2%E0%B8%A2%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B9%80%E0%B8%AA%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%87-risk-report-display-test-scheme-canonical-document-fr-xai-01-fr-analysis-04">การแสดงรายงานความเสี่ยง
-            (Risk Report Display) — test-scheme (canonical: Document FR-XAI-01 + FR-ANALYSIS-04)</a></li>
-        <li class="toc-level-3"><a
-            href="#%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%A7%E0%B8%B1%E0%B8%95%E0%B8%B4%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%AA%E0%B9%81%E0%B8%81%E0%B8%99-scan-history-test-scheme-canonical-document-fr-history-01">ประวัติการสแกน
-            (Scan History) — test-scheme (canonical: Document FR-HISTORY-01)</a></li>
-        <li class="toc-level-3"><a
-            href="#%E0%B9%81%E0%B8%88%E0%B9%89%E0%B8%87%E0%B8%A3%E0%B8%B2%E0%B8%A2%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%AB%E0%B8%A5%E0%B8%AD%E0%B8%81%E0%B8%A5%E0%B8%A7%E0%B8%87-scam-reporting-test-scheme-canonical-document-fr-history-02">แจ้งรายงานหลอกลวง
-            (Scam Reporting) — test-scheme (canonical: Document FR-HISTORY-02)</a></li>
-        <li class="toc-level-3"><a
-            href="#%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%81%E0%B8%8A%E0%B8%A3%E0%B9%8C%E0%B8%9C%E0%B8%A5%E0%B8%A5%E0%B8%B1%E0%B8%9E%E0%B8%98%E0%B9%8C-result-sharing-test-scheme-%E0%B8%9D%E0%B8%B1%E0%B9%88%E0%B8%87-wiki-%E0%B9%84%E0%B8%A1%E0%B9%88%E0%B8%A1%E0%B8%B5-fr-%E0%B9%81%E0%B8%A2%E0%B8%81%E0%B9%83%E0%B8%99-document-%E0%B8%AD%E0%B8%A2%E0%B8%B9%E0%B9%88%E0%B9%83%E0%B8%95%E0%B9%89-fr-history-02-fr-08-%E0%B8%A1%E0%B8%B8%E0%B8%A1%E0%B8%A1%E0%B8%AD%E0%B8%87-coarse">การแชร์ผลลัพธ์
-            (Result Sharing) — test-scheme ฝั่ง wiki (ไม่มี FR แยกใน Document; อยู่ใต้ FR-HISTORY-02/FR-08 มุมมอง
-            coarse)</a></li>
-        <li class="toc-level-3"><a
-            href="#%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B8%B9%E0%B8%A5%E0%B8%AA%E0%B9%88%E0%B8%A7%E0%B8%99%E0%B8%9A%E0%B8%B8%E0%B8%84%E0%B8%84%E0%B8%A5-pdpa-controls-test-scheme-canonical-document-fr-pdpa-01">การจัดการข้อมูลส่วนบุคคล
-            (PDPA Controls) — test-scheme (canonical: Document FR-PDPA-01)</a></li>
-        <li class="toc-level-2"><a
-            href="#%E0%B8%9F%E0%B8%B1%E0%B8%87%E0%B8%81%E0%B9%8C%E0%B8%8A%E0%B8%B1%E0%B8%99%E0%B8%9D%E0%B8%B1%E0%B9%88%E0%B8%87%E0%B9%81%E0%B8%AD%E0%B8%94%E0%B8%A1%E0%B8%B4%E0%B8%99-admin-portal-test-scheme-canonical-document-fr-admin-01-04">ฟังก์ชันฝั่งแอดมิน
-            (Admin Portal) — test-scheme (canonical: Document FR-ADMIN-01..04)</a></li>
-        <li class="toc-level-3"><a
-            href="#%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%95%E0%B8%A3%E0%B8%A7%E0%B8%88%E0%B8%AA%E0%B8%AD%E0%B8%9A%E0%B8%A2%E0%B9%89%E0%B8%AD%E0%B8%99%E0%B8%AB%E0%B8%A5%E0%B8%B1%E0%B8%87-audit-test-scheme-canonical-document-fr-admin-04">การตรวจสอบย้อนหลัง
-            (Audit) — test-scheme (canonical: Document FR-ADMIN-04)</a></li>
-        <li class="toc-level-2"><a
-            href="#%E0%B8%9F%E0%B8%B1%E0%B8%87%E0%B8%81%E0%B9%8C%E0%B8%8A%E0%B8%B1%E0%B8%99%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A%E0%B8%AD%E0%B8%B1%E0%B8%95%E0%B9%82%E0%B8%99%E0%B8%A1%E0%B8%B1%E0%B8%95%E0%B8%B4-backend-ai-test-scheme-canonical-document-fr-scan-fr-analysis-fr-xai">ฟังก์ชันระบบอัตโนมัติ
-            (Backend / AI) — test-scheme (canonical: Document FR-SCAN/FR-ANALYSIS/FR-XAI)</a></li>
-        <li class="toc-level-2"><a
-            href="#%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%87">หน้าที่เกี่ยวข้อง</a>
-        </li>
-      </ol>
-    </aside>
+    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><div class="sidebar-head"><a class="sidebar-brand" href="../../index.html" aria-label="ScamGuard Documentation"><span class="brand brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z"/><path d="m9.2 12 1.8 1.8 3.9-4.2"/></svg></span><span class="sidebar-brand-name">ScamGuard Docs</span></a><div class="theme-switcher" role="group" aria-label="ธีมเว็บไซต์"><button type="button" data-theme-option="system" aria-label="ใช้ธีมตามระบบ" title="System"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></button><button type="button" data-theme-option="light" aria-label="ใช้โหมดสว่าง" title="Light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></button><button type="button" data-theme-option="dark" aria-label="ใช้โหมดมืด" title="Dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8 8 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/></svg></button></div></div><button class="control nav-close" type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button><button class="sidebar-search" type="button" data-search-open><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search...</span><kbd>Ctrl K</kbd></button><div class="sidebar-scroll"><details class="sidebar-group" ><summary>ภาพรวม</summary><ul class="sidebar-list"><li><a href="../overview.html" >ภาพรวมโปรเจค</a></li><li><a href="../index.html" >สารบัญ Wiki — โปรเจค Scam Image Detection</a></li></ul></details><details class="sidebar-group" open><summary>ความต้องการระบบ</summary><ul class="sidebar-list"><li><a href="functional-requirements.html" aria-current="page">ความต้องการเชิงฟังก์ชัน (Functional Requirements)</a></li><li><a href="non-functional-requirements.html" >ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements)</a></li><li><a href="traceability-matrix.html" >เมทริกซ์การสืบย้อนความต้องการ</a></li><li><a href="objectives-kpis.html" >วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp; KPIs)</a></li><li><a href="srs.html" >Software Requirements Specification (SRS)</a></li><li><a href="use-case-diagram.html" >Use Case Diagram</a></li></ul></details><details class="sidebar-group" ><summary>สถาปัตยกรรม</summary><ul class="sidebar-list"><li><a href="../architecture/database-migrations.html" >การจัดการการย้ายฐานข้อมูล (Database Migrations)</a></li><li><a href="../architecture/external-integrations.html" >การเชื่อมต่อบริการภายนอก (External Integrations)</a></li><li><a href="../architecture/database-schema.html" >โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li><li><a href="../architecture/system-architecture.html" >สถาปัตยกรรมระบบ (System Architecture)</a></li><li><a href="../architecture/admin-portal.html" >สถาปัตยกรรมและการออกแบบ Admin Portal</a></li><li><a href="../architecture/mobile-app.html" >สถาปัตยกรรม Mobile App</a></li><li><a href="../architecture/ai-inference-service.html" >AI Inference Service</a></li><li><a href="../architecture/backend-api.html" >Backend API — FastAPI Orchestrator</a></li><li><a href="../architecture/c1-system-context-diagram.html" >C1 System Context Diagram</a></li><li><a href="../architecture/c2-container-diagram.html" >C2 Container Diagram</a></li><li><a href="../architecture/c3-component-diagram.html" >C3 Component Diagram - API Application</a></li><li><a href="../architecture/c4-code-diagram.html" >C4 Code Diagram - Image Scanning Flow</a></li><li><a href="../architecture/database-er-diagram.html" >Entity Relationship Diagram (ER Diagram)</a></li><li><a href="../architecture/mobile-design.html" >Mobile App Architecture</a></li><li><a href="../architecture/flowchart.html" >System Flowchart</a></li><li><a href="../architecture/design-overview.html" >UX/UI &amp; System Design Overview</a></li></ul></details><details class="sidebar-group" ><summary>แนวคิดและเทคนิค</summary><ul class="sidebar-list"><li><a href="../concepts/risk-scoring.html" >การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li><li><a href="../concepts/multi-layer-analysis.html" >การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li><li><a href="../concepts/explainable-ai.html" >ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li><li><a href="../concepts/configs.html" >พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li><li><a href="../concepts/ai-model-segformer.html" >โมเดล AI — SegFormer</a></li><li><a href="../concepts/surya-ocr.html" >โมเดล AI — Surya OCR</a></li><li><a href="../concepts/model-training.html" >AI Model Training Workflow</a></li><li><a href="../concepts/mmsegmentation.html" >MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li><li><a href="../concepts/semantic-segmentation.html" >Semantic Segmentation</a></li></ul></details><details class="sidebar-group" ><summary>องค์ประกอบระบบ</summary><ul class="sidebar-list"><li><a href="../entities/tech-stack.html" >เทคโนโลยีที่ใช้ (Technology Stack)</a></li><li><a href="../entities/actors.html" >ผู้ใช้ระบบ (Actors)</a></li></ul></details><details class="sidebar-group" ><summary>การตัดสินใจ</summary><ul class="sidebar-list"><li><a href="../decisions/technology-choices.html" >การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li></ul></details><details class="sidebar-group" ><summary>การวางแผน</summary><ul class="sidebar-list"><li><a href="../planning/task-tracking.html" >การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a></li><li><a href="../planning/project-scope.html" >ขอบเขตโครงการ (Project Scope)</a></li><li><a href="../planning/team.html" >ทีมงานและผู้รับผิดชอบ (Team)</a></li><li><a href="../planning/backend-documentation.html" >Backend Documentation</a></li></ul></details><details class="sidebar-group" ><summary>การทดสอบ</summary><ul class="sidebar-list"><li><a href="../testing/test-cases.html" >กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li></ul></details><details class="sidebar-group" ><summary>คู่มือและภาคผนวก</summary><ul class="sidebar-list"><li><a href="../log.html" >บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li><li><a href="../howto.html" >วิธีใช้งาน Wiki (How to Use This Wiki)</a></li><li><a href="../runbook.html" >Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li><li><a href="../AGENTS.html" >Wiki Operating Guide</a></li></ul></details></div></aside><div class="nav-backdrop" data-nav-backdrop></div>
+    <main class="article" id="main-content"><nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span aria-hidden="true">/</span><span>ความต้องการระบบ</span></nav><header class="article-header"><h1>ความต้องการเชิงฟังก์ชัน (Functional Requirements)</h1><p class="article-lead">ความสามารถหลักที่ระบบต้องทำได้ จัดกลุ่มตามผู้ใช้และระบบย่อย</p><div class="meta"><span>หมวด ความต้องการระบบ</span><time datetime="2026-08-02">อัปเดต 2026-08-02</time><span>ต้นฉบับ requirements/functional-requirements.md</span></div><div class="tags"><span class="tag">functional</span><span class="tag">FR</span><span class="tag">use-case</span><span class="tag">features</span></div></header><div class="prose"><h1 id="ความต้องการเชิงฟังก์ชัน-functional-requirements">ความต้องการเชิงฟังก์ชัน (Functional Requirements)</h1>
+<p>ความสามารถหลักที่ระบบต้องทำได้ จัดกลุ่มตามผู้ใช้และระบบย่อย</p>
+<blockquote>
+<p><strong>ชื่อผลิตภัณฑ์:</strong> ScamGuard (ชื่อเต็ม: Scam Image Detection — แอปตรวจสอบรูปภาพตัดต่อเพื่อป้องกันการหลอกลวง)</p>
+</blockquote>
+<blockquote>
+<p><strong>Canonical catalog:</strong> <code>Document/srs/05_Software_Requirement_Specification.md</code> (FR/NFR/AC), <code>06_Requirement_Traceability.md</code>, <code>07_Appendix_A_Full_Traceability_Matrix.md</code>, <code>04_Requirement_Candidates.md</code> (RC) — ไฟล์นี้ใช้เลขชุดเดียวกับ Document; ID กลุ่ม <code>FR-INPUT/FR-SYS/FR-REPORT/FR-HIST/FR-RPT/FR-ADM/FR-AUDIT/FR-SHARE/FR-SET</code> เป็น test-scheme ฝั่ง wiki (baseline งานทดสอบใน <code>tests_all/rtm.md</code>) โดยแต่ละข้อมี canonical mapping กำกับไว้</p>
+</blockquote>
+<hr>
+<h2 id="ฟังก์ชันฝั่งผู้ใช้-mobile-app">ฟังก์ชันฝั่งผู้ใช้ (Mobile App)</h2>
+<h3 id="การยืนยันตัวตน-authentication-canonical-fr-auth-01-04-document-05-2-1">การยืนยันตัวตน (Authentication) — canonical: FR-AUTH-01..04 (Document 05 §2.1)</h3>
+<ul>
+<li><strong>FR-AUTH-01:</strong> ผู้ใช้สมัครสมาชิกด้วย Email/Password ได้ (→ Document FR-AUTH-01)</li>
+<li><strong>FR-AUTH-02:</strong> ผู้ใช้เข้าสู่ระบบด้วย Email/Password + JWT ได้; โทเค็นเก็บใน Secure Storage ของเครื่อง (Secure Storage = Document FR-AUTH-02 AC-4)</li>
+<li><strong>FR-AUTH-03:</strong> ผู้ใช้ต่ออายุ Access Token ด้วย Refresh Token ได้ (→ Document FR-AUTH-03)</li>
+<li><strong>FR-AUTH-04:</strong> ผู้ใช้ออกจากระบบ (Logout) เพื่อล้างค่าเซสชั่นได้ (→ Document FR-AUTH-04; รวมเพิกถอน Refresh Token ฝั่ง server ภายใน 60 วินาที)</li>
+<li><strong>FR-AUTH-06:</strong> (Phase 2 backlog, RC-AUTH-06 deferred — ไม่ใช่ baseline v1) ผู้ใช้เข้าสู่ระบบด้วย Google OAuth (canonical FR-AUTH-03 = ต่ออายุ Token ตาม Document/log_docs/05)</li>
+</ul>
+<blockquote>
+<p>Alias ประวัติ: test-scheme เดิมเรียก Secure Storage+Refresh ว่า FR-AUTH-04 และ Logout ว่า FR-AUTH-05 — ยุบ/ย้ายเป็น FR-AUTH-02/03/04 ตาม Document แล้ว (TC ที่เคยอ้างเลขเก่าอัปเดตตามใน <code>tests_all/rtm.md</code> และ <code>tests_all/manual_tests/</code>)</p>
+</blockquote>
+<h3 id="การรับภาพ-image-input-test-scheme-canonical-document-fr-scan-01-02-03">การรับภาพ (Image Input) — test-scheme (canonical: Document FR-SCAN-01/02/03)</h3>
+<ul>
+<li><strong>FR-INPUT-01:</strong> ผู้ใช้เลือกรูปจากคลังภาพ (Gallery) ในเครื่องได้ (→ FR-SCAN-01)</li>
+<li><strong>FR-INPUT-02:</strong> ผู้ใช้ปรับขนาดและครอบตัด (Crop) ภาพก่อนส่งได้ เพื่อเน้นจุดสนใจ (→ FR-SCAN-01)</li>
+<li><strong>FR-INPUT-03:</strong> แอปอัปโหลดภาพผ่าน Multipart HTTP เพื่อส่งไปวิเคราะห์ (→ FR-SCAN-02)</li>
+<li><strong>FR-INPUT-04:</strong> แอปตรวจสอบประเภท/ขนาดไฟล์ก่อนอัปโหลด (jpg/jpeg/png/webp; Mobile ≤ 10MB / API Server ≤ 20MB; decode แล้ว ≤ 100M พิกเซล; trace → SRS FR-02) (→ FR-SCAN-02)</li>
+</ul>
+<h3 id="การแสดงรายงานความเสี่ยง-risk-report-display-test-scheme-canonical-document-fr-xai-01-fr-analysis-04">การแสดงรายงานความเสี่ยง (Risk Report Display) — test-scheme (canonical: Document FR-XAI-01 + FR-ANALYSIS-04)</h3>
+<ul>
+<li><strong>FR-REPORT-01:</strong> แอปแสดงคะแนนความเสี่ยงรวม Overall Risk Score (0-100) พร้อม Color Badge 3 ระดับ (Low/Medium/High; เกณฑ์ตาม Document FR-ANALYSIS-04 — ดูนิยามที่ Document ที่เดียว)</li>
+<li><strong>FR-REPORT-02:</strong> แอปแสดงภาพ Heatmap ซ้อนทับรูปจริง (→ FR-XAI-01)</li>
+<li><strong>FR-REPORT-03:</strong> ผู้ใช้กดเปิด/ปิด (Toggle) ภาพ Heatmap ซ้อนทับได้ (→ FR-XAI-01)</li>
+<li><strong>FR-REPORT-04:</strong> แอปแสดงคะแนนความเสี่ยงแยกย่อยแต่ละชั้น (Textual, Source, Visual) (→ FR-XAI-01 AC-5)</li>
+<li><strong>FR-REPORT-05:</strong> แอปแสดงคำที่เข้าข่ายน่าสงสัย/หลอกลวง (ถ้าพบโดยโมดูล OCR/NLP) (→ FR-ANALYSIS-01)</li>
+<li><strong>FR-REPORT-06:</strong> แอปแสดงผล Source Verification (จำนวนเว็บไซต์ที่พบภาพเดียวกัน) (→ FR-ANALYSIS-03)</li>
+</ul>
+<h3 id="ประวัติการสแกน-scan-history-test-scheme-canonical-document-fr-history-01">ประวัติการสแกน (Scan History) — test-scheme (canonical: Document FR-HISTORY-01)</h3>
+<ul>
+<li><strong>FR-HIST-01:</strong> ผู้ใช้ดูประวัติผลการสแกนย้อนหลังตามลำดับเวลาได้ (→ FR-HISTORY-01)</li>
+<li><strong>FR-HIST-02:</strong> ผู้ใช้กดเปิดดูรายงานแบบละเอียดของการสแกนเก่าได้ (→ FR-HISTORY-01)</li>
+<li><strong>FR-HIST-03:</strong> ผู้ใช้ลบประวัติการสแกนได้ (ทีละรายการ + ลบทั้งหมด; ลบไฟล์ original/heatmap ใน Object Storage ด้วย — ตาม PDPA Right to Delete) (→ FR-HISTORY-01)</li>
+</ul>
+<h3 id="แจ้งรายงานหลอกลวง-scam-reporting-test-scheme-canonical-document-fr-history-02">แจ้งรายงานหลอกลวง (Scam Reporting) — test-scheme (canonical: Document FR-HISTORY-02)</h3>
+<ul>
+<li><strong>FR-RPT-01:</strong> ผู้ใช้แจ้งยืนยันว่าผลสแกนคือการหลอกลวงจริง เพื่อส่งให้แอดมินตรวจสอบได้ (→ FR-HISTORY-02)</li>
+</ul>
+<h3 id="การแชร์ผลลัพธ์-result-sharing-test-scheme-ฝั่ง-wiki-ไม่มี-fr-แยกใน-document-อยู่ใต้-fr-history-02-fr-08-มุมมอง-coarse">การแชร์ผลลัพธ์ (Result Sharing) — test-scheme ฝั่ง wiki (ไม่มี FR แยกใน Document; อยู่ใต้ FR-HISTORY-02/FR-08 มุมมอง coarse)</h3>
+<ul>
+<li><strong>FR-SHARE-01:</strong> ผู้ใช้แชร์ภาพผลลัพธ์/คำเตือนความเสี่ยงไปยังแอปพลิเคชันภายนอกได้ (trace → SRS BR-07/FR-08; หลักฐาน 02 SC01 §5; GAP: ยังไม่มี TC)</li>
+</ul>
+<h3 id="การจัดการข้อมูลส่วนบุคคล-pdpa-controls-test-scheme-canonical-document-fr-pdpa-01">การจัดการข้อมูลส่วนบุคคล (PDPA Controls) — test-scheme (canonical: Document FR-PDPA-01)</h3>
+<ul>
+<li><strong>FR-PDPA-01:</strong> แสดงหน้าความยินยอม (Consent Screen) การประมวลผลข้อมูลในครั้งแรกที่เปิดแอป (→ Document FR-PDPA-01)</li>
+<li><strong>FR-PDPA-02:</strong> ผู้ใช้สามารถถอนความยินยอมในการเข้าร่วมวิจัยได้จากหน้าการตั้งค่าตลอดเวลา (→ Document FR-PDPA-01 AC-3)</li>
+<li><strong>FR-PDPA-03:</strong> หากถอนความยินยอม ระบบต้องลบภาพ/ข้อมูลของผู้ใช้ออกจาก Research Dataset ภายใน 72 ชม. (→ Document FR-PDPA-01; retention 1 ปี = RC-PDPA-04 deferred Phase 2)</li>
+</ul>
+<hr>
+<h2 id="ฟังก์ชันฝั่งแอดมิน-admin-portal-test-scheme-canonical-document-fr-admin-01-04">ฟังก์ชันฝั่งแอดมิน (Admin Portal) — test-scheme (canonical: Document FR-ADMIN-01..04)</h2>
+<ul>
+<li><strong>FR-ADM-01:</strong> แอดมินดูสถิติภาพรวมระบบ (จำนวนการสแกน, สถิติความแม่นยำ, ยอดใช้งาน) ได้ (→ FR-ADMIN-01)</li>
+<li><strong>FR-ADM-02:</strong> แอดมินตรวจสอบรายการ Scam Report จากผู้ใช้ และอนุมัติ/ปัดตก ได้ (→ FR-ADMIN-02)</li>
+<li><strong>FR-ADM-03:</strong> แอดมิน Export ภาพ Scam ที่ถูกยืนยันแล้ว ไปทำ Dataset ได้ (→ FR-ADMIN-02 AC-3)</li>
+<li><strong>FR-ADM-04:</strong> แอดมินอัปโหลดไฟล์น้ำหนัก AI Model ล่าสุด และสั่ง Deploy ได้ (→ FR-ADMIN-03; อัปโหลดไฟล์ = Phase 2, v1 วางไฟล์บน server แล้ว deploy ผ่าน API)</li>
+<li><strong>FR-ADM-05:</strong> แอดมินจัดการบัญชีผู้ใช้งาน (ดูข้อมูล, แบนผู้ใช้) ได้ (→ FR-ADMIN-01; เปลี่ยนสถานะเท่านั้น ห้าม hard-delete)</li>
+<li><strong>FR-ADM-06:</strong> → ดู <strong>FR-AUDIT-01</strong> (ID เดียวสำหรับ Audit Log; ยุบรวมกันแล้ว ไม่นิยามซ้ำ) (→ FR-ADMIN-04)</li>
+</ul>
+<h3 id="การตรวจสอบย้อนหลัง-audit-test-scheme-canonical-document-fr-admin-04">การตรวจสอบย้อนหลัง (Audit) — test-scheme (canonical: Document FR-ADMIN-04)</h3>
+<ul>
+<li><strong>FR-AUDIT-01:</strong> ระบบบันทึกกิจกรรมของผู้ดูแลระบบลง Audit Log แบบ Append-only (แยกจาก FR-SYS-10 ซึ่งคือการแจ้งเตือน; FCM push = Phase 2) (→ FR-ADMIN-04)</li>
+</ul>
+<hr>
+<h2 id="ฟังก์ชันระบบอัตโนมัติ-backend-ai-test-scheme-canonical-document-fr-scan-fr-analysis-fr-xai">ฟังก์ชันระบบอัตโนมัติ (Backend / AI) — test-scheme (canonical: Document FR-SCAN/FR-ANALYSIS/FR-XAI)</h2>
+<ul>
+<li><strong>FR-SYS-01:</strong> ระบบดึงข้อมูล EXIF Metadata ออกจากรูปที่อัปโหลด (→ RC-ANALYSIS-06 แสดงผลเท่านั้น ไม่ใช้คำนวณ Risk; ไม่มี FR แยกใน Document)</li>
+<li><strong>FR-SYS-02:</strong> ระบบสกัดข้อความ (OCR) รองรับภาษาไทยและอังกฤษ (→ FR-ANALYSIS-01)</li>
+<li><strong>FR-SYS-03:</strong> ระบบตรวจจับคำหลอกลวงหรือคีย์เวิร์ดเฝ้าระวังด้วย NLP (→ FR-ANALYSIS-01)</li>
+<li><strong>FR-SYS-04:</strong> ระบบสแกนหาที่มาภาพย้อนกลับด้วย Google Vision API (→ FR-ANALYSIS-03)</li>
+<li><strong>FR-SYS-05:</strong> ระบบตรวจสอบร่องรอยการดัดแปลงภาพระดับพิกเซลด้วย Deep Learning (SegFormer) (→ FR-ANALYSIS-02)</li>
+<li><strong>FR-SYS-06:</strong> ระบบคัดกรองรูปภาพที่สร้างจาก AI ด้วย Classifier (→ FR-ANALYSIS-02)</li>
+<li><strong>FR-SYS-07:</strong> ระบบประมวลผลคะแนนความเสี่ยงรวม Overall Risk Score พร้อม Multi-Factor Breakdown (สูตร/เกณฑ์ตาม Document FR-ANALYSIS-04 — ดูนิยามที่ Document ที่เดียว)</li>
+<li><strong>FR-SYS-08:</strong> ระบบสร้างภาพ Heatmap แบบ mask-to-heatmap overlay (→ FR-XAI-01)</li>
+<li><strong>FR-SYS-09:</strong> ระบบคำนวณ SHA-256 Hash ของภาพและเก็บผลสแกนลง Cache (Redis, TTL 30 วัน) เพื่อตอบกลับคำขอที่ซ้ำกันให้เร็วขึ้น (เป้าหมายเวลา: NFR-01; ยุบรวม FR-INPUT-05 แล้ว — ไม่นิยามซ้ำ) (→ FR-SCAN-03)</li>
+<li><strong>FR-SYS-10:</strong> ระบบแจ้งเตือนแบบ in-app/polling ภายใน 60 วินาทีเมื่อประมวลผลเบื้องหลัง (Async) เสร็จ (FCM push = Phase 2, RC-NOTIFY deferred; ไม่มี FR แยกใน Document)</li>
+<li><strong>FR-SYS-11:</strong> ระบบสร้างคำอธิบายภาษาไทยประกอบ Heatmap ด้วย Qwen2.5-1.5B (XAI; trace → Document FR-XAI-01 AC-1)</li>
+</ul>
+<hr>
+<h2 id="หน้าที่เกี่ยวข้อง">หน้าที่เกี่ยวข้อง</h2>
+<ul>
+<li><a href="objectives-kpis.html">requirements/objectives-kpis</a></li>
+<li><a href="non-functional-requirements.html">requirements/non-functional-requirements</a></li>
+<li><a href="../entities/actors.html">entities/actors</a></li>
+<li><a href="../architecture/mobile-app.html">architecture/mobile-app</a></li>
+<li><a href="../architecture/backend-api.html">architecture/backend-api</a></li>
+<li><a href="../concepts/multi-layer-analysis.html">concepts/multi-layer-analysis</a></li>
+</ul>
+</div></main>
+    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้"><p class="toc-title">ในหน้านี้</p><ol class="toc"><li class="toc-level-2"><a href="#%E0%B8%9F%E0%B8%B1%E0%B8%87%E0%B8%81%E0%B9%8C%E0%B8%8A%E0%B8%B1%E0%B8%99%E0%B8%9D%E0%B8%B1%E0%B9%88%E0%B8%87%E0%B8%9C%E0%B8%B9%E0%B9%89%E0%B9%83%E0%B8%8A%E0%B9%89-mobile-app">ฟังก์ชันฝั่งผู้ใช้ (Mobile App)</a></li><li class="toc-level-3"><a href="#%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%A2%E0%B8%B7%E0%B8%99%E0%B8%A2%E0%B8%B1%E0%B8%99%E0%B8%95%E0%B8%B1%E0%B8%A7%E0%B8%95%E0%B8%99-authentication-canonical-fr-auth-01-04-document-05-2-1">การยืนยันตัวตน (Authentication) — canonical: FR-AUTH-01..04 (Document 05 §2.1)</a></li><li class="toc-level-3"><a href="#%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B8%A0%E0%B8%B2%E0%B8%9E-image-input-test-scheme-canonical-document-fr-scan-01-02-03">การรับภาพ (Image Input) — test-scheme (canonical: Document FR-SCAN-01/02/03)</a></li><li class="toc-level-3"><a href="#%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%81%E0%B8%AA%E0%B8%94%E0%B8%87%E0%B8%A3%E0%B8%B2%E0%B8%A2%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B9%80%E0%B8%AA%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%87-risk-report-display-test-scheme-canonical-document-fr-xai-01-fr-analysis-04">การแสดงรายงานความเสี่ยง (Risk Report Display) — test-scheme (canonical: Document FR-XAI-01 + FR-ANALYSIS-04)</a></li><li class="toc-level-3"><a href="#%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%A7%E0%B8%B1%E0%B8%95%E0%B8%B4%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%AA%E0%B9%81%E0%B8%81%E0%B8%99-scan-history-test-scheme-canonical-document-fr-history-01">ประวัติการสแกน (Scan History) — test-scheme (canonical: Document FR-HISTORY-01)</a></li><li class="toc-level-3"><a href="#%E0%B9%81%E0%B8%88%E0%B9%89%E0%B8%87%E0%B8%A3%E0%B8%B2%E0%B8%A2%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%AB%E0%B8%A5%E0%B8%AD%E0%B8%81%E0%B8%A5%E0%B8%A7%E0%B8%87-scam-reporting-test-scheme-canonical-document-fr-history-02">แจ้งรายงานหลอกลวง (Scam Reporting) — test-scheme (canonical: Document FR-HISTORY-02)</a></li><li class="toc-level-3"><a href="#%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%81%E0%B8%8A%E0%B8%A3%E0%B9%8C%E0%B8%9C%E0%B8%A5%E0%B8%A5%E0%B8%B1%E0%B8%9E%E0%B8%98%E0%B9%8C-result-sharing-test-scheme-%E0%B8%9D%E0%B8%B1%E0%B9%88%E0%B8%87-wiki-%E0%B9%84%E0%B8%A1%E0%B9%88%E0%B8%A1%E0%B8%B5-fr-%E0%B9%81%E0%B8%A2%E0%B8%81%E0%B9%83%E0%B8%99-document-%E0%B8%AD%E0%B8%A2%E0%B8%B9%E0%B9%88%E0%B9%83%E0%B8%95%E0%B9%89-fr-history-02-fr-08-%E0%B8%A1%E0%B8%B8%E0%B8%A1%E0%B8%A1%E0%B8%AD%E0%B8%87-coarse">การแชร์ผลลัพธ์ (Result Sharing) — test-scheme ฝั่ง wiki (ไม่มี FR แยกใน Document; อยู่ใต้ FR-HISTORY-02/FR-08 มุมมอง coarse)</a></li><li class="toc-level-3"><a href="#%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B8%B9%E0%B8%A5%E0%B8%AA%E0%B9%88%E0%B8%A7%E0%B8%99%E0%B8%9A%E0%B8%B8%E0%B8%84%E0%B8%84%E0%B8%A5-pdpa-controls-test-scheme-canonical-document-fr-pdpa-01">การจัดการข้อมูลส่วนบุคคล (PDPA Controls) — test-scheme (canonical: Document FR-PDPA-01)</a></li><li class="toc-level-2"><a href="#%E0%B8%9F%E0%B8%B1%E0%B8%87%E0%B8%81%E0%B9%8C%E0%B8%8A%E0%B8%B1%E0%B8%99%E0%B8%9D%E0%B8%B1%E0%B9%88%E0%B8%87%E0%B9%81%E0%B8%AD%E0%B8%94%E0%B8%A1%E0%B8%B4%E0%B8%99-admin-portal-test-scheme-canonical-document-fr-admin-01-04">ฟังก์ชันฝั่งแอดมิน (Admin Portal) — test-scheme (canonical: Document FR-ADMIN-01..04)</a></li><li class="toc-level-3"><a href="#%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%95%E0%B8%A3%E0%B8%A7%E0%B8%88%E0%B8%AA%E0%B8%AD%E0%B8%9A%E0%B8%A2%E0%B9%89%E0%B8%AD%E0%B8%99%E0%B8%AB%E0%B8%A5%E0%B8%B1%E0%B8%87-audit-test-scheme-canonical-document-fr-admin-04">การตรวจสอบย้อนหลัง (Audit) — test-scheme (canonical: Document FR-ADMIN-04)</a></li><li class="toc-level-2"><a href="#%E0%B8%9F%E0%B8%B1%E0%B8%87%E0%B8%81%E0%B9%8C%E0%B8%8A%E0%B8%B1%E0%B8%99%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A%E0%B8%AD%E0%B8%B1%E0%B8%95%E0%B9%82%E0%B8%99%E0%B8%A1%E0%B8%B1%E0%B8%95%E0%B8%B4-backend-ai-test-scheme-canonical-document-fr-scan-fr-analysis-fr-xai">ฟังก์ชันระบบอัตโนมัติ (Backend / AI) — test-scheme (canonical: Document FR-SCAN/FR-ANALYSIS/FR-XAI)</a></li><li class="toc-level-2"><a href="#%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%87">หน้าที่เกี่ยวข้อง</a></li></ol></aside>
   </div>
-  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title">
-    <div class="search-dialog-head"><label class="visually-hidden" id="search-title"
-        for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…"
-        autocomplete="off" data-search-input><button class="control" type="button" data-search-close
-        aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="m6 6 12 12M18 6 6 18" />
-        </svg></button></div>
-    <div class="search-results" data-search-results aria-live="polite"></div>
-  </dialog>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title"><div class="search-dialog-head"><label class="visually-hidden" id="search-title" for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…" autocomplete="off" data-search-input><button class="control" type="button" data-search-close aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div class="search-results" data-search-results aria-live="polite"></div></dialog>
   <script src="../../assets/js/search-index.js"></script>
   <script src="../../assets/js/site.js"></script>
 </body>
-
 </html>

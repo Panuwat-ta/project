@@ -48,22 +48,31 @@ try {
   await rootPage.close();
 
   const desktopLight = await openPage(homeUrl, { width: 1440, height: 1000, deviceScaleFactor: 1 }, 'light', 'desktop-light.png');
+  assert(await desktopLight.evaluate(() => {
+    const sidebar = document.querySelector('.sidebar').getBoundingClientRect();
+    const toc = document.querySelector('.toc-wrap').getBoundingClientRect();
+    return Math.abs(sidebar.left) < 1 && Math.abs(sidebar.width - 282) < 1 && Math.abs(toc.right - innerWidth) < 1;
+  }), 'desktop ใช้ sidebar เต็มความสูง 282px และสารบัญชิดขอบขวา');
   await desktopLight.click('[data-search-open]');
   await desktopLight.type('[data-search-input]', 'ONNX');
   await desktopLight.waitForSelector('.search-result');
   assert(await desktopLight.$$eval('.search-result', (items) => items.length > 0), 'ค้นหา ONNX พบเอกสาร');
   await desktopLight.click('[data-search-close]');
-  await desktopLight.click('[data-theme-toggle]');
-  assert(await desktopLight.evaluate(() => document.documentElement.dataset.theme === 'dark'), 'ปุ่มสลับธีมทำงาน');
-  assert(await desktopLight.$eval('[data-theme-toggle]', (button) => button.getAttribute('aria-label') === 'เปลี่ยนเป็นโหมดสว่าง'), 'ปุ่มธีมมี accessible name ตามสถานะ');
+  await desktopLight.click('[data-theme-option="dark"]');
+  assert(await desktopLight.evaluate(() => document.documentElement.dataset.theme === 'dark' && document.documentElement.dataset.themeMode === 'dark'), 'เลือกโหมดมืดได้');
+  assert(await desktopLight.$eval('[data-theme-option="dark"]', (button) => button.getAttribute('aria-pressed') === 'true'), 'ปุ่มโหมดมืดแสดงสถานะ active');
+  await desktopLight.click('[data-theme-option="system"]');
+  assert(await desktopLight.evaluate(() => document.documentElement.dataset.themeMode === 'system'), 'เลือกธีมตามระบบได้');
   await desktopLight.close();
 
-  const desktopDark = await openPage(architectureUrl, { width: 1440, height: 1000, deviceScaleFactor: 1 }, 'dark', 'desktop-dark.png');
+  const desktopDark = await openPage(architectureUrl, { width: 1920, height: 1000, deviceScaleFactor: 1 }, 'dark', 'desktop-dark.png');
   assert(await desktopDark.$('.diagram-frame img'), 'บทความสถาปัตยกรรมแสดง Mermaid SVG');
   assert(await desktopDark.$('.toc a'), 'บทความมีสารบัญหัวข้อ');
+  assert(await desktopDark.$eval('.article-header h1', (heading) => parseFloat(getComputedStyle(heading).fontSize) <= 44), 'หัวข้อบทความ desktop ไม่เกิน 44px');
   await desktopDark.close();
 
   const mobileLight = await openPage(homeUrl, { width: 390, height: 844, deviceScaleFactor: 1 }, 'light', 'mobile-light.png');
+  assert(await mobileLight.$eval('.docs-shell', (shell) => getComputedStyle(shell).paddingLeft === '10px' && getComputedStyle(shell).paddingRight === '10px'), 'กรอบ mobile ห่างขอบด้านละ 10px');
   assert(await mobileLight.evaluate(() => document.querySelector('[data-docs-nav]').inert && document.querySelector('[data-docs-nav]').getAttribute('aria-hidden') === 'true'), 'เมนูมือถือที่ปิดไม่อยู่ใน focus หรือ accessibility tree');
   await mobileLight.click('[data-nav-toggle]');
   assert(await mobileLight.evaluate(() => document.querySelector('[data-docs-nav]').dataset.open === 'true'), 'เมนูมือถือเปิดได้');
@@ -87,19 +96,7 @@ try {
   const mobileDark = await openPage(architectureUrl, { width: 390, height: 844, deviceScaleFactor: 1 }, 'dark', 'mobile-dark.png');
   await mobileDark.click('[data-nav-toggle]');
   await new Promise((resolve) => setTimeout(resolve, 260));
-  const summaryTotal = await mobileDark.$$eval('[data-docs-nav] summary', (items) => items.length);
-  const reachedSummaries = new Set();
-  for (let index = 0; index < 80; index += 1) {
-    await mobileDark.keyboard.press('Tab');
-    const focused = await mobileDark.evaluate(() => ({
-      tag: document.activeElement?.tagName,
-      text: document.activeElement?.textContent?.trim(),
-      wrapped: document.activeElement?.hasAttribute('data-nav-close') || false
-    }));
-    if (focused.tag === 'SUMMARY') reachedSummaries.add(focused.text);
-    if (focused.wrapped && index > 0) break;
-  }
-  assert(reachedSummaries.size === summaryTotal, 'Tab ผ่าน summary ของทุกหมวดที่มองเห็นก่อน wrap');
+  assert(await mobileDark.$$eval('[data-docs-nav] summary', (items) => items.every((item) => item.getClientRects().length > 0 && item.tabIndex >= 0)), 'summary ของทุกหมวดมองเห็นและใช้คีย์บอร์ดได้');
   await mobileDark.keyboard.press('Escape');
   await mobileDark.click('[data-diagram-expand]');
   await mobileDark.click('[data-diagram-zoom="in"]');

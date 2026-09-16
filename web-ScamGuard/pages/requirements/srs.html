@@ -1,266 +1,78 @@
 <!doctype html>
-<html lang="th" data-theme="light">
-
+<html lang="th" data-theme="light" data-theme-mode="system">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description"
-        content="เอกสารข้อกำหนดความต้องการทางซอฟต์แวร์ Software Requirements Specification - SRS โครงงาน: แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง Image Forgery Detection Application for Fraud Prevention หลัก…">
-    <meta name="color-scheme" content="light dark">
-    <title>Software Requirements Specification (SRS) | ScamGuard Documentation</title>
-    <link rel="stylesheet" href="../../assets/css/site.css">
-    <script>document.documentElement.dataset.theme = (() => { try { return localStorage.getItem('scamguard-docs-theme') || 'light' } catch (e) { return 'light' } })(); window.SC_DOCS_ROOT = '../../';</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="เอกสารข้อกำหนดความต้องการทางซอฟต์แวร์ Software Requirements Specification - SRS โครงงาน: แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง Image Forgery Detection Application for Fraud Prevention หลัก…">
+  <meta name="color-scheme" content="light dark">
+  <title>Software Requirements Specification (SRS) | ScamGuard Documentation</title>
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <script>(()=>{let m='system';try{m=localStorage.getItem('scamguard-docs-theme')||'system'}catch(e){}if(!['system','light','dark'].includes(m))m='system';const t=m==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;document.documentElement.dataset.themeMode=m;document.documentElement.dataset.theme=t})();window.SC_DOCS_ROOT='../../';</script>
 </head>
-
 <body class="">
-    <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
-    <header class="masthead">
-        <div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle
-                aria-expanded="false" aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
-                    aria-hidden="true">
-                    <path d="M4 7h16M4 12h16M4 17h16" />
-                </svg></button><a class="brand" href="../../index.html"><svg viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
-                    aria-hidden="true">
-                    <path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z" />
-                    <path d="m9.2 12 1.8 1.8 3.9-4.2" />
-                </svg><span>ScamGuard <small>Documentation</small></span></a>
-            <div class="masthead-actions"><button class="control" type="button" data-search-open><svg
-                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                        stroke-linejoin="round" aria-hidden="true">
-                        <circle cx="11" cy="11" r="6.5" />
-                        <path d="m16 16 4 4" />
-                    </svg><span>ค้นหา</span><span class="search-shortcut">Ctrl K</span></button><button class="control"
-                    type="button" data-theme-toggle aria-label="เปลี่ยนเป็นโหมดมืด"><svg viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
-                        aria-hidden="true">
-                        <path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.5A7 7 0 0 1 12 3Z" />
-                    </svg><span class="theme-label" data-theme-label>โหมดมืด</span></button></div>
-        </div>
-    </header>
-    <div class="docs-shell">
-        <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><button class="control nav-close"
-                type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="m6 6 12 12M18 6 6 18" />
-                </svg></button>
-            <p class="sidebar-title">เอกสารทั้งหมด</p>
-            <details class="sidebar-group">
-                <summary>ภาพรวม</summary>
-                <ul class="sidebar-list">
-                    <li><a href="../overview.html">ภาพรวมโปรเจค</a></li>
-                    <li><a href="../index.html">สารบัญ Wiki — โปรเจค Scam Image Detection</a></li>
-                </ul>
-            </details>
-            <details class="sidebar-group" open>
-                <summary>ความต้องการระบบ</summary>
-                <ul class="sidebar-list">
-                    <li><a href="functional-requirements.html">ความต้องการเชิงฟังก์ชัน (Functional Requirements)</a>
-                    </li>
-                    <li><a href="non-functional-requirements.html">ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional
-                            Requirements)</a></li>
-                    <li><a href="traceability-matrix.html">เมทริกซ์การสืบย้อนความต้องการ</a></li>
-                    <li><a href="objectives-kpis.html">วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp; KPIs)</a>
-                    </li>
-                    <li><a href="srs.html" aria-current="page">Software Requirements Specification (SRS)</a></li>
-                    <li><a href="use-case-diagram.html">Use Case Diagram</a></li>
-                </ul>
-            </details>
-            <details class="sidebar-group">
-                <summary>สถาปัตยกรรม</summary>
-                <ul class="sidebar-list">
-                    <li><a href="../architecture/database-migrations.html">การจัดการการย้ายฐานข้อมูล (Database
-                            Migrations)</a></li>
-                    <li><a href="../architecture/external-integrations.html">การเชื่อมต่อบริการภายนอก (External
-                            Integrations)</a></li>
-                    <li><a href="../architecture/database-schema.html">โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li>
-                    <li><a href="../architecture/system-architecture.html">สถาปัตยกรรมระบบ (System Architecture)</a>
-                    </li>
-                    <li><a href="../architecture/admin-portal.html">สถาปัตยกรรมและการออกแบบ Admin Portal</a></li>
-                    <li><a href="../architecture/mobile-app.html">สถาปัตยกรรม Mobile App</a></li>
-                    <li><a href="../architecture/ai-inference-service.html">AI Inference Service</a></li>
-                    <li><a href="../architecture/backend-api.html">Backend API — FastAPI Orchestrator</a></li>
-                    <li><a href="../architecture/c1-system-context-diagram.html">C1 System Context Diagram</a></li>
-                    <li><a href="../architecture/c2-container-diagram.html">C2 Container Diagram</a></li>
-                    <li><a href="../architecture/c3-component-diagram.html">C3 Component Diagram - API Application</a>
-                    </li>
-                    <li><a href="../architecture/c4-code-diagram.html">C4 Code Diagram - Image Scanning Flow</a></li>
-                    <li><a href="../architecture/database-er-diagram.html">Entity Relationship Diagram (ER Diagram)</a>
-                    </li>
-                    <li><a href="../architecture/mobile-design.html">Mobile App Architecture</a></li>
-                    <li><a href="../architecture/flowchart.html">System Flowchart</a></li>
-                    <li><a href="../architecture/design-overview.html">UX/UI &amp; System Design Overview</a></li>
-                </ul>
-            </details>
-            <details class="sidebar-group">
-                <summary>แนวคิดและเทคนิค</summary>
-                <ul class="sidebar-list">
-                    <li><a href="../concepts/risk-scoring.html">การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li>
-                    <li><a href="../concepts/multi-layer-analysis.html">การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a>
-                    </li>
-                    <li><a href="../concepts/explainable-ai.html">ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a>
-                    </li>
-                    <li><a href="../concepts/configs.html">พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a>
-                    </li>
-                    <li><a href="../concepts/ai-model-segformer.html">โมเดล AI — SegFormer</a></li>
-                    <li><a href="../concepts/surya-ocr.html">โมเดล AI — Surya OCR</a></li>
-                    <li><a href="../concepts/model-training.html">AI Model Training Workflow</a></li>
-                    <li><a href="../concepts/mmsegmentation.html">MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a>
-                    </li>
-                    <li><a href="../concepts/semantic-segmentation.html">Semantic Segmentation</a></li>
-                </ul>
-            </details>
-            <details class="sidebar-group">
-                <summary>องค์ประกอบระบบ</summary>
-                <ul class="sidebar-list">
-                    <li><a href="../entities/tech-stack.html">เทคโนโลยีที่ใช้ (Technology Stack)</a></li>
-                    <li><a href="../entities/actors.html">ผู้ใช้ระบบ (Actors)</a></li>
-                </ul>
-            </details>
-            <details class="sidebar-group">
-                <summary>การตัดสินใจ</summary>
-                <ul class="sidebar-list">
-                    <li><a href="../decisions/technology-choices.html">การตัดสินใจเลือกเทคโนโลยี (Technology
-                            Choices)</a></li>
-                </ul>
-            </details>
-            <details class="sidebar-group">
-                <summary>การวางแผน</summary>
-                <ul class="sidebar-list">
-                    <li><a href="../planning/task-tracking.html">การติดตามงานและการบริหารโครงการ (Task Tracking &amp;
-                            Jira)</a></li>
-                    <li><a href="../planning/project-scope.html">ขอบเขตโครงการ (Project Scope)</a></li>
-                    <li><a href="../planning/team.html">ทีมงานและผู้รับผิดชอบ (Team)</a></li>
-                    <li><a href="../planning/backend-documentation.html">Backend Documentation</a></li>
-                </ul>
-            </details>
-            <details class="sidebar-group">
-                <summary>การทดสอบ</summary>
-                <ul class="sidebar-list">
-                    <li><a href="../testing/test-cases.html">กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li>
-                </ul>
-            </details>
-            <details class="sidebar-group">
-                <summary>คู่มือและภาคผนวก</summary>
-                <ul class="sidebar-list">
-                    <li><a href="../log.html">บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li>
-                    <li><a href="../howto.html">วิธีใช้งาน Wiki (How to Use This Wiki)</a></li>
-                    <li><a href="../runbook.html">Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li>
-                    <li><a href="../AGENTS.html">Wiki Operating Guide</a></li>
-                </ul>
-            </details>
-        </aside>
-        <div class="nav-backdrop" data-nav-backdrop></div>
-        <main class="article" id="main-content">
-            <nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span
-                    aria-hidden="true">/</span><span>ความต้องการระบบ</span></nav>
-            <header class="article-header">
-                <h1>Software Requirements Specification (SRS)</h1>
-                <p class="article-lead">หลักสูตรวิศวกรรมซอฟต์แวร์ สาขาวิศวกรรมไฟฟ้า คณะวิศวกรรมศาสตร์
-                    มหาวิทยาลัยเทคโนโลยีราชมงคลล้านนา ปีการศึกษา 2/2568 รหัสโครงงานวิศวกรรม: SE02</p>
-                <div class="meta"><span>หมวด ความต้องการระบบ</span><time datetime="2026-08-04">อัปเดต
-                        2026-08-04</time><span>ต้นฉบับ requirements/srs.md</span></div>
-                <div class="tags"><span class="tag">requirements</span><span class="tag">srs</span><span
-                        class="tag">spec</span></div>
-            </header>
-            <div class="prose">
-                <h1 id="เอกสารข้อกำหนดความต้องการทางซอฟต์แวร์-software-requirements-specification-srs">
-                    เอกสารข้อกำหนดความต้องการทางซอฟต์แวร์ (Software Requirements Specification - SRS)</h1>
-                <h2
-                    id="โครงงาน-แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง-image-forgery-detection-application-for-fraud-prevention">
-                    โครงงาน: แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง (Image Forgery Detection Application for Fraud
-                    Prevention)</h2>
-                <p><strong>หลักสูตรวิศวกรรมซอฟต์แวร์ สาขาวิศวกรรมไฟฟ้า คณะวิศวกรรมศาสตร์</strong><br>
-                    <strong>มหาวิทยาลัยเทคโนโลยีราชมงคลล้านนา ปีการศึกษา 2/2568</strong><br>
-                    <strong>รหัสโครงงานวิศวกรรม:</strong> SE02
-                </p>
-                <hr>
-                <h2 id="คณะผู้ดำเนินงาน">คณะผู้ดำเนินงาน</h2>
-                <ol>
-                    <li>
-                        <p><strong>นาย ภานุวัฒน์ ต๋าคำ</strong> (หัวหน้าโครงงาน)<br>
-                            รหัสนักศึกษา: 67543210044-3 ชั้นปี: วิศวกรรมซอฟต์แวร์ ปี 2ข (หลักสูตรเทียบโอน)<br>
-                            ความเชี่ยวชาญ: การพัฒนาโมบายแอปพลิเคชัน, การพัฒนาเว็บแอปพลิเคชัน, การวิเคราะห์และออกแบบระบบ,
-                            การออกแบบฐานข้อมูล, การออกแบบส่วนติดต่อผู้ใช้ (UI), การเขียนโปรแกรมภาษา Python และ
-                            JavaScript<br>
-                            ความรับผิดชอบ: วางแผนและกำหนดขอบเขตโครงงาน, เก็บและวิเคราะห์ความต้องการระบบ,
-                            วิเคราะห์และออกแบบระบบ, พัฒนาแอปพลิเคชันบนอุปกรณ์เคลื่อนที่, พัฒนาระบบฝั่งเซิร์ฟเวอร์,
-                            พัฒนาและฝึกสอนโมเดลปัญญาประดิษฐ์ (AI), จัดทำเอกสารประกอบโครงงาน<br>
-                            สัดส่วนความรับผิดชอบ: 70%<br>
-                            สถานที่ติดต่อ: มหาวิทยาลัยเทคโนโลยีราชมงคลล้านนา เชียงใหม่ ดอยสะเก็ด<br>
-                            โทรศัพท์: 083-923-0703<br>
-                            อีเมล: <a href="mailto:panuwat_ta67@live.rmutl.ac.th"
-                                rel="noreferrer">panuwat_ta67@live.rmutl.ac.th</a></p>
-                    </li>
-                    <li>
-                        <p><strong>นาย เอกพันธ์ ทศทิศรังสรรค์</strong> (ผู้ร่วมโครงงาน)<br>
-                            รหัสนักศึกษา: 67543210050-0 ชั้นปี: วิศวกรรมซอฟต์แวร์ ปี 2ข (หลักสูตรเทียบโอน)<br>
-                            ความเชี่ยวชาญ: การพัฒนาโมบายแอปพลิเคชัน, การพัฒนาเว็บแอปพลิเคชัน,
-                            การวิเคราะห์และออกแบบระบบ<br>
-                            ความรับผิดชอบ: การวิเคราะห์และออกแบบระบบ, พัฒนาแอปพลิเคชันบนอุปกรณ์เคลื่อนที่,
-                            จัดทำเอกสารประกอบโครงงาน, ดำเนินการทดสอบระบบ<br>
-                            สัดส่วนความรับผิดชอบ: 30%<br>
-                            สถานที่ติดต่อ: มหาวิทยาลัยเทคโนโลยีราชมงคลล้านนา เชียงใหม่ ดอยสะเก็ด<br>
-                            โทรศัพท์: 093-149-1440<br>
-                            อีเมล: <a href="mailto:akkapan_to67@live.rmutl.ac.th"
-                                rel="noreferrer">akkapan_to67@live.rmutl.ac.th</a></p>
-                    </li>
-                </ol>
-                <p><strong>อาจารย์ที่ปรึกษาร่วม:</strong> อาจารย์ สัญญา อุทธโยธา และ อาจารย์ ปิยผล ยืนยงสถาวร
-                    <strong>วันที่เสนอโครงงาน:</strong> 20 มีนาคม พ.ศ. 2568
-                </p>
-                <hr>
-                <h2 id="1-บทนำ-introduction">1. บทนำ (Introduction)</h2>
-                <h3 id="1-1-วัตถุประสงค์ของเอกสาร-purpose">1.1 วัตถุประสงค์ของเอกสาร (Purpose)</h3>
-                <p>เอกสารฉบับนี้จัดทำขึ้นเพื่อระบุข้อกำหนดความต้องการทางซอฟต์แวร์ (Software Requirements Specification:
-                    SRS) สำหรับแอปพลิเคชันตรวจสอบรูปภาพตัดต่อเพื่อป้องกันการหลอกลวง
-                    โดยแสดงข้อมูลเกี่ยวกับความต้องการทางธุรกิจ (Business Requirements) ความต้องการเชิงฟังก์ชัน
-                    (Functional Requirements) ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements)
-                    สถาปัตยกรรมของระบบ
-                    และการออกแบบระบบเบื้องต้นเพื่อใช้เป็นแนวทางและข้อตกลงร่วมในการพัฒนาโครงงานวิศวกรรมซอฟต์แวร์นี้</p>
-                <h3 id="1-2-ขอบเขตของผลิตภัณฑ์-product-scope">1.2 ขอบเขตของผลิตภัณฑ์ (Product Scope)</h3>
-                <p>ระบบ Scam Image Detection
-                    เป็นระบบตรวจสอบความเสี่ยงของรูปภาพที่สงสัยว่าถูกตัดต่อหรือสร้างขึ้นด้วยปัญญาประดิษฐ์เพื่อลดการตกเป็นเหยื่อของการหลอกลวงทางไซเบอร์
-                    เช่น สลิปโอนเงินปลอม หรือภาพหน้าคนปลอม โดยระบบจะตรวจสอบผ่าน 3 เลเยอร์หลัก (Multi-layer Analysis):
-                </p>
-                <ol>
-                    <li><strong>Textual Analysis (วิเคราะห์ข้อความในภาพ):</strong> ดึงข้อความด้วย OCR
-                        และวิเคราะห์หาคำสำคัญหรือรูปแบบประโยคหลอกลวงด้วย NLP</li>
-                    <li><strong>Source Verification (ตรวจสอบแหล่งที่มา):</strong> ค้นหาภาพย้อนกลับ (Reverse Image
-                        Search) เพื่อตรวจสอบว่าภาพเคยปรากฏในอินเทอร์เน็ตมาก่อนหรือไม่</li>
-                    <li><strong>Visual Anomaly Detection (วิเคราะห์ความผิดปกติทางทัศนภาพ):</strong>
-                        ใช้โมเดลการเรียนรู้เชิงลึก (Deep Learning) เพื่อหาร่องรอยการตัดต่อ (Image Forgery)
-                        หรือภาพที่ถูกสร้างโดย Generative AI (AI-Generated Image)</li>
-                </ol>
-                <p><strong>ขอบเขตแพลตฟอร์ม v1:</strong> รองรับ Android เท่านั้น (พัฒนา codebase เดียวด้วย Flutter เตรียม
-                    build iOS ในอนาคต)</p>
-                <h3 id="1-3-คำสำคัญ-keywords">1.3 คำสำคัญ (Keywords)</h3>
-                <ul>
-                    <li><strong>Image Forgery Detection:</strong> การตรวจสอบการปลอมแปลงรูปภาพ</li>
-                    <li><strong>Explainable AI (XAI):</strong> ปัญญาประดิษฐ์ที่อธิบายได้</li>
-                    <li><strong>Heatmap (Heatmap):</strong> แผนที่ความร้อนระบุจุดผิดปกติ</li>
-                    <li><strong>Multi-layer Analysis:</strong> การวิเคราะห์ข้อมูลแบบหลายชั้น</li>
-                    <li><strong>Microservices Architecture:</strong> สถาปัตยกรรมไมโครเซอร์วิส</li>
-                    <li><strong>PDPA (Personal Data Protection Act):</strong> พระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล</li>
-                </ul>
-                <hr>
-                <h2 id="2-คำอธิบายโดยรวม-overall-description">2. คำอธิบายโดยรวม (Overall Description)</h2>
-                <h3 id="2-1-มุมมองของผลิตภัณฑ์-product-perspective">2.1 มุมมองของผลิตภัณฑ์ (Product Perspective)</h3>
-                <p>ระบบตรวจสอบภาพหลอกลวงได้รับการพัฒนาให้อยู่ในรูปของแอปพลิเคชันบนสมาร์ทโฟน (Flutter)
-                    เพื่อให้เข้าถึงง่าย ทำงานร่วมกับ API Gateway ฝั่งระบบหลังบ้าน (FastAPI)
-                    และระบบบริการตรวจสอบวิเคราะห์ปัญญาประดิษฐ์ (AI Inference Service)
-                    เพื่อส่งผลลัพธ์ที่เป็นระดับความเสี่ยง (Risk Score) และคำอธิบายเชิงภาพ (Heatmap) กลับไปยังผู้ใช้</p>
-                <h4 id="2-1-1-แผนภาพ-context-diagram-c1">2.1.1 แผนภาพ Context Diagram (C1)</h4>
-                <p>แสดงขอบเขตและการแลกเปลี่ยนข้อมูลระหว่างผู้ใช้ ระบบ และบริการภายนอก:</p>
-                <figure class="diagram-frame">
-                    <div class="diagram-toolbar"><span>แผนภาพ 2</span><button class="control" type="button"
-                            data-diagram-expand>ดูขนาดใหญ่</button></div><img
-                        src="../../assets/diagrams/requirements-srs-2.svg"
-                        alt="แผนภาพจาก Software Requirements Specification (SRS)" loading="lazy">
-                    <details class="diagram-source">
-                        <summary>ดู Mermaid source</summary>
-                        <pre><code>flowchart TD
+  <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
+  <header class="masthead"><div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><nav class="top-tabs" aria-label="เมนูหลัก"><a href="../../index.html">Guide</a><a href="../../pages/architecture/system-architecture.html">Architecture</a><a href="../../pages/architecture/backend-api.html">API Reference</a></nav></div></header>
+  <div class="docs-shell">
+    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><div class="sidebar-head"><a class="sidebar-brand" href="../../index.html" aria-label="ScamGuard Documentation"><span class="brand brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z"/><path d="m9.2 12 1.8 1.8 3.9-4.2"/></svg></span><span class="sidebar-brand-name">ScamGuard Docs</span></a><div class="theme-switcher" role="group" aria-label="ธีมเว็บไซต์"><button type="button" data-theme-option="system" aria-label="ใช้ธีมตามระบบ" title="System"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></button><button type="button" data-theme-option="light" aria-label="ใช้โหมดสว่าง" title="Light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></button><button type="button" data-theme-option="dark" aria-label="ใช้โหมดมืด" title="Dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8 8 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/></svg></button></div></div><button class="control nav-close" type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button><button class="sidebar-search" type="button" data-search-open><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search...</span><kbd>Ctrl K</kbd></button><div class="sidebar-scroll"><details class="sidebar-group" ><summary>ภาพรวม</summary><ul class="sidebar-list"><li><a href="../overview.html" >ภาพรวมโปรเจค</a></li><li><a href="../index.html" >สารบัญ Wiki — โปรเจค Scam Image Detection</a></li></ul></details><details class="sidebar-group" open><summary>ความต้องการระบบ</summary><ul class="sidebar-list"><li><a href="functional-requirements.html" >ความต้องการเชิงฟังก์ชัน (Functional Requirements)</a></li><li><a href="non-functional-requirements.html" >ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements)</a></li><li><a href="traceability-matrix.html" >เมทริกซ์การสืบย้อนความต้องการ</a></li><li><a href="objectives-kpis.html" >วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp; KPIs)</a></li><li><a href="srs.html" aria-current="page">Software Requirements Specification (SRS)</a></li><li><a href="use-case-diagram.html" >Use Case Diagram</a></li></ul></details><details class="sidebar-group" ><summary>สถาปัตยกรรม</summary><ul class="sidebar-list"><li><a href="../architecture/database-migrations.html" >การจัดการการย้ายฐานข้อมูล (Database Migrations)</a></li><li><a href="../architecture/external-integrations.html" >การเชื่อมต่อบริการภายนอก (External Integrations)</a></li><li><a href="../architecture/database-schema.html" >โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li><li><a href="../architecture/system-architecture.html" >สถาปัตยกรรมระบบ (System Architecture)</a></li><li><a href="../architecture/admin-portal.html" >สถาปัตยกรรมและการออกแบบ Admin Portal</a></li><li><a href="../architecture/mobile-app.html" >สถาปัตยกรรม Mobile App</a></li><li><a href="../architecture/ai-inference-service.html" >AI Inference Service</a></li><li><a href="../architecture/backend-api.html" >Backend API — FastAPI Orchestrator</a></li><li><a href="../architecture/c1-system-context-diagram.html" >C1 System Context Diagram</a></li><li><a href="../architecture/c2-container-diagram.html" >C2 Container Diagram</a></li><li><a href="../architecture/c3-component-diagram.html" >C3 Component Diagram - API Application</a></li><li><a href="../architecture/c4-code-diagram.html" >C4 Code Diagram - Image Scanning Flow</a></li><li><a href="../architecture/database-er-diagram.html" >Entity Relationship Diagram (ER Diagram)</a></li><li><a href="../architecture/mobile-design.html" >Mobile App Architecture</a></li><li><a href="../architecture/flowchart.html" >System Flowchart</a></li><li><a href="../architecture/design-overview.html" >UX/UI &amp; System Design Overview</a></li></ul></details><details class="sidebar-group" ><summary>แนวคิดและเทคนิค</summary><ul class="sidebar-list"><li><a href="../concepts/risk-scoring.html" >การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li><li><a href="../concepts/multi-layer-analysis.html" >การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li><li><a href="../concepts/explainable-ai.html" >ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li><li><a href="../concepts/configs.html" >พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li><li><a href="../concepts/ai-model-segformer.html" >โมเดล AI — SegFormer</a></li><li><a href="../concepts/surya-ocr.html" >โมเดล AI — Surya OCR</a></li><li><a href="../concepts/model-training.html" >AI Model Training Workflow</a></li><li><a href="../concepts/mmsegmentation.html" >MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li><li><a href="../concepts/semantic-segmentation.html" >Semantic Segmentation</a></li></ul></details><details class="sidebar-group" ><summary>องค์ประกอบระบบ</summary><ul class="sidebar-list"><li><a href="../entities/tech-stack.html" >เทคโนโลยีที่ใช้ (Technology Stack)</a></li><li><a href="../entities/actors.html" >ผู้ใช้ระบบ (Actors)</a></li></ul></details><details class="sidebar-group" ><summary>การตัดสินใจ</summary><ul class="sidebar-list"><li><a href="../decisions/technology-choices.html" >การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li></ul></details><details class="sidebar-group" ><summary>การวางแผน</summary><ul class="sidebar-list"><li><a href="../planning/task-tracking.html" >การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a></li><li><a href="../planning/project-scope.html" >ขอบเขตโครงการ (Project Scope)</a></li><li><a href="../planning/team.html" >ทีมงานและผู้รับผิดชอบ (Team)</a></li><li><a href="../planning/backend-documentation.html" >Backend Documentation</a></li></ul></details><details class="sidebar-group" ><summary>การทดสอบ</summary><ul class="sidebar-list"><li><a href="../testing/test-cases.html" >กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li></ul></details><details class="sidebar-group" ><summary>คู่มือและภาคผนวก</summary><ul class="sidebar-list"><li><a href="../log.html" >บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li><li><a href="../howto.html" >วิธีใช้งาน Wiki (How to Use This Wiki)</a></li><li><a href="../runbook.html" >Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li><li><a href="../AGENTS.html" >Wiki Operating Guide</a></li></ul></details></div></aside><div class="nav-backdrop" data-nav-backdrop></div>
+    <main class="article" id="main-content"><nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span aria-hidden="true">/</span><span>ความต้องการระบบ</span></nav><header class="article-header"><h1>Software Requirements Specification (SRS)</h1><p class="article-lead">หลักสูตรวิศวกรรมซอฟต์แวร์ สาขาวิศวกรรมไฟฟ้า คณะวิศวกรรมศาสตร์ มหาวิทยาลัยเทคโนโลยีราชมงคลล้านนา ปีการศึกษา 2/2568 รหัสโครงงานวิศวกรรม: SE02</p><div class="meta"><span>หมวด ความต้องการระบบ</span><time datetime="2026-08-04">อัปเดต 2026-08-04</time><span>ต้นฉบับ requirements/srs.md</span></div><div class="tags"><span class="tag">requirements</span><span class="tag">srs</span><span class="tag">spec</span></div></header><div class="prose"><h1 id="เอกสารข้อกำหนดความต้องการทางซอฟต์แวร์-software-requirements-specification-srs">เอกสารข้อกำหนดความต้องการทางซอฟต์แวร์ (Software Requirements Specification - SRS)</h1>
+<h2 id="โครงงาน-แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง-image-forgery-detection-application-for-fraud-prevention">โครงงาน: แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง (Image Forgery Detection Application for Fraud Prevention)</h2>
+<p><strong>หลักสูตรวิศวกรรมซอฟต์แวร์ สาขาวิศวกรรมไฟฟ้า คณะวิศวกรรมศาสตร์</strong><br>
+<strong>มหาวิทยาลัยเทคโนโลยีราชมงคลล้านนา ปีการศึกษา 2/2568</strong><br>
+<strong>รหัสโครงงานวิศวกรรม:</strong> SE02</p>
+<hr>
+<h2 id="คณะผู้ดำเนินงาน">คณะผู้ดำเนินงาน</h2>
+<ol>
+<li>
+<p><strong>นาย ภานุวัฒน์ ต๋าคำ</strong> (หัวหน้าโครงงาน)<br>
+รหัสนักศึกษา: 67543210044-3 ชั้นปี: วิศวกรรมซอฟต์แวร์ ปี 2ข (หลักสูตรเทียบโอน)<br>
+ความเชี่ยวชาญ: การพัฒนาโมบายแอปพลิเคชัน, การพัฒนาเว็บแอปพลิเคชัน, การวิเคราะห์และออกแบบระบบ, การออกแบบฐานข้อมูล, การออกแบบส่วนติดต่อผู้ใช้ (UI), การเขียนโปรแกรมภาษา Python และ JavaScript<br>
+ความรับผิดชอบ: วางแผนและกำหนดขอบเขตโครงงาน, เก็บและวิเคราะห์ความต้องการระบบ, วิเคราะห์และออกแบบระบบ, พัฒนาแอปพลิเคชันบนอุปกรณ์เคลื่อนที่, พัฒนาระบบฝั่งเซิร์ฟเวอร์, พัฒนาและฝึกสอนโมเดลปัญญาประดิษฐ์ (AI), จัดทำเอกสารประกอบโครงงาน<br>
+สัดส่วนความรับผิดชอบ: 70%<br>
+สถานที่ติดต่อ: มหาวิทยาลัยเทคโนโลยีราชมงคลล้านนา เชียงใหม่ ดอยสะเก็ด<br>
+โทรศัพท์: 083-923-0703<br>
+อีเมล: <a href="mailto:panuwat_ta67@live.rmutl.ac.th" rel="noreferrer">panuwat_ta67@live.rmutl.ac.th</a></p>
+</li>
+<li>
+<p><strong>นาย เอกพันธ์ ทศทิศรังสรรค์</strong> (ผู้ร่วมโครงงาน)<br>
+รหัสนักศึกษา: 67543210050-0 ชั้นปี: วิศวกรรมซอฟต์แวร์ ปี 2ข (หลักสูตรเทียบโอน)<br>
+ความเชี่ยวชาญ: การพัฒนาโมบายแอปพลิเคชัน, การพัฒนาเว็บแอปพลิเคชัน, การวิเคราะห์และออกแบบระบบ<br>
+ความรับผิดชอบ: การวิเคราะห์และออกแบบระบบ, พัฒนาแอปพลิเคชันบนอุปกรณ์เคลื่อนที่, จัดทำเอกสารประกอบโครงงาน, ดำเนินการทดสอบระบบ<br>
+สัดส่วนความรับผิดชอบ: 30%<br>
+สถานที่ติดต่อ: มหาวิทยาลัยเทคโนโลยีราชมงคลล้านนา เชียงใหม่ ดอยสะเก็ด<br>
+โทรศัพท์: 093-149-1440<br>
+อีเมล: <a href="mailto:akkapan_to67@live.rmutl.ac.th" rel="noreferrer">akkapan_to67@live.rmutl.ac.th</a></p>
+</li>
+</ol>
+<p><strong>อาจารย์ที่ปรึกษาร่วม:</strong> อาจารย์ สัญญา อุทธโยธา และ อาจารย์ ปิยผล ยืนยงสถาวร
+<strong>วันที่เสนอโครงงาน:</strong> 20 มีนาคม พ.ศ. 2568</p>
+<hr>
+<h2 id="1-บทนำ-introduction">1. บทนำ (Introduction)</h2>
+<h3 id="1-1-วัตถุประสงค์ของเอกสาร-purpose">1.1 วัตถุประสงค์ของเอกสาร (Purpose)</h3>
+<p>เอกสารฉบับนี้จัดทำขึ้นเพื่อระบุข้อกำหนดความต้องการทางซอฟต์แวร์ (Software Requirements Specification: SRS) สำหรับแอปพลิเคชันตรวจสอบรูปภาพตัดต่อเพื่อป้องกันการหลอกลวง โดยแสดงข้อมูลเกี่ยวกับความต้องการทางธุรกิจ (Business Requirements) ความต้องการเชิงฟังก์ชัน (Functional Requirements) ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements) สถาปัตยกรรมของระบบ และการออกแบบระบบเบื้องต้นเพื่อใช้เป็นแนวทางและข้อตกลงร่วมในการพัฒนาโครงงานวิศวกรรมซอฟต์แวร์นี้</p>
+<h3 id="1-2-ขอบเขตของผลิตภัณฑ์-product-scope">1.2 ขอบเขตของผลิตภัณฑ์ (Product Scope)</h3>
+<p>ระบบ Scam Image Detection เป็นระบบตรวจสอบความเสี่ยงของรูปภาพที่สงสัยว่าถูกตัดต่อหรือสร้างขึ้นด้วยปัญญาประดิษฐ์เพื่อลดการตกเป็นเหยื่อของการหลอกลวงทางไซเบอร์ เช่น สลิปโอนเงินปลอม หรือภาพหน้าคนปลอม โดยระบบจะตรวจสอบผ่าน 3 เลเยอร์หลัก (Multi-layer Analysis):</p>
+<ol>
+<li><strong>Textual Analysis (วิเคราะห์ข้อความในภาพ):</strong> ดึงข้อความด้วย OCR และวิเคราะห์หาคำสำคัญหรือรูปแบบประโยคหลอกลวงด้วย NLP</li>
+<li><strong>Source Verification (ตรวจสอบแหล่งที่มา):</strong> ค้นหาภาพย้อนกลับ (Reverse Image Search) เพื่อตรวจสอบว่าภาพเคยปรากฏในอินเทอร์เน็ตมาก่อนหรือไม่</li>
+<li><strong>Visual Anomaly Detection (วิเคราะห์ความผิดปกติทางทัศนภาพ):</strong> ใช้โมเดลการเรียนรู้เชิงลึก (Deep Learning) เพื่อหาร่องรอยการตัดต่อ (Image Forgery) หรือภาพที่ถูกสร้างโดย Generative AI (AI-Generated Image)</li>
+</ol>
+<p><strong>ขอบเขตแพลตฟอร์ม v1:</strong> รองรับ Android เท่านั้น (พัฒนา codebase เดียวด้วย Flutter เตรียม build iOS ในอนาคต)</p>
+<h3 id="1-3-คำสำคัญ-keywords">1.3 คำสำคัญ (Keywords)</h3>
+<ul>
+<li><strong>Image Forgery Detection:</strong> การตรวจสอบการปลอมแปลงรูปภาพ</li>
+<li><strong>Explainable AI (XAI):</strong> ปัญญาประดิษฐ์ที่อธิบายได้</li>
+<li><strong>Heatmap (Heatmap):</strong> แผนที่ความร้อนระบุจุดผิดปกติ</li>
+<li><strong>Multi-layer Analysis:</strong> การวิเคราะห์ข้อมูลแบบหลายชั้น</li>
+<li><strong>Microservices Architecture:</strong> สถาปัตยกรรมไมโครเซอร์วิส</li>
+<li><strong>PDPA (Personal Data Protection Act):</strong> พระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล</li>
+</ul>
+<hr>
+<h2 id="2-คำอธิบายโดยรวม-overall-description">2. คำอธิบายโดยรวม (Overall Description)</h2>
+<h3 id="2-1-มุมมองของผลิตภัณฑ์-product-perspective">2.1 มุมมองของผลิตภัณฑ์ (Product Perspective)</h3>
+<p>ระบบตรวจสอบภาพหลอกลวงได้รับการพัฒนาให้อยู่ในรูปของแอปพลิเคชันบนสมาร์ทโฟน (Flutter) เพื่อให้เข้าถึงง่าย ทำงานร่วมกับ API Gateway ฝั่งระบบหลังบ้าน (FastAPI) และระบบบริการตรวจสอบวิเคราะห์ปัญญาประดิษฐ์ (AI Inference Service) เพื่อส่งผลลัพธ์ที่เป็นระดับความเสี่ยง (Risk Score) และคำอธิบายเชิงภาพ (Heatmap) กลับไปยังผู้ใช้</p>
+<h4 id="2-1-1-แผนภาพ-context-diagram-c1">2.1.1 แผนภาพ Context Diagram (C1)</h4>
+<p>แสดงขอบเขตและการแลกเปลี่ยนข้อมูลระหว่างผู้ใช้ ระบบ และบริการภายนอก:</p>
+<figure class="diagram-frame"><div class="diagram-toolbar"><span>แผนภาพ 2</span><button class="control" type="button" data-diagram-expand>ดูขนาดใหญ่</button></div><img src="../../assets/diagrams/requirements-srs-2.svg" alt="แผนภาพจาก Software Requirements Specification (SRS)" loading="lazy"><details class="diagram-source"><summary>ดู Mermaid source</summary><pre><code>flowchart TD
     %% การตั้งค่า Class สีต่างๆ (กำหนด color:black ตามคำสั่ง)
     classDef mainSystem fill:#0050ef,stroke:#001DBC,color:black
     classDef userFill fill:#fff2cc,stroke:#d6b656,color:black
@@ -298,73 +110,38 @@
     class User userFill
     class Admin adminFill
     class ExtSearch,ExtNotify extFill
-</code></pre>
-                    </details>
-                    <dialog aria-label="แผนภาพขนาดใหญ่">
-                        <div class="diagram-expanded-head"><button class="control" type="button"
-                                data-diagram-zoom="out">ย่อ</button><span class="zoom-status"
-                                data-zoom-status>100%</span><button class="control" type="button"
-                                data-diagram-zoom="in">ขยาย</button><button class="control" type="button"
-                                data-diagram-close>ปิด</button></div>
-                        <div class="diagram-pan" data-diagram-pan data-zoom="1" tabindex="0"
-                            aria-label="พื้นที่แผนภาพ เลื่อนได้ทั้งแนวตั้งและแนวนอน"><img
-                                src="../../assets/diagrams/requirements-srs-2.svg"
-                                alt="แผนภาพจาก Software Requirements Specification (SRS)"></div>
-                    </dialog>
-                </figure>
-                <h5 id="คำอธิบายระบบในภาพรวม-system-context-details">คำอธิบายระบบในภาพรวม (System Context Details)</h5>
-                <ul>
-                    <li><strong>1. ระบบหลัก (The Software System):</strong>
-                        <ul>
-                            <li><strong>Mobile App: Scam Image Detection:</strong> เป็นแอปพลิเคชันบนมือถือที่พัฒนาด้วย
-                                Flutter
-                                สำหรับอำนวยความสะดวกให้ผู้ใช้งานทั่วไปสามารถอัปโหลดรูปภาพที่น่าสงสัยเข้ามาตรวจสอบความเสี่ยงของการปลอมแปลงและการหลอกลวง
-                            </li>
-                        </ul>
-                    </li>
-                    <li><strong>2. ผู้ใช้งาน (People):</strong>
-                        <ul>
-                            <li><strong>General User (ผู้ใช้งานทั่วไป):</strong> ผู้รับรูปภาพน่าสงสัย เช่น
-                                สลิปโอนเงินปลอม หรือรูปโปรไฟล์หลอกลวง
-                                ส่งภาพเข้ามาตรวจสอบและดูรายงานระดับความเสี่ยงเพื่อประกอบการตัดสินใจ</li>
-                            <li><strong>Admin (ผู้ดูแลระบบ):</strong> ตรวจสอบรูปภาพสแกมที่ผู้ใช้รายงาน
-                                ส่งภาพเข้าคลังชุดข้อมูล
-                                หรือดำเนินงานอัปเดตข้อมูลไฟล์โมเดลปัญญาประดิษฐ์ให้เท่าทันรูปแบบกลโกงใหม่ๆ</li>
-                        </ul>
-                    </li>
-                    <li><strong>3. ระบบภายนอก (External Systems):</strong>
-                        <ul>
-                            <li><strong>Reverse Image Search Provider:</strong> ระบบภายนอก (Google Vision API / Bing
-                                Visual Search) สำหรับสืบค้นและค้นหาว่าไฟล์ภาพดังกล่าวเคยปรากฏในอินเทอร์เน็ตที่ใดบ้าง
-                                เพื่อระบุแหล่งที่มาและบริบทที่แท้จริง</li>
-                            <li><strong>Push Notification Service (Phase 2 = FCM):</strong> ใน v1 ใช้การแจ้งเตือนแบบ
-                                in-app/polling ภายใน 60 วินาทีเมื่อระบบวิเคราะห์ผลลัพธ์เบื้องหลังเสร็จสมบูรณ์</li>
-                        </ul>
-                    </li>
-                    <li><strong>สรุปขั้นตอนการทำงาน (Workflow Scenario):</strong>
-                        <ol>
-                            <li><strong>User</strong> อัปโหลดรูปภาพที่ต้องการตรวจสอบเข้ามาในระบบผ่านแอปพลิเคชันมือถือ
-                            </li>
-                            <li><strong>System</strong> ตรวจสอบความละเอียด ร่องรอยการตัดต่อ (Semantic Segmentation)
-                                และส่งข้อมูลสกัดภาพไปสืบค้นแหล่งที่มาผ่าน Google/Bing API</li>
-                            <li>ระบบประมวลผลคำนวณความเสี่ยง และแจ้งเตือนผู้ใช้งานแบบ in-app/polling ภายใน 60 วินาที (FCM
-                                push = Phase 2)</li>
-                            <li>ผู้ใช้เปิดตรวจสอบรายงานผลลัพธ์ดัชนีความเสี่ยงพร้อมแผนที่ความร้อน (Heatmap)</li>
-                            <li>หากภาพเป็นรูปแบบกลโกงใหม่ ผู้ใช้สามารถกดรายงานเพื่อส่งข้อมูลไปให้ Admin
-                                ทำการอัปเดตโมเดลในอนาคต</li>
-                        </ol>
-                    </li>
-                </ul>
-                <h4 id="2-1-2-แผนภาพ-container-diagram-c2">2.1.2 แผนภาพ Container Diagram (C2)</h4>
-                <p>แสดงโครงสร้างส่วนประกอบย่อยภายในระบบที่ทำงานร่วมกันแบบ Microservices:</p>
-                <figure class="diagram-frame">
-                    <div class="diagram-toolbar"><span>แผนภาพ 3</span><button class="control" type="button"
-                            data-diagram-expand>ดูขนาดใหญ่</button></div><img
-                        src="../../assets/diagrams/requirements-srs-3.svg"
-                        alt="แผนภาพจาก Software Requirements Specification (SRS)" loading="lazy">
-                    <details class="diagram-source">
-                        <summary>ดู Mermaid source</summary>
-                        <pre><code>flowchart TB
+</code></pre></details><dialog aria-label="แผนภาพขนาดใหญ่"><div class="diagram-expanded-head"><button class="control" type="button" data-diagram-zoom="out">ย่อ</button><span class="zoom-status" data-zoom-status>100%</span><button class="control" type="button" data-diagram-zoom="in">ขยาย</button><button class="control" type="button" data-diagram-close>ปิด</button></div><div class="diagram-pan" data-diagram-pan data-zoom="1" tabindex="0" aria-label="พื้นที่แผนภาพ เลื่อนได้ทั้งแนวตั้งและแนวนอน"><img src="../../assets/diagrams/requirements-srs-2.svg" alt="แผนภาพจาก Software Requirements Specification (SRS)"></div></dialog></figure><h5 id="คำอธิบายระบบในภาพรวม-system-context-details">คำอธิบายระบบในภาพรวม (System Context Details)</h5>
+<ul>
+<li><strong>1. ระบบหลัก (The Software System):</strong>
+<ul>
+<li><strong>Mobile App: Scam Image Detection:</strong> เป็นแอปพลิเคชันบนมือถือที่พัฒนาด้วย Flutter สำหรับอำนวยความสะดวกให้ผู้ใช้งานทั่วไปสามารถอัปโหลดรูปภาพที่น่าสงสัยเข้ามาตรวจสอบความเสี่ยงของการปลอมแปลงและการหลอกลวง</li>
+</ul>
+</li>
+<li><strong>2. ผู้ใช้งาน (People):</strong>
+<ul>
+<li><strong>General User (ผู้ใช้งานทั่วไป):</strong> ผู้รับรูปภาพน่าสงสัย เช่น สลิปโอนเงินปลอม หรือรูปโปรไฟล์หลอกลวง ส่งภาพเข้ามาตรวจสอบและดูรายงานระดับความเสี่ยงเพื่อประกอบการตัดสินใจ</li>
+<li><strong>Admin (ผู้ดูแลระบบ):</strong> ตรวจสอบรูปภาพสแกมที่ผู้ใช้รายงาน ส่งภาพเข้าคลังชุดข้อมูล หรือดำเนินงานอัปเดตข้อมูลไฟล์โมเดลปัญญาประดิษฐ์ให้เท่าทันรูปแบบกลโกงใหม่ๆ</li>
+</ul>
+</li>
+<li><strong>3. ระบบภายนอก (External Systems):</strong>
+<ul>
+<li><strong>Reverse Image Search Provider:</strong> ระบบภายนอก (Google Vision API / Bing Visual Search) สำหรับสืบค้นและค้นหาว่าไฟล์ภาพดังกล่าวเคยปรากฏในอินเทอร์เน็ตที่ใดบ้าง เพื่อระบุแหล่งที่มาและบริบทที่แท้จริง</li>
+<li><strong>Push Notification Service (Phase 2 = FCM):</strong> ใน v1 ใช้การแจ้งเตือนแบบ in-app/polling ภายใน 60 วินาทีเมื่อระบบวิเคราะห์ผลลัพธ์เบื้องหลังเสร็จสมบูรณ์</li>
+</ul>
+</li>
+<li><strong>สรุปขั้นตอนการทำงาน (Workflow Scenario):</strong>
+<ol>
+<li><strong>User</strong> อัปโหลดรูปภาพที่ต้องการตรวจสอบเข้ามาในระบบผ่านแอปพลิเคชันมือถือ</li>
+<li><strong>System</strong> ตรวจสอบความละเอียด ร่องรอยการตัดต่อ (Semantic Segmentation) และส่งข้อมูลสกัดภาพไปสืบค้นแหล่งที่มาผ่าน Google/Bing API</li>
+<li>ระบบประมวลผลคำนวณความเสี่ยง และแจ้งเตือนผู้ใช้งานแบบ in-app/polling ภายใน 60 วินาที (FCM push = Phase 2)</li>
+<li>ผู้ใช้เปิดตรวจสอบรายงานผลลัพธ์ดัชนีความเสี่ยงพร้อมแผนที่ความร้อน (Heatmap)</li>
+<li>หากภาพเป็นรูปแบบกลโกงใหม่ ผู้ใช้สามารถกดรายงานเพื่อส่งข้อมูลไปให้ Admin ทำการอัปเดตโมเดลในอนาคต</li>
+</ol>
+</li>
+</ul>
+<h4 id="2-1-2-แผนภาพ-container-diagram-c2">2.1.2 แผนภาพ Container Diagram (C2)</h4>
+<p>แสดงโครงสร้างส่วนประกอบย่อยภายในระบบที่ทำงานร่วมกันแบบ Microservices:</p>
+<figure class="diagram-frame"><div class="diagram-toolbar"><span>แผนภาพ 3</span><button class="control" type="button" data-diagram-expand>ดูขนาดใหญ่</button></div><img src="../../assets/diagrams/requirements-srs-3.svg" alt="แผนภาพจาก Software Requirements Specification (SRS)" loading="lazy"><details class="diagram-source"><summary>ดู Mermaid source</summary><pre><code>flowchart TB
     %% การตั้งค่า Class สีต่างๆ
     classDef userFill fill:#fff2cc,stroke:#d6b656,color:black
     classDef clientFill fill:#dae8fc,stroke:#6c8ebf,color:black
@@ -424,736 +201,524 @@
     class APIGateway,AIInference backendFill
     class Cache,ObjectStore,MainDB storageFill
     class PushService,ReverseSearch extFill
-</code></pre>
-                    </details>
-                    <dialog aria-label="แผนภาพขนาดใหญ่">
-                        <div class="diagram-expanded-head"><button class="control" type="button"
-                                data-diagram-zoom="out">ย่อ</button><span class="zoom-status"
-                                data-zoom-status>100%</span><button class="control" type="button"
-                                data-diagram-zoom="in">ขยาย</button><button class="control" type="button"
-                                data-diagram-close>ปิด</button></div>
-                        <div class="diagram-pan" data-diagram-pan data-zoom="1" tabindex="0"
-                            aria-label="พื้นที่แผนภาพ เลื่อนได้ทั้งแนวตั้งและแนวนอน"><img
-                                src="../../assets/diagrams/requirements-srs-3.svg"
-                                alt="แผนภาพจาก Software Requirements Specification (SRS)"></div>
-                    </dialog>
-                </figure>
-                <h5 id="คำอธิบาย-container-diagram">คำอธิบาย Container Diagram</h5>
-                <p>สถาปัตยกรรมของระบบ Scam Image Detection ถูกออกแบบภายใต้แนวคิด <strong>Microservices</strong> และ
-                    <strong>Cloud-Native Architecture</strong>
-                    เพื่อให้ระบบสามารถรองรับการประมวลผลข้อมูลรูปภาพและโมเดลปัญญาประดิษฐ์ (ซึ่งใช้ทรัพยากรการคำนวณสูง)
-                    ได้อย่างมีประสิทธิภาพ โดยไม่ส่งผลกระทบต่อความเร็วในการตอบสนองของแอปพลิเคชัน ภายในขอบเขตของระบบ
-                    (System Boundary) ประกอบด้วยคอนเทนเนอร์หลัก 3 ส่วน ดังนี้:</p>
-                <ul>
-                    <li><strong>1. ส่วนติดต่อผู้ใช้งาน (Frontend Containers):</strong>
-                        <ul>
-                            <li><strong>Mobile App (Flutter; v1: Android เท่านั้น — CON-MOB-01):</strong>
-                                แอปพลิเคชันบนสมาร์ทโฟนสำหรับผู้ใช้งานทั่วไป (General User)
-                                ทำหน้าที่รับส่งไฟล์ภาพและแสดงผลคะแนนความเสี่ยง (Risk Score) พร้อมแผนที่ความร้อน
-                                (Heatmap)</li>
-                            <li><strong>Admin Web Portal (React + Admin UI):</strong>
-                                เว็บแอปสำหรับแอดมินใช้ตรวจสอบสถิติระบบ บริหารจัดการบัญชีผู้ใช้งาน (ดู + เปิด/ปิดบัญชี)
-                                ตรวจสอบรูปภาพสแกมที่รายงาน และอัปเดตโมเดล AI</li>
-                        </ul>
-                    </li>
-                    <li><strong>2. ส่วนประมวลผลหลัก (Backend Containers):</strong>
-                        <ul>
-                            <li><strong>API Application (FastAPI):</strong> ทำหน้าที่เป็น API Gateway รับส่งข้อมูล
-                                และประมวลผลตรรกะทางธุรกิจ เช่น การยืนยันตัวตน ดึงข้อมูลแฝง (Metadata) และตรวจสอบ OCR
-                                เบื้องต้น</li>
-                            <li><strong>AI Inference Service (PyTorch / ONNX):</strong> เซอร์วิสวิเคราะห์โมเดล AI
-                                โดยเฉพาะ ทำการตรวจสอบรูปภาพว่าถูกตัดต่อ (Semantic Segmentation)
-                                หรือสร้างจากปัญญาประดิษฐ์ (AI-Generated Image) หรือไม่</li>
-                        </ul>
-                    </li>
-                    <li><strong>3. ส่วนจัดเก็บข้อมูล (Storage Containers):</strong>
-                        <ul>
-                            <li><strong>Cache (Redis):</strong> เก็บบันทึกข้อมูลผลการสแกนภาพล่าสุด
-                                เพื่อนำกลับมาแสดงผลทันทีโดยไม่ต้องประมวลผลใหม่ (Cache Hit) เมื่อส่งรูปเดิมเข้ามาซ้ำ</li>
-                            <li><strong>Object Storage (Cloud Storage):</strong>
-                                จัดเก็บข้อมูลรูปภาพดิบที่ผู้ใช้อัปโหลดเข้ามาและรูปภาพผลลัพธ์ของ Heatmap</li>
-                            <li><strong>Main Database (PostgreSQL):</strong> จัดเก็บข้อมูลระบบหลัก เช่น
-                                ข้อมูลบัญชีผู้ใช้ บันทึกประวัติการสแกน และล็อกระบบ RBAC</li>
-                        </ul>
-                    </li>
-                    <li><strong>4. การเชื่อมต่อกับระบบภายนอก (External Systems):</strong>
-                        <ul>
-                            <li><strong>Reverse Image Search (Google Vision API):</strong>
-                                สืบค้นหาแหล่งที่มาดั้งเดิมของภาพจากเว็บไซต์ทั่วโลก</li>
-                            <li><strong>Notification Service:</strong> แจ้งเตือนผู้ใช้งานแบบ in-app/polling ภายใน 60
-                                วินาทีเมื่อรูปภาพที่รันแบบ Asynchronous ตรวจสอบเสร็จสิ้น (FCM push = Phase 2)</li>
-                        </ul>
-                    </li>
-                </ul>
-                <h4 id="2-1-3-เทคโนโลยีที่ใช้ในการพัฒนา-technology-stack">2.1.3 เทคโนโลยีที่ใช้ในการพัฒนา (Technology
-                    Stack)</h4>
-                <ul>
-                    <li><strong>Frontend:</strong> Flutter (แอปพลิเคชันมือถือ; v1 build เฉพาะ Android เท่านั้น —
-                        CON-MOB-01), React.js (หน้าเว็บแอดมิน)</li>
-                    <li><strong>Backend:</strong> Python FastAPI (API Gateway และ Core Service)</li>
-                    <li><strong>AI Engine:</strong> PyTorch / ONNX (สำหรับ AI Inference), ตรวจร่องรอยดัดแปลงภาพด้วย
-                        SegFormer (ONNX ตัวเดียว) + AI-Gen classifier + OCR ด้วย Surya OCR v0.5.0 (Native PyTorch) + XAI
-                        ด้วย Qwen2.5-1.5B และแผนที่ความร้อนแบบ mask-to-heatmap overlay</li>
-                    <li><strong>Database &amp; Caching:</strong> PostgreSQL (ฐานข้อมูลหลัก), Redis
-                        (สำหรับจัดเก็บข้อมูลแคช)</li>
-                    <li><strong>Object Storage:</strong> ระบบจัดเก็บไฟล์บนคลาวด์ (Cloud Storage) (สำหรับรูปภาพและ
-                        Heatmap)</li>
-                    <li><strong>Deployment:</strong> Docker &amp; Containerization</li>
-                </ul>
-                <h3 id="2-2-ฟังก์ชันการทำงานของระบบ-product-functions">2.2 ฟังก์ชันการทำงานของระบบ (Product Functions)
-                </h3>
-                <ul>
-                    <li>ระบบสมัครสมาชิกและล็อกอินด้วย Email/Password + JWT (Social Login / Google OAuth เป็น Phase 2)
-                    </li>
-                    <li>เลือกและอัปโหลดรูปภาพเพื่อตรวจสอบ</li>
-                    <li>ถอดข้อความจากรูปภาพ วิเคราะห์ประเด็นหลอกลวง และค้นหาแหล่งที่มาของรูปภาพ</li>
-                    <li>ส่งรูปภาพตรวจสอบผ่านโมเดลปัญญาประดิษฐ์เพื่อหาจุดตัดต่อและระบุดัชนีความเสี่ยง</li>
-                    <li>แสดงผลวิเคราะห์ภาพพร้อมแผนที่ความร้อน (Heatmap)</li>
-                    <li>การแจ้งเตือนผู้ใช้งานแบบ in-app/polling ภายใน 60 วินาทีเมื่อวิเคราะห์ภาพเบื้องหลังเสร็จสิ้น (FCM
-                        push = Phase 2)</li>
-                    <li>บันทึกประวัติและรายงานรูปภาพที่น่าสงสัย</li>
-                    <li>แดชบอร์ดตรวจสอบสถิติและเครื่องมืออัปเดตโมเดล AI สำหรับผู้ดูแลระบบ</li>
-                </ul>
-                <h3 id="2-3-กลุ่มผู้ใช้และคุณลักษณะ-user-classes-and-characteristics">2.3 กลุ่มผู้ใช้และคุณลักษณะ (User
-                    Classes and Characteristics)</h3>
-                <ol>
-                    <li><strong>General User (ผู้ใช้งานทั่วไป):</strong>
-                        <ul>
-                            <li>ประชาชนทั่วไปที่ทำธุรกรรมออนไลน์ ซื้อของออนไลน์ หรือผู้ใช้สื่อสังคมออนไลน์</li>
-                            <li>ต้องการความสามารถในการตรวจเช็กภาพอย่างรวดเร็วและเข้าใจง่าย (ผ่านผลลัพธ์ Visual Heatmap)
-                            </li>
-                        </ul>
-                    </li>
-                    <li><strong>Administrator (ผู้ดูแลระบบ):</strong>
-                        <ul>
-                            <li>มีความเข้าใจด้านเทคนิคและระบบซอฟต์แวร์</li>
-                            <li>ทำหน้าที่จัดการสิทธิ์เข้าถึง จัดการชุดข้อมูลรูปภาพ (Dataset) ที่ผู้ใช้รายงานเข้ามา
-                                และอัปโหลดไฟล์น้ำหนักโมเดล (AI Weights)</li>
-                        </ul>
-                    </li>
-                </ol>
-                <h3 id="2-4-ข้อจำกัดในการพัฒนา-design-and-implementation-constraints">2.4 ข้อจำกัดในการพัฒนา (Design and
-                    Implementation Constraints)</h3>
-                <ul>
-                    <li>อุปกรณ์เคลื่อนที่ต้องเชื่อมต่ออินเทอร์เน็ตในการส่งรูปภาพไปประมวลผลบนคลาวด์</li>
-                    <li>การตรวจสอบทางด้านข้อความ (OCR) อาจได้ผลลัพธ์ไม่แม่นยำ 100% หากรูปภาพเบลอ มีความละเอียดต่ำ
-                        หรือแสงไม่เพียงพอ — เกณฑ์ภาพ ≥720p; ภาพต่ำกว่าเกณฑ์ระบบ shall แจ้งเตือนและคืนผลบางส่วนพร้อม
-                        confidence</li>
-                    <li>การประเมินผลความเสี่ยง (Risk Score) เป็นการประเมินเชิงสถิติจากโมเดล
-                        ไม่สามารถใช้เป็นข้อสรุปทางกฎหมายหรือพยานหลักฐานเด็ดขาดในชั้นศาลได้โดยตรง</li>
-                    <li>ระบบต้องปฏิบัติตามมาตรฐาน พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล (PDPA) อย่างเคร่งครัด</li>
-                </ul>
-                <h3 id="2-5-สมมติฐานและความขึ้นต่อกัน-assumptions-and-dependencies">2.5 สมมติฐานและความขึ้นต่อกัน
-                    (Assumptions and Dependencies)</h3>
-                <ul>
-                    <li>สมมติว่าระบบบริการค้นหาข้อมูลภายนอก (Google Vision API)
-                        เปิดบริการตามปกติและมีอัตราการเชื่อมต่อที่เสถียร; หากล้มเหลวหรือยังไม่ตั้งค่า ระบบ shall
-                        fallback ตาม Document FR-ANALYSIS-03 AC-4: แจ้งสถานะ &quot;ไม่มีข้อมูลแหล่งที่มา&quot;
-                        (<code>source_status = &quot;unavailable&quot;</code>) และคืนผลบางส่วนพร้อม confidence
-                        โดยไม่สรุปว่าภาพปลอดภัย</li>
-                    <li>โมเดล AI จำเป็นต้องมีการเก็บรวบรวมรูปภาพสแกมไทย (Thai-Context Scam Images)
-                        เพิ่มเติมอย่างต่อเนื่องเพื่ออัปเดตโมเดลให้เข้ากับกลโกงรูปแบบใหม่ๆ</li>
-                </ul>
-                <hr>
-                <h2 id="3-ข้อกำหนดความต้องการเชิงระบบ-system-requirements">3. ข้อกำหนดความต้องการเชิงระบบ (System
-                    Requirements)</h2>
-                <h3 id="3-1-ความต้องการทางธุรกิจ-business-requirements-br">3.1 ความต้องการทางธุรกิจ (Business
-                    Requirements - BR)</h3>
-                <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="text-align:left">รหัส (BR-ID)</th>
-                                <th style="text-align:left">รายละเอียดความต้องการทางธุรกิจ</th>
-                                <th style="text-align:left">เหตุผล / คุณค่าทางธุรกิจ (Business Value)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td style="text-align:left"><strong>BR-01</strong></td>
-                                <td style="text-align:left">
-                                    ระบบต้องช่วยให้ผู้ใช้สามารถอัปโหลดและตรวจสอบรูปภาพที่น่าสงสัยผ่านสมาร์ทโฟนได้</td>
-                                <td style="text-align:left">
-                                    ป้องกันความสูญเสียทรัพย์สินและทำให้ประชาชนรู้เท่าทันกลโกงได้ทุกที่ทุกเวลา</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>BR-02</strong></td>
-                                <td style="text-align:left">ระบบต้องวิเคราะห์ภาพแบบหลายชั้น (ข้อความ, แหล่งที่มา,
-                                    การตัดต่อ, AI) ได้อัตโนมัติ</td>
-                                <td style="text-align:left">
-                                    เพิ่มความแม่นยำในการตรวจสอบและลดข้อผิดพลาดที่เกิดจากการประเมินด้วยสายตามนุษย์</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>BR-03</strong></td>
-                                <td style="text-align:left">ระบบต้องสามารถแสดงคำอธิบายผลลัพธ์ผ่านแผนที่ความร้อน
-                                    (Heatmap) ได้</td>
-                                <td style="text-align:left">สร้างความน่าเชื่อถือ (Trust)
-                                    และเพิ่มความตระหนักรู้ทางดิจิทัล (Digital Literacy) ให้ผู้ใช้</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>BR-04</strong></td>
-                                <td style="text-align:left">ระบบต้องคืนผล Cache Hit ใน ≤3 วินาที (P95), Full inference
-                                    P50 ≤15 วินาที และแจ้งเตือนแบบ in-app/polling ภายใน 60 วินาทีหลังงานเบื้องหลังเสร็จ
-                                    (FCM = Phase 2)</td>
-                                <td style="text-align:left">มอบประสบการณ์ใช้งานที่ดี (UX)
-                                    ทำให้ผู้ใช้ไม่ต้องเปิดหน้าจอแอปพลิเคชันค้างไว้เพื่อรอผล</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>BR-05</strong></td>
-                                <td style="text-align:left">ระบบต้องสามารถจัดเก็บประวัติการสแกนและเรียกดูย้อนหลังได้
-                                </td>
-                                <td style="text-align:left">ช่วยให้ผู้ใช้มีระบบจัดเก็บข้อมูลที่เป็นระเบียบ
-                                    และสามารถนำมาใช้เป็นหลักฐานอ้างอิงได้ในภายหลัง</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>BR-06</strong></td>
-                                <td style="text-align:left">ระบบต้องเปิดให้ผู้ใช้สามารถส่งรายงาน (Report)
-                                    รูปภาพตัดต่อหลอกลวงเข้าสู่ระบบส่วนกลางได้</td>
-                                <td style="text-align:left">สร้างความร่วมมือในชุมชน (Crowdsourcing)
-                                    และรวบรวมข้อมูลเพื่อใช้สอน AI ในอนาคต</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>BR-07</strong></td>
-                                <td style="text-align:left">ระบบต้องสามารถแชร์ (Share)
-                                    หรือส่งออกภาพผลลัพธ์ความเสี่ยงไปยังแอปพลิเคชันอื่นได้</td>
-                                <td style="text-align:left">เพื่อให้ผู้ใช้สามารถส่งภาพแจ้งเตือนภัยไปยังบุคคลใกล้ชิด
-                                    (เช่น ผ่าน LINE) ได้อย่างสะดวกรวดเร็ว</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>BR-08</strong></td>
-                                <td style="text-align:left">
-                                    ระบบต้องจัดเก็บข้อมูลและประวัติผู้ใช้งานด้วยมาตรการรักษาความปลอดภัย (PDPA
-                                    Compliance)</td>
-                                <td style="text-align:left">ป้องกันการรั่วไหลของข้อมูลส่วนบุคคล
-                                    และสร้างความมั่นใจในการใช้งานแอปพลิเคชัน</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>BR-09</strong></td>
-                                <td style="text-align:left">ระบบต้องมีหน้าแดชบอร์ด (Admin Dashboard)
-                                    และระบบควบคุมสิทธิ์ผู้ใช้ (RBAC)</td>
-                                <td style="text-align:left">ช่วยให้ผู้ดูแลระบบสามารถควบคุม ตรวจสอบ
-                                    และบริหารจัดการระบบได้อย่างมีประสิทธิภาพ</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>BR-10</strong></td>
-                                <td style="text-align:left">ระบบต้องรองรับการจัดการชุดข้อมูล (Dataset) และการอัปเดตโมเดล
-                                    AI โดยผู้ดูแลระบบ</td>
-                                <td style="text-align:left">เพื่อให้ระบบมีความยืดหยุ่น สามารถเรียนรู้กลโกงรูปแบบใหม่ๆ
-                                    และรักษาความแม่นยำได้ในระยะยาว</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <h3 id="3-2-ความต้องการเชิงฟังก์ชัน-functional-requirements-fr">3.2 ความต้องการเชิงฟังก์ชัน (Functional
-                    Requirements - FR)</h3>
-                <aside class="callout callout-note" aria-label="หมายเหตุ">
-                    <p class="callout-title">หมายเหตุ</p>
-                    <p>Canonical catalog ของ FR/NFR/RC ฉบับจริงอยู่ที่
-                        <code>Document/srs/05_Software_Requirement_Specification.md</code> และ
-                        <code>06_Requirement_Traceability.md</code>; FR-01..FR-10 ด้านล่างเป็นมุมมอง coarse ของ wiki
-                        (RC-AUTH-05 กู้รหัสผ่าน / RC-AUTH-06 Social Login = deferred Phase 2)</p>
-                </aside>
-                <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="text-align:left">รหัส (FR-ID)</th>
-                                <th style="text-align:left">รายละเอียดความต้องการเชิงฟังก์ชัน</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td style="text-align:left"><strong>FR-01</strong></td>
-                                <td style="text-align:left"><strong>ระบบเข้าสู่ระบบและยืนยันตัวตน
-                                        (Authentication):</strong> ผู้ใช้และผู้ดูแลระบบเข้าสู่ระบบด้วย Email/Password +
-                                    JWT (Social Login / Google OAuth = RC-AUTH-06 Phase 2 deferred; ระบบกู้คืนรหัสผ่าน =
-                                    RC-AUTH-05 Phase 2)</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>FR-02</strong></td>
-                                <td style="text-align:left"><strong>ระบบนำเข้ารูปภาพ (Image Input):</strong>
-                                    ผู้ใช้เลือกรูปจากคลังภาพ (Gallery, v1 Android เท่านั้น)
-                                    แล้วอัปโหลดไฟล์ภาพเข้าสู่ระบบ โดยระบบ shall รับเฉพาะ jpg/jpeg/png/webp, Mobile ≤10MB
-                                    / API ≤20MB, decode แล้ว ≤100M พิกเซล และปฏิเสธไฟล์เกินพร้อมข้อความ (ไม่บีบอัดใน v1)
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>FR-03a</strong></td>
-                                <td style="text-align:left"><strong>EXIF/Metadata (แสดงผลเท่านั้น):</strong> ระบบดึง
-                                    Metadata/EXIF มาแสดงประกอบ (RC-ANALYSIS-06; ไม่ใช้คำนวณ Risk Score)</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>FR-03b</strong></td>
-                                <td style="text-align:left"><strong>OCR + NLP:</strong> ระบบสกัดข้อความไทย/อังกฤษ (ภาพ
-                                    ≥720p; ต่ำกว่าเกณฑ์ให้เตือน+คืนผลบางส่วนพร้อม confidence)
-                                    และตรวจจับคีย์เวิร์ดหลอกลวง</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>FR-03c</strong></td>
-                                <td style="text-align:left"><strong>Reverse Image Search (optional):</strong>
-                                    ระบบค้นหาแหล่งที่มาของภาพ; หากล้มเหลว/ยังไม่ตั้งค่า shall แจ้ง
-                                    &quot;ไม่มีข้อมูลแหล่งที่มา&quot; และคืนผลบางส่วน ไม่สรุปว่าปลอดภัย</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>FR-04</strong></td>
-                                <td style="text-align:left"><strong>ระบบวิเคราะห์ด้วยปัญญาประดิษฐ์ (AI
-                                        Inference):</strong> ระบบส่งภาพเข้าสู่โมเดล Deep Learning
-                                    เพื่อตรวจสอบร่องรอยการตัดต่อ (Image Forgery/Semantic Segmentation)
-                                    และตรวจสอบภาพที่สร้างด้วยปัญญาประดิษฐ์ (AI-Generated)</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>FR-05</strong></td>
-                                <td style="text-align:left"><strong>ระบบแสดงผลลัพธ์ (Result &amp;
-                                        Visualization):</strong> ระบบคำนวณคะแนนความเสี่ยงรวมและสร้างแผนที่ความร้อน
-                                    (Heatmap) เพื่ออธิบายผลลัพธ์ให้ผู้ใช้เข้าใจ — สูตร/เกณฑ์ตาม Document FR-ANALYSIS-04
-                                    (ดูนิยามที่ Document ที่เดียว)</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>FR-06</strong></td>
-                                <td style="text-align:left"><strong>ระบบแจ้งเตือน (Notification):</strong> v1 ใช้
-                                    polling + in-app notification ภายใน 60 วินาทีหลังงานเบื้องหลัง (Background Task)
-                                    เสร็จสิ้น; FCM push = Phase 2 (RC-NOTIFY-01/02 deferred)</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>FR-07</strong></td>
-                                <td style="text-align:left"><strong>ระบบจัดการประวัติการสแกน (History
-                                        Management):</strong>
-                                    ระบบบันทึกประวัติการตรวจสอบภาพของผู้ใช้โดยสามารถเรียกดูผลลัพธ์ย้อนหลัง
-                                    หรือลบประวัติได้</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>FR-08</strong></td>
-                                <td style="text-align:left"><strong>ระบบรายงานและแชร์ข้อมูล (Report &amp;
-                                        Share):</strong> ผู้ใช้สามารถกดรายงาน (Report) ภาพหลอกลวงเข้าสู่ฐานข้อมูลกลาง
-                                    และสามารถแชร์ภาพผลลัพธ์/คำเตือนไปยังแอปพลิเคชันภายนอกได้</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>FR-09</strong></td>
-                                <td style="text-align:left"><strong>ระบบผู้ดูแลและการจัดการสิทธิ์ (Admin &amp;
-                                        RBAC):</strong> มีหน้าแดชบอร์ดให้ผู้ดูแลระบบตรวจสอบสถิติการใช้งาน,
-                                    จัดการข้อมูลผู้ใช้, และกำหนดสิทธิ์การเข้าถึงระบบตามบทบาท</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>FR-10</strong></td>
-                                <td style="text-align:left"><strong>ระบบจัดการข้อมูลและโมเดล (Dataset &amp; Model
-                                        Management):</strong> ผู้ดูแลระบบสามารถตรวจสอบรูปภาพที่ถูกผู้ใช้รายงาน
-                                    นำไปจัดหมวดหมู่ชุดข้อมูล และอัปโหลดโมเดล AI (Weights) เวอร์ชันใหม่เข้าสู่ระบบได้
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <h3 id="3-3-ความต้องการที่ไม่ใช่ฟังก์ชัน-non-functional-requirements-nfr">3.3
-                    ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements - NFR)</h3>
-                <blockquote>
-                    <p>นิยามตัวเลข/สูตร/เกณฑ์ทั้งหมดอยู่ที่
-                        <code>Document/srs/05_Software_Requirement_Specification.md</code> §3 (NFR-01..09) ที่เดียว —
-                        ตารางนี้ใช้เลขชุดเดียวกับ Document และเหลือแค่ลิงก์อ้าง + รายละเอียดระดับทดสอบ</p>
-                </blockquote>
-                <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="text-align:left">รหัส (NFR-ID)</th>
-                                <th style="text-align:left">รายละเอียดคุณภาพของระบบ (shall เดี่ยว + metric + เงื่อนไขวัด
-                                    + วิธีวัด; canonical IDs ตาม Document/log_docs/05)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td style="text-align:left"><strong>NFR-01 (PERF)</strong></td>
-                                <td style="text-align:left"><strong>เวลาตอบสนอง (Performance):</strong> ตาม Document
-                                    NFR-01 — Cache Hit ≤ 3 วินาที (P95, End-to-End); Full inference P50 ≤15 วินาที/ภาพ
-                                    (P95 ≤25s, P99 ≤35s); GPU ≤10s, CPU fallback ≤60s; เงื่อนไขภาพ 1080p / 4G / NVIDIA
-                                    T4</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>NFR-02 (SCAL)</strong></td>
-                                <td style="text-align:left"><strong>การขยายตัว (Scalability):</strong> ตาม Document
-                                    NFR-02 — รองรับ 100 concurrent users (Cache Hit avg ≤ 5s, Cache Miss avg ≤ 20s,
-                                    Error Rate &lt; 1%); รายละเอียดระดับทดสอบ: scale-out AI Inference 1→4 replicas
-                                    throughput ≥3x ใน 5 นาที</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>NFR-03 (REL)</strong></td>
-                                <td style="text-align:left"><strong>ความพร้อมใช้งาน (Availability):</strong> ตาม
-                                    Document NFR-03 — Uptime ≥99.5% ต่อรอบ 30 วัน (ไม่นับ Planned Maintenance
-                                    ที่ประกาศล่วงหน้า); Monitoring Prometheus + Grafana; Alerting → Slack/LINE/Email;
-                                    รายละเอียดระดับทดสอบ: crash-free sessions ≥99.9%</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>NFR-04 (SEC)</strong></td>
-                                <td style="text-align:left"><strong>ความมั่นคงปลอดภัย (Security):</strong> ตาม Document
-                                    NFR-04 — TLS 1.3 ทุก endpoint; JWT (Access 15 นาที); bcrypt cost 12; Rate Limit
-                                    (Guest 10 / User 60 / Admin 300 ต่อนาที); Input validation; รายละเอียดระดับทดสอบ:
-                                    Argon2id ทางเลือก, ownership check ทุก endpoint, ห้าม plaintext</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>NFR-05 (ACC)</strong></td>
-                                <td style="text-align:left"><strong>ความแม่นยำโมเดล (Accuracy):</strong> ตาม Document
-                                    NFR-05 — Accuracy ≥85% และ mDice ≥85% บน frozen test set 1,000 ภาพ (เกณฑ์เสริม
-                                    Precision/Recall ≥85%); รายละเอียดระดับทดสอบ: AI-Gen classifier Accuracy ≥85% +
-                                    AUROC ≥0.90</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>NFR-06 (USA)</strong></td>
-                                <td style="text-align:left"><strong>ความง่ายในการใช้งาน (Usability):</strong> ตาม
-                                    Document NFR-06 — ผู้ใช้ทั่วไป ≥80% (n=100) เข้าใจบริเวณต้องสงสัยจาก Heatmap (UAT
-                                    protocol + rubric); Likert เฉลี่ย ≥4.00/5.00</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>NFR-07 (PERF-CACHE)</strong></td>
-                                <td style="text-align:left"><strong>ประสิทธิภาพแคช (Caching):</strong> ตาม Document
-                                    NFR-07 — Redis Cache Hit ≤3 วินาที (P95), hit-rate ≥40% ต่อสัปดาห์ (alert เมื่อ
-                                    &lt;35%); กลยุทธ์ 4 ขั้นเมื่อต่ำกว่าเป้าหมาย</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>NFR-08 (COMP)</strong></td>
-                                <td style="text-align:left"><strong>ความเข้ากันได้ (Compatibility):</strong> ตาม
-                                    Document NFR-08 — key flows ผ่าน 100% บน Android 10–15 (API 29–35) อย่างน้อย
-                                    10/12/14/15; API round-trip SHA-256 ตรง 100% + ตรง OpenAPI schema (v1 Android
-                                    เท่านั้น — CON-MOB-01)</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>NFR-09 (MAINT)</strong></td>
-                                <td style="text-align:left"><strong>ความบำรุงรักษา (Maintainability):</strong> ตาม
-                                    Document NFR-09 — branch coverage ≥80% ทั้ง backend/mobile บน CI ทุก PR; static
-                                    analysis 0 errors (ruff + mypy / flutter analyze); AI Inference แยกอิสระ
-                                    (CON-ARCH-01)</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <blockquote>
-                    <p>เดิมมี <strong>NFR-10 (PRV)</strong> wiki-local — ยกเลิกเลขนี้แล้ว เนื้อหา map ไป Document
-                        <strong>FR-PDPA-01</strong> (consent 2 ระดับ + ถอน consent), <strong>NFR-04</strong>
-                        (TLS/hash/ownership), <strong>RC-PDPA-04</strong> (retention 1 ปี, deferred Phase 2) และ
-                        <strong>FR-ADMIN-04</strong> (Audit Log append-only)
-                        เดิมมี <strong>NFR-11</strong> wiki-local (กรณีวิเคราะห์ไม่ครบ) — ยกเลิกเลขนี้แล้ว เนื้อหา map
-                        ไป Document <strong>FR-ANALYSIS-03 AC-4</strong> (fallback:
-                        <code>source_status = &quot;unavailable&quot;</code> ไม่ใช้ค่ากลางปลอม มติ DOC-01)</p>
-                </blockquote>
-                <h3 id="3-4-เมตริกย้อนกลับความต้องการ-traceability-matrix">3.4 เมตริกย้อนกลับความต้องการ (Traceability
-                    Matrix)</h3>
-                <h4 id="3-4-1-ตารางตรวจสอบย้อนกลับความต้องการ-br-fr-nfr-mapping">3.4.1 ตารางตรวจสอบย้อนกลับความต้องการ
-                    (BR &amp; FR/NFR Mapping)</h4>
-                <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="text-align:left">รหัส BR</th>
-                                <th style="text-align:left">รายละเอียดความต้องการทางธุรกิจ</th>
-                                <th style="text-align:left">รหัส FR ที่เกี่ยวข้อง</th>
-                                <th style="text-align:left">รหัส NFR ที่เกี่ยวข้อง</th>
-                                <th style="text-align:left">หมายเหตุ / การเชื่อมโยง</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td style="text-align:left"><strong>BR-01</strong></td>
-                                <td style="text-align:left">อัปโหลดและตรวจสอบรูปภาพผ่านสมาร์ทโฟน</td>
-                                <td style="text-align:left">FR-02</td>
-                                <td style="text-align:left">NFR-08</td>
-                                <td style="text-align:left">ฟังก์ชันหลักฝั่ง Mobile App (v1 Android เท่านั้น)</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>BR-02</strong></td>
-                                <td style="text-align:left">วิเคราะห์ภาพแบบหลายชั้นอัตโนมัติ</td>
-                                <td style="text-align:left">FR-03a/b/c, FR-04</td>
-                                <td style="text-align:left">NFR-02</td>
-                                <td style="text-align:left">วิเคราะห์ EXIF/OCR/Source หลายชั้น; ขยาย AI Inference 1→4
-                                    replicas (Microservices = CON-ARCH-01)</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>BR-03</strong></td>
-                                <td style="text-align:left">แสดงแผนที่ความร้อน (Heatmap) อธิบายผล</td>
-                                <td style="text-align:left">FR-05</td>
-                                <td style="text-align:left">NFR-06</td>
-                                <td style="text-align:left">แสดงผลภาพ XAI เพื่อเพิ่มความเข้าใจ (Usability)</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>BR-04</strong></td>
-                                <td style="text-align:left">ประมวลผลรวดเร็ว / แจ้งเตือนเมื่อเสร็จสิ้น</td>
-                                <td style="text-align:left">FR-06</td>
-                                <td style="text-align:left">NFR-01, NFR-07</td>
-                                <td style="text-align:left">ใช้ Redis Cache และ in-app notification (FCM = Phase 2)</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>BR-05</strong></td>
-                                <td style="text-align:left">จัดเก็บประวัติการสแกนย้อนหลัง</td>
-                                <td style="text-align:left">FR-07</td>
-                                <td style="text-align:left">NFR-04, FR-PDPA-01</td>
-                                <td style="text-align:left">เรียกดู/ลบประวัติตาม PDPA (consent 2 ระดับ + retention
-                                    tiers)</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>BR-06</strong></td>
-                                <td style="text-align:left">ส่งรายงาน (Report) รูปภาพหลอกลวง</td>
-                                <td style="text-align:left">FR-08</td>
-                                <td style="text-align:left">NFR-06</td>
-                                <td style="text-align:left">ผู้ใช้ช่วยแจ้งเบาะแสเพื่อให้แอดมินตรวจสอบ</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>BR-07</strong></td>
-                                <td style="text-align:left">แชร์ภาพผลลัพธ์ไปยังแอปพลิเคชันอื่น</td>
-                                <td style="text-align:left">FR-08</td>
-                                <td style="text-align:left">NFR-04</td>
-                                <td style="text-align:left">แชร์คำเตือนภัยไปยังแอปแชทภายนอกอย่างปลอดภัย</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>BR-08</strong></td>
-                                <td style="text-align:left">รักษาความปลอดภัยตามมาตรการ (PDPA)</td>
-                                <td style="text-align:left">FR-01</td>
-                                <td style="text-align:left">NFR-04, FR-PDPA-01</td>
-                                <td style="text-align:left">TLS 1.3 + bcrypt + consent 2 ระดับ + ownership check</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>BR-09</strong></td>
-                                <td style="text-align:left">หน้าแดชบอร์ดจัดการผู้ดูแลระบบ (RBAC)</td>
-                                <td style="text-align:left">FR-09</td>
-                                <td style="text-align:left">FR-ADMIN-04</td>
-                                <td style="text-align:left">แอดมินตรวจสอบข้อมูลและมีการเก็บ Audit Log แบบ append-only
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>BR-10</strong></td>
-                                <td style="text-align:left">จัดการชุดข้อมูลและอัปเดตโมเดล AI</td>
-                                <td style="text-align:left">FR-10</td>
-                                <td style="text-align:left">NFR-02, NFR-03</td>
-                                <td style="text-align:left">รองรับการขยายตัว (Scalability) โดยระบบไม่ขัดข้อง</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <h4 id="3-4-2-ตารางตรวจสอบย้อนกลับระหว่างวัตถุประสงค์และความต้องการ-objectives-requirements-mapping">
-                    3.4.2 ตารางตรวจสอบย้อนกลับระหว่างวัตถุประสงค์และความต้องการ (Objectives-Requirements Mapping)</h4>
-                <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="text-align:center">ลำดับวัตถุประสงค์</th>
-                                <th style="text-align:left">วัตถุประสงค์ของโครงงาน</th>
-                                <th style="text-align:left">รหัส FR ที่เกี่ยวข้อง</th>
-                                <th style="text-align:left">รหัส NFR ที่เกี่ยวข้อง</th>
-                                <th style="text-align:left">หมายเหตุ</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td style="text-align:center"><strong>OBJ-01</strong></td>
-                                <td style="text-align:left">
-                                    เพื่อพัฒนาแอปพลิเคชันบนอุปกรณ์เคลื่อนที่สำหรับคัดกรองรูปภาพที่มีความเสี่ยง</td>
-                                <td style="text-align:left">FR-01, FR-02, FR-05, FR-07</td>
-                                <td style="text-align:left">NFR-06, NFR-08</td>
-                                <td style="text-align:left">ครอบคลุมการทำงานตั้งแต่ล็อกอิน อัปโหลด แสดงผล และดูประวัติ
-                                    บน Android</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:center"><strong>OBJ-02</strong></td>
-                                <td style="text-align:left">เพื่อประยุกต์ใช้เทคโนโลยี Deep Learning ตรวจสอบ Image
-                                    Forgery และ AI-Generated</td>
-                                <td style="text-align:left">FR-04, FR-10</td>
-                                <td style="text-align:left">NFR-05, NFR-02</td>
-                                <td style="text-align:left">โมเดลตัดต่อ Accuracy/mDice ≥85%, AI-Gen Accuracy ≥85% +
-                                    AUROC ≥0.90; AI Inference แยกอิสระและอัปเดตได้</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:center"><strong>OBJ-03</strong></td>
-                                <td style="text-align:left">เพื่อพัฒนาระบบวิเคราะห์ความเสี่ยงแบบบูรณาการ (Multi-layer
-                                    Analysis)</td>
-                                <td style="text-align:left">FR-03a/b/c, FR-04</td>
-                                <td style="text-align:left">NFR-01, NFR-07</td>
-                                <td style="text-align:left">วิเคราะห์ EXIF/OCR/Source ควบคู่กัน ประมวลผลเร็วด้วย Cache
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:center"><strong>OBJ-04</strong></td>
-                                <td style="text-align:left">เพื่อทดสอบและประเมินประสิทธิภาพของระบบ
-                                    รวมถึงความพึงพอใจของผู้ใช้งาน</td>
-                                <td style="text-align:left">FR-06, FR-08, FR-09</td>
-                                <td style="text-align:left">NFR-03, NFR-06, FR-ADMIN-04</td>
-                                <td style="text-align:left">มี in-app notification รักษา UX (FCM = Phase 2)
-                                    การแชร์เพื่อทดสอบจริง และระบบเก็บ Audit Log</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <hr>
-                <h2 id="4-กรณีการใช้งานของระบบ-use-cases">4. กรณีการใช้งานของระบบ (Use Cases)</h2>
-                <h3 id="4-1-ตารางสรุป-use-case-use-case-summary-table">4.1 ตารางสรุป Use Case (Use Case Summary Table)
-                </h3>
-                <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="text-align:left">UC-ID</th>
-                                <th style="text-align:left">Use Case Name</th>
-                                <th style="text-align:center">Primary Actor</th>
-                                <th style="text-align:left">Description</th>
-                                <th style="text-align:center">Related FR</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td style="text-align:left"><strong>UC-01</strong></td>
-                                <td style="text-align:left">เข้าสู่ระบบ / ยืนยันตัวตน (Login &amp; Authentication)</td>
-                                <td style="text-align:center">User / Admin</td>
-                                <td style="text-align:left">ผู้ใช้และผู้ดูแลระบบเข้าสู่ระบบด้วย Email/Password + JWT
-                                    เพื่อเข้าถึงระบบตามสิทธิ์ (Social Login = Phase 2)</td>
-                                <td style="text-align:center">FR-01</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>UC-02</strong></td>
-                                <td style="text-align:left">นำเข้ารูปภาพ (Upload Image)</td>
-                                <td style="text-align:center">User</td>
-                                <td style="text-align:left">ผู้ใช้อัปโหลดรูปภาพที่น่าสงสัยจากคลังภาพ</td>
-                                <td style="text-align:center">FR-02</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>UC-03</strong></td>
-                                <td style="text-align:left">ประมวลผลภาพขั้นต้น (Primary Analysis)</td>
-                                <td style="text-align:center">System</td>
-                                <td style="text-align:left">ระบบดำเนินการสกัดข้อความ (OCR), ดึง Metadata,
-                                    และสืบค้นแหล่งที่มา (Reverse Image Search) อัตโนมัติ</td>
-                                <td style="text-align:center">FR-03</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>UC-04</strong></td>
-                                <td style="text-align:left">วิเคราะห์ด้วยปัญญาประดิษฐ์ (AI Inference)</td>
-                                <td style="text-align:center">System</td>
-                                <td style="text-align:left">ระบบประมวลผลผ่านโมเดล Deep Learning เพื่อตรวจหาการตัดต่อ
-                                    (Semantic Segmentation) และการใช้ AI สร้างภาพ</td>
-                                <td style="text-align:center">FR-04</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>UC-05</strong></td>
-                                <td style="text-align:left">ตรวจสอบผลลัพธ์และแผนที่ความร้อน (View Result &amp; Heatmap)
-                                </td>
-                                <td style="text-align:center">User</td>
-                                <td style="text-align:left">ผู้ใช้ตรวจสอบคะแนนความเสี่ยงรวม (Risk Score)
-                                    และดูแผนที่ความร้อน (Heatmap) ที่อธิบายจุดผิดปกติ</td>
-                                <td style="text-align:center">FR-05</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>UC-06</strong></td>
-                                <td style="text-align:left">รับการแจ้งเตือน (Receive Notification)</td>
-                                <td style="text-align:center">User</td>
-                                <td style="text-align:left">ผู้ใช้รับการแจ้งเตือนแบบ in-app/polling ภายใน 60
-                                    วินาทีเมื่อระบบ AI วิเคราะห์ภาพเสร็จสิ้น (FCM push = Phase 2)</td>
-                                <td style="text-align:center">FR-06</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>UC-07</strong></td>
-                                <td style="text-align:left">จัดการประวัติการสแกน (History Management)</td>
-                                <td style="text-align:center">User</td>
-                                <td style="text-align:left">ผู้ใช้สามารถเรียกดูผลลัพธ์ย้อนหลัง
-                                    หรือลบประวัติการสแกนภาพของตนเองได้</td>
-                                <td style="text-align:center">FR-07</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>UC-08</strong></td>
-                                <td style="text-align:left">รายงานและแชร์ผลลัพธ์ (Report &amp; Share)</td>
-                                <td style="text-align:center">User</td>
-                                <td style="text-align:left">ผู้ใช้สามารถกดรายงาน (Report) ภาพสแกมเมอร์
-                                    หรือแชร์ภาพเตือนภัยไปยังแอปพลิเคชันภายนอกได้</td>
-                                <td style="text-align:center">FR-08</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>UC-09</strong></td>
-                                <td style="text-align:left">จัดการผู้ใช้และแดชบอร์ด (Admin Dashboard &amp; RBAC)</td>
-                                <td style="text-align:center">Admin</td>
-                                <td style="text-align:left">ผู้ดูแลระบบตรวจสอบสถิติ เปลี่ยนสถานะผู้ใช้
-                                    (แบน/ปิดใช้/เปิดใช้ — เปลี่ยนสถานะเท่านั้น ห้าม hard-delete)
-                                    และกำหนดสิทธิ์การเข้าถึงระบบ</td>
-                                <td style="text-align:center">FR-09</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>UC-10</strong></td>
-                                <td style="text-align:left">จัดการชุดข้อมูลและอัปเดตโมเดล (Dataset &amp; Model
-                                    Management)</td>
-                                <td style="text-align:center">Admin</td>
-                                <td style="text-align:left">ผู้ดูแลระบบตรวจสอบรูปภาพที่ถูก Report เพื่อรวบรวมเป็น
-                                    Dataset และอัปเดตโมเดล AI ใหม่เข้าสู่ระบบ</td>
-                                <td style="text-align:center">FR-10</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <h3 id="4-2-ตารางเชื่อมโยง-use-case-และ-functional-requirements">4.2 ตารางเชื่อมโยง Use Case และ
-                    Functional Requirements</h3>
-                <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="text-align:left">FR-ID</th>
-                                <th style="text-align:left">รายละเอียดความต้องการเชิงฟังก์ชัน</th>
-                                <th style="text-align:left">Use Case ที่เกี่ยวข้อง</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td style="text-align:left"><strong>FR-01</strong></td>
-                                <td style="text-align:left">ระบบเข้าสู่ระบบและยืนยันตัวตนด้วย Email/Password + JWT
-                                    (Authentication; Social Login / Google OAuth = Phase 2 deferred)</td>
-                                <td style="text-align:left">UC-01</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>FR-02</strong></td>
-                                <td style="text-align:left">ระบบนำเข้ารูปภาพจากคลังภาพ (Image Input)</td>
-                                <td style="text-align:left">UC-02</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>FR-03</strong></td>
-                                <td style="text-align:left">ระบบวิเคราะห์ข้อมูลขั้นต้น (Metadata, OCR, Source)</td>
-                                <td style="text-align:left">UC-03</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>FR-04</strong></td>
-                                <td style="text-align:left">ระบบวิเคราะห์ด้วยปัญญาประดิษฐ์ (AI Inference)</td>
-                                <td style="text-align:left">UC-04</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>FR-05</strong></td>
-                                <td style="text-align:left">ระบบแสดงผลลัพธ์ Risk Score และภาพ Heatmap</td>
-                                <td style="text-align:left">UC-05</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>FR-06</strong></td>
-                                <td style="text-align:left">ระบบแจ้งเตือน (v1 in-app/polling; FCM = Phase 2)</td>
-                                <td style="text-align:left">UC-06</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>FR-07</strong></td>
-                                <td style="text-align:left">ระบบจัดการประวัติการสแกน (History Management)</td>
-                                <td style="text-align:left">UC-07</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>FR-08</strong></td>
-                                <td style="text-align:left">ระบบรายงานและแชร์ข้อมูล (Report &amp; Share)</td>
-                                <td style="text-align:left">UC-08</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>FR-09</strong></td>
-                                <td style="text-align:left">ระบบผู้ดูแลและการจัดการสิทธิ์ (Admin &amp; RBAC)</td>
-                                <td style="text-align:left">UC-09</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>FR-10</strong></td>
-                                <td style="text-align:left">ระบบจัดการข้อมูลและโมเดล AI (Dataset &amp; Model)</td>
-                                <td style="text-align:left">UC-10</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <h3 id="4-3-แผนภาพกรณีการใช้งาน-use-case-diagram">4.3 แผนภาพกรณีการใช้งาน (Use Case Diagram)</h3>
-                <figure class="diagram-frame">
-                    <div class="diagram-toolbar"><span>แผนภาพ 4</span><button class="control" type="button"
-                            data-diagram-expand>ดูขนาดใหญ่</button></div><img
-                        src="../../assets/diagrams/requirements-srs-4.svg"
-                        alt="แผนภาพจาก Software Requirements Specification (SRS)" loading="lazy">
-                    <details class="diagram-source">
-                        <summary>ดู Mermaid source</summary>
-                        <pre><code>flowchart LR
+</code></pre></details><dialog aria-label="แผนภาพขนาดใหญ่"><div class="diagram-expanded-head"><button class="control" type="button" data-diagram-zoom="out">ย่อ</button><span class="zoom-status" data-zoom-status>100%</span><button class="control" type="button" data-diagram-zoom="in">ขยาย</button><button class="control" type="button" data-diagram-close>ปิด</button></div><div class="diagram-pan" data-diagram-pan data-zoom="1" tabindex="0" aria-label="พื้นที่แผนภาพ เลื่อนได้ทั้งแนวตั้งและแนวนอน"><img src="../../assets/diagrams/requirements-srs-3.svg" alt="แผนภาพจาก Software Requirements Specification (SRS)"></div></dialog></figure><h5 id="คำอธิบาย-container-diagram">คำอธิบาย Container Diagram</h5>
+<p>สถาปัตยกรรมของระบบ Scam Image Detection ถูกออกแบบภายใต้แนวคิด <strong>Microservices</strong> และ <strong>Cloud-Native Architecture</strong> เพื่อให้ระบบสามารถรองรับการประมวลผลข้อมูลรูปภาพและโมเดลปัญญาประดิษฐ์ (ซึ่งใช้ทรัพยากรการคำนวณสูง) ได้อย่างมีประสิทธิภาพ โดยไม่ส่งผลกระทบต่อความเร็วในการตอบสนองของแอปพลิเคชัน ภายในขอบเขตของระบบ (System Boundary) ประกอบด้วยคอนเทนเนอร์หลัก 3 ส่วน ดังนี้:</p>
+<ul>
+<li><strong>1. ส่วนติดต่อผู้ใช้งาน (Frontend Containers):</strong>
+<ul>
+<li><strong>Mobile App (Flutter; v1: Android เท่านั้น — CON-MOB-01):</strong> แอปพลิเคชันบนสมาร์ทโฟนสำหรับผู้ใช้งานทั่วไป (General User) ทำหน้าที่รับส่งไฟล์ภาพและแสดงผลคะแนนความเสี่ยง (Risk Score) พร้อมแผนที่ความร้อน (Heatmap)</li>
+<li><strong>Admin Web Portal (React + Admin UI):</strong> เว็บแอปสำหรับแอดมินใช้ตรวจสอบสถิติระบบ บริหารจัดการบัญชีผู้ใช้งาน (ดู + เปิด/ปิดบัญชี) ตรวจสอบรูปภาพสแกมที่รายงาน และอัปเดตโมเดล AI</li>
+</ul>
+</li>
+<li><strong>2. ส่วนประมวลผลหลัก (Backend Containers):</strong>
+<ul>
+<li><strong>API Application (FastAPI):</strong> ทำหน้าที่เป็น API Gateway รับส่งข้อมูล และประมวลผลตรรกะทางธุรกิจ เช่น การยืนยันตัวตน ดึงข้อมูลแฝง (Metadata) และตรวจสอบ OCR เบื้องต้น</li>
+<li><strong>AI Inference Service (PyTorch / ONNX):</strong> เซอร์วิสวิเคราะห์โมเดล AI โดยเฉพาะ ทำการตรวจสอบรูปภาพว่าถูกตัดต่อ (Semantic Segmentation) หรือสร้างจากปัญญาประดิษฐ์ (AI-Generated Image) หรือไม่</li>
+</ul>
+</li>
+<li><strong>3. ส่วนจัดเก็บข้อมูล (Storage Containers):</strong>
+<ul>
+<li><strong>Cache (Redis):</strong> เก็บบันทึกข้อมูลผลการสแกนภาพล่าสุด เพื่อนำกลับมาแสดงผลทันทีโดยไม่ต้องประมวลผลใหม่ (Cache Hit) เมื่อส่งรูปเดิมเข้ามาซ้ำ</li>
+<li><strong>Object Storage (Cloud Storage):</strong> จัดเก็บข้อมูลรูปภาพดิบที่ผู้ใช้อัปโหลดเข้ามาและรูปภาพผลลัพธ์ของ Heatmap</li>
+<li><strong>Main Database (PostgreSQL):</strong> จัดเก็บข้อมูลระบบหลัก เช่น ข้อมูลบัญชีผู้ใช้ บันทึกประวัติการสแกน และล็อกระบบ RBAC</li>
+</ul>
+</li>
+<li><strong>4. การเชื่อมต่อกับระบบภายนอก (External Systems):</strong>
+<ul>
+<li><strong>Reverse Image Search (Google Vision API):</strong> สืบค้นหาแหล่งที่มาดั้งเดิมของภาพจากเว็บไซต์ทั่วโลก</li>
+<li><strong>Notification Service:</strong> แจ้งเตือนผู้ใช้งานแบบ in-app/polling ภายใน 60 วินาทีเมื่อรูปภาพที่รันแบบ Asynchronous ตรวจสอบเสร็จสิ้น (FCM push = Phase 2)</li>
+</ul>
+</li>
+</ul>
+<h4 id="2-1-3-เทคโนโลยีที่ใช้ในการพัฒนา-technology-stack">2.1.3 เทคโนโลยีที่ใช้ในการพัฒนา (Technology Stack)</h4>
+<ul>
+<li><strong>Frontend:</strong> Flutter (แอปพลิเคชันมือถือ; v1 build เฉพาะ Android เท่านั้น — CON-MOB-01), React.js (หน้าเว็บแอดมิน)</li>
+<li><strong>Backend:</strong> Python FastAPI (API Gateway และ Core Service)</li>
+<li><strong>AI Engine:</strong> PyTorch / ONNX (สำหรับ AI Inference), ตรวจร่องรอยดัดแปลงภาพด้วย SegFormer (ONNX ตัวเดียว) + AI-Gen classifier + OCR ด้วย Surya OCR v0.5.0 (Native PyTorch) + XAI ด้วย Qwen2.5-1.5B และแผนที่ความร้อนแบบ mask-to-heatmap overlay</li>
+<li><strong>Database &amp; Caching:</strong> PostgreSQL (ฐานข้อมูลหลัก), Redis (สำหรับจัดเก็บข้อมูลแคช)</li>
+<li><strong>Object Storage:</strong> ระบบจัดเก็บไฟล์บนคลาวด์ (Cloud Storage) (สำหรับรูปภาพและ Heatmap)</li>
+<li><strong>Deployment:</strong> Docker &amp; Containerization</li>
+</ul>
+<h3 id="2-2-ฟังก์ชันการทำงานของระบบ-product-functions">2.2 ฟังก์ชันการทำงานของระบบ (Product Functions)</h3>
+<ul>
+<li>ระบบสมัครสมาชิกและล็อกอินด้วย Email/Password + JWT (Social Login / Google OAuth เป็น Phase 2)</li>
+<li>เลือกและอัปโหลดรูปภาพเพื่อตรวจสอบ</li>
+<li>ถอดข้อความจากรูปภาพ วิเคราะห์ประเด็นหลอกลวง และค้นหาแหล่งที่มาของรูปภาพ</li>
+<li>ส่งรูปภาพตรวจสอบผ่านโมเดลปัญญาประดิษฐ์เพื่อหาจุดตัดต่อและระบุดัชนีความเสี่ยง</li>
+<li>แสดงผลวิเคราะห์ภาพพร้อมแผนที่ความร้อน (Heatmap)</li>
+<li>การแจ้งเตือนผู้ใช้งานแบบ in-app/polling ภายใน 60 วินาทีเมื่อวิเคราะห์ภาพเบื้องหลังเสร็จสิ้น (FCM push = Phase 2)</li>
+<li>บันทึกประวัติและรายงานรูปภาพที่น่าสงสัย</li>
+<li>แดชบอร์ดตรวจสอบสถิติและเครื่องมืออัปเดตโมเดล AI สำหรับผู้ดูแลระบบ</li>
+</ul>
+<h3 id="2-3-กลุ่มผู้ใช้และคุณลักษณะ-user-classes-and-characteristics">2.3 กลุ่มผู้ใช้และคุณลักษณะ (User Classes and Characteristics)</h3>
+<ol>
+<li><strong>General User (ผู้ใช้งานทั่วไป):</strong>
+<ul>
+<li>ประชาชนทั่วไปที่ทำธุรกรรมออนไลน์ ซื้อของออนไลน์ หรือผู้ใช้สื่อสังคมออนไลน์</li>
+<li>ต้องการความสามารถในการตรวจเช็กภาพอย่างรวดเร็วและเข้าใจง่าย (ผ่านผลลัพธ์ Visual Heatmap)</li>
+</ul>
+</li>
+<li><strong>Administrator (ผู้ดูแลระบบ):</strong>
+<ul>
+<li>มีความเข้าใจด้านเทคนิคและระบบซอฟต์แวร์</li>
+<li>ทำหน้าที่จัดการสิทธิ์เข้าถึง จัดการชุดข้อมูลรูปภาพ (Dataset) ที่ผู้ใช้รายงานเข้ามา และอัปโหลดไฟล์น้ำหนักโมเดล (AI Weights)</li>
+</ul>
+</li>
+</ol>
+<h3 id="2-4-ข้อจำกัดในการพัฒนา-design-and-implementation-constraints">2.4 ข้อจำกัดในการพัฒนา (Design and Implementation Constraints)</h3>
+<ul>
+<li>อุปกรณ์เคลื่อนที่ต้องเชื่อมต่ออินเทอร์เน็ตในการส่งรูปภาพไปประมวลผลบนคลาวด์</li>
+<li>การตรวจสอบทางด้านข้อความ (OCR) อาจได้ผลลัพธ์ไม่แม่นยำ 100% หากรูปภาพเบลอ มีความละเอียดต่ำ หรือแสงไม่เพียงพอ — เกณฑ์ภาพ ≥720p; ภาพต่ำกว่าเกณฑ์ระบบ shall แจ้งเตือนและคืนผลบางส่วนพร้อม confidence</li>
+<li>การประเมินผลความเสี่ยง (Risk Score) เป็นการประเมินเชิงสถิติจากโมเดล ไม่สามารถใช้เป็นข้อสรุปทางกฎหมายหรือพยานหลักฐานเด็ดขาดในชั้นศาลได้โดยตรง</li>
+<li>ระบบต้องปฏิบัติตามมาตรฐาน พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล (PDPA) อย่างเคร่งครัด</li>
+</ul>
+<h3 id="2-5-สมมติฐานและความขึ้นต่อกัน-assumptions-and-dependencies">2.5 สมมติฐานและความขึ้นต่อกัน (Assumptions and Dependencies)</h3>
+<ul>
+<li>สมมติว่าระบบบริการค้นหาข้อมูลภายนอก (Google Vision API) เปิดบริการตามปกติและมีอัตราการเชื่อมต่อที่เสถียร; หากล้มเหลวหรือยังไม่ตั้งค่า ระบบ shall fallback ตาม Document FR-ANALYSIS-03 AC-4: แจ้งสถานะ &quot;ไม่มีข้อมูลแหล่งที่มา&quot; (<code>source_status = &quot;unavailable&quot;</code>) และคืนผลบางส่วนพร้อม confidence โดยไม่สรุปว่าภาพปลอดภัย</li>
+<li>โมเดล AI จำเป็นต้องมีการเก็บรวบรวมรูปภาพสแกมไทย (Thai-Context Scam Images) เพิ่มเติมอย่างต่อเนื่องเพื่ออัปเดตโมเดลให้เข้ากับกลโกงรูปแบบใหม่ๆ</li>
+</ul>
+<hr>
+<h2 id="3-ข้อกำหนดความต้องการเชิงระบบ-system-requirements">3. ข้อกำหนดความต้องการเชิงระบบ (System Requirements)</h2>
+<h3 id="3-1-ความต้องการทางธุรกิจ-business-requirements-br">3.1 ความต้องการทางธุรกิจ (Business Requirements - BR)</h3>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">รหัส (BR-ID)</th>
+<th style="text-align:left">รายละเอียดความต้องการทางธุรกิจ</th>
+<th style="text-align:left">เหตุผล / คุณค่าทางธุรกิจ (Business Value)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>BR-01</strong></td>
+<td style="text-align:left">ระบบต้องช่วยให้ผู้ใช้สามารถอัปโหลดและตรวจสอบรูปภาพที่น่าสงสัยผ่านสมาร์ทโฟนได้</td>
+<td style="text-align:left">ป้องกันความสูญเสียทรัพย์สินและทำให้ประชาชนรู้เท่าทันกลโกงได้ทุกที่ทุกเวลา</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>BR-02</strong></td>
+<td style="text-align:left">ระบบต้องวิเคราะห์ภาพแบบหลายชั้น (ข้อความ, แหล่งที่มา, การตัดต่อ, AI) ได้อัตโนมัติ</td>
+<td style="text-align:left">เพิ่มความแม่นยำในการตรวจสอบและลดข้อผิดพลาดที่เกิดจากการประเมินด้วยสายตามนุษย์</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>BR-03</strong></td>
+<td style="text-align:left">ระบบต้องสามารถแสดงคำอธิบายผลลัพธ์ผ่านแผนที่ความร้อน (Heatmap) ได้</td>
+<td style="text-align:left">สร้างความน่าเชื่อถือ (Trust) และเพิ่มความตระหนักรู้ทางดิจิทัล (Digital Literacy) ให้ผู้ใช้</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>BR-04</strong></td>
+<td style="text-align:left">ระบบต้องคืนผล Cache Hit ใน ≤3 วินาที (P95), Full inference P50 ≤15 วินาที และแจ้งเตือนแบบ in-app/polling ภายใน 60 วินาทีหลังงานเบื้องหลังเสร็จ (FCM = Phase 2)</td>
+<td style="text-align:left">มอบประสบการณ์ใช้งานที่ดี (UX) ทำให้ผู้ใช้ไม่ต้องเปิดหน้าจอแอปพลิเคชันค้างไว้เพื่อรอผล</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>BR-05</strong></td>
+<td style="text-align:left">ระบบต้องสามารถจัดเก็บประวัติการสแกนและเรียกดูย้อนหลังได้</td>
+<td style="text-align:left">ช่วยให้ผู้ใช้มีระบบจัดเก็บข้อมูลที่เป็นระเบียบ และสามารถนำมาใช้เป็นหลักฐานอ้างอิงได้ในภายหลัง</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>BR-06</strong></td>
+<td style="text-align:left">ระบบต้องเปิดให้ผู้ใช้สามารถส่งรายงาน (Report) รูปภาพตัดต่อหลอกลวงเข้าสู่ระบบส่วนกลางได้</td>
+<td style="text-align:left">สร้างความร่วมมือในชุมชน (Crowdsourcing) และรวบรวมข้อมูลเพื่อใช้สอน AI ในอนาคต</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>BR-07</strong></td>
+<td style="text-align:left">ระบบต้องสามารถแชร์ (Share) หรือส่งออกภาพผลลัพธ์ความเสี่ยงไปยังแอปพลิเคชันอื่นได้</td>
+<td style="text-align:left">เพื่อให้ผู้ใช้สามารถส่งภาพแจ้งเตือนภัยไปยังบุคคลใกล้ชิด (เช่น ผ่าน LINE) ได้อย่างสะดวกรวดเร็ว</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>BR-08</strong></td>
+<td style="text-align:left">ระบบต้องจัดเก็บข้อมูลและประวัติผู้ใช้งานด้วยมาตรการรักษาความปลอดภัย (PDPA Compliance)</td>
+<td style="text-align:left">ป้องกันการรั่วไหลของข้อมูลส่วนบุคคล และสร้างความมั่นใจในการใช้งานแอปพลิเคชัน</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>BR-09</strong></td>
+<td style="text-align:left">ระบบต้องมีหน้าแดชบอร์ด (Admin Dashboard) และระบบควบคุมสิทธิ์ผู้ใช้ (RBAC)</td>
+<td style="text-align:left">ช่วยให้ผู้ดูแลระบบสามารถควบคุม ตรวจสอบ และบริหารจัดการระบบได้อย่างมีประสิทธิภาพ</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>BR-10</strong></td>
+<td style="text-align:left">ระบบต้องรองรับการจัดการชุดข้อมูล (Dataset) และการอัปเดตโมเดล AI โดยผู้ดูแลระบบ</td>
+<td style="text-align:left">เพื่อให้ระบบมีความยืดหยุ่น สามารถเรียนรู้กลโกงรูปแบบใหม่ๆ และรักษาความแม่นยำได้ในระยะยาว</td>
+</tr>
+</tbody>
+</table></div><h3 id="3-2-ความต้องการเชิงฟังก์ชัน-functional-requirements-fr">3.2 ความต้องการเชิงฟังก์ชัน (Functional Requirements - FR)</h3>
+<aside class="callout callout-note" aria-label="หมายเหตุ"><p class="callout-title">หมายเหตุ</p><p>Canonical catalog ของ FR/NFR/RC ฉบับจริงอยู่ที่ <code>Document/srs/05_Software_Requirement_Specification.md</code> และ <code>06_Requirement_Traceability.md</code>; FR-01..FR-10 ด้านล่างเป็นมุมมอง coarse ของ wiki (RC-AUTH-05 กู้รหัสผ่าน / RC-AUTH-06 Social Login = deferred Phase 2)</p>
+</aside>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">รหัส (FR-ID)</th>
+<th style="text-align:left">รายละเอียดความต้องการเชิงฟังก์ชัน</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>FR-01</strong></td>
+<td style="text-align:left"><strong>ระบบเข้าสู่ระบบและยืนยันตัวตน (Authentication):</strong> ผู้ใช้และผู้ดูแลระบบเข้าสู่ระบบด้วย Email/Password + JWT (Social Login / Google OAuth = RC-AUTH-06 Phase 2 deferred; ระบบกู้คืนรหัสผ่าน = RC-AUTH-05 Phase 2)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-02</strong></td>
+<td style="text-align:left"><strong>ระบบนำเข้ารูปภาพ (Image Input):</strong> ผู้ใช้เลือกรูปจากคลังภาพ (Gallery, v1 Android เท่านั้น) แล้วอัปโหลดไฟล์ภาพเข้าสู่ระบบ โดยระบบ shall รับเฉพาะ jpg/jpeg/png/webp, Mobile ≤10MB / API ≤20MB, decode แล้ว ≤100M พิกเซล และปฏิเสธไฟล์เกินพร้อมข้อความ (ไม่บีบอัดใน v1)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-03a</strong></td>
+<td style="text-align:left"><strong>EXIF/Metadata (แสดงผลเท่านั้น):</strong> ระบบดึง Metadata/EXIF มาแสดงประกอบ (RC-ANALYSIS-06; ไม่ใช้คำนวณ Risk Score)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-03b</strong></td>
+<td style="text-align:left"><strong>OCR + NLP:</strong> ระบบสกัดข้อความไทย/อังกฤษ (ภาพ ≥720p; ต่ำกว่าเกณฑ์ให้เตือน+คืนผลบางส่วนพร้อม confidence) และตรวจจับคีย์เวิร์ดหลอกลวง</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-03c</strong></td>
+<td style="text-align:left"><strong>Reverse Image Search (optional):</strong> ระบบค้นหาแหล่งที่มาของภาพ; หากล้มเหลว/ยังไม่ตั้งค่า shall แจ้ง &quot;ไม่มีข้อมูลแหล่งที่มา&quot; และคืนผลบางส่วน ไม่สรุปว่าปลอดภัย</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-04</strong></td>
+<td style="text-align:left"><strong>ระบบวิเคราะห์ด้วยปัญญาประดิษฐ์ (AI Inference):</strong> ระบบส่งภาพเข้าสู่โมเดล Deep Learning เพื่อตรวจสอบร่องรอยการตัดต่อ (Image Forgery/Semantic Segmentation) และตรวจสอบภาพที่สร้างด้วยปัญญาประดิษฐ์ (AI-Generated)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-05</strong></td>
+<td style="text-align:left"><strong>ระบบแสดงผลลัพธ์ (Result &amp; Visualization):</strong> ระบบคำนวณคะแนนความเสี่ยงรวมและสร้างแผนที่ความร้อน (Heatmap) เพื่ออธิบายผลลัพธ์ให้ผู้ใช้เข้าใจ — สูตร/เกณฑ์ตาม Document FR-ANALYSIS-04 (ดูนิยามที่ Document ที่เดียว)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-06</strong></td>
+<td style="text-align:left"><strong>ระบบแจ้งเตือน (Notification):</strong> v1 ใช้ polling + in-app notification ภายใน 60 วินาทีหลังงานเบื้องหลัง (Background Task) เสร็จสิ้น; FCM push = Phase 2 (RC-NOTIFY-01/02 deferred)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-07</strong></td>
+<td style="text-align:left"><strong>ระบบจัดการประวัติการสแกน (History Management):</strong> ระบบบันทึกประวัติการตรวจสอบภาพของผู้ใช้โดยสามารถเรียกดูผลลัพธ์ย้อนหลัง หรือลบประวัติได้</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-08</strong></td>
+<td style="text-align:left"><strong>ระบบรายงานและแชร์ข้อมูล (Report &amp; Share):</strong> ผู้ใช้สามารถกดรายงาน (Report) ภาพหลอกลวงเข้าสู่ฐานข้อมูลกลาง และสามารถแชร์ภาพผลลัพธ์/คำเตือนไปยังแอปพลิเคชันภายนอกได้</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-09</strong></td>
+<td style="text-align:left"><strong>ระบบผู้ดูแลและการจัดการสิทธิ์ (Admin &amp; RBAC):</strong> มีหน้าแดชบอร์ดให้ผู้ดูแลระบบตรวจสอบสถิติการใช้งาน, จัดการข้อมูลผู้ใช้, และกำหนดสิทธิ์การเข้าถึงระบบตามบทบาท</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-10</strong></td>
+<td style="text-align:left"><strong>ระบบจัดการข้อมูลและโมเดล (Dataset &amp; Model Management):</strong> ผู้ดูแลระบบสามารถตรวจสอบรูปภาพที่ถูกผู้ใช้รายงาน นำไปจัดหมวดหมู่ชุดข้อมูล และอัปโหลดโมเดล AI (Weights) เวอร์ชันใหม่เข้าสู่ระบบได้</td>
+</tr>
+</tbody>
+</table></div><h3 id="3-3-ความต้องการที่ไม่ใช่ฟังก์ชัน-non-functional-requirements-nfr">3.3 ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements - NFR)</h3>
+<blockquote>
+<p>นิยามตัวเลข/สูตร/เกณฑ์ทั้งหมดอยู่ที่ <code>Document/srs/05_Software_Requirement_Specification.md</code> §3 (NFR-01..09) ที่เดียว — ตารางนี้ใช้เลขชุดเดียวกับ Document และเหลือแค่ลิงก์อ้าง + รายละเอียดระดับทดสอบ</p>
+</blockquote>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">รหัส (NFR-ID)</th>
+<th style="text-align:left">รายละเอียดคุณภาพของระบบ (shall เดี่ยว + metric + เงื่อนไขวัด + วิธีวัด; canonical IDs ตาม Document/log_docs/05)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>NFR-01 (PERF)</strong></td>
+<td style="text-align:left"><strong>เวลาตอบสนอง (Performance):</strong> ตาม Document NFR-01 — Cache Hit ≤ 3 วินาที (P95, End-to-End); Full inference P50 ≤15 วินาที/ภาพ (P95 ≤25s, P99 ≤35s); GPU ≤10s, CPU fallback ≤60s; เงื่อนไขภาพ 1080p / 4G / NVIDIA T4</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>NFR-02 (SCAL)</strong></td>
+<td style="text-align:left"><strong>การขยายตัว (Scalability):</strong> ตาม Document NFR-02 — รองรับ 100 concurrent users (Cache Hit avg ≤ 5s, Cache Miss avg ≤ 20s, Error Rate &lt; 1%); รายละเอียดระดับทดสอบ: scale-out AI Inference 1→4 replicas throughput ≥3x ใน 5 นาที</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>NFR-03 (REL)</strong></td>
+<td style="text-align:left"><strong>ความพร้อมใช้งาน (Availability):</strong> ตาม Document NFR-03 — Uptime ≥99.5% ต่อรอบ 30 วัน (ไม่นับ Planned Maintenance ที่ประกาศล่วงหน้า); Monitoring Prometheus + Grafana; Alerting → Slack/LINE/Email; รายละเอียดระดับทดสอบ: crash-free sessions ≥99.9%</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>NFR-04 (SEC)</strong></td>
+<td style="text-align:left"><strong>ความมั่นคงปลอดภัย (Security):</strong> ตาม Document NFR-04 — TLS 1.3 ทุก endpoint; JWT (Access 15 นาที); bcrypt cost 12; Rate Limit (Guest 10 / User 60 / Admin 300 ต่อนาที); Input validation; รายละเอียดระดับทดสอบ: Argon2id ทางเลือก, ownership check ทุก endpoint, ห้าม plaintext</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>NFR-05 (ACC)</strong></td>
+<td style="text-align:left"><strong>ความแม่นยำโมเดล (Accuracy):</strong> ตาม Document NFR-05 — Accuracy ≥85% และ mDice ≥85% บน frozen test set 1,000 ภาพ (เกณฑ์เสริม Precision/Recall ≥85%); รายละเอียดระดับทดสอบ: AI-Gen classifier Accuracy ≥85% + AUROC ≥0.90</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>NFR-06 (USA)</strong></td>
+<td style="text-align:left"><strong>ความง่ายในการใช้งาน (Usability):</strong> ตาม Document NFR-06 — ผู้ใช้ทั่วไป ≥80% (n=100) เข้าใจบริเวณต้องสงสัยจาก Heatmap (UAT protocol + rubric); Likert เฉลี่ย ≥4.00/5.00</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>NFR-07 (PERF-CACHE)</strong></td>
+<td style="text-align:left"><strong>ประสิทธิภาพแคช (Caching):</strong> ตาม Document NFR-07 — Redis Cache Hit ≤3 วินาที (P95), hit-rate ≥40% ต่อสัปดาห์ (alert เมื่อ &lt;35%); กลยุทธ์ 4 ขั้นเมื่อต่ำกว่าเป้าหมาย</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>NFR-08 (COMP)</strong></td>
+<td style="text-align:left"><strong>ความเข้ากันได้ (Compatibility):</strong> ตาม Document NFR-08 — key flows ผ่าน 100% บน Android 10–15 (API 29–35) อย่างน้อย 10/12/14/15; API round-trip SHA-256 ตรง 100% + ตรง OpenAPI schema (v1 Android เท่านั้น — CON-MOB-01)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>NFR-09 (MAINT)</strong></td>
+<td style="text-align:left"><strong>ความบำรุงรักษา (Maintainability):</strong> ตาม Document NFR-09 — branch coverage ≥80% ทั้ง backend/mobile บน CI ทุก PR; static analysis 0 errors (ruff + mypy / flutter analyze); AI Inference แยกอิสระ (CON-ARCH-01)</td>
+</tr>
+</tbody>
+</table></div><blockquote>
+<p>เดิมมี <strong>NFR-10 (PRV)</strong> wiki-local — ยกเลิกเลขนี้แล้ว เนื้อหา map ไป Document <strong>FR-PDPA-01</strong> (consent 2 ระดับ + ถอน consent), <strong>NFR-04</strong> (TLS/hash/ownership), <strong>RC-PDPA-04</strong> (retention 1 ปี, deferred Phase 2) และ <strong>FR-ADMIN-04</strong> (Audit Log append-only)
+เดิมมี <strong>NFR-11</strong> wiki-local (กรณีวิเคราะห์ไม่ครบ) — ยกเลิกเลขนี้แล้ว เนื้อหา map ไป Document <strong>FR-ANALYSIS-03 AC-4</strong> (fallback: <code>source_status = &quot;unavailable&quot;</code> ไม่ใช้ค่ากลางปลอม มติ DOC-01)</p>
+</blockquote>
+<h3 id="3-4-เมตริกย้อนกลับความต้องการ-traceability-matrix">3.4 เมตริกย้อนกลับความต้องการ (Traceability Matrix)</h3>
+<h4 id="3-4-1-ตารางตรวจสอบย้อนกลับความต้องการ-br-fr-nfr-mapping">3.4.1 ตารางตรวจสอบย้อนกลับความต้องการ (BR &amp; FR/NFR Mapping)</h4>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">รหัส BR</th>
+<th style="text-align:left">รายละเอียดความต้องการทางธุรกิจ</th>
+<th style="text-align:left">รหัส FR ที่เกี่ยวข้อง</th>
+<th style="text-align:left">รหัส NFR ที่เกี่ยวข้อง</th>
+<th style="text-align:left">หมายเหตุ / การเชื่อมโยง</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>BR-01</strong></td>
+<td style="text-align:left">อัปโหลดและตรวจสอบรูปภาพผ่านสมาร์ทโฟน</td>
+<td style="text-align:left">FR-02</td>
+<td style="text-align:left">NFR-08</td>
+<td style="text-align:left">ฟังก์ชันหลักฝั่ง Mobile App (v1 Android เท่านั้น)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>BR-02</strong></td>
+<td style="text-align:left">วิเคราะห์ภาพแบบหลายชั้นอัตโนมัติ</td>
+<td style="text-align:left">FR-03a/b/c, FR-04</td>
+<td style="text-align:left">NFR-02</td>
+<td style="text-align:left">วิเคราะห์ EXIF/OCR/Source หลายชั้น; ขยาย AI Inference 1→4 replicas (Microservices = CON-ARCH-01)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>BR-03</strong></td>
+<td style="text-align:left">แสดงแผนที่ความร้อน (Heatmap) อธิบายผล</td>
+<td style="text-align:left">FR-05</td>
+<td style="text-align:left">NFR-06</td>
+<td style="text-align:left">แสดงผลภาพ XAI เพื่อเพิ่มความเข้าใจ (Usability)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>BR-04</strong></td>
+<td style="text-align:left">ประมวลผลรวดเร็ว / แจ้งเตือนเมื่อเสร็จสิ้น</td>
+<td style="text-align:left">FR-06</td>
+<td style="text-align:left">NFR-01, NFR-07</td>
+<td style="text-align:left">ใช้ Redis Cache และ in-app notification (FCM = Phase 2)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>BR-05</strong></td>
+<td style="text-align:left">จัดเก็บประวัติการสแกนย้อนหลัง</td>
+<td style="text-align:left">FR-07</td>
+<td style="text-align:left">NFR-04, FR-PDPA-01</td>
+<td style="text-align:left">เรียกดู/ลบประวัติตาม PDPA (consent 2 ระดับ + retention tiers)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>BR-06</strong></td>
+<td style="text-align:left">ส่งรายงาน (Report) รูปภาพหลอกลวง</td>
+<td style="text-align:left">FR-08</td>
+<td style="text-align:left">NFR-06</td>
+<td style="text-align:left">ผู้ใช้ช่วยแจ้งเบาะแสเพื่อให้แอดมินตรวจสอบ</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>BR-07</strong></td>
+<td style="text-align:left">แชร์ภาพผลลัพธ์ไปยังแอปพลิเคชันอื่น</td>
+<td style="text-align:left">FR-08</td>
+<td style="text-align:left">NFR-04</td>
+<td style="text-align:left">แชร์คำเตือนภัยไปยังแอปแชทภายนอกอย่างปลอดภัย</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>BR-08</strong></td>
+<td style="text-align:left">รักษาความปลอดภัยตามมาตรการ (PDPA)</td>
+<td style="text-align:left">FR-01</td>
+<td style="text-align:left">NFR-04, FR-PDPA-01</td>
+<td style="text-align:left">TLS 1.3 + bcrypt + consent 2 ระดับ + ownership check</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>BR-09</strong></td>
+<td style="text-align:left">หน้าแดชบอร์ดจัดการผู้ดูแลระบบ (RBAC)</td>
+<td style="text-align:left">FR-09</td>
+<td style="text-align:left">FR-ADMIN-04</td>
+<td style="text-align:left">แอดมินตรวจสอบข้อมูลและมีการเก็บ Audit Log แบบ append-only</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>BR-10</strong></td>
+<td style="text-align:left">จัดการชุดข้อมูลและอัปเดตโมเดล AI</td>
+<td style="text-align:left">FR-10</td>
+<td style="text-align:left">NFR-02, NFR-03</td>
+<td style="text-align:left">รองรับการขยายตัว (Scalability) โดยระบบไม่ขัดข้อง</td>
+</tr>
+</tbody>
+</table></div><h4 id="3-4-2-ตารางตรวจสอบย้อนกลับระหว่างวัตถุประสงค์และความต้องการ-objectives-requirements-mapping">3.4.2 ตารางตรวจสอบย้อนกลับระหว่างวัตถุประสงค์และความต้องการ (Objectives-Requirements Mapping)</h4>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:center">ลำดับวัตถุประสงค์</th>
+<th style="text-align:left">วัตถุประสงค์ของโครงงาน</th>
+<th style="text-align:left">รหัส FR ที่เกี่ยวข้อง</th>
+<th style="text-align:left">รหัส NFR ที่เกี่ยวข้อง</th>
+<th style="text-align:left">หมายเหตุ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><strong>OBJ-01</strong></td>
+<td style="text-align:left">เพื่อพัฒนาแอปพลิเคชันบนอุปกรณ์เคลื่อนที่สำหรับคัดกรองรูปภาพที่มีความเสี่ยง</td>
+<td style="text-align:left">FR-01, FR-02, FR-05, FR-07</td>
+<td style="text-align:left">NFR-06, NFR-08</td>
+<td style="text-align:left">ครอบคลุมการทำงานตั้งแต่ล็อกอิน อัปโหลด แสดงผล และดูประวัติ บน Android</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>OBJ-02</strong></td>
+<td style="text-align:left">เพื่อประยุกต์ใช้เทคโนโลยี Deep Learning ตรวจสอบ Image Forgery และ AI-Generated</td>
+<td style="text-align:left">FR-04, FR-10</td>
+<td style="text-align:left">NFR-05, NFR-02</td>
+<td style="text-align:left">โมเดลตัดต่อ Accuracy/mDice ≥85%, AI-Gen Accuracy ≥85% + AUROC ≥0.90; AI Inference แยกอิสระและอัปเดตได้</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>OBJ-03</strong></td>
+<td style="text-align:left">เพื่อพัฒนาระบบวิเคราะห์ความเสี่ยงแบบบูรณาการ (Multi-layer Analysis)</td>
+<td style="text-align:left">FR-03a/b/c, FR-04</td>
+<td style="text-align:left">NFR-01, NFR-07</td>
+<td style="text-align:left">วิเคราะห์ EXIF/OCR/Source ควบคู่กัน ประมวลผลเร็วด้วย Cache</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>OBJ-04</strong></td>
+<td style="text-align:left">เพื่อทดสอบและประเมินประสิทธิภาพของระบบ รวมถึงความพึงพอใจของผู้ใช้งาน</td>
+<td style="text-align:left">FR-06, FR-08, FR-09</td>
+<td style="text-align:left">NFR-03, NFR-06, FR-ADMIN-04</td>
+<td style="text-align:left">มี in-app notification รักษา UX (FCM = Phase 2) การแชร์เพื่อทดสอบจริง และระบบเก็บ Audit Log</td>
+</tr>
+</tbody>
+</table></div><hr>
+<h2 id="4-กรณีการใช้งานของระบบ-use-cases">4. กรณีการใช้งานของระบบ (Use Cases)</h2>
+<h3 id="4-1-ตารางสรุป-use-case-use-case-summary-table">4.1 ตารางสรุป Use Case (Use Case Summary Table)</h3>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">UC-ID</th>
+<th style="text-align:left">Use Case Name</th>
+<th style="text-align:center">Primary Actor</th>
+<th style="text-align:left">Description</th>
+<th style="text-align:center">Related FR</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>UC-01</strong></td>
+<td style="text-align:left">เข้าสู่ระบบ / ยืนยันตัวตน (Login &amp; Authentication)</td>
+<td style="text-align:center">User / Admin</td>
+<td style="text-align:left">ผู้ใช้และผู้ดูแลระบบเข้าสู่ระบบด้วย Email/Password + JWT เพื่อเข้าถึงระบบตามสิทธิ์ (Social Login = Phase 2)</td>
+<td style="text-align:center">FR-01</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>UC-02</strong></td>
+<td style="text-align:left">นำเข้ารูปภาพ (Upload Image)</td>
+<td style="text-align:center">User</td>
+<td style="text-align:left">ผู้ใช้อัปโหลดรูปภาพที่น่าสงสัยจากคลังภาพ</td>
+<td style="text-align:center">FR-02</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>UC-03</strong></td>
+<td style="text-align:left">ประมวลผลภาพขั้นต้น (Primary Analysis)</td>
+<td style="text-align:center">System</td>
+<td style="text-align:left">ระบบดำเนินการสกัดข้อความ (OCR), ดึง Metadata, และสืบค้นแหล่งที่มา (Reverse Image Search) อัตโนมัติ</td>
+<td style="text-align:center">FR-03</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>UC-04</strong></td>
+<td style="text-align:left">วิเคราะห์ด้วยปัญญาประดิษฐ์ (AI Inference)</td>
+<td style="text-align:center">System</td>
+<td style="text-align:left">ระบบประมวลผลผ่านโมเดล Deep Learning เพื่อตรวจหาการตัดต่อ (Semantic Segmentation) และการใช้ AI สร้างภาพ</td>
+<td style="text-align:center">FR-04</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>UC-05</strong></td>
+<td style="text-align:left">ตรวจสอบผลลัพธ์และแผนที่ความร้อน (View Result &amp; Heatmap)</td>
+<td style="text-align:center">User</td>
+<td style="text-align:left">ผู้ใช้ตรวจสอบคะแนนความเสี่ยงรวม (Risk Score) และดูแผนที่ความร้อน (Heatmap) ที่อธิบายจุดผิดปกติ</td>
+<td style="text-align:center">FR-05</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>UC-06</strong></td>
+<td style="text-align:left">รับการแจ้งเตือน (Receive Notification)</td>
+<td style="text-align:center">User</td>
+<td style="text-align:left">ผู้ใช้รับการแจ้งเตือนแบบ in-app/polling ภายใน 60 วินาทีเมื่อระบบ AI วิเคราะห์ภาพเสร็จสิ้น (FCM push = Phase 2)</td>
+<td style="text-align:center">FR-06</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>UC-07</strong></td>
+<td style="text-align:left">จัดการประวัติการสแกน (History Management)</td>
+<td style="text-align:center">User</td>
+<td style="text-align:left">ผู้ใช้สามารถเรียกดูผลลัพธ์ย้อนหลัง หรือลบประวัติการสแกนภาพของตนเองได้</td>
+<td style="text-align:center">FR-07</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>UC-08</strong></td>
+<td style="text-align:left">รายงานและแชร์ผลลัพธ์ (Report &amp; Share)</td>
+<td style="text-align:center">User</td>
+<td style="text-align:left">ผู้ใช้สามารถกดรายงาน (Report) ภาพสแกมเมอร์ หรือแชร์ภาพเตือนภัยไปยังแอปพลิเคชันภายนอกได้</td>
+<td style="text-align:center">FR-08</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>UC-09</strong></td>
+<td style="text-align:left">จัดการผู้ใช้และแดชบอร์ด (Admin Dashboard &amp; RBAC)</td>
+<td style="text-align:center">Admin</td>
+<td style="text-align:left">ผู้ดูแลระบบตรวจสอบสถิติ เปลี่ยนสถานะผู้ใช้ (แบน/ปิดใช้/เปิดใช้ — เปลี่ยนสถานะเท่านั้น ห้าม hard-delete) และกำหนดสิทธิ์การเข้าถึงระบบ</td>
+<td style="text-align:center">FR-09</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>UC-10</strong></td>
+<td style="text-align:left">จัดการชุดข้อมูลและอัปเดตโมเดล (Dataset &amp; Model Management)</td>
+<td style="text-align:center">Admin</td>
+<td style="text-align:left">ผู้ดูแลระบบตรวจสอบรูปภาพที่ถูก Report เพื่อรวบรวมเป็น Dataset และอัปเดตโมเดล AI ใหม่เข้าสู่ระบบ</td>
+<td style="text-align:center">FR-10</td>
+</tr>
+</tbody>
+</table></div><h3 id="4-2-ตารางเชื่อมโยง-use-case-และ-functional-requirements">4.2 ตารางเชื่อมโยง Use Case และ Functional Requirements</h3>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">FR-ID</th>
+<th style="text-align:left">รายละเอียดความต้องการเชิงฟังก์ชัน</th>
+<th style="text-align:left">Use Case ที่เกี่ยวข้อง</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>FR-01</strong></td>
+<td style="text-align:left">ระบบเข้าสู่ระบบและยืนยันตัวตนด้วย Email/Password + JWT (Authentication; Social Login / Google OAuth = Phase 2 deferred)</td>
+<td style="text-align:left">UC-01</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-02</strong></td>
+<td style="text-align:left">ระบบนำเข้ารูปภาพจากคลังภาพ (Image Input)</td>
+<td style="text-align:left">UC-02</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-03</strong></td>
+<td style="text-align:left">ระบบวิเคราะห์ข้อมูลขั้นต้น (Metadata, OCR, Source)</td>
+<td style="text-align:left">UC-03</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-04</strong></td>
+<td style="text-align:left">ระบบวิเคราะห์ด้วยปัญญาประดิษฐ์ (AI Inference)</td>
+<td style="text-align:left">UC-04</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-05</strong></td>
+<td style="text-align:left">ระบบแสดงผลลัพธ์ Risk Score และภาพ Heatmap</td>
+<td style="text-align:left">UC-05</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-06</strong></td>
+<td style="text-align:left">ระบบแจ้งเตือน (v1 in-app/polling; FCM = Phase 2)</td>
+<td style="text-align:left">UC-06</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-07</strong></td>
+<td style="text-align:left">ระบบจัดการประวัติการสแกน (History Management)</td>
+<td style="text-align:left">UC-07</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-08</strong></td>
+<td style="text-align:left">ระบบรายงานและแชร์ข้อมูล (Report &amp; Share)</td>
+<td style="text-align:left">UC-08</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-09</strong></td>
+<td style="text-align:left">ระบบผู้ดูแลและการจัดการสิทธิ์ (Admin &amp; RBAC)</td>
+<td style="text-align:left">UC-09</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-10</strong></td>
+<td style="text-align:left">ระบบจัดการข้อมูลและโมเดล AI (Dataset &amp; Model)</td>
+<td style="text-align:left">UC-10</td>
+</tr>
+</tbody>
+</table></div><h3 id="4-3-แผนภาพกรณีการใช้งาน-use-case-diagram">4.3 แผนภาพกรณีการใช้งาน (Use Case Diagram)</h3>
+<figure class="diagram-frame"><div class="diagram-toolbar"><span>แผนภาพ 4</span><button class="control" type="button" data-diagram-expand>ดูขนาดใหญ่</button></div><img src="../../assets/diagrams/requirements-srs-4.svg" alt="แผนภาพจาก Software Requirements Specification (SRS)" loading="lazy"><details class="diagram-source"><summary>ดู Mermaid source</summary><pre><code>flowchart LR
     %% การตั้งค่า Class สีต่างๆ (กำหนด color:black ตามมาตรฐานเดิม)
     classDef actorFill fill:#fff2cc,stroke:#d6b656,color:black
     classDef ucFill fill:#dae8fc,stroke:#6c8ebf,color:black
@@ -1213,286 +778,187 @@
     class User,Admin actorFill
     class UC01,UC02,UC03,UC04,UC05,UC06,UC07,UC08,UC09,UC10 ucFill
     class GoogleVision,FCM extFill
-</code></pre>
-                    </details>
-                    <dialog aria-label="แผนภาพขนาดใหญ่">
-                        <div class="diagram-expanded-head"><button class="control" type="button"
-                                data-diagram-zoom="out">ย่อ</button><span class="zoom-status"
-                                data-zoom-status>100%</span><button class="control" type="button"
-                                data-diagram-zoom="in">ขยาย</button><button class="control" type="button"
-                                data-diagram-close>ปิด</button></div>
-                        <div class="diagram-pan" data-diagram-pan data-zoom="1" tabindex="0"
-                            aria-label="พื้นที่แผนภาพ เลื่อนได้ทั้งแนวตั้งและแนวนอน"><img
-                                src="../../assets/diagrams/requirements-srs-4.svg"
-                                alt="แผนภาพจาก Software Requirements Specification (SRS)"></div>
-                    </dialog>
-                </figure>
-                <h5 id="คำอธิบายรายละเอียดกรณีการใช้งาน-use-case-details">คำอธิบายรายละเอียดกรณีการใช้งาน (Use Case
-                    Details)</h5>
-                <ul>
-                    <li>
-                        <p><strong>UC-01: เข้าสู่ระบบ / ยืนยันตัวตน (Login &amp; Authentication):</strong></p>
-                        <ul>
-                            <li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User, Admin</li>
-                            <li><strong>รายละเอียด:</strong> กระบวนการยืนยันตัวตนเพื่อรักษาความปลอดภัยก่อนเข้าใช้งานระบบ
-                                โดยเข้าผ่าน Email/Password + JWT เพื่อทำการตรวจสอบและกำหนดสิทธิ์การดูข้อมูลตามบทบาท
-                                (Role-Based Access Control; Social Login = Phase 2 deferred)</li>
-                            <li><strong>ความต้องการทางระบบ (FR):</strong> FR-01 - ระบบเข้าสู่ระบบและยืนยันตัวตน
-                                (Authentication): ผู้ใช้และผู้ดูแลระบบเข้าสู่ระบบด้วย Email/Password + JWT (Social Login
-                                / Google OAuth = Phase 2 deferred)</li>
-                        </ul>
-                    </li>
-                    <li>
-                        <p><strong>UC-02: นำเข้ารูปภาพ (Upload Image):</strong></p>
-                        <ul>
-                            <li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User</li>
-                            <li><strong>รายละเอียด:</strong> ผู้ใช้งานสามารถอัปโหลดภาพที่ต้องการตรวจสอบ เช่น สลิปโอนเงิน
-                                หรือรูปโปรไฟล์บุคคลอื่น โดยเลือกรูปที่มีอยู่แล้วในคลังรูปภาพ (Gallery)
-                                ของอุปกรณ์เคลื่อนที่</li>
-                            <li><strong>ความต้องการทางระบบ (FR):</strong> FR-02 - ระบบนำเข้ารูปภาพ (Image Input):
-                                ผู้ใช้เลือกรูปจากคลังภาพ แล้วอัปโหลดไฟล์ภาพเข้าสู่ระบบ</li>
-                        </ul>
-                    </li>
-                    <li>
-                        <p><strong>UC-03: ประมวลผลภาพขั้นต้น (Primary Analysis):</strong></p>
-                        <ul>
-                            <li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User (ผ่าน &lt;<include>&gt; จาก UC-02)
-                            </li>
-                            <li><strong>รายละเอียด:</strong> การดึงข้อมูลเมทาดาตา (Metadata/EXIF) ของภาพ,
-                                การสกัดตัวอักษรด้วยเทคนิค OCR เพื่อวิเคราะห์ Keyword อันตรายร่วมกับเทคนิค NLP
-                                และการส่งข้อมูลรูปภาพไปสืบค้นหาแหล่งที่มาดั้งเดิมด้วย Google Vision API</li>
-                            <li><strong>ความต้องการทางระบบ (FR):</strong> FR-03 - ระบบวิเคราะห์ข้อมูลชั้นต้น (Primary
-                                Analysis): ระบบสามารถดึงข้อมูลแฝง (Metadata/EXIF), สกัดข้อความในภาพ (OCR),
-                                และค้นหาแหล่งที่มาของภาพ (Reverse Image Search) ได้โดยอัตโนมัติ</li>
-                        </ul>
-                    </li>
-                    <li>
-                        <p><strong>UC-04: วิเคราะห์ด้วย AI (AI Inference):</strong></p>
-                        <ul>
-                            <li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User (ผ่าน &lt;<include>&gt; จาก UC-03)
-                            </li>
-                            <li><strong>รายละเอียด:</strong> ส่งรูปภาพเพื่อนำเข้าโมเดลปัญญาประดิษฐ์เชิงลึก (Deep
-                                Learning) ในการตรวจสอบการแก้ไขระดับพิกเซล (Semantic Segmentation)
-                                เพื่อหาร่องรอยการตัดต่อ (Image Forgery) และตรวจสอบลักษณะว่าภาพถูกสังเคราะห์ด้วย
-                                Generative AI หรือไม่</li>
-                            <li><strong>ความต้องการทางระบบ (FR):</strong> FR-04 - ระบบวิเคราะห์ด้วยปัญญาประดิษฐ์ (AI
-                                Inference): ระบบส่งภาพเข้าสู่โมเดล Deep Learning เพื่อตรวจสอบร่องรอยการตัดต่อ (Image
-                                Forgery/Semantic Segmentation) และตรวจสอบภาพที่สร้างด้วยปัญญาประดิษฐ์ (AI-Generated)
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <p><strong>UC-05: ตรวจสอบผลลัพธ์และแผนที่ความร้อน (View Result &amp; Heatmap):</strong></p>
-                        <ul>
-                            <li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User</li>
-                            <li><strong>รายละเอียด:</strong> หน้าจอแสดงค่าคะแนนความเสี่ยงรวม (Overall Risk Score)
-                                พร้อมแสดงผลสรุปเหตุผลความผิดปกติ และแสดงแผนที่ความร้อน (Heatmap) บนจุดที่น่าสงสัยของภาพ
-                                เพื่อตอบโจทย์ความโปร่งใสของปัญญาประดิษฐ์ (XAI)</li>
-                            <li><strong>ความต้องการทางระบบ (FR):</strong> FR-05 - ระบบแสดงผลลัพธ์ (Result &amp;
-                                Visualization): ระบบคำนวณคะแนนความเสี่ยงรวม (Overall Risk Score) และสร้างแผนที่ความร้อน
-                                (Heatmap) เพื่ออธิบายผลลัพธ์ให้ผู้ใช้เข้าใจ</li>
-                        </ul>
-                    </li>
-                    <li>
-                        <p><strong>UC-06: รับการแจ้งเตือน (Receive Notification; FCM = Phase 2):</strong></p>
-                        <ul>
-                            <li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User</li>
-                            <li><strong>รายละเอียด:</strong> การรับการแจ้งเตือนแบบ in-app/polling ภายใน 60
-                                วินาทีเมื่อระบบตรวจสอบวิเคราะห์รูปภาพบนเซิร์ฟเวอร์เบื้องหลัง (Background Task)
-                                เสร็จสิ้นสมบูรณ์ (FCM push = Phase 2)</li>
-                            <li><strong>ความต้องการทางระบบ (FR):</strong> FR-06 - ระบบแจ้งเตือน: v1 ใช้ polling + in-app
-                                notification ภายใน 60 วินาทีหลังงานเบื้องหลังเสร็จ (FCM push = Phase 2)</li>
-                        </ul>
-                    </li>
-                    <li>
-                        <p><strong>UC-07: จัดการประวัติการสแกน (History Management):</strong></p>
-                        <ul>
-                            <li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User</li>
-                            <li><strong>รายละเอียด:</strong>
-                                ผู้ใช้งานทั่วไปสามารถเรียกดูประวัติรูปภาพและผลคะแนนความเสี่ยงย้อนหลังที่เคยส่งตรวจสอบ
-                                เพื่อเก็บบันทึกข้อมูลหรือเรียกดูใหม่
-                                และผู้ใช้สามารถกดลบข้อมูลการสแกนประวัติตนเองได้ตามนโยบาย PDPA</li>
-                            <li><strong>ความต้องการทางระบบ (FR):</strong> FR-07 - ระบบจัดการประวัติการสแกน (History
-                                Management): ระบบบันทึกประวัติการตรวจสอบภาพของผู้ใช้โดยสามารถเรียกดูผลลัพธ์ย้อนหลัง
-                                หรือลบประวัติได้</li>
-                        </ul>
-                    </li>
-                    <li>
-                        <p><strong>UC-08: รายงานและแชร์ผลลัพธ์ (Report &amp; Share):</strong></p>
-                        <ul>
-                            <li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User</li>
-                            <li><strong>รายละเอียด:</strong> การกดรายงาน (Report)
-                                ส่งยืนยันภาพหลอกลวงเข้าคลังสแกมเมอร์ส่วนกลางเพื่อเป็นประโยชน์ในอนาคต
-                                และสามารถกดแชร์ภาพสรุปความเสี่ยงหรือคำเตือนภัยไปยังสื่อโซเชียลภายนอก (เช่น LINE)
-                                เพื่อเตือนภัยบุคคลใกล้ชิด</li>
-                            <li><strong>ความต้องการทางระบบ (FR):</strong> FR-08 - ระบบรายงานและแชร์ข้อมูล (Report &amp;
-                                Share): ผู้ใช้สามารถกดรายงาน (Report) ภาพหลอกลวงเข้าสู่ฐานข้อมูลกลาง
-                                และสามารถแชร์ภาพผลลัพธ์/คำเตือนไปยังแอปพลิเคชันภายนอกได้</li>
-                        </ul>
-                    </li>
-                    <li>
-                        <p><strong>UC-09: จัดการผู้ใช้และแดชบอร์ด (Admin Dashboard &amp; RBAC):</strong></p>
-                        <ul>
-                            <li><strong>ผู้เกี่ยวข้อง (Actors):</strong> Admin</li>
-                            <li><strong>รายละเอียด:</strong> แอดมินเข้าใช้งานหน้าเว็บแผงควบคุมระบบ (Admin Panel)
-                                เพื่อติดตามกราฟสถิติการใช้งาน, จัดการข้อมูลของผู้ใช้งาน, ตรวจสอบสิทธิ์การเข้าถึง
-                                และการอนุมัติจัดการรายงานต่าง ๆ</li>
-                            <li><strong>ความต้องการทางระบบ (FR):</strong> FR-09 - ระบบผู้ดูแลและการจัดการสิทธิ์ (Admin
-                                &amp; RBAC): มีหน้าแดชบอร์ดให้ผู้ดูแลระบบตรวจสอบสถิติการใช้งาน, จัดการข้อมูลผู้ใช้,
-                                และกำหนดสิทธิ์การเข้าถึงระบบตามบทบาท</li>
-                        </ul>
-                    </li>
-                    <li>
-                        <p><strong>UC-10: จัดการชุดข้อมูลและอัปเดตโมเดล (Dataset &amp; Model Management):</strong></p>
-                        <ul>
-                            <li><strong>ผู้เกี่ยวข้อง (Actors):</strong> Admin</li>
-                            <li><strong>รายละเอียด:</strong> แอดมินทำหน้าที่ตรวจสอบรูปภาพสแกมที่ผู้ใช้รายงาน
-                                ตรวจจัดหมวดหมู่เพื่อส่งเข้าชุดข้อมูล (Scam Dataset) สำหรับนำไปเทรนและวิเคราะห์เพิ่มเติม
-                                พร้อมทำการอัปโหลดไฟล์น้ำหนักโมเดล (Model Weights) เวอร์ชันใหม่ขึ้นระบบ</li>
-                            <li><strong>ความต้องการทางระบบ (FR):</strong> FR-10 - ระบบจัดการข้อมูลและโมเดล (Dataset
-                                &amp; Model Management): ผู้ดูแลระบบสามารถตรวจสอบรูปภาพที่ถูกผู้ใช้รายงาน
-                                นำไปจัดหมวดหมู่ชุดข้อมูล และอัปโหลดโมเดล AI (Weights) เวอร์ชันใหม่เข้าสู่ระบบได้</li>
-                        </ul>
-                    </li>
-                </ul>
-                <h4 id="exception-flows-ทุก-uc">Exception flows (ทุก UC)</h4>
-                <ul>
-                    <li>ไฟล์ผิดชนิด/เกินขนาด (FR-02) → ปฏิเสธพร้อมข้อความ ไม่บีบอัดใน v1</li>
-                    <li>OCR/โมเดล/External ล้มเหลว → คืนผลบางส่วนพร้อม confidence + สถานะชัดเจน (ไม่บันทึกว่า
-                        &quot;สำเร็จ&quot; ทั้งที่วิเคราะห์ไม่ครบ)</li>
-                    <li>Reverse search/FCM ไม่พร้อม → แจ้ง &quot;ไม่มีข้อมูล&quot; (optional) ไม่สรุปว่าภาพปลอดภัย</li>
-                    <li>Token หมดอายุ/สิทธิ์ไม่พอ → 401 + ต่ออายุหรือล็อกอินใหม่; ทรัพยากรมีเจ้าของตรวจ ownership เสมอ
-                    </li>
-                </ul>
-                <hr>
-                <h2 id="5-การเปรียบเทียบกระบวนการทำงานระบบเดิมและระบบใหม่-as-is-vs-to-be">5.
-                    การเปรียบเทียบกระบวนการทำงานระบบเดิมและระบบใหม่ (AS-IS vs TO-BE)</h2>
-                <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="text-align:left">หัวข้อเปรียบเทียบ</th>
-                                <th style="text-align:left">ระบบเดิม (AS-IS)</th>
-                                <th style="text-align:left">ระบบใหม่ (TO-BE: Scam Image Detection)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td style="text-align:left"><strong>ขั้นตอนการตรวจสอบ</strong></td>
-                                <td style="text-align:left">ใช้สายตามนุษย์คาดเดา หรือต้องบันทึกรูปไปสืบค้นบน Google
-                                    Images ด้วยตนเองทีละขั้นตอน</td>
-                                <td style="text-align:left">อัปโหลดรูปภาพผ่านสมาร์ทโฟน ระบบทำการตรวจสอบแบบหลายชั้น
-                                    (Multi-layer Analysis) ให้โดยอัตโนมัติในแอปเดียว</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>เครื่องมือที่ใช้</strong></td>
-                                <td style="text-align:left">ต้องใช้คอมพิวเตอร์และซอฟต์แวร์นิติวิทยาศาสตร์ (Digital
-                                    Forensics) ที่มีความซับซ้อน</td>
-                                <td style="text-align:left">ใช้งานง่ายผ่านแอปพลิเคชันบนสมาร์ทโฟน (Android, v1)
-                                    ไม่ต้องมีพื้นฐานด้านไอที</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>ความสามารถของ AI</strong></td>
-                                <td style="text-align:left">สายตามนุษย์และซอฟต์แวร์ดั้งเดิมไม่สามารถแยกแยะภาพที่สร้างจาก
-                                    Generative AI รุ่นใหม่ได้</td>
-                                <td style="text-align:left">ประยุกต์ใช้โมเดล Deep Learning
-                                    ตรวจสอบความผิดปกติของสเปกตรัมภาพระดับพิกเซลได้อย่างแม่นยำ</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>การทำความเข้าใจผลลัพธ์</strong></td>
-                                <td style="text-align:left">ทราบเพียงแค่ภาพนี้ &quot;น่าจะจริง&quot; หรือ
-                                    &quot;น่าจะปลอม&quot; แต่ไม่ทราบพิกัดที่ถูกแก้ไข</td>
-                                <td style="text-align:left">ระบบแสดงผลแบบ Explainable AI ผ่านแผนที่ความร้อน (Heatmap)
-                                    ชี้พิกัดที่ถูกตัดต่อให้เห็นอย่างเป็นรูปธรรม</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>ประสิทธิภาพและเวลา</strong></td>
-                                <td style="text-align:left">
-                                    ใช้เวลาหลายนาทีถึงหลักชั่วโมงในการสืบหาข้อมูลแหล่งที่มาและการตัดต่อ</td>
-                                <td style="text-align:left">ใช้เวลาเพียงเสี้ยววินาที (กรณี Cache Hit) หรือ P50 ไม่เกิน
-                                    15 วินาที พร้อมแจ้งเตือน in-app เมื่อเสร็จสิ้น (FCM = Phase 2)</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left"><strong>การจัดเก็บและการมีส่วนร่วม</strong></td>
-                                <td style="text-align:left">รูปภาพหลอกลวงไม่ถูกบันทึกเป็นฐานข้อมูล
-                                    ทำให้เกิดเหยื่อรายใหม่ซ้ำซาก</td>
-                                <td style="text-align:left">มีระบบ History จัดเก็บประวัติและระบบ Report
-                                    ที่ช่วยรวบรวมข้อมูลภาพหลอกลวงส่งให้ส่วนกลางอัปเดต AI ต่อไป</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <hr>
-                <h2 id="6-ขอบเขตการทำงานของระบบโดยละเอียด-detailed-system-scope">6. ขอบเขตการทำงานของระบบโดยละเอียด
-                    (Detailed System Scope)</h2>
-                <h3 id="6-1-ขอบเขตของผู้ใช้-user-scope">6.1 ขอบเขตของผู้ใช้ (User Scope)</h3>
-                <ul>
-                    <li><strong>General User (ผู้ใช้งานทั่วไป):</strong>
-                        <ul>
-                            <li>ลงทะเบียนและยืนยันตัวตนก่อนเข้าใช้งานระบบ</li>
-                            <li>นำเข้ารูปภาพเพื่อตรวจสอบความเสี่ยง จากการเลือกรูปภาพในแกลเลอรีของเครื่อง</li>
-                            <li>เรียกดูรายงานผลลัพธ์ความเสี่ยง (Risk Score) และดูตรรกะเหตุผลผ่านแผนที่ความร้อน (Heatmap)
-                            </li>
-                            <li>ดูรายการประวัติการตรวจสอบย้อนหลังของตนเองและลบได้</li>
-                            <li>รายงาน (Report) ข้อมูลรูปภาพที่เป็นการหลอกลวงเข้าสู่คลังฐานข้อมูลกลาง</li>
-                        </ul>
-                    </li>
-                    <li><strong>Administrator (ผู้ดูแลระบบ):</strong>
-                        <ul>
-                            <li>เข้าสู่ระบบผ่านหน้าเว็บแอปพลิเคชัน (Admin Portal)</li>
-                            <li>บริหารจัดการข้อมูลผู้ใช้งานและกำหนดระดับความปลอดภัย (RBAC)</li>
-                            <li>ตรวจสอบรายงานรูปภาพตัดต่อที่ส่งเข้ามาโดยผู้ใช้เพื่อพิจารณาอัปเดตเข้าคลังข้อมูลวิจัย</li>
-                            <li>อัปเดตไฟล์น้ำหนักโมเดล AI (Model Weights)
-                                เวอร์ชันใหม่เพื่อใช้ในการประมวลผลตรวจจับที่ดียิ่งขึ้น</li>
-                        </ul>
-                    </li>
-                </ul>
-                <h3 id="6-2-ขอบเขตการประมวลผลและการจัดเก็บข้อมูล-system-data-scope">6.2
-                    ขอบเขตการประมวลผลและการจัดเก็บข้อมูล (System &amp; Data Scope)</h3>
-                <ul>
-                    <li><strong>การประมวลผลภาพขั้นต้น (Primary Analysis):</strong>
-                        <ul>
-                            <li>ดึงค่า Metadata ของรูปภาพเพื่อตรวจสอบรายละเอียดของไฟล์ภาพ อุปกรณ์ที่ใช้บันทึก
-                                และประวัติตำแหน่ง (ถ้ามี)</li>
-                            <li>สกัดอักษร (OCR) เพื่อตรวจสอบเนื้อความเบื้องต้น
-                                โดยจะตรวจจับประเด็นคำหรือตัวเลขที่มีความเสี่ยงสูง (เช่น
-                                คำที่มักใช้ในการโกงหรือข้อความแปลกปลอม)</li>
-                            <li>ใช้ Google Vision API เพื่อทำธุรกรรม Reverse Image Search
-                                ค้นหาความถี่ของการปรากฏของภาพในสื่อออนไลน์</li>
-                        </ul>
-                    </li>
-                    <li><strong>การตรวจจับภาพตัดต่อด้วย AI (AI Inference):</strong>
-                        <ul>
-                            <li>ประมวลผลบนเซิร์ฟเวอร์แยกต่างหาก (AI Inference Container)</li>
-                            <li>ใช้โครงข่ายประสาทเทียมแบบ Deep Learning (PyTorch) ในการประเมินร่องรอยการแก้ไขพิกเซล
-                                (Semantic Segmentation) และตรวจเช็กการสังเคราะห์ภาพจาก Generative AI</li>
-                        </ul>
-                    </li>
-                    <li><strong>สถาปัตยกรรมความปลอดภัยและการจัดเก็บข้อมูล:</strong>
-                        <ul>
-                            <li>จัดเก็บรายละเอียดบัญชีผู้ใช้งาน ประวัติรายการสแกน และรายงานความปลอดภัยลงในฐานข้อมูล
-                                PostgreSQL</li>
-                            <li>เก็บรูปภาพต้นฉบับและรูปภาพผลลัพธ์แผนที่ความร้อนลงในระบบจัดเก็บไฟล์บนคลาวด์ (Cloud
-                                Storage)</li>
-                            <li>ใช้ Redis ในฐานะระบบจัดเก็บข้อมูลชั่วคราว (Caching)
-                                เพื่อตอบสนองความเร็วกรณีตรวจสอบรูปภาพซ้ำ</li>
-                        </ul>
-                    </li>
-                </ul>
-                <hr>
-                <h2 id="7-แผนการดำเนินงานและงบประมาณ-project-plan-budget">7. แผนการดำเนินงานและงบประมาณ (Project Plan
-                    &amp; Budget)</h2>
-                <h3 id="7-1-แผนการดำเนินงาน-gantt-chart-timeline">7.1 แผนการดำเนินงาน (Gantt Chart / Timeline)</h3>
-                <p>โครงการใช้เวลาในการดำเนินงานทั้งสิ้น 8 เดือน ตั้งแต่เดือนพฤศจิกายน พ.ศ. 2568 ถึง เดือนมิถุนายน พ.ศ.
-                    2569:</p>
-                <figure class="diagram-frame">
-                    <div class="diagram-toolbar"><span>แผนภาพ 5</span><button class="control" type="button"
-                            data-diagram-expand>ดูขนาดใหญ่</button></div><img
-                        src="../../assets/diagrams/requirements-srs-5.svg"
-                        alt="แผนภาพจาก Software Requirements Specification (SRS)" loading="lazy">
-                    <details class="diagram-source">
-                        <summary>ดู Mermaid source</summary>
-                        <pre><code>gantt
+</code></pre></details><dialog aria-label="แผนภาพขนาดใหญ่"><div class="diagram-expanded-head"><button class="control" type="button" data-diagram-zoom="out">ย่อ</button><span class="zoom-status" data-zoom-status>100%</span><button class="control" type="button" data-diagram-zoom="in">ขยาย</button><button class="control" type="button" data-diagram-close>ปิด</button></div><div class="diagram-pan" data-diagram-pan data-zoom="1" tabindex="0" aria-label="พื้นที่แผนภาพ เลื่อนได้ทั้งแนวตั้งและแนวนอน"><img src="../../assets/diagrams/requirements-srs-4.svg" alt="แผนภาพจาก Software Requirements Specification (SRS)"></div></dialog></figure><h5 id="คำอธิบายรายละเอียดกรณีการใช้งาน-use-case-details">คำอธิบายรายละเอียดกรณีการใช้งาน (Use Case Details)</h5>
+<ul>
+<li>
+<p><strong>UC-01: เข้าสู่ระบบ / ยืนยันตัวตน (Login &amp; Authentication):</strong></p>
+<ul>
+<li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User, Admin</li>
+<li><strong>รายละเอียด:</strong> กระบวนการยืนยันตัวตนเพื่อรักษาความปลอดภัยก่อนเข้าใช้งานระบบ โดยเข้าผ่าน Email/Password + JWT เพื่อทำการตรวจสอบและกำหนดสิทธิ์การดูข้อมูลตามบทบาท (Role-Based Access Control; Social Login = Phase 2 deferred)</li>
+<li><strong>ความต้องการทางระบบ (FR):</strong> FR-01 - ระบบเข้าสู่ระบบและยืนยันตัวตน (Authentication): ผู้ใช้และผู้ดูแลระบบเข้าสู่ระบบด้วย Email/Password + JWT (Social Login / Google OAuth = Phase 2 deferred)</li>
+</ul>
+</li>
+<li>
+<p><strong>UC-02: นำเข้ารูปภาพ (Upload Image):</strong></p>
+<ul>
+<li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User</li>
+<li><strong>รายละเอียด:</strong> ผู้ใช้งานสามารถอัปโหลดภาพที่ต้องการตรวจสอบ เช่น สลิปโอนเงิน หรือรูปโปรไฟล์บุคคลอื่น โดยเลือกรูปที่มีอยู่แล้วในคลังรูปภาพ (Gallery) ของอุปกรณ์เคลื่อนที่</li>
+<li><strong>ความต้องการทางระบบ (FR):</strong> FR-02 - ระบบนำเข้ารูปภาพ (Image Input): ผู้ใช้เลือกรูปจากคลังภาพ แล้วอัปโหลดไฟล์ภาพเข้าสู่ระบบ</li>
+</ul>
+</li>
+<li>
+<p><strong>UC-03: ประมวลผลภาพขั้นต้น (Primary Analysis):</strong></p>
+<ul>
+<li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User (ผ่าน &lt;<include>&gt; จาก UC-02)</li>
+<li><strong>รายละเอียด:</strong> การดึงข้อมูลเมทาดาตา (Metadata/EXIF) ของภาพ, การสกัดตัวอักษรด้วยเทคนิค OCR เพื่อวิเคราะห์ Keyword อันตรายร่วมกับเทคนิค NLP และการส่งข้อมูลรูปภาพไปสืบค้นหาแหล่งที่มาดั้งเดิมด้วย Google Vision API</li>
+<li><strong>ความต้องการทางระบบ (FR):</strong> FR-03 - ระบบวิเคราะห์ข้อมูลชั้นต้น (Primary Analysis): ระบบสามารถดึงข้อมูลแฝง (Metadata/EXIF), สกัดข้อความในภาพ (OCR), และค้นหาแหล่งที่มาของภาพ (Reverse Image Search) ได้โดยอัตโนมัติ</li>
+</ul>
+</li>
+<li>
+<p><strong>UC-04: วิเคราะห์ด้วย AI (AI Inference):</strong></p>
+<ul>
+<li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User (ผ่าน &lt;<include>&gt; จาก UC-03)</li>
+<li><strong>รายละเอียด:</strong> ส่งรูปภาพเพื่อนำเข้าโมเดลปัญญาประดิษฐ์เชิงลึก (Deep Learning) ในการตรวจสอบการแก้ไขระดับพิกเซล (Semantic Segmentation) เพื่อหาร่องรอยการตัดต่อ (Image Forgery) และตรวจสอบลักษณะว่าภาพถูกสังเคราะห์ด้วย Generative AI หรือไม่</li>
+<li><strong>ความต้องการทางระบบ (FR):</strong> FR-04 - ระบบวิเคราะห์ด้วยปัญญาประดิษฐ์ (AI Inference): ระบบส่งภาพเข้าสู่โมเดล Deep Learning เพื่อตรวจสอบร่องรอยการตัดต่อ (Image Forgery/Semantic Segmentation) และตรวจสอบภาพที่สร้างด้วยปัญญาประดิษฐ์ (AI-Generated)</li>
+</ul>
+</li>
+<li>
+<p><strong>UC-05: ตรวจสอบผลลัพธ์และแผนที่ความร้อน (View Result &amp; Heatmap):</strong></p>
+<ul>
+<li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User</li>
+<li><strong>รายละเอียด:</strong> หน้าจอแสดงค่าคะแนนความเสี่ยงรวม (Overall Risk Score) พร้อมแสดงผลสรุปเหตุผลความผิดปกติ และแสดงแผนที่ความร้อน (Heatmap) บนจุดที่น่าสงสัยของภาพ เพื่อตอบโจทย์ความโปร่งใสของปัญญาประดิษฐ์ (XAI)</li>
+<li><strong>ความต้องการทางระบบ (FR):</strong> FR-05 - ระบบแสดงผลลัพธ์ (Result &amp; Visualization): ระบบคำนวณคะแนนความเสี่ยงรวม (Overall Risk Score) และสร้างแผนที่ความร้อน (Heatmap) เพื่ออธิบายผลลัพธ์ให้ผู้ใช้เข้าใจ</li>
+</ul>
+</li>
+<li>
+<p><strong>UC-06: รับการแจ้งเตือน (Receive Notification; FCM = Phase 2):</strong></p>
+<ul>
+<li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User</li>
+<li><strong>รายละเอียด:</strong> การรับการแจ้งเตือนแบบ in-app/polling ภายใน 60 วินาทีเมื่อระบบตรวจสอบวิเคราะห์รูปภาพบนเซิร์ฟเวอร์เบื้องหลัง (Background Task) เสร็จสิ้นสมบูรณ์ (FCM push = Phase 2)</li>
+<li><strong>ความต้องการทางระบบ (FR):</strong> FR-06 - ระบบแจ้งเตือน: v1 ใช้ polling + in-app notification ภายใน 60 วินาทีหลังงานเบื้องหลังเสร็จ (FCM push = Phase 2)</li>
+</ul>
+</li>
+<li>
+<p><strong>UC-07: จัดการประวัติการสแกน (History Management):</strong></p>
+<ul>
+<li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User</li>
+<li><strong>รายละเอียด:</strong> ผู้ใช้งานทั่วไปสามารถเรียกดูประวัติรูปภาพและผลคะแนนความเสี่ยงย้อนหลังที่เคยส่งตรวจสอบ เพื่อเก็บบันทึกข้อมูลหรือเรียกดูใหม่ และผู้ใช้สามารถกดลบข้อมูลการสแกนประวัติตนเองได้ตามนโยบาย PDPA</li>
+<li><strong>ความต้องการทางระบบ (FR):</strong> FR-07 - ระบบจัดการประวัติการสแกน (History Management): ระบบบันทึกประวัติการตรวจสอบภาพของผู้ใช้โดยสามารถเรียกดูผลลัพธ์ย้อนหลัง หรือลบประวัติได้</li>
+</ul>
+</li>
+<li>
+<p><strong>UC-08: รายงานและแชร์ผลลัพธ์ (Report &amp; Share):</strong></p>
+<ul>
+<li><strong>ผู้เกี่ยวข้อง (Actors):</strong> General User</li>
+<li><strong>รายละเอียด:</strong> การกดรายงาน (Report) ส่งยืนยันภาพหลอกลวงเข้าคลังสแกมเมอร์ส่วนกลางเพื่อเป็นประโยชน์ในอนาคต และสามารถกดแชร์ภาพสรุปความเสี่ยงหรือคำเตือนภัยไปยังสื่อโซเชียลภายนอก (เช่น LINE) เพื่อเตือนภัยบุคคลใกล้ชิด</li>
+<li><strong>ความต้องการทางระบบ (FR):</strong> FR-08 - ระบบรายงานและแชร์ข้อมูล (Report &amp; Share): ผู้ใช้สามารถกดรายงาน (Report) ภาพหลอกลวงเข้าสู่ฐานข้อมูลกลาง และสามารถแชร์ภาพผลลัพธ์/คำเตือนไปยังแอปพลิเคชันภายนอกได้</li>
+</ul>
+</li>
+<li>
+<p><strong>UC-09: จัดการผู้ใช้และแดชบอร์ด (Admin Dashboard &amp; RBAC):</strong></p>
+<ul>
+<li><strong>ผู้เกี่ยวข้อง (Actors):</strong> Admin</li>
+<li><strong>รายละเอียด:</strong> แอดมินเข้าใช้งานหน้าเว็บแผงควบคุมระบบ (Admin Panel) เพื่อติดตามกราฟสถิติการใช้งาน, จัดการข้อมูลของผู้ใช้งาน, ตรวจสอบสิทธิ์การเข้าถึง และการอนุมัติจัดการรายงานต่าง ๆ</li>
+<li><strong>ความต้องการทางระบบ (FR):</strong> FR-09 - ระบบผู้ดูแลและการจัดการสิทธิ์ (Admin &amp; RBAC): มีหน้าแดชบอร์ดให้ผู้ดูแลระบบตรวจสอบสถิติการใช้งาน, จัดการข้อมูลผู้ใช้, และกำหนดสิทธิ์การเข้าถึงระบบตามบทบาท</li>
+</ul>
+</li>
+<li>
+<p><strong>UC-10: จัดการชุดข้อมูลและอัปเดตโมเดล (Dataset &amp; Model Management):</strong></p>
+<ul>
+<li><strong>ผู้เกี่ยวข้อง (Actors):</strong> Admin</li>
+<li><strong>รายละเอียด:</strong> แอดมินทำหน้าที่ตรวจสอบรูปภาพสแกมที่ผู้ใช้รายงาน ตรวจจัดหมวดหมู่เพื่อส่งเข้าชุดข้อมูล (Scam Dataset) สำหรับนำไปเทรนและวิเคราะห์เพิ่มเติม พร้อมทำการอัปโหลดไฟล์น้ำหนักโมเดล (Model Weights) เวอร์ชันใหม่ขึ้นระบบ</li>
+<li><strong>ความต้องการทางระบบ (FR):</strong> FR-10 - ระบบจัดการข้อมูลและโมเดล (Dataset &amp; Model Management): ผู้ดูแลระบบสามารถตรวจสอบรูปภาพที่ถูกผู้ใช้รายงาน นำไปจัดหมวดหมู่ชุดข้อมูล และอัปโหลดโมเดล AI (Weights) เวอร์ชันใหม่เข้าสู่ระบบได้</li>
+</ul>
+</li>
+</ul>
+<h4 id="exception-flows-ทุก-uc">Exception flows (ทุก UC)</h4>
+<ul>
+<li>ไฟล์ผิดชนิด/เกินขนาด (FR-02) → ปฏิเสธพร้อมข้อความ ไม่บีบอัดใน v1</li>
+<li>OCR/โมเดล/External ล้มเหลว → คืนผลบางส่วนพร้อม confidence + สถานะชัดเจน (ไม่บันทึกว่า &quot;สำเร็จ&quot; ทั้งที่วิเคราะห์ไม่ครบ)</li>
+<li>Reverse search/FCM ไม่พร้อม → แจ้ง &quot;ไม่มีข้อมูล&quot; (optional) ไม่สรุปว่าภาพปลอดภัย</li>
+<li>Token หมดอายุ/สิทธิ์ไม่พอ → 401 + ต่ออายุหรือล็อกอินใหม่; ทรัพยากรมีเจ้าของตรวจ ownership เสมอ</li>
+</ul>
+<hr>
+<h2 id="5-การเปรียบเทียบกระบวนการทำงานระบบเดิมและระบบใหม่-as-is-vs-to-be">5. การเปรียบเทียบกระบวนการทำงานระบบเดิมและระบบใหม่ (AS-IS vs TO-BE)</h2>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">หัวข้อเปรียบเทียบ</th>
+<th style="text-align:left">ระบบเดิม (AS-IS)</th>
+<th style="text-align:left">ระบบใหม่ (TO-BE: Scam Image Detection)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>ขั้นตอนการตรวจสอบ</strong></td>
+<td style="text-align:left">ใช้สายตามนุษย์คาดเดา หรือต้องบันทึกรูปไปสืบค้นบน Google Images ด้วยตนเองทีละขั้นตอน</td>
+<td style="text-align:left">อัปโหลดรูปภาพผ่านสมาร์ทโฟน ระบบทำการตรวจสอบแบบหลายชั้น (Multi-layer Analysis) ให้โดยอัตโนมัติในแอปเดียว</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>เครื่องมือที่ใช้</strong></td>
+<td style="text-align:left">ต้องใช้คอมพิวเตอร์และซอฟต์แวร์นิติวิทยาศาสตร์ (Digital Forensics) ที่มีความซับซ้อน</td>
+<td style="text-align:left">ใช้งานง่ายผ่านแอปพลิเคชันบนสมาร์ทโฟน (Android, v1) ไม่ต้องมีพื้นฐานด้านไอที</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>ความสามารถของ AI</strong></td>
+<td style="text-align:left">สายตามนุษย์และซอฟต์แวร์ดั้งเดิมไม่สามารถแยกแยะภาพที่สร้างจาก Generative AI รุ่นใหม่ได้</td>
+<td style="text-align:left">ประยุกต์ใช้โมเดล Deep Learning ตรวจสอบความผิดปกติของสเปกตรัมภาพระดับพิกเซลได้อย่างแม่นยำ</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>การทำความเข้าใจผลลัพธ์</strong></td>
+<td style="text-align:left">ทราบเพียงแค่ภาพนี้ &quot;น่าจะจริง&quot; หรือ &quot;น่าจะปลอม&quot; แต่ไม่ทราบพิกัดที่ถูกแก้ไข</td>
+<td style="text-align:left">ระบบแสดงผลแบบ Explainable AI ผ่านแผนที่ความร้อน (Heatmap) ชี้พิกัดที่ถูกตัดต่อให้เห็นอย่างเป็นรูปธรรม</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>ประสิทธิภาพและเวลา</strong></td>
+<td style="text-align:left">ใช้เวลาหลายนาทีถึงหลักชั่วโมงในการสืบหาข้อมูลแหล่งที่มาและการตัดต่อ</td>
+<td style="text-align:left">ใช้เวลาเพียงเสี้ยววินาที (กรณี Cache Hit) หรือ P50 ไม่เกิน 15 วินาที พร้อมแจ้งเตือน in-app เมื่อเสร็จสิ้น (FCM = Phase 2)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>การจัดเก็บและการมีส่วนร่วม</strong></td>
+<td style="text-align:left">รูปภาพหลอกลวงไม่ถูกบันทึกเป็นฐานข้อมูล ทำให้เกิดเหยื่อรายใหม่ซ้ำซาก</td>
+<td style="text-align:left">มีระบบ History จัดเก็บประวัติและระบบ Report ที่ช่วยรวบรวมข้อมูลภาพหลอกลวงส่งให้ส่วนกลางอัปเดต AI ต่อไป</td>
+</tr>
+</tbody>
+</table></div><hr>
+<h2 id="6-ขอบเขตการทำงานของระบบโดยละเอียด-detailed-system-scope">6. ขอบเขตการทำงานของระบบโดยละเอียด (Detailed System Scope)</h2>
+<h3 id="6-1-ขอบเขตของผู้ใช้-user-scope">6.1 ขอบเขตของผู้ใช้ (User Scope)</h3>
+<ul>
+<li><strong>General User (ผู้ใช้งานทั่วไป):</strong>
+<ul>
+<li>ลงทะเบียนและยืนยันตัวตนก่อนเข้าใช้งานระบบ</li>
+<li>นำเข้ารูปภาพเพื่อตรวจสอบความเสี่ยง จากการเลือกรูปภาพในแกลเลอรีของเครื่อง</li>
+<li>เรียกดูรายงานผลลัพธ์ความเสี่ยง (Risk Score) และดูตรรกะเหตุผลผ่านแผนที่ความร้อน (Heatmap)</li>
+<li>ดูรายการประวัติการตรวจสอบย้อนหลังของตนเองและลบได้</li>
+<li>รายงาน (Report) ข้อมูลรูปภาพที่เป็นการหลอกลวงเข้าสู่คลังฐานข้อมูลกลาง</li>
+</ul>
+</li>
+<li><strong>Administrator (ผู้ดูแลระบบ):</strong>
+<ul>
+<li>เข้าสู่ระบบผ่านหน้าเว็บแอปพลิเคชัน (Admin Portal)</li>
+<li>บริหารจัดการข้อมูลผู้ใช้งานและกำหนดระดับความปลอดภัย (RBAC)</li>
+<li>ตรวจสอบรายงานรูปภาพตัดต่อที่ส่งเข้ามาโดยผู้ใช้เพื่อพิจารณาอัปเดตเข้าคลังข้อมูลวิจัย</li>
+<li>อัปเดตไฟล์น้ำหนักโมเดล AI (Model Weights) เวอร์ชันใหม่เพื่อใช้ในการประมวลผลตรวจจับที่ดียิ่งขึ้น</li>
+</ul>
+</li>
+</ul>
+<h3 id="6-2-ขอบเขตการประมวลผลและการจัดเก็บข้อมูล-system-data-scope">6.2 ขอบเขตการประมวลผลและการจัดเก็บข้อมูล (System &amp; Data Scope)</h3>
+<ul>
+<li><strong>การประมวลผลภาพขั้นต้น (Primary Analysis):</strong>
+<ul>
+<li>ดึงค่า Metadata ของรูปภาพเพื่อตรวจสอบรายละเอียดของไฟล์ภาพ อุปกรณ์ที่ใช้บันทึก และประวัติตำแหน่ง (ถ้ามี)</li>
+<li>สกัดอักษร (OCR) เพื่อตรวจสอบเนื้อความเบื้องต้น โดยจะตรวจจับประเด็นคำหรือตัวเลขที่มีความเสี่ยงสูง (เช่น คำที่มักใช้ในการโกงหรือข้อความแปลกปลอม)</li>
+<li>ใช้ Google Vision API เพื่อทำธุรกรรม Reverse Image Search ค้นหาความถี่ของการปรากฏของภาพในสื่อออนไลน์</li>
+</ul>
+</li>
+<li><strong>การตรวจจับภาพตัดต่อด้วย AI (AI Inference):</strong>
+<ul>
+<li>ประมวลผลบนเซิร์ฟเวอร์แยกต่างหาก (AI Inference Container)</li>
+<li>ใช้โครงข่ายประสาทเทียมแบบ Deep Learning (PyTorch) ในการประเมินร่องรอยการแก้ไขพิกเซล (Semantic Segmentation) และตรวจเช็กการสังเคราะห์ภาพจาก Generative AI</li>
+</ul>
+</li>
+<li><strong>สถาปัตยกรรมความปลอดภัยและการจัดเก็บข้อมูล:</strong>
+<ul>
+<li>จัดเก็บรายละเอียดบัญชีผู้ใช้งาน ประวัติรายการสแกน และรายงานความปลอดภัยลงในฐานข้อมูล PostgreSQL</li>
+<li>เก็บรูปภาพต้นฉบับและรูปภาพผลลัพธ์แผนที่ความร้อนลงในระบบจัดเก็บไฟล์บนคลาวด์ (Cloud Storage)</li>
+<li>ใช้ Redis ในฐานะระบบจัดเก็บข้อมูลชั่วคราว (Caching) เพื่อตอบสนองความเร็วกรณีตรวจสอบรูปภาพซ้ำ</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="7-แผนการดำเนินงานและงบประมาณ-project-plan-budget">7. แผนการดำเนินงานและงบประมาณ (Project Plan &amp; Budget)</h2>
+<h3 id="7-1-แผนการดำเนินงาน-gantt-chart-timeline">7.1 แผนการดำเนินงาน (Gantt Chart / Timeline)</h3>
+<p>โครงการใช้เวลาในการดำเนินงานทั้งสิ้น 8 เดือน ตั้งแต่เดือนพฤศจิกายน พ.ศ. 2568 ถึง เดือนมิถุนายน พ.ศ. 2569:</p>
+<figure class="diagram-frame"><div class="diagram-toolbar"><span>แผนภาพ 5</span><button class="control" type="button" data-diagram-expand>ดูขนาดใหญ่</button></div><img src="../../assets/diagrams/requirements-srs-5.svg" alt="แผนภาพจาก Software Requirements Specification (SRS)" loading="lazy"><details class="diagram-source"><summary>ดู Mermaid source</summary><pre><code>gantt
     title แผนการดำเนินโครงงานวิศวกรรมซอฟต์แวร์ (พ.ย. 2568 - มิ.ย. 2569)
     dateFormat  YYYY-MM-DD
     section วางแผน &amp; วิเคราะห์ความต้องการ
@@ -1509,231 +975,87 @@
     ติดตั้งขึ้นระบบจริง &amp; UAT (Deployment &amp; UAT) : p5, 2026-05-01, 2026-05-31
     section สรุปผลโครงงาน
     สรุปผลการวิจัยและจัดทำเล่มรายงานฉบับสมบูรณ์ : p6, 2026-06-01, 2026-06-30
-</code></pre>
-                    </details>
-                    <dialog aria-label="แผนภาพขนาดใหญ่">
-                        <div class="diagram-expanded-head"><button class="control" type="button"
-                                data-diagram-zoom="out">ย่อ</button><span class="zoom-status"
-                                data-zoom-status>100%</span><button class="control" type="button"
-                                data-diagram-zoom="in">ขยาย</button><button class="control" type="button"
-                                data-diagram-close>ปิด</button></div>
-                        <div class="diagram-pan" data-diagram-pan data-zoom="1" tabindex="0"
-                            aria-label="พื้นที่แผนภาพ เลื่อนได้ทั้งแนวตั้งและแนวนอน"><img
-                                src="../../assets/diagrams/requirements-srs-5.svg"
-                                alt="แผนภาพจาก Software Requirements Specification (SRS)"></div>
-                    </dialog>
-                </figure>
-                <h3 id="7-2-ผลงานที่คาดว่าจะสำเร็จในแต่ละช่วงเวลา-deliverables">7.2
-                    ผลงานที่คาดว่าจะสำเร็จในแต่ละช่วงเวลา (Deliverables)</h3>
-                <ul>
-                    <li><strong>เดือนที่ 1-2 (พ.ย. - ธ.ค. 2568):</strong>
-                        <ul>
-                            <li>เอกสารข้อกำหนดความต้องการทางซอฟต์แวร์ (SRS) และเอกสารขอบเขตโครงงาน (Scope)</li>
-                            <li>แบบร่างหน้าจอผู้ใช้งาน (Wireframes) และหน้าจอแอปพลิเคชันต้นแบบ (UI Prototype)</li>
-                            <li>เอกสารแผนภาพสถาปัตยกรรมระบบระดับ C1, C2 และ C3</li>
-                        </ul>
-                    </li>
-                    <li><strong>เดือนที่ 3-5 (ม.ค. - เม.ย. 2569):</strong>
-                        <ul>
-                            <li>โมเดลปัญญาประดิษฐ์ที่ผ่านการ Fine-tuning สำหรับตรวจร่องรอยการตัดต่อและภาพจาก GenAI</li>
-                            <li>ระบบ Backend API (FastAPI) ที่เชื่อมต่อระบบฐานข้อมูลหลักและ Redis Cache เรียบร้อย</li>
-                            <li>หน้าจอแอปพลิเคชันมือถือ (Flutter) ส่วนหน้าบ้านเชื่อมต่อฟังก์ชันการรับและส่งรูปภาพ</li>
-                        </ul>
-                    </li>
-                    <li><strong>เดือนที่ 6-7 (พ.ค. 2569):</strong>
-                        <ul>
-                            <li>ระบบรักษาความปลอดภัยข้อมูล (Auth, TLS 1.3) และมาตรการยินยอมข้อมูลตาม PDPA</li>
-                            <li>รายงานการประเมินค่าความแม่นยำของ AI (AI Metrics) และรายงานผลการทดสอบระบบแบบบูรณาการ
-                                (SIT)</li>
-                            <li>ผลประเมินการทดสอบการยอมรับจากผู้ใช้ (UAT) และการแก้ไขจุดแสดงผล Heatmap ตามผลตอบรับ</li>
-                        </ul>
-                    </li>
-                    <li><strong>เดือนที่ 8 (มิ.ย. 2569):</strong>
-                        <ul>
-                            <li>ติดตั้งระบบจริงบนระบบคลาวด์ (Cloud Deployment) และตั้งค่าแจ้งเตือน in-app/polling (FCM =
-                                Phase 2)</li>
-                            <li>คู่มือการใช้งานแอปพลิเคชัน (User Manual)
-                                และเล่มรายงานโครงงานวิศวกรรมซอฟต์แวร์ฉบับสมบูรณ์</li>
-                        </ul>
-                    </li>
-                </ul>
-                <h3 id="7-3-งบประมาณโครงงาน-budget">7.3 งบประมาณโครงงาน (Budget)</h3>
-                <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="text-align:center">ลำดับ</th>
-                                <th style="text-align:left">รายการ</th>
-                                <th style="text-align:center">จำนวนเงิน (บาท)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td style="text-align:center">1</td>
-                                <td style="text-align:left"><strong>ค่าวัสดุและอุปกรณ์</strong><br>- วัสดุสำนักงานทั่วไป
-                                    กระดาษ แฟ้ม สำหรับจัดทำเล่มรายงาน</td>
-                                <td style="text-align:center">500</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:center">2</td>
-                                <td style="text-align:left"><strong>ค่าดำเนินงานระบบ</strong><br>- ค่าเช่า Cloud Server
-                                    / บริการรันโมเดล AI (เช่น AWS/GCP) และ Firebase สำหรับระบบแจ้งเตือน<br>-
-                                    ค่าเช่าบริการชื่อโดเมน (Domain Name) และใบรับรองความปลอดภัย (SSL) สำหรับ API</td>
-                                <td style="text-align:center">4,000</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:center">3</td>
-                                <td style="text-align:left"><strong>ค่าจัดทำเล่มรายงาน</strong><br>-
-                                    ค่าพิมพ์เอกสารโครงงานฉบับสมบูรณ์ รูปเล่ม และเอกสารนำเสนอผลงาน</td>
-                                <td style="text-align:center">1,000</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:center"></td>
-                                <td style="text-align:left"><strong>รวมทั้งสิ้น</strong></td>
-                                <td style="text-align:center"><strong>5,500</strong></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <h3 id="7-4-วิธีการประเมินผลโครงการ-evaluation-criteria">7.4 วิธีการประเมินผลโครงการ (Evaluation
-                    Criteria)</h3>
-                <ul>
-                    <li><strong>การประเมินเชิงคุณภาพ (Qualitative):</strong>
-                        <ul>
-                            <li>สัมภาษณ์ผู้ใช้งานกลุ่มตัวอย่างเพื่อประเมินความง่ายในการใช้งาน (Usability)
-                                และความเข้าใจต่อผลวิเคราะห์ Heatmap</li>
-                            <li>มีเกณฑ์เป้าหมายคือ ผู้ใช้งานไม่น้อยกว่าร้อยละ 80 เห็นว่าระบบใช้งานง่ายและเข้าใจเหตุผลของ
-                                AI ได้อย่างชัดเจน</li>
-                            <li>แบบสอบถามความพึงพอใจการใช้ระบบอ้างอิง Likert Scale 5 ระดับ จากกลุ่มตัวอย่าง 100 คน
-                                ต้องได้คะแนนเฉลี่ยรวมไม่น้อยกว่า 4.00 (ระดับดี)</li>
-                        </ul>
-                    </li>
-                    <li><strong>การประเมินเชิงปริมาณ (Quantitative):</strong>
-                        <ul>
-                            <li>ตรวจประเมินความแม่นยำทางสถิติของโมเดล Deep Learning
-                                ในการคัดกรองรูปภาพหลอกลวงผ่านชุดข้อมูลทดสอบ (Testing Set)</li>
-                            <li>วัดประสิทธิภาพความเร็วในการดึงข้อมูลผลลัพธ์ตรวจสอบจาก Cache ต้องเสร็จสิ้นใน 3 วินาที
-                                และการประมวลผลวิเคราะห์ผ่าน AI ใหม่ทั้งหมดต้องใช้เวลาเฉลี่ยไม่เกิน 15 วินาทีต่อภาพ</li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-            <footer class="source-panel"><strong>แหล่งข้อมูลของหน้านี้</strong>
-                <ul>
-                    <li><a href="../../sources/wiki/requirements/srs.md">Markdown ต้นฉบับ: requirements/srs.md</a></li>
-                    <li>Document/srs.md</li>
-                </ul>
-            </footer>
-        </main>
-        <aside class="toc-wrap" aria-label="สารบัญในหน้านี้">
-            <p class="toc-title">ในหน้านี้</p>
-            <ol class="toc">
-                <li class="toc-level-2"><a
-                        href="#%E0%B9%82%E0%B8%84%E0%B8%A3%E0%B8%87%E0%B8%87%E0%B8%B2%E0%B8%99-%E0%B9%81%E0%B8%AD%E0%B8%9B%E0%B8%95%E0%B8%A3%E0%B8%A7%E0%B8%88%E0%B8%AA%E0%B8%AD%E0%B8%9A%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%95%E0%B8%B1%E0%B8%94%E0%B8%95%E0%B9%88%E0%B8%AD%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%96%E0%B8%B9%E0%B8%81%E0%B8%99%E0%B8%B3%E0%B8%A1%E0%B8%B2%E0%B8%AB%E0%B8%A5%E0%B8%AD%E0%B8%81%E0%B8%A5%E0%B8%A7%E0%B8%87-image-forgery-detection-application-for-fraud-prevention">โครงงาน:
-                        แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง (Image Forgery Detection Application for Fraud
-                        Prevention)</a></li>
-                <li class="toc-level-2"><a
-                        href="#%E0%B8%84%E0%B8%93%E0%B8%B0%E0%B8%9C%E0%B8%B9%E0%B9%89%E0%B8%94%E0%B8%B3%E0%B9%80%E0%B8%99%E0%B8%B4%E0%B8%99%E0%B8%87%E0%B8%B2%E0%B8%99">คณะผู้ดำเนินงาน</a>
-                </li>
-                <li class="toc-level-2"><a href="#1-%E0%B8%9A%E0%B8%97%E0%B8%99%E0%B8%B3-introduction">1. บทนำ
-                        (Introduction)</a></li>
-                <li class="toc-level-3"><a
-                        href="#1-1-%E0%B8%A7%E0%B8%B1%E0%B8%95%E0%B8%96%E0%B8%B8%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%AA%E0%B8%87%E0%B8%84%E0%B9%8C%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B9%80%E0%B8%AD%E0%B8%81%E0%B8%AA%E0%B8%B2%E0%B8%A3-purpose">1.1
-                        วัตถุประสงค์ของเอกสาร (Purpose)</a></li>
-                <li class="toc-level-3"><a
-                        href="#1-2-%E0%B8%82%E0%B8%AD%E0%B8%9A%E0%B9%80%E0%B8%82%E0%B8%95%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B8%9C%E0%B8%A5%E0%B8%B4%E0%B8%95%E0%B8%A0%E0%B8%B1%E0%B8%93%E0%B8%91%E0%B9%8C-product-scope">1.2
-                        ขอบเขตของผลิตภัณฑ์ (Product Scope)</a></li>
-                <li class="toc-level-3"><a
-                        href="#1-3-%E0%B8%84%E0%B8%B3%E0%B8%AA%E0%B8%B3%E0%B8%84%E0%B8%B1%E0%B8%8D-keywords">1.3 คำสำคัญ
-                        (Keywords)</a></li>
-                <li class="toc-level-2"><a
-                        href="#2-%E0%B8%84%E0%B8%B3%E0%B8%AD%E0%B8%98%E0%B8%B4%E0%B8%9A%E0%B8%B2%E0%B8%A2%E0%B9%82%E0%B8%94%E0%B8%A2%E0%B8%A3%E0%B8%A7%E0%B8%A1-overall-description">2.
-                        คำอธิบายโดยรวม (Overall Description)</a></li>
-                <li class="toc-level-3"><a
-                        href="#2-1-%E0%B8%A1%E0%B8%B8%E0%B8%A1%E0%B8%A1%E0%B8%AD%E0%B8%87%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B8%9C%E0%B8%A5%E0%B8%B4%E0%B8%95%E0%B8%A0%E0%B8%B1%E0%B8%93%E0%B8%91%E0%B9%8C-product-perspective">2.1
-                        มุมมองของผลิตภัณฑ์ (Product Perspective)</a></li>
-                <li class="toc-level-3"><a
-                        href="#2-2-%E0%B8%9F%E0%B8%B1%E0%B8%87%E0%B8%81%E0%B9%8C%E0%B8%8A%E0%B8%B1%E0%B8%99%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%97%E0%B8%B3%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A-product-functions">2.2
-                        ฟังก์ชันการทำงานของระบบ (Product Functions)</a></li>
-                <li class="toc-level-3"><a
-                        href="#2-3-%E0%B8%81%E0%B8%A5%E0%B8%B8%E0%B9%88%E0%B8%A1%E0%B8%9C%E0%B8%B9%E0%B9%89%E0%B9%83%E0%B8%8A%E0%B9%89%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%84%E0%B8%B8%E0%B8%93%E0%B8%A5%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B8%93%E0%B8%B0-user-classes-and-characteristics">2.3
-                        กลุ่มผู้ใช้และคุณลักษณะ (User Classes and Characteristics)</a></li>
-                <li class="toc-level-3"><a
-                        href="#2-4-%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%88%E0%B8%B3%E0%B8%81%E0%B8%B1%E0%B8%94%E0%B9%83%E0%B8%99%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9E%E0%B8%B1%E0%B8%92%E0%B8%99%E0%B8%B2-design-and-implementation-constraints">2.4
-                        ข้อจำกัดในการพัฒนา (Design and Implementation Constraints)</a></li>
-                <li class="toc-level-3"><a
-                        href="#2-5-%E0%B8%AA%E0%B8%A1%E0%B8%A1%E0%B8%95%E0%B8%B4%E0%B8%90%E0%B8%B2%E0%B8%99%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%82%E0%B8%B6%E0%B9%89%E0%B8%99%E0%B8%95%E0%B9%88%E0%B8%AD%E0%B8%81%E0%B8%B1%E0%B8%99-assumptions-and-dependencies">2.5
-                        สมมติฐานและความขึ้นต่อกัน (Assumptions and Dependencies)</a></li>
-                <li class="toc-level-2"><a
-                        href="#3-%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%81%E0%B8%B3%E0%B8%AB%E0%B8%99%E0%B8%94%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%95%E0%B9%89%E0%B8%AD%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%8A%E0%B8%B4%E0%B8%87%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A-system-requirements">3.
-                        ข้อกำหนดความต้องการเชิงระบบ (System Requirements)</a></li>
-                <li class="toc-level-3"><a
-                        href="#3-1-%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%95%E0%B9%89%E0%B8%AD%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%97%E0%B8%B2%E0%B8%87%E0%B8%98%E0%B8%B8%E0%B8%A3%E0%B8%81%E0%B8%B4%E0%B8%88-business-requirements-br">3.1
-                        ความต้องการทางธุรกิจ (Business Requirements - BR)</a></li>
-                <li class="toc-level-3"><a
-                        href="#3-2-%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%95%E0%B9%89%E0%B8%AD%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%8A%E0%B8%B4%E0%B8%87%E0%B8%9F%E0%B8%B1%E0%B8%87%E0%B8%81%E0%B9%8C%E0%B8%8A%E0%B8%B1%E0%B8%99-functional-requirements-fr">3.2
-                        ความต้องการเชิงฟังก์ชัน (Functional Requirements - FR)</a></li>
-                <li class="toc-level-3"><a
-                        href="#3-3-%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%95%E0%B9%89%E0%B8%AD%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%84%E0%B8%A1%E0%B9%88%E0%B9%83%E0%B8%8A%E0%B9%88%E0%B8%9F%E0%B8%B1%E0%B8%87%E0%B8%81%E0%B9%8C%E0%B8%8A%E0%B8%B1%E0%B8%99-non-functional-requirements-nfr">3.3
-                        ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements - NFR)</a></li>
-                <li class="toc-level-3"><a
-                        href="#3-4-%E0%B9%80%E0%B8%A1%E0%B8%95%E0%B8%A3%E0%B8%B4%E0%B8%81%E0%B8%A2%E0%B9%89%E0%B8%AD%E0%B8%99%E0%B8%81%E0%B8%A5%E0%B8%B1%E0%B8%9A%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%95%E0%B9%89%E0%B8%AD%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3-traceability-matrix">3.4
-                        เมตริกย้อนกลับความต้องการ (Traceability Matrix)</a></li>
-                <li class="toc-level-2"><a
-                        href="#4-%E0%B8%81%E0%B8%A3%E0%B8%93%E0%B8%B5%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%83%E0%B8%8A%E0%B9%89%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A-use-cases">4.
-                        กรณีการใช้งานของระบบ (Use Cases)</a></li>
-                <li class="toc-level-3"><a
-                        href="#4-1-%E0%B8%95%E0%B8%B2%E0%B8%A3%E0%B8%B2%E0%B8%87%E0%B8%AA%E0%B8%A3%E0%B8%B8%E0%B8%9B-use-case-use-case-summary-table">4.1
-                        ตารางสรุป Use Case (Use Case Summary Table)</a></li>
-                <li class="toc-level-3"><a
-                        href="#4-2-%E0%B8%95%E0%B8%B2%E0%B8%A3%E0%B8%B2%E0%B8%87%E0%B9%80%E0%B8%8A%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%A1%E0%B9%82%E0%B8%A2%E0%B8%87-use-case-%E0%B9%81%E0%B8%A5%E0%B8%B0-functional-requirements">4.2
-                        ตารางเชื่อมโยง Use Case และ Functional Requirements</a></li>
-                <li class="toc-level-3"><a
-                        href="#4-3-%E0%B9%81%E0%B8%9C%E0%B8%99%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%81%E0%B8%A3%E0%B8%93%E0%B8%B5%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%83%E0%B8%8A%E0%B9%89%E0%B8%87%E0%B8%B2%E0%B8%99-use-case-diagram">4.3
-                        แผนภาพกรณีการใช้งาน (Use Case Diagram)</a></li>
-                <li class="toc-level-2"><a
-                        href="#5-%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%9B%E0%B8%A3%E0%B8%B5%E0%B8%A2%E0%B8%9A%E0%B9%80%E0%B8%97%E0%B8%B5%E0%B8%A2%E0%B8%9A%E0%B8%81%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%A7%E0%B8%99%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%97%E0%B8%B3%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A%E0%B9%80%E0%B8%94%E0%B8%B4%E0%B8%A1%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A%E0%B9%83%E0%B8%AB%E0%B8%A1%E0%B9%88-as-is-vs-to-be">5.
-                        การเปรียบเทียบกระบวนการทำงานระบบเดิมและระบบใหม่ (AS-IS vs TO-BE)</a></li>
-                <li class="toc-level-2"><a
-                        href="#6-%E0%B8%82%E0%B8%AD%E0%B8%9A%E0%B9%80%E0%B8%82%E0%B8%95%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%97%E0%B8%B3%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A%E0%B9%82%E0%B8%94%E0%B8%A2%E0%B8%A5%E0%B8%B0%E0%B9%80%E0%B8%AD%E0%B8%B5%E0%B8%A2%E0%B8%94-detailed-system-scope">6.
-                        ขอบเขตการทำงานของระบบโดยละเอียด (Detailed System Scope)</a></li>
-                <li class="toc-level-3"><a
-                        href="#6-1-%E0%B8%82%E0%B8%AD%E0%B8%9A%E0%B9%80%E0%B8%82%E0%B8%95%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B8%9C%E0%B8%B9%E0%B9%89%E0%B9%83%E0%B8%8A%E0%B9%89-user-scope">6.1
-                        ขอบเขตของผู้ใช้ (User Scope)</a></li>
-                <li class="toc-level-3"><a
-                        href="#6-2-%E0%B8%82%E0%B8%AD%E0%B8%9A%E0%B9%80%E0%B8%82%E0%B8%95%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%A1%E0%B8%A7%E0%B8%A5%E0%B8%9C%E0%B8%A5%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B9%80%E0%B8%81%E0%B9%87%E0%B8%9A%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B8%B9%E0%B8%A5-system-data-scope">6.2
-                        ขอบเขตการประมวลผลและการจัดเก็บข้อมูล (System &amp; Data Scope)</a></li>
-                <li class="toc-level-2"><a
-                        href="#7-%E0%B9%81%E0%B8%9C%E0%B8%99%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%94%E0%B8%B3%E0%B9%80%E0%B8%99%E0%B8%B4%E0%B8%99%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%87%E0%B8%9A%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%A1%E0%B8%B2%E0%B8%93-project-plan-budget">7.
-                        แผนการดำเนินงานและงบประมาณ (Project Plan &amp; Budget)</a></li>
-                <li class="toc-level-3"><a
-                        href="#7-1-%E0%B9%81%E0%B8%9C%E0%B8%99%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%94%E0%B8%B3%E0%B9%80%E0%B8%99%E0%B8%B4%E0%B8%99%E0%B8%87%E0%B8%B2%E0%B8%99-gantt-chart-timeline">7.1
-                        แผนการดำเนินงาน (Gantt Chart / Timeline)</a></li>
-                <li class="toc-level-3"><a
-                        href="#7-2-%E0%B8%9C%E0%B8%A5%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%84%E0%B8%B2%E0%B8%94%E0%B8%A7%E0%B9%88%E0%B8%B2%E0%B8%88%E0%B8%B0%E0%B8%AA%E0%B8%B3%E0%B9%80%E0%B8%A3%E0%B9%87%E0%B8%88%E0%B9%83%E0%B8%99%E0%B9%81%E0%B8%95%E0%B9%88%E0%B8%A5%E0%B8%B0%E0%B8%8A%E0%B9%88%E0%B8%A7%E0%B8%87%E0%B9%80%E0%B8%A7%E0%B8%A5%E0%B8%B2-deliverables">7.2
-                        ผลงานที่คาดว่าจะสำเร็จในแต่ละช่วงเวลา (Deliverables)</a></li>
-                <li class="toc-level-3"><a
-                        href="#7-3-%E0%B8%87%E0%B8%9A%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%A1%E0%B8%B2%E0%B8%93%E0%B9%82%E0%B8%84%E0%B8%A3%E0%B8%87%E0%B8%87%E0%B8%B2%E0%B8%99-budget">7.3
-                        งบประมาณโครงงาน (Budget)</a></li>
-                <li class="toc-level-3"><a
-                        href="#7-4-%E0%B8%A7%E0%B8%B4%E0%B8%98%E0%B8%B5%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%A1%E0%B8%B4%E0%B8%99%E0%B8%9C%E0%B8%A5%E0%B9%82%E0%B8%84%E0%B8%A3%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3-evaluation-criteria">7.4
-                        วิธีการประเมินผลโครงการ (Evaluation Criteria)</a></li>
-            </ol>
-        </aside>
-    </div>
-    <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title">
-        <div class="search-dialog-head"><label class="visually-hidden" id="search-title"
-                for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search"
-                placeholder="ค้นหาในเอกสารทั้งหมด…" autocomplete="off" data-search-input><button class="control"
-                type="button" data-search-close aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
-                    aria-hidden="true">
-                    <path d="m6 6 12 12M18 6 6 18" />
-                </svg></button></div>
-        <div class="search-results" data-search-results aria-live="polite"></div>
-    </dialog>
-    <script src="../../assets/js/search-index.js"></script>
-    <script src="../../assets/js/site.js"></script>
+</code></pre></details><dialog aria-label="แผนภาพขนาดใหญ่"><div class="diagram-expanded-head"><button class="control" type="button" data-diagram-zoom="out">ย่อ</button><span class="zoom-status" data-zoom-status>100%</span><button class="control" type="button" data-diagram-zoom="in">ขยาย</button><button class="control" type="button" data-diagram-close>ปิด</button></div><div class="diagram-pan" data-diagram-pan data-zoom="1" tabindex="0" aria-label="พื้นที่แผนภาพ เลื่อนได้ทั้งแนวตั้งและแนวนอน"><img src="../../assets/diagrams/requirements-srs-5.svg" alt="แผนภาพจาก Software Requirements Specification (SRS)"></div></dialog></figure><h3 id="7-2-ผลงานที่คาดว่าจะสำเร็จในแต่ละช่วงเวลา-deliverables">7.2 ผลงานที่คาดว่าจะสำเร็จในแต่ละช่วงเวลา (Deliverables)</h3>
+<ul>
+<li><strong>เดือนที่ 1-2 (พ.ย. - ธ.ค. 2568):</strong>
+<ul>
+<li>เอกสารข้อกำหนดความต้องการทางซอฟต์แวร์ (SRS) และเอกสารขอบเขตโครงงาน (Scope)</li>
+<li>แบบร่างหน้าจอผู้ใช้งาน (Wireframes) และหน้าจอแอปพลิเคชันต้นแบบ (UI Prototype)</li>
+<li>เอกสารแผนภาพสถาปัตยกรรมระบบระดับ C1, C2 และ C3</li>
+</ul>
+</li>
+<li><strong>เดือนที่ 3-5 (ม.ค. - เม.ย. 2569):</strong>
+<ul>
+<li>โมเดลปัญญาประดิษฐ์ที่ผ่านการ Fine-tuning สำหรับตรวจร่องรอยการตัดต่อและภาพจาก GenAI</li>
+<li>ระบบ Backend API (FastAPI) ที่เชื่อมต่อระบบฐานข้อมูลหลักและ Redis Cache เรียบร้อย</li>
+<li>หน้าจอแอปพลิเคชันมือถือ (Flutter) ส่วนหน้าบ้านเชื่อมต่อฟังก์ชันการรับและส่งรูปภาพ</li>
+</ul>
+</li>
+<li><strong>เดือนที่ 6-7 (พ.ค. 2569):</strong>
+<ul>
+<li>ระบบรักษาความปลอดภัยข้อมูล (Auth, TLS 1.3) และมาตรการยินยอมข้อมูลตาม PDPA</li>
+<li>รายงานการประเมินค่าความแม่นยำของ AI (AI Metrics) และรายงานผลการทดสอบระบบแบบบูรณาการ (SIT)</li>
+<li>ผลประเมินการทดสอบการยอมรับจากผู้ใช้ (UAT) และการแก้ไขจุดแสดงผล Heatmap ตามผลตอบรับ</li>
+</ul>
+</li>
+<li><strong>เดือนที่ 8 (มิ.ย. 2569):</strong>
+<ul>
+<li>ติดตั้งระบบจริงบนระบบคลาวด์ (Cloud Deployment) และตั้งค่าแจ้งเตือน in-app/polling (FCM = Phase 2)</li>
+<li>คู่มือการใช้งานแอปพลิเคชัน (User Manual) และเล่มรายงานโครงงานวิศวกรรมซอฟต์แวร์ฉบับสมบูรณ์</li>
+</ul>
+</li>
+</ul>
+<h3 id="7-3-งบประมาณโครงงาน-budget">7.3 งบประมาณโครงงาน (Budget)</h3>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:center">ลำดับ</th>
+<th style="text-align:left">รายการ</th>
+<th style="text-align:center">จำนวนเงิน (บาท)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">1</td>
+<td style="text-align:left"><strong>ค่าวัสดุและอุปกรณ์</strong><br>- วัสดุสำนักงานทั่วไป กระดาษ แฟ้ม สำหรับจัดทำเล่มรายงาน</td>
+<td style="text-align:center">500</td>
+</tr>
+<tr>
+<td style="text-align:center">2</td>
+<td style="text-align:left"><strong>ค่าดำเนินงานระบบ</strong><br>- ค่าเช่า Cloud Server / บริการรันโมเดล AI (เช่น AWS/GCP) และ Firebase สำหรับระบบแจ้งเตือน<br>- ค่าเช่าบริการชื่อโดเมน (Domain Name) และใบรับรองความปลอดภัย (SSL) สำหรับ API</td>
+<td style="text-align:center">4,000</td>
+</tr>
+<tr>
+<td style="text-align:center">3</td>
+<td style="text-align:left"><strong>ค่าจัดทำเล่มรายงาน</strong><br>- ค่าพิมพ์เอกสารโครงงานฉบับสมบูรณ์ รูปเล่ม และเอกสารนำเสนอผลงาน</td>
+<td style="text-align:center">1,000</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:left"><strong>รวมทั้งสิ้น</strong></td>
+<td style="text-align:center"><strong>5,500</strong></td>
+</tr>
+</tbody>
+</table></div><h3 id="7-4-วิธีการประเมินผลโครงการ-evaluation-criteria">7.4 วิธีการประเมินผลโครงการ (Evaluation Criteria)</h3>
+<ul>
+<li><strong>การประเมินเชิงคุณภาพ (Qualitative):</strong>
+<ul>
+<li>สัมภาษณ์ผู้ใช้งานกลุ่มตัวอย่างเพื่อประเมินความง่ายในการใช้งาน (Usability) และความเข้าใจต่อผลวิเคราะห์ Heatmap</li>
+<li>มีเกณฑ์เป้าหมายคือ ผู้ใช้งานไม่น้อยกว่าร้อยละ 80 เห็นว่าระบบใช้งานง่ายและเข้าใจเหตุผลของ AI ได้อย่างชัดเจน</li>
+<li>แบบสอบถามความพึงพอใจการใช้ระบบอ้างอิง Likert Scale 5 ระดับ จากกลุ่มตัวอย่าง 100 คน ต้องได้คะแนนเฉลี่ยรวมไม่น้อยกว่า 4.00 (ระดับดี)</li>
+</ul>
+</li>
+<li><strong>การประเมินเชิงปริมาณ (Quantitative):</strong>
+<ul>
+<li>ตรวจประเมินความแม่นยำทางสถิติของโมเดล Deep Learning ในการคัดกรองรูปภาพหลอกลวงผ่านชุดข้อมูลทดสอบ (Testing Set)</li>
+<li>วัดประสิทธิภาพความเร็วในการดึงข้อมูลผลลัพธ์ตรวจสอบจาก Cache ต้องเสร็จสิ้นใน 3 วินาที และการประมวลผลวิเคราะห์ผ่าน AI ใหม่ทั้งหมดต้องใช้เวลาเฉลี่ยไม่เกิน 15 วินาทีต่อภาพ</li>
+</ul>
+</li>
+</ul>
+</div></main>
+    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้"><p class="toc-title">ในหน้านี้</p><ol class="toc"><li class="toc-level-2"><a href="#%E0%B9%82%E0%B8%84%E0%B8%A3%E0%B8%87%E0%B8%87%E0%B8%B2%E0%B8%99-%E0%B9%81%E0%B8%AD%E0%B8%9B%E0%B8%95%E0%B8%A3%E0%B8%A7%E0%B8%88%E0%B8%AA%E0%B8%AD%E0%B8%9A%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%95%E0%B8%B1%E0%B8%94%E0%B8%95%E0%B9%88%E0%B8%AD%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%96%E0%B8%B9%E0%B8%81%E0%B8%99%E0%B8%B3%E0%B8%A1%E0%B8%B2%E0%B8%AB%E0%B8%A5%E0%B8%AD%E0%B8%81%E0%B8%A5%E0%B8%A7%E0%B8%87-image-forgery-detection-application-for-fraud-prevention">โครงงาน: แอปตรวจสอบรูปภาพตัดต่อที่ถูกนำมาหลอกลวง (Image Forgery Detection Application for Fraud Prevention)</a></li><li class="toc-level-2"><a href="#%E0%B8%84%E0%B8%93%E0%B8%B0%E0%B8%9C%E0%B8%B9%E0%B9%89%E0%B8%94%E0%B8%B3%E0%B9%80%E0%B8%99%E0%B8%B4%E0%B8%99%E0%B8%87%E0%B8%B2%E0%B8%99">คณะผู้ดำเนินงาน</a></li><li class="toc-level-2"><a href="#1-%E0%B8%9A%E0%B8%97%E0%B8%99%E0%B8%B3-introduction">1. บทนำ (Introduction)</a></li><li class="toc-level-3"><a href="#1-1-%E0%B8%A7%E0%B8%B1%E0%B8%95%E0%B8%96%E0%B8%B8%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%AA%E0%B8%87%E0%B8%84%E0%B9%8C%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B9%80%E0%B8%AD%E0%B8%81%E0%B8%AA%E0%B8%B2%E0%B8%A3-purpose">1.1 วัตถุประสงค์ของเอกสาร (Purpose)</a></li><li class="toc-level-3"><a href="#1-2-%E0%B8%82%E0%B8%AD%E0%B8%9A%E0%B9%80%E0%B8%82%E0%B8%95%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B8%9C%E0%B8%A5%E0%B8%B4%E0%B8%95%E0%B8%A0%E0%B8%B1%E0%B8%93%E0%B8%91%E0%B9%8C-product-scope">1.2 ขอบเขตของผลิตภัณฑ์ (Product Scope)</a></li><li class="toc-level-3"><a href="#1-3-%E0%B8%84%E0%B8%B3%E0%B8%AA%E0%B8%B3%E0%B8%84%E0%B8%B1%E0%B8%8D-keywords">1.3 คำสำคัญ (Keywords)</a></li><li class="toc-level-2"><a href="#2-%E0%B8%84%E0%B8%B3%E0%B8%AD%E0%B8%98%E0%B8%B4%E0%B8%9A%E0%B8%B2%E0%B8%A2%E0%B9%82%E0%B8%94%E0%B8%A2%E0%B8%A3%E0%B8%A7%E0%B8%A1-overall-description">2. คำอธิบายโดยรวม (Overall Description)</a></li><li class="toc-level-3"><a href="#2-1-%E0%B8%A1%E0%B8%B8%E0%B8%A1%E0%B8%A1%E0%B8%AD%E0%B8%87%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B8%9C%E0%B8%A5%E0%B8%B4%E0%B8%95%E0%B8%A0%E0%B8%B1%E0%B8%93%E0%B8%91%E0%B9%8C-product-perspective">2.1 มุมมองของผลิตภัณฑ์ (Product Perspective)</a></li><li class="toc-level-3"><a href="#2-2-%E0%B8%9F%E0%B8%B1%E0%B8%87%E0%B8%81%E0%B9%8C%E0%B8%8A%E0%B8%B1%E0%B8%99%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%97%E0%B8%B3%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A-product-functions">2.2 ฟังก์ชันการทำงานของระบบ (Product Functions)</a></li><li class="toc-level-3"><a href="#2-3-%E0%B8%81%E0%B8%A5%E0%B8%B8%E0%B9%88%E0%B8%A1%E0%B8%9C%E0%B8%B9%E0%B9%89%E0%B9%83%E0%B8%8A%E0%B9%89%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%84%E0%B8%B8%E0%B8%93%E0%B8%A5%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B8%93%E0%B8%B0-user-classes-and-characteristics">2.3 กลุ่มผู้ใช้และคุณลักษณะ (User Classes and Characteristics)</a></li><li class="toc-level-3"><a href="#2-4-%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%88%E0%B8%B3%E0%B8%81%E0%B8%B1%E0%B8%94%E0%B9%83%E0%B8%99%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9E%E0%B8%B1%E0%B8%92%E0%B8%99%E0%B8%B2-design-and-implementation-constraints">2.4 ข้อจำกัดในการพัฒนา (Design and Implementation Constraints)</a></li><li class="toc-level-3"><a href="#2-5-%E0%B8%AA%E0%B8%A1%E0%B8%A1%E0%B8%95%E0%B8%B4%E0%B8%90%E0%B8%B2%E0%B8%99%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%82%E0%B8%B6%E0%B9%89%E0%B8%99%E0%B8%95%E0%B9%88%E0%B8%AD%E0%B8%81%E0%B8%B1%E0%B8%99-assumptions-and-dependencies">2.5 สมมติฐานและความขึ้นต่อกัน (Assumptions and Dependencies)</a></li><li class="toc-level-2"><a href="#3-%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%81%E0%B8%B3%E0%B8%AB%E0%B8%99%E0%B8%94%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%95%E0%B9%89%E0%B8%AD%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%8A%E0%B8%B4%E0%B8%87%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A-system-requirements">3. ข้อกำหนดความต้องการเชิงระบบ (System Requirements)</a></li><li class="toc-level-3"><a href="#3-1-%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%95%E0%B9%89%E0%B8%AD%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%97%E0%B8%B2%E0%B8%87%E0%B8%98%E0%B8%B8%E0%B8%A3%E0%B8%81%E0%B8%B4%E0%B8%88-business-requirements-br">3.1 ความต้องการทางธุรกิจ (Business Requirements - BR)</a></li><li class="toc-level-3"><a href="#3-2-%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%95%E0%B9%89%E0%B8%AD%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%8A%E0%B8%B4%E0%B8%87%E0%B8%9F%E0%B8%B1%E0%B8%87%E0%B8%81%E0%B9%8C%E0%B8%8A%E0%B8%B1%E0%B8%99-functional-requirements-fr">3.2 ความต้องการเชิงฟังก์ชัน (Functional Requirements - FR)</a></li><li class="toc-level-3"><a href="#3-3-%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%95%E0%B9%89%E0%B8%AD%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%84%E0%B8%A1%E0%B9%88%E0%B9%83%E0%B8%8A%E0%B9%88%E0%B8%9F%E0%B8%B1%E0%B8%87%E0%B8%81%E0%B9%8C%E0%B8%8A%E0%B8%B1%E0%B8%99-non-functional-requirements-nfr">3.3 ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements - NFR)</a></li><li class="toc-level-3"><a href="#3-4-%E0%B9%80%E0%B8%A1%E0%B8%95%E0%B8%A3%E0%B8%B4%E0%B8%81%E0%B8%A2%E0%B9%89%E0%B8%AD%E0%B8%99%E0%B8%81%E0%B8%A5%E0%B8%B1%E0%B8%9A%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%95%E0%B9%89%E0%B8%AD%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3-traceability-matrix">3.4 เมตริกย้อนกลับความต้องการ (Traceability Matrix)</a></li><li class="toc-level-2"><a href="#4-%E0%B8%81%E0%B8%A3%E0%B8%93%E0%B8%B5%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%83%E0%B8%8A%E0%B9%89%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A-use-cases">4. กรณีการใช้งานของระบบ (Use Cases)</a></li><li class="toc-level-3"><a href="#4-1-%E0%B8%95%E0%B8%B2%E0%B8%A3%E0%B8%B2%E0%B8%87%E0%B8%AA%E0%B8%A3%E0%B8%B8%E0%B8%9B-use-case-use-case-summary-table">4.1 ตารางสรุป Use Case (Use Case Summary Table)</a></li><li class="toc-level-3"><a href="#4-2-%E0%B8%95%E0%B8%B2%E0%B8%A3%E0%B8%B2%E0%B8%87%E0%B9%80%E0%B8%8A%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%A1%E0%B9%82%E0%B8%A2%E0%B8%87-use-case-%E0%B9%81%E0%B8%A5%E0%B8%B0-functional-requirements">4.2 ตารางเชื่อมโยง Use Case และ Functional Requirements</a></li><li class="toc-level-3"><a href="#4-3-%E0%B9%81%E0%B8%9C%E0%B8%99%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%81%E0%B8%A3%E0%B8%93%E0%B8%B5%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%83%E0%B8%8A%E0%B9%89%E0%B8%87%E0%B8%B2%E0%B8%99-use-case-diagram">4.3 แผนภาพกรณีการใช้งาน (Use Case Diagram)</a></li><li class="toc-level-2"><a href="#5-%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%9B%E0%B8%A3%E0%B8%B5%E0%B8%A2%E0%B8%9A%E0%B9%80%E0%B8%97%E0%B8%B5%E0%B8%A2%E0%B8%9A%E0%B8%81%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%A7%E0%B8%99%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%97%E0%B8%B3%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A%E0%B9%80%E0%B8%94%E0%B8%B4%E0%B8%A1%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A%E0%B9%83%E0%B8%AB%E0%B8%A1%E0%B9%88-as-is-vs-to-be">5. การเปรียบเทียบกระบวนการทำงานระบบเดิมและระบบใหม่ (AS-IS vs TO-BE)</a></li><li class="toc-level-2"><a href="#6-%E0%B8%82%E0%B8%AD%E0%B8%9A%E0%B9%80%E0%B8%82%E0%B8%95%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%97%E0%B8%B3%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A%E0%B9%82%E0%B8%94%E0%B8%A2%E0%B8%A5%E0%B8%B0%E0%B9%80%E0%B8%AD%E0%B8%B5%E0%B8%A2%E0%B8%94-detailed-system-scope">6. ขอบเขตการทำงานของระบบโดยละเอียด (Detailed System Scope)</a></li><li class="toc-level-3"><a href="#6-1-%E0%B8%82%E0%B8%AD%E0%B8%9A%E0%B9%80%E0%B8%82%E0%B8%95%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B8%9C%E0%B8%B9%E0%B9%89%E0%B9%83%E0%B8%8A%E0%B9%89-user-scope">6.1 ขอบเขตของผู้ใช้ (User Scope)</a></li><li class="toc-level-3"><a href="#6-2-%E0%B8%82%E0%B8%AD%E0%B8%9A%E0%B9%80%E0%B8%82%E0%B8%95%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%A1%E0%B8%A7%E0%B8%A5%E0%B8%9C%E0%B8%A5%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B9%80%E0%B8%81%E0%B9%87%E0%B8%9A%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B8%B9%E0%B8%A5-system-data-scope">6.2 ขอบเขตการประมวลผลและการจัดเก็บข้อมูล (System &amp; Data Scope)</a></li><li class="toc-level-2"><a href="#7-%E0%B9%81%E0%B8%9C%E0%B8%99%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%94%E0%B8%B3%E0%B9%80%E0%B8%99%E0%B8%B4%E0%B8%99%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%87%E0%B8%9A%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%A1%E0%B8%B2%E0%B8%93-project-plan-budget">7. แผนการดำเนินงานและงบประมาณ (Project Plan &amp; Budget)</a></li><li class="toc-level-3"><a href="#7-1-%E0%B9%81%E0%B8%9C%E0%B8%99%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%94%E0%B8%B3%E0%B9%80%E0%B8%99%E0%B8%B4%E0%B8%99%E0%B8%87%E0%B8%B2%E0%B8%99-gantt-chart-timeline">7.1 แผนการดำเนินงาน (Gantt Chart / Timeline)</a></li><li class="toc-level-3"><a href="#7-2-%E0%B8%9C%E0%B8%A5%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%84%E0%B8%B2%E0%B8%94%E0%B8%A7%E0%B9%88%E0%B8%B2%E0%B8%88%E0%B8%B0%E0%B8%AA%E0%B8%B3%E0%B9%80%E0%B8%A3%E0%B9%87%E0%B8%88%E0%B9%83%E0%B8%99%E0%B9%81%E0%B8%95%E0%B9%88%E0%B8%A5%E0%B8%B0%E0%B8%8A%E0%B9%88%E0%B8%A7%E0%B8%87%E0%B9%80%E0%B8%A7%E0%B8%A5%E0%B8%B2-deliverables">7.2 ผลงานที่คาดว่าจะสำเร็จในแต่ละช่วงเวลา (Deliverables)</a></li><li class="toc-level-3"><a href="#7-3-%E0%B8%87%E0%B8%9A%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%A1%E0%B8%B2%E0%B8%93%E0%B9%82%E0%B8%84%E0%B8%A3%E0%B8%87%E0%B8%87%E0%B8%B2%E0%B8%99-budget">7.3 งบประมาณโครงงาน (Budget)</a></li><li class="toc-level-3"><a href="#7-4-%E0%B8%A7%E0%B8%B4%E0%B8%98%E0%B8%B5%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%A1%E0%B8%B4%E0%B8%99%E0%B8%9C%E0%B8%A5%E0%B9%82%E0%B8%84%E0%B8%A3%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3-evaluation-criteria">7.4 วิธีการประเมินผลโครงการ (Evaluation Criteria)</a></li></ol></aside>
+  </div>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title"><div class="search-dialog-head"><label class="visually-hidden" id="search-title" for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…" autocomplete="off" data-search-input><button class="control" type="button" data-search-close aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div class="search-results" data-search-results aria-live="polite"></div></dialog>
+  <script src="../../assets/js/search-index.js"></script>
+  <script src="../../assets/js/site.js"></script>
 </body>
-
 </html>

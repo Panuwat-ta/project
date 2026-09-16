@@ -1,364 +1,167 @@
 <!doctype html>
-<html lang="th" data-theme="light">
-
+<html lang="th" data-theme="light" data-theme-mode="system">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description"
-    content="เทคโนโลยีที่ใช้ Technology Stack รายการเทคโนโลยีที่เลือกใช้สำหรับโปรเจค พร้อมเหตุผลทางวิศวกรรม --- สรุป Full Stack ส่วนประกอบ เทคโนโลยี เหตุผล :--- :--- :--- Mobile App Flutter Dart รองรับ A…">
+  <meta name="description" content="เทคโนโลยีที่ใช้ Technology Stack รายการเทคโนโลยีที่เลือกใช้สำหรับโปรเจค พร้อมเหตุผลทางวิศวกรรม --- สรุป Full Stack ส่วนประกอบ เทคโนโลยี เหตุผล :--- :--- :--- Mobile App Flutter Dart รองรับ A…">
   <meta name="color-scheme" content="light dark">
   <title>เทคโนโลยีที่ใช้ (Technology Stack) | ScamGuard Documentation</title>
   <link rel="stylesheet" href="../../assets/css/site.css">
-  <script>document.documentElement.dataset.theme = (() => { try { return localStorage.getItem('scamguard-docs-theme') || 'light' } catch (e) { return 'light' } })(); window.SC_DOCS_ROOT = '../../';</script>
+  <script>(()=>{let m='system';try{m=localStorage.getItem('scamguard-docs-theme')||'system'}catch(e){}if(!['system','light','dark'].includes(m))m='system';const t=m==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;document.documentElement.dataset.themeMode=m;document.documentElement.dataset.theme=t})();window.SC_DOCS_ROOT='../../';</script>
 </head>
-
 <body class="">
   <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
-  <header class="masthead">
-    <div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false"
-        aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M4 7h16M4 12h16M4 17h16" />
-        </svg></button><a class="brand" href="../../index.html"><svg viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z" />
-          <path d="m9.2 12 1.8 1.8 3.9-4.2" />
-        </svg><span>ScamGuard <small>Documentation</small></span></a>
-      <div class="masthead-actions"><button class="control" type="button" data-search-open><svg viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
-            aria-hidden="true">
-            <circle cx="11" cy="11" r="6.5" />
-            <path d="m16 16 4 4" />
-          </svg><span>ค้นหา</span><span class="search-shortcut">Ctrl K</span></button><button class="control"
-          type="button" data-theme-toggle aria-label="เปลี่ยนเป็นโหมดมืด"><svg viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.5A7 7 0 0 1 12 3Z" />
-          </svg><span class="theme-label" data-theme-label>โหมดมืด</span></button></div>
-    </div>
-  </header>
+  <header class="masthead"><div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><nav class="top-tabs" aria-label="เมนูหลัก"><a href="../../index.html">Guide</a><a href="../../pages/architecture/system-architecture.html">Architecture</a><a href="../../pages/architecture/backend-api.html">API Reference</a></nav></div></header>
   <div class="docs-shell">
-    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><button class="control nav-close"
-        type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="m6 6 12 12M18 6 6 18" />
-        </svg></button>
-      <p class="sidebar-title">เอกสารทั้งหมด</p>
-      <details class="sidebar-group">
-        <summary>ภาพรวม</summary>
-        <ul class="sidebar-list">
-          <li><a href="../overview.html">ภาพรวมโปรเจค</a></li>
-          <li><a href="../index.html">สารบัญ Wiki — โปรเจค Scam Image Detection</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>ความต้องการระบบ</summary>
-        <ul class="sidebar-list">
-          <li><a href="../requirements/functional-requirements.html">ความต้องการเชิงฟังก์ชัน (Functional
-              Requirements)</a></li>
-          <li><a href="../requirements/non-functional-requirements.html">ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional
-              Requirements)</a></li>
-          <li><a href="../requirements/traceability-matrix.html">เมทริกซ์การสืบย้อนความต้องการ</a></li>
-          <li><a href="../requirements/objectives-kpis.html">วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp;
-              KPIs)</a></li>
-          <li><a href="../requirements/srs.html">Software Requirements Specification (SRS)</a></li>
-          <li><a href="../requirements/use-case-diagram.html">Use Case Diagram</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>สถาปัตยกรรม</summary>
-        <ul class="sidebar-list">
-          <li><a href="../architecture/database-migrations.html">การจัดการการย้ายฐานข้อมูล (Database Migrations)</a>
-          </li>
-          <li><a href="../architecture/external-integrations.html">การเชื่อมต่อบริการภายนอก (External Integrations)</a>
-          </li>
-          <li><a href="../architecture/database-schema.html">โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li>
-          <li><a href="../architecture/system-architecture.html">สถาปัตยกรรมระบบ (System Architecture)</a></li>
-          <li><a href="../architecture/admin-portal.html">สถาปัตยกรรมและการออกแบบ Admin Portal</a></li>
-          <li><a href="../architecture/mobile-app.html">สถาปัตยกรรม Mobile App</a></li>
-          <li><a href="../architecture/ai-inference-service.html">AI Inference Service</a></li>
-          <li><a href="../architecture/backend-api.html">Backend API — FastAPI Orchestrator</a></li>
-          <li><a href="../architecture/c1-system-context-diagram.html">C1 System Context Diagram</a></li>
-          <li><a href="../architecture/c2-container-diagram.html">C2 Container Diagram</a></li>
-          <li><a href="../architecture/c3-component-diagram.html">C3 Component Diagram - API Application</a></li>
-          <li><a href="../architecture/c4-code-diagram.html">C4 Code Diagram - Image Scanning Flow</a></li>
-          <li><a href="../architecture/database-er-diagram.html">Entity Relationship Diagram (ER Diagram)</a></li>
-          <li><a href="../architecture/mobile-design.html">Mobile App Architecture</a></li>
-          <li><a href="../architecture/flowchart.html">System Flowchart</a></li>
-          <li><a href="../architecture/design-overview.html">UX/UI &amp; System Design Overview</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>แนวคิดและเทคนิค</summary>
-        <ul class="sidebar-list">
-          <li><a href="../concepts/risk-scoring.html">การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li>
-          <li><a href="../concepts/multi-layer-analysis.html">การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li>
-          <li><a href="../concepts/explainable-ai.html">ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li>
-          <li><a href="../concepts/configs.html">พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li>
-          <li><a href="../concepts/ai-model-segformer.html">โมเดล AI — SegFormer</a></li>
-          <li><a href="../concepts/surya-ocr.html">โมเดล AI — Surya OCR</a></li>
-          <li><a href="../concepts/model-training.html">AI Model Training Workflow</a></li>
-          <li><a href="../concepts/mmsegmentation.html">MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li>
-          <li><a href="../concepts/semantic-segmentation.html">Semantic Segmentation</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group" open>
-        <summary>องค์ประกอบระบบ</summary>
-        <ul class="sidebar-list">
-          <li><a href="tech-stack.html" aria-current="page">เทคโนโลยีที่ใช้ (Technology Stack)</a></li>
-          <li><a href="actors.html">ผู้ใช้ระบบ (Actors)</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>การตัดสินใจ</summary>
-        <ul class="sidebar-list">
-          <li><a href="../decisions/technology-choices.html">การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>การวางแผน</summary>
-        <ul class="sidebar-list">
-          <li><a href="../planning/task-tracking.html">การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a>
-          </li>
-          <li><a href="../planning/project-scope.html">ขอบเขตโครงการ (Project Scope)</a></li>
-          <li><a href="../planning/team.html">ทีมงานและผู้รับผิดชอบ (Team)</a></li>
-          <li><a href="../planning/backend-documentation.html">Backend Documentation</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>การทดสอบ</summary>
-        <ul class="sidebar-list">
-          <li><a href="../testing/test-cases.html">กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>คู่มือและภาคผนวก</summary>
-        <ul class="sidebar-list">
-          <li><a href="../log.html">บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li>
-          <li><a href="../howto.html">วิธีใช้งาน Wiki (How to Use This Wiki)</a></li>
-          <li><a href="../runbook.html">Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li>
-          <li><a href="../AGENTS.html">Wiki Operating Guide</a></li>
-        </ul>
-      </details>
-    </aside>
-    <div class="nav-backdrop" data-nav-backdrop></div>
-    <main class="article" id="main-content">
-      <nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span
-          aria-hidden="true">/</span><span>องค์ประกอบระบบ</span></nav>
-      <header class="article-header">
-        <h1>เทคโนโลยีที่ใช้ (Technology Stack)</h1>
-        <p class="article-lead">รายการเทคโนโลยีที่เลือกใช้สำหรับโปรเจค พร้อมเหตุผลทางวิศวกรรม</p>
-        <div class="meta"><span>หมวด องค์ประกอบระบบ</span><time datetime="2026-08-02">อัปเดต
-            2026-08-02</time><span>ต้นฉบับ entities/tech-stack.md</span></div>
-        <div class="tags"><span class="tag">tech-stack</span><span class="tag">Flutter</span><span
-            class="tag">FastAPI</span><span class="tag">PyTorch</span><span class="tag">ONNX</span><span
-            class="tag">PostgreSQL</span><span class="tag">Redis</span></div>
-      </header>
-      <div class="prose">
-        <h1 id="เทคโนโลยีที่ใช้-technology-stack">เทคโนโลยีที่ใช้ (Technology Stack)</h1>
-        <p>รายการเทคโนโลยีที่เลือกใช้สำหรับโปรเจค พร้อมเหตุผลทางวิศวกรรม</p>
-        <hr>
-        <h2 id="สรุป-full-stack">สรุป Full Stack</h2>
-        <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
-          <table>
-            <thead>
-              <tr>
-                <th style="text-align:left">ส่วนประกอบ</th>
-                <th style="text-align:left">เทคโนโลยี</th>
-                <th style="text-align:left">เหตุผล</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style="text-align:left"><strong>Mobile App</strong></td>
-                <td style="text-align:left">Flutter (Dart)</td>
-                <td style="text-align:left">รองรับ Android (และ iOS ในอนาคต) ด้วย Codebase เดียว; รองรับ Dark Mode
-                  ดีเยี่ยม; ใช้ BLoC State Management</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><strong>Admin Portal</strong></td>
-                <td style="text-align:left">React.js + Tailwind CSS</td>
-                <td style="text-align:left">โหลดข้อมูล Dynamic รวดเร็ว; จัดการ State สำหรับ Dashboard ได้ดี; เขียนแบบ
-                  Component-based</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><strong>API Backend</strong></td>
-                <td style="text-align:left">Python FastAPI</td>
-                <td style="text-align:left">Async I/O ประสิทธิภาพเทียบเท่า Go/Node.js; ตรวจสอบ Pydantic อัตโนมัติ;
-                  Auto-generated OpenAPI Docs</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><strong>AI Training</strong></td>
-                <td style="text-align:left">PyTorch</td>
-                <td style="text-align:left">Framework มาตรฐานอุตสาหกรรมสำหรับ Deep Learning; มี Ecosystem ของ SegFormer
-                  รองรับดี</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><strong>AI Inference</strong></td>
-                <td style="text-align:left">ONNX Runtime</td>
-                <td style="text-align:left">เป้าหมายเร็วกว่า PyTorch baseline รุ่นเดียวกัน ≥ 2 เท่า (ภาพ 1080p เฉลี่ย
-                  100 ภาพ บน T4; ยืนยันด้วย benchmark ก่อนอ้างภายนอก); ไม่ยึดติดกับ Framework</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><strong>Primary Database</strong></td>
-                <td style="text-align:left">PostgreSQL</td>
-                <td style="text-align:left">ACID Transactions; ความถูกต้องของ Relational Data; รองรับ PostGIS
-                  สำหรับฟีเจอร์พิกัดในอนาคต</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><strong>Cache</strong></td>
-                <td style="text-align:left">Redis</td>
-                <td style="text-align:left">ค้นหา Image Hash ไวระดับ Sub-millisecond; ลดโหลด AI Inference
-                  สำหรับรูปซ้ำได้มหาศาล</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><strong>File Storage</strong></td>
-                <td style="text-align:left">Cloud Object Storage</td>
-                <td style="text-align:left">ขยายได้ไม่จำกัด; ใช้ Presigned URL เพื่อความปลอดภัยของ Client</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><strong>Reverse Image Search</strong></td>
-                <td style="text-align:left">Google Vision API</td>
-                <td style="text-align:left">ค้นหาภาพย้อนกลับครอบคลุมและแม่นยำที่สุด</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><strong>Push Notifications</strong></td>
-                <td style="text-align:left">Firebase Cloud Messaging (FCM)</td>
-                <td style="text-align:left">ฟรี, เสถียรบน Android, ไม่ต้องบริหาร Infrastructure เอง</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <hr>
-        <h2 id="รายละเอียดฝั่ง-mobile-app">รายละเอียดฝั่ง Mobile App</h2>
-        <ul>
-          <li><strong>State Management:</strong> BLoC (Business Logic Component)</li>
-          <li><strong>HTTP Client:</strong> Dio + Secure Storage สำหรับเก็บ JWT</li>
-          <li><strong>จัดการรูปภาพ:</strong> <code>image_picker</code> + <code>image_cropper</code></li>
-          <li><strong>Platform:</strong> Android (หลัก), iOS (อนาคต)</li>
-          <li><strong>Architecture:</strong> Clean Architecture (Presentation / Domain / Data)</li>
-        </ul>
-        <p>ดูเพิ่มเติมที่ <a href="../architecture/mobile-app.html">architecture/mobile-app</a></p>
-        <hr>
-        <h2 id="รายละเอียดฝั่ง-ai">รายละเอียดฝั่ง AI</h2>
-        <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
-          <table>
-            <thead>
-              <tr>
-                <th style="text-align:left">ส่วน</th>
-                <th style="text-align:left">เทคโนโลยี</th>
-                <th style="text-align:left">หมายเหตุ</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style="text-align:left">Core Model</td>
-                <td style="text-align:left">SegFormer (ONNX เดียว)</td>
-                <td style="text-align:left">Transformer-based Semantic Segmentation, tiling 512/overlap 64</td>
-              </tr>
-              <tr>
-                <td style="text-align:left">Training Framework</td>
-                <td style="text-align:left">PyTorch</td>
-                <td style="text-align:left">มาตรฐาน; Ecosystem ใหญ่</td>
-              </tr>
-              <tr>
-                <td style="text-align:left">Serving Format</td>
-                <td style="text-align:left">ONNX</td>
-                <td style="text-align:left">รันผ่าน ONNX Worker subprocess ภายใน Backend เดียวกัน</td>
-              </tr>
-              <tr>
-                <td style="text-align:left">Inference Runtime</td>
-                <td style="text-align:left">ONNX Runtime</td>
-                <td style="text-align:left">Engine สำหรับ Serving ที่ Optimized แล้ว</td>
-              </tr>
-              <tr>
-                <td style="text-align:left">AI-Gen classifier</td>
-                <td style="text-align:left">ค่าความน่าจะเป็นภาพสังเคราะห์จาก AI (0–1, informative ประกอบการตัดสิน —
-                  เกณฑ์ตัดสินหลักใช้ Visual/Textual/Source + Risk Grade ดู <a
-                    href="../concepts/risk-scoring.html">concepts/risk-scoring</a>)</td>
-                <td style="text-align:left">ยังไม่ตรึงโมเดล/threshold ทางการ — ห้ามอ้างเป็นเกณฑ์ตัดสินจนกว่าจะนิยามใน
-                  SRS</td>
-              </tr>
-              <tr>
-                <td style="text-align:left">XAI</td>
-                <td style="text-align:left">แผนที่ความร้อนแบบ mask-to-heatmap overlay</td>
-                <td style="text-align:left">แปลง Segmentation Mask เป็นภาพสีซ้อนทับบนภาพต้นฉบับ</td>
-              </tr>
-              <tr>
-                <td style="text-align:left">XAI reasoning</td>
-                <td style="text-align:left">Qwen2.5-1.5B</td>
-                <td style="text-align:left">สำหรับสร้างคำอธิบายภาษาไทย</td>
-              </tr>
-              <tr>
-                <td style="text-align:left">OCR</td>
-                <td style="text-align:left">Surya OCR v0.5.0 (Native PyTorch)</td>
-                <td style="text-align:left">ดึงข้อความภาษาไทย + อังกฤษ</td>
-              </tr>
-              <tr>
-                <td style="text-align:left">Risk</td>
-                <td style="text-align:left">Hybrid max+bonus 3 ระดับ: Low 0-39 / Medium 40-69 / High 70-100</td>
-                <td style="text-align:left">คะแนนฐานจากมิติสูงสุด บวกเพิ่มมิติรอง สูงสุดไม่เกิน 100</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <hr>
-        <h2 id="ทำไมถึงเลือก-flutter-สำหรับ-mobile">ทำไมถึงเลือก Flutter สำหรับ Mobile?</h2>
-        <aside class="callout callout-note" aria-label="หมายเหตุ">
-          <p class="callout-title">หมายเหตุ</p>
-          <p>โครงการนี้เลือกใช้ <strong>Flutter</strong> สำหรับการพัฒนาแอปพลิเคชันมือถือแบบ Cross-Platform (Android)
-            เนื่องจากประสิทธิภาพสูง, มี Hot Reload, UI สวยงามด้วย Material Design และ Cupertino, และมี BLoC State
-            Management ที่เขียน Test ได้ง่าย — ดูรายละเอียดการตัดสินใจเทคโนโลยีได้ที่ <a
-              href="../decisions/technology-choices.html">decisions/technology-choices</a></p>
-        </aside>
-        <hr>
-        <h2 id="หน้าที่เกี่ยวข้อง">หน้าที่เกี่ยวข้อง</h2>
-        <ul>
-          <li><a href="../decisions/technology-choices.html">decisions/technology-choices</a></li>
-          <li><a href="../architecture/system-architecture.html">architecture/system-architecture</a></li>
-          <li><a href="../architecture/mobile-app.html">architecture/mobile-app</a></li>
-          <li><a href="../architecture/backend-api.html">architecture/backend-api</a></li>
-          <li><a href="../architecture/ai-inference-service.html">architecture/ai-inference-service</a></li>
-          <li><a href="../concepts/ai-model-segformer.html">concepts/ai-model-segformer</a></li>
-        </ul>
-      </div>
-      <footer class="source-panel"><strong>แหล่งข้อมูลของหน้านี้</strong>
-        <ul>
-          <li><a href="../../sources/wiki/entities/tech-stack.md">Markdown ต้นฉบับ: entities/tech-stack.md</a></li>
-          <li>design/architecture.md</li>
-        </ul>
-      </footer>
-    </main>
-    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้">
-      <p class="toc-title">ในหน้านี้</p>
-      <ol class="toc">
-        <li class="toc-level-2"><a href="#%E0%B8%AA%E0%B8%A3%E0%B8%B8%E0%B8%9B-full-stack">สรุป Full Stack</a></li>
-        <li class="toc-level-2"><a
-            href="#%E0%B8%A3%E0%B8%B2%E0%B8%A2%E0%B8%A5%E0%B8%B0%E0%B9%80%E0%B8%AD%E0%B8%B5%E0%B8%A2%E0%B8%94%E0%B8%9D%E0%B8%B1%E0%B9%88%E0%B8%87-mobile-app">รายละเอียดฝั่ง
-            Mobile App</a></li>
-        <li class="toc-level-2"><a
-            href="#%E0%B8%A3%E0%B8%B2%E0%B8%A2%E0%B8%A5%E0%B8%B0%E0%B9%80%E0%B8%AD%E0%B8%B5%E0%B8%A2%E0%B8%94%E0%B8%9D%E0%B8%B1%E0%B9%88%E0%B8%87-ai">รายละเอียดฝั่ง
-            AI</a></li>
-        <li class="toc-level-2"><a
-            href="#%E0%B8%97%E0%B8%B3%E0%B9%84%E0%B8%A1%E0%B8%96%E0%B8%B6%E0%B8%87%E0%B9%80%E0%B8%A5%E0%B8%B7%E0%B8%AD%E0%B8%81-flutter-%E0%B8%AA%E0%B8%B3%E0%B8%AB%E0%B8%A3%E0%B8%B1%E0%B8%9A-mobile">ทำไมถึงเลือก
-            Flutter สำหรับ Mobile?</a></li>
-        <li class="toc-level-2"><a
-            href="#%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%87">หน้าที่เกี่ยวข้อง</a>
-        </li>
-      </ol>
-    </aside>
+    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><div class="sidebar-head"><a class="sidebar-brand" href="../../index.html" aria-label="ScamGuard Documentation"><span class="brand brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z"/><path d="m9.2 12 1.8 1.8 3.9-4.2"/></svg></span><span class="sidebar-brand-name">ScamGuard Docs</span></a><div class="theme-switcher" role="group" aria-label="ธีมเว็บไซต์"><button type="button" data-theme-option="system" aria-label="ใช้ธีมตามระบบ" title="System"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></button><button type="button" data-theme-option="light" aria-label="ใช้โหมดสว่าง" title="Light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></button><button type="button" data-theme-option="dark" aria-label="ใช้โหมดมืด" title="Dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8 8 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/></svg></button></div></div><button class="control nav-close" type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button><button class="sidebar-search" type="button" data-search-open><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search...</span><kbd>Ctrl K</kbd></button><div class="sidebar-scroll"><details class="sidebar-group" ><summary>ภาพรวม</summary><ul class="sidebar-list"><li><a href="../overview.html" >ภาพรวมโปรเจค</a></li><li><a href="../index.html" >สารบัญ Wiki — โปรเจค Scam Image Detection</a></li></ul></details><details class="sidebar-group" ><summary>ความต้องการระบบ</summary><ul class="sidebar-list"><li><a href="../requirements/functional-requirements.html" >ความต้องการเชิงฟังก์ชัน (Functional Requirements)</a></li><li><a href="../requirements/non-functional-requirements.html" >ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements)</a></li><li><a href="../requirements/traceability-matrix.html" >เมทริกซ์การสืบย้อนความต้องการ</a></li><li><a href="../requirements/objectives-kpis.html" >วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp; KPIs)</a></li><li><a href="../requirements/srs.html" >Software Requirements Specification (SRS)</a></li><li><a href="../requirements/use-case-diagram.html" >Use Case Diagram</a></li></ul></details><details class="sidebar-group" ><summary>สถาปัตยกรรม</summary><ul class="sidebar-list"><li><a href="../architecture/database-migrations.html" >การจัดการการย้ายฐานข้อมูล (Database Migrations)</a></li><li><a href="../architecture/external-integrations.html" >การเชื่อมต่อบริการภายนอก (External Integrations)</a></li><li><a href="../architecture/database-schema.html" >โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li><li><a href="../architecture/system-architecture.html" >สถาปัตยกรรมระบบ (System Architecture)</a></li><li><a href="../architecture/admin-portal.html" >สถาปัตยกรรมและการออกแบบ Admin Portal</a></li><li><a href="../architecture/mobile-app.html" >สถาปัตยกรรม Mobile App</a></li><li><a href="../architecture/ai-inference-service.html" >AI Inference Service</a></li><li><a href="../architecture/backend-api.html" >Backend API — FastAPI Orchestrator</a></li><li><a href="../architecture/c1-system-context-diagram.html" >C1 System Context Diagram</a></li><li><a href="../architecture/c2-container-diagram.html" >C2 Container Diagram</a></li><li><a href="../architecture/c3-component-diagram.html" >C3 Component Diagram - API Application</a></li><li><a href="../architecture/c4-code-diagram.html" >C4 Code Diagram - Image Scanning Flow</a></li><li><a href="../architecture/database-er-diagram.html" >Entity Relationship Diagram (ER Diagram)</a></li><li><a href="../architecture/mobile-design.html" >Mobile App Architecture</a></li><li><a href="../architecture/flowchart.html" >System Flowchart</a></li><li><a href="../architecture/design-overview.html" >UX/UI &amp; System Design Overview</a></li></ul></details><details class="sidebar-group" ><summary>แนวคิดและเทคนิค</summary><ul class="sidebar-list"><li><a href="../concepts/risk-scoring.html" >การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li><li><a href="../concepts/multi-layer-analysis.html" >การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li><li><a href="../concepts/explainable-ai.html" >ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li><li><a href="../concepts/configs.html" >พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li><li><a href="../concepts/ai-model-segformer.html" >โมเดล AI — SegFormer</a></li><li><a href="../concepts/surya-ocr.html" >โมเดล AI — Surya OCR</a></li><li><a href="../concepts/model-training.html" >AI Model Training Workflow</a></li><li><a href="../concepts/mmsegmentation.html" >MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li><li><a href="../concepts/semantic-segmentation.html" >Semantic Segmentation</a></li></ul></details><details class="sidebar-group" open><summary>องค์ประกอบระบบ</summary><ul class="sidebar-list"><li><a href="tech-stack.html" aria-current="page">เทคโนโลยีที่ใช้ (Technology Stack)</a></li><li><a href="actors.html" >ผู้ใช้ระบบ (Actors)</a></li></ul></details><details class="sidebar-group" ><summary>การตัดสินใจ</summary><ul class="sidebar-list"><li><a href="../decisions/technology-choices.html" >การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li></ul></details><details class="sidebar-group" ><summary>การวางแผน</summary><ul class="sidebar-list"><li><a href="../planning/task-tracking.html" >การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a></li><li><a href="../planning/project-scope.html" >ขอบเขตโครงการ (Project Scope)</a></li><li><a href="../planning/team.html" >ทีมงานและผู้รับผิดชอบ (Team)</a></li><li><a href="../planning/backend-documentation.html" >Backend Documentation</a></li></ul></details><details class="sidebar-group" ><summary>การทดสอบ</summary><ul class="sidebar-list"><li><a href="../testing/test-cases.html" >กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li></ul></details><details class="sidebar-group" ><summary>คู่มือและภาคผนวก</summary><ul class="sidebar-list"><li><a href="../log.html" >บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li><li><a href="../howto.html" >วิธีใช้งาน Wiki (How to Use This Wiki)</a></li><li><a href="../runbook.html" >Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li><li><a href="../AGENTS.html" >Wiki Operating Guide</a></li></ul></details></div></aside><div class="nav-backdrop" data-nav-backdrop></div>
+    <main class="article" id="main-content"><nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span aria-hidden="true">/</span><span>องค์ประกอบระบบ</span></nav><header class="article-header"><h1>เทคโนโลยีที่ใช้ (Technology Stack)</h1><p class="article-lead">รายการเทคโนโลยีที่เลือกใช้สำหรับโปรเจค พร้อมเหตุผลทางวิศวกรรม</p><div class="meta"><span>หมวด องค์ประกอบระบบ</span><time datetime="2026-08-02">อัปเดต 2026-08-02</time><span>ต้นฉบับ entities/tech-stack.md</span></div><div class="tags"><span class="tag">tech-stack</span><span class="tag">Flutter</span><span class="tag">FastAPI</span><span class="tag">PyTorch</span><span class="tag">ONNX</span><span class="tag">PostgreSQL</span><span class="tag">Redis</span></div></header><div class="prose"><h1 id="เทคโนโลยีที่ใช้-technology-stack">เทคโนโลยีที่ใช้ (Technology Stack)</h1>
+<p>รายการเทคโนโลยีที่เลือกใช้สำหรับโปรเจค พร้อมเหตุผลทางวิศวกรรม</p>
+<hr>
+<h2 id="สรุป-full-stack">สรุป Full Stack</h2>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">ส่วนประกอบ</th>
+<th style="text-align:left">เทคโนโลยี</th>
+<th style="text-align:left">เหตุผล</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Mobile App</strong></td>
+<td style="text-align:left">Flutter (Dart)</td>
+<td style="text-align:left">รองรับ Android (และ iOS ในอนาคต) ด้วย Codebase เดียว; รองรับ Dark Mode ดีเยี่ยม; ใช้ BLoC State Management</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Admin Portal</strong></td>
+<td style="text-align:left">React.js + Tailwind CSS</td>
+<td style="text-align:left">โหลดข้อมูล Dynamic รวดเร็ว; จัดการ State สำหรับ Dashboard ได้ดี; เขียนแบบ Component-based</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>API Backend</strong></td>
+<td style="text-align:left">Python FastAPI</td>
+<td style="text-align:left">Async I/O ประสิทธิภาพเทียบเท่า Go/Node.js; ตรวจสอบ Pydantic อัตโนมัติ; Auto-generated OpenAPI Docs</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>AI Training</strong></td>
+<td style="text-align:left">PyTorch</td>
+<td style="text-align:left">Framework มาตรฐานอุตสาหกรรมสำหรับ Deep Learning; มี Ecosystem ของ SegFormer รองรับดี</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>AI Inference</strong></td>
+<td style="text-align:left">ONNX Runtime</td>
+<td style="text-align:left">เป้าหมายเร็วกว่า PyTorch baseline รุ่นเดียวกัน ≥ 2 เท่า (ภาพ 1080p เฉลี่ย 100 ภาพ บน T4; ยืนยันด้วย benchmark ก่อนอ้างภายนอก); ไม่ยึดติดกับ Framework</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Primary Database</strong></td>
+<td style="text-align:left">PostgreSQL</td>
+<td style="text-align:left">ACID Transactions; ความถูกต้องของ Relational Data; รองรับ PostGIS สำหรับฟีเจอร์พิกัดในอนาคต</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Cache</strong></td>
+<td style="text-align:left">Redis</td>
+<td style="text-align:left">ค้นหา Image Hash ไวระดับ Sub-millisecond; ลดโหลด AI Inference สำหรับรูปซ้ำได้มหาศาล</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>File Storage</strong></td>
+<td style="text-align:left">Cloud Object Storage</td>
+<td style="text-align:left">ขยายได้ไม่จำกัด; ใช้ Presigned URL เพื่อความปลอดภัยของ Client</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Reverse Image Search</strong></td>
+<td style="text-align:left">Google Vision API</td>
+<td style="text-align:left">ค้นหาภาพย้อนกลับครอบคลุมและแม่นยำที่สุด</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Push Notifications</strong></td>
+<td style="text-align:left">Firebase Cloud Messaging (FCM)</td>
+<td style="text-align:left">ฟรี, เสถียรบน Android, ไม่ต้องบริหาร Infrastructure เอง</td>
+</tr>
+</tbody>
+</table></div><hr>
+<h2 id="รายละเอียดฝั่ง-mobile-app">รายละเอียดฝั่ง Mobile App</h2>
+<ul>
+<li><strong>State Management:</strong> BLoC (Business Logic Component)</li>
+<li><strong>HTTP Client:</strong> Dio + Secure Storage สำหรับเก็บ JWT</li>
+<li><strong>จัดการรูปภาพ:</strong> <code>image_picker</code> + <code>image_cropper</code></li>
+<li><strong>Platform:</strong> Android (หลัก), iOS (อนาคต)</li>
+<li><strong>Architecture:</strong> Clean Architecture (Presentation / Domain / Data)</li>
+</ul>
+<p>ดูเพิ่มเติมที่ <a href="../architecture/mobile-app.html">architecture/mobile-app</a></p>
+<hr>
+<h2 id="รายละเอียดฝั่ง-ai">รายละเอียดฝั่ง AI</h2>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">ส่วน</th>
+<th style="text-align:left">เทคโนโลยี</th>
+<th style="text-align:left">หมายเหตุ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Core Model</td>
+<td style="text-align:left">SegFormer (ONNX เดียว)</td>
+<td style="text-align:left">Transformer-based Semantic Segmentation, tiling 512/overlap 64</td>
+</tr>
+<tr>
+<td style="text-align:left">Training Framework</td>
+<td style="text-align:left">PyTorch</td>
+<td style="text-align:left">มาตรฐาน; Ecosystem ใหญ่</td>
+</tr>
+<tr>
+<td style="text-align:left">Serving Format</td>
+<td style="text-align:left">ONNX</td>
+<td style="text-align:left">รันผ่าน ONNX Worker subprocess ภายใน Backend เดียวกัน</td>
+</tr>
+<tr>
+<td style="text-align:left">Inference Runtime</td>
+<td style="text-align:left">ONNX Runtime</td>
+<td style="text-align:left">Engine สำหรับ Serving ที่ Optimized แล้ว</td>
+</tr>
+<tr>
+<td style="text-align:left">AI-Gen classifier</td>
+<td style="text-align:left">ค่าความน่าจะเป็นภาพสังเคราะห์จาก AI (0–1, informative ประกอบการตัดสิน — เกณฑ์ตัดสินหลักใช้ Visual/Textual/Source + Risk Grade ดู <a href="../concepts/risk-scoring.html">concepts/risk-scoring</a>)</td>
+<td style="text-align:left">ยังไม่ตรึงโมเดล/threshold ทางการ — ห้ามอ้างเป็นเกณฑ์ตัดสินจนกว่าจะนิยามใน SRS</td>
+</tr>
+<tr>
+<td style="text-align:left">XAI</td>
+<td style="text-align:left">แผนที่ความร้อนแบบ mask-to-heatmap overlay</td>
+<td style="text-align:left">แปลง Segmentation Mask เป็นภาพสีซ้อนทับบนภาพต้นฉบับ</td>
+</tr>
+<tr>
+<td style="text-align:left">XAI reasoning</td>
+<td style="text-align:left">Qwen2.5-1.5B</td>
+<td style="text-align:left">สำหรับสร้างคำอธิบายภาษาไทย</td>
+</tr>
+<tr>
+<td style="text-align:left">OCR</td>
+<td style="text-align:left">Surya OCR v0.5.0 (Native PyTorch)</td>
+<td style="text-align:left">ดึงข้อความภาษาไทย + อังกฤษ</td>
+</tr>
+<tr>
+<td style="text-align:left">Risk</td>
+<td style="text-align:left">Hybrid max+bonus 3 ระดับ: Low 0-39 / Medium 40-69 / High 70-100</td>
+<td style="text-align:left">คะแนนฐานจากมิติสูงสุด บวกเพิ่มมิติรอง สูงสุดไม่เกิน 100</td>
+</tr>
+</tbody>
+</table></div><hr>
+<h2 id="ทำไมถึงเลือก-flutter-สำหรับ-mobile">ทำไมถึงเลือก Flutter สำหรับ Mobile?</h2>
+<aside class="callout callout-note" aria-label="หมายเหตุ"><p class="callout-title">หมายเหตุ</p><p>โครงการนี้เลือกใช้ <strong>Flutter</strong> สำหรับการพัฒนาแอปพลิเคชันมือถือแบบ Cross-Platform (Android) เนื่องจากประสิทธิภาพสูง, มี Hot Reload, UI สวยงามด้วย Material Design และ Cupertino, และมี BLoC State Management ที่เขียน Test ได้ง่าย — ดูรายละเอียดการตัดสินใจเทคโนโลยีได้ที่ <a href="../decisions/technology-choices.html">decisions/technology-choices</a></p>
+</aside>
+<hr>
+<h2 id="หน้าที่เกี่ยวข้อง">หน้าที่เกี่ยวข้อง</h2>
+<ul>
+<li><a href="../decisions/technology-choices.html">decisions/technology-choices</a></li>
+<li><a href="../architecture/system-architecture.html">architecture/system-architecture</a></li>
+<li><a href="../architecture/mobile-app.html">architecture/mobile-app</a></li>
+<li><a href="../architecture/backend-api.html">architecture/backend-api</a></li>
+<li><a href="../architecture/ai-inference-service.html">architecture/ai-inference-service</a></li>
+<li><a href="../concepts/ai-model-segformer.html">concepts/ai-model-segformer</a></li>
+</ul>
+</div></main>
+    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้"><p class="toc-title">ในหน้านี้</p><ol class="toc"><li class="toc-level-2"><a href="#%E0%B8%AA%E0%B8%A3%E0%B8%B8%E0%B8%9B-full-stack">สรุป Full Stack</a></li><li class="toc-level-2"><a href="#%E0%B8%A3%E0%B8%B2%E0%B8%A2%E0%B8%A5%E0%B8%B0%E0%B9%80%E0%B8%AD%E0%B8%B5%E0%B8%A2%E0%B8%94%E0%B8%9D%E0%B8%B1%E0%B9%88%E0%B8%87-mobile-app">รายละเอียดฝั่ง Mobile App</a></li><li class="toc-level-2"><a href="#%E0%B8%A3%E0%B8%B2%E0%B8%A2%E0%B8%A5%E0%B8%B0%E0%B9%80%E0%B8%AD%E0%B8%B5%E0%B8%A2%E0%B8%94%E0%B8%9D%E0%B8%B1%E0%B9%88%E0%B8%87-ai">รายละเอียดฝั่ง AI</a></li><li class="toc-level-2"><a href="#%E0%B8%97%E0%B8%B3%E0%B9%84%E0%B8%A1%E0%B8%96%E0%B8%B6%E0%B8%87%E0%B9%80%E0%B8%A5%E0%B8%B7%E0%B8%AD%E0%B8%81-flutter-%E0%B8%AA%E0%B8%B3%E0%B8%AB%E0%B8%A3%E0%B8%B1%E0%B8%9A-mobile">ทำไมถึงเลือก Flutter สำหรับ Mobile?</a></li><li class="toc-level-2"><a href="#%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%87">หน้าที่เกี่ยวข้อง</a></li></ol></aside>
   </div>
-  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title">
-    <div class="search-dialog-head"><label class="visually-hidden" id="search-title"
-        for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…"
-        autocomplete="off" data-search-input><button class="control" type="button" data-search-close
-        aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="m6 6 12 12M18 6 6 18" />
-        </svg></button></div>
-    <div class="search-results" data-search-results aria-live="polite"></div>
-  </dialog>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title"><div class="search-dialog-head"><label class="visually-hidden" id="search-title" for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…" autocomplete="off" data-search-input><button class="control" type="button" data-search-close aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div class="search-results" data-search-results aria-live="polite"></div></dialog>
   <script src="../../assets/js/search-index.js"></script>
   <script src="../../assets/js/site.js"></script>
 </body>
-
 </html>

@@ -1,201 +1,35 @@
 <!doctype html>
-<html lang="th" data-theme="light">
-
+<html lang="th" data-theme="light" data-theme-mode="system">
 <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description"
-            content="โมเดล AI — SegFormer โมเดล Deep Learning หลักที่ใช้ตรวจจับการตัดต่อภาพในระดับพิกเซล SegFormer เป็นสถาปัตยกรรม Transformer ที่ออกแบบมาสำหรับงาน Semantic Segmentation โดยเฉพาะ --- ทำไมถึงเลือก…">
-      <meta name="color-scheme" content="light dark">
-      <title>โมเดล AI — SegFormer | ScamGuard Documentation</title>
-      <link rel="stylesheet" href="../../assets/css/site.css">
-      <script>document.documentElement.dataset.theme = (() => { try { return localStorage.getItem('scamguard-docs-theme') || 'light' } catch (e) { return 'light' } })(); window.SC_DOCS_ROOT = '../../';</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="โมเดล AI — SegFormer โมเดล Deep Learning หลักที่ใช้ตรวจจับการตัดต่อภาพในระดับพิกเซล SegFormer เป็นสถาปัตยกรรม Transformer ที่ออกแบบมาสำหรับงาน Semantic Segmentation โดยเฉพาะ --- ทำไมถึงเลือก…">
+  <meta name="color-scheme" content="light dark">
+  <title>โมเดล AI — SegFormer | ScamGuard Documentation</title>
+  <link rel="stylesheet" href="../../assets/css/site.css">
+  <script>(()=>{let m='system';try{m=localStorage.getItem('scamguard-docs-theme')||'system'}catch(e){}if(!['system','light','dark'].includes(m))m='system';const t=m==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;document.documentElement.dataset.themeMode=m;document.documentElement.dataset.theme=t})();window.SC_DOCS_ROOT='../../';</script>
 </head>
-
 <body class="">
-      <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
-      <header class="masthead">
-            <div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle
-                        aria-expanded="false" aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none"
-                              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
-                              aria-hidden="true">
-                              <path d="M4 7h16M4 12h16M4 17h16" />
-                        </svg></button><a class="brand" href="../../index.html"><svg viewBox="0 0 24 24" fill="none"
-                              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
-                              aria-hidden="true">
-                              <path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z" />
-                              <path d="m9.2 12 1.8 1.8 3.9-4.2" />
-                        </svg><span>ScamGuard <small>Documentation</small></span></a>
-                  <div class="masthead-actions"><button class="control" type="button" data-search-open><svg
-                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                    <circle cx="11" cy="11" r="6.5" />
-                                    <path d="m16 16 4 4" />
-                              </svg><span>ค้นหา</span><span class="search-shortcut">Ctrl K</span></button><button
-                              class="control" type="button" data-theme-toggle aria-label="เปลี่ยนเป็นโหมดมืด"><svg
-                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                    <path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.5A7 7 0 0 1 12 3Z" />
-                              </svg><span class="theme-label" data-theme-label>โหมดมืด</span></button></div>
-            </div>
-      </header>
-      <div class="docs-shell">
-            <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><button
-                        class="control nav-close" type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24"
-                              fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                              stroke-linejoin="round" aria-hidden="true">
-                              <path d="m6 6 12 12M18 6 6 18" />
-                        </svg></button>
-                  <p class="sidebar-title">เอกสารทั้งหมด</p>
-                  <details class="sidebar-group">
-                        <summary>ภาพรวม</summary>
-                        <ul class="sidebar-list">
-                              <li><a href="../overview.html">ภาพรวมโปรเจค</a></li>
-                              <li><a href="../index.html">สารบัญ Wiki — โปรเจค Scam Image Detection</a></li>
-                        </ul>
-                  </details>
-                  <details class="sidebar-group">
-                        <summary>ความต้องการระบบ</summary>
-                        <ul class="sidebar-list">
-                              <li><a href="../requirements/functional-requirements.html">ความต้องการเชิงฟังก์ชัน
-                                          (Functional Requirements)</a></li>
-                              <li><a href="../requirements/non-functional-requirements.html">ความต้องการที่ไม่ใช่ฟังก์ชัน
-                                          (Non-Functional Requirements)</a></li>
-                              <li><a href="../requirements/traceability-matrix.html">เมทริกซ์การสืบย้อนความต้องการ</a>
-                              </li>
-                              <li><a href="../requirements/objectives-kpis.html">วัตถุประสงค์และตัวชี้วัดความสำเร็จ
-                                          (Objectives &amp; KPIs)</a></li>
-                              <li><a href="../requirements/srs.html">Software Requirements Specification (SRS)</a></li>
-                              <li><a href="../requirements/use-case-diagram.html">Use Case Diagram</a></li>
-                        </ul>
-                  </details>
-                  <details class="sidebar-group">
-                        <summary>สถาปัตยกรรม</summary>
-                        <ul class="sidebar-list">
-                              <li><a href="../architecture/database-migrations.html">การจัดการการย้ายฐานข้อมูล (Database
-                                          Migrations)</a></li>
-                              <li><a href="../architecture/external-integrations.html">การเชื่อมต่อบริการภายนอก
-                                          (External Integrations)</a></li>
-                              <li><a href="../architecture/database-schema.html">โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a>
-                              </li>
-                              <li><a href="../architecture/system-architecture.html">สถาปัตยกรรมระบบ (System
-                                          Architecture)</a></li>
-                              <li><a href="../architecture/admin-portal.html">สถาปัตยกรรมและการออกแบบ Admin Portal</a>
-                              </li>
-                              <li><a href="../architecture/mobile-app.html">สถาปัตยกรรม Mobile App</a></li>
-                              <li><a href="../architecture/ai-inference-service.html">AI Inference Service</a></li>
-                              <li><a href="../architecture/backend-api.html">Backend API — FastAPI Orchestrator</a></li>
-                              <li><a href="../architecture/c1-system-context-diagram.html">C1 System Context Diagram</a>
-                              </li>
-                              <li><a href="../architecture/c2-container-diagram.html">C2 Container Diagram</a></li>
-                              <li><a href="../architecture/c3-component-diagram.html">C3 Component Diagram - API
-                                          Application</a></li>
-                              <li><a href="../architecture/c4-code-diagram.html">C4 Code Diagram - Image Scanning
-                                          Flow</a></li>
-                              <li><a href="../architecture/database-er-diagram.html">Entity Relationship Diagram (ER
-                                          Diagram)</a></li>
-                              <li><a href="../architecture/mobile-design.html">Mobile App Architecture</a></li>
-                              <li><a href="../architecture/flowchart.html">System Flowchart</a></li>
-                              <li><a href="../architecture/design-overview.html">UX/UI &amp; System Design Overview</a>
-                              </li>
-                        </ul>
-                  </details>
-                  <details class="sidebar-group" open>
-                        <summary>แนวคิดและเทคนิค</summary>
-                        <ul class="sidebar-list">
-                              <li><a href="risk-scoring.html">การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li>
-                              <li><a href="multi-layer-analysis.html">การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a>
-                              </li>
-                              <li><a href="explainable-ai.html">ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a>
-                              </li>
-                              <li><a href="configs.html">พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a>
-                              </li>
-                              <li><a href="ai-model-segformer.html" aria-current="page">โมเดล AI — SegFormer</a></li>
-                              <li><a href="surya-ocr.html">โมเดล AI — Surya OCR</a></li>
-                              <li><a href="model-training.html">AI Model Training Workflow</a></li>
-                              <li><a href="mmsegmentation.html">MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a>
-                              </li>
-                              <li><a href="semantic-segmentation.html">Semantic Segmentation</a></li>
-                        </ul>
-                  </details>
-                  <details class="sidebar-group">
-                        <summary>องค์ประกอบระบบ</summary>
-                        <ul class="sidebar-list">
-                              <li><a href="../entities/tech-stack.html">เทคโนโลยีที่ใช้ (Technology Stack)</a></li>
-                              <li><a href="../entities/actors.html">ผู้ใช้ระบบ (Actors)</a></li>
-                        </ul>
-                  </details>
-                  <details class="sidebar-group">
-                        <summary>การตัดสินใจ</summary>
-                        <ul class="sidebar-list">
-                              <li><a href="../decisions/technology-choices.html">การตัดสินใจเลือกเทคโนโลยี (Technology
-                                          Choices)</a></li>
-                        </ul>
-                  </details>
-                  <details class="sidebar-group">
-                        <summary>การวางแผน</summary>
-                        <ul class="sidebar-list">
-                              <li><a href="../planning/task-tracking.html">การติดตามงานและการบริหารโครงการ (Task
-                                          Tracking &amp; Jira)</a></li>
-                              <li><a href="../planning/project-scope.html">ขอบเขตโครงการ (Project Scope)</a></li>
-                              <li><a href="../planning/team.html">ทีมงานและผู้รับผิดชอบ (Team)</a></li>
-                              <li><a href="../planning/backend-documentation.html">Backend Documentation</a></li>
-                        </ul>
-                  </details>
-                  <details class="sidebar-group">
-                        <summary>การทดสอบ</summary>
-                        <ul class="sidebar-list">
-                              <li><a href="../testing/test-cases.html">กรณีทดสอบและรูปแบบตาราง Manual Test (Test
-                                          Cases)</a></li>
-                        </ul>
-                  </details>
-                  <details class="sidebar-group">
-                        <summary>คู่มือและภาคผนวก</summary>
-                        <ul class="sidebar-list">
-                              <li><a href="../log.html">บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li>
-                              <li><a href="../howto.html">วิธีใช้งาน Wiki (How to Use This Wiki)</a></li>
-                              <li><a href="../runbook.html">Runbook: ScamGuard Admin Portal (Production) — ฉบับ
-                                          Canonical</a></li>
-                              <li><a href="../AGENTS.html">Wiki Operating Guide</a></li>
-                        </ul>
-                  </details>
-            </aside>
-            <div class="nav-backdrop" data-nav-backdrop></div>
-            <main class="article" id="main-content">
-                  <nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span
-                              aria-hidden="true">/</span><span>แนวคิดและเทคนิค</span></nav>
-                  <header class="article-header">
-                        <h1>โมเดล AI — SegFormer</h1>
-                        <p class="article-lead">โมเดล Deep Learning หลักที่ใช้ตรวจจับการตัดต่อภาพในระดับพิกเซล SegFormer
-                              เป็นสถาปัตยกรรม Transformer ที่ออกแบบมาสำหรับงาน Semantic Segmentation โดยเฉพาะ</p>
-                        <div class="meta"><span>หมวด แนวคิดและเทคนิค</span><time datetime="2026-09-15">อัปเดต
-                                    2026-09-15</time><span>ต้นฉบับ concepts/ai-model-segformer.md</span></div>
-                        <div class="tags"><span class="tag">SegFormer</span><span class="tag">transformer</span><span
-                                    class="tag">semantic-segmentation</span><span class="tag">MiT</span><span
-                                    class="tag">ONNX</span><span class="tag">deep-learning</span></div>
-                  </header>
-                  <div class="prose">
-                        <h1 id="โมเดล-ai-segformer">โมเดล AI — SegFormer</h1>
-                        <p>โมเดล Deep Learning หลักที่ใช้ตรวจจับการตัดต่อภาพในระดับพิกเซล SegFormer เป็นสถาปัตยกรรม
-                              Transformer ที่ออกแบบมาสำหรับงาน Semantic Segmentation โดยเฉพาะ</p>
-                        <hr>
-                        <h2 id="ทำไมถึงเลือก-segformer">ทำไมถึงเลือก SegFormer?</h2>
-                        <p>งานหลักคือการหาว่า <em>พิกเซลใด</em> ถูกดัดแปลง — ซึ่งเป็นปัญหา <strong>Semantic
-                                    Segmentation</strong> ไม่ใช่แค่ Classification ธรรมดา SegFormer ถูกเลือกเพราะ:</p>
-                        <ul>
-                              <li>ออกแบบมาสำหรับงาน Semantic Segmentation (การระบุป้ายกำกับระดับพิกเซล) โดยเฉพาะ</li>
-                              <li>ไม่ใช้ Positional Encoding แบบซับซ้อน ทำให้เร็วขึ้นและ generalize ได้ดีกว่า Vision
-                                    Transformer รุ่นเก่า</li>
-                              <li>จัดการทั้ง <strong>Global Context</strong> (โครงสร้างภาพโดยรวม) และ <strong>Local
-                                          Details</strong> (รายละเอียดพิกเซลละเอียด) ผ่าน Multi-scale Features</li>
-                              <li>เบากว่าโมเดล ViT-based ทั่วไป</li>
-                              <li>แปลงเป็น ONNX ได้ง่ายหลัง training ใน PyTorch</li>
-                        </ul>
-                        <p><strong>ข้อจำกัด:</strong> ใช้ RAM/VRAM สูงกว่า CNN แบบดั้งเดิม ยอมรับได้ในระดับ Server
-                              Inference แต่เป็นแรงผลักดันให้วางแผน On-device Quantization ในอนาคต</p>
-                        <hr>
-                        <h2 id="สถาปัตยกรรม">สถาปัตยกรรม</h2>
-                        <pre><code><div class="code-frame"><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-text">รูปภาพ Input (RGB เช่น 512×512)
+  <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
+  <header class="masthead"><div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><nav class="top-tabs" aria-label="เมนูหลัก"><a href="../../index.html">Guide</a><a href="../../pages/architecture/system-architecture.html">Architecture</a><a href="../../pages/architecture/backend-api.html">API Reference</a></nav></div></header>
+  <div class="docs-shell">
+    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><div class="sidebar-head"><a class="sidebar-brand" href="../../index.html" aria-label="ScamGuard Documentation"><span class="brand brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z"/><path d="m9.2 12 1.8 1.8 3.9-4.2"/></svg></span><span class="sidebar-brand-name">ScamGuard Docs</span></a><div class="theme-switcher" role="group" aria-label="ธีมเว็บไซต์"><button type="button" data-theme-option="system" aria-label="ใช้ธีมตามระบบ" title="System"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></button><button type="button" data-theme-option="light" aria-label="ใช้โหมดสว่าง" title="Light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></button><button type="button" data-theme-option="dark" aria-label="ใช้โหมดมืด" title="Dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8 8 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/></svg></button></div></div><button class="control nav-close" type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button><button class="sidebar-search" type="button" data-search-open><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search...</span><kbd>Ctrl K</kbd></button><div class="sidebar-scroll"><details class="sidebar-group" ><summary>ภาพรวม</summary><ul class="sidebar-list"><li><a href="../overview.html" >ภาพรวมโปรเจค</a></li><li><a href="../index.html" >สารบัญ Wiki — โปรเจค Scam Image Detection</a></li></ul></details><details class="sidebar-group" ><summary>ความต้องการระบบ</summary><ul class="sidebar-list"><li><a href="../requirements/functional-requirements.html" >ความต้องการเชิงฟังก์ชัน (Functional Requirements)</a></li><li><a href="../requirements/non-functional-requirements.html" >ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements)</a></li><li><a href="../requirements/traceability-matrix.html" >เมทริกซ์การสืบย้อนความต้องการ</a></li><li><a href="../requirements/objectives-kpis.html" >วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp; KPIs)</a></li><li><a href="../requirements/srs.html" >Software Requirements Specification (SRS)</a></li><li><a href="../requirements/use-case-diagram.html" >Use Case Diagram</a></li></ul></details><details class="sidebar-group" ><summary>สถาปัตยกรรม</summary><ul class="sidebar-list"><li><a href="../architecture/database-migrations.html" >การจัดการการย้ายฐานข้อมูล (Database Migrations)</a></li><li><a href="../architecture/external-integrations.html" >การเชื่อมต่อบริการภายนอก (External Integrations)</a></li><li><a href="../architecture/database-schema.html" >โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li><li><a href="../architecture/system-architecture.html" >สถาปัตยกรรมระบบ (System Architecture)</a></li><li><a href="../architecture/admin-portal.html" >สถาปัตยกรรมและการออกแบบ Admin Portal</a></li><li><a href="../architecture/mobile-app.html" >สถาปัตยกรรม Mobile App</a></li><li><a href="../architecture/ai-inference-service.html" >AI Inference Service</a></li><li><a href="../architecture/backend-api.html" >Backend API — FastAPI Orchestrator</a></li><li><a href="../architecture/c1-system-context-diagram.html" >C1 System Context Diagram</a></li><li><a href="../architecture/c2-container-diagram.html" >C2 Container Diagram</a></li><li><a href="../architecture/c3-component-diagram.html" >C3 Component Diagram - API Application</a></li><li><a href="../architecture/c4-code-diagram.html" >C4 Code Diagram - Image Scanning Flow</a></li><li><a href="../architecture/database-er-diagram.html" >Entity Relationship Diagram (ER Diagram)</a></li><li><a href="../architecture/mobile-design.html" >Mobile App Architecture</a></li><li><a href="../architecture/flowchart.html" >System Flowchart</a></li><li><a href="../architecture/design-overview.html" >UX/UI &amp; System Design Overview</a></li></ul></details><details class="sidebar-group" open><summary>แนวคิดและเทคนิค</summary><ul class="sidebar-list"><li><a href="risk-scoring.html" >การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li><li><a href="multi-layer-analysis.html" >การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li><li><a href="explainable-ai.html" >ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li><li><a href="configs.html" >พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li><li><a href="ai-model-segformer.html" aria-current="page">โมเดล AI — SegFormer</a></li><li><a href="surya-ocr.html" >โมเดล AI — Surya OCR</a></li><li><a href="model-training.html" >AI Model Training Workflow</a></li><li><a href="mmsegmentation.html" >MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li><li><a href="semantic-segmentation.html" >Semantic Segmentation</a></li></ul></details><details class="sidebar-group" ><summary>องค์ประกอบระบบ</summary><ul class="sidebar-list"><li><a href="../entities/tech-stack.html" >เทคโนโลยีที่ใช้ (Technology Stack)</a></li><li><a href="../entities/actors.html" >ผู้ใช้ระบบ (Actors)</a></li></ul></details><details class="sidebar-group" ><summary>การตัดสินใจ</summary><ul class="sidebar-list"><li><a href="../decisions/technology-choices.html" >การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li></ul></details><details class="sidebar-group" ><summary>การวางแผน</summary><ul class="sidebar-list"><li><a href="../planning/task-tracking.html" >การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a></li><li><a href="../planning/project-scope.html" >ขอบเขตโครงการ (Project Scope)</a></li><li><a href="../planning/team.html" >ทีมงานและผู้รับผิดชอบ (Team)</a></li><li><a href="../planning/backend-documentation.html" >Backend Documentation</a></li></ul></details><details class="sidebar-group" ><summary>การทดสอบ</summary><ul class="sidebar-list"><li><a href="../testing/test-cases.html" >กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li></ul></details><details class="sidebar-group" ><summary>คู่มือและภาคผนวก</summary><ul class="sidebar-list"><li><a href="../log.html" >บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li><li><a href="../howto.html" >วิธีใช้งาน Wiki (How to Use This Wiki)</a></li><li><a href="../runbook.html" >Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li><li><a href="../AGENTS.html" >Wiki Operating Guide</a></li></ul></details></div></aside><div class="nav-backdrop" data-nav-backdrop></div>
+    <main class="article" id="main-content"><nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../../index.html">หน้าแรก</a><span aria-hidden="true">/</span><span>แนวคิดและเทคนิค</span></nav><header class="article-header"><h1>โมเดล AI — SegFormer</h1><p class="article-lead">โมเดล Deep Learning หลักที่ใช้ตรวจจับการตัดต่อภาพในระดับพิกเซล SegFormer เป็นสถาปัตยกรรม Transformer ที่ออกแบบมาสำหรับงาน Semantic Segmentation โดยเฉพาะ</p><div class="meta"><span>หมวด แนวคิดและเทคนิค</span><time datetime="2026-09-15">อัปเดต 2026-09-15</time><span>ต้นฉบับ concepts/ai-model-segformer.md</span></div><div class="tags"><span class="tag">SegFormer</span><span class="tag">transformer</span><span class="tag">semantic-segmentation</span><span class="tag">MiT</span><span class="tag">ONNX</span><span class="tag">deep-learning</span></div></header><div class="prose"><h1 id="โมเดล-ai-segformer">โมเดล AI — SegFormer</h1>
+<p>โมเดล Deep Learning หลักที่ใช้ตรวจจับการตัดต่อภาพในระดับพิกเซล SegFormer เป็นสถาปัตยกรรม Transformer ที่ออกแบบมาสำหรับงาน Semantic Segmentation โดยเฉพาะ</p>
+<hr>
+<h2 id="ทำไมถึงเลือก-segformer">ทำไมถึงเลือก SegFormer?</h2>
+<p>งานหลักคือการหาว่า <em>พิกเซลใด</em> ถูกดัดแปลง — ซึ่งเป็นปัญหา <strong>Semantic Segmentation</strong> ไม่ใช่แค่ Classification ธรรมดา SegFormer ถูกเลือกเพราะ:</p>
+<ul>
+<li>ออกแบบมาสำหรับงาน Semantic Segmentation (การระบุป้ายกำกับระดับพิกเซล) โดยเฉพาะ</li>
+<li>ไม่ใช้ Positional Encoding แบบซับซ้อน ทำให้เร็วขึ้นและ generalize ได้ดีกว่า Vision Transformer รุ่นเก่า</li>
+<li>จัดการทั้ง <strong>Global Context</strong> (โครงสร้างภาพโดยรวม) และ <strong>Local Details</strong> (รายละเอียดพิกเซลละเอียด) ผ่าน Multi-scale Features</li>
+<li>เบากว่าโมเดล ViT-based ทั่วไป</li>
+<li>แปลงเป็น ONNX ได้ง่ายหลัง training ใน PyTorch</li>
+</ul>
+<p><strong>ข้อจำกัด:</strong> ใช้ RAM/VRAM สูงกว่า CNN แบบดั้งเดิม ยอมรับได้ในระดับ Server Inference แต่เป็นแรงผลักดันให้วางแผน On-device Quantization ในอนาคต</p>
+<hr>
+<h2 id="สถาปัตยกรรม">สถาปัตยกรรม</h2>
+<pre><code><div class="code-frame"><button class="copy-button" type="button" data-copy>คัดลอก</button><pre><code class="hljs language-text">รูปภาพ Input (RGB เช่น 512×512)
         |
   Preprocessing: Resize + Normalize
         |
@@ -217,172 +51,100 @@
   ├── Segmentation Mask (binary, ขนาดเท่า input)
   ├── Heatmap (ค่าความเชื่อมั่นต่อพิกเซล)
   └── Risk Score (รวมจาก mask coverage × confidence)
-</code></pre>
-                  </div></code></pre>
-                  <h3 id="อัลกอริทึมและสมการคณิตศาสตร์-mathematical-formulation">อัลกอริทึมและสมการคณิตศาสตร์
-                        (Mathematical Formulation)</h3>
-                  <ol>
-                        <li>
-                              <p><strong>Efficient Self-Attention:</strong>
-                                    $X \in \mathbb{R}^{H \times W \times C}$ จะถูกแปลงให้แบนราบ (Flatten) เป็น Sequence
-                                    $N = H \times W$
-                                    โดยลดมิติของ Key และ Value ด้วยอัตราส่วน $R$ เพื่อลดภาระการคำนวณ:
-                                    $$K' = \text{Reshape}\left(\frac{N}{R}, C \cdot R\right)(K) \cdot W_K$$
-                                    $$V' = \text{Reshape}\left(\frac{N}{R}, C \cdot R\right)(V) \cdot W_V$$
-                                    $$ \text{Attention}(Q, K', V') = \text{Softmax}\left( \frac{Q (K')^T}{\sqrt{d_k}}
-                                    \right) V' $$</p>
-                        </li>
-                        <li>
-                              <p><strong>Mix-FFN (Mix Feed-Forward Network):</strong>
-                                    ใช้ 3x3 Convolution แทน Positional Encoding แบบตายตัว
-                                    เพื่อพิจารณาตำแหน่งจากบริบทภาพ:
-                                    $$x_{out} =
-                                    \text{MLP}(\text{GELU}(\text{Conv}<em>{3\times3}(\text{MLP}(x</em>{in})))) +
-                                    x_{in}$$</p>
-                        </li>
-                  </ol>
-                  <hr>
-                  <h2 id="รูปแบบข้อมูล">รูปแบบข้อมูล</h2>
-                  <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
-                        <table>
-                              <thead>
-                                    <tr>
-                                          <th style="text-align:left">ขั้นตอน</th>
-                                          <th style="text-align:left">รูปแบบ</th>
-                                          <th style="text-align:left">คำอธิบาย</th>
-                                    </tr>
-                              </thead>
-                              <tbody>
-                                    <tr>
-                                          <td style="text-align:left">Input</td>
-                                          <td style="text-align:left">Tensor <code>[B, 3, H, W]</code></td>
-                                          <td style="text-align:left">เช่น <code>[1, 3, 512, 512]</code> สำหรับ 1 ภาพ
-                                          </td>
-                                    </tr>
-                                    <tr>
-                                          <td style="text-align:left">Encoder output</td>
-                                          <td style="text-align:left">Multi-scale feature maps</td>
-                                          <td style="text-align:left">การแทนค่าแบบลำดับชั้น</td>
-                                    </tr>
-                                    <tr>
-                                          <td style="text-align:left">Decoder output</td>
-                                          <td style="text-align:left">Tensor <code>[B, 2, H, W]</code></td>
-                                          <td style="text-align:left">ความน่าจะเป็นต่อพิกเซลทุก class</td>
-                                    </tr>
-                                    <tr>
-                                          <td style="text-align:left">Segmentation Mask</td>
-                                          <td style="text-align:left">PNG ขาวดำ</td>
-                                          <td style="text-align:left">ขาว = ถูกดัดแปลง, ดำ = ดั้งเดิม</td>
-                                    </tr>
-                                    <tr>
-                                          <td style="text-align:left">Heatmap</td>
-                                          <td style="text-align:left">Float array</td>
-                                          <td style="text-align:left">ค่าความเชื่อมั่นต่อพิกเซล (0.0–1.0)</td>
-                                    </tr>
-                                    <tr>
-                                          <td style="text-align:left">Risk Score</td>
-                                          <td style="text-align:left">Float 0–100</td>
-                                          <td style="text-align:left">คำนวณจาก mask coverage และ confidence</td>
-                                    </tr>
-                              </tbody>
-                        </table>
-                  </div>
-                  <hr>
-                  <h2 id="versioning-และการ-deploy">Versioning และการ Deploy</h2>
-                  <ul>
-                        <li>Version โมเดลใช้ Semantic Versioning เช่น <code>segformer_v1.0.0</code></li>
-                        <li>Train ใน PyTorch แล้ว export เป็น <strong>ONNX format</strong> สำหรับ Production Inference
-                        </li>
-                        <li>ONNX Runtime เป็นเป้าหมายเพิ่มความเร็ว Inference ≥2 เท่าเทียบ Native PyTorch รุ่นเดียวกัน
-                              (วิธีวัด: GPU T4 เฉลี่ย 100 ภาพ; ตัวเลขจริงต้องบันทึกจาก benchmark ก่อนอ้างเป็นผล)</li>
-                        <li>น้ำหนักโมเดลเก็บใน <strong>Model Registry</strong> (Version-controlled file store)</li>
-                        <li>Admin สามารถ deploy โมเดลเวอร์ชันใหม่ผ่าน Admin Portal โดยไม่ต้อง Redeploy service</li>
-                        <li><strong>v1.0.5 (ล่าสุด, config v10):</strong> MiT-B2 fine-tune จาก <code>v1.0.0</code> ครบ
-                              200,000 iters (จบ 2026-09-12) best validation mIoU <strong>91.31</strong> @iter 197,500 —
-                              อันดับหนึ่งบน locked common test (mIoU <strong>91.24</strong>, Forgery IoU
-                              <strong>83.51</strong>) — export ONNX <code>segformer_v1_0_5_dynamic.onnx</code> แล้ว
-                              แต่ยังเป็น candidate (Production ยังเป็น <code>v1.0.0</code>; รายละเอียดการเทรนดู <a
-                                    href="model-training.html">concepts/model-training</a>)</li>
-                  </ul>
-                  <hr>
-                  <h2 id="ข้อจำกัดที่รู้จัก">ข้อจำกัดที่รู้จัก</h2>
-                  <ol>
-                        <li><strong>การ Re-compress ซ้ำหลายครั้ง</strong> — ความแม่นยำลดลงถ้าภาพถูก compress หลายรอบ
-                              (เช่น ส่งต่อผ่านแอปแชท) เพราะ artifact จาก compression บดบัง Semantic Segmentation signal
-                        </li>
-                        <li><strong>ภาพ AI-Generated ทั้งหมด</strong> — SegFormer ตรวจจับ <em>การตัดต่อ</em> ระดับพิกเซล
-                              ภาพ synthetic ทั้งหมดไม่มี splice artifact แบบดั้งเดิม ต้องใช้ AI-Gen classifier
-                              แยกต่างหาก</li>
-                  </ol>
-                  <hr>
-                  <h2 id="แผนพัฒนาในอนาคต">แผนพัฒนาในอนาคต</h2>
-                  <ul>
-                        <li><strong>Ensemble Model</strong> — เพิ่มโมเดลตรวจจับภาพ AI-Generated ควบคู่กับ SegFormer</li>
-                        <li><strong>Model Quantization</strong> (INT8/FP16) — เพื่อ Inference บนอุปกรณ์มือถือโดยตรง
-                              ขจัดการรอ Network Round-trip</li>
-                  </ul>
-                  <hr>
-                  <h2 id="หน้าที่เกี่ยวข้อง">หน้าที่เกี่ยวข้อง</h2>
-                  <ul>
-                        <li><a href="semantic-segmentation.html">concepts/semantic-segmentation</a></li>
-                        <li><a href="explainable-ai.html">concepts/explainable-ai</a></li>
-                        <li><a href="multi-layer-analysis.html">concepts/multi-layer-analysis</a></li>
-                        <li><a href="../architecture/ai-inference-service.html">architecture/ai-inference-service</a>
-                        </li>
-                        <li><a href="../decisions/technology-choices.html">decisions/technology-choices</a></li>
-                  </ul>
-      </div>
-      <footer class="source-panel"><strong>แหล่งข้อมูลของหน้านี้</strong>
-            <ul>
-                  <li><a href="../../sources/wiki/concepts/ai-model-segformer.md">Markdown ต้นฉบับ:
-                              concepts/ai-model-segformer.md</a></li>
-                  <li>design/model.md</li>
-            </ul>
-      </footer>
-      </main>
-      <aside class="toc-wrap" aria-label="สารบัญในหน้านี้">
-            <p class="toc-title">ในหน้านี้</p>
-            <ol class="toc">
-                  <li class="toc-level-2"><a
-                              href="#%E0%B8%97%E0%B8%B3%E0%B9%84%E0%B8%A1%E0%B8%96%E0%B8%B6%E0%B8%87%E0%B9%80%E0%B8%A5%E0%B8%B7%E0%B8%AD%E0%B8%81-segformer">ทำไมถึงเลือก
-                              SegFormer?</a></li>
-                  <li class="toc-level-2"><a
-                              href="#%E0%B8%AA%E0%B8%96%E0%B8%B2%E0%B8%9B%E0%B8%B1%E0%B8%95%E0%B8%A2%E0%B8%81%E0%B8%A3%E0%B8%A3%E0%B8%A1">สถาปัตยกรรม</a>
-                  </li>
-                  <li class="toc-level-3"><a
-                              href="#%E0%B8%AD%E0%B8%B1%E0%B8%A5%E0%B8%81%E0%B8%AD%E0%B8%A3%E0%B8%B4%E0%B8%97%E0%B8%B6%E0%B8%A1%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%AA%E0%B8%A1%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%84%E0%B8%93%E0%B8%B4%E0%B8%95%E0%B8%A8%E0%B8%B2%E0%B8%AA%E0%B8%95%E0%B8%A3%E0%B9%8C-mathematical-formulation">อัลกอริทึมและสมการคณิตศาสตร์
-                              (Mathematical Formulation)</a></li>
-                  <li class="toc-level-2"><a
-                              href="#%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B9%81%E0%B8%9A%E0%B8%9A%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B8%B9%E0%B8%A5">รูปแบบข้อมูล</a>
-                  </li>
-                  <li class="toc-level-2"><a
-                              href="#versioning-%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%81%E0%B8%B2%E0%B8%A3-deploy">Versioning
-                              และการ Deploy</a></li>
-                  <li class="toc-level-2"><a
-                              href="#%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%88%E0%B8%B3%E0%B8%81%E0%B8%B1%E0%B8%94%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%A3%E0%B8%B9%E0%B9%89%E0%B8%88%E0%B8%B1%E0%B8%81">ข้อจำกัดที่รู้จัก</a>
-                  </li>
-                  <li class="toc-level-2"><a
-                              href="#%E0%B9%81%E0%B8%9C%E0%B8%99%E0%B8%9E%E0%B8%B1%E0%B8%92%E0%B8%99%E0%B8%B2%E0%B9%83%E0%B8%99%E0%B8%AD%E0%B8%99%E0%B8%B2%E0%B8%84%E0%B8%95">แผนพัฒนาในอนาคต</a>
-                  </li>
-                  <li class="toc-level-2"><a
-                              href="#%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%87">หน้าที่เกี่ยวข้อง</a>
-                  </li>
-            </ol>
-      </aside>
-      </div>
-      <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title">
-            <div class="search-dialog-head"><label class="visually-hidden" id="search-title"
-                        for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search"
-                        placeholder="ค้นหาในเอกสารทั้งหมด…" autocomplete="off" data-search-input><button class="control"
-                        type="button" data-search-close aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none"
-                              stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
-                              aria-hidden="true">
-                              <path d="m6 6 12 12M18 6 6 18" />
-                        </svg></button></div>
-            <div class="search-results" data-search-results aria-live="polite"></div>
-      </dialog>
-      <script src="../../assets/js/search-index.js"></script>
-      <script src="../../assets/js/site.js"></script>
+</code></pre></div></code></pre>
+<h3 id="อัลกอริทึมและสมการคณิตศาสตร์-mathematical-formulation">อัลกอริทึมและสมการคณิตศาสตร์ (Mathematical Formulation)</h3>
+<ol>
+<li>
+<p><strong>Efficient Self-Attention:</strong>
+$X \in \mathbb{R}^{H \times W \times C}$ จะถูกแปลงให้แบนราบ (Flatten) เป็น Sequence $N = H \times W$
+โดยลดมิติของ Key และ Value ด้วยอัตราส่วน $R$ เพื่อลดภาระการคำนวณ:
+$$K' = \text{Reshape}\left(\frac{N}{R}, C \cdot R\right)(K) \cdot W_K$$
+$$V' = \text{Reshape}\left(\frac{N}{R}, C \cdot R\right)(V) \cdot W_V$$
+$$ \text{Attention}(Q, K', V') = \text{Softmax}\left( \frac{Q (K')^T}{\sqrt{d_k}} \right) V' $$</p>
+</li>
+<li>
+<p><strong>Mix-FFN (Mix Feed-Forward Network):</strong>
+ใช้ 3x3 Convolution แทน Positional Encoding แบบตายตัว เพื่อพิจารณาตำแหน่งจากบริบทภาพ:
+$$x_{out} = \text{MLP}(\text{GELU}(\text{Conv}<em>{3\times3}(\text{MLP}(x</em>{in})))) + x_{in}$$</p>
+</li>
+</ol>
+<hr>
+<h2 id="รูปแบบข้อมูล">รูปแบบข้อมูล</h2>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">ขั้นตอน</th>
+<th style="text-align:left">รูปแบบ</th>
+<th style="text-align:left">คำอธิบาย</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Input</td>
+<td style="text-align:left">Tensor <code>[B, 3, H, W]</code></td>
+<td style="text-align:left">เช่น <code>[1, 3, 512, 512]</code> สำหรับ 1 ภาพ</td>
+</tr>
+<tr>
+<td style="text-align:left">Encoder output</td>
+<td style="text-align:left">Multi-scale feature maps</td>
+<td style="text-align:left">การแทนค่าแบบลำดับชั้น</td>
+</tr>
+<tr>
+<td style="text-align:left">Decoder output</td>
+<td style="text-align:left">Tensor <code>[B, 2, H, W]</code></td>
+<td style="text-align:left">ความน่าจะเป็นต่อพิกเซลทุก class</td>
+</tr>
+<tr>
+<td style="text-align:left">Segmentation Mask</td>
+<td style="text-align:left">PNG ขาวดำ</td>
+<td style="text-align:left">ขาว = ถูกดัดแปลง, ดำ = ดั้งเดิม</td>
+</tr>
+<tr>
+<td style="text-align:left">Heatmap</td>
+<td style="text-align:left">Float array</td>
+<td style="text-align:left">ค่าความเชื่อมั่นต่อพิกเซล (0.0–1.0)</td>
+</tr>
+<tr>
+<td style="text-align:left">Risk Score</td>
+<td style="text-align:left">Float 0–100</td>
+<td style="text-align:left">คำนวณจาก mask coverage และ confidence</td>
+</tr>
+</tbody>
+</table></div><hr>
+<h2 id="versioning-และการ-deploy">Versioning และการ Deploy</h2>
+<ul>
+<li>Version โมเดลใช้ Semantic Versioning เช่น <code>segformer_v1.0.0</code></li>
+<li>Train ใน PyTorch แล้ว export เป็น <strong>ONNX format</strong> สำหรับ Production Inference</li>
+<li>ONNX Runtime เป็นเป้าหมายเพิ่มความเร็ว Inference ≥2 เท่าเทียบ Native PyTorch รุ่นเดียวกัน (วิธีวัด: GPU T4 เฉลี่ย 100 ภาพ; ตัวเลขจริงต้องบันทึกจาก benchmark ก่อนอ้างเป็นผล)</li>
+<li>น้ำหนักโมเดลเก็บใน <strong>Model Registry</strong> (Version-controlled file store)</li>
+<li>Admin สามารถ deploy โมเดลเวอร์ชันใหม่ผ่าน Admin Portal โดยไม่ต้อง Redeploy service</li>
+<li><strong>v1.0.5 (ล่าสุด, config v10):</strong> MiT-B2 fine-tune จาก <code>v1.0.0</code> ครบ 200,000 iters (จบ 2026-09-12) best validation mIoU <strong>91.31</strong> @iter 197,500 — อันดับหนึ่งบน locked common test (mIoU <strong>91.24</strong>, Forgery IoU <strong>83.51</strong>) — export ONNX <code>segformer_v1_0_5_dynamic.onnx</code> แล้ว แต่ยังเป็น candidate (Production ยังเป็น <code>v1.0.0</code>; รายละเอียดการเทรนดู <a href="model-training.html">concepts/model-training</a>)</li>
+</ul>
+<hr>
+<h2 id="ข้อจำกัดที่รู้จัก">ข้อจำกัดที่รู้จัก</h2>
+<ol>
+<li><strong>การ Re-compress ซ้ำหลายครั้ง</strong> — ความแม่นยำลดลงถ้าภาพถูก compress หลายรอบ (เช่น ส่งต่อผ่านแอปแชท) เพราะ artifact จาก compression บดบัง Semantic Segmentation signal</li>
+<li><strong>ภาพ AI-Generated ทั้งหมด</strong> — SegFormer ตรวจจับ <em>การตัดต่อ</em> ระดับพิกเซล ภาพ synthetic ทั้งหมดไม่มี splice artifact แบบดั้งเดิม ต้องใช้ AI-Gen classifier แยกต่างหาก</li>
+</ol>
+<hr>
+<h2 id="แผนพัฒนาในอนาคต">แผนพัฒนาในอนาคต</h2>
+<ul>
+<li><strong>Ensemble Model</strong> — เพิ่มโมเดลตรวจจับภาพ AI-Generated ควบคู่กับ SegFormer</li>
+<li><strong>Model Quantization</strong> (INT8/FP16) — เพื่อ Inference บนอุปกรณ์มือถือโดยตรง ขจัดการรอ Network Round-trip</li>
+</ul>
+<hr>
+<h2 id="หน้าที่เกี่ยวข้อง">หน้าที่เกี่ยวข้อง</h2>
+<ul>
+<li><a href="semantic-segmentation.html">concepts/semantic-segmentation</a></li>
+<li><a href="explainable-ai.html">concepts/explainable-ai</a></li>
+<li><a href="multi-layer-analysis.html">concepts/multi-layer-analysis</a></li>
+<li><a href="../architecture/ai-inference-service.html">architecture/ai-inference-service</a></li>
+<li><a href="../decisions/technology-choices.html">decisions/technology-choices</a></li>
+</ul>
+</div></main>
+    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้"><p class="toc-title">ในหน้านี้</p><ol class="toc"><li class="toc-level-2"><a href="#%E0%B8%97%E0%B8%B3%E0%B9%84%E0%B8%A1%E0%B8%96%E0%B8%B6%E0%B8%87%E0%B9%80%E0%B8%A5%E0%B8%B7%E0%B8%AD%E0%B8%81-segformer">ทำไมถึงเลือก SegFormer?</a></li><li class="toc-level-2"><a href="#%E0%B8%AA%E0%B8%96%E0%B8%B2%E0%B8%9B%E0%B8%B1%E0%B8%95%E0%B8%A2%E0%B8%81%E0%B8%A3%E0%B8%A3%E0%B8%A1">สถาปัตยกรรม</a></li><li class="toc-level-3"><a href="#%E0%B8%AD%E0%B8%B1%E0%B8%A5%E0%B8%81%E0%B8%AD%E0%B8%A3%E0%B8%B4%E0%B8%97%E0%B8%B6%E0%B8%A1%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%AA%E0%B8%A1%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%84%E0%B8%93%E0%B8%B4%E0%B8%95%E0%B8%A8%E0%B8%B2%E0%B8%AA%E0%B8%95%E0%B8%A3%E0%B9%8C-mathematical-formulation">อัลกอริทึมและสมการคณิตศาสตร์ (Mathematical Formulation)</a></li><li class="toc-level-2"><a href="#%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B9%81%E0%B8%9A%E0%B8%9A%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B8%B9%E0%B8%A5">รูปแบบข้อมูล</a></li><li class="toc-level-2"><a href="#versioning-%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%81%E0%B8%B2%E0%B8%A3-deploy">Versioning และการ Deploy</a></li><li class="toc-level-2"><a href="#%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%88%E0%B8%B3%E0%B8%81%E0%B8%B1%E0%B8%94%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%A3%E0%B8%B9%E0%B9%89%E0%B8%88%E0%B8%B1%E0%B8%81">ข้อจำกัดที่รู้จัก</a></li><li class="toc-level-2"><a href="#%E0%B9%81%E0%B8%9C%E0%B8%99%E0%B8%9E%E0%B8%B1%E0%B8%92%E0%B8%99%E0%B8%B2%E0%B9%83%E0%B8%99%E0%B8%AD%E0%B8%99%E0%B8%B2%E0%B8%84%E0%B8%95">แผนพัฒนาในอนาคต</a></li><li class="toc-level-2"><a href="#%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%87">หน้าที่เกี่ยวข้อง</a></li></ol></aside>
+  </div>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title"><div class="search-dialog-head"><label class="visually-hidden" id="search-title" for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…" autocomplete="off" data-search-input><button class="control" type="button" data-search-close aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div class="search-results" data-search-results aria-live="polite"></div></dialog>
+  <script src="../../assets/js/search-index.js"></script>
+  <script src="../../assets/js/site.js"></script>
 </body>
-
 </html>

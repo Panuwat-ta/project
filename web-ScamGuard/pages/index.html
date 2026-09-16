@@ -1,494 +1,254 @@
 <!doctype html>
-<html lang="th" data-theme="light">
-
+<html lang="th" data-theme="light" data-theme-mode="system">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description"
-    content="สารบัญ Wiki รายการหน้าทั้งหมดใน wiki จัดหมวดหมู่ตามประเภท อัปเดตทุกครั้งที่มีการเพิ่มหน้าใหม่ ให้อ่านไฟล์นี้ก่อนเสมอเมื่อต้องการค้นหาข้อมูล --- ภาพรวม หน้า สรุป :--- :--- overview ภาพรวมโปรเ…">
+  <meta name="description" content="สารบัญ Wiki รายการหน้าทั้งหมดใน wiki จัดหมวดหมู่ตามประเภท อัปเดตทุกครั้งที่มีการเพิ่มหน้าใหม่ ให้อ่านไฟล์นี้ก่อนเสมอเมื่อต้องการค้นหาข้อมูล --- ภาพรวม หน้า สรุป :--- :--- overview ภาพรวมโปรเ…">
   <meta name="color-scheme" content="light dark">
   <title>สารบัญ Wiki — โปรเจค Scam Image Detection | ScamGuard Documentation</title>
   <link rel="stylesheet" href="../assets/css/site.css">
-  <script>document.documentElement.dataset.theme = (() => { try { return localStorage.getItem('scamguard-docs-theme') || 'light' } catch (e) { return 'light' } })(); window.SC_DOCS_ROOT = '../';</script>
+  <script>(()=>{let m='system';try{m=localStorage.getItem('scamguard-docs-theme')||'system'}catch(e){}if(!['system','light','dark'].includes(m))m='system';const t=m==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;document.documentElement.dataset.themeMode=m;document.documentElement.dataset.theme=t})();window.SC_DOCS_ROOT='../';</script>
 </head>
-
 <body class="">
   <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
-  <header class="masthead">
-    <div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false"
-        aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M4 7h16M4 12h16M4 17h16" />
-        </svg></button><a class="brand" href="../index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z" />
-          <path d="m9.2 12 1.8 1.8 3.9-4.2" />
-        </svg><span>ScamGuard <small>Documentation</small></span></a>
-      <div class="masthead-actions"><button class="control" type="button" data-search-open><svg viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
-            aria-hidden="true">
-            <circle cx="11" cy="11" r="6.5" />
-            <path d="m16 16 4 4" />
-          </svg><span>ค้นหา</span><span class="search-shortcut">Ctrl K</span></button><button class="control"
-          type="button" data-theme-toggle aria-label="เปลี่ยนเป็นโหมดมืด"><svg viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.5A7 7 0 0 1 12 3Z" />
-          </svg><span class="theme-label" data-theme-label>โหมดมืด</span></button></div>
-    </div>
-  </header>
+  <header class="masthead"><div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-label="เปิดเมนูเอกสาร"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><nav class="top-tabs" aria-label="เมนูหลัก"><a href="../index.html">Guide</a><a href="../pages/architecture/system-architecture.html">Architecture</a><a href="../pages/architecture/backend-api.html">API Reference</a></nav></div></header>
   <div class="docs-shell">
-    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><button class="control nav-close"
-        type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="m6 6 12 12M18 6 6 18" />
-        </svg></button>
-      <p class="sidebar-title">เอกสารทั้งหมด</p>
-      <details class="sidebar-group" open>
-        <summary>ภาพรวม</summary>
-        <ul class="sidebar-list">
-          <li><a href="overview.html">ภาพรวมโปรเจค</a></li>
-          <li><a href="index.html" aria-current="page">สารบัญ Wiki — โปรเจค Scam Image Detection</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>ความต้องการระบบ</summary>
-        <ul class="sidebar-list">
-          <li><a href="requirements/functional-requirements.html">ความต้องการเชิงฟังก์ชัน (Functional Requirements)</a>
-          </li>
-          <li><a href="requirements/non-functional-requirements.html">ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional
-              Requirements)</a></li>
-          <li><a href="requirements/traceability-matrix.html">เมทริกซ์การสืบย้อนความต้องการ</a></li>
-          <li><a href="requirements/objectives-kpis.html">วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp; KPIs)</a>
-          </li>
-          <li><a href="requirements/srs.html">Software Requirements Specification (SRS)</a></li>
-          <li><a href="requirements/use-case-diagram.html">Use Case Diagram</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>สถาปัตยกรรม</summary>
-        <ul class="sidebar-list">
-          <li><a href="architecture/database-migrations.html">การจัดการการย้ายฐานข้อมูล (Database Migrations)</a></li>
-          <li><a href="architecture/external-integrations.html">การเชื่อมต่อบริการภายนอก (External Integrations)</a>
-          </li>
-          <li><a href="architecture/database-schema.html">โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li>
-          <li><a href="architecture/system-architecture.html">สถาปัตยกรรมระบบ (System Architecture)</a></li>
-          <li><a href="architecture/admin-portal.html">สถาปัตยกรรมและการออกแบบ Admin Portal</a></li>
-          <li><a href="architecture/mobile-app.html">สถาปัตยกรรม Mobile App</a></li>
-          <li><a href="architecture/ai-inference-service.html">AI Inference Service</a></li>
-          <li><a href="architecture/backend-api.html">Backend API — FastAPI Orchestrator</a></li>
-          <li><a href="architecture/c1-system-context-diagram.html">C1 System Context Diagram</a></li>
-          <li><a href="architecture/c2-container-diagram.html">C2 Container Diagram</a></li>
-          <li><a href="architecture/c3-component-diagram.html">C3 Component Diagram - API Application</a></li>
-          <li><a href="architecture/c4-code-diagram.html">C4 Code Diagram - Image Scanning Flow</a></li>
-          <li><a href="architecture/database-er-diagram.html">Entity Relationship Diagram (ER Diagram)</a></li>
-          <li><a href="architecture/mobile-design.html">Mobile App Architecture</a></li>
-          <li><a href="architecture/flowchart.html">System Flowchart</a></li>
-          <li><a href="architecture/design-overview.html">UX/UI &amp; System Design Overview</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>แนวคิดและเทคนิค</summary>
-        <ul class="sidebar-list">
-          <li><a href="concepts/risk-scoring.html">การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li>
-          <li><a href="concepts/multi-layer-analysis.html">การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li>
-          <li><a href="concepts/explainable-ai.html">ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li>
-          <li><a href="concepts/configs.html">พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li>
-          <li><a href="concepts/ai-model-segformer.html">โมเดล AI — SegFormer</a></li>
-          <li><a href="concepts/surya-ocr.html">โมเดล AI — Surya OCR</a></li>
-          <li><a href="concepts/model-training.html">AI Model Training Workflow</a></li>
-          <li><a href="concepts/mmsegmentation.html">MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li>
-          <li><a href="concepts/semantic-segmentation.html">Semantic Segmentation</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>องค์ประกอบระบบ</summary>
-        <ul class="sidebar-list">
-          <li><a href="entities/tech-stack.html">เทคโนโลยีที่ใช้ (Technology Stack)</a></li>
-          <li><a href="entities/actors.html">ผู้ใช้ระบบ (Actors)</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>การตัดสินใจ</summary>
-        <ul class="sidebar-list">
-          <li><a href="decisions/technology-choices.html">การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>การวางแผน</summary>
-        <ul class="sidebar-list">
-          <li><a href="planning/task-tracking.html">การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a></li>
-          <li><a href="planning/project-scope.html">ขอบเขตโครงการ (Project Scope)</a></li>
-          <li><a href="planning/team.html">ทีมงานและผู้รับผิดชอบ (Team)</a></li>
-          <li><a href="planning/backend-documentation.html">Backend Documentation</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>การทดสอบ</summary>
-        <ul class="sidebar-list">
-          <li><a href="testing/test-cases.html">กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li>
-        </ul>
-      </details>
-      <details class="sidebar-group">
-        <summary>คู่มือและภาคผนวก</summary>
-        <ul class="sidebar-list">
-          <li><a href="log.html">บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li>
-          <li><a href="howto.html">วิธีใช้งาน Wiki (How to Use This Wiki)</a></li>
-          <li><a href="runbook.html">Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li>
-          <li><a href="AGENTS.html">Wiki Operating Guide</a></li>
-        </ul>
-      </details>
-    </aside>
-    <div class="nav-backdrop" data-nav-backdrop></div>
-    <main class="article" id="main-content">
-      <nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../index.html">หน้าแรก</a><span
-          aria-hidden="true">/</span><span>ภาพรวม</span></nav>
-      <header class="article-header">
-        <h1>สารบัญ Wiki — โปรเจค Scam Image Detection</h1>
-        <p class="article-lead">รายการหน้าทั้งหมดใน wiki จัดหมวดหมู่ตามประเภท อัปเดตทุกครั้งที่มีการเพิ่มหน้าใหม่
-          ให้อ่านไฟล์นี้ก่อนเสมอเมื่อต้องการค้นหาข้อมูล</p>
-        <div class="meta"><span>หมวด ภาพรวม</span><time datetime="2026-09-13">อัปเดต 2026-09-13</time><span>ต้นฉบับ
-            index.md</span></div>
-      </header>
-      <div class="prose">
-        <h1 id="สารบัญ-wiki">สารบัญ Wiki</h1>
-        <p>รายการหน้าทั้งหมดใน wiki จัดหมวดหมู่ตามประเภท อัปเดตทุกครั้งที่มีการเพิ่มหน้าใหม่
-          ให้อ่านไฟล์นี้ก่อนเสมอเมื่อต้องการค้นหาข้อมูล</p>
-        <hr>
-        <h2 id="ภาพรวม">ภาพรวม</h2>
-        <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
-          <table>
-            <thead>
-              <tr>
-                <th style="text-align:left">หน้า</th>
-                <th style="text-align:left">สรุป</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style="text-align:left"><a href="overview.html">overview</a></td>
-                <td style="text-align:left">ภาพรวมโปรเจคทั้งหมด — คืออะไร ทำไมต้องมี และทำงานอย่างไรตั้งแต่ต้นจนจบ</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <hr>
-        <h2 id="ความต้องการของระบบ">ความต้องการของระบบ</h2>
-        <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
-          <table>
-            <thead>
-              <tr>
-                <th style="text-align:left">หน้า</th>
-                <th style="text-align:left">สรุป</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style="text-align:left"><a href="requirements/objectives-kpis.html">requirements/objectives-kpis</a>
-                </td>
-                <td style="text-align:left">วัตถุประสงค์โปรเจค (OBJ-01 ถึง OBJ-04) และ KPI เชิงปริมาณ/เชิงคุณภาพ</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><a
-                    href="requirements/functional-requirements.html">requirements/functional-requirements</a></td>
-                <td style="text-align:left">ความต้องการเชิงฟังก์ชันจาก SRS และ Use Case</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><a
-                    href="requirements/non-functional-requirements.html">requirements/non-functional-requirements</a>
-                </td>
-                <td style="text-align:left">ประสิทธิภาพ, ความปลอดภัย, ความพร้อมใช้งาน และการปฏิบัติตาม PDPA</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><a href="requirements/srs.html">requirements/srs</a></td>
-                <td style="text-align:left">Software Requirements Specification (SRS) ฉบับสมบูรณ์</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><a
-                    href="requirements/use-case-diagram.html">requirements/use-case-diagram</a></td>
-                <td style="text-align:left">Use Case Diagram และรายละเอียด Actor/System</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><a
-                    href="requirements/traceability-matrix.html">requirements/traceability-matrix</a></td>
-                <td style="text-align:left">เมทริกซ์การสืบย้อนความต้องการ (RTM) เชื่อมโยง Stakeholder, Objectives,
-                  Scopes, RCs, FR/NFR</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <hr>
-        <h2 id="สถาปัตยกรรม">สถาปัตยกรรม</h2>
-        <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
-          <table>
-            <thead>
-              <tr>
-                <th style="text-align:left">หน้า</th>
-                <th style="text-align:left">สรุป</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style="text-align:left"><a
-                    href="architecture/system-architecture.html">architecture/system-architecture</a></td>
-                <td style="text-align:left">ภาพรวมสถาปัตยกรรม Cloud-Native แบบ 3 ชั้น และ data flow</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><a href="architecture/mobile-app.html">architecture/mobile-app</a></td>
-                <td style="text-align:left">Flutter Mobile App: Clean Architecture, BLoC, หน้าจอต่างๆ
-                  และขั้นตอนการอัปโหลดรูป</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><a href="architecture/backend-api.html">architecture/backend-api</a></td>
-                <td style="text-align:left">FastAPI Orchestrator: auth, OCR/NLP, ดึง metadata และประสานงาน job</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><a href="architecture/admin-portal.html">architecture/admin-portal</a></td>
-                <td style="text-align:left">Admin Portal: เว็บคอนโซล React/Vite, UI Design System, Model Registry &amp;
-                  Telemetry</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><a
-                    href="architecture/ai-inference-service.html">architecture/ai-inference-service</a></td>
-                <td style="text-align:left">PyTorch/ONNX AI Node: Semantic Segmentation, ตรวจจับภาพ AI-Gen, สร้าง
-                  Heatmap</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><a href="architecture/database-schema.html">architecture/database-schema</a>
-                </td>
-                <td style="text-align:left">PostgreSQL schema, Redis cache strategy, Cloud Object Storage layout</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><a
-                    href="architecture/database-migrations.html">architecture/database-migrations</a></td>
-                <td style="text-align:left">การจัดการการย้ายฐานข้อมูล (Database Migrations) ด้วย Alembic และ SQLAlchemy
-                </td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><a
-                    href="architecture/external-integrations.html">architecture/external-integrations</a></td>
-                <td style="text-align:left">Google Vision API (reverse search), Firebase FCM และ integration อื่นๆ
-                  ในอนาคต</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><a
-                    href="architecture/c1-system-context-diagram.html">architecture/c1-system-context-diagram</a></td>
-                <td style="text-align:left">C1 System Context Diagram ภาพรวมระบบระดับกว้าง</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><a
-                    href="architecture/c2-container-diagram.html">architecture/c2-container-diagram</a></td>
-                <td style="text-align:left">C2 Container Diagram เจาะลึกระดับ Container ภายใน</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><a href="architecture/flowchart.html">architecture/flowchart</a></td>
-                <td style="text-align:left">System Flowchart แสดงการทำงานแต่ละขั้นตอนของระบบสแกน</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><a href="architecture/design-overview.html">architecture/design-overview</a>
-                </td>
-                <td style="text-align:left">UX/UI &amp; System Design Overview ภาพรวมการออกแบบทั้งหมด</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><a href="architecture/mobile-design.html">architecture/mobile-design</a>
-                </td>
-                <td style="text-align:left">Mobile App Architecture &amp; Design แบบเจาะลึก</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><a
-                    href="architecture/database-er-diagram.html">architecture/database-er-diagram</a></td>
-                <td style="text-align:left">Entity Relationship Diagram (ER Diagram) โครงสร้างฐานข้อมูล</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <hr>
-        <h2 id="แนวคิดและเทคนิค">แนวคิดและเทคนิค</h2>
-        <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
-          <table>
-            <thead>
-              <tr>
-                <th style="text-align:left">หน้า</th>
-                <th style="text-align:left">สรุป</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style="text-align:left"><a
-                    href="concepts/multi-layer-analysis.html">concepts/multi-layer-analysis</a></td>
-                <td style="text-align:left">การวิเคราะห์ 3 ชั้น: Textual, Source Verification, Visual Anomaly</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><a href="concepts/risk-scoring.html">concepts/risk-scoring</a></td>
-                <td style="text-align:left">สูตรคำนวณ Overall Risk Score (Hybrid Worst-Case Approach),
-                  เกณฑ์ระดับความเสี่ยง และการรวมคะแนน</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><a href="concepts/explainable-ai.html">concepts/explainable-ai</a></td>
-                <td style="text-align:left">แนวทาง XAI: การสร้าง Heatmap, overlay ลงรูปภาพ และการแสดงผล UI</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><a href="concepts/ai-model-segformer.html">concepts/ai-model-segformer</a>
-                </td>
-                <td style="text-align:left">สถาปัตยกรรม SegFormer, MiT encoder, All-MLP decoder และ output ระดับพิกเซล
-                </td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><a href="concepts/mmsegmentation.html">concepts/mmsegmentation</a></td>
-                <td style="text-align:left">MMSegmentation Framework: สถาปัตยกรรมแบบโมดูลาร์, Backbone, Decode Head,
-                  Training Loss</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><a href="concepts/surya-ocr.html">concepts/surya-ocr</a></td>
-                <td style="text-align:left">สถาปัตยกรรม Surya OCR และการสกัดข้อความ</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><a
-                    href="concepts/semantic-segmentation.html">concepts/semantic-segmentation</a></td>
-                <td style="text-align:left">Semantic Segmentation — หลักการทำงานและการตรวจจับบริเวณที่ถูกดัดแปลง</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><a href="concepts/model-training.html">concepts/model-training</a></td>
-                <td style="text-align:left">AI Model Training Workflow ขั้นตอนการฝึกและเทรนโมเดล</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <hr>
-        <h2 id="เอนทิตี">เอนทิตี</h2>
-        <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
-          <table>
-            <thead>
-              <tr>
-                <th style="text-align:left">หน้า</th>
-                <th style="text-align:left">สรุป</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style="text-align:left"><a href="entities/actors.html">entities/actors</a></td>
-                <td style="text-align:left">ผู้ใช้ทั่วไปและ Admin/Researcher — บทบาทและรูปแบบการใช้งาน</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><a href="entities/tech-stack.html">entities/tech-stack</a></td>
-                <td style="text-align:left">สรุป Technology Stack ทั้งหมดพร้อมเหตุผลเชิงวิศวกรรม</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <hr>
-        <h2 id="การตัดสินใจ">การตัดสินใจ</h2>
-        <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
-          <table>
-            <thead>
-              <tr>
-                <th style="text-align:left">หน้า</th>
-                <th style="text-align:left">สรุป</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style="text-align:left"><a href="decisions/technology-choices.html">decisions/technology-choices</a>
-                </td>
-                <td style="text-align:left">การตัดสินใจเลือกเทคโนโลยีหลัก: Flutter, SegFormer, FastAPI, ONNX</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <hr>
-        <h2 id="การวางแผน">การวางแผน</h2>
-        <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
-          <table>
-            <thead>
-              <tr>
-                <th style="text-align:left">หน้า</th>
-                <th style="text-align:left">สรุป</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style="text-align:left"><a href="planning/project-scope.html">planning/project-scope</a></td>
-                <td style="text-align:left">4 Development Container, Work Package และงานที่ยังไม่ได้พัฒนา</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><a href="planning/team.html">planning/team</a></td>
-                <td style="text-align:left">สมาชิกทีม, ความรับผิดชอบ และข้อมูลอาจารย์ที่ปรึกษา</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><a
-                    href="planning/backend-documentation.html">planning/backend-documentation</a></td>
-                <td style="text-align:left">Backend Documentation คู่มือการเริ่มพัฒนาโค้ดฝั่ง Server</td>
-              </tr>
-              <tr>
-                <td style="text-align:left"><a href="planning/task-tracking.html">planning/task-tracking</a></td>
-                <td style="text-align:left">การติดตามงานและการบริหารโครงการ: กระดาน Jira SCM, สถานะรายเฟส และ Work
-                  Packages</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <hr>
-        <h2 id="การทดสอบ">การทดสอบ</h2>
-        <div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0">
-          <table>
-            <thead>
-              <tr>
-                <th style="text-align:left">หน้า</th>
-                <th style="text-align:left">สรุป</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style="text-align:left"><a href="testing/test-cases.html">testing/test-cases</a></td>
-                <td style="text-align:left">กรณีทดสอบ manual ตาราง 10 คอลัมน์ IEEE 829/ISTQB, กฎ md-canonical + CSV ใน
-                  spreadsheets/<area>/, จำนวนเคสต่อไฟล์ และที่เก็บผลรัน tests_all/tests_report/</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <footer class="source-panel"><strong>แหล่งข้อมูลของหน้านี้</strong>
-        <ul>
-          <li><a href="../sources/wiki/index.md">Markdown ต้นฉบับ: index.md</a></li>
-        </ul>
-      </footer>
-    </main>
-    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้">
-      <p class="toc-title">ในหน้านี้</p>
-      <ol class="toc">
-        <li class="toc-level-2"><a href="#%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%A3%E0%B8%A7%E0%B8%A1">ภาพรวม</a></li>
-        <li class="toc-level-2"><a
-            href="#%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%95%E0%B9%89%E0%B8%AD%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A">ความต้องการของระบบ</a>
-        </li>
-        <li class="toc-level-2"><a
-            href="#%E0%B8%AA%E0%B8%96%E0%B8%B2%E0%B8%9B%E0%B8%B1%E0%B8%95%E0%B8%A2%E0%B8%81%E0%B8%A3%E0%B8%A3%E0%B8%A1">สถาปัตยกรรม</a>
-        </li>
-        <li class="toc-level-2"><a
-            href="#%E0%B9%81%E0%B8%99%E0%B8%A7%E0%B8%84%E0%B8%B4%E0%B8%94%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B9%80%E0%B8%97%E0%B8%84%E0%B8%99%E0%B8%B4%E0%B8%84">แนวคิดและเทคนิค</a>
-        </li>
-        <li class="toc-level-2"><a href="#%E0%B9%80%E0%B8%AD%E0%B8%99%E0%B8%97%E0%B8%B4%E0%B8%95%E0%B8%B5">เอนทิตี</a>
-        </li>
-        <li class="toc-level-2"><a
-            href="#%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%95%E0%B8%B1%E0%B8%94%E0%B8%AA%E0%B8%B4%E0%B8%99%E0%B9%83%E0%B8%88">การตัดสินใจ</a>
-        </li>
-        <li class="toc-level-2"><a
-            href="#%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%A7%E0%B8%B2%E0%B8%87%E0%B9%81%E0%B8%9C%E0%B8%99">การวางแผน</a></li>
-        <li class="toc-level-2"><a
-            href="#%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%97%E0%B8%94%E0%B8%AA%E0%B8%AD%E0%B8%9A">การทดสอบ</a></li>
-      </ol>
-    </aside>
+    <aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><div class="sidebar-head"><a class="sidebar-brand" href="../index.html" aria-label="ScamGuard Documentation"><span class="brand brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z"/><path d="m9.2 12 1.8 1.8 3.9-4.2"/></svg></span><span class="sidebar-brand-name">ScamGuard Docs</span></a><div class="theme-switcher" role="group" aria-label="ธีมเว็บไซต์"><button type="button" data-theme-option="system" aria-label="ใช้ธีมตามระบบ" title="System"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></button><button type="button" data-theme-option="light" aria-label="ใช้โหมดสว่าง" title="Light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></button><button type="button" data-theme-option="dark" aria-label="ใช้โหมดมืด" title="Dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8 8 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/></svg></button></div></div><button class="control nav-close" type="button" data-nav-close>ปิดเมนู <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button><button class="sidebar-search" type="button" data-search-open><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search...</span><kbd>Ctrl K</kbd></button><div class="sidebar-scroll"><details class="sidebar-group" open><summary>ภาพรวม</summary><ul class="sidebar-list"><li><a href="overview.html" >ภาพรวมโปรเจค</a></li><li><a href="index.html" aria-current="page">สารบัญ Wiki — โปรเจค Scam Image Detection</a></li></ul></details><details class="sidebar-group" ><summary>ความต้องการระบบ</summary><ul class="sidebar-list"><li><a href="requirements/functional-requirements.html" >ความต้องการเชิงฟังก์ชัน (Functional Requirements)</a></li><li><a href="requirements/non-functional-requirements.html" >ความต้องการที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements)</a></li><li><a href="requirements/traceability-matrix.html" >เมทริกซ์การสืบย้อนความต้องการ</a></li><li><a href="requirements/objectives-kpis.html" >วัตถุประสงค์และตัวชี้วัดความสำเร็จ (Objectives &amp; KPIs)</a></li><li><a href="requirements/srs.html" >Software Requirements Specification (SRS)</a></li><li><a href="requirements/use-case-diagram.html" >Use Case Diagram</a></li></ul></details><details class="sidebar-group" ><summary>สถาปัตยกรรม</summary><ul class="sidebar-list"><li><a href="architecture/database-migrations.html" >การจัดการการย้ายฐานข้อมูล (Database Migrations)</a></li><li><a href="architecture/external-integrations.html" >การเชื่อมต่อบริการภายนอก (External Integrations)</a></li><li><a href="architecture/database-schema.html" >โครงสร้างฐานข้อมูลและการจัดเก็บข้อมูล</a></li><li><a href="architecture/system-architecture.html" >สถาปัตยกรรมระบบ (System Architecture)</a></li><li><a href="architecture/admin-portal.html" >สถาปัตยกรรมและการออกแบบ Admin Portal</a></li><li><a href="architecture/mobile-app.html" >สถาปัตยกรรม Mobile App</a></li><li><a href="architecture/ai-inference-service.html" >AI Inference Service</a></li><li><a href="architecture/backend-api.html" >Backend API — FastAPI Orchestrator</a></li><li><a href="architecture/c1-system-context-diagram.html" >C1 System Context Diagram</a></li><li><a href="architecture/c2-container-diagram.html" >C2 Container Diagram</a></li><li><a href="architecture/c3-component-diagram.html" >C3 Component Diagram - API Application</a></li><li><a href="architecture/c4-code-diagram.html" >C4 Code Diagram - Image Scanning Flow</a></li><li><a href="architecture/database-er-diagram.html" >Entity Relationship Diagram (ER Diagram)</a></li><li><a href="architecture/mobile-design.html" >Mobile App Architecture</a></li><li><a href="architecture/flowchart.html" >System Flowchart</a></li><li><a href="architecture/design-overview.html" >UX/UI &amp; System Design Overview</a></li></ul></details><details class="sidebar-group" ><summary>แนวคิดและเทคนิค</summary><ul class="sidebar-list"><li><a href="concepts/risk-scoring.html" >การคำนวณคะแนนความเสี่ยง (Risk Scoring)</a></li><li><a href="concepts/multi-layer-analysis.html" >การวิเคราะห์หลายชั้น (Multi-layer Analysis)</a></li><li><a href="concepts/explainable-ai.html" >ปัญญาประดิษฐ์ที่อธิบายได้ (Explainable AI / XAI)</a></li><li><a href="concepts/configs.html" >พารามิเตอร์และสมการคณิตศาสตร์ (Configurations &amp; Math)</a></li><li><a href="concepts/ai-model-segformer.html" >โมเดล AI — SegFormer</a></li><li><a href="concepts/surya-ocr.html" >โมเดล AI — Surya OCR</a></li><li><a href="concepts/model-training.html" >AI Model Training Workflow</a></li><li><a href="concepts/mmsegmentation.html" >MMSegmentation Framework และสถาปัตยกรรมแบบโมดูลาร์</a></li><li><a href="concepts/semantic-segmentation.html" >Semantic Segmentation</a></li></ul></details><details class="sidebar-group" ><summary>องค์ประกอบระบบ</summary><ul class="sidebar-list"><li><a href="entities/tech-stack.html" >เทคโนโลยีที่ใช้ (Technology Stack)</a></li><li><a href="entities/actors.html" >ผู้ใช้ระบบ (Actors)</a></li></ul></details><details class="sidebar-group" ><summary>การตัดสินใจ</summary><ul class="sidebar-list"><li><a href="decisions/technology-choices.html" >การตัดสินใจเลือกเทคโนโลยี (Technology Choices)</a></li></ul></details><details class="sidebar-group" ><summary>การวางแผน</summary><ul class="sidebar-list"><li><a href="planning/task-tracking.html" >การติดตามงานและการบริหารโครงการ (Task Tracking &amp; Jira)</a></li><li><a href="planning/project-scope.html" >ขอบเขตโครงการ (Project Scope)</a></li><li><a href="planning/team.html" >ทีมงานและผู้รับผิดชอบ (Team)</a></li><li><a href="planning/backend-documentation.html" >Backend Documentation</a></li></ul></details><details class="sidebar-group" ><summary>การทดสอบ</summary><ul class="sidebar-list"><li><a href="testing/test-cases.html" >กรณีทดสอบและรูปแบบตาราง Manual Test (Test Cases)</a></li></ul></details><details class="sidebar-group" ><summary>คู่มือและภาคผนวก</summary><ul class="sidebar-list"><li><a href="log.html" >บันทึกการดำเนินงาน Wiki — โปรเจค Scam Image Detection</a></li><li><a href="howto.html" >วิธีใช้งาน Wiki (How to Use This Wiki)</a></li><li><a href="runbook.html" >Runbook: ScamGuard Admin Portal (Production) — ฉบับ Canonical</a></li><li><a href="AGENTS.html" >Wiki Operating Guide</a></li></ul></details></div></aside><div class="nav-backdrop" data-nav-backdrop></div>
+    <main class="article" id="main-content"><nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="../index.html">หน้าแรก</a><span aria-hidden="true">/</span><span>ภาพรวม</span></nav><header class="article-header"><h1>สารบัญ Wiki — โปรเจค Scam Image Detection</h1><p class="article-lead">รายการหน้าทั้งหมดใน wiki จัดหมวดหมู่ตามประเภท อัปเดตทุกครั้งที่มีการเพิ่มหน้าใหม่ ให้อ่านไฟล์นี้ก่อนเสมอเมื่อต้องการค้นหาข้อมูล</p><div class="meta"><span>หมวด ภาพรวม</span><time datetime="2026-09-13">อัปเดต 2026-09-13</time><span>ต้นฉบับ index.md</span></div></header><div class="prose"><h1 id="สารบัญ-wiki">สารบัญ Wiki</h1>
+<p>รายการหน้าทั้งหมดใน wiki จัดหมวดหมู่ตามประเภท อัปเดตทุกครั้งที่มีการเพิ่มหน้าใหม่ ให้อ่านไฟล์นี้ก่อนเสมอเมื่อต้องการค้นหาข้อมูล</p>
+<hr>
+<h2 id="ภาพรวม">ภาพรวม</h2>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">หน้า</th>
+<th style="text-align:left">สรุป</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="overview.html">overview</a></td>
+<td style="text-align:left">ภาพรวมโปรเจคทั้งหมด — คืออะไร ทำไมต้องมี และทำงานอย่างไรตั้งแต่ต้นจนจบ</td>
+</tr>
+</tbody>
+</table></div><hr>
+<h2 id="ความต้องการของระบบ">ความต้องการของระบบ</h2>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">หน้า</th>
+<th style="text-align:left">สรุป</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="requirements/objectives-kpis.html">requirements/objectives-kpis</a></td>
+<td style="text-align:left">วัตถุประสงค์โปรเจค (OBJ-01 ถึง OBJ-04) และ KPI เชิงปริมาณ/เชิงคุณภาพ</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="requirements/functional-requirements.html">requirements/functional-requirements</a></td>
+<td style="text-align:left">ความต้องการเชิงฟังก์ชันจาก SRS และ Use Case</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="requirements/non-functional-requirements.html">requirements/non-functional-requirements</a></td>
+<td style="text-align:left">ประสิทธิภาพ, ความปลอดภัย, ความพร้อมใช้งาน และการปฏิบัติตาม PDPA</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="requirements/srs.html">requirements/srs</a></td>
+<td style="text-align:left">Software Requirements Specification (SRS) ฉบับสมบูรณ์</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="requirements/use-case-diagram.html">requirements/use-case-diagram</a></td>
+<td style="text-align:left">Use Case Diagram และรายละเอียด Actor/System</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="requirements/traceability-matrix.html">requirements/traceability-matrix</a></td>
+<td style="text-align:left">เมทริกซ์การสืบย้อนความต้องการ (RTM) เชื่อมโยง Stakeholder, Objectives, Scopes, RCs, FR/NFR</td>
+</tr>
+</tbody>
+</table></div><hr>
+<h2 id="สถาปัตยกรรม">สถาปัตยกรรม</h2>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">หน้า</th>
+<th style="text-align:left">สรุป</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="architecture/system-architecture.html">architecture/system-architecture</a></td>
+<td style="text-align:left">ภาพรวมสถาปัตยกรรม Cloud-Native แบบ 3 ชั้น และ data flow</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="architecture/mobile-app.html">architecture/mobile-app</a></td>
+<td style="text-align:left">Flutter Mobile App: Clean Architecture, BLoC, หน้าจอต่างๆ และขั้นตอนการอัปโหลดรูป</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="architecture/backend-api.html">architecture/backend-api</a></td>
+<td style="text-align:left">FastAPI Orchestrator: auth, OCR/NLP, ดึง metadata และประสานงาน job</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="architecture/admin-portal.html">architecture/admin-portal</a></td>
+<td style="text-align:left">Admin Portal: เว็บคอนโซล React/Vite, UI Design System, Model Registry &amp; Telemetry</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="architecture/ai-inference-service.html">architecture/ai-inference-service</a></td>
+<td style="text-align:left">PyTorch/ONNX AI Node: Semantic Segmentation, ตรวจจับภาพ AI-Gen, สร้าง Heatmap</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="architecture/database-schema.html">architecture/database-schema</a></td>
+<td style="text-align:left">PostgreSQL schema, Redis cache strategy, Cloud Object Storage layout</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="architecture/database-migrations.html">architecture/database-migrations</a></td>
+<td style="text-align:left">การจัดการการย้ายฐานข้อมูล (Database Migrations) ด้วย Alembic และ SQLAlchemy</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="architecture/external-integrations.html">architecture/external-integrations</a></td>
+<td style="text-align:left">Google Vision API (reverse search), Firebase FCM และ integration อื่นๆ ในอนาคต</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="architecture/c1-system-context-diagram.html">architecture/c1-system-context-diagram</a></td>
+<td style="text-align:left">C1 System Context Diagram ภาพรวมระบบระดับกว้าง</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="architecture/c2-container-diagram.html">architecture/c2-container-diagram</a></td>
+<td style="text-align:left">C2 Container Diagram เจาะลึกระดับ Container ภายใน</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="architecture/flowchart.html">architecture/flowchart</a></td>
+<td style="text-align:left">System Flowchart แสดงการทำงานแต่ละขั้นตอนของระบบสแกน</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="architecture/design-overview.html">architecture/design-overview</a></td>
+<td style="text-align:left">UX/UI &amp; System Design Overview ภาพรวมการออกแบบทั้งหมด</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="architecture/mobile-design.html">architecture/mobile-design</a></td>
+<td style="text-align:left">Mobile App Architecture &amp; Design แบบเจาะลึก</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="architecture/database-er-diagram.html">architecture/database-er-diagram</a></td>
+<td style="text-align:left">Entity Relationship Diagram (ER Diagram) โครงสร้างฐานข้อมูล</td>
+</tr>
+</tbody>
+</table></div><hr>
+<h2 id="แนวคิดและเทคนิค">แนวคิดและเทคนิค</h2>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">หน้า</th>
+<th style="text-align:left">สรุป</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="concepts/multi-layer-analysis.html">concepts/multi-layer-analysis</a></td>
+<td style="text-align:left">การวิเคราะห์ 3 ชั้น: Textual, Source Verification, Visual Anomaly</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="concepts/risk-scoring.html">concepts/risk-scoring</a></td>
+<td style="text-align:left">สูตรคำนวณ Overall Risk Score (Hybrid Worst-Case Approach), เกณฑ์ระดับความเสี่ยง และการรวมคะแนน</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="concepts/explainable-ai.html">concepts/explainable-ai</a></td>
+<td style="text-align:left">แนวทาง XAI: การสร้าง Heatmap, overlay ลงรูปภาพ และการแสดงผล UI</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="concepts/ai-model-segformer.html">concepts/ai-model-segformer</a></td>
+<td style="text-align:left">สถาปัตยกรรม SegFormer, MiT encoder, All-MLP decoder และ output ระดับพิกเซล</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="concepts/mmsegmentation.html">concepts/mmsegmentation</a></td>
+<td style="text-align:left">MMSegmentation Framework: สถาปัตยกรรมแบบโมดูลาร์, Backbone, Decode Head, Training Loss</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="concepts/surya-ocr.html">concepts/surya-ocr</a></td>
+<td style="text-align:left">สถาปัตยกรรม Surya OCR และการสกัดข้อความ</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="concepts/semantic-segmentation.html">concepts/semantic-segmentation</a></td>
+<td style="text-align:left">Semantic Segmentation — หลักการทำงานและการตรวจจับบริเวณที่ถูกดัดแปลง</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="concepts/model-training.html">concepts/model-training</a></td>
+<td style="text-align:left">AI Model Training Workflow ขั้นตอนการฝึกและเทรนโมเดล</td>
+</tr>
+</tbody>
+</table></div><hr>
+<h2 id="เอนทิตี">เอนทิตี</h2>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">หน้า</th>
+<th style="text-align:left">สรุป</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="entities/actors.html">entities/actors</a></td>
+<td style="text-align:left">ผู้ใช้ทั่วไปและ Admin/Researcher — บทบาทและรูปแบบการใช้งาน</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="entities/tech-stack.html">entities/tech-stack</a></td>
+<td style="text-align:left">สรุป Technology Stack ทั้งหมดพร้อมเหตุผลเชิงวิศวกรรม</td>
+</tr>
+</tbody>
+</table></div><hr>
+<h2 id="การตัดสินใจ">การตัดสินใจ</h2>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">หน้า</th>
+<th style="text-align:left">สรุป</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="decisions/technology-choices.html">decisions/technology-choices</a></td>
+<td style="text-align:left">การตัดสินใจเลือกเทคโนโลยีหลัก: Flutter, SegFormer, FastAPI, ONNX</td>
+</tr>
+</tbody>
+</table></div><hr>
+<h2 id="การวางแผน">การวางแผน</h2>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">หน้า</th>
+<th style="text-align:left">สรุป</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="planning/project-scope.html">planning/project-scope</a></td>
+<td style="text-align:left">4 Development Container, Work Package และงานที่ยังไม่ได้พัฒนา</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="planning/team.html">planning/team</a></td>
+<td style="text-align:left">สมาชิกทีม, ความรับผิดชอบ และข้อมูลอาจารย์ที่ปรึกษา</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="planning/backend-documentation.html">planning/backend-documentation</a></td>
+<td style="text-align:left">Backend Documentation คู่มือการเริ่มพัฒนาโค้ดฝั่ง Server</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="planning/task-tracking.html">planning/task-tracking</a></td>
+<td style="text-align:left">การติดตามงานและการบริหารโครงการ: กระดาน Jira SCM, สถานะรายเฟส และ Work Packages</td>
+</tr>
+</tbody>
+</table></div><hr>
+<h2 id="การทดสอบ">การทดสอบ</h2>
+<div class="table-wrap" role="region" aria-label="ตาราง เลื่อนแนวนอนได้" tabindex="0"><table><thead>
+<tr>
+<th style="text-align:left">หน้า</th>
+<th style="text-align:left">สรุป</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="testing/test-cases.html">testing/test-cases</a></td>
+<td style="text-align:left">กรณีทดสอบ manual ตาราง 10 คอลัมน์ IEEE 829/ISTQB, กฎ md-canonical + CSV ใน spreadsheets/<area>/, จำนวนเคสต่อไฟล์ และที่เก็บผลรัน tests_all/tests_report/</td>
+</tr>
+</tbody>
+</table></div></div></main>
+    <aside class="toc-wrap" aria-label="สารบัญในหน้านี้"><p class="toc-title">ในหน้านี้</p><ol class="toc"><li class="toc-level-2"><a href="#%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%A3%E0%B8%A7%E0%B8%A1">ภาพรวม</a></li><li class="toc-level-2"><a href="#%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%95%E0%B9%89%E0%B8%AD%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A">ความต้องการของระบบ</a></li><li class="toc-level-2"><a href="#%E0%B8%AA%E0%B8%96%E0%B8%B2%E0%B8%9B%E0%B8%B1%E0%B8%95%E0%B8%A2%E0%B8%81%E0%B8%A3%E0%B8%A3%E0%B8%A1">สถาปัตยกรรม</a></li><li class="toc-level-2"><a href="#%E0%B9%81%E0%B8%99%E0%B8%A7%E0%B8%84%E0%B8%B4%E0%B8%94%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B9%80%E0%B8%97%E0%B8%84%E0%B8%99%E0%B8%B4%E0%B8%84">แนวคิดและเทคนิค</a></li><li class="toc-level-2"><a href="#%E0%B9%80%E0%B8%AD%E0%B8%99%E0%B8%97%E0%B8%B4%E0%B8%95%E0%B8%B5">เอนทิตี</a></li><li class="toc-level-2"><a href="#%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%95%E0%B8%B1%E0%B8%94%E0%B8%AA%E0%B8%B4%E0%B8%99%E0%B9%83%E0%B8%88">การตัดสินใจ</a></li><li class="toc-level-2"><a href="#%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%A7%E0%B8%B2%E0%B8%87%E0%B9%81%E0%B8%9C%E0%B8%99">การวางแผน</a></li><li class="toc-level-2"><a href="#%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%97%E0%B8%94%E0%B8%AA%E0%B8%AD%E0%B8%9A">การทดสอบ</a></li></ol></aside>
   </div>
-  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title">
-    <div class="search-dialog-head"><label class="visually-hidden" id="search-title"
-        for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…"
-        autocomplete="off" data-search-input><button class="control" type="button" data-search-close
-        aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="m6 6 12 12M18 6 6 18" />
-        </svg></button></div>
-    <div class="search-results" data-search-results aria-live="polite"></div>
-  </dialog>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title"><div class="search-dialog-head"><label class="visually-hidden" id="search-title" for="docs-search">ค้นหาเอกสาร</label><input id="docs-search" type="search" placeholder="ค้นหาในเอกสารทั้งหมด…" autocomplete="off" data-search-input><button class="control" type="button" data-search-close aria-label="ปิดการค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div class="search-results" data-search-results aria-live="polite"></div></dialog>
   <script src="../assets/js/search-index.js"></script>
   <script src="../assets/js/site.js"></script>
 </body>
-
 </html>

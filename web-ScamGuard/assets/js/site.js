@@ -1,30 +1,43 @@
 (() => {
   const root = document.documentElement;
   const storageKey = 'scamguard-docs-theme';
+  const systemTheme = matchMedia('(prefers-color-scheme: dark)');
 
-  function preferredTheme() {
+  function selectedTheme() {
     try {
       const saved = localStorage.getItem(storageKey);
-      if (saved === 'light' || saved === 'dark') return saved;
+      if (saved === 'system' || saved === 'light' || saved === 'dark') return saved;
     } catch (_) { }
-    return matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    return 'system';
   }
 
-  function setTheme(theme) {
-    root.dataset.theme = theme;
-    document.querySelectorAll('[data-theme-label]').forEach((node) => {
-      node.textContent = theme === 'dark' ? 'โหมดสว่าง' : 'โหมดมืด';
-    });
-    document.querySelectorAll('[data-theme-toggle]').forEach((button) => {
-      button.setAttribute('aria-label', theme === 'dark' ? 'เปลี่ยนเป็นโหมดสว่าง' : 'เปลี่ยนเป็นโหมดมืด');
-    });
-    try { localStorage.setItem(storageKey, theme); } catch (_) { }
+  function resolveTheme(mode) {
+    return mode === 'system' ? (systemTheme.matches ? 'dark' : 'light') : mode;
   }
 
-  setTheme(preferredTheme());
+  function setTheme(mode, persist = true) {
+    if (!['system', 'light', 'dark'].includes(mode)) mode = 'system';
+    const resolved = resolveTheme(mode);
+    root.dataset.themeMode = mode;
+    root.dataset.theme = resolved;
+    document.querySelectorAll('[data-theme-option]').forEach((button) => {
+      const active = button.dataset.themeOption === mode;
+      button.classList.toggle('is-active', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
+    if (persist) {
+      try { localStorage.setItem(storageKey, mode); } catch (_) { }
+    }
+  }
 
-  document.querySelectorAll('[data-theme-toggle]').forEach((button) => {
-    button.addEventListener('click', () => setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark'));
+  setTheme(selectedTheme(), false);
+
+  document.querySelectorAll('[data-theme-option]').forEach((button) => {
+    button.addEventListener('click', () => setTheme(button.dataset.themeOption));
+  });
+
+  systemTheme.addEventListener('change', () => {
+    if (root.dataset.themeMode === 'system') setTheme('system', false);
   });
 
   const nav = document.querySelector('[data-docs-nav]');

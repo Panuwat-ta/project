@@ -198,25 +198,27 @@ function icon(name) {
   const paths = {
     shield: '<path d="M12 3 5.5 5.7v5.8c0 4.2 2.7 7.7 6.5 9.5 3.8-1.8 6.5-5.3 6.5-9.5V5.7L12 3Z"/><path d="m9.2 12 1.8 1.8 3.9-4.2"/>',
     search: '<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/>',
-    theme: '<path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.5A7 7 0 0 1 12 3Z"/>',
+    monitor: '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',
+    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>',
+    moon: '<path d="M20.5 14.2A8 8 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/>',
     menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
     close: '<path d="m6 6 12 12M18 6 6 18"/>'
   };
   return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]}</svg>`;
 }
 
-function navigation(docs, current, outputPath) {
+function navigation(docs, current, outputPath, prefix) {
   const groups = categoryOrder.map((category) => {
     const items = docs.filter((doc) => doc.category === category);
     if (!items.length) return '';
     const open = current?.category === category || !current;
     return `<details class="sidebar-group" ${open ? 'open' : ''}><summary>${categoryLabels[category]}</summary><ul class="sidebar-list">${items.map((doc) => `<li><a href="${linkTo(outputPath, doc.outputPath)}" ${current?.sourcePath === doc.sourcePath ? 'aria-current="page"' : ''}>${escapeHtml(doc.shortTitle)}</a></li>`).join('')}</ul></details>`;
   }).join('');
-  return `<aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><button class="control nav-close" type="button" data-nav-close>ปิดเมนู ${icon('close')}</button><p class="sidebar-title">เอกสารทั้งหมด</p>${groups}</aside><div class="nav-backdrop" data-nav-backdrop></div>`;
+  return `<aside class="sidebar" data-docs-nav data-open="false" aria-label="หมวดเอกสาร"><div class="sidebar-head"><a class="sidebar-brand" href="${prefix}index.html" aria-label="ScamGuard Documentation"><span class="brand brand-mark">${icon('shield')}</span><span class="sidebar-brand-name">ScamGuard Docs</span></a><div class="theme-switcher" role="group" aria-label="ธีมเว็บไซต์"><button type="button" data-theme-option="system" aria-label="ใช้ธีมตามระบบ" title="System">${icon('monitor')}</button><button type="button" data-theme-option="light" aria-label="ใช้โหมดสว่าง" title="Light">${icon('sun')}</button><button type="button" data-theme-option="dark" aria-label="ใช้โหมดมืด" title="Dark">${icon('moon')}</button></div></div><button class="control nav-close" type="button" data-nav-close>ปิดเมนู ${icon('close')}</button><button class="sidebar-search" type="button" data-search-open>${icon('search')}<span>Search...</span><kbd>Ctrl K</kbd></button><div class="sidebar-scroll">${groups}</div></aside><div class="nav-backdrop" data-nav-backdrop></div>`;
 }
 
 function masthead(prefix) {
-  return `<header class="masthead"><div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-label="เปิดเมนูเอกสาร">${icon('menu')}</button><a class="brand" href="${prefix}index.html">${icon('shield')}<span>ScamGuard <small>Documentation</small></span></a><div class="masthead-actions"><button class="control" type="button" data-search-open>${icon('search')}<span>ค้นหา</span><span class="search-shortcut">Ctrl K</span></button><button class="control" type="button" data-theme-toggle aria-label="เปลี่ยนเป็นโหมดมืด">${icon('theme')}<span class="theme-label" data-theme-label>โหมดมืด</span></button></div></div></header>`;
+  return `<header class="masthead"><div class="masthead-inner"><button class="control nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-label="เปิดเมนูเอกสาร">${icon('menu')}</button><nav class="top-tabs" aria-label="เมนูหลัก"><a href="${prefix}index.html">Guide</a><a href="${prefix}pages/architecture/system-architecture.html">Architecture</a><a href="${prefix}pages/architecture/backend-api.html">API Reference</a></nav></div></header>`;
 }
 
 function searchDialog() {
@@ -230,7 +232,7 @@ function tocMarkup(toc) {
 
 function layout({ title, description, prefix, docs, current, outputPath, article, toc = [], bodyClass = '' }) {
   return `<!doctype html>
-<html lang="th" data-theme="light">
+<html lang="th" data-theme="light" data-theme-mode="system">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -238,13 +240,13 @@ function layout({ title, description, prefix, docs, current, outputPath, article
   <meta name="color-scheme" content="light dark">
   <title>${escapeHtml(title)} | ScamGuard Documentation</title>
   <link rel="stylesheet" href="${prefix}assets/css/site.css">
-  <script>document.documentElement.dataset.theme=(()=>{try{return localStorage.getItem('scamguard-docs-theme')||'light'}catch(e){return'light'}})();window.SC_DOCS_ROOT='${prefix}';</script>
+  <script>(()=>{let m='system';try{m=localStorage.getItem('scamguard-docs-theme')||'system'}catch(e){}if(!['system','light','dark'].includes(m))m='system';const t=m==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;document.documentElement.dataset.themeMode=m;document.documentElement.dataset.theme=t})();window.SC_DOCS_ROOT='${prefix}';</script>
 </head>
 <body class="${bodyClass}">
   <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
   ${masthead(prefix)}
   <div class="docs-shell">
-    ${navigation(docs, current, outputPath)}
+    ${navigation(docs, current, outputPath, prefix)}
     <main class="article" id="main-content">${article}</main>
     <aside class="toc-wrap" aria-label="สารบัญในหน้านี้"><p class="toc-title">ในหน้านี้</p>${tocMarkup(toc)}</aside>
   </div>
@@ -342,12 +344,6 @@ async function copySourceMaterials() {
       await fs.copyFile(source, destination);
     } catch (_) { }
   }
-}
-
-function sourceLinks(doc) {
-  const links = [`<li><a href="${doc.prefix}sources/wiki/${escapeAttribute(doc.sourcePath)}">Markdown ต้นฉบับ: ${escapeHtml(doc.sourcePath)}</a></li>`];
-  for (const source of doc.sources) links.push(`<li>${escapeHtml(String(source))}</li>`);
-  return `<footer class="source-panel"><strong>แหล่งข้อมูลของหน้านี้</strong><ul>${links.join('')}</ul></footer>`;
 }
 
 function shortTitle(title) {
@@ -458,7 +454,7 @@ export async function build() {
     const prepared = preprocessCallouts(doc.content, md, env);
     const rendered = md.render(prepared, env);
     const lead = firstParagraph(doc.content);
-    const article = `<nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="${prefix}index.html">หน้าแรก</a><span aria-hidden="true">/</span><span>${categoryLabels[doc.category]}</span></nav><header class="article-header"><h1>${escapeHtml(doc.title)}</h1>${lead ? `<p class="article-lead">${escapeHtml(lead)}</p>` : ''}<div class="meta"><span>หมวด ${categoryLabels[doc.category]}</span>${doc.updated ? `<time datetime="${doc.updated}">อัปเดต ${doc.updated}</time>` : ''}<span>ต้นฉบับ ${escapeHtml(doc.sourcePath)}</span></div>${doc.tags.length ? `<div class="tags">${doc.tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}</header><div class="prose">${rendered}</div>${sourceLinks({ ...doc, prefix })}`;
+    const article = `<nav class="breadcrumbs" aria-label="เส้นทางเอกสาร"><a href="${prefix}index.html">หน้าแรก</a><span aria-hidden="true">/</span><span>${categoryLabels[doc.category]}</span></nav><header class="article-header"><h1>${escapeHtml(doc.title)}</h1>${lead ? `<p class="article-lead">${escapeHtml(lead)}</p>` : ''}<div class="meta"><span>หมวด ${categoryLabels[doc.category]}</span>${doc.updated ? `<time datetime="${doc.updated}">อัปเดต ${doc.updated}</time>` : ''}<span>ต้นฉบับ ${escapeHtml(doc.sourcePath)}</span></div>${doc.tags.length ? `<div class="tags">${doc.tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}</header><div class="prose">${rendered}</div>`;
     const html = layout({ title: doc.title, description: excerpt(doc.content), prefix, docs: rawDocs, current: doc, outputPath: doc.outputPath, article, toc: env.toc });
     const output = path.join(webRoot, doc.outputPath);
     await fs.mkdir(path.dirname(output), { recursive: true });
