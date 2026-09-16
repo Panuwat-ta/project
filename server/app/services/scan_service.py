@@ -1,4 +1,5 @@
 import os
+import asyncio
 import json
 from fastapi import UploadFile, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -174,14 +175,22 @@ async def process_image_background(scan_id, file_bytes: bytes, image_hash: str):
             # Broadcast ให้ dashboard/client เห็นผลรอบแรกทันที
             await manager.broadcast({"type": "refresh_dashboard"})
 
-            # Phase 2: XAI explanation ตามมาทีหลัง — พังก็ไม่ล้มสแกน ใช้ fallback แทน
+            # Phase 2: XAI explanation ตามมาทีหลัง — พัง/หมดเวลาก็ไม่ล้มสแกน ใช้ fallback แทน
             try:
-                xai_explanation = await run_in_threadpool(
-                    inference_service.generate_xai_explanation,
-                    region=anomaly_region,
-                    visual_score=visual_score,
-                    ai_gen_probability=ai_gen_probability,
-                    scam_keywords=found_keywords
+                xai_explanation = await asyncio.wait_for(
+                    run_in_threadpool(
+                        inference_service.generate_xai_explanation,
+                        region=anomaly_region,
+                        visual_score=visual_score,
+                        ai_gen_probability=ai_gen_probability,
+                        scam_keywords=found_keywords
+                    ),
+                    timeout=settings.XAI_TIMEOUT,
+                )
+            except (asyncio.TimeoutError, TimeoutError):
+                print(f"XAI timeout after {settings.XAI_TIMEOUT}s, using fallback")
+                xai_explanation = inference_service._fallback_xai_explanation(
+                    anomaly_region, visual_score, ai_gen_probability, found_keywords
                 )
             except Exception as e:
                 print(f"XAI phase failed, using fallback: {e}")

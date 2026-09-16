@@ -3,7 +3,14 @@ import base64
 import json
 import subprocess
 import sys
+import threading
 from app.core.config import settings
+
+# Llama instance ไม่ thread-safe: XAI ซ้อนกัน 2 Jobs -> ggml-cuda race -> SIGABRT
+# ตายทั้ง process (จับด้วย try ไม่ได้) ต้อง serialize ที่ต้นตอ
+_xai_lock = threading.Lock()
+# ย้ายโมเดล Surya ข้าม device ใน fallback ก็ต้องห้ามซ้อนกันเช่นกัน
+_ocr_device_lock = threading.Lock()
 
 class InferenceService:
     def __init__(self):
@@ -173,13 +180,14 @@ class InferenceService:
         )
 
         try:
-            output = self.xai_model(
-                prompt,
-                max_tokens=180,
-                temperature=0.2,
-                top_p=0.85,
-                stop=["<|im_end|>", "\n\n"]
-            )
+            with _xai_lock:
+                output = self.xai_model(
+                    prompt,
+                    max_tokens=180,
+                    temperature=0.2,
+                    top_p=0.85,
+                    stop=["<|im_end|>", "\n\n"]
+                )
             text = output["choices"][0]["text"].strip()
             # Clean up potential robotic artifacts
             text = text.replace("คำสำคัญที่พบในภาพไม่พบ", "ไม่พบคำสำคัญที่เกี่ยวข้องกับการหลอกลวง")
@@ -250,6 +258,7 @@ class InferenceService:
                 [img], [langs],
                 self.det_model, self.det_processor,
                 self.rec_model, self.rec_processor,
+                batch_size=settings.SURYA_REC_BATCH_SIZE,
             ))
 
         # รอบ 1: ภาพเต็มบน GPU
@@ -275,26 +284,55 @@ class InferenceService:
                 print(f"OCR still OOM at max-dim {max_dim}, trying smaller...")
 
         # รอบสุดท้าย: ย้าย recognition ลง CPU (ช้าแต่ผ่านชัวร์) แล้วย้ายกลับ
+        # ล็อกกันสแกนซ้อนกันย้ายโมเดลสวนทางกัน
         print("OCR falling back to CPU")
         assert self.det_model is not None and self.rec_model is not None
-        det_dev = next(self.det_model.parameters()).device
-        rec_dev = next(self.rec_model.parameters()).device
-        try:
-            if torch.cuda.is_available():
-                torch.cuda.empty_cache()
-            small = image.copy()
-            small.thumbnail((1024, 1024))
-            self.det_model.to("cpu")
-            self.rec_model.to("cpu")
-            return _attempt(small)
-        finally:
+        with _ocr_device_lock:
+            det_dev = next(self.det_model.parameters()).device
+            rec_dev = next(self.rec_model.parameters()).device
             try:
-                self.det_model.to(det_dev)
-                self.rec_model.to(rec_dev)
                 if torch.cuda.is_available():
                     torch.cuda.empty_cache()
+                small = image.copy()
+                small.thumbnail((1024, 1024))
+                self.det_model.to("cpu")
+                self.rec_model.to("cpu")
+                return _attempt(small)
+            finally:
+                try:
+                    self.det_model.to(det_dev)
+                    self.rec_model.to(rec_dev)
+                    if torch.cuda.is_available():
+                        torch.cuda.empty_cache()
+                except Exception as e:
+                    print(f"OCR failed to restore GPU models: {e}")
+
+    def _run_ocr_with_timeout(self, image_bytes: bytes) -> str:
+        """รัน OCR ทั้งก้อนพร้อม timeout (partial failure -> คืนสตริงว่างแล้วไปต่อ).
+
+        หมายเหตุ: thread ที่ค้างใน torch op ฆ่าจากข้างนอกไม่ได้ จะ leak ค้างไว้
+        แต่สแกนไม่ค้างตาม (ต่างจากเดิมที่รอไม่จำกัด)
+        """
+        import concurrent.futures
+        import io
+        from PIL import Image
+        from surya.ocr import run_ocr
+
+        if not self.det_model or not self.rec_model:
+            return ""
+
+        image = Image.open(io.BytesIO(image_bytes))
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+            future = pool.submit(self._run_ocr_fallback, run_ocr, image, ["th", "en"])
+            try:
+                return future.result(timeout=settings.OCR_TIMEOUT)
+            except concurrent.futures.TimeoutError:
+                print(f"OCR timeout after {settings.OCR_TIMEOUT}s, continuing without OCR text")
+                return ""
             except Exception as e:
-                print(f"OCR failed to restore GPU models: {e}")
+                print(f"Surya OCR error: {e}")
+                return ""
 
     def predict(self, image_bytes: bytes) -> dict:
         """
@@ -330,7 +368,22 @@ class InferenceService:
             )
             
             b64_image = base64.b64encode(image_bytes).decode('utf-8')
-            stdout, stderr = process.communicate(input=b64_image.encode('utf-8'))
+            try:
+                stdout, stderr = process.communicate(
+                    input=b64_image.encode('utf-8'),
+                    timeout=settings.ONNX_WORKER_TIMEOUT,
+                )
+            except subprocess.TimeoutExpired:
+                process.kill()
+                stdout, stderr = process.communicate()
+                print(f"ONNX worker timeout after {settings.ONNX_WORKER_TIMEOUT}s, using defaults")
+                return {
+                    "visual_risk_score": visual_risk_score,
+                    "ai_gen_probability": ai_gen_probability,
+                    "anomaly_region": "บริเวณที่น่าสงสัยในภาพ",
+                    "heatmap_bytes": heatmap_bytes,
+                    "ocr_text": self._run_ocr_with_timeout(image_bytes),
+                }
             
             if process.returncode == 0:
                 # Parse only the last line as JSON to ignore any other print statements
@@ -346,22 +399,8 @@ class InferenceService:
         except Exception as e:
             print(f"Failed to run ONNX worker: {e}")
             
-        # 2. Run Surya OCR (GPU → ย่อภาพ retry → CPU ตามลำดับ)
-        ocr_text = ""
-        if self.det_model and self.rec_model:
-            try:
-                from surya.ocr import run_ocr
-                import io
-                import torch
-                from PIL import Image
-
-                image = Image.open(io.BytesIO(image_bytes))
-
-                ocr_text = self._run_ocr_fallback(
-                    run_ocr, image, ["th", "en"]
-                )
-            except Exception as e:
-                print(f"Surya OCR error: {e}")
+        # 2. Run Surya OCR (GPU → ย่อภาพ retry → CPU ตามลำดับ, มี timeout)
+        ocr_text = self._run_ocr_with_timeout(image_bytes)
                 
         return {
             "visual_risk_score": visual_risk_score,

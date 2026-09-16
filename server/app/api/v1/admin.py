@@ -524,10 +524,10 @@ async def update_user(
         user_agent=request.headers.get("user-agent") if request else None,
     )
     return {
-        "id": user.id,
-        "email": user.email,
-        "role": user.role,
-        "is_active": user.is_active,
+        "id": user["id"],
+        "email": user["email"],
+        "role": user["role"],
+        "is_active": user["is_active"],
         "message": "อัปเดตข้อมูลผู้ใช้เรียบร้อยแล้ว"
     }
 
