@@ -103,13 +103,6 @@ export function Dashboard() {
     loadData();
   }, [loadData]);
 
-  // Live clock ticking every second, like a real clock.
-  const [now, setNow] = useState(() => new Date());
-  useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(id);
-  }, []);
-
   // WebSocket Live Updates (single connection + backoff reconnect)
   useDashboardWebSocket({
     onRefresh: () => loadData(false, true),
@@ -192,8 +185,7 @@ export function Dashboard() {
             </Badge>
           </h2>
           <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed font-mono">
-            {now.toLocaleTimeString("th-TH")}
-            {lastUpdated ? ` · อัปเดตข้อมูลล่าสุด: ${lastUpdated.toLocaleTimeString("th-TH")}` : ""}
+            {lastUpdated ? `อัปเดตข้อมูลล่าสุด: ${lastUpdated.toLocaleTimeString("th-TH")}` : ""}
           </p>
         </div>
 

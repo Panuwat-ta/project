@@ -18,6 +18,17 @@ async def lifespan(app: FastAPI):
     # Startup: สร้างตาราง DB, โหลด Model, etc.
     print(f"[Startup] {settings.APP_NAME} v{settings.APP_VERSION}")
     await init_redis()
+    # Auto-register local model versions missing from the registry.
+    # Never blocks startup: failures only log a warning.
+    try:
+        from app.core.database import async_session
+        from app.services.admin_service import sync_model_registry
+        async with async_session() as db:
+            added = await sync_model_registry(db)
+        if added:
+            print(f"[Startup] Auto-registered model versions: {', '.join(added)}")
+    except Exception as e:
+        print(f"[Startup] Model registry sync skipped: {e}")
     yield
     # Shutdown: ปิด connections
     print("[Shutdown] Cleaning up...")
