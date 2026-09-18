@@ -200,11 +200,26 @@ train_pipeline = [
     dict(type='PackSegInputs')
 ]
 
+# CopyPasteForgery scope: synthesis applies to every forged source, not just
+# copymove. Rationale: it is a general augmentation (ObjectFormer/DF2023
+# synthesize broadly during pretraining), masks stay exact so there is no
+# label noise, and per-source regressions are caught by Test-Case
+# per_category + FPR monitoring after training. To restrict synthesis to
+# specific sources (ablation), list them here, e.g.
+# frozenset({'face', 'realtext', 'aiforge', 'splicing', 'inpainting'}).
+# 'authentic' never gets synthesis (always uses authentic_train_pipeline).
+_NO_COPYPASTE_SOURCES = frozenset()
+
 # Authentic images deliberately contain no forgery; do not retry mixed-class crops
 # and do not synthesize forgery into them.
 authentic_train_pipeline = [
     dict(step, cat_max_ratio=1.0) if step['type'] == 'RandomCrop' else dict(step)
     for step in train_pipeline if step['type'] != 'CopyPasteForgery'
+]
+
+plain_train_pipeline = [
+    dict(step) for step in train_pipeline
+    if step['type'] != 'CopyPasteForgery'
 ]
 
 test_pipeline = [
@@ -263,7 +278,12 @@ train_repeat_factors = dict(
 
 def _train_ds(root):
     name = root.rstrip('/').rsplit('/', 1)[-1]
-    pipeline = authentic_train_pipeline if name == 'authentic' else train_pipeline
+    if name == 'authentic':
+        pipeline = authentic_train_pipeline
+    elif name in _NO_COPYPASTE_SOURCES:
+        pipeline = plain_train_pipeline
+    else:
+        pipeline = train_pipeline
     dataset = _ds(root, 'train', pipeline)
     repeats = train_repeat_factors[name]
     if repeats == 1:
