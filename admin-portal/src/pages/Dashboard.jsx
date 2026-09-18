@@ -10,7 +10,6 @@ import {
   Database,
   Cpu,
   ShieldCheck,
-  CheckCircle2,
   ArrowUpRight,
   TrendingUp,
 } from "lucide-react";
@@ -33,16 +32,14 @@ import { useDashboardWebSocket } from "@/lib/use-dashboard-ws";
 import { useAutoRefresh } from "@/lib/use-auto-refresh";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
 import { CardSkeleton } from "@/components/ui/Skeleton";
 import { useToast } from "@/components/ui/ToastContext";
-import { useTheme } from "@/components/theme-provider";
 import { formatNumber } from "@/lib/utils";
 
 const RISK_PALETTE = {
-  low: "#10b981",    // Emerald
-  medium: "#f59e0b", // Amber
-  high: "#f43f5e",   // Rose
+  low: "var(--chart-risk-low)",
+  medium: "var(--chart-risk-medium)",
+  high: "var(--chart-risk-high)",
 };
 
 const CATEGORY_LABELS = {
@@ -65,14 +62,6 @@ export function Dashboard() {
   const navigate = useNavigate();
   const toast = useToast();
   const { setIsWsConnected } = useOutletContext() || {};
-  const { theme } = useTheme();
-
-  const isDark =
-    theme === "dark" ||
-    (theme === "system" &&
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches);
-
   const loadData = useCallback(async (manual = false, quiet = false) => {
     try {
       if (manual) setIsRefreshing(true);
@@ -160,9 +149,9 @@ export function Dashboard() {
   // Risk Donut Data
   const riskTotal = (data.risk_distribution.low || 0) + (data.risk_distribution.medium || 0) + (data.risk_distribution.high || 0);
   const riskDonut = [
-    { name: "Low Risk", value: data.risk_distribution.low || 0, color: RISK_PALETTE.low },
-    { name: "Medium Risk", value: data.risk_distribution.medium || 0, color: RISK_PALETTE.medium },
-    { name: "High Risk", value: data.risk_distribution.high || 0, color: RISK_PALETTE.high },
+    { name: "ต่ำ", value: data.risk_distribution.low || 0, color: RISK_PALETTE.low },
+    { name: "กลาง", value: data.risk_distribution.medium || 0, color: RISK_PALETTE.medium },
+    { name: "สูง", value: data.risk_distribution.high || 0, color: RISK_PALETTE.high },
   ];
 
   // Category breakdown formatted
@@ -178,13 +167,10 @@ export function Dashboard() {
       {/* Top Header & Telemetry Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-           <h2 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2.5">
-            <span>ศูนย์ควบคุมและตรวจจับการหลอกลวง</span>
-            <Badge variant="primary" size="sm" withDot>
-              Real-time
-            </Badge>
+           <h2 className="text-xl font-bold tracking-tight text-foreground">
+            ภาพรวมระบบ
           </h2>
-          <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed font-mono">
+          <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
             {lastUpdated ? `อัปเดตข้อมูลล่าสุด: ${lastUpdated.toLocaleTimeString("th-TH")}` : ""}
           </p>
         </div>
@@ -197,34 +183,29 @@ export function Dashboard() {
             isLoading={isRefreshing}
             onClick={() => loadData(true)}
           >
-            รีเฟรชสถิติ
+            รีเฟรช
           </Button>
         </div>
       </div>
 
-      {/* System Infrastructure Telemetry Bar */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-3 rounded-xl bg-muted/40 border border-border text-xs font-mono">
+      {/* System status summary */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 rounded-xl bg-muted/40 border border-border text-[13px]">
         <div className="flex items-center gap-2">
           <Database className="size-4 text-primary shrink-0" />
-          <span className="text-muted-foreground font-semibold">Database:</span>
-          <span className="font-bold text-success">Connected</span>
+          <span className="text-muted-foreground font-medium">ฐานข้อมูล</span>
+          <span className="font-semibold text-success">ปกติ</span>
         </div>
         <div className="flex items-center gap-2">
           <Cpu className="size-4 text-primary shrink-0" />
-          <span className="text-muted-foreground font-semibold">AI Node:</span>
-          <span className="font-bold text-success">Ready (SegFormer)</span>
+          <span className="text-muted-foreground font-medium">โมเดล AI</span>
+          <span className="font-semibold text-success">พร้อมใช้งาน</span>
         </div>
         <div className="flex items-center gap-2">
           <ShieldCheck className="size-4 text-primary shrink-0" />
-          <span className="text-muted-foreground font-semibold">Model:</span>
-          <span className="font-bold text-foreground truncate">
+          <span className="text-muted-foreground font-medium">โมเดลที่ใช้งาน</span>
+          <span className="font-semibold font-mono text-foreground truncate">
             {data?.model?.active_version ? `SegFormer ${data.model.active_version}` : (health?.models ? "SegFormer v1.0.0" : "SegFormer-B2")}
           </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <CheckCircle2 className="size-4 text-success shrink-0" />
-          <span className="text-muted-foreground font-semibold">Status:</span>
-          <span className="font-bold text-success">All Operational</span>
         </div>
       </div>
 
@@ -233,18 +214,16 @@ export function Dashboard() {
         {/* KPI 1: Scan Velocity Today */}
         <Card className="hover:border-primary-border transition-all">
           <CardContent className="p-4 space-y-2">
-            <div className="flex items-center justify-between text-xs text-muted-foreground font-medium">
-              <span>สแกนวันนี้ (24h Velocity)</span>
+            <div className="flex items-center justify-between text-[13px] text-muted-foreground font-medium">
+              <span>สแกนวันนี้</span>
               <Zap className="size-4 text-primary" />
             </div>
             <div className="text-2xl font-bold font-mono text-foreground tracking-tight">
               {formatNumber(data.overview.scans_today)}
             </div>
-            <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-1 border-t border-border-subtle font-mono font-medium">
+            <div className="flex items-center justify-between text-xs text-muted-foreground pt-1 border-t border-border-subtle font-medium">
               <span>สะสมทั้งหมด</span>
-              <span className="font-bold text-foreground">
-                {formatNumber(data.overview.total_scans)} ครั้ง
-              </span>
+              <span className="font-bold text-foreground"><span className="font-mono">{formatNumber(data.overview.total_scans)}</span> ครั้ง</span>
             </div>
           </CardContent>
         </Card>
@@ -259,20 +238,20 @@ export function Dashboard() {
           onClick={() => navigate("/admin/reports?status=pending")}
         >
           <CardContent className="p-4 space-y-2">
-            <div className="flex items-center justify-between text-xs text-muted-foreground font-medium">
-              <span>ค้างการตรวจสอบ (Pending Queue)</span>
+            <div className="flex items-center justify-between text-[13px] text-muted-foreground font-medium">
+              <span>รอตรวจ</span>
               <Flag className="size-4 text-danger" />
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-2xl font-bold font-mono text-danger tracking-tight">
                 {formatNumber(data.reports.pending)}
               </span>
-              <span className="text-xs text-muted-foreground font-mono font-medium">
-                / {formatNumber(data.reports.reviewing)} กำลังตรวจ
+              <span className="text-xs text-muted-foreground font-medium">
+                / <span className="font-mono">{formatNumber(data.reports.reviewing)}</span> กำลังตรวจ
               </span>
             </div>
-            <div className="flex items-center justify-between text-[11px] text-danger font-semibold pt-1 border-t border-border-subtle">
-              <span>คลิกเพื่อเปิดคิวตรวจทันที</span>
+            <div className="flex items-center justify-between text-[13px] text-danger font-semibold pt-1 border-t border-border-subtle">
+              <span>เปิดรายการรอตรวจ</span>
               <ArrowUpRight className="size-3.5" />
             </div>
           </CardContent>
@@ -281,19 +260,19 @@ export function Dashboard() {
         {/* KPI 3: High Risk Anomaly Ratio */}
         <Card className="hover:border-warning-border transition-all">
           <CardContent className="p-4 space-y-2">
-            <div className="flex items-center justify-between text-xs text-muted-foreground font-medium">
-              <span>อัตราภาพเสี่ยงสูง (High Risk)</span>
+            <div className="flex items-center justify-between text-[13px] text-muted-foreground font-medium">
+              <span>ภาพความเสี่ยงสูง</span>
               <Activity className="size-4 text-warning" />
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-2xl font-bold font-mono text-warning tracking-tight">
                 {highRiskRatio}%
               </span>
-              <span className="text-xs text-muted-foreground font-mono font-medium">
-                ({formatNumber(data.risk_distribution.high)} ภาพ)
+              <span className="text-xs text-muted-foreground font-medium">
+                (<span className="font-mono">{formatNumber(data.risk_distribution.high)}</span> ภาพ)
               </span>
             </div>
-            <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-1 border-t border-border-subtle font-mono font-medium">
+            <div className="flex items-center justify-between text-xs text-muted-foreground pt-1 border-t border-border-subtle font-medium">
               <span>สัดส่วนความเสี่ยง</span>
               <span className="font-bold text-foreground">
                 L:{data.risk_distribution.low} M:{data.risk_distribution.medium} H:{data.risk_distribution.high}
@@ -305,18 +284,16 @@ export function Dashboard() {
         {/* KPI 4: Active Registered Users */}
         <Card className="hover:border-primary-border transition-all">
           <CardContent className="p-4 space-y-2">
-            <div className="flex items-center justify-between text-xs text-muted-foreground font-medium">
-              <span>ผู้ใช้งานวันนี้ (Active Users)</span>
+            <div className="flex items-center justify-between text-[13px] text-muted-foreground font-medium">
+              <span>ผู้ใช้งานวันนี้</span>
               <Users className="size-4 text-primary" />
             </div>
             <div className="text-2xl font-bold font-mono text-foreground tracking-tight">
               {formatNumber(data.overview.active_users_today)}
             </div>
-            <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-1 border-t border-border-subtle font-mono font-medium">
+            <div className="flex items-center justify-between text-xs text-muted-foreground pt-1 border-t border-border-subtle font-medium">
               <span>บัญชีทั้งหมด</span>
-              <span className="font-bold text-foreground">
-                {formatNumber(data.overview.total_users)} บัญชี
-              </span>
+              <span className="font-bold text-foreground"><span className="font-mono">{formatNumber(data.overview.total_users)}</span> บัญชี</span>
             </div>
           </CardContent>
         </Card>
@@ -330,10 +307,10 @@ export function Dashboard() {
             <div>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="size-4 text-primary" />
-                <span>แนวโน้มปริมาณการสแกนรูปภาพ (Scan Trend)</span>
+                <span>แนวโน้มการสแกน</span>
               </CardTitle>
               <p className="text-xs text-muted-foreground mt-0.5">
-                สถิติการส่งรูปภาพตรวจจับความผิดปกติรายวัน
+                จำนวนการสแกนรายวัน
               </p>
             </div>
           </CardHeader>
@@ -346,44 +323,43 @@ export function Dashboard() {
                 >
                   <defs>
                     <linearGradient id="scanGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={isDark ? "#00e5ff" : "#0e7490"} stopOpacity={0.4} />
-                      <stop offset="95%" stopColor={isDark ? "#00e5ff" : "#0e7490"} stopOpacity={0.0} />
+                      <stop offset="5%" stopColor="var(--chart-primary)" stopOpacity={0.4} />
+                      <stop offset="95%" stopColor="var(--chart-primary)" stopOpacity={0.0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#1e293b" : "#e2e8f0"} opacity={0.7} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" opacity={0.7} />
                   <XAxis
                     dataKey="date"
-                    tick={{ fontSize: 11, fill: isDark ? "#94a3b8" : "#475569" }}
+                    tick={{ fontSize: 12, fill: "var(--chart-axis)" }}
                     tickLine={false}
-                    axisLine={{ stroke: isDark ? "#334155" : "#cbd5e1" }}
+                    axisLine={{ stroke: "var(--chart-axis-line)" }}
                   />
                   <YAxis
-                    tick={{ fontSize: 11, fill: isDark ? "#94a3b8" : "#475569" }}
+                    tick={{ fontSize: 12, fill: "var(--chart-axis)" }}
                     tickLine={false}
-                    axisLine={{ stroke: isDark ? "#334155" : "#cbd5e1" }}
+                    axisLine={{ stroke: "var(--chart-axis-line)" }}
                   />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: isDark ? "#0f172a" : "#ffffff",
-                      borderColor: isDark ? "#334155" : "#cbd5e1",
+                      backgroundColor: "var(--chart-tooltip-bg)",
+                      borderColor: "var(--chart-tooltip-border)",
                       borderRadius: "0.5rem",
-                      fontSize: "12px",
-                      color: isDark ? "#f8fafc" : "#0f172a",
-                      boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                      fontFamily: "var(--font-mono)",
+                      fontSize: "13px",
+                      color: "var(--foreground)",
+                      boxShadow: "var(--chart-tooltip-shadow)",
                     }}
                   />
                   <Area
                     type="monotone"
                     dataKey="count"
                     name="จำนวนสแกน"
-                    stroke={isDark ? "#00e5ff" : "#0e7490"}
+                    stroke="var(--chart-primary)"
                     strokeWidth={2}
                     fillOpacity={1}
                     fill="url(#scanGradient)"
                     isAnimationActive={false}
-                    dot={{ r: 3, fill: isDark ? "#00e5ff" : "#0e7490" }}
-                    activeDot={{ r: 5, fill: isDark ? "#00e5ff" : "#0e7490" }}
+                    dot={{ r: 3, fill: "var(--chart-primary)" }}
+                    activeDot={{ r: 5, fill: "var(--chart-primary)" }}
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -395,7 +371,7 @@ export function Dashboard() {
         <Card>
           <CardHeader>
             <div>
-              <CardTitle>การกระจายระดับความเสี่ยง (Risk Tiers)</CardTitle>
+              <CardTitle>ระดับความเสี่ยง</CardTitle>
               <p className="text-xs text-muted-foreground mt-0.5">
                 เกณฑ์ 3 ระดับ: ต่ำ, ปานกลาง, สูง
               </p>
@@ -425,9 +401,9 @@ export function Dashboard() {
                         backgroundColor: "var(--card)",
                         borderColor: "var(--border)",
                         borderRadius: "0.5rem",
-                        fontSize: "12px",
+                        fontSize: "13px",
                         color: "var(--foreground)",
-                        boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                        boxShadow: "var(--chart-tooltip-shadow)",
                       }}
                     />
                   </PieChart>
@@ -436,19 +412,19 @@ export function Dashboard() {
                   <span className="text-xl font-bold font-mono text-foreground">
                     {formatNumber(riskTotal)}
                   </span>
-                  <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">ทั้งหมด</span>
+                  <span className="text-xs text-muted-foreground font-medium">ทั้งหมด</span>
                 </div>
               </div>
 
               {/* Level bars */}
-              <div className="flex-1 w-full space-y-3 font-mono">
+              <div className="flex-1 w-full space-y-3">
                 {[
                   { label: "สูง", value: data.risk_distribution.high || 0, color: RISK_PALETTE.high },
                   { label: "กลาง", value: data.risk_distribution.medium || 0, color: RISK_PALETTE.medium },
                   { label: "ต่ำ", value: data.risk_distribution.low || 0, color: RISK_PALETTE.low },
                 ].map((row) => (
                   <div key={row.label} className="flex items-center gap-3">
-                    <span className="w-8 shrink-0 text-xs text-muted-foreground font-sans">{row.label}</span>
+                    <span className="w-10 shrink-0 text-[13px] text-muted-foreground font-sans">{row.label}</span>
                     <div className="flex-1 h-2.5 rounded-full bg-muted overflow-hidden">
                       <div
                         className="h-full rounded-full"
@@ -458,7 +434,7 @@ export function Dashboard() {
                         }}
                       />
                     </div>
-                    <span className="w-8 shrink-0 text-right text-sm font-bold text-foreground">
+                    <span className="w-8 shrink-0 text-right text-sm font-mono font-bold text-foreground">
                       {formatNumber(row.value)}
                     </span>
                   </div>
@@ -482,9 +458,9 @@ export function Dashboard() {
           </Button>
         }>
           <div>
-            <CardTitle>จำแนกตามประเภทการหลอกลวง (Scam Categories)</CardTitle>
+            <CardTitle>ประเภทการหลอกลวง</CardTitle>
             <p className="text-xs text-muted-foreground mt-0.5">
-              การกระจายตัวของภาพหลอกลวงที่ตรวจพบในระบบ
+              จำนวนรายการในแต่ละประเภท
             </p>
           </div>
         </CardHeader>
@@ -495,26 +471,26 @@ export function Dashboard() {
                 data={categoryData}
                 margin={{ top: 10, right: 10, left: -20, bottom: 20 }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#1e293b" : "#e2e8f0"} opacity={0.7} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" opacity={0.7} />
                 <XAxis
                   dataKey="name"
-                  tick={{ fontSize: 11, fill: isDark ? "#94a3b8" : "#475569" }}
+                  tick={{ fontSize: 12, fill: "var(--chart-axis)" }}
                   interval={0}
                   angle={-15}
                   textAnchor="end"
                 />
-                <YAxis tick={{ fontSize: 11, fill: isDark ? "#94a3b8" : "#475569" }} />
+                <YAxis tick={{ fontSize: 12, fill: "var(--chart-axis)" }} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: isDark ? "#0f172a" : "#ffffff",
-                    borderColor: isDark ? "#334155" : "#cbd5e1",
+                    backgroundColor: "var(--chart-tooltip-bg)",
+                    borderColor: "var(--chart-tooltip-border)",
                     borderRadius: "0.5rem",
-                    fontSize: "12px",
-                    color: isDark ? "#f8fafc" : "#0f172a",
-                    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                    fontSize: "13px",
+                    color: "var(--foreground)",
+                    boxShadow: "var(--chart-tooltip-shadow)",
                   }}
                 />
-                <Bar dataKey="count" name="จำนวนคดี" fill={isDark ? "#0ea5e9" : "#0284c7"} radius={[4, 4, 0, 0]} isAnimationActive={false} />
+                <Bar dataKey="count" name="จำนวนคดี" fill="var(--chart-secondary)" radius={[4, 4, 0, 0]} isAnimationActive={false} />
               </BarChart>
             </ResponsiveContainer>
           </div>

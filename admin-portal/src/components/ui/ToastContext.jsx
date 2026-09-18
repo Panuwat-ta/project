@@ -42,7 +42,7 @@ export function ToastProvider({ children }) {
   return (
     <ToastContext.Provider value={toast}>
       {children}
-      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none p-2">
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none p-2" aria-live="polite" aria-atomic="true">
         {toasts.map((t) => {
           const icons = {
             success: <CheckCircle2 className="size-4 text-success shrink-0 mt-0.5" />,
@@ -61,6 +61,7 @@ export function ToastProvider({ children }) {
           return (
             <div
               key={t.id}
+              role="status"
               className={cn(
                 "pointer-events-auto flex items-start gap-3 p-3.5 rounded-lg border shadow-xl backdrop-blur-md transition-all animate-in slide-in-from-bottom-3 duration-200",
                 borders[t.type] || "border-border bg-card text-foreground"
@@ -74,7 +75,7 @@ export function ToastProvider({ children }) {
               <button
                 onClick={() => removeToast(t.id)}
                 className="opacity-70 hover:opacity-100 transition-opacity p-0.5"
-                aria-label="Close notification"
+                aria-label="ปิดการแจ้งเตือน"
               >
                 <X className="size-3.5" />
               </button>

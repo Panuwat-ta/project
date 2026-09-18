@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, RefreshCw, Eye, Ban, CheckCircle2 } from "lucide-react";
+import { RefreshCw, Eye, Ban, CheckCircle2 } from "lucide-react";
 import { fetchUsers, updateUserStatus } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -8,7 +8,7 @@ import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell, TableEmp
 import { StatusBadge, Badge } from "@/components/ui/Badge";
 import { TableSkeleton } from "@/components/ui/Skeleton";
 import { Modal } from "@/components/ui/Modal";
-import { Textarea } from "@/components/ui/Input";
+import { SearchInput, Textarea } from "@/components/ui/Input";
 import { useToast } from "@/components/ui/ToastContext";
 import { formatDate, formatNumber } from "@/lib/utils";
 import { useAutoRefresh } from "@/lib/use-auto-refresh";
@@ -98,7 +98,7 @@ export function UsersList() {
 
   const handleUpdateStatus = async () => {
     if (!reason.trim()) {
-      setReasonError("กรุณาระบุเหตุผลในการดำเนินการเพื่อบันทึกลง Audit Log");
+      setReasonError("กรุณาระบุเหตุผล เหตุผลนี้จะถูกบันทึกไว้ในประวัติระบบ");
       return;
     }
 
@@ -127,10 +127,10 @@ export function UsersList() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold tracking-tight text-foreground">
-            การจัดการผู้ใช้งาน (User Management)
+            ผู้ใช้งาน
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            ตรวจสอบประวัติการใช้งาน บัญชีผู้ส่งรายงาน และมาตรการระงับบัญชี (Ban/Unban)
+            ดูข้อมูลผู้ใช้และจัดการสถานะบัญชี
           </p>
         </div>
 
@@ -142,7 +142,7 @@ export function UsersList() {
             isLoading={isRefreshing}
             onClick={() => loadUsers(true)}
           >
-            รีเฟรชรายชื่อ
+            รีเฟรช
           </Button>
         </div>
       </div>
@@ -150,18 +150,15 @@ export function UsersList() {
       {/* Filter and Table Card */}
       <Card>
         <div className="p-4 flex items-center justify-between gap-4 border-b border-border-subtle">
-          <div className="relative w-full sm:w-80">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
-            <input
-              type="search"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="ค้นหาชื่อ, อีเมล, หรือ User ID..."
-              className="w-full pl-8 pr-3 py-1.5 bg-card border border-input text-xs text-foreground placeholder:text-muted-foreground rounded-lg outline-none focus:border-ring focus:ring-1 focus:ring-ring transition-all font-mono"
-            />
-          </div>
+          <SearchInput
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="ค้นหาชื่อ อีเมล หรือรหัสผู้ใช้..."
+            containerClassName="sm:w-80"
+            aria-label="ค้นหาผู้ใช้งาน"
+          />
 
-          <div className="text-xs font-mono text-muted-foreground hidden sm:block">
+          <div className="text-xs text-muted-foreground hidden sm:block">
             ผู้ใช้ทั้งหมด: <span className="font-bold text-foreground">{formatNumber(total)}</span> บัญชี
           </div>
         </div>
@@ -173,9 +170,9 @@ export function UsersList() {
             <Table>
               <TableHeader>
                 <TableRow isHoverable={false}>
-                  <TableHead>User ID</TableHead>
+                  <TableHead>รหัสผู้ใช้</TableHead>
                   <TableHead>ข้อมูลผู้ใช้งาน</TableHead>
-                  <TableHead>สิทธิ์ (Role)</TableHead>
+                  <TableHead>สิทธิ์</TableHead>
                   <TableHead>สถานะ</TableHead>
                   <TableHead>สแกนสะสม</TableHead>
                   <TableHead>วันที่ลงทะเบียน</TableHead>
@@ -195,16 +192,16 @@ export function UsersList() {
                         onClick={() => navigate(`/admin/users/${user.id}`)}
                       >
                         {/* ID */}
-                        <TableCell className="font-mono text-xs font-semibold text-foreground">
+                        <TableCell className="font-mono text-[13px] font-semibold text-foreground">
                           #{user.id}
                         </TableCell>
 
                         {/* Name / Email */}
                         <TableCell>
-                          <div className="text-xs font-medium text-foreground">
+                          <div className="text-[13px] font-medium text-foreground">
                             {user.full_name || "ไม่มีชื่อระบุ"}
                           </div>
-                          <div className="text-[10px] font-mono text-muted-foreground font-medium">{user.email}</div>
+                          <div className="text-xs font-mono text-muted-foreground font-medium">{user.email}</div>
                         </TableCell>
 
                         {/* Role */}
@@ -220,12 +217,12 @@ export function UsersList() {
                         </TableCell>
 
                         {/* Total Scans */}
-                        <TableCell className="font-mono text-xs text-foreground">
+                        <TableCell className="font-mono text-[13px] text-foreground">
                           {formatNumber(user.total_scans ?? user.scans_count ?? 0)} ครั้ง
                         </TableCell>
 
                         {/* Created At */}
-                        <TableCell className="text-xs text-muted-foreground font-mono whitespace-nowrap">
+                        <TableCell className="text-[13px] text-muted-foreground font-mono whitespace-nowrap">
                           {formatDate(user.created_at)}
                         </TableCell>
 
@@ -259,7 +256,7 @@ export function UsersList() {
                                   onClick={() => openStatusModal(user, true)}
                                   className="text-success border-success-border hover:bg-success-subtle"
                                 >
-                                  ปลดแบน
+                                  ปลดระงับ
                                 </Button>
                               )
                             )}
@@ -315,7 +312,7 @@ export function UsersList() {
       >
         <div className="space-y-4 pt-2">
           <Textarea
-            label="เหตุผลในการดำเนินการ (Audit Reason) *"
+            label="เหตุผลในการดำเนินการ *"
             required
             value={reason}
             onChange={(e) => {

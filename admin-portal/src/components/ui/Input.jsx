@@ -3,11 +3,11 @@ import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Input = forwardRef(
-  ({ className, type = "text", error, label, helperText, icon: Icon, ...props }, ref) => {
+  ({ className, containerClassName, type = "text", error, label, helperText, icon: Icon, ...props }, ref) => {
     return (
-      <div className="w-full space-y-1.5">
+      <div className={cn("w-full space-y-1.5", containerClassName)}>
         {label && (
-          <label className="block text-xs font-semibold text-foreground">
+          <label className="block text-[13px] font-semibold text-foreground">
             {label}
           </label>
         )}
@@ -21,9 +21,9 @@ export const Input = forwardRef(
             ref={ref}
             type={type}
             className={cn(
-              "w-full rounded-md border border-input bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground transition-colors outline-none focus:border-ring focus:ring-1 focus:ring-ring disabled:opacity-50 disabled:bg-muted",
+              "w-full h-10 rounded-md border border-input bg-card px-3 text-sm text-foreground placeholder:text-muted-foreground transition-colors outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/35 disabled:opacity-50 disabled:bg-muted",
               Icon && "pl-9",
-              error && "border-danger focus:border-danger focus:ring-danger",
+              error && "border-danger focus-visible:border-danger focus-visible:ring-danger/35",
               className
             )}
             {...props}
@@ -40,9 +40,9 @@ export const Input = forwardRef(
 Input.displayName = "Input";
 
 export const SearchInput = forwardRef(
-  ({ className, value, onChange, placeholder = "Search...", ...props }, ref) => {
+  ({ className, containerClassName, value, onChange, placeholder = "Search...", ...props }, ref) => {
     return (
-      <div className="relative w-full">
+      <div className={cn("relative w-full", containerClassName)}>
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
         <input
           ref={ref}
@@ -51,7 +51,7 @@ export const SearchInput = forwardRef(
           onChange={onChange}
           placeholder={placeholder}
           className={cn(
-            "w-full rounded-md border border-input bg-card pl-9 pr-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground transition-colors outline-none focus:border-ring focus:ring-1 focus:ring-ring",
+            "w-full h-9 rounded-md border border-input bg-card pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground transition-colors outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/35",
             className
           )}
           {...props}
@@ -63,19 +63,19 @@ export const SearchInput = forwardRef(
 SearchInput.displayName = "SearchInput";
 
 export const Select = forwardRef(
-  ({ className, label, error, helperText, children, ...props }, ref) => {
+  ({ className, containerClassName, label, error, helperText, children, ...props }, ref) => {
     return (
-      <div className="w-full space-y-1.5">
+      <div className={cn("w-full space-y-1.5", containerClassName)}>
         {label && (
-          <label className="block text-xs font-semibold text-foreground">
+          <label className="block text-[13px] font-semibold text-foreground">
             {label}
           </label>
         )}
         <select
           ref={ref}
           className={cn(
-            "w-full rounded-md border border-input bg-card px-3 py-2 text-sm text-foreground transition-colors outline-none focus:border-ring focus:ring-1 focus:ring-ring disabled:opacity-50",
-            error && "border-danger focus:border-danger focus:ring-danger",
+            "w-full h-9 rounded-md border border-input bg-card px-3 text-sm text-foreground transition-colors outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/35 disabled:opacity-50",
+            error && "border-danger focus-visible:border-danger focus-visible:ring-danger/35",
             className
           )}
           {...props}
@@ -93,11 +93,11 @@ export const Select = forwardRef(
 Select.displayName = "Select";
 
 export const Textarea = forwardRef(
-  ({ className, label, error, helperText, rows = 3, ...props }, ref) => {
+  ({ className, containerClassName, label, error, helperText, rows = 3, ...props }, ref) => {
     return (
-      <div className="w-full space-y-1.5">
+      <div className={cn("w-full space-y-1.5", containerClassName)}>
         {label && (
-          <label className="block text-xs font-semibold text-foreground">
+          <label className="block text-[13px] font-semibold text-foreground">
             {label}
           </label>
         )}
@@ -105,8 +105,8 @@ export const Textarea = forwardRef(
           ref={ref}
           rows={rows}
           className={cn(
-            "w-full rounded-md border border-input bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground transition-colors outline-none focus:border-ring focus:ring-1 focus:ring-ring disabled:opacity-50",
-            error && "border-danger focus:border-danger focus:ring-danger",
+            "w-full rounded-md border border-input bg-card px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground transition-colors outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/35 disabled:opacity-50",
+            error && "border-danger focus-visible:border-danger focus-visible:ring-danger/35",
             className
           )}
           {...props}

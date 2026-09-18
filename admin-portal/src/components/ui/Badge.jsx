@@ -36,7 +36,7 @@ export function Badge({
   };
 
   const sizes = {
-    sm: "text-[10px] px-1.5 py-0.5 gap-1",
+    sm: "text-xs px-1.5 py-0.5 gap-1",
     md: "text-xs px-2.5 py-0.5 gap-1.5",
     lg: "text-xs px-3 py-1 gap-2",
   };
@@ -68,20 +68,20 @@ export function RiskBadge({ score, className }) {
   const numericScore = typeof score === "number" ? score : Number(score) || 0;
 
   let variant = "success";
-  let label = "LOW";
+  let label = "ต่ำ";
 
   if (numericScore >= 70) {
     variant = "danger";
-    label = "HIGH";
+    label = "สูง";
   } else if (numericScore >= 40) {
     variant = "warning";
-    label = "MEDIUM";
+    label = "กลาง";
   }
 
   return (
-    <Badge variant={variant} withDot className={cn("font-semibold font-mono", className)}>
+    <Badge variant={variant} withDot className={cn("font-semibold", className)}>
       <span>{label}</span>
-      <span className="opacity-80">({numericScore})</span>
+      <span className="opacity-80 font-mono">({numericScore})</span>
     </Badge>
   );
 }
@@ -90,19 +90,19 @@ export function StatusBadge({ status, className }) {
   const s = String(status || "").toLowerCase();
 
   const config = {
-    pending: { variant: "info", label: "Pending", withDot: true },
-    reviewing: { variant: "warning", label: "Reviewing", withDot: true },
-    approved: { variant: "success", label: "Approved", withDot: true },
-    rejected: { variant: "danger", label: "Rejected", withDot: true },
-    active: { variant: "success", label: "Active", withDot: true },
-    banned: { variant: "danger", label: "Banned", withDot: true },
-    deployed: { variant: "primary", label: "Active Model", withDot: true },
-    staged: { variant: "default", label: "Staged", withDot: false },
-    queued: { variant: "info", label: "Queued", withDot: true },
-    running: { variant: "warning", label: "Running", withDot: true },
-    succeeded: { variant: "success", label: "Succeeded", withDot: true },
-    failed: { variant: "danger", label: "Failed", withDot: true },
-    cancelled: { variant: "default", label: "Cancelled", withDot: false },
+    pending: { variant: "info", label: "รอตรวจ", withDot: true },
+    reviewing: { variant: "warning", label: "กำลังตรวจ", withDot: true },
+    approved: { variant: "success", label: "ยืนยันแล้ว", withDot: true },
+    rejected: { variant: "danger", label: "ปฏิเสธ", withDot: true },
+    active: { variant: "success", label: "ใช้งาน", withDot: true },
+    banned: { variant: "danger", label: "ระงับ", withDot: true },
+    deployed: { variant: "primary", label: "กำลังใช้งาน", withDot: true },
+    staged: { variant: "default", label: "รอใช้งาน", withDot: false },
+    queued: { variant: "info", label: "รอคิว", withDot: true },
+    running: { variant: "warning", label: "กำลังทำงาน", withDot: true },
+    succeeded: { variant: "success", label: "สำเร็จ", withDot: true },
+    failed: { variant: "danger", label: "ล้มเหลว", withDot: true },
+    cancelled: { variant: "default", label: "ยกเลิก", withDot: false },
   };
 
   const item = config[s] || { variant: "default", label: status, withDot: false };

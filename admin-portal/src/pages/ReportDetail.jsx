@@ -79,7 +79,7 @@ export function ReportDetail() {
     try {
       const updated = await startReviewReport(report.id, report.version);
       setReport(updated);
-      toast.success("เปลี่ยนสถานะเป็น 'กำลังตรวจสอบ (Reviewing)' เรียบร้อยแล้ว");
+      toast.success("เริ่มตรวจสอบรายงานแล้ว");
     } catch (err) {
       if (err.status === 409) {
         toast.error("ข้อมูลถูกแก้ไขโดยผู้ดูแลท่านอื่นแล้ว กรุณารีเฟรชหน้าจอ");
@@ -123,8 +123,8 @@ export function ReportDetail() {
       closeDecisionModal();
       toast.success(
         decision === "approved"
-          ? "ยืนยันรายงานว่าเป็นภาพหลอกลวง (Approved) สำเร็จ"
-          : "ปฏิเสธรายงาน (Rejected) สำเร็จ"
+          ? "ยืนยันรายงานว่าเป็นการหลอกลวงแล้ว"
+          : "ปฏิเสธรายงานแล้ว"
       );
     } catch (err) {
       if (err.status === 409) {
@@ -191,15 +191,15 @@ export function ReportDetail() {
             <ArrowLeft className="size-4" />
           </button>
           <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold font-mono tracking-tight text-foreground">
-                รายงานตรวจสอบ #{report.id}
+            <div className="flex flex-wrap items-center gap-2">
+              <h2 className="text-xl font-bold tracking-tight text-foreground">
+                รายงาน <span className="font-mono">#{report.id}</span>
               </h2>
               <StatusBadge status={report.status} />
               <RiskBadge score={report.scan?.total_risk_score} />
             </div>
-            <p className="text-xs text-muted-foreground mt-0.5 font-mono">
-              ส่งตรวจเมื่อ: {formatDate(report.created_at)}
+            <p className="text-xs text-muted-foreground mt-0.5">
+              ส่งตรวจเมื่อ <span className="font-mono">{formatDate(report.created_at)}</span>
             </p>
           </div>
         </div>
@@ -214,7 +214,7 @@ export function ReportDetail() {
               isLoading={isStartingReview}
               onClick={handleStartReview}
             >
-              รับเรื่องตรวจ (Start Review)
+              เริ่มตรวจสอบ
             </Button>
           )}
 
@@ -226,7 +226,7 @@ export function ReportDetail() {
                 icon={XCircle}
                 onClick={() => openDecisionModal("rejected")}
               >
-                ปัดตกรายงาน (Reject)
+                ปฏิเสธ
               </Button>
 
               <Button
@@ -235,7 +235,7 @@ export function ReportDetail() {
                 icon={CheckCircle2}
                 onClick={() => openDecisionModal("approved")}
               >
-                ยืนยัน Scam (Approve)
+                ยืนยันว่าเป็นการหลอกลวง
               </Button>
             </>
           )}
@@ -249,7 +249,7 @@ export function ReportDetail() {
           <HeatmapComparator
             originalUrl={report.scan?.raw_image_url}
             heatmapUrl={report.scan?.heatmap_image_url}
-            title="การพิสูจน์ภาพตัดต่อ / AI Deepfake (SegFormer Anomaly)"
+            title="จุดผิดปกติที่โมเดลตรวจพบ"
           />
 
           {/* Submitter Note & Reason */}
@@ -257,7 +257,7 @@ export function ReportDetail() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="size-4 text-primary" />
-                <span>คำอธิบายจากผู้ส่งรายงาน (User Description)</span>
+                <span>รายละเอียดจากผู้รายงาน</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -267,8 +267,8 @@ export function ReportDetail() {
 
               {report.admin_note && (
                 <div className="space-y-1">
-                  <div className="text-xs font-semibold text-foreground">บันทึกของเจ้าหน้าที่ (Admin Note):</div>
-                  <div className="p-3 rounded-lg bg-primary-subtle border border-primary-border text-xs text-primary font-mono font-medium">
+                  <div className="text-[13px] font-semibold text-foreground">บันทึกของผู้ตรวจ</div>
+                  <div className="p-3 rounded-lg bg-primary-subtle border border-primary-border text-sm text-foreground">
                     {report.admin_note}
                   </div>
                 </div>
@@ -284,15 +284,15 @@ export function ReportDetail() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Layers className="size-4 text-primary" />
-                <span>การวิเคราะห์หลายชั้น (Multi-layer Analysis)</span>
+                <span>ผลการวิเคราะห์</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Layer 1: Visual Anomaly (SegFormer AI) */}
               <div className="p-3.5 rounded-lg bg-muted/40 border border-border space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-foreground">
-                    1. Visual Anomaly (SegFormer AI)
+                  <span className="text-[13px] font-semibold text-foreground">
+                    ความผิดปกติของภาพ
                   </span>
                   <Badge variant={multiLayer.visual_anomaly?.score >= 70 ? "danger" : "primary"} size="sm">
                     {multiLayer.visual_anomaly?.score ?? report.scan?.total_risk_score ?? 0}%
@@ -306,8 +306,8 @@ export function ReportDetail() {
               {/* Layer 2: Textual OCR (Surya OCR) */}
               <div className="p-3.5 rounded-lg bg-muted/40 border border-border space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-foreground">
-                    2. Textual / OCR Analysis (Surya)
+                  <span className="text-[13px] font-semibold text-foreground">
+                    ข้อความในภาพ (OCR)
                   </span>
                   <Badge variant={multiLayer.textual_analysis?.score >= 70 ? "danger" : "default"} size="sm">
                     {multiLayer.textual_analysis?.score ?? 0}%
@@ -317,7 +317,7 @@ export function ReportDetail() {
                   {multiLayer.textual_analysis?.summary || "สกัดข้อความในภาพเพื่อตรวจสอบคำต้องสงสัยและรูปแบบข้อความหลอกลวง"}
                 </p>
                 {multiLayer.textual_analysis?.extracted_text && (
-                  <div className="p-2 rounded bg-muted border border-border text-[11px] font-mono text-foreground max-h-24 overflow-y-auto">
+                  <div className="p-2 rounded bg-muted border border-border text-xs font-mono text-foreground max-h-24 overflow-y-auto">
                     {multiLayer.textual_analysis.extracted_text}
                   </div>
                 )}
@@ -326,11 +326,13 @@ export function ReportDetail() {
               {/* Layer 3: Source Verification (Reverse Search) */}
               <div className="p-3.5 rounded-lg bg-muted/40 border border-border space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-foreground">
-                    3. Source Verification (Vision)
+                  <span className="text-[13px] font-semibold text-foreground">
+                    การตรวจสอบแหล่งที่มา
                   </span>
                   <Badge variant="default" size="sm">
-                    {multiLayer.source_verification?.matches_count ?? 0} matches
+                    {(multiLayer.source_verification?.matches_count ?? 0) > 0
+                      ? `${multiLayer.source_verification.matches_count} รายการ`
+                      : "ไม่พบภาพที่ตรงกัน"}
                   </Badge>
                 </div>
                 <p className="text-xs text-muted-foreground">
@@ -345,37 +347,37 @@ export function ReportDetail() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <KeyRound className="size-4 text-primary" />
-                <span>ข้อมูลทางเทคนิค (Forensic Metadata)</span>
+                <span>ข้อมูลไฟล์</span>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3 font-mono text-xs">
+            <CardContent className="space-y-3 text-[13px]">
               <div className="flex items-center justify-between py-1.5 border-b border-border-subtle">
-                <span className="text-muted-foreground font-medium">Image Hash (SHA-256):</span>
-                <span className="text-foreground font-semibold truncate max-w-[180px]" title={report.scan?.image_hash}>
+                <span className="text-muted-foreground font-medium">Hash (SHA-256):</span>
+                <span className="text-foreground font-mono font-semibold truncate max-w-[180px]" title={report.scan?.image_hash}>
                   {report.scan?.image_hash || "-"}
                 </span>
               </div>
 
               <div className="flex items-center justify-between py-1.5 border-b border-border-subtle">
                 <span className="text-muted-foreground font-medium">ขนาดความละเอียด:</span>
-                <span className="text-foreground font-semibold">{report.scan?.exif_data?.dimensions || report.metadata?.dimensions || "ไม่ระบุ"}</span>
+                <span className="text-foreground font-mono font-semibold">{report.scan?.exif_data?.dimensions || report.metadata?.dimensions || "ไม่ระบุ"}</span>
               </div>
 
               <div className="flex items-center justify-between py-1.5 border-b border-border-subtle">
-                <span className="text-muted-foreground font-medium">อุปกรณ์ที่ถ่าย (Camera):</span>
+                <span className="text-muted-foreground font-medium">อุปกรณ์ที่ถ่าย:</span>
                 <span className="text-foreground font-semibold">{report.metadata?.device || "ไม่ระบุ"}</span>
               </div>
 
               <div className="flex items-center justify-between py-1.5 border-b border-border-subtle">
-                <span className="text-muted-foreground font-medium">ยินยอมให้นำไปวิจัย (PDPA):</span>
+                <span className="text-muted-foreground font-medium">อนุญาตให้นำข้อมูลไปใช้วิจัย:</span>
                 <span className={report.allow_research_use ? "text-success font-semibold" : "text-muted-foreground font-semibold"}>
-                  {report.allow_research_use ? "ยินยอม (Consent)" : "ไม่ยินยอม"}
+                  {report.allow_research_use ? "อนุญาต" : "ไม่อนุญาต"}
                 </span>
               </div>
 
               <div className="flex items-center justify-between py-1.5">
                 <span className="text-muted-foreground font-medium">ผู้ส่งรายงาน:</span>
-                <span className="text-foreground font-semibold">{report.user?.email || "ไม่ระบุ"}</span>
+                <span className="text-foreground font-mono font-semibold">{report.user?.email || "ไม่ระบุ"}</span>
               </div>
             </CardContent>
           </Card>
@@ -388,13 +390,13 @@ export function ReportDetail() {
         onClose={closeDecisionModal}
         title={
           modalState.decision === "approved"
-            ? "ยืนยันการอนุมัติรายงาน (Mark as Confirmed Scam)"
-            : "ปฏิเสธรายงาน (Reject Report)"
+            ? "ยืนยันรายงานว่าเป็นการหลอกลวง"
+            : "ปฏิเสธรายงาน"
         }
         description={
           modalState.decision === "approved"
-            ? "การอนุมัติจะเปลี่ยนสถานะรายงานเป็น Approved และนำภาพเข้าสู่ระบบฝึกโมเดลหากได้รับความยินยอม"
-            : "การปฏิเสธจะทำเครื่องหมายรายงานเป็น Rejected จำเป็นต้องระบุเหตุผลในการตัดสินใจ"
+            ? "รายงานจะถูกยืนยัน และนำภาพไปใช้กับชุดข้อมูลวิจัยเมื่อผู้ใช้อนุญาต"
+            : "กรุณาระบุเหตุผลก่อนปฏิเสธรายงาน"
         }
         footer={
           <>
@@ -414,7 +416,7 @@ export function ReportDetail() {
       >
         <div className="space-y-4 pt-2">
           <Textarea
-            label="บันทึกเหตุผลของเจ้าหน้าที่ (Admin Reason / Note)"
+            label="บันทึกของผู้ตรวจ"
             required={modalState.decision === "rejected"}
             value={adminNote}
             onChange={(e) => {

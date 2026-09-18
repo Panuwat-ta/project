@@ -43,7 +43,9 @@ export function AdminLayout() {
         />
 
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-background">
-          <Outlet context={{ setIsWsConnected }} />
+          <div className="w-full max-w-[1600px] mx-auto">
+            <Outlet context={{ setIsWsConnected }} />
+          </div>
         </main>
       </div>
 

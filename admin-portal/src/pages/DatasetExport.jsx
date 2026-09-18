@@ -23,18 +23,19 @@ import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell, TableEmp
 import { StatusBadge } from "@/components/ui/Badge";
 import { TableSkeleton } from "@/components/ui/Skeleton";
 import { useToast } from "@/components/ui/ToastContext";
+import { Input } from "@/components/ui/Input";
 import { formatDate, formatNumber, formatFileSize } from "@/lib/utils";
 import { useAutoRefresh } from "@/lib/use-auto-refresh";
 import { useDashboardWebSocket } from "@/lib/use-dashboard-ws";
 
 const CATEGORIES = [
-  { key: "romance_scam", label: "หลอกลวงความรัก (Romance)" },
-  { key: "online_shopping", label: "ซื้อขายออนไลน์ (Shopping)" },
-  { key: "fake_slip", label: "สลิปโอนเงินปลอม (Slip)" },
-  { key: "investment", label: "ลงทุน / ผลตอบแทนสูง (Invest)" },
-  { key: "identity_theft", label: "ปลอมแปลงตัวตน (Identity)" },
+  { key: "romance_scam", label: "หลอกลวงความรัก" },
+  { key: "online_shopping", label: "ซื้อขายออนไลน์" },
+  { key: "fake_slip", label: "สลิปโอนเงินปลอม" },
+  { key: "investment", label: "ลงทุน / ผลตอบแทนสูง" },
+  { key: "identity_theft", label: "ปลอมแปลงตัวตน" },
   { key: "ai_deepfake", label: "ภาพ AI / Deepfake" },
-  { key: "other", label: "อื่น ๆ (Other)" },
+  { key: "other", label: "อื่น ๆ" },
 ];
 
 export function DatasetExport() {
@@ -147,7 +148,7 @@ export function DatasetExport() {
 
     try {
       await createExportJob(payload);
-      toast.success("สร้างงานส่งออกชุดข้อมูลเรียบร้อยแล้ว ระบบกำลังประมวลผลในเบื้องหลัง");
+      toast.success("เริ่มสร้างไฟล์ส่งออกแล้ว");
       setSelectedCategories([]);
       setFromDate("");
       setToDate("");
@@ -176,10 +177,10 @@ export function DatasetExport() {
         <div>
           <h2 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
             <Database className="size-5 text-primary" />
-            <span>ส่งออกชุดข้อมูลสำหรับงานวิจัย (Dataset Export Pipeline)</span>
+            <span>ส่งออกชุดข้อมูล</span>
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            รวบรวมรูปภาพหลอกลวงที่ผ่านการยืนยัน (Approved) พร้อมความยินยอม PDPA เพื่อใช้ฝึกและประเมินโมเดล AI
+            สร้างชุดข้อมูลจากรายงานที่ยืนยันแล้วและได้รับอนุญาตให้นำไปใช้วิจัย
           </p>
         </div>
 
@@ -191,7 +192,7 @@ export function DatasetExport() {
             isLoading={isRefreshingJobs}
             onClick={() => loadJobs(true)}
           >
-            รีเฟรชประวัติงาน
+            รีเฟรช
           </Button>
         </div>
       </div>
@@ -204,9 +205,9 @@ export function DatasetExport() {
               <CheckCircle2 className="size-5" />
             </div>
             <div>
-              <div className="text-xs text-muted-foreground font-medium">รายงานที่ผ่านการอนุมัติ (Approved)</div>
-              <div className="text-xl font-bold font-mono text-foreground">
-                {formatNumber(totalApprovedCount)} รูปภาพ
+              <div className="text-xs text-muted-foreground font-medium">รายงานที่ยืนยันแล้ว</div>
+              <div className="text-xl font-bold text-foreground">
+                <span className="font-mono">{formatNumber(totalApprovedCount)}</span> รูปภาพ
               </div>
             </div>
           </CardContent>
@@ -218,9 +219,9 @@ export function DatasetExport() {
               <ShieldCheck className="size-5" />
             </div>
             <div>
-              <div className="text-xs text-muted-foreground font-medium">มาตรการคุ้มครองข้อมูล (PDPA Filter)</div>
-              <div className="text-xs font-bold text-success font-mono mt-0.5">
-                Enforced (allow_research_use=true)
+              <div className="text-xs text-muted-foreground font-medium">สิทธิ์ใช้ข้อมูลเพื่อการวิจัย</div>
+              <div className="text-[13px] font-semibold text-success mt-0.5">
+                ใช้เฉพาะรายการที่ได้รับอนุญาต
               </div>
             </div>
           </CardContent>
@@ -232,7 +233,7 @@ export function DatasetExport() {
               <FileArchive className="size-5" />
             </div>
             <div>
-              <div className="text-xs text-muted-foreground font-medium">รูปแบบไฟล์ผลลัพธ์ (Packaging)</div>
+              <div className="text-xs text-muted-foreground font-medium">รูปแบบไฟล์</div>
               <div className="text-xs font-bold text-foreground font-mono mt-0.5">
                 ZIP Archive + Manifest.json
               </div>
@@ -246,15 +247,15 @@ export function DatasetExport() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Layers className="size-4 text-primary" />
-            <span>สร้างงานส่งออกชุดข้อมูลใหม่ (New Export Job)</span>
+            <span>สร้างไฟล์ส่งออก</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleCreateExport} className="space-y-5">
             {/* Category Filter Pills */}
             <div className="space-y-2">
-              <label className="block text-xs font-semibold text-foreground">
-                เลือกหมวดหมู่ที่ต้องการส่งออก (ค่าเริ่มต้นคือทุกหมวดหมู่)
+              <label className="block text-[13px] font-semibold text-foreground">
+                เลือกหมวดหมู่ที่ต้องการส่งออก
               </label>
               <div className="flex flex-wrap gap-2">
                 {CATEGORIES.map((cat) => {
@@ -264,7 +265,7 @@ export function DatasetExport() {
                       key={cat.key}
                       type="button"
                       onClick={() => toggleCategory(cat.key)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+                      className={`h-8 px-3 rounded-lg text-xs font-medium border transition-all ${
                         isSelected
                           ? "bg-primary-subtle border-primary-border text-primary font-semibold shadow-sm"
                           : "bg-muted/40 border-border text-muted-foreground hover:text-foreground hover:bg-muted"
@@ -279,39 +280,31 @@ export function DatasetExport() {
 
             {/* Date Range & Metadata Options */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-              <div className="space-y-1.5">
-                <label className="block text-xs font-semibold text-foreground">
-                  ตั้งแต่วันที่ (From Date)
-                </label>
-                <input
-                  type="date"
-                  value={fromDate}
-                  onChange={(e) => setFromDate(e.target.value)}
-                  className="w-full px-3 py-1.5 rounded-lg bg-card border border-input text-xs text-foreground outline-none focus:border-ring font-mono"
-                />
-              </div>
+              <Input
+                type="date"
+                label="ตั้งแต่วันที่"
+                value={fromDate}
+                onChange={(e) => setFromDate(e.target.value)}
+                className="font-mono"
+              />
 
-              <div className="space-y-1.5">
-                <label className="block text-xs font-semibold text-foreground">
-                  ถึงวันที่ (To Date)
-                </label>
-                <input
-                  type="date"
-                  value={toDate}
-                  onChange={(e) => setToDate(e.target.value)}
-                  className="w-full px-3 py-1.5 rounded-lg bg-card border border-input text-xs text-foreground outline-none focus:border-ring font-mono"
-                />
-              </div>
+              <Input
+                type="date"
+                label="ถึงวันที่"
+                value={toDate}
+                onChange={(e) => setToDate(e.target.value)}
+                className="font-mono"
+              />
 
               <div className="flex items-end pb-1.5">
-                <label className="flex items-center gap-2 cursor-pointer select-none text-xs text-foreground font-medium">
+                <label className="flex items-center gap-2 cursor-pointer select-none text-[13px] text-foreground font-medium">
                   <input
                     type="checkbox"
                     checked={includeMetadata}
                     onChange={(e) => setIncludeMetadata(e.target.checked)}
                     className="size-4 rounded accent-primary"
                   />
-                  <span>รวม Metadata & Heatmap Mask ลงในไฟล์</span>
+                  <span>รวม Metadata และ Heatmap</span>
                 </label>
               </div>
             </div>
@@ -324,7 +317,7 @@ export function DatasetExport() {
                 icon={Download}
                 isLoading={isExporting}
               >
-                เริ่มสร้างไฟล์ส่งออก (Queue Export Job)
+                สร้างไฟล์ส่งออก
               </Button>
             </div>
           </form>
@@ -336,7 +329,7 @@ export function DatasetExport() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Clock className="size-4 text-primary" />
-            <span>ประวัติงานส่งออกชุดข้อมูล (Export Jobs History)</span>
+            <span>ประวัติการส่งออก</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
@@ -347,11 +340,11 @@ export function DatasetExport() {
               <Table>
                 <TableHeader>
                   <TableRow isHoverable={false}>
-                    <TableHead>Job ID</TableHead>
-                    <TableHead>ความคืบหน้า / จำนวนแถว</TableHead>
+                    <TableHead>รหัสงาน</TableHead>
+                    <TableHead>ความคืบหน้า</TableHead>
                     <TableHead>จำนวนภาพ / ขนาด</TableHead>
-                    <TableHead>สถานะงาน</TableHead>
-                    <TableHead>วันที่สร้างงาน</TableHead>
+                    <TableHead>สถานะ</TableHead>
+                    <TableHead>วันที่สร้าง</TableHead>
                     <TableHead className="text-right">การจัดการ</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -366,17 +359,17 @@ export function DatasetExport() {
 
                       return (
                         <TableRow key={job.id}>
-                          <TableCell className="font-mono text-xs font-bold text-foreground">
+                          <TableCell className="font-mono text-[13px] font-bold text-foreground">
                             #{job.id}
                           </TableCell>
 
                           <TableCell>
-                            <span className="text-xs font-medium text-foreground">
+                            <span className="text-[13px] font-medium text-foreground">
                               {Math.round(Number(job.progress ?? 0))}%{job.total_rows != null ? ` · ${formatNumber(job.total_rows)} แถว` : ""}
                             </span>
                           </TableCell>
 
-                          <TableCell className="font-mono text-xs font-semibold text-foreground">
+                          <TableCell className="font-mono text-[13px] font-semibold text-foreground">
                             {job.file_size_bytes != null ? formatFileSize(job.file_size_bytes) : "-"}
                           </TableCell>
 
@@ -384,7 +377,7 @@ export function DatasetExport() {
                             <StatusBadge status={job.status} />
                           </TableCell>
 
-                          <TableCell className="font-mono text-xs text-muted-foreground whitespace-nowrap">
+                          <TableCell className="font-mono text-[13px] text-muted-foreground whitespace-nowrap">
                             {formatDate(job.created_at)}
                           </TableCell>
 
@@ -395,7 +388,7 @@ export function DatasetExport() {
                                   href={downloadUrl}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary-subtle border border-primary-border text-primary hover:bg-primary/20 text-xs font-semibold transition-colors"
+                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary-subtle border border-primary-border text-primary hover:bg-primary/20 text-[13px] font-semibold transition-colors"
                                 >
                                   <Download className="size-3.5" />
                                   <span>ดาวน์โหลด ZIP</span>

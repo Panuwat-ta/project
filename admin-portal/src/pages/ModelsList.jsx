@@ -89,20 +89,20 @@ export function ModelsList() {
     try {
       const res = await dryRunModel(model.id);
       setDryRunState({ isLoading: false, modelId: model.id, result: res });
-      toast.success(`ทดสอบ Dry-run โมเดล ${model.version_tag || model.name || model.version} สำเร็จ`);
+      toast.success(`ทดสอบโมเดล ${model.version_tag || model.name || model.version} สำเร็จ`);
     } catch (err) {
       setDryRunState({
         isLoading: false,
         modelId: model.id,
         result: { success: false, message: err.message },
       });
-      toast.error(`Dry-run ไม่ผ่าน: ${err.message}`);
+      toast.error(`ทดสอบโมเดลไม่ผ่าน: ${err.message}`);
     }
   };
 
   const openDeployModal = (model, isRollback = false) => {
     setDeployModal({ isOpen: true, model, isRollback });
-    setDeployReason(isRollback ? "Rollback to previous stable model version" : "");
+    setDeployReason(isRollback ? "ย้อนกลับไปใช้โมเดลเวอร์ชันก่อนหน้า" : "");
     setDeployReasonError("");
   };
 
@@ -115,7 +115,7 @@ export function ModelsList() {
 
   const handleExecuteDeploy = async () => {
     if (!deployReason.trim()) {
-      setDeployReasonError("กรุณาระบุเหตุผลในการ Deploy หรือ Rollback เพื่อความปลอดภัย");
+      setDeployReasonError("กรุณาระบุเหตุผลในการเปลี่ยนโมเดล");
       return;
     }
 
@@ -124,13 +124,13 @@ export function ModelsList() {
       await deployModel(deployModal.model.id, deployReason.trim());
       toast.success(
         deployModal.isRollback
-          ? `Rollback กลับไปยังโมเดล ${deployModal.model.version_tag || deployModal.model.name} เรียบร้อยแล้ว`
-          : `Deploy โมเดล ${deployModal.model.version_tag || deployModal.model.name} ขึ้น Production สำเร็จ`
+          ? `ย้อนกลับไปใช้โมเดล ${deployModal.model.version_tag || deployModal.model.name} แล้ว`
+          : `นำโมเดล ${deployModal.model.version_tag || deployModal.model.name} ไปใช้งานแล้ว`
       );
       closeDeployModal();
       await loadModels();
     } catch (err) {
-      toast.error("การ Deploy ล้มเหลว: " + err.message);
+      toast.error("เปลี่ยนโมเดลไม่สำเร็จ: " + err.message);
     } finally {
       setIsDeploying(false);
     }
@@ -142,10 +142,10 @@ export function ModelsList() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2.5">
-            <span>การจัดการโมเดล AI (Model Registry & Deployment)</span>
+            <span>โมเดล AI</span>
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            ควบคุมเวอร์ชันโมเดล SegFormer Semantic Segmentation, ทดสอบความพร้อม (Dry-run) และจัดการ Rollback
+            ดูเวอร์ชัน ทดสอบ และเลือกโมเดลที่ระบบใช้งาน
           </p>
         </div>
 
@@ -157,7 +157,7 @@ export function ModelsList() {
             isLoading={isRefreshing}
             onClick={() => loadModels(true)}
           >
-            รีเฟรชโมเดล
+            รีเฟรช
           </Button>
         </div>
       </div>
@@ -172,7 +172,7 @@ export function ModelsList() {
           <div className="space-y-1">
             <h3 className="text-sm font-semibold text-foreground">ไม่พบข้อมูลโมเดล AI ในระบบ</h3>
             <p className="text-xs text-muted-foreground max-w-sm">
-              ยังไม่มีโมเดล SegFormer ถูกบันทึกไว้ในทะเบียน ModelVersion ของฐานข้อมูล กรุณาตรวจสอบการลงทะเบียนโมเดลผ่าน backend
+              ยังไม่มีโมเดลที่พร้อมใช้งานในระบบ
             </p>
           </div>
           <Button variant="outline" size="sm" icon={RefreshCw} onClick={() => loadModels(true)}>
@@ -191,14 +191,14 @@ export function ModelsList() {
                 key={model.id}
                 className={
                   isActive
-                    ? "border-primary ring-1 ring-primary/50 bg-primary-subtle/20 relative"
+                    ? "border-primary-border relative"
                     : "hover:border-border transition-all"
                 }
               >
                 {isActive && (
-                  <div className="absolute -top-2.5 right-4 px-2.5 py-0.5 rounded-full bg-primary text-primary-foreground font-bold text-[10px] font-mono tracking-wider uppercase shadow-md flex items-center gap-1">
-                    <span className="size-1.5 rounded-full bg-primary-foreground animate-pulse" />
-                    <span>Active Production</span>
+                  <div className="absolute -top-2.5 right-4 px-2.5 py-0.5 rounded-full bg-card border border-primary-border text-primary font-semibold text-xs flex items-center gap-1">
+                    <span className="size-1.5 rounded-full bg-success" />
+                    <span>กำลังใช้งาน</span>
                   </div>
                 )}
 
@@ -208,8 +208,9 @@ export function ModelsList() {
                       <Cpu className={isActive ? "size-4 text-primary" : "size-4 text-muted-foreground"} />
                       <span>{model.version_tag ? `SegFormer ${model.version_tag}` : (model.name || `Model Version v${model.version}`)}</span>
                     </CardTitle>
-                    <p className="text-xs font-mono text-muted-foreground font-medium">
-                      ID: #{model.id} • Architecture: {model.framework_compatibility || model.framework || "SegFormer (MiT-B2)"}
+                    <p className="text-xs text-muted-foreground font-medium">
+                      ID: <span className="font-mono">#{model.id}</span> • สถาปัตยกรรม:{" "}
+                      <span className="font-mono">{model.framework_compatibility || model.framework || "SegFormer (MiT-B2)"}</span>
                     </p>
                   </div>
                 </CardHeader>
@@ -218,25 +219,25 @@ export function ModelsList() {
                   {/* Model Performance Metrics */}
                   <div className="grid grid-cols-2 gap-2 p-3 rounded-lg bg-muted/40 border border-border font-mono text-xs">
                     <div>
-                      <span className="text-muted-foreground text-[11px] font-medium">Mean IoU (mIoU):</span>
+                      <span className="text-muted-foreground text-xs font-medium">mIoU</span>
                       <div className="text-sm font-bold text-primary">
                         {model.m_iou != null ? `${(model.m_iou * 100).toFixed(2)}%` : "-"}
                       </div>
                     </div>
                     <div>
-                      <span className="text-muted-foreground text-[11px] font-medium">All Acc (aAcc):</span>
+                      <span className="text-muted-foreground text-xs font-medium">aAcc</span>
                       <div className="text-sm font-bold text-success">
                         {model.a_acc != null ? `${(model.a_acc * 100).toFixed(2)}%` : "-"}
                       </div>
                     </div>
                     <div>
-                      <span className="text-muted-foreground text-[11px] font-medium">Mean Acc (mAcc):</span>
+                      <span className="text-muted-foreground text-xs font-medium">mAcc</span>
                       <div className="text-sm font-bold text-foreground">
                         {model.m_acc != null ? `${(model.m_acc * 100).toFixed(2)}%` : "-"}
                       </div>
                     </div>
                     <div>
-                      <span className="text-muted-foreground text-[11px] font-medium">Mean Dice (mDice):</span>
+                      <span className="text-muted-foreground text-xs font-medium">mDice</span>
                       <div className="text-sm font-bold text-info">
                         {model.m_dice != null ? `${(model.m_dice * 100).toFixed(2)}%` : "-"}
                       </div>
@@ -244,25 +245,25 @@ export function ModelsList() {
                   </div>
 
                   {/* Model Metadata Notes */}
-                  <div className="space-y-1.5 font-mono text-[11px] text-muted-foreground">
+                  <div className="space-y-1.5 text-xs text-muted-foreground">
                     <div className="flex items-center justify-between">
-                      <span className="font-medium">Dataset Reference:</span>
-                      <span className="text-foreground font-semibold truncate max-w-[150px]">{model.dataset_reference || "ไม่ระบุ"}</span>
+                      <span className="font-medium">ชุดข้อมูล:</span>
+                      <span className="text-foreground font-mono font-semibold truncate max-w-[150px]">{model.dataset_reference || "ไม่ระบุ"}</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="font-medium">Checksum:</span>
-                      <span className="text-foreground font-semibold truncate max-w-[140px]" title={model.artifact_checksum}>
+                      <span className="text-foreground font-mono font-semibold truncate max-w-[140px]" title={model.artifact_checksum}>
                         {model.artifact_checksum || "-"}
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="font-medium">Deployed At:</span>
-                      <span className="text-foreground font-semibold">{formatDate(model.deployed_at || model.created_at)}</span>
+                      <span className="font-medium">เริ่มใช้งาน:</span>
+                      <span className="text-foreground font-mono font-semibold">{formatDate(model.deployed_at || model.created_at)}</span>
                     </div>
                     {model.file_path && (
                       <div className="flex items-center justify-between">
-                        <span className="font-medium">File Path:</span>
-                        <span className="text-foreground font-semibold truncate max-w-[140px]" title={model.file_path}>
+                        <span className="font-medium">ไฟล์:</span>
+                        <span className="text-foreground font-mono font-semibold truncate max-w-[140px]" title={model.file_path}>
                           {model.file_path.split("/").pop()}
                         </span>
                       </div>
@@ -272,7 +273,7 @@ export function ModelsList() {
                   {/* Dry Run Output Panel */}
                   {dryResult && (
                     <div
-                      className={`p-3 rounded-lg border text-xs font-mono space-y-1 ${
+                      className={`p-3 rounded-lg border text-xs space-y-1 ${
                         dryResult.success !== false
                           ? "bg-success-subtle border-success-border text-success"
                           : "bg-danger-subtle border-danger-border text-danger"
@@ -284,13 +285,13 @@ export function ModelsList() {
                         ) : (
                           <AlertTriangle className="size-3.5 text-danger" />
                         )}
-                        <span>{dryResult.success !== false ? "Inference Health: PASS" : "Health Check: FAILED"}</span>
+                        <span>{dryResult.success !== false ? "ทดสอบผ่าน" : "ทดสอบไม่ผ่าน"}</span>
                       </div>
-                      <div className="text-[11px] opacity-90">
+                      <div className="text-xs opacity-90">
                         Latency: {dryResult.details?.latency_ms || dryResult.latency_ms || 98}ms • Memory: {dryResult.details?.memory_usage_mb ? `${dryResult.details.memory_usage_mb}MB` : "235MB"}
                       </div>
                       {dryResult.message && (
-                        <div className="text-[10px] text-foreground truncate">
+                        <div className="text-xs text-foreground truncate">
                           {dryResult.message}
                         </div>
                       )}
@@ -307,7 +308,7 @@ export function ModelsList() {
                       onClick={() => handleDryRun(model)}
                       className="flex-1"
                     >
-                      Dry-Run ทดสอบ
+                      ทดสอบโมเดล
                     </Button>
 
                     {!isActive ? (
@@ -318,7 +319,7 @@ export function ModelsList() {
                         onClick={() => openDeployModal(model, false)}
                         className="flex-1"
                       >
-                        Deploy ขึ้นระบบ
+                        นำไปใช้งาน
                       </Button>
                     ) : (
                       <Button
@@ -328,11 +329,11 @@ export function ModelsList() {
                         onClick={() => {
                           const backup = models.find((m) => m.id !== model.id);
                           if (backup) openDeployModal(backup, true);
-                          else toast.warning("ไม่มีโมเดลเวอร์ชันสำรองสำหรับ Rollback");
+                          else toast.warning("ไม่มีโมเดลเวอร์ชันก่อนหน้าสำหรับย้อนกลับ");
                         }}
                         className="flex-1"
                       >
-                        Rollback
+                        ย้อนกลับเวอร์ชัน
                       </Button>
                     )}
                   </div>
@@ -349,10 +350,10 @@ export function ModelsList() {
         onClose={closeDeployModal}
         title={
           deployModal.isRollback
-            ? `ยืนยันการ Rollback โมเดล AI: ${deployModal.model?.version_tag || deployModal.model?.name || deployModal.model?.version}`
-            : `ยืนยันการ Deploy โมเดล AI: ${deployModal.model?.version_tag || deployModal.model?.name || deployModal.model?.version}`
+            ? `ย้อนกลับไปใช้โมเดล ${deployModal.model?.version_tag || deployModal.model?.name || deployModal.model?.version}?`
+            : `นำโมเดล ${deployModal.model?.version_tag || deployModal.model?.name || deployModal.model?.version} ไปใช้งาน?`
         }
-        description="การดำเนินการนี้จะเปลี่ยนโมเดลหลักที่ให้บริการวิเคราะห์รูปภาพทั่วทั้งระบบในทันที กรุณาระบุเหตุผลเพื่อบันทึกประวัติความปลอดภัย"
+        description="การเปลี่ยนแปลงจะมีผลกับการวิเคราะห์รูปภาพครั้งถัดไป กรุณาระบุเหตุผล"
         footer={
           <>
             <Button variant="ghost" size="sm" onClick={closeDeployModal} disabled={isDeploying}>
@@ -365,27 +366,27 @@ export function ModelsList() {
               onClick={handleExecuteDeploy}
               className={deployModal.isRollback ? "bg-warning text-warning-foreground hover:bg-warning/90" : ""}
             >
-              {deployModal.isRollback ? "ยืนยันสลับ Rollback" : "ยืนยัน Deploy โมเดล"}
+              {deployModal.isRollback ? "ยืนยันย้อนกลับ" : "ยืนยันใช้งานโมเดล"}
             </Button>
           </>
         }
       >
         <div className="space-y-4 pt-2">
-          <div className="p-3 rounded-lg bg-primary-subtle border border-primary-border text-xs text-primary font-mono space-y-1">
-            <div>Target Model: {deployModal.model?.version_tag || deployModal.model?.name} (ID: #{deployModal.model?.id})</div>
-            <div>Architecture: {deployModal.model?.framework_compatibility || "SegFormer (MiT-B2)"}</div>
-            <div>mIoU Benchmark: {deployModal.model?.m_iou ? `${(deployModal.model.m_iou * 100).toFixed(2)}%` : "-"}</div>
+          <div className="p-3 rounded-lg bg-primary-subtle border border-primary-border text-xs text-primary space-y-1">
+            <div>โมเดล: {deployModal.model?.version_tag || deployModal.model?.name} (ID: #{deployModal.model?.id})</div>
+            <div>สถาปัตยกรรม: {deployModal.model?.framework_compatibility || "SegFormer (MiT-B2)"}</div>
+            <div>mIoU: {deployModal.model?.m_iou ? `${(deployModal.model.m_iou * 100).toFixed(2)}%` : "-"}</div>
           </div>
 
           <Textarea
-            label="เหตุผลในการเปลี่ยนเวอร์ชันโมเดล (Deployment / Rollback Reason) *"
+            label="เหตุผลในการเปลี่ยนโมเดล *"
             required
             value={deployReason}
             onChange={(e) => {
               setDeployReason(e.target.value);
               setDeployReasonError("");
             }}
-            placeholder="เช่น ปรับปรุงโมเดลรอบสัปดาห์, แก้ไข False Positive ในหมวด Romance Scam..."
+            placeholder="เช่น ปรับปรุงโมเดลประจำรอบ หรือแก้ปัญหา False Positive..."
             error={deployReasonError}
             rows={4}
           />

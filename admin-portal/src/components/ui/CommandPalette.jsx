@@ -5,13 +5,13 @@ import { searchGlobal } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 const NAV_SHORTCUTS = [
-  { title: "Dashboard", subtitle: "ภาพรวมระบบและสถิติ", url: "/admin/dashboard", icon: LayoutDashboard },
-  { title: "Scam Reports", subtitle: "คิวตรวจสอบรายงานภาพหลอกลวง", url: "/admin/reports", icon: Flag },
-  { title: "User Management", subtitle: "จัดการบัญชีผู้ใช้งาน", url: "/admin/users", icon: Users },
-  { title: "AI Models", subtitle: "โมเดล SegFormer & Surya OCR", url: "/admin/models", icon: Cpu },
-  { title: "Dataset Export", subtitle: "ส่งออกชุดข้อมูลสำหรับงานวิจัย", url: "/admin/dataset", icon: Database },
-  { title: "Audit Log", subtitle: "ประวัติการตรวจสอบย้อนหลัง", url: "/admin/audit-log", icon: FileText },
-  { title: "Profile Settings", subtitle: "ตั้งค่าบัญชีและเซสชัน", url: "/admin/profile", icon: Settings },
+  { title: "ภาพรวม", subtitle: "สถิติและสถานะระบบ", url: "/admin/dashboard", icon: LayoutDashboard },
+  { title: "รายงาน", subtitle: "รายการที่รอตรวจสอบ", url: "/admin/reports", icon: Flag },
+  { title: "ผู้ใช้งาน", subtitle: "ข้อมูลและสถานะบัญชี", url: "/admin/users", icon: Users },
+  { title: "โมเดล AI", subtitle: "เวอร์ชันและผลการทดสอบโมเดล", url: "/admin/models", icon: Cpu },
+  { title: "ส่งออกชุดข้อมูล", subtitle: "สร้างและดาวน์โหลดชุดข้อมูล", url: "/admin/dataset", icon: Database },
+  { title: "บันทึกกิจกรรม", subtitle: "ประวัติการเปลี่ยนแปลงในระบบ", url: "/admin/audit-log", icon: FileText },
+  { title: "บัญชีและความปลอดภัย", subtitle: "บัญชี รหัสผ่าน และอุปกรณ์", url: "/admin/profile", icon: Settings },
 ];
 
 export function CommandPalette({ isOpen, onClose }) {
@@ -86,10 +86,14 @@ export function CommandPalette({ isOpen, onClose }) {
       <div
         className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity animate-in fade-in duration-150"
         onClick={onClose}
+        aria-hidden="true"
       />
 
       <div
         className="relative z-10 w-full max-w-xl rounded-xl bg-card border border-border shadow-2xl overflow-hidden transition-all animate-in zoom-in-95 duration-150"
+        role="dialog"
+        aria-modal="true"
+        aria-label="ค้นหาและนำทาง"
         onKeyDown={handleKeyDown}
       >
         {/* Search Bar */}
@@ -117,8 +121,8 @@ export function CommandPalette({ isOpen, onClose }) {
             </div>
           ) : (
             <div className="space-y-1">
-              <div className="px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                {query.length >= 2 ? "ผลการค้นหา" : "เมนูลัด (Navigation)"}
+              <div className="px-3 py-1 text-xs font-semibold text-muted-foreground">
+                {query.length >= 2 ? "ผลการค้นหา" : "เมนูลัด"}
               </div>
               {items.map((item, idx) => {
                 const isSelected = idx === selectedIndex;
@@ -167,7 +171,7 @@ export function CommandPalette({ isOpen, onClose }) {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-4 py-2 border-t border-border-subtle bg-muted/40 text-[11px] font-medium text-muted-foreground">
+        <div className="flex items-center justify-between px-4 py-2 border-t border-border-subtle bg-muted/40 text-xs font-medium text-muted-foreground">
           <span>ใช้ลูกศรขึ้น/ลง เพื่อเลือก</span>
           <span>กด Enter เพื่อเปิด</span>
         </div>

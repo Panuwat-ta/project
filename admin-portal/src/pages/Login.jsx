@@ -49,10 +49,10 @@ export function Login() {
             <Shield className="size-7 text-primary" />
           </div>
           <h1 className="text-xl font-bold tracking-tight text-foreground">
-            ScamGuard Security Console
+            ScamGuard Admin
           </h1>
-          <p className="text-xs text-muted-foreground mt-1 font-mono">
-            ระบบตรวจสอบและจัดการภาพหลอกลวง (Super Admin)
+          <p className="text-sm text-muted-foreground mt-1">
+            สำหรับผู้ดูแลระบบ
           </p>
         </div>
 
@@ -66,7 +66,7 @@ export function Login() {
           )}
 
           <div className="space-y-1.5">
-            <label className="block text-xs font-medium text-foreground">อีเมลผู้ดูแลระบบ</label>
+            <label className="block text-[13px] font-semibold text-foreground">อีเมลผู้ดูแลระบบ</label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
               <input
@@ -76,13 +76,13 @@ export function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@scamguard.local"
-                className="w-full pl-9 pr-3 py-2 rounded-lg bg-muted/40 border border-input text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-ring focus:ring-1 focus:ring-ring transition-all font-mono"
+                className="w-full h-10 pl-9 pr-3 rounded-lg bg-muted/40 border border-input text-sm text-foreground placeholder:text-muted-foreground outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/35 transition-all font-mono"
               />
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <label className="block text-xs font-medium text-foreground">รหัสผ่าน</label>
+            <label className="block text-[13px] font-semibold text-foreground">รหัสผ่าน</label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
               <input
@@ -91,13 +91,13 @@ export function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full pl-9 pr-10 py-2 rounded-lg bg-muted/40 border border-input text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-ring focus:ring-1 focus:ring-ring transition-all font-mono"
+                className="w-full h-10 pl-9 pr-10 rounded-lg bg-muted/40 border border-input text-sm text-foreground placeholder:text-muted-foreground outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/35 transition-all font-mono"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                tabIndex={-1}
+                className="absolute right-2 top-1/2 -translate-y-1/2 size-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                aria-label={showPassword ? "ซ่อนรหัสผ่าน" : "แสดงรหัสผ่าน"}
               >
                 {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
               </button>
@@ -112,16 +112,15 @@ export function Login() {
               isLoading={loading}
               className="w-full justify-center"
             >
-              เข้าสู่ระบบตรวจสอบ
+              เข้าสู่ระบบ
             </Button>
           </div>
         </form>
 
         {/* Security Notice */}
         <div className="mt-6 pt-4 border-t border-border-subtle text-center">
-          <p className="text-[11px] text-muted-foreground">
-            สงวนสิทธิ์เฉพาะเจ้าหน้าที่รักษาความปลอดภัยและผู้ดูแลระบบเท่านั้น
-            ทุกกิจกรรมจะถูกบันทึกผ่าน Immutable Audit Trail
+          <p className="text-xs text-muted-foreground">
+            สำหรับผู้ดูแลระบบเท่านั้น กิจกรรมสำคัญจะถูกบันทึกไว้ในประวัติระบบ
           </p>
         </div>
       </div>

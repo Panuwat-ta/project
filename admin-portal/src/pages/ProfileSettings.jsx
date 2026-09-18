@@ -20,14 +20,18 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/Table";
+import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell, Pagination } from "@/components/ui/Table";
 import { Modal } from "@/components/ui/Modal";
 import { useToast } from "@/components/ui/ToastContext";
+import { Input } from "@/components/ui/Input";
 import { formatDate } from "@/lib/utils";
+
+const SESSION_PAGE_SIZE = 10;
 
 export function ProfileSettings() {
   const [profile, setProfile] = useState(null);
   const [sessions, setSessions] = useState([]);
+  const [sessionPage, setSessionPage] = useState(1);
   const [loading, setLoading] = useState(true);
 
   // Change Password Form
@@ -49,6 +53,7 @@ export function ProfileSettings() {
       const [p, s] = await Promise.all([fetchAdminProfile(), fetchAdminSessions()]);
       setProfile(p);
       setSessions(s.items || []);
+      setSessionPage(1);
     } catch (err) {
       console.error("Load admin profile error:", err);
       toast.error("ไม่สามารถโหลดข้อมูลโปรไฟล์หรือเซสชันได้: " + err.message);
@@ -60,6 +65,18 @@ export function ProfileSettings() {
   useEffect(() => {
     loadProfileData();
   }, [loadProfileData]);
+
+  const totalSessionPages = Math.max(1, Math.ceil(sessions.length / SESSION_PAGE_SIZE));
+  const visibleSessions = sessions.slice(
+    (sessionPage - 1) * SESSION_PAGE_SIZE,
+    sessionPage * SESSION_PAGE_SIZE
+  );
+
+  useEffect(() => {
+    if (sessionPage > totalSessionPages) {
+      setSessionPage(totalSessionPages);
+    }
+  }, [sessionPage, totalSessionPages]);
 
   const handleUpdatePassword = async (e) => {
     e.preventDefault();
@@ -109,12 +126,12 @@ export function ProfileSettings() {
   const parseDevice = (ua = "") => {
     const l = ua.toLowerCase();
     if (l.includes("mobile") || l.includes("android") || l.includes("iphone")) {
-      return { icon: Smartphone, label: "Mobile Device" };
+      return { icon: Smartphone, label: "อุปกรณ์เคลื่อนที่" };
     }
     if (l.includes("mac") || l.includes("windows") || l.includes("linux")) {
-      return { icon: Laptop, label: "Workstation / Laptop" };
+      return { icon: Laptop, label: "คอมพิวเตอร์" };
     }
-    return { icon: Monitor, label: "Web Console" };
+    return { icon: Monitor, label: "เว็บเบราว์เซอร์" };
   };
 
   if (loading && !profile) {
@@ -136,10 +153,10 @@ export function ProfileSettings() {
         <div>
           <h2 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
             <Shield className="size-5 text-primary" />
-            <span>การตั้งค่าบัญชีและความปลอดภัย (Profile & Security)</span>
+            <span>บัญชีและความปลอดภัย</span>
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            จัดการข้อมูล Super Admin, นโยบายรหัสผ่าน และเพิกถอนเซสชันการเข้าใช้งาน (Session Management)
+            จัดการข้อมูลบัญชี รหัสผ่าน และอุปกรณ์ที่เข้าสู่ระบบ
           </p>
         </div>
 
@@ -159,7 +176,7 @@ export function ProfileSettings() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <User className="size-4 text-primary" />
-              <span>ข้อมูลบัญชีผู้ดูแลระบบ (Super Admin)</span>
+              <span>ข้อมูลผู้ดูแลระบบ</span>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -169,32 +186,32 @@ export function ProfileSettings() {
               </div>
               <div className="min-w-0">
                 <div className="text-sm font-bold text-foreground">
-                  {profile?.full_name || "Super Admin"}
+                  {profile?.full_name || "ผู้ดูแลระบบ"}
                 </div>
                 <div className="text-xs text-muted-foreground font-mono font-medium">{profile?.email}</div>
                 <div className="flex items-center gap-2 mt-1">
                   <Badge variant="primary" size="sm" withDot>
-                    Super Admin
+                    ผู้ดูแลระบบ
                   </Badge>
                   <Badge variant="success" size="sm">
-                    Active
+                    ใช้งาน
                   </Badge>
                 </div>
               </div>
             </div>
 
-            <div className="space-y-2 font-mono text-xs">
+            <div className="space-y-2 text-[13px]">
               <div className="flex justify-between py-1.5 border-b border-border-subtle">
-                <span className="text-muted-foreground font-medium">Account ID:</span>
-                <span className="text-foreground font-bold">#{profile?.id || "1"}</span>
+                <span className="text-muted-foreground font-medium">รหัสบัญชี:</span>
+                <span className="text-foreground font-mono font-bold">#{profile?.id || "1"}</span>
               </div>
               <div className="flex justify-between py-1.5 border-b border-border-subtle">
                 <span className="text-muted-foreground font-medium">สิทธิ์การเข้าถึง:</span>
-                <span className="text-success font-bold">Full System Governance (RBAC)</span>
+                <span className="text-success font-bold">สิทธิ์ผู้ดูแลระบบทั้งหมด</span>
               </div>
               <div className="flex justify-between py-1.5">
                 <span className="text-muted-foreground font-medium">เข้าสู่ระบบล่าสุด:</span>
-                <span className="text-foreground font-bold">{formatDate(profile?.last_login_at || new Date())}</span>
+                <span className="text-foreground font-mono font-bold">{formatDate(profile?.last_login_at || new Date())}</span>
               </div>
             </div>
           </CardContent>
@@ -205,7 +222,7 @@ export function ProfileSettings() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <KeyRound className="size-4 text-primary" />
-              <span>เปลี่ยนรหัสผ่าน (Change Password)</span>
+              <span>เปลี่ยนรหัสผ่าน</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -217,47 +234,33 @@ export function ProfileSettings() {
                 </div>
               )}
 
-              <div className="space-y-1">
-                <label className="block text-xs font-medium text-foreground">
-                  รหัสผ่านปัจจุบัน
-                </label>
-                <input
-                  type="password"
-                  required
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  placeholder="••••••••••••"
-                  className="w-full px-3 py-1.5 rounded-lg bg-card border border-input text-xs text-foreground outline-none focus:border-ring font-mono"
-                />
-              </div>
+              <Input
+                type="password"
+                label="รหัสผ่านปัจจุบัน"
+                required
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                placeholder="••••••••••••"
+              />
 
-              <div className="space-y-1">
-                <label className="block text-xs font-medium text-foreground">
-                  รหัสผ่านใหม่ (ขั้นต่ำ 8 ตัวอักษร)
-                </label>
-                <input
-                  type="password"
-                  required
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="••••••••••••"
-                  className="w-full px-3 py-1.5 rounded-lg bg-card border border-input text-xs text-foreground outline-none focus:border-ring font-mono"
-                />
-              </div>
+              <Input
+                type="password"
+                label="รหัสผ่านใหม่"
+                helperText="อย่างน้อย 8 ตัวอักษร"
+                required
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="••••••••••••"
+              />
 
-              <div className="space-y-1">
-                <label className="block text-xs font-medium text-foreground">
-                  ยืนยันรหัสผ่านใหม่
-                </label>
-                <input
-                  type="password"
-                  required
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="••••••••••••"
-                  className="w-full px-3 py-1.5 rounded-lg bg-card border border-input text-xs text-foreground outline-none focus:border-ring font-mono"
-                />
-              </div>
+              <Input
+                type="password"
+                label="ยืนยันรหัสผ่านใหม่"
+                required
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="••••••••••••"
+              />
 
               <div className="pt-2 flex justify-end">
                 <Button
@@ -279,7 +282,7 @@ export function ProfileSettings() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Clock className="size-4 text-primary" />
-            <span>เซสชันการเข้าใช้งานปัจจุบัน (Active Admin Sessions)</span>
+            <span>อุปกรณ์ที่เข้าสู่ระบบ</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
@@ -301,7 +304,7 @@ export function ProfileSettings() {
                   </TableCell>
                 </TableRow>
               ) : (
-                sessions.map((sess) => {
+                visibleSessions.map((sess) => {
                   const dev = parseDevice(sess.user_agent);
                   const Icon = dev.icon;
                   const isCurrent = sess.is_current;
@@ -314,21 +317,21 @@ export function ProfileSettings() {
                             <Icon className="size-4" />
                           </div>
                           <div>
-                            <div className="text-xs font-semibold text-foreground">
+                            <div className="text-sm font-semibold text-foreground">
                               {dev.label}
                             </div>
-                            <div className="text-[10px] text-muted-foreground font-mono truncate max-w-xs font-medium">
-                              {sess.user_agent || "Web Admin Client"}
+                            <div className="text-xs text-muted-foreground font-mono truncate max-w-xs" title={sess.user_agent || "เว็บเบราว์เซอร์"}>
+                              {sess.user_agent || "เว็บเบราว์เซอร์"}
                             </div>
                           </div>
                         </div>
                       </TableCell>
 
-                      <TableCell className="font-mono text-xs font-medium text-foreground">
+                      <TableCell className="font-mono text-[13px] font-medium text-foreground">
                         {sess.ip_address || "127.0.0.1"}
                       </TableCell>
 
-                      <TableCell className="font-mono text-xs text-muted-foreground font-medium">
+                      <TableCell className="font-mono text-[13px] text-muted-foreground">
                         {formatDate(sess.last_active_at || sess.created_at)}
                       </TableCell>
 
@@ -347,11 +350,12 @@ export function ProfileSettings() {
                       <TableCell className="text-right">
                         {!isCurrent && (
                           <Button
-                            variant="dangerOutline"
+                            variant="ghost"
                             size="xs"
+                            className="text-muted-foreground hover:text-danger hover:bg-danger-subtle"
                             onClick={() => setRevokeSessionId(sess.id)}
                           >
-                            เพิกถอน
+                            ออกจากระบบอุปกรณ์นี้
                           </Button>
                         )}
                       </TableCell>
@@ -361,6 +365,13 @@ export function ProfileSettings() {
               )}
             </TableBody>
           </Table>
+          <Pagination
+            page={sessionPage}
+            totalPages={totalSessionPages}
+            totalItems={sessions.length}
+            onPageChange={setSessionPage}
+            limit={SESSION_PAGE_SIZE}
+          />
         </CardContent>
       </Card>
 
@@ -368,21 +379,21 @@ export function ProfileSettings() {
       <Modal
         isOpen={!!revokeSessionId}
         onClose={() => setRevokeSessionId(null)}
-        title="ยืนยันการเพิกถอนเซสชัน (Revoke Session)"
-        description="การเพิกถอนจะบังคับให้อุปกรณ์ดังกล่าวออกจากระบบทันที และไม่สามารถใช้ Refresh Token เดิมได้อีก"
+        title="ออกจากระบบอุปกรณ์นี้?"
+        description="อุปกรณ์นี้จะถูกออกจากระบบ และต้องเข้าสู่ระบบใหม่หากต้องการใช้งานอีกครั้ง"
         footer={
           <>
             <Button variant="ghost" size="sm" onClick={() => setRevokeSessionId(null)} disabled={isRevoking}>
               ยกเลิก
             </Button>
             <Button variant="danger" size="sm" isLoading={isRevoking} onClick={confirmRevokeSession}>
-              ยืนยันเพิกถอนเซสชัน
+              ยืนยันออกจากระบบ
             </Button>
           </>
         }
       >
         <p className="text-xs text-foreground">
-          คุณต้องการเพิกถอน Session ID: <span className="font-mono text-primary font-bold">#{revokeSessionId}</span> หรือไม่?
+          เซสชัน <span className="font-mono text-primary font-bold">#{revokeSessionId}</span> จะถูกยกเลิกทันที
         </p>
       </Modal>
     </div>
