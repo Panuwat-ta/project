@@ -12,20 +12,47 @@ export function Modal({
   maxWidth = "max-w-lg",
 }) {
   const modalRef = useRef(null);
+  const lastActiveElementRef = useRef(null);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape" && isOpen) {
         onClose();
+        return;
+      }
+
+      if (e.key === "Tab" && isOpen && modalRef.current) {
+        const focusable = modalRef.current.querySelectorAll(
+          'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
+        );
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
       }
     };
+
     if (isOpen) {
+      lastActiveElementRef.current = document.activeElement;
       document.body.style.overflow = "hidden";
       window.addEventListener("keydown", handleKeyDown);
+      requestAnimationFrame(() => {
+        modalRef.current
+          ?.querySelector('button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])')
+          ?.focus();
+      });
     }
+
     return () => {
       document.body.style.overflow = "unset";
       window.removeEventListener("keydown", handleKeyDown);
+      if (isOpen) lastActiveElementRef.current?.focus?.();
     };
   }, [isOpen, onClose]);
 
@@ -72,7 +99,7 @@ export function Modal({
             type="button"
             onClick={onClose}
             className="p-1 -mr-1 text-muted-foreground hover:text-foreground rounded-md transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            aria-label="Close modal"
+            aria-label="ปิดหน้าต่าง"
           >
             <X className="size-4" />
           </button>

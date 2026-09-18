@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 export function HeatmapComparator({
   originalUrl,
   heatmapUrl,
-  title = "การตรวจจับความผิดปกติของภาพ (Visual Anomaly)",
+  title = "เปรียบเทียบผลการตรวจภาพ",
   className,
 }) {
   const [mode, setMode] = useState("slider"); // 'slider' | 'side-by-side' | 'overlay'
@@ -22,7 +22,7 @@ export function HeatmapComparator({
       {/* Control Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 border-b border-border bg-muted/50">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <span className="text-sm font-semibold text-foreground">
             {title}
           </span>
         </div>
@@ -34,45 +34,45 @@ export function HeatmapComparator({
               type="button"
               onClick={() => setMode("slider")}
               className={cn(
-                "px-2.5 py-1 text-xs font-medium rounded-md transition-all flex items-center gap-1.5",
+                "h-8 px-2.5 text-xs font-medium rounded-md transition-all flex items-center gap-1.5",
                 mode === "slider"
                   ? "bg-card text-primary shadow-sm font-semibold"
                   : "text-muted-foreground hover:text-foreground"
               )}
-              title="Split Slider View"
+              title="เลื่อนเปรียบเทียบ"
             >
               <Sliders className="size-3.5" />
-              <span>Slider</span>
+              <span>เลื่อนเปรียบเทียบ</span>
             </button>
 
             <button
               type="button"
               onClick={() => setMode("side-by-side")}
               className={cn(
-                "px-2.5 py-1 text-xs font-medium rounded-md transition-all flex items-center gap-1.5",
+                "h-8 px-2.5 text-xs font-medium rounded-md transition-all flex items-center gap-1.5",
                 mode === "side-by-side"
                   ? "bg-card text-primary shadow-sm font-semibold"
                   : "text-muted-foreground hover:text-foreground"
               )}
-              title="Side by Side"
+              title="เทียบข้างกัน"
             >
               <Columns className="size-3.5" />
-              <span>Side-by-Side</span>
+              <span>เทียบข้างกัน</span>
             </button>
 
             <button
               type="button"
               onClick={() => setMode("overlay")}
               className={cn(
-                "px-2.5 py-1 text-xs font-medium rounded-md transition-all flex items-center gap-1.5",
+                "h-8 px-2.5 text-xs font-medium rounded-md transition-all flex items-center gap-1.5",
                 mode === "overlay"
                   ? "bg-card text-primary shadow-sm font-semibold"
                   : "text-muted-foreground hover:text-foreground"
               )}
-              title="Adjustable Overlay"
+              title="ซ้อนภาพ"
             >
               <Layers className="size-3.5" />
-              <span>Overlay</span>
+              <span>ซ้อนภาพ</span>
             </button>
           </div>
 
@@ -82,7 +82,7 @@ export function HeatmapComparator({
               type="button"
               onClick={handleZoomOut}
               className="p-1 rounded text-muted-foreground hover:bg-muted transition-colors"
-              title="Zoom Out"
+              title="ย่อภาพ"
             >
               <ZoomOut className="size-3.5" />
             </button>
@@ -93,7 +93,7 @@ export function HeatmapComparator({
               type="button"
               onClick={handleZoomIn}
               className="p-1 rounded text-muted-foreground hover:bg-muted transition-colors"
-              title="Zoom In"
+              title="ขยายภาพ"
             >
               <ZoomIn className="size-3.5" />
             </button>
@@ -102,7 +102,7 @@ export function HeatmapComparator({
                 type="button"
                 onClick={handleZoomReset}
                 className="p-1 rounded text-muted-foreground hover:bg-muted transition-colors"
-                title="Reset Zoom"
+                title="คืนขนาดเดิม"
               >
                 <RotateCcw className="size-3.5" />
               </button>
@@ -126,7 +126,7 @@ export function HeatmapComparator({
             {/* Heatmap Base (Right/Background) */}
             <img
               src={heatmapUrl || originalUrl}
-              alt="Heatmap Analysis"
+              alt="ผลการวิเคราะห์ฮีตแมป"
               className="max-h-[480px] w-auto object-contain block pointer-events-none"
             />
 
@@ -137,14 +137,14 @@ export function HeatmapComparator({
             >
               <img
                 src={originalUrl}
-                alt="Original Image"
+                alt="ภาพต้นฉบับ"
                 className="max-h-[480px] w-auto object-contain block"
               />
             </div>
 
             {/* Divider Line */}
             <div
-              className="absolute inset-y-0 w-0.5 bg-primary shadow-[0_0_10px_rgba(0,229,255,0.7)] pointer-events-none"
+              className="absolute inset-y-0 w-0.5 bg-primary shadow-[0_0_10px_color-mix(in_srgb,var(--primary)_70%,transparent)] pointer-events-none"
               style={{ left: `${sliderPosition}%` }}
             >
               <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 size-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg font-bold text-[9px]">
@@ -153,11 +153,11 @@ export function HeatmapComparator({
             </div>
 
             {/* Labels */}
-            <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/80 text-[10px] font-mono text-white pointer-events-none">
-              Original
+            <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/80 text-xs font-medium text-white pointer-events-none">
+              ภาพต้นฉบับ
             </div>
-            <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-black/80 text-[10px] font-mono text-primary pointer-events-none">
-              SegFormer Heatmap
+            <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-black/80 text-xs font-medium text-primary pointer-events-none">
+              ผลตรวจของโมเดล
             </div>
           </div>
         )}
@@ -168,22 +168,22 @@ export function HeatmapComparator({
             style={{ transform: `scale(${zoom})`, transformOrigin: "center center", transition: "transform 0.15s ease" }}
           >
             <div className="flex flex-col items-center gap-2">
-              <span className="text-xs font-mono text-muted-foreground">ภาพต้นฉบับ (Original)</span>
+              <span className="text-xs text-muted-foreground">ภาพต้นฉบับ</span>
               <div className="rounded-lg border border-border overflow-hidden bg-card/50 p-1">
                 <img
                   src={originalUrl}
-                  alt="Original"
+                  alt="ภาพต้นฉบับ"
                   className="max-h-[420px] w-full object-contain rounded"
                 />
               </div>
             </div>
 
             <div className="flex flex-col items-center gap-2">
-              <span className="text-xs font-mono text-primary">Heatmap วิเคราะห์จุดผิดปกติ</span>
+              <span className="text-xs text-primary">ผลตรวจของโมเดล</span>
               <div className="rounded-lg border border-primary-border overflow-hidden bg-card/50 p-1">
                 <img
                   src={heatmapUrl || originalUrl}
-                  alt="Heatmap"
+                  alt="ผลตรวจฮีตแมป"
                   className="max-h-[420px] w-full object-contain rounded"
                 />
               </div>
@@ -199,14 +199,14 @@ export function HeatmapComparator({
             {/* Base Original Image */}
             <img
               src={originalUrl}
-              alt="Original Base"
+              alt="ภาพต้นฉบับ"
               className="max-h-[480px] w-auto object-contain block"
             />
 
             {/* Heatmap with Opacity */}
             <img
               src={heatmapUrl || originalUrl}
-              alt="Heatmap Overlay"
+              alt="ผลตรวจฮีตแมปแบบซ้อนภาพ"
               className="absolute inset-0 max-h-[480px] w-full h-full object-contain transition-opacity duration-150 mix-blend-screen pointer-events-none"
               style={{ opacity: overlayOpacity / 100 }}
             />
@@ -218,7 +218,7 @@ export function HeatmapComparator({
       <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 bg-muted/40 border-t border-border text-xs text-muted-foreground">
         {mode === "overlay" ? (
           <div className="flex items-center gap-3 w-full sm:w-72">
-            <span className="text-xs font-semibold text-foreground">ความโปร่งแสง Heatmap:</span>
+            <span className="text-xs font-semibold text-foreground">ความโปร่งแสง:</span>
             <input
               type="range"
               min="0"
@@ -231,24 +231,24 @@ export function HeatmapComparator({
           </div>
         ) : (
           <div className="text-xs text-muted-foreground font-medium">
-            เลื่อนเมาส์ผ่านภาพเพื่อเปรียบเทียบจุดตรวจจับพิกเซลผิดปกติ
+            เลื่อนเมาส์บนภาพเพื่อเปรียบเทียบผล
           </div>
         )}
 
         {/* Heatmap Legend */}
-        <div className="flex items-center gap-4 text-[11px]">
-          <span className="font-semibold text-muted-foreground">ระดับความเสี่ยงพิกเซล:</span>
+        <div className="flex flex-wrap items-center gap-4 text-xs">
+          <span className="font-semibold text-muted-foreground">ระดับความเสี่ยง:</span>
           <div className="flex items-center gap-1.5 text-foreground font-medium">
             <span className="size-2 rounded-full bg-risk-low" />
-            <span>ธรรมชาติ (0-39)</span>
+            <span>ต่ำ (0–39)</span>
           </div>
           <div className="flex items-center gap-1.5 text-foreground font-medium">
             <span className="size-2 rounded-full bg-risk-medium" />
-            <span>สงสัยปานกลาง (40-69)</span>
+            <span>กลาง (40–69)</span>
           </div>
           <div className="flex items-center gap-1.5 text-foreground font-medium">
             <span className="size-2 rounded-full bg-risk-high" />
-            <span>ผิดปกติสูง (70-100)</span>
+            <span>สูง (70–100)</span>
           </div>
         </div>
       </div>

@@ -6,7 +6,7 @@ export function Table({ className, children, ...props }) {
     <div className="w-full overflow-x-auto">
       <table
         className={cn(
-          "w-full caption-bottom text-sm text-left text-foreground",
+          "w-full caption-bottom text-[13px] text-left text-foreground",
           className
         )}
         {...props}
@@ -21,7 +21,7 @@ export function TableHeader({ className, children, ...props }) {
   return (
     <thead
       className={cn(
-        "bg-muted/60 border-b border-border text-xs font-semibold uppercase tracking-wider text-muted-foreground",
+        "bg-muted/60 border-b border-border text-xs font-semibold text-muted-foreground",
         className
       )}
       {...props}
@@ -67,7 +67,7 @@ export function TableHead({ className, children, ...props }) {
 
 export function TableCell({ className, children, ...props }) {
   return (
-    <td className={cn("px-4 py-3 align-middle tabular-nums", className)} {...props}>
+    <td className={cn("px-4 py-3.5 align-middle tabular-nums", className)} {...props}>
       {children}
     </td>
   );
@@ -108,22 +108,22 @@ export function Pagination({ page, totalPages, totalItems, onPageChange, limit =
           type="button"
           onClick={() => onPageChange(page - 1)}
           disabled={page <= 1}
-          className="p-1.5 rounded-md border border-border text-foreground hover:bg-card disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-          aria-label="Previous page"
+          className="size-8 inline-flex items-center justify-center rounded-md border border-border text-foreground hover:bg-card disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          aria-label="หน้าก่อนหน้า"
         >
           <ChevronLeft className="size-4" />
         </button>
 
-        <span className="px-3 py-1 font-mono text-xs font-semibold text-foreground">
-          หน้า {page} / {totalPages || 1}
+        <span className="px-3 py-1 text-xs font-semibold text-foreground">
+          หน้า <span className="font-mono">{page}</span> / <span className="font-mono">{totalPages || 1}</span>
         </span>
 
         <button
           type="button"
           onClick={() => onPageChange(page + 1)}
           disabled={page >= totalPages}
-          className="p-1.5 rounded-md border border-border text-foreground hover:bg-card disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-          aria-label="Next page"
+          className="size-8 inline-flex items-center justify-center rounded-md border border-border text-foreground hover:bg-card disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          aria-label="หน้าถัดไป"
         >
           <ChevronRight className="size-4" />
         </button>

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Search, RefreshCw, Eye, Image as ImageIcon } from "lucide-react";
+import { RefreshCw, Eye, Image as ImageIcon } from "lucide-react";
 import { fetchReports } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell, TableEmpty, Pagination } from "@/components/ui/Table";
@@ -8,6 +8,7 @@ import { Tabs } from "@/components/ui/Tabs";
 import { RiskBadge, StatusBadge } from "@/components/ui/Badge";
 import { TableSkeleton } from "@/components/ui/Skeleton";
 import { Card } from "@/components/ui/Card";
+import { SearchInput, Select } from "@/components/ui/Input";
 import { useToast } from "@/components/ui/ToastContext";
 import { formatDate } from "@/lib/utils";
 import { useAutoRefresh } from "@/lib/use-auto-refresh";
@@ -17,21 +18,21 @@ const LIMIT = 15;
 
 const STATUS_TABS = [
   { id: "All", label: "ทั้งหมด" },
-  { id: "Pending", label: "รอตรวจ (Pending)" },
-  { id: "Reviewing", label: "กำลังตรวจ (Reviewing)" },
-  { id: "Approved", label: "ยืนยัน Scam (Approved)" },
-  { id: "Rejected", label: "ปัดตก (Rejected)" },
+  { id: "Pending", label: "รอตรวจ" },
+  { id: "Reviewing", label: "กำลังตรวจ" },
+  { id: "Approved", label: "ยืนยันแล้ว" },
+  { id: "Rejected", label: "ปฏิเสธ" },
 ];
 
 const CATEGORIES = [
   { key: "All", label: "ทุกหมวดหมู่การหลอกลวง" },
-  { key: "romance_scam", label: "หลอกลวงความรัก (Romance Scam)" },
-  { key: "online_shopping", label: "ซื้อขายออนไลน์ (Online Shopping)" },
-  { key: "fake_slip", label: "สลิปโอนเงินปลอม (Fake Slip)" },
-  { key: "investment", label: "ลงทุน / ผลตอบแทนสูง (Investment)" },
-  { key: "identity_theft", label: "ปลอมแปลงตัวตน (Identity Theft)" },
+  { key: "romance_scam", label: "หลอกลวงความรัก" },
+  { key: "online_shopping", label: "ซื้อขายออนไลน์" },
+  { key: "fake_slip", label: "สลิปโอนเงินปลอม" },
+  { key: "investment", label: "ลงทุน / ผลตอบแทนสูง" },
+  { key: "identity_theft", label: "ปลอมแปลงตัวตน" },
   { key: "ai_deepfake", label: "ภาพ AI / Deepfake" },
-  { key: "other", label: "อื่น ๆ (Other)" },
+  { key: "other", label: "อื่น ๆ" },
 ];
 
 const CATEGORY_LABELS = Object.fromEntries(CATEGORIES.filter((c) => c.key !== "All").map((c) => [c.key, c.label]));
@@ -142,10 +143,10 @@ export function ReportsList() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
-            <span>คิวรายงานการหลอกลวง (Scam Reports Queue)</span>
+            <span>รายงานที่รอตรวจสอบ</span>
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            ตรวจสอบ พิสูจน์หลักฐานความผิดปกติของรูปภาพ และตัดสินสถานะรายงาน
+            ตรวจสอบภาพและยืนยันผลรายงานจากผู้ใช้
           </p>
         </div>
 
@@ -157,7 +158,7 @@ export function ReportsList() {
             isLoading={isRefreshing}
             onClick={() => loadReports(true)}
           >
-            รีเฟรชคิว
+            รีเฟรช
           </Button>
         </div>
       </div>
@@ -173,29 +174,28 @@ export function ReportsList() {
           />
 
           {/* Search & Category Filter */}
-          <div className="flex flex-col sm:flex-row items-center gap-3">
-            <select
+          <div className="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto">
+            <Select
               value={category}
               onChange={handleCategoryChange}
-              className="w-full sm:w-auto px-3 py-1.5 bg-card border border-input text-xs font-medium text-foreground rounded-lg outline-none focus:border-ring focus:ring-1 focus:ring-ring transition-all"
+              containerClassName="sm:w-auto"
+              className="sm:w-auto min-w-52"
+              aria-label="กรองตามหมวดหมู่"
             >
               {CATEGORIES.map((cat) => (
                 <option key={cat.key} value={cat.key}>
                   {cat.label}
                 </option>
               ))}
-            </select>
+            </Select>
 
-            <div className="relative w-full sm:w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
-              <input
-                type="search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="ค้นหารหัส, ผู้ส่ง, รายละเอียด..."
-                className="w-full pl-8 pr-3 py-1.5 bg-card border border-input text-xs text-foreground placeholder:text-muted-foreground rounded-lg outline-none focus:border-ring focus:ring-1 focus:ring-ring transition-all font-mono"
-              />
-            </div>
+            <SearchInput
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="ค้นหารหัส ผู้ส่ง หรือรายละเอียด..."
+              containerClassName="sm:w-64"
+              aria-label="ค้นหารายงาน"
+            />
           </div>
         </div>
 
@@ -208,9 +208,9 @@ export function ReportsList() {
               <TableHeader>
                 <TableRow isHoverable={false}>
                   <TableHead className="w-16">ตัวอย่าง</TableHead>
-                  <TableHead>รหัสรายงาน (ID / Hash)</TableHead>
+                  <TableHead>รหัสรายงาน</TableHead>
                   <TableHead>หมวดหมู่</TableHead>
-                  <TableHead>คะแนนเสี่ยง (Risk)</TableHead>
+                  <TableHead>คะแนนความเสี่ยง</TableHead>
                   <TableHead>ผู้ส่งรายงาน</TableHead>
                   <TableHead>สถานะ</TableHead>
                   <TableHead>วันที่ส่งตรวจ</TableHead>
@@ -232,7 +232,7 @@ export function ReportsList() {
                           setDebouncedSearch("");
                           handleTabChange("All");
                         }}
-                        className="mt-2 text-cyan-500"
+                        className="mt-2 text-primary"
                       >
                         ล้างตัวกรองทั้งหมด
                       </Button>
@@ -253,7 +253,7 @@ export function ReportsList() {
                             {thumbUrl ? (
                               <img
                                 src={thumbUrl}
-                                alt="Report Preview"
+                                alt="ตัวอย่างรายงาน"
                                 className="size-full object-cover group-hover:scale-110 transition-transform duration-200"
                               />
                             ) : (
@@ -264,14 +264,14 @@ export function ReportsList() {
 
                         {/* ID */}
                         <TableCell>
-                          <div className="font-mono text-xs font-semibold text-foreground">
+                          <div className="font-mono text-[13px] font-semibold text-foreground">
                             #{report.id}
                           </div>
                         </TableCell>
 
                         {/* Category */}
                         <TableCell>
-                          <span className="text-xs font-medium text-foreground">
+                          <span className="text-[13px] font-medium text-foreground">
                             {CATEGORY_LABELS[report.category] || report.category || "ไม่ระบุ"}
                           </span>
                         </TableCell>
@@ -283,10 +283,10 @@ export function ReportsList() {
 
                         {/* Submitter */}
                         <TableCell>
-                          <div className="text-xs text-foreground font-medium">
+                          <div className="text-[13px] text-foreground font-medium">
                             {report.user?.full_name || report.user?.email || "ผู้ใช้ทั่วไป"}
                           </div>
-                          <div className="text-[10px] text-muted-foreground font-mono truncate max-w-[150px]">
+                          <div className="text-xs text-muted-foreground font-mono truncate max-w-[150px]">
                             {report.user?.email || "-"}
                           </div>
                         </TableCell>
@@ -297,7 +297,7 @@ export function ReportsList() {
                         </TableCell>
 
                         {/* Created At */}
-                        <TableCell className="text-xs text-muted-foreground font-mono whitespace-nowrap">
+                        <TableCell className="text-[13px] text-muted-foreground font-mono whitespace-nowrap">
                           {formatDate(report.created_at)}
                         </TableCell>
 

@@ -11,32 +11,31 @@ import {
   Settings,
   Shield,
   X,
-  Radio,
 } from "lucide-react";
 import { logoutAdmin, getStoredUser, fetchDashboard } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 const NAV_GROUPS = [
   {
-    label: "ศูนย์บัญชาการ",
+    label: "งานหลัก",
     items: [
-      { name: "แดชบอร์ดสถิติ", path: "/admin/dashboard", icon: LayoutDashboard },
-      { name: "คิวรายงานสแกน", path: "/admin/reports", icon: Flag, showPendingCount: true },
-      { name: "จัดการผู้ใช้งาน", path: "/admin/users", icon: Users },
+      { name: "ภาพรวม", path: "/admin/dashboard", icon: LayoutDashboard },
+      { name: "รายงานรอตรวจ", path: "/admin/reports", icon: Flag, showPendingCount: true },
+      { name: "ผู้ใช้งาน", path: "/admin/users", icon: Users },
     ],
   },
   {
     label: "โมเดล AI & ชุดข้อมูล",
     items: [
-      { name: "โมเดลตรวจจับ (AI)", path: "/admin/models", icon: Cpu },
+      { name: "โมเดล AI", path: "/admin/models", icon: Cpu },
       { name: "ส่งออกชุดข้อมูล", path: "/admin/dataset", icon: Database },
     ],
   },
   {
     label: "ความปลอดภัย & ระบบ",
     items: [
-      { name: "บันทึก Audit Log", path: "/admin/audit-log", icon: FileText },
-      { name: "ตั้งค่าโปรไฟล์", path: "/admin/profile", icon: Settings },
+      { name: "บันทึกกิจกรรม", path: "/admin/audit-log", icon: FileText },
+      { name: "บัญชีและความปลอดภัย", path: "/admin/profile", icon: Settings },
     ],
   },
 ];
@@ -85,8 +84,8 @@ export function AppSidebar({ isOpen, setIsOpen }) {
             <span className="font-bold text-sm text-sidebar-foreground tracking-tight leading-none">
               ScamGuard
             </span>
-            <span className="text-[10px] font-mono text-primary font-semibold tracking-wider uppercase mt-0.5">
-              Admin Console
+            <span className="text-[11px] text-sidebar-muted font-medium mt-0.5">
+              ผู้ดูแลระบบ
             </span>
           </div>
         </Link>
@@ -94,8 +93,8 @@ export function AppSidebar({ isOpen, setIsOpen }) {
         <button
           type="button"
           onClick={handleClose}
-          className="p-1.5 text-sidebar-muted hover:text-sidebar-foreground rounded-md hover:bg-sidebar-accent transition-colors md:hidden"
-          aria-label="Close sidebar"
+          className="size-8 inline-flex items-center justify-center text-sidebar-muted hover:text-sidebar-foreground rounded-md hover:bg-sidebar-accent transition-colors md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          aria-label="ปิดเมนูด้านข้าง"
         >
           <X className="size-4" />
         </button>
@@ -105,7 +104,7 @@ export function AppSidebar({ isOpen, setIsOpen }) {
       <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
         {NAV_GROUPS.map((group) => (
           <div key={group.label} className="space-y-1">
-            <div className="text-[11px] font-semibold text-sidebar-muted uppercase tracking-wider px-3 pb-1">
+            <div className="text-xs font-semibold text-sidebar-muted px-3 pb-1">
               {group.label}
             </div>
 
@@ -119,7 +118,7 @@ export function AppSidebar({ isOpen, setIsOpen }) {
                   to={item.path}
                   onClick={handleClose}
                   className={cn(
-                    "flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all group outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                    "flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-all group outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     isActive
                       ? "bg-primary/10 text-primary border border-primary/20 font-semibold"
                       : "text-sidebar-muted hover:bg-sidebar-accent hover:text-sidebar-foreground border border-transparent"
@@ -138,7 +137,7 @@ export function AppSidebar({ isOpen, setIsOpen }) {
                   {item.showPendingCount && pendingCount > 0 && (
                     <span
                       className={cn(
-                        "px-1.5 py-0.5 rounded-full text-[10px] font-mono font-bold transition-colors",
+                        "px-1.5 py-0.5 rounded-full text-[11px] font-mono font-bold transition-colors",
                         isActive
                           ? "bg-danger text-danger-foreground"
                           : "bg-danger/20 text-danger border border-danger/30"
@@ -166,12 +165,11 @@ export function AppSidebar({ isOpen, setIsOpen }) {
               {user.full_name?.substring(0, 2).toUpperCase() || "SA"}
             </div>
             <div className="min-w-0 flex-1">
-              <div className="text-xs font-medium text-sidebar-foreground truncate">
-                {user.full_name || "Super Admin"}
+              <div className="text-sm font-medium text-sidebar-foreground truncate">
+                {user.full_name || "ผู้ดูแลระบบ"}
               </div>
-              <div className="text-[10px] text-primary font-mono flex items-center gap-1">
-                <Radio className="size-2.5 text-success animate-pulse" />
-                <span>Super Admin</span>
+              <div className="text-xs text-sidebar-muted">
+                ผู้ดูแลระบบ
               </div>
             </div>
           </Link>
@@ -179,8 +177,8 @@ export function AppSidebar({ isOpen, setIsOpen }) {
           <button
             type="button"
             onClick={logoutAdmin}
-            title="ออกจากระบบ (Log out)"
-            className="p-1.5 text-sidebar-muted hover:text-danger hover:bg-sidebar rounded-md transition-colors"
+            title="ออกจากระบบ"
+            className="size-8 inline-flex items-center justify-center text-sidebar-muted hover:text-danger hover:bg-sidebar rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <LogOut className="size-4" />
           </button>

@@ -141,7 +141,7 @@ export function UserDetail() {
               </Badge>
             </div>
             <p className="text-xs text-muted-foreground font-mono mt-0.5">
-              User ID: #{user.id} • {user.email}
+              รหัสผู้ใช้ #{user.id} • {user.email}
             </p>
           </div>
         </div>
@@ -186,7 +186,7 @@ export function UserDetail() {
               <Flag className="size-5" />
             </div>
             <div>
-              <div className="text-xs font-medium text-muted-foreground">ส่งรายงาน Scam ทั้งหมด</div>
+              <div className="text-xs font-medium text-muted-foreground">รายงานทั้งหมด</div>
               <div className="text-xl font-bold font-mono text-foreground">
                 {formatNumber(user.total_reports ?? 0)} รายการ
               </div>
@@ -219,7 +219,7 @@ export function UserDetail() {
               <span>ข้อมูลบัญชีผู้ใช้</span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3 font-mono text-xs">
+          <CardContent className="space-y-3 text-[13px]">
             <div className="flex items-center justify-between py-1.5 border-b border-border-subtle">
               <span className="text-muted-foreground font-medium">ชื่อ-นามสกุล:</span>
               <span className="text-foreground font-sans font-semibold">{user.full_name || "-"}</span>
@@ -227,18 +227,18 @@ export function UserDetail() {
 
             <div className="flex items-center justify-between py-1.5 border-b border-border-subtle">
               <span className="text-muted-foreground font-medium">อีเมล:</span>
-              <span className="text-foreground font-semibold">{user.email}</span>
+              <span className="text-foreground font-mono font-semibold">{user.email}</span>
             </div>
 
             <div className="flex items-center justify-between py-1.5 border-b border-border-subtle">
-              <span className="text-muted-foreground font-medium">ระดับสิทธิ์ (Role):</span>
+              <span className="text-muted-foreground font-medium">สิทธิ์:</span>
               <span className="text-foreground font-semibold uppercase">{user.role}</span>
             </div>
 
             <div className="flex items-center justify-between py-1.5 border-b border-border-subtle">
               <span className="text-muted-foreground font-medium">สถานะปัจจุบัน:</span>
               <span className={user.is_active ? "text-success font-bold" : "text-danger font-bold"}>
-                {user.is_active ? "ปกติ (Active)" : "ถูกระงับ (Banned)"}
+                {user.is_active ? "ใช้งาน" : "ถูกระงับ"}
               </span>
             </div>
 
@@ -258,14 +258,14 @@ export function UserDetail() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Activity className="size-4 text-primary" />
-              <span>ประวัติการสแกนล่าสุด (Recent Scan Activity)</span>
+              <span>การสแกนล่าสุด</span>
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <Table>
               <TableHeader>
                 <TableRow isHoverable={false}>
-                  <TableHead>Scan ID</TableHead>
+                  <TableHead>รหัสการสแกน</TableHead>
                   <TableHead>คะแนนความเสี่ยง</TableHead>
                   <TableHead>ระดับผลการตรวจ</TableHead>
                   <TableHead>วันที่สแกน</TableHead>
@@ -277,10 +277,10 @@ export function UserDetail() {
                 ) : (
                   recentScans.map((scan) => (
                     <TableRow key={scan.id}>
-                      <TableCell className="font-mono text-xs font-semibold text-foreground">
+                      <TableCell className="font-mono text-[13px] font-semibold text-foreground">
                         #{scan.id}
                       </TableCell>
-                      <TableCell className="font-mono text-xs font-bold text-foreground">
+                      <TableCell className="font-mono text-[13px] font-bold text-foreground">
                         {scan.total_risk_score ?? 0}%
                       </TableCell>
                       <TableCell>
@@ -288,10 +288,10 @@ export function UserDetail() {
                           variant={(scan.total_risk_score ?? 0) >= 70 ? "danger" : (scan.total_risk_score ?? 0) >= 40 ? "warning" : "success"}
                           size="sm"
                         >
-                          {scan.risk_grade ? scan.risk_grade.toUpperCase() : ((scan.total_risk_score ?? 0) >= 70 ? "HIGH" : (scan.total_risk_score ?? 0) >= 40 ? "MEDIUM" : "LOW")}
+                          {(scan.total_risk_score ?? 0) >= 70 ? "สูง" : (scan.total_risk_score ?? 0) >= 40 ? "กลาง" : "ต่ำ"}
                         </Badge>
                       </TableCell>
-                      <TableCell className="font-mono text-xs text-muted-foreground">
+                      <TableCell className="font-mono text-[13px] text-muted-foreground">
                         {formatDate(scan.created_at)}
                       </TableCell>
                     </TableRow>
@@ -308,7 +308,7 @@ export function UserDetail() {
         isOpen={showStatusModal}
         onClose={() => setShowStatusModal(false)}
         title={user.is_active ? `ระงับบัญชี: ${user.email}` : `ปลดการระงับ: ${user.email}`}
-        description="กรุณาระบุเหตุผลอย่างละเอียดเพื่อบันทึกประวัติลง Audit Trail"
+        description="กรุณาระบุเหตุผล เหตุผลนี้จะถูกบันทึกไว้ในประวัติระบบ"
         footer={
           <>
             <Button variant="ghost" size="sm" onClick={() => setShowStatusModal(false)} disabled={isSubmitting}>

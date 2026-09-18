@@ -1,13 +1,14 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "@fontsource-variable/geist";
+@import "@fontsource-variable/noto-sans-thai";
 
 @plugin 'tailwindcss-animate';
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: "Geist Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-sans: "Noto Sans Thai Variable", "Geist Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   /* Canvas & Surface Tokens */
@@ -60,6 +61,12 @@
   --color-info-foreground: var(--info-foreground);
   --color-info-subtle: var(--info-subtle);
   --color-info-border: var(--info-border);
+
+  /* Chart Tokens */
+  --color-chart-primary: var(--chart-primary);
+  --color-chart-secondary: var(--chart-secondary);
+  --color-chart-grid: var(--chart-grid);
+  --color-chart-axis: var(--chart-axis);
 
   /* Risk Scoring Tiers */
   --color-risk-low: var(--risk-low);
@@ -119,11 +126,11 @@
   /* Borders & Inputs */
   --border: #cbd5e1;
   --border-subtle: #e2e8f0;
-  --input: #cbd5e1;
-  --ring: #0891b2;
+  --input: #8491a3;
+  --ring: #0e7490;
 
   /* Brand Primary (Cyber Cyan) */
-  --primary: #0891b2;
+  --primary: #0e7490;
   --primary-foreground: #ffffff;
   --primary-subtle: #ecfeff;
   --primary-border: #a5f3fc;
@@ -144,10 +151,23 @@
   --danger-subtle: #fff1f2;
   --danger-border: #fecdd3;
 
-  --info: #0284c7;
+  --info: #0369a1;
   --info-foreground: #ffffff;
   --info-subtle: #f0f9ff;
   --info-border: #bae6fd;
+
+  /* Charts */
+  --chart-primary: #0e7490;
+  --chart-secondary: #0284c7;
+  --chart-grid: #e2e8f0;
+  --chart-axis: #475569;
+  --chart-axis-line: #cbd5e1;
+  --chart-tooltip-bg: #ffffff;
+  --chart-tooltip-border: #cbd5e1;
+  --chart-tooltip-shadow: 0 4px 6px -1px rgb(15 23 42 / 0.1);
+  --chart-risk-low: #047857;
+  --chart-risk-medium: #b45309;
+  --chart-risk-high: #be123c;
 
   /* Risk Levels */
   --risk-low: #047857;
@@ -187,7 +207,7 @@
   /* Borders & Inputs */
   --border: #1e2b40;
   --border-subtle: #162032;
-  --input: #1e2b40;
+  --input: #52647e;
   --ring: #00e5ff;
 
   /* Brand Primary (Cyber Cyan) */
@@ -207,23 +227,36 @@
   --warning-subtle: rgba(245, 158, 11, 0.12);
   --warning-border: rgba(245, 158, 11, 0.25);
 
-  --danger: #f43f5e;
-  --danger-foreground: #4c0519;
-  --danger-subtle: rgba(244, 63, 94, 0.12);
-  --danger-border: rgba(244, 63, 94, 0.25);
+  --danger: #fb7185;
+  --danger-foreground: #3f0713;
+  --danger-subtle: rgba(251, 113, 133, 0.12);
+  --danger-border: rgba(251, 113, 133, 0.3);
 
   --info: #38bdf8;
   --info-foreground: #082f49;
   --info-subtle: rgba(56, 189, 248, 0.12);
   --info-border: rgba(56, 189, 248, 0.25);
 
+  /* Charts */
+  --chart-primary: #00e5ff;
+  --chart-secondary: #0ea5e9;
+  --chart-grid: #1e293b;
+  --chart-axis: #94a3b8;
+  --chart-axis-line: #334155;
+  --chart-tooltip-bg: #0f1623;
+  --chart-tooltip-border: #334155;
+  --chart-tooltip-shadow: 0 4px 8px -2px rgb(0 0 0 / 0.35);
+  --chart-risk-low: #10b981;
+  --chart-risk-medium: #f59e0b;
+  --chart-risk-high: #fb7185;
+
   /* Risk Levels */
   --risk-low: #10b981;
   --risk-low-subtle: rgba(16, 185, 129, 0.12);
   --risk-medium: #f59e0b;
   --risk-medium-subtle: rgba(245, 158, 11, 0.12);
-  --risk-high: #f43f5e;
-  --risk-high-subtle: rgba(244, 63, 94, 0.12);
+  --risk-high: #fb7185;
+  --risk-high-subtle: rgba(251, 113, 133, 0.12);
 
   /* Dedicated Dark Cyber Sidebar */
   --sidebar: #090d16;
@@ -252,10 +285,9 @@
   background-color: var(--muted-foreground);
 }
 
-/* Recharts Outline fix */
-.recharts-wrapper:focus,
-.recharts-surface:focus,
-.recharts-wrapper *,
-.recharts-surface * {
-  outline: none !important;
+/* Keep keyboard focus visible on interactive chart surfaces. */
+.recharts-wrapper:focus-visible,
+.recharts-surface:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
 }
