@@ -22,15 +22,14 @@
 # (mDice 97.30) by iter 100k, stop and inspect instead of burning GPU.
 # Promotion gate for v1.0.7: locked mDice >= 97.29, local imd2020 Forgery Dice
 # > 50%, overall FPR <= 1.0%. Evaluate the locked test only once at the end.
-# NOTE: this file must not contain static `import` statements for third-party
-# modules. mmengine classifies any such import as a lazy-import config, which
-# rejects the classic `_base_` list style used here. Third-party modules are
-# therefore loaded at runtime via __import__ (an AST Call node, invisible to
-# that check); behavior is identical once the config is executed.
-_random = __import__('random')
-_np = __import__('numpy')
-_BaseTransform = __import__('mmcv.transforms', fromlist=['BaseTransform']).BaseTransform
-_TRANSFORMS = __import__('mmseg.registry', fromlist=['TRANSFORMS']).TRANSFORMS
+# NOTE: CopyPasteForgery lives in ../forgery_aug.py (plain module with normal
+# imports). It must not be defined or imported here: any static third-party
+# `import` makes mmengine misclassify this file as lazy-import (rejecting
+# `_base_`), and class/module objects left in config globals break
+# `cfg.pretty_text` at Runner startup (crashed 2026-09-18). This bare
+# __import__ expression registers the transform as a side effect without
+# binding any name. Requires the segformer dir on PYTHONPATH (train.sh sets it).
+__import__('forgery_aug')
 
 DATA_ROOT = '/run/media/panuwat/USB/dataset'
 
@@ -50,80 +49,6 @@ checkpoint = (
 load_from = None
 resume = False
 randomness = dict(seed=43, diff_rank_seed=False, deterministic=False)
-
-
-@_TRANSFORMS.register_module()
-class CopyPasteForgery(_BaseTransform):
-    """Synthesize copy-move forgery inside the training crop.
-
-    Copies a random background patch and pastes it at a displaced
-    background location, labeling the pasted area as forgery (1) in
-    ``gt_seg_map``. Attempts touching existing forgery (source or
-    destination) are skipped, so every synthetic sample unambiguously means
-    "background copied elsewhere = new forgery". Half of the pastes use
-    feathered edges (Gaussian-blurred alpha blending, following the DF2023
-    synthesis protocol) so the model also sees concealed boundaries; the
-    rest stay hard-edged. Photometric laundering of the pasted patch is
-    left to the downstream Albu step.
-    """
-
-    def __init__(self, p=0.3, min_size=32, max_size=160, max_attempts=10,
-                 feather_prob=0.5):
-        self.p = p
-        self.min_size = min_size
-        self.max_size = max_size
-        self.max_attempts = max_attempts
-        self.feather_prob = feather_prob
-
-    def _paste(self, img, seg, sy, sx, dy, dx, s):
-        patch = img[sy:sy + s, sx:sx + s].copy()
-        if _random.random() < self.feather_prob:
-            cv2 = __import__('cv2')
-            h, w = seg.shape[:2]
-            alpha = _np.zeros((h, w), dtype=_np.float32)
-            alpha[dy:dy + s, dx:dx + s] = 1.0
-            k = max(3, (s // 16) * 2 + 1)  # odd kernel scaled to patch size
-            alpha = cv2.GaussianBlur(alpha, (k, k), 0)
-            canvas = img.astype(_np.float32)
-            # Start from canvas (not zeros): blurred alpha bleeds outside the
-            # destination, and blending bleed area with black would bake a
-            # dark halo ring that the model could learn as a forgery cue.
-            pasted = canvas.copy()
-            pasted[dy:dy + s, dx:dx + s] = patch.astype(_np.float32)
-            a3 = alpha[..., None]
-            img[:] = (a3 * pasted + (1.0 - a3) * canvas).astype(_np.uint8)
-            seg[dy:dy + s, dx:dx + s] = (
-                alpha[dy:dy + s, dx:dx + s] > 0.5).astype(seg.dtype)
-        else:
-            img[dy:dy + s, dx:dx + s] = patch
-            seg[dy:dy + s, dx:dx + s] = 1
-
-    def transform(self, results):
-        if _random.random() >= self.p:
-            return results
-        img = results['img']
-        seg = results['gt_seg_map']
-        h, w = seg.shape[:2]
-        max_s = min(self.max_size, h, w)
-        if max_s < self.min_size:
-            return results
-        for _ in range(self.max_attempts):
-            s = _random.randint(self.min_size, max_s)
-            sy = _random.randint(0, h - s)
-            sx = _random.randint(0, w - s)
-            dy = _random.randint(0, h - s)
-            dx = _random.randint(0, w - s)
-            if abs(dy - sy) < s and abs(dx - sx) < s:
-                continue  # require a visibly displaced duplicate
-            if seg[sy:sy + s, sx:sx + s].any():
-                continue  # source must be background: copy background only
-            if seg[dy:dy + s, dx:dx + s].any():
-                continue  # keep destination background-pure
-            self._paste(img, seg, sy, sx, dy, dx, s)
-            break
-        results['img'] = img
-        results['gt_seg_map'] = seg
-        return results
 
 
 model = dict(
@@ -293,7 +218,10 @@ def _train_ds(root):
 train_dataloader = dict(
     # batch 16 OOMs on 8GB (proven 2026-09-10): 8 + accumulate 2 = effective 16.
     batch_size=8,
-    num_workers=8,
+    # 4 workers (not 8): 2026-09-18 OOM killed a data worker on the 15GB
+    # desktop during val, when 8 train + 8 val workers coexisted with desktop
+    # apps. data_time was ~0.01s, so loading is far from the bottleneck.
+    num_workers=4,
     persistent_workers=True,
     dataset=dict(
         _delete_=True,
@@ -304,7 +232,7 @@ train_dataloader = dict(
 
 val_dataloader = dict(
     batch_size=16,
-    num_workers=8,
+    num_workers=4,  # see OOM note on train_dataloader (workers coexist during val)
     persistent_workers=True,
     dataset=dict(
         _delete_=True,
