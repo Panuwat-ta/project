@@ -2,3 +2,27 @@
   warnings.warn('Fail to import ``MultiScaleDeformableAttention`` from '
 /home/panuwat/project/model/segformer/library/mmsegmentation/mmseg/models/decode_heads/decode_head.py:120: UserWarning: For binary segmentation, we suggest using`out_channels = 1` to define the outputchannels of segmentor, and use `threshold`to convert `seg_logits` into a predictionapplying a threshold
   warnings.warn('For binary segmentation, we suggest using'
+train=12800 val=3200 (pos=8000/16000)
+Loads checkpoint by local backend from path: work_dirs/v1.0.6/best_mIoU_iter_195000.pth
+epoch 1/30 val_loss=0.4549 val_acc=0.7941
+epoch 2/30 val_loss=0.4345 val_acc=0.7981
+epoch 3/30 val_loss=0.4227 val_acc=0.8087
+epoch 4/30 val_loss=0.4170 val_acc=0.8113
+epoch 5/30 val_loss=0.4097 val_acc=0.8103
+epoch 6/30 val_loss=0.4076 val_acc=0.8109
+epoch 7/30 val_loss=0.4020 val_acc=0.8125
+epoch 8/30 val_loss=0.3990 val_acc=0.8150
+epoch 9/30 val_loss=0.3981 val_acc=0.8181
+epoch 10/30 val_loss=0.3945 val_acc=0.8231
+epoch 11/30 val_loss=0.3930 val_acc=0.8216
+epoch 12/30 val_loss=0.3927 val_acc=0.8237
+epoch 13/30 val_loss=0.3897 val_acc=0.8266
+epoch 14/30 val_loss=0.3882 val_acc=0.8247
+epoch 15/30 val_loss=0.3869 val_acc=0.8269
+epoch 16/30 val_loss=0.3862 val_acc=0.8250
+epoch 17/30 val_loss=0.3856 val_acc=0.8269
+epoch 18/30 val_loss=0.3845 val_acc=0.8272
+epoch 19/30 val_loss=0.3838 val_acc=0.8266
+epoch 20/30 val_loss=0.3832 val_acc=0.8263
+epoch 21/30 val_loss=0.3822 val_acc=0.8256
+epoch 22/30 val_loss=0.3817 val_acc=0.8269

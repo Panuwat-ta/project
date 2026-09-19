@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../features/result/domain/entities/analysis_result.dart';
 import '../theme/app_colors.dart';
 import '../constants/app_spacing.dart';
 import '../theme/app_typography.dart';
@@ -58,8 +59,10 @@ class HistoryListItem extends StatelessWidget {
                         thumbnailUrl!,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) =>
-                            const Icon(Icons.image_not_supported_outlined,
-                                size: 24),
+                            const Icon(
+                              Icons.image_not_supported_outlined,
+                              size: 24,
+                            ),
                       )
                     : Icon(
                         Icons.image_outlined,

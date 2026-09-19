@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:scam_image_mobile/core/theme/app_colors.dart';
 import 'package:scam_image_mobile/core/widgets/risk_badge.dart';
+import 'package:scam_image_mobile/features/result/domain/entities/analysis_result.dart';
 
 void main() {
   setUpAll(() {
@@ -20,8 +21,9 @@ void main() {
   }
 
   group('RiskBadge', () {
-    testWidgets('low — shows "ต่ำ" with success green background',
-        (tester) async {
+    testWidgets('low — shows "ต่ำ" with success green background', (
+      tester,
+    ) async {
       await tester.pumpWidget(buildBadge(RiskLevel.low));
       await tester.pump();
 
@@ -31,11 +33,15 @@ void main() {
       // Background color is AppColors.success
       final container = tester.widget<Container>(find.byType(Container).first);
       final decoration = container.decoration as BoxDecoration;
-      expect(decoration.color, equals(AppColors.success.withValues(alpha: 0.15)));
+      expect(
+        decoration.color,
+        equals(AppColors.success.withValues(alpha: 0.15)),
+      );
     });
 
-    testWidgets('medium — shows "ปานกลาง" with warning amber background',
-        (tester) async {
+    testWidgets('medium — shows "ปานกลาง" with warning amber background', (
+      tester,
+    ) async {
       await tester.pumpWidget(buildBadge(RiskLevel.medium));
       await tester.pump();
 
@@ -43,11 +49,15 @@ void main() {
 
       final container = tester.widget<Container>(find.byType(Container).first);
       final decoration = container.decoration as BoxDecoration;
-      expect(decoration.color, equals(AppColors.warning.withValues(alpha: 0.15)));
+      expect(
+        decoration.color,
+        equals(AppColors.warning.withValues(alpha: 0.15)),
+      );
     });
 
-    testWidgets('high — shows "สูง" with danger red background',
-        (tester) async {
+    testWidgets('high — shows "สูง" with danger red background', (
+      tester,
+    ) async {
       await tester.pumpWidget(buildBadge(RiskLevel.high));
       await tester.pump();
 
@@ -55,7 +65,10 @@ void main() {
 
       final container = tester.widget<Container>(find.byType(Container).first);
       final decoration = container.decoration as BoxDecoration;
-      expect(decoration.color, equals(AppColors.danger.withValues(alpha: 0.15)));
+      expect(
+        decoration.color,
+        equals(AppColors.danger.withValues(alpha: 0.15)),
+      );
     });
 
     group('levelFromString', () {
@@ -71,13 +84,20 @@ void main() {
         expect(RiskBadge.levelFromString('high'), RiskLevel.high);
       });
 
-      test('maps "safe" to RiskLevel.low (legacy)', () {
-        expect(RiskBadge.levelFromString('safe'), RiskLevel.low);
+      test('maps "safe" to RiskLevel.unknown (no Safe level)', () {
+        expect(RiskBadge.levelFromString('safe'), RiskLevel.unknown);
       });
 
-      test('maps unknown string to RiskLevel.low (default)', () {
-        expect(RiskBadge.levelFromString('unknown'), RiskLevel.low);
+      test('maps unknown string to RiskLevel.unknown (never Low)', () {
+        expect(RiskBadge.levelFromString('unknown'), RiskLevel.unknown);
       });
+    });
+
+    testWidgets('unknown — shows "ไม่ทราบ" grey badge', (tester) async {
+      await tester.pumpWidget(buildBadge(RiskLevel.unknown));
+      await tester.pump();
+
+      expect(find.text('ไม่ทราบ'), findsOneWidget);
     });
   });
 }

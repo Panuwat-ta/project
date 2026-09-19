@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../features/result/domain/entities/analysis_result.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
-import 'risk_badge.dart';
 
 /// Horizontal progress bar (score / 100) with risk-level color fill.
 ///
@@ -33,6 +33,10 @@ class RiskProgressBar extends StatelessWidget {
         return AppColors.warning;
       case RiskLevel.high:
         return AppColors.danger;
+      case RiskLevel.unknown:
+        // Unreachable: _levelForScore never returns unknown. Required for
+        // exhaustive switch; grey signals "not assessable" if ever hit.
+        return Colors.grey;
     }
   }
 
@@ -66,10 +70,7 @@ class RiskProgressBar extends StatelessWidget {
         ),
         if (showLabel) ...[
           const SizedBox(width: 8),
-          Text(
-            '$score%',
-            style: AppTypography.codeData(color: color),
-          ),
+          Text('$score%', style: AppTypography.codeData(color: color)),
         ],
       ],
     );

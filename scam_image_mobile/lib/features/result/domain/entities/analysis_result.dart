@@ -1,13 +1,17 @@
 import 'package:equatable/equatable.dart';
 import 'risk_factor.dart';
 
-enum RiskLevel { low, medium, high }
+/// Overall risk grade. The single authority is the server RiskScore module.
+///
+/// `unknown` means the grade is missing or unrecognized and must never be
+/// rendered as Low — the UI has to show an explicit "not assessable" state.
+enum RiskLevel { low, medium, high, unknown }
 
 class AnalysisResult extends Equatable {
   final String scanId;
   final String taskId;
-  final String status;      // "completed" | "failed"
-  final int riskScore;      // 0-100
+  final String status; // "completed" | "failed"
+  final int riskScore; // 0-100
   final RiskLevel riskLevel;
   final String summary;
   final String? imageUrl;
@@ -38,19 +42,19 @@ class AnalysisResult extends Equatable {
 
   @override
   List<Object?> get props => [
-        scanId,
-        taskId,
-        status,
-        riskScore,
-        riskLevel,
-        summary,
-        imageUrl,
-        heatmapUrl,
-        xaiExplanation,
-        aiGenProbability,
-        ocrText,
-        scamKeywords,
-        createdAt,
-        factors,
-      ];
+    scanId,
+    taskId,
+    status,
+    riskScore,
+    riskLevel,
+    summary,
+    imageUrl,
+    heatmapUrl,
+    xaiExplanation,
+    aiGenProbability,
+    ocrText,
+    scamKeywords,
+    createdAt,
+    factors,
+  ];
 }

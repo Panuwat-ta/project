@@ -3,15 +3,17 @@ import 'package:flutter/material.dart';
 import '../../features/result/domain/entities/analysis_result.dart';
 import '../theme/app_colors.dart';
 
-/// Converts a numeric risk score (0-100) to a [RiskLevel] (3 ระดับ: Low/Medium/High).
+/// Presentation mappers for a [RiskLevel] (3 ระดับ + unknown).
 ///
-/// 0-39  → low
-/// 40-69 → medium
-/// 70-100 → high
+/// The overall grade is owned by the server RiskScore module — mobile never
+/// recomputes it. [factorLevelForScore] is presentation-only for per-factor
+/// pills and must not be used as the overall grade.
 class RiskLevelHelper {
   RiskLevelHelper._();
 
-  static RiskLevel fromScore(int score) {
+  /// Presentation-only mapping of a single factor score to a level pill.
+  /// Not a grade authority: the overall grade always comes from the server.
+  static RiskLevel factorLevelForScore(int score) {
     if (score >= 70) return RiskLevel.high;
     if (score >= 40) return RiskLevel.medium;
     return RiskLevel.low;
@@ -25,6 +27,8 @@ class RiskLevelHelper {
         return 'Medium';
       case RiskLevel.high:
         return 'High';
+      case RiskLevel.unknown:
+        return 'Unknown';
     }
   }
 
@@ -37,6 +41,8 @@ class RiskLevelHelper {
         return const Color(0xFFEA580C); // orange-600
       case RiskLevel.high:
         return AppColors.danger;
+      case RiskLevel.unknown:
+        return Colors.grey;
     }
   }
 
@@ -49,6 +55,8 @@ class RiskLevelHelper {
         return isDark ? const Color(0xFF33200E) : const Color(0xFFFFF7ED);
       case RiskLevel.high:
         return isDark ? const Color(0xFF4A1818) : const Color(0xFFFFEBEB);
+      case RiskLevel.unknown:
+        return isDark ? const Color(0xFF2A2A2A) : const Color(0xFFF0F0F0);
     }
   }
 
@@ -61,6 +69,8 @@ class RiskLevelHelper {
         return isDark ? const Color(0xFFFDBA74) : const Color(0xFFEA580C);
       case RiskLevel.high:
         return isDark ? const Color(0xFFFFB4B4) : AppColors.danger;
+      case RiskLevel.unknown:
+        return isDark ? const Color(0xFFBDBDBD) : const Color(0xFF757575);
     }
   }
 
@@ -73,6 +83,8 @@ class RiskLevelHelper {
         return 'result_medium_risk';
       case RiskLevel.high:
         return 'result_high_risk';
+      case RiskLevel.unknown:
+        return 'result_unknown_risk';
     }
   }
 
@@ -85,6 +97,8 @@ class RiskLevelHelper {
         return Icons.warning_rounded;
       case RiskLevel.high:
         return Icons.warning_amber_rounded;
+      case RiskLevel.unknown:
+        return Icons.help_outline_rounded;
     }
   }
 }

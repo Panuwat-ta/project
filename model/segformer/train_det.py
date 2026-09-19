@@ -171,9 +171,11 @@ def main():
     print(f'train={len(train_items)} val={len(val_items)} '
           f'(pos={sum(x[1] for x in items)}/{len(items)})')
     train_loader = DataLoader(ImgLabelDataset(train_items),
-                              batch_size=args.batch_size, shuffle=True)
+                              batch_size=args.batch_size, shuffle=True,
+                              num_workers=4, pin_memory=True)
     val_loader = DataLoader(ImgLabelDataset(val_items),
-                            batch_size=args.batch_size)
+                            batch_size=args.batch_size,
+                            num_workers=2, pin_memory=True)
 
     device = torch.device(args.device)
     seg = build_seg_model(args.config, args.checkpoint, 'cpu')

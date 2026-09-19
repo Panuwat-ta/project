@@ -5,7 +5,9 @@ import 'package:scam_image_mobile/features/result/domain/entities/analysis_resul
 
 void main() {
   setUpAll(() {
-    dotenv.loadFromString(envString: 'API_BASE_URL=http://10.0.0.1:8000/api/v1');
+    dotenv.loadFromString(
+      envString: 'API_BASE_URL=http://10.0.0.1:8000/api/v1',
+    );
   });
 
   group('ScanHistoryItemModel.fromJson', () {
@@ -30,7 +32,7 @@ void main() {
       expect(model.createdAt, DateTime(2026, 1, 15, 10, 30));
     });
 
-    test('parses camelCase keys', () {
+    test('legacy camelCase keys are ignored (canonical contract only)', () {
       final json = {
         'scanId': 'scan-camel',
         'thumbnailUrl': 'http://example.com/thumb.jpg',
@@ -43,9 +45,8 @@ void main() {
       final model = ScanHistoryItemModel.fromJson(json);
 
       expect(model.scanId, 'scan-camel');
-      expect(model.thumbnailUrl, 'http://example.com/thumb.jpg');
-      expect(model.riskScore, 50);
-      expect(model.riskLevel, RiskLevel.medium);
+      expect(model.riskScore, 0);
+      expect(model.riskLevel, RiskLevel.unknown);
     });
 
     test('parses risk_level low', () {
@@ -61,7 +62,7 @@ void main() {
       expect(model.riskLevel, RiskLevel.low);
     });
 
-    test('falls back to RiskLevelHelper when no risk_level', () {
+    test('missing risk_level maps to unknown, never Low', () {
       final json = {
         'scan_id': 'scan-1',
         'risk_score': 85,
@@ -70,7 +71,7 @@ void main() {
       };
 
       final model = ScanHistoryItemModel.fromJson(json);
-      expect(model.riskLevel, RiskLevel.high);
+      expect(model.riskLevel, RiskLevel.unknown);
     });
 
     test('defaults riskScore to 0 when missing', () {
@@ -85,20 +86,14 @@ void main() {
     });
 
     test('defaults status to completed when missing', () {
-      final json = {
-        'scan_id': 'scan-1',
-        'created_at': '2026-01-01T00:00:00',
-      };
+      final json = {'scan_id': 'scan-1', 'created_at': '2026-01-01T00:00:00'};
 
       final model = ScanHistoryItemModel.fromJson(json);
       expect(model.status, 'completed');
     });
 
     test('defaults scanId to empty string when missing', () {
-      final json = {
-        'status': 'completed',
-        'created_at': '2026-01-01T00:00:00',
-      };
+      final json = {'status': 'completed', 'created_at': '2026-01-01T00:00:00'};
 
       final model = ScanHistoryItemModel.fromJson(json);
       expect(model.scanId, '');

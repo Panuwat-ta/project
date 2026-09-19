@@ -47,11 +47,16 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
         context.go('/main/home');
       },
       child: Scaffold(
-        backgroundColor: isDark ? const Color(0xFF0F1720) : const Color(0xFFF6F8FB),
+        backgroundColor: isDark
+            ? const Color(0xFF0F1720)
+            : const Color(0xFFF6F8FB),
         appBar: AppTopBar(
           automaticallyImplyLeading: false,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : AppColors.onSurface),
+            icon: Icon(
+              Icons.arrow_back,
+              color: isDark ? Colors.white : AppColors.onSurface,
+            ),
             onPressed: () {
               if (canPop) {
                 context.pop();
@@ -62,46 +67,52 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           ),
           actions: [
             IconButton(
-              icon: Icon(Icons.notifications_none,
-                  color: isDark ? Colors.white : AppColors.onSurface),
+              icon: Icon(
+                Icons.notifications_none,
+                color: isDark ? Colors.white : AppColors.onSurface,
+              ),
               onPressed: () {},
             ),
           ],
         ),
-      body: BlocBuilder<ResultBloc, ResultState>(
-        builder: (context, state) {
-          if (state is ResultLoading || state is ResultInitial) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (state is ResultError) {
-            return Center(child: Text(state.message));
-          }
-          if (state is ResultLoaded) {
-            return _ResultBody(
-              result: state.result,
-              isDark: isDark,
-              scanName: widget.scanName,
-            );
-          }
-          return const SizedBox.shrink();
-        },
-      ),
-      bottomNavigationBar: AppBottomNavigation(
-        currentIndex: 1,
-        onTap: (index) {
-          if (index == 0) context.go('/main/home');
-          if (index == 1) context.go('/main/history');
-          if (index == 2) context.go('/main/report');
-          if (index == 3) context.go('/main/settings');
-        },
-      ),
+        body: BlocBuilder<ResultBloc, ResultState>(
+          builder: (context, state) {
+            if (state is ResultLoading || state is ResultInitial) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (state is ResultError) {
+              return Center(child: Text(state.message));
+            }
+            if (state is ResultLoaded) {
+              return _ResultBody(
+                result: state.result,
+                isDark: isDark,
+                scanName: widget.scanName,
+              );
+            }
+            return const SizedBox.shrink();
+          },
+        ),
+        bottomNavigationBar: AppBottomNavigation(
+          currentIndex: 1,
+          onTap: (index) {
+            if (index == 0) context.go('/main/home');
+            if (index == 1) context.go('/main/history');
+            if (index == 2) context.go('/main/report');
+            if (index == 3) context.go('/main/settings');
+          },
+        ),
       ),
     );
   }
 }
 
 class _ResultBody extends StatelessWidget {
-  const _ResultBody({required this.result, required this.isDark, this.scanName});
+  const _ResultBody({
+    required this.result,
+    required this.isDark,
+    this.scanName,
+  });
 
   final domain.AnalysisResult result;
   final bool isDark;
@@ -121,7 +132,9 @@ class _ResultBody extends StatelessWidget {
             Text(
               scanName!,
               textAlign: TextAlign.center,
-              style: AppTypography.headlineLgMobile(color: isDark ? Colors.white : AppColors.primary).copyWith(fontWeight: FontWeight.bold),
+              style: AppTypography.headlineLgMobile(
+                color: isDark ? Colors.white : AppColors.primary,
+              ).copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: AppSpacing.sm),
           ],
@@ -141,7 +154,10 @@ class _ResultBody extends StatelessWidget {
   Widget _buildRiskGauge(BuildContext context) {
     final riskColor = RiskLevelHelper.toColor(result.riskLevel);
     final badgeBg = RiskLevelHelper.toBgColor(result.riskLevel, isDark: isDark);
-    final badgeTextColor = RiskLevelHelper.toTextColor(result.riskLevel, isDark: isDark);
+    final badgeTextColor = RiskLevelHelper.toTextColor(
+      result.riskLevel,
+      isDark: isDark,
+    );
     final badgeIcon = RiskLevelHelper.toIcon(result.riskLevel);
 
     return Column(
@@ -158,12 +174,15 @@ class _ResultBody extends StatelessWidget {
                 children: [
                   Text(
                     '${result.riskScore}',
-                    style: AppTypography.displayHero(color: riskColor)
-                        .copyWith(fontSize: 40, height: 1.0),
+                    style: AppTypography.displayHero(
+                      color: riskColor,
+                    ).copyWith(fontSize: 40, height: 1.0),
                   ),
                   Text(
                     'result_risk_score'.tr(context),
-                    style: AppTypography.caption(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    style: AppTypography.caption(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),
@@ -184,7 +203,9 @@ class _ResultBody extends StatelessWidget {
               const SizedBox(width: 4),
               Text(
                 '${result.riskScore}%',
-                style: AppTypography.caption(color: badgeTextColor).copyWith(fontWeight: FontWeight.w600),
+                style: AppTypography.caption(
+                  color: badgeTextColor,
+                ).copyWith(fontWeight: FontWeight.w600),
               ),
             ],
           ),
@@ -231,7 +252,9 @@ class _ResultBody extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
-                  result.summary.isNotEmpty ? result.summary : 'result_summary_desc'.tr(context),
+                  result.summary.isNotEmpty
+                      ? result.summary
+                      : 'result_summary_desc'.tr(context),
                   style: AppTypography.bodyBase(
                     color: isDark ? Colors.white70 : AppColors.textSecondary,
                   ),
@@ -246,7 +269,7 @@ class _ResultBody extends StatelessWidget {
 
   Widget _buildActionButtons(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Column(
       children: [
         Row(
@@ -261,7 +284,9 @@ class _ResultBody extends StatelessWidget {
                   foregroundColor: Colors.white,
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   textStyle: AppTypography.buttonLabel(),
                 ),
               ),
@@ -274,9 +299,15 @@ class _ResultBody extends StatelessWidget {
                 label: Text('result_report_scam'.tr(context)),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.danger,
-                  side: BorderSide(color: isDark ? AppColors.danger.withValues(alpha: 0.5) : AppColors.danger),
+                  side: BorderSide(
+                    color: isDark
+                        ? AppColors.danger.withValues(alpha: 0.5)
+                        : AppColors.danger,
+                  ),
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   textStyle: AppTypography.buttonLabel(),
                 ),
               ),
@@ -295,10 +326,18 @@ class _ResultBody extends StatelessWidget {
                 icon: const Icon(Icons.share_outlined, size: 20),
                 label: Text('result_share'.tr(context)),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: isDark ? AppColors.primaryFixedDim : AppColors.primary,
-                  side: BorderSide(color: isDark ? AppColors.primaryFixedDim.withValues(alpha: 0.5) : AppColors.primary),
+                  foregroundColor: isDark
+                      ? AppColors.primaryFixedDim
+                      : AppColors.primary,
+                  side: BorderSide(
+                    color: isDark
+                        ? AppColors.primaryFixedDim.withValues(alpha: 0.5)
+                        : AppColors.primary,
+                  ),
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   textStyle: AppTypography.buttonLabel(),
                 ),
               ),
@@ -319,24 +358,35 @@ class _ResultBody extends StatelessWidget {
                         ),
                         TextButton(
                           onPressed: () => Navigator.pop(ctx, true),
-                          child: Text('delete'.tr(context), style: const TextStyle(color: Colors.red)),
+                          child: Text(
+                            'delete'.tr(context),
+                            style: const TextStyle(color: Colors.red),
+                          ),
                         ),
                       ],
                     ),
                   );
                   if (confirm == true && context.mounted) {
-                    context.read<HistoryBloc>().add(HistoryItemDeleted(result.taskId));
+                    context.read<HistoryBloc>().add(
+                      HistoryItemDeleted(result.taskId),
+                    );
                     context.go('/main/home');
                   }
                 },
                 icon: const Icon(Icons.delete_outline, size: 20),
                 label: Text('delete'.tr(context)),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isDark ? const Color(0xFF3F191D) : const Color(0xFFFFEBEB),
-                  foregroundColor: isDark ? const Color(0xFFFFB4B4) : AppColors.danger,
+                  backgroundColor: isDark
+                      ? const Color(0xFF3F191D)
+                      : const Color(0xFFFFEBEB),
+                  foregroundColor: isDark
+                      ? const Color(0xFFFFB4B4)
+                      : AppColors.danger,
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   textStyle: AppTypography.buttonLabel(),
                 ),
               ),
@@ -344,21 +394,33 @@ class _ResultBody extends StatelessWidget {
           ],
         ),
         const SizedBox(height: AppSpacing.md),
-        Divider(height: 1, thickness: 1, color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
+        Divider(
+          height: 1,
+          thickness: 1,
+          color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+        ),
         const SizedBox(height: AppSpacing.md),
         SizedBox(
           width: double.infinity,
           child: ElevatedButton.icon(
-            onPressed: () => context.go('/main/history'), // Should be /main/home? Current app uses history, let's keep it.
+            onPressed: () => context.go(
+              '/main/history',
+            ), // Should be /main/home? Current app uses history, let's keep it.
             icon: const Icon(Icons.photo_camera_outlined, size: 20),
             label: Text('result_check_another'.tr(context)),
             style: ElevatedButton.styleFrom(
-              backgroundColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFF8F9FA),
+              backgroundColor: isDark
+                  ? const Color(0xFF1E293B)
+                  : const Color(0xFFF8F9FA),
               foregroundColor: isDark ? Colors.white : AppColors.textPrimary,
-              side: isDark ? BorderSide.none : const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
+              side: isDark
+                  ? BorderSide.none
+                  : const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
               elevation: 0,
               padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               textStyle: AppTypography.buttonLabel(),
             ),
           ),
@@ -369,8 +431,15 @@ class _ResultBody extends StatelessWidget {
 
   Widget _buildVisualAnomalyCard(BuildContext context) {
     final visuals = result.factors.where((f) => f.type == 'visual');
-    final visualFactor = visuals.isNotEmpty ? visuals.first : const domain.RiskFactor(type: 'visual', score: 0, title: '', details: []);
-    
+    final visualFactor = visuals.isNotEmpty
+        ? visuals.first
+        : const domain.RiskFactor(
+            type: 'visual',
+            score: 0,
+            title: '',
+            details: [],
+          );
+
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
@@ -390,13 +459,18 @@ class _ResultBody extends StatelessWidget {
               Expanded(
                 child: Row(
                   children: [
-                    Icon(Icons.image_search, color: isDark ? Colors.white : const Color(0xFF0F172A)),
+                    Icon(
+                      Icons.image_search,
+                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         'visual_anomaly_title'.tr(context),
                         style: AppTypography.sectionHeader(
-                          color: isDark ? Colors.white : const Color(0xFF0F172A),
+                          color: isDark
+                              ? Colors.white
+                              : const Color(0xFF0F172A),
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -407,18 +481,28 @@ class _ResultBody extends StatelessWidget {
               const SizedBox(width: AppSpacing.sm),
               Builder(
                 builder: (_) {
-                  final vLevel = RiskLevelHelper.fromScore(visualFactor.score);
+                  final vLevel = RiskLevelHelper.factorLevelForScore(
+                    visualFactor.score,
+                  );
                   final vBg = RiskLevelHelper.toBgColor(vLevel, isDark: isDark);
-                  final vFg = RiskLevelHelper.toTextColor(vLevel, isDark: isDark);
+                  final vFg = RiskLevelHelper.toTextColor(
+                    vLevel,
+                    isDark: isDark,
+                  );
                   return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: vBg,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
                       '${visualFactor.score}%',
-                      style: AppTypography.caption(color: vFg).copyWith(fontWeight: FontWeight.bold),
+                      style: AppTypography.caption(
+                        color: vFg,
+                      ).copyWith(fontWeight: FontWeight.bold),
                     ),
                   );
                 },
@@ -426,7 +510,7 @@ class _ResultBody extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          
+
           // Image / Slider container
           GestureDetector(
             onTap: () {
@@ -434,7 +518,8 @@ class _ResultBody extends StatelessWidget {
                 '/heatmap/${result.taskId}',
                 extra: <String, dynamic>{
                   if (result.imageUrl != null) 'imageUrl': result.imageUrl,
-                  if (result.heatmapUrl != null) 'heatmapUrl': result.heatmapUrl,
+                  if (result.heatmapUrl != null)
+                    'heatmapUrl': result.heatmapUrl,
                 },
               );
             },
@@ -447,27 +532,51 @@ class _ResultBody extends StatelessWidget {
                     height: 200,
                     width: double.infinity,
                     color: const Color(0xFF0F172A),
-                    child: (result.heatmapUrl != null || result.imageUrl != null)
+                    child:
+                        (result.heatmapUrl != null || result.imageUrl != null)
                         ? CachedNetworkImage(
                             imageUrl: (result.heatmapUrl ?? result.imageUrl)!,
                             fit: BoxFit.cover,
                             width: double.infinity,
                             height: 200,
                             placeholder: (context, url) => const Center(
-                              child: SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white24)),
+                              child: SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white24,
+                                ),
+                              ),
                             ),
                             errorWidget: (context, url, error) => const Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.broken_image_outlined, color: Colors.white24, size: 32),
+                                  Icon(
+                                    Icons.broken_image_outlined,
+                                    color: Colors.white24,
+                                    size: 32,
+                                  ),
                                   SizedBox(height: 8),
-                                  Text('โหลดรูปไม่สำเร็จ', style: TextStyle(color: Colors.white38, fontSize: 12)),
+                                  Text(
+                                    'โหลดรูปไม่สำเร็จ',
+                                    style: TextStyle(
+                                      color: Colors.white38,
+                                      fontSize: 12,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
                           )
-                        : const Center(child: Icon(Icons.image, color: Colors.white24, size: 48)),
+                        : const Center(
+                            child: Icon(
+                              Icons.image,
+                              color: Colors.white24,
+                              size: 48,
+                            ),
+                          ),
                   ),
                   // Slider overlay at bottom
                   Positioned(
@@ -475,14 +584,21 @@ class _ResultBody extends StatelessWidget {
                     left: 8,
                     right: 8,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.85),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.visibility, color: Color(0xFF64748B), size: 20),
+                          const Icon(
+                            Icons.visibility,
+                            color: Color(0xFF64748B),
+                            size: 20,
+                          ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Container(
@@ -504,7 +620,11 @@ class _ResultBody extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 12),
-                          const Icon(Icons.layers, color: Color(0xFF0284C7), size: 20),
+                          const Icon(
+                            Icons.layers,
+                            color: Color(0xFF0284C7),
+                            size: 20,
+                          ),
                         ],
                       ),
                     ),
@@ -514,19 +634,23 @@ class _ResultBody extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          
+
           // Alerts from visual factor details
           if (visualFactor.details.isNotEmpty)
-            ...visualFactor.details.map((detail) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: _buildAlertItem(
-                icon: Icons.error,
-                iconColor: RiskLevelHelper.toColor(RiskLevelHelper.fromScore(visualFactor.score)),
-                title: detail,
-                subtitle: '',
-                isDark: isDark,
+            ...visualFactor.details.map(
+              (detail) => Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: _buildAlertItem(
+                  icon: Icons.error,
+                  iconColor: RiskLevelHelper.toColor(
+                    RiskLevelHelper.factorLevelForScore(visualFactor.score),
+                  ),
+                  title: detail,
+                  subtitle: '',
+                  isDark: isDark,
+                ),
               ),
-            ))
+            )
           else
             _buildAlertItem(
               icon: Icons.check_circle,

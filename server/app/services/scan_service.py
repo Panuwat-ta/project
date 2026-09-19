@@ -11,7 +11,7 @@ from app.core.websocket import manager
 from app.models.scan import Scan
 from app.utils.hashing import calculate_image_hash
 from app.utils.image_utils import load_image_verified, encode_lossless_png
-from app.utils.risk_calculator import calculate_risk_score
+from app.utils.risk_calculator import calculate_risk_score, build_text_analysis, build_source_score
 from app.services.inference_service import inference_service
 import app.core.redis as redis_core
 
@@ -136,23 +136,15 @@ async def process_image_background(scan_id, file_bytes: bytes, image_hash: str):
             scan.progress = 80
             await db.commit()
 
-            # 7. Calculate Other Analysis Data (OCR)
+            # 7. Calculate Other Analysis Data (OCR) via risk module builders
             ocr_text = inference_result.get("ocr_text", "")
-            scam_keywords = ["ด่วน", "โบนัส", "กู้เงิน", "รับเงิน", "ลงทุน", "อนุมัติไว", "ได้เงินจริง", "คลิก", "เครดิตฟรี", "แจกฟรี", "หลุด"]
-            found_keywords = []
-
-            text_score = 0
             if ocr_text:
-                for kw in scam_keywords:
-                    if kw in ocr_text:
-                        found_keywords.append(kw)
-                        text_score += 25
-                text_score = min(text_score, 100)
+                text_score, found_keywords = build_text_analysis(ocr_text)
             else:
-                text_score = 0
+                text_score, found_keywords = 0, []
                 ocr_text = "No text detected."
 
-            source_score = settings.DEFAULT_SOURCE_SCORE
+            source_score = build_source_score()
             visual_score = inference_result.get("visual_risk_score", 0)
             ai_gen_probability = inference_result.get("ai_gen_probability", 0.0)
             anomaly_region = inference_result.get("anomaly_region", "บริเวณที่น่าสงสัยในภาพ")

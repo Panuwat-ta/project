@@ -14,7 +14,6 @@ import '../bloc/history_bloc.dart';
 import '../../../../core/localization/app_translations.dart';
 import '../../../settings/presentation/bloc/settings_bloc.dart';
 
-
 // ── Screen ───────────────────────────────────────────────────────────────────
 
 class HistoryScreen extends StatefulWidget {
@@ -41,7 +40,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
     if (mounted) setState(() {});
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 400), () {
-      if (mounted) context.read<HistoryBloc>().add(HistorySearched(_searchController.text));
+      if (mounted)
+        context.read<HistoryBloc>().add(
+          HistorySearched(_searchController.text),
+        );
     });
   }
 
@@ -50,17 +52,31 @@ class _HistoryScreenState extends State<HistoryScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
       builder: (ctx) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             const SizedBox(height: 12),
-            Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[400], borderRadius: BorderRadius.circular(2))),
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[400],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
             const SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text('filter'.tr(context), style: AppTypography.sectionHeader(color: isDark ? Colors.white : AppColors.onSurface)),
+              child: Text(
+                'filter'.tr(context),
+                style: AppTypography.sectionHeader(
+                  color: isDark ? Colors.white : AppColors.onSurface,
+                ),
+              ),
             ),
             const SizedBox(height: 12),
             ...[
@@ -68,14 +84,23 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ('high', 'เสี่ยงสูง'),
               ('medium', 'เสี่ยงปานกลาง'),
               ('low', 'เสี่ยงต่ำ'),
-            ].map((e) => ListTile(
-                  title: Text(e.$2, style: TextStyle(color: isDark ? Colors.white : AppColors.onSurface)),
-                  trailing: _selectedRiskLevel == e.$1 ? const Icon(Icons.check, color: AppColors.primary) : null,
-                  onTap: () {
-                    setState(() => _selectedRiskLevel = e.$1);
-                    Navigator.pop(ctx);
-                  },
-                )),
+            ].map(
+              (e) => ListTile(
+                title: Text(
+                  e.$2,
+                  style: TextStyle(
+                    color: isDark ? Colors.white : AppColors.onSurface,
+                  ),
+                ),
+                trailing: _selectedRiskLevel == e.$1
+                    ? const Icon(Icons.check, color: AppColors.primary)
+                    : null,
+                onTap: () {
+                  setState(() => _selectedRiskLevel = e.$1);
+                  Navigator.pop(ctx);
+                },
+              ),
+            ),
             const SizedBox(height: 16),
           ],
         ),
@@ -94,7 +119,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF141921) : const Color(0xFFF5F6F8),
+      backgroundColor: isDark
+          ? const Color(0xFF141921)
+          : const Color(0xFFF5F6F8),
       appBar: core_widgets.AppTopBar(
         automaticallyImplyLeading: false,
         actions: [
@@ -108,269 +135,319 @@ class _HistoryScreenState extends State<HistoryScreen> {
           ),
         ],
       ),
-        body: Column(
-          children: [
-            // ── Search + filter header ────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.all(AppSpacing.safeMargin),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Title row with count badge
-                  BlocBuilder<HistoryBloc, HistoryState>(
-                    builder: (context, state) {
-                      int count = 0;
-                      if (state is HistoryDataLoaded) {
-                        count = _selectedRiskLevel == null
-                            ? state.items.length
-                            : state.items.where((it) => it.riskLevel.name == _selectedRiskLevel).length;
-                      }
-                      return Row(
-                        children: [
-                          Flexible(
-                            child: Text(
-                              'history_title'.tr(context),
-                              style: AppTypography.sectionHeader(
-                                  color: isDark ? Colors.white : AppColors.onSurface),
-                              overflow: TextOverflow.ellipsis,
+      body: Column(
+        children: [
+          // ── Search + filter header ────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.all(AppSpacing.safeMargin),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title row with count badge
+                BlocBuilder<HistoryBloc, HistoryState>(
+                  builder: (context, state) {
+                    int count = 0;
+                    if (state is HistoryDataLoaded) {
+                      count = _selectedRiskLevel == null
+                          ? state.items.length
+                          : state.items
+                                .where(
+                                  (it) =>
+                                      it.riskLevel.name == _selectedRiskLevel,
+                                )
+                                .length;
+                    }
+                    return Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            'history_title'.tr(context),
+                            style: AppTypography.sectionHeader(
+                              color: isDark
+                                  ? Colors.white
+                                  : AppColors.onSurface,
                             ),
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          const SizedBox(width: AppSpacing.sm),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.sm,
-                              vertical: AppSpacing.xs,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.primaryFixedDim
-                                  .withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(99),
-                            ),
-                            child: Text(
-                              '$count ${'items'.tr(context)}',
-                              style: AppTypography.caption(
-                                  color: isDark ? AppColors.primaryFixedDim : AppColors.primary),
-                            ),
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.sm,
+                            vertical: AppSpacing.xs,
                           ),
-                        ],
-                      );
-                    },
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  // Search field + filter button
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: _searchController,
-                          style: TextStyle(color: isDark ? Colors.white : AppColors.onSurface),
-                          decoration: InputDecoration(
-                            hintText: 'search_history'.tr(context),
-                            hintStyle: AppTypography.bodyBase(
-                              color: AppColors.outlineVariant
-                                  .withValues(alpha: 0.6),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryFixedDim.withValues(
+                              alpha: 0.15,
                             ),
-                            prefixIcon: const Icon(
-                              Icons.search_outlined,
-                              color: AppColors.outlineVariant,
-                            ),
-                            suffixIcon: _searchController.text.isNotEmpty
-                                ? IconButton(
-                                    icon: const Icon(Icons.clear, size: 20, color: AppColors.outlineVariant),
-                                    onPressed: () {
-                                      _searchController.clear();
-                                    },
-                                  )
-                                : null,
-                            filled: true,
-                            fillColor: isDark ? const Color(0xFF141921) : Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: BorderSide(color: isDark ? Colors.white24 : Colors.black12),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: BorderSide(color: isDark ? Colors.white24 : Colors.black12),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: BorderSide(color: AppColors.primary.withValues(alpha: 0.5)),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.md,
-                              vertical: AppSpacing.md,
+                            borderRadius: BorderRadius.circular(99),
+                          ),
+                          child: Text(
+                            '$count ${'items'.tr(context)}',
+                            style: AppTypography.caption(
+                              color: isDark
+                                  ? AppColors.primaryFixedDim
+                                  : AppColors.primary,
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      SizedBox(
-                        width: 48,
-                        height: 48,
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: isDark ? const Color(0xFF141921) : Colors.white,
+                      ],
+                    );
+                  },
+                ),
+                const SizedBox(height: AppSpacing.md),
+                // Search field + filter button
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: _searchController,
+                        style: TextStyle(
+                          color: isDark ? Colors.white : AppColors.onSurface,
+                        ),
+                        decoration: InputDecoration(
+                          hintText: 'search_history'.tr(context),
+                          hintStyle: AppTypography.bodyBase(
+                            color: AppColors.outlineVariant.withValues(
+                              alpha: 0.6,
+                            ),
+                          ),
+                          prefixIcon: const Icon(
+                            Icons.search_outlined,
+                            color: AppColors.outlineVariant,
+                          ),
+                          suffixIcon: _searchController.text.isNotEmpty
+                              ? IconButton(
+                                  icon: const Icon(
+                                    Icons.clear,
+                                    size: 20,
+                                    color: AppColors.outlineVariant,
+                                  ),
+                                  onPressed: () {
+                                    _searchController.clear();
+                                  },
+                                )
+                              : null,
+                          filled: true,
+                          fillColor: isDark
+                              ? const Color(0xFF141921)
+                              : Colors.white,
+                          border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
+                            borderSide: BorderSide(
                               color: isDark ? Colors.white24 : Colors.black12,
                             ),
                           ),
-                          child: Stack(
-                            children: [
-                              IconButton(
-                                icon: Icon(
-                                  Icons.tune,
-                                  color: _selectedRiskLevel != null
-                                      ? AppColors.primary
-                                      : (isDark ? AppColors.primaryFixedDim : AppColors.primary),
-                                ),
-                                onPressed: _showFilterDialog,
-                                tooltip: 'filter'.tr(context),
-                              ),
-                              if (_selectedRiskLevel != null)
-                                Positioned(
-                                  top: 8,
-                                  right: 8,
-                                  child: Container(
-                                    width: 8,
-                                    height: 8,
-                                    decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
-                                  ),
-                                ),
-                            ],
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide(
+                              color: isDark ? Colors.white24 : Colors.black12,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide(
+                              color: AppColors.primary.withValues(alpha: 0.5),
+                            ),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.md,
+                            vertical: AppSpacing.md,
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            // ── List area ────────────────────────────────────────────────
-            Expanded(
-              child: BlocBuilder<HistoryBloc, HistoryState>(
-                builder: (context, state) {
-                  if (state is HistoryLoading || state is HistoryInitial) {
-                    return const Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.primaryFixedDim,
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    SizedBox(
+                      width: 48,
+                      height: 48,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? const Color(0xFF141921)
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: isDark ? Colors.white24 : Colors.black12,
+                          ),
+                        ),
+                        child: Stack(
+                          children: [
+                            IconButton(
+                              icon: Icon(
+                                Icons.tune,
+                                color: _selectedRiskLevel != null
+                                    ? AppColors.primary
+                                    : (isDark
+                                          ? AppColors.primaryFixedDim
+                                          : AppColors.primary),
+                              ),
+                              onPressed: _showFilterDialog,
+                              tooltip: 'filter'.tr(context),
+                            ),
+                            if (_selectedRiskLevel != null)
+                              Positioned(
+                                top: 8,
+                                right: 8,
+                                child: Container(
+                                  width: 8,
+                                  height: 8,
+                                  decoration: const BoxDecoration(
+                                    color: AppColors.primary,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
-                    );
-                  }
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
 
-                  if (state is HistoryEmpty) {
-                    return core_widgets.EmptyStateView(
-                      icon: Icons.history_toggle_off_outlined,
-                      title: 'history_empty_title'.tr(context),
-                      subtitle: 'history_empty_desc'.tr(context),
-                    );
-                  }
-
-                  if (state is HistoryError) {
-                    return core_widgets.ErrorStateView(
-                      message: state.message,
-                      onRetry: () => context.read<HistoryBloc>().add(const HistoryLoaded()),
-                    );
-                  }
-
-                  if (state is HistoryDataLoaded) {
-                    // Apply client-side risk filter if selected
-                    final filtered = _selectedRiskLevel == null
-                        ? state.items
-                        : state.items.where((it) => it.riskLevel.name == _selectedRiskLevel).toList();
-                    if (filtered.isEmpty) {
-                      return core_widgets.EmptyStateView(
-                        icon: Icons.search_off_outlined,
-                        title: 'ไม่พบผลลัพธ์',
-                        subtitle: _selectedRiskLevel != null
-                            ? 'ไม่พบประวัติระดับ ${_selectedRiskLevel == 'high' ? 'เสี่ยงสูง' : _selectedRiskLevel == 'medium' ? 'เสี่ยงปานกลาง' : _selectedRiskLevel == 'low' ? 'เสี่ยงต่ำ' : 'ปลอดภัย'}'
-                            : 'ไม่พบประวัติที่ตรงกับคำค้นหา',
-                      );
-                    }
-                    return RefreshIndicator(
+          // ── List area ────────────────────────────────────────────────
+          Expanded(
+            child: BlocBuilder<HistoryBloc, HistoryState>(
+              builder: (context, state) {
+                if (state is HistoryLoading || state is HistoryInitial) {
+                  return const Center(
+                    child: CircularProgressIndicator(
                       color: AppColors.primaryFixedDim,
-                      onRefresh: () {
-                        final completer = Completer<void>();
-                        context.read<HistoryBloc>().add(HistoryRefreshed(completer));
-                        return completer.future.timeout(
-                          const Duration(seconds: 5),
-                          onTimeout: () {
-                            if (!completer.isCompleted) {
-                              completer.complete();
-                            }
+                    ),
+                  );
+                }
+
+                if (state is HistoryEmpty) {
+                  return core_widgets.EmptyStateView(
+                    icon: Icons.history_toggle_off_outlined,
+                    title: 'history_empty_title'.tr(context),
+                    subtitle: 'history_empty_desc'.tr(context),
+                  );
+                }
+
+                if (state is HistoryError) {
+                  return core_widgets.ErrorStateView(
+                    message: state.message,
+                    onRetry: () =>
+                        context.read<HistoryBloc>().add(const HistoryLoaded()),
+                  );
+                }
+
+                if (state is HistoryDataLoaded) {
+                  // Apply client-side risk filter if selected
+                  final filtered = _selectedRiskLevel == null
+                      ? state.items
+                      : state.items
+                            .where(
+                              (it) => it.riskLevel.name == _selectedRiskLevel,
+                            )
+                            .toList();
+                  if (filtered.isEmpty) {
+                    return core_widgets.EmptyStateView(
+                      icon: Icons.search_off_outlined,
+                      title: 'ไม่พบผลลัพธ์',
+                      subtitle: _selectedRiskLevel != null
+                          ? 'ไม่พบประวัติระดับ ${_selectedRiskLevel == 'high'
+                                ? 'เสี่ยงสูง'
+                                : _selectedRiskLevel == 'medium'
+                                ? 'เสี่ยงปานกลาง'
+                                : _selectedRiskLevel == 'low'
+                                ? 'เสี่ยงต่ำ'
+                                : 'ปลอดภัย'}'
+                          : 'ไม่พบประวัติที่ตรงกับคำค้นหา',
+                    );
+                  }
+                  return RefreshIndicator(
+                    color: AppColors.primaryFixedDim,
+                    onRefresh: () {
+                      final completer = Completer<void>();
+                      context.read<HistoryBloc>().add(
+                        HistoryRefreshed(completer),
+                      );
+                      return completer.future.timeout(
+                        const Duration(seconds: 5),
+                        onTimeout: () {
+                          if (!completer.isCompleted) {
+                            completer.complete();
+                          }
+                        },
+                      );
+                    },
+                    child: ListView.separated(
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.safeMargin,
+                        0,
+                        AppSpacing.safeMargin,
+                        AppSpacing.xxl,
+                      ),
+                      itemCount: filtered.length,
+                      separatorBuilder: (context2, i) =>
+                          const SizedBox(height: AppSpacing.md),
+                      itemBuilder: (context, index) {
+                        final item = filtered[index];
+                        return Dismissible(
+                          key: Key(item.scanId),
+                          direction: DismissDirection.endToStart,
+                          background: Container(
+                            alignment: Alignment.centerRight,
+                            padding: const EdgeInsets.only(
+                              right: AppSpacing.lg,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.danger.withValues(alpha: 0.8),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: const Icon(
+                              Icons.delete_outline,
+                              color: Colors.white,
+                              size: 28,
+                            ),
+                          ),
+                          onDismissed: (_) => context.read<HistoryBloc>().add(
+                            HistoryItemDeleted(item.scanId),
+                          ),
+                          confirmDismiss: (direction) async {
+                            return await showDialog(
+                              context: context,
+                              builder: (ctx) => AlertDialog(
+                                title: Text('delete_confirm'.tr(context)),
+                                content: Text('delete_desc'.tr(context)),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(ctx, false),
+                                    child: Text('cancel'.tr(context)),
+                                  ),
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(ctx, true),
+                                    child: Text(
+                                      'delete'.tr(context),
+                                      style: const TextStyle(color: Colors.red),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
                           },
+                          child: GestureDetector(
+                            onTap: () => context.push('/result/${item.scanId}'),
+                            child: _HistoryCard(item: item),
+                          ),
                         );
                       },
-                      child: ListView.separated(
-                        padding: const EdgeInsets.fromLTRB(
-                          AppSpacing.safeMargin,
-                          0,
-                          AppSpacing.safeMargin,
-                          AppSpacing.xxl,
-                        ),
-                        itemCount: filtered.length,
-                        separatorBuilder: (context2, i) =>
-                            const SizedBox(height: AppSpacing.md),
-                        itemBuilder: (context, index) {
-                          final item = filtered[index];
-                          return Dismissible(
-                            key: Key(item.scanId),
-                            direction: DismissDirection.endToStart,
-                            background: Container(
-                              alignment: Alignment.centerRight,
-                              padding: const EdgeInsets.only(
-                                  right: AppSpacing.lg),
-                              decoration: BoxDecoration(
-                                color:
-                                    AppColors.danger.withValues(alpha: 0.8),
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: const Icon(
-                                Icons.delete_outline,
-                                color: Colors.white,
-                                size: 28,
-                              ),
-                            ),
-                            onDismissed: (_) =>
-                                context.read<HistoryBloc>().add(HistoryItemDeleted(item.scanId)),
-                            confirmDismiss: (direction) async {
-                              return await showDialog(
-                                context: context,
-                                builder: (ctx) => AlertDialog(
-                                  title: Text('delete_confirm'.tr(context)),
-                                  content: Text('delete_desc'.tr(context)),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(ctx, false),
-                                      child: Text('cancel'.tr(context)),
-                                    ),
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(ctx, true),
-                                      child: Text('delete'.tr(context), style: const TextStyle(color: Colors.red)),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                            child: GestureDetector(
-                              onTap: () =>
-                                  context.push('/result/${item.scanId}'),
-                              child: _HistoryCard(item: item),
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  }
+                    ),
+                  );
+                }
 
-                  return const SizedBox.shrink();
-                },
-              ),
+                return const SizedBox.shrink();
+              },
             ),
-          ],
-        ),
-      );
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -383,8 +460,19 @@ class _HistoryCard extends StatelessWidget {
 
   String _formatThaiDate(DateTime date, BuildContext context) {
     const thaiMonths = [
-      '', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.',
-      'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'
+      '',
+      'ม.ค.',
+      'ก.พ.',
+      'มี.ค.',
+      'เม.ย.',
+      'พ.ค.',
+      'มิ.ย.',
+      'ก.ค.',
+      'ส.ค.',
+      'ก.ย.',
+      'ต.ค.',
+      'พ.ย.',
+      'ธ.ค.',
     ];
     final year = date.year > 2500 ? date.year : date.year + 543;
     final month = thaiMonths[date.month];
@@ -394,10 +482,14 @@ class _HistoryCard extends StatelessWidget {
     return '$day $month $year, $hours:$mins ${context.read<SettingsCubit>().state.language == 'th' ? 'น.' : ''}';
   }
 
-  Widget _buildRiskBadge(BuildContext context, domain.RiskLevel level, int score) {
+  Widget _buildRiskBadge(
+    BuildContext context,
+    domain.RiskLevel level,
+    int score,
+  ) {
     Color bgColor;
     IconData icon;
-    
+
     switch (level) {
       case domain.RiskLevel.high:
         bgColor = const Color(0xFFDC2626);
@@ -411,8 +503,12 @@ class _HistoryCard extends StatelessWidget {
         bgColor = const Color(0xFF00A6D6);
         icon = Icons.info_outline;
         break;
+      case domain.RiskLevel.unknown:
+        bgColor = Colors.grey;
+        icon = Icons.help_outline_rounded;
+        break;
     }
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
@@ -426,7 +522,11 @@ class _HistoryCard extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             '$score%',
-            style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),
@@ -438,8 +538,10 @@ class _HistoryCard extends StatelessWidget {
       return ['pixel_edge'.tr(context), 'metadata_conflict'.tr(context)];
     } else if (level == domain.RiskLevel.medium) {
       return ['light_filter'.tr(context)];
-    } else {
+    } else if (level == domain.RiskLevel.low) {
       return ['original_file'.tr(context)];
+    } else {
+      return [];
     }
   }
 
@@ -448,7 +550,7 @@ class _HistoryCard extends StatelessWidget {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
     final dateStr = _formatThaiDate(item.createdAt, context);
     final tags = _getTags(context, item.riskLevel);
-    
+
     final displayTitle = '${item.title ?? item.scanId} • ${item.riskScore}%';
 
     return Container(
@@ -462,7 +564,7 @@ class _HistoryCard extends StatelessWidget {
                   color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
-                )
+                ),
               ],
       ),
       child: Column(
@@ -472,7 +574,9 @@ class _HistoryCard extends StatelessWidget {
           Stack(
             children: [
               ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(16),
+                ),
                 child: SizedBox(
                   height: 160,
                   width: double.infinity,
@@ -480,15 +584,31 @@ class _HistoryCard extends StatelessWidget {
                       ? CachedNetworkImage(
                           imageUrl: item.thumbnailUrl!,
                           fit: BoxFit.cover,
-                          placeholder: (ctx, url) => Container(color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF1F5F9)),
+                          placeholder: (ctx, url) => Container(
+                            color: isDark
+                                ? const Color(0xFF0F172A)
+                                : const Color(0xFFF1F5F9),
+                          ),
                           errorWidget: (ctx, url, err) => Container(
-                            color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF1F5F9),
-                            child: const Icon(Icons.image_outlined, color: Colors.grey, size: 48),
+                            color: isDark
+                                ? const Color(0xFF0F172A)
+                                : const Color(0xFFF1F5F9),
+                            child: const Icon(
+                              Icons.image_outlined,
+                              color: Colors.grey,
+                              size: 48,
+                            ),
                           ),
                         )
                       : Container(
-                          color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF1F5F9),
-                          child: const Icon(Icons.image_outlined, color: Colors.grey, size: 48),
+                          color: isDark
+                              ? const Color(0xFF0F172A)
+                              : const Color(0xFFF1F5F9),
+                          child: const Icon(
+                            Icons.image_outlined,
+                            color: Colors.grey,
+                            size: 48,
+                          ),
                         ),
                 ),
               ),
@@ -500,7 +620,7 @@ class _HistoryCard extends StatelessWidget {
               ),
             ],
           ),
-          
+
           // ── Content Section ──
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -514,64 +634,97 @@ class _HistoryCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         displayTitle,
-                        style: AppTypography.titleMd(color: isDark ? Colors.white : AppColors.textPrimary)
-                            .copyWith(fontWeight: FontWeight.bold),
+                        style: AppTypography.titleMd(
+                          color: isDark ? Colors.white : AppColors.textPrimary,
+                        ).copyWith(fontWeight: FontWeight.bold),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    Icon(Icons.chevron_right, color: isDark ? Colors.white54 : Colors.black38, size: 20),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                
-                // Date
-                Row(
-                  children: [
-                    Icon(Icons.calendar_today_outlined, size: 14, color: isDark ? Colors.white54 : AppColors.textSecondary),
-                    const SizedBox(width: 6),
-                    Text(
-                      dateStr,
-                      style: AppTypography.bodyBase(color: isDark ? Colors.white54 : AppColors.textSecondary)
-                          .copyWith(fontSize: 13),
+                    Icon(
+                      Icons.chevron_right,
+                      color: isDark ? Colors.white54 : Colors.black38,
+                      size: 20,
                     ),
                   ],
                 ),
-                
+                const SizedBox(height: 6),
+
+                // Date
+                Row(
+                  children: [
+                    Icon(
+                      Icons.calendar_today_outlined,
+                      size: 14,
+                      color: isDark ? Colors.white54 : AppColors.textSecondary,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      dateStr,
+                      style: AppTypography.bodyBase(
+                        color: isDark
+                            ? Colors.white54
+                            : AppColors.textSecondary,
+                      ).copyWith(fontSize: 13),
+                    ),
+                  ],
+                ),
+
                 const SizedBox(height: 12),
-                Divider(color: isDark ? Colors.white10 : Colors.black12, height: 1),
+                Divider(
+                  color: isDark ? Colors.white10 : Colors.black12,
+                  height: 1,
+                ),
                 const SizedBox(height: 12),
-                
+
                 // Tags
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    ...tags.map((tag) => Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9),
-                            borderRadius: BorderRadius.circular(6),
+                    ...tags.map(
+                      (tag) => Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? const Color(0xFF334155)
+                              : const Color(0xFFF1F5F9),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          tag,
+                          style: TextStyle(
+                            color: isDark
+                                ? const Color(0xFF94A3B8)
+                                : const Color(0xFF475569),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
                           ),
-                          child: Text(
-                            tag,
-                            style: TextStyle(
-                              color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569),
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        )),
+                        ),
+                      ),
+                    ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFDCFCE7).withValues(alpha: isDark ? 0.1 : 1.0),
+                        color: const Color(
+                          0xFFDCFCE7,
+                        ).withValues(alpha: isDark ? 0.1 : 1.0),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
-                        item.status == 'completed' ? 'completed'.tr(context) : item.status,
+                        item.status == 'completed'
+                            ? 'completed'.tr(context)
+                            : item.status,
                         style: TextStyle(
-                          color: isDark ? const Color(0xFF4ADE80) : const Color(0xFF16A34A),
+                          color: isDark
+                              ? const Color(0xFF4ADE80)
+                              : const Color(0xFF16A34A),
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                         ),
@@ -587,4 +740,3 @@ class _HistoryCard extends StatelessWidget {
     );
   }
 }
-

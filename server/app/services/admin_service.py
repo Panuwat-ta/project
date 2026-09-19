@@ -22,6 +22,7 @@ from app.models.admin import Admin
 from app.models.admin_session import AdminSession
 from app.schemas.admin import ReportDecisionRequest, UserUpdateRequest, ExportRequest
 from app.core.config import TH_TIMEZONE, settings
+from app.utils.risk_calculator import grade_for, LOW_MAX, MEDIUM_MAX
 from app.core.security import (
     hash_token, create_access_token, create_refresh_token,
 )
@@ -35,14 +36,6 @@ def _to_media_url(path: Optional[str]) -> Optional[str]:
     if not name:
         return None
     return f"/uploads/{name}"
-
-
-def _risk_grade(score: int) -> str:
-    if score >= 70:
-        return "high"
-    if score >= 40:
-        return "medium"
-    return "low"
 
 
 def _admin_claims(admin: Admin) -> dict:
@@ -126,10 +119,10 @@ async def get_dashboard_stats(db: AsyncSession) -> Dict[str, Any]:
     scans_this_week = await db.scalar(select(func.count(Scan.id)).where(Scan.created_at >= week_ago))
     scans_this_month = await db.scalar(select(func.count(Scan.id)).where(Scan.created_at >= month_ago))
     
-    # Risk Distribution
-    low_risk = await db.scalar(select(func.count(Scan.id)).where(Scan.total_risk_score < 40))
-    medium_risk = await db.scalar(select(func.count(Scan.id)).where(and_(Scan.total_risk_score >= 40, Scan.total_risk_score < 70)))
-    high_risk = await db.scalar(select(func.count(Scan.id)).where(Scan.total_risk_score >= 70))
+    # Risk Distribution (bands owned by risk_calculator thresholds)
+    low_risk = await db.scalar(select(func.count(Scan.id)).where(Scan.total_risk_score <= LOW_MAX))
+    medium_risk = await db.scalar(select(func.count(Scan.id)).where(and_(Scan.total_risk_score > LOW_MAX, Scan.total_risk_score <= MEDIUM_MAX)))
+    high_risk = await db.scalar(select(func.count(Scan.id)).where(Scan.total_risk_score > MEDIUM_MAX))
     
     # Reports Stats
     total_reports = await db.scalar(select(func.count(ScamReport.id)))
@@ -242,9 +235,9 @@ async def get_reports(db: AsyncSession, page: int = 1, limit: int = 20, status: 
                 "id": s.id,
                 "thumbnail_url": _to_media_url(s.raw_image_url),
                 "total_risk_score": s.total_risk_score,
-                "risk_grade": _risk_grade(s.total_risk_score)
+                "risk_grade": grade_for(s.total_risk_score or 0, s.visual_score or 0)
             }
-    
+
     items = []
     for r in reports:
         items.append({
@@ -395,7 +388,7 @@ async def get_report_detail(db: AsyncSession, report_id: int) -> Dict[str, Any]:
                 "raw_image_url": _to_media_url(scan.raw_image_url),
                 "heatmap_image_url": _to_media_url(scan.heatmap_image_url),
                 "total_risk_score": scan.total_risk_score,
-                "risk_grade": _risk_grade(scan.total_risk_score),
+                "risk_grade": grade_for(scan.total_risk_score or 0, scan.visual_score or 0),
                 "text_score": scan.text_score,
                 "visual_score": scan.visual_score,
                 "source_score": scan.source_score,
@@ -544,12 +537,11 @@ async def get_user_detail(db: AsyncSession, user_id: int) -> Dict[str, Any]:
     scans_list = []
     for s in recent_scans:
         score = s.total_risk_score or 0
-        grade = "high" if score >= 70 else "medium" if score >= 40 else "low"
         scans_list.append({
             "id": str(s.id),
             "image_url": s.raw_image_url or "",
             "total_risk_score": score,
-            "risk_grade": grade,
+            "risk_grade": grade_for(score, s.visual_score or 0),
             "created_at": s.created_at.isoformat() if s.created_at else None,
         })
     
