@@ -126,6 +126,27 @@ def tile_inference(session, input_name, image: Image.Image) -> np.ndarray:
     return (acc / weight).astype(np.float32)
 
 
+def run_det_image(session, input_name, image: Image.Image):
+    """รัน det head (Track B) บนภาพทั้งใบย่อ 512x512 คืน det score 0-1.
+
+    คืน None ถ้าโมเดลมีแค่ 1 output (backward compatible กับ ONNX เดิม)
+    """
+    try:
+        if len(session.get_outputs()) < 2:
+            return None
+        small = image.resize((TILE_SIZE, TILE_SIZE), Image.BILINEAR)
+        arr = np.asarray(small).astype(np.float32) / 255.0
+        norm = (arr - MEAN) / STD
+        tensor = np.expand_dims(np.transpose(norm, (2, 0, 1)), axis=0)
+        outputs = session.run(None, {input_name: tensor})
+        if len(outputs) < 2:
+            return None
+        logit = float(np.asarray(outputs[1]).ravel()[0])
+        return float(1.0 / (1.0 + np.exp(-logit)))
+    except Exception:
+        return None
+
+
 def main():
     input_data = sys.stdin.read()
     if not input_data:
@@ -159,6 +180,9 @@ def main():
     ai_gen_prob = float(prob_map_true.max())
     visual_risk_score = int(round(ai_gen_prob * 100))
 
+    # Track B det score (None ถ้าโมเดลไม่มี det head) — ขั้นนี้ยังไม่รวมเข้า total
+    det_score = run_det_image(session, input_name, image)
+
     h, w = prob_map_true.shape[:2]
     threshold = max(0.35, float(prob_map_true.mean() + 0.10))
     tampered_pixels = np.argwhere(prob_map_true >= threshold)
@@ -181,6 +205,7 @@ def main():
     result = {
         "visual_risk_score": visual_risk_score,
         "ai_gen_probability": ai_gen_prob,
+        "det_score": det_score,
         "anomaly_region": region,
         "heatmap_b64": base64.b64encode(heatmap_bytes).decode('utf-8') if heatmap_bytes else ""
     }
