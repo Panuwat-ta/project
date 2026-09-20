@@ -30,19 +30,17 @@ class ScanRepositoryImpl implements ScanRepository {
     // Log a debug warning when the file exceeds the recommended size.
     // Real compression is applied by the ImagePicker quality setting in the
     // presentation layer before this method is called.
-    assert(
-      () {
-        final file = File(filePath);
-        if (file.existsSync() && file.lengthSync() > _maxFileSizeBytes) {
-          // ignore: avoid_print
-          print(
-            'ScanRepositoryImpl: file exceeds 10 MB — '
-            'ensure image_picker quality compression was applied.',
-          );
-        }
-        return true;
-      }(),
-    );
+    assert(() {
+      final file = File(filePath);
+      if (file.existsSync() && file.lengthSync() > _maxFileSizeBytes) {
+        // ignore: avoid_print
+        print(
+          'ScanRepositoryImpl: file exceeds 10 MB — '
+          'ensure image_picker quality compression was applied.',
+        );
+      }
+      return true;
+    }());
 
     return remoteDataSource.submitScan(
       filePath: filePath,
@@ -55,8 +53,4 @@ class ScanRepositoryImpl implements ScanRepository {
   @override
   Future<AnalysisTask> getAnalysisStatus(String taskId) =>
       remoteDataSource.getScanStatus(taskId);
-
-  @override
-  Future<void> cancelScan(String taskId) =>
-      remoteDataSource.cancelScan(taskId);
 }

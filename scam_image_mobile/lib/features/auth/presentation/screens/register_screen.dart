@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../bloc/auth_bloc.dart';
-import '../bloc/consent_cubit.dart';
 import '../../../../core/localization/app_translations.dart';
 import '../../../../core/di/injection_container.dart';
 
@@ -15,39 +14,19 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  late final AuthBloc _bloc;
-
-  @override
-  void initState() {
-    super.initState();
-    _bloc = AuthBloc(ServiceLocator.authRepository);
-  }
-
-  @override
-  void dispose() {
-    _bloc.close();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<AuthBloc>.value(value: _bloc),
-        BlocProvider<ConsentCubit>(create: (_) => ConsentCubit()),
-      ],
-      child: BlocListener<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if (state is AuthAuthenticated) {
-            context.go('/main/home');
-          } else if (state is AuthError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message), backgroundColor: Colors.red),
-            );
-          }
-        },
-        child: const _RegisterView(),
-      ),
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthAuthenticated) {
+          context.go('/main/home');
+        } else if (state is AuthError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+          );
+        }
+      },
+      child: const _RegisterView(),
     );
   }
 }
@@ -78,19 +57,26 @@ class _RegisterViewState extends State<_RegisterView> {
     super.dispose();
   }
 
-  void _submit() {
+  Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     if (!_termsAccepted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('auth_terms_error'.tr(context)), backgroundColor: Colors.red),
+        SnackBar(
+          content: Text('auth_terms_error'.tr(context)),
+          backgroundColor: Colors.red,
+        ),
       );
       return;
     }
+    final consents = await ServiceLocator.settingsRepository.getConsents();
+    if (!mounted) return;
     context.read<AuthBloc>().add(
       RegisterRequested(
         email: _emailController.text.trim(),
         password: _passwordController.text,
         displayName: _displayNameController.text.trim(),
+        systemConsent: true,
+        researchConsent: consents.researchConsent,
       ),
     );
   }
@@ -104,7 +90,9 @@ class _RegisterViewState extends State<_RegisterView> {
     final subtitleColor = isDark ? Colors.white70 : const Color(0xFF6B7280);
     final primaryColor = const Color(0xFF007293);
     final inputFillColor = isDark ? const Color(0xFF141F2B) : Colors.white;
-    final inputBorderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+    final inputBorderColor = isDark
+        ? const Color(0xFF334155)
+        : const Color(0xFFE2E8F0);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -121,7 +109,9 @@ class _RegisterViewState extends State<_RegisterView> {
             Container(
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF1E2936) : const Color(0xFFE0F2FE),
+                color: isDark
+                    ? const Color(0xFF1E2936)
+                    : const Color(0xFFE0F2FE),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(Icons.shield, color: primaryColor, size: 16),
@@ -129,7 +119,11 @@ class _RegisterViewState extends State<_RegisterView> {
             const SizedBox(width: 8),
             Text(
               'ScamGuard',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: primaryColor),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: primaryColor,
+              ),
             ),
           ],
         ),
@@ -156,7 +150,9 @@ class _RegisterViewState extends State<_RegisterView> {
                           offset: const Offset(0, 10),
                         ),
                       ],
-                      border: isDark ? Border.all(color: const Color(0xFF334155), width: 1) : null,
+                      border: isDark
+                          ? Border.all(color: const Color(0xFF334155), width: 1)
+                          : null,
                     ),
                     padding: const EdgeInsets.all(24),
                     child: Form(
@@ -176,7 +172,10 @@ class _RegisterViewState extends State<_RegisterView> {
                           const SizedBox(height: 8),
                           Text(
                             'auth_register_subtitle'.tr(context),
-                            style: TextStyle(fontSize: 14, color: subtitleColor),
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: subtitleColor,
+                            ),
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 24),
@@ -184,7 +183,11 @@ class _RegisterViewState extends State<_RegisterView> {
                           // Name field
                           Text(
                             'auth_fullname'.tr(context),
-                            style: TextStyle(fontSize: 14, color: subtitleColor, fontWeight: FontWeight.w500),
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: subtitleColor,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                           const SizedBox(height: 8),
                           TextFormField(
@@ -192,23 +195,46 @@ class _RegisterViewState extends State<_RegisterView> {
                             style: TextStyle(color: textColor),
                             decoration: InputDecoration(
                               hintText: 'auth_fullname_hint'.tr(context),
-                              hintStyle: TextStyle(color: subtitleColor.withValues(alpha: 0.5)),
-                              prefixIcon: Icon(Icons.person_outline, color: subtitleColor),
+                              hintStyle: TextStyle(
+                                color: subtitleColor.withValues(alpha: 0.5),
+                              ),
+                              prefixIcon: Icon(
+                                Icons.person_outline,
+                                color: subtitleColor,
+                              ),
                               filled: true,
                               fillColor: inputFillColor,
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: inputBorderColor)),
-                              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: inputBorderColor)),
-                              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: primaryColor)),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 16,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(color: inputBorderColor),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(color: inputBorderColor),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(color: primaryColor),
+                              ),
                             ),
-                            validator: (v) => (v == null || v.isEmpty) ? 'auth_fullname_error'.tr(context) : null,
+                            validator: (v) => (v == null || v.isEmpty)
+                                ? 'auth_fullname_error'.tr(context)
+                                : null,
                           ),
                           const SizedBox(height: 16),
 
                           // Email field
                           Text(
                             'auth_email'.tr(context),
-                            style: TextStyle(fontSize: 14, color: subtitleColor, fontWeight: FontWeight.w500),
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: subtitleColor,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                           const SizedBox(height: 8),
                           TextFormField(
@@ -217,23 +243,46 @@ class _RegisterViewState extends State<_RegisterView> {
                             style: TextStyle(color: textColor),
                             decoration: InputDecoration(
                               hintText: 'example@email.com',
-                              hintStyle: TextStyle(color: subtitleColor.withValues(alpha: 0.5)),
-                              prefixIcon: Icon(Icons.mail_outline, color: subtitleColor),
+                              hintStyle: TextStyle(
+                                color: subtitleColor.withValues(alpha: 0.5),
+                              ),
+                              prefixIcon: Icon(
+                                Icons.mail_outline,
+                                color: subtitleColor,
+                              ),
                               filled: true,
                               fillColor: inputFillColor,
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: inputBorderColor)),
-                              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: inputBorderColor)),
-                              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: primaryColor)),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 16,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(color: inputBorderColor),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(color: inputBorderColor),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(color: primaryColor),
+                              ),
                             ),
-                            validator: (v) => (v == null || v.isEmpty) ? 'auth_email_hint'.tr(context) : null,
+                            validator: (v) => (v == null || v.isEmpty)
+                                ? 'auth_email_hint'.tr(context)
+                                : null,
                           ),
                           const SizedBox(height: 16),
 
                           // Password field
                           Text(
                             'auth_password'.tr(context),
-                            style: TextStyle(fontSize: 14, color: subtitleColor, fontWeight: FontWeight.w500),
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: subtitleColor,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                           const SizedBox(height: 8),
                           TextFormField(
@@ -242,30 +291,57 @@ class _RegisterViewState extends State<_RegisterView> {
                             style: TextStyle(color: textColor),
                             decoration: InputDecoration(
                               hintText: 'auth_password_min_hint'.tr(context),
-                              hintStyle: TextStyle(color: subtitleColor.withValues(alpha: 0.5)),
-                              prefixIcon: Icon(Icons.lock_outline, color: subtitleColor),
+                              hintStyle: TextStyle(
+                                color: subtitleColor.withValues(alpha: 0.5),
+                              ),
+                              prefixIcon: Icon(
+                                Icons.lock_outline,
+                                color: subtitleColor,
+                              ),
                               suffixIcon: IconButton(
                                 icon: Icon(
-                                  _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                                  _obscurePassword
+                                      ? Icons.visibility_outlined
+                                      : Icons.visibility_off_outlined,
                                   color: subtitleColor,
                                 ),
-                                onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                                onPressed: () => setState(
+                                  () => _obscurePassword = !_obscurePassword,
+                                ),
                               ),
                               filled: true,
                               fillColor: inputFillColor,
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: inputBorderColor)),
-                              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: inputBorderColor)),
-                              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: primaryColor)),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 16,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(color: inputBorderColor),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(color: inputBorderColor),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(color: primaryColor),
+                              ),
                             ),
-                            validator: (v) => (v == null || v.length < 8) ? 'auth_password_min_error'.tr(context) : null,
+                            validator: (v) => (v == null || v.length < 8)
+                                ? 'auth_password_min_error'.tr(context)
+                                : null,
                           ),
                           const SizedBox(height: 16),
 
                           // Confirm Password field
                           Text(
                             'auth_password_confirm'.tr(context),
-                            style: TextStyle(fontSize: 14, color: subtitleColor, fontWeight: FontWeight.w500),
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: subtitleColor,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                           const SizedBox(height: 8),
                           TextFormField(
@@ -273,26 +349,55 @@ class _RegisterViewState extends State<_RegisterView> {
                             obscureText: _obscureConfirm,
                             style: TextStyle(color: textColor),
                             decoration: InputDecoration(
-                              hintText: 'auth_password_confirm_hint'.tr(context),
-                              hintStyle: TextStyle(color: subtitleColor.withValues(alpha: 0.5)),
-                              prefixIcon: Icon(Icons.sync_lock, color: subtitleColor),
+                              hintText: 'auth_password_confirm_hint'.tr(
+                                context,
+                              ),
+                              hintStyle: TextStyle(
+                                color: subtitleColor.withValues(alpha: 0.5),
+                              ),
+                              prefixIcon: Icon(
+                                Icons.sync_lock,
+                                color: subtitleColor,
+                              ),
                               suffixIcon: IconButton(
                                 icon: Icon(
-                                  _obscureConfirm ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                                  _obscureConfirm
+                                      ? Icons.visibility_outlined
+                                      : Icons.visibility_off_outlined,
                                   color: subtitleColor,
                                 ),
-                                onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                                onPressed: () => setState(
+                                  () => _obscureConfirm = !_obscureConfirm,
+                                ),
                               ),
                               filled: true,
                               fillColor: inputFillColor,
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: inputBorderColor)),
-                              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: inputBorderColor)),
-                              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: primaryColor)),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 16,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(color: inputBorderColor),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(color: inputBorderColor),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(color: primaryColor),
+                              ),
                             ),
                             validator: (v) {
-                              if (v == null || v.isEmpty) return 'auth_password_confirm_error'.tr(context);
-                              if (v != _passwordController.text) return 'auth_password_match_error'.tr(context);
+                              if (v == null || v.isEmpty) {
+                                return 'auth_password_confirm_error'.tr(
+                                  context,
+                                );
+                              }
+                              if (v != _passwordController.text) {
+                                return 'auth_password_match_error'.tr(context);
+                              }
                               return null;
                             },
                           ),
@@ -307,23 +412,49 @@ class _RegisterViewState extends State<_RegisterView> {
                                 height: 24,
                                 child: Checkbox(
                                   value: _termsAccepted,
-                                  onChanged: (v) => setState(() => _termsAccepted = v ?? false),
+                                  onChanged: (v) => setState(
+                                    () => _termsAccepted = v ?? false,
+                                  ),
                                   activeColor: primaryColor,
                                   checkColor: Colors.white,
-                                  side: BorderSide(color: subtitleColor.withValues(alpha: 0.5)),
+                                  side: BorderSide(
+                                    color: subtitleColor.withValues(alpha: 0.5),
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: RichText(
                                   text: TextSpan(
-                                    style: TextStyle(fontSize: 12, color: subtitleColor, height: 1.5),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: subtitleColor,
+                                      height: 1.5,
+                                    ),
                                     children: [
-                                      TextSpan(text: 'auth_terms_accept'.tr(context)),
-                                      TextSpan(text: 'auth_terms_link'.tr(context), style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold)),
-                                      TextSpan(text: 'auth_terms_and'.tr(context)),
-                                      TextSpan(text: 'auth_privacy_link'.tr(context), style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold)),
-                                      TextSpan(text: 'auth_terms_suffix'.tr(context)),
+                                      TextSpan(
+                                        text: 'auth_terms_accept'.tr(context),
+                                      ),
+                                      TextSpan(
+                                        text: 'auth_terms_link'.tr(context),
+                                        style: TextStyle(
+                                          color: primaryColor,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: 'auth_terms_and'.tr(context),
+                                      ),
+                                      TextSpan(
+                                        text: 'auth_privacy_link'.tr(context),
+                                        style: TextStyle(
+                                          color: primaryColor,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: 'auth_terms_suffix'.tr(context),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -339,18 +470,33 @@ class _RegisterViewState extends State<_RegisterView> {
                             child: BlocBuilder<AuthBloc, AuthState>(
                               builder: (context, state) {
                                 return ElevatedButton.icon(
-                                  onPressed: state is AuthLoading ? null : _submit,
+                                  onPressed: state is AuthLoading
+                                      ? null
+                                      : _submit,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: primaryColor,
                                     foregroundColor: Colors.white,
                                     elevation: 0,
                                   ),
                                   icon: state is AuthLoading
-                                      ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                                      ? const SizedBox(
+                                          width: 24,
+                                          height: 24,
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                            strokeWidth: 2,
+                                          ),
+                                        )
                                       : const Icon(Icons.person_add_alt_1),
                                   label: state is AuthLoading
                                       ? const SizedBox.shrink()
-                                      : Text('auth_register_link'.tr(context), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                      : Text(
+                                          'auth_register_link'.tr(context),
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
                                 );
                               },
                             ),
@@ -360,12 +506,32 @@ class _RegisterViewState extends State<_RegisterView> {
                           // Divider
                           Row(
                             children: [
-                              Expanded(child: Divider(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16),
-                                child: Text('auth_or'.tr(context), style: TextStyle(color: subtitleColor, fontSize: 14)),
+                              Expanded(
+                                child: Divider(
+                                  color: isDark
+                                      ? const Color(0xFF334155)
+                                      : const Color(0xFFE2E8F0),
+                                ),
                               ),
-                              Expanded(child: Divider(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                ),
+                                child: Text(
+                                  'auth_or'.tr(context),
+                                  style: TextStyle(
+                                    color: subtitleColor,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Divider(
+                                  color: isDark
+                                      ? const Color(0xFF334155)
+                                      : const Color(0xFFE2E8F0),
+                                ),
+                              ),
                             ],
                           ),
                           const SizedBox(height: 24),
@@ -376,17 +542,25 @@ class _RegisterViewState extends State<_RegisterView> {
                             children: [
                               Text(
                                 'auth_has_account'.tr(context),
-                                style: TextStyle(color: subtitleColor, fontSize: 14),
+                                style: TextStyle(
+                                  color: subtitleColor,
+                                  fontSize: 14,
+                                ),
                               ),
                               TextButton(
                                 onPressed: () => context.go('/login'),
                                 style: TextButton.styleFrom(
                                   padding: EdgeInsets.zero,
-                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
                                 ),
                                 child: Text(
                                   'auth_login_button'.tr(context),
-                                  style: TextStyle(color: primaryColor, fontSize: 14, fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                    color: primaryColor,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ],
@@ -400,23 +574,38 @@ class _RegisterViewState extends State<_RegisterView> {
                   // Bottom badge
                   Center(
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF1E2936) : const Color(0xFFE0F2FE),
+                        color: isDark
+                            ? const Color(0xFF1E2936)
+                            : const Color(0xFFE0F2FE),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFBAE6FD)),
+                        border: Border.all(
+                          color: isDark
+                              ? const Color(0xFF334155)
+                              : const Color(0xFFBAE6FD),
+                        ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.shield, color: Color(0xFF10B981), size: 16),
+                          const Icon(
+                            Icons.shield,
+                            color: Color(0xFF10B981),
+                            size: 16,
+                          ),
                           const SizedBox(width: 8),
                           Text(
                             'END-TO-END ENCRYPTED DATA PROTECTION',
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
-                              color: isDark ? const Color(0xFF10B981) : const Color(0xFF047857),
+                              color: isDark
+                                  ? const Color(0xFF10B981)
+                                  : const Color(0xFF047857),
                             ),
                           ),
                         ],
@@ -433,4 +622,3 @@ class _RegisterViewState extends State<_RegisterView> {
     );
   }
 }
-

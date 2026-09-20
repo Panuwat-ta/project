@@ -14,7 +14,7 @@ class AuthLocalDataSource {
     await secureStorage.saveToken(kRefreshToken, token.refreshToken);
     if (token.expiresAt != null) {
       await secureStorage.saveToken(
-        _kExpiresAt,
+        kTokenExpiresAt,
         token.expiresAt!.toIso8601String(),
       );
     }
@@ -26,8 +26,8 @@ class AuthLocalDataSource {
   /// Returns the stored refresh token, or `null` if not present.
   Future<String?> getRefreshToken() => secureStorage.getToken(kRefreshToken);
 
-  /// Removes all stored tokens from secure storage.
-  Future<void> clearTokens() => secureStorage.deleteAll();
+  /// Removes auth credentials only. Onboarding/settings must survive logout.
+  Future<void> clearTokens() => secureStorage.clearAuthTokens();
 
   /// Returns `true` if an access token is present in storage.
   ///
@@ -47,6 +47,3 @@ class AuthLocalDataSource {
     await secureStorage.saveToken(kHasSeenOnboarding, 'true');
   }
 }
-
-/// Key used to store the token expiry timestamp.
-const String _kExpiresAt = 'expires_at';

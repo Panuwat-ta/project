@@ -12,10 +12,15 @@ class AnalysisTaskModel extends AnalysisTask {
   factory AnalysisTaskModel.fromJson(Map<String, dynamic> json) {
     final statusStr = json['status'] as String? ?? 'queued';
     return AnalysisTaskModel(
-      taskId: json['taskId'] as String? ?? json['task_id'] as String? ?? '',
+      taskId:
+          json['taskId'] as String? ??
+          json['task_id'] as String? ??
+          json['id']?.toString() ??
+          '',
       status: _parseStatus(statusStr),
-      progress: json['progress'] as int? ?? 0,
-      errorMessage: json['errorMessage'] as String?,
+      progress: (json['progress'] as num?)?.toInt() ?? 0,
+      errorMessage:
+          json['errorMessage'] as String? ?? json['error_message'] as String?,
     );
   }
 

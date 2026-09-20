@@ -1,6 +1,14 @@
 import { useState } from "react";
 import { Sliders, Columns, Layers, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  pointerToPct,
+  sliderClipStyle,
+  dividerStyle,
+  opacityFraction,
+  zoomIn,
+  zoomOut,
+} from "@/lib/heatmap-math";
 
 export function HeatmapComparator({
   originalUrl,
@@ -13,8 +21,8 @@ export function HeatmapComparator({
   const [overlayOpacity, setOverlayOpacity] = useState(70); // percentage
   const [zoom, setZoom] = useState(1);
 
-  const handleZoomIn = () => setZoom((prev) => Math.min(prev + 0.25, 2.5));
-  const handleZoomOut = () => setZoom((prev) => Math.max(prev - 0.25, 0.75));
+  const handleZoomIn = () => setZoom((prev) => zoomIn(prev));
+  const handleZoomOut = () => setZoom((prev) => zoomOut(prev));
   const handleZoomReset = () => setZoom(1);
 
   return (
@@ -119,8 +127,7 @@ export function HeatmapComparator({
             style={{ transform: `scale(${zoom})`, transformOrigin: "center center", transition: "transform 0.15s ease" }}
             onMouseMove={(e) => {
               const rect = e.currentTarget.getBoundingClientRect();
-              const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
-              setSliderPosition((x / rect.width) * 100);
+              setSliderPosition(pointerToPct(e.clientX, rect.left, rect.width));
             }}
           >
             {/* Heatmap Base (Right/Background) */}
@@ -133,7 +140,7 @@ export function HeatmapComparator({
             {/* Original Overlay (Left/Foreground clipped) */}
             <div
               className="absolute inset-0 overflow-hidden pointer-events-none"
-              style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
+              style={sliderClipStyle(sliderPosition)}
             >
               <img
                 src={originalUrl}
@@ -145,7 +152,7 @@ export function HeatmapComparator({
             {/* Divider Line */}
             <div
               className="absolute inset-y-0 w-0.5 bg-primary shadow-[0_0_10px_color-mix(in_srgb,var(--primary)_70%,transparent)] pointer-events-none"
-              style={{ left: `${sliderPosition}%` }}
+              style={dividerStyle(sliderPosition)}
             >
               <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 size-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg font-bold text-[9px]">
                 ↔
@@ -208,7 +215,7 @@ export function HeatmapComparator({
               src={heatmapUrl || originalUrl}
               alt="ผลตรวจฮีตแมปแบบซ้อนภาพ"
               className="absolute inset-0 max-h-[480px] w-full h-full object-contain transition-opacity duration-150 mix-blend-screen pointer-events-none"
-              style={{ opacity: overlayOpacity / 100 }}
+              style={{ opacity: opacityFraction(overlayOpacity) }}
             />
           </div>
         )}

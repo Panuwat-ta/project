@@ -27,35 +27,36 @@ void main() {
     blocTest<ScanBloc, ScanState>(
       'emits [ScanUploading, ScanPolling] when submitImage succeeds',
       build: () {
-        when(() => mockRepo.submitImage(
-              filePath: any(named: 'filePath'),
-              consentForResearch: any(named: 'consentForResearch'),
-              clientRequestId: any(named: 'clientRequestId'),
-            )).thenAnswer((_) async => 'task-1');
+        when(
+          () => mockRepo.submitImage(
+            filePath: any(named: 'filePath'),
+            consentForResearch: any(named: 'consentForResearch'),
+            clientRequestId: any(named: 'clientRequestId'),
+          ),
+        ).thenAnswer((_) async => 'task-1');
         return ScanBloc(repository: mockRepo);
       },
       act: (bloc) => bloc.add(CropConfirmed('/path/to/image.jpg')),
       expect: () => [
         isA<ScanUploading>(),
-        isA<ScanCompleted>().having((s) => s.taskId, 'taskId', 'task-1'),
+        isA<ScanPolling>().having((s) => s.taskId, 'taskId', 'task-1'),
       ],
     );
 
     blocTest<ScanBloc, ScanState>(
       'emits [ScanUploading, ScanError] when submitImage throws',
       build: () {
-        when(() => mockRepo.submitImage(
-              filePath: any(named: 'filePath'),
-              consentForResearch: any(named: 'consentForResearch'),
-              clientRequestId: any(named: 'clientRequestId'),
-            )).thenThrow(Exception('network error'));
+        when(
+          () => mockRepo.submitImage(
+            filePath: any(named: 'filePath'),
+            consentForResearch: any(named: 'consentForResearch'),
+            clientRequestId: any(named: 'clientRequestId'),
+          ),
+        ).thenThrow(Exception('network error'));
         return ScanBloc(repository: mockRepo);
       },
       act: (bloc) => bloc.add(CropConfirmed('/path/to/image.jpg')),
-      expect: () => [
-        isA<ScanUploading>(),
-        isA<ScanError>(),
-      ],
+      expect: () => [isA<ScanUploading>(), isA<ScanError>()],
     );
   });
 
@@ -75,11 +76,7 @@ void main() {
         isA<ScanPolling>()
             .having((s) => s.taskId, 'taskId', 'task-1')
             .having((s) => s.progress, 'progress', 45)
-            .having(
-              (s) => s.step,
-              'step',
-              AnalysisTaskStatus.processingText,
-            ),
+            .having((s) => s.step, 'step', AnalysisTaskStatus.processingText),
       ],
     );
 
@@ -119,8 +116,9 @@ void main() {
     blocTest<ScanBloc, ScanState>(
       'silently keeps polling when getAnalysisStatus throws (transient error)',
       build: () {
-        when(() => mockRepo.getAnalysisStatus('task-1'))
-            .thenThrow(Exception('socket closed'));
+        when(
+          () => mockRepo.getAnalysisStatus('task-1'),
+        ).thenThrow(Exception('socket closed'));
         return ScanBloc(repository: mockRepo);
       },
       act: (bloc) => bloc.add(AnalysisPollTick('task-1')),
@@ -136,8 +134,9 @@ void main() {
         // Drive the elapsed counter past the 120-second threshold by adding
         // 1201 poll ticks (1201 × 3 s = 3603 s > 3600 s). Repository is never
         // called because the timeout check happens first.
-        when(() => mockRepo.getAnalysisStatus(any()))
-            .thenAnswer((_) async => _task(AnalysisTaskStatus.queued));
+        when(
+          () => mockRepo.getAnalysisStatus(any()),
+        ).thenAnswer((_) async => _task(AnalysisTaskStatus.queued));
 
         for (var i = 0; i < 1201; i++) {
           bloc.add(AnalysisPollTick('task-1'));
@@ -151,16 +150,17 @@ void main() {
 
   group('AnalysisCancelled', () {
     blocTest<ScanBloc, ScanState>(
-      'emits ScanInitial and calls cancelScan when a task is in progress',
+      'emits ScanInitial when a task is in progress (cancel path is a no-op)',
       build: () {
         // First upload so the BLoC tracks a taskId
-        when(() => mockRepo.submitImage(
-              filePath: any(named: 'filePath'),
-              consentForResearch: any(named: 'consentForResearch'),
-              clientRequestId: any(named: 'clientRequestId'),
-            )).thenAnswer((_) async => 'task-1');
-        when(() => mockRepo.cancelScan('task-1'))
-            .thenAnswer((_) async {});
+        when(
+          () => mockRepo.submitImage(
+            filePath: any(named: 'filePath'),
+            consentForResearch: any(named: 'consentForResearch'),
+            clientRequestId: any(named: 'clientRequestId'),
+          ),
+        ).thenAnswer((_) async => 'task-1');
+
         return ScanBloc(repository: mockRepo);
       },
       act: (bloc) async {
@@ -171,21 +171,17 @@ void main() {
       },
       expect: () => [
         isA<ScanUploading>(),
-        isA<ScanCompleted>(),
+        isA<ScanPolling>(),
         isA<ScanInitial>(),
       ],
-      verify: (_) {
-      },
+      verify: (_) {},
     );
 
     blocTest<ScanBloc, ScanState>(
-      'emits ScanInitial without calling cancelScan when no task is running',
+      'emits ScanInitial when no task is running',
       build: () => ScanBloc(repository: mockRepo),
       act: (bloc) => bloc.add(AnalysisCancelled()),
       expect: () => [isA<ScanInitial>()],
-      verify: (_) {
-        verifyNever(() => mockRepo.cancelScan(any()));
-      },
     );
   });
 }

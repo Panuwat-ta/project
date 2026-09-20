@@ -184,32 +184,9 @@ manifest["versions"].append(entry)
 plot_training.validate_manifest_data(manifest, root=segformer_root, check_files=True)
 
 version_dir = tests_root / "v" / version
-wrapper_path = version_dir / "test_qualitative_onnx.py"
-if wrapper_path.exists():
-    raise SystemExit(f"Version test script already exists: {wrapper_path}")
 version_dir.mkdir(parents=True, exist_ok=True)
-
-wrapper = f'''#!/usr/bin/env python3
-"""Run the {version} qualitative ONNX example."""
-from pathlib import Path
-import sys
-
-REPORT_ROOT = Path(__file__).resolve().parents[2] / "report"
-sys.path.insert(0, str(REPORT_ROOT))
-
-from plot_training import render_qualitative_onnx_version  # noqa: E402
-
-
-if __name__ == "__main__":
-    for output in render_qualitative_onnx_version("{version}"):
-        print(output)
-'''
-
-with tempfile.NamedTemporaryFile(
-    "w", encoding="utf-8", dir=version_dir, delete=False
-) as wrapper_file:
-    wrapper_file.write(wrapper)
-    wrapper_temp = Path(wrapper_file.name)
+# No per-version wrapper: tests_model/test_qualitative_onnx.py takes the
+# version as argv and is shared by all versions.
 
 with tempfile.NamedTemporaryFile(
     "w", encoding="utf-8", dir=manifest_path.parent, delete=False
@@ -217,14 +194,10 @@ with tempfile.NamedTemporaryFile(
     json.dump(manifest, manifest_file, indent=2, ensure_ascii=False)
     manifest_file.write("\n")
     manifest_temp = Path(manifest_file.name)
-
-os.chmod(wrapper_temp, 0o755)
-os.replace(wrapper_temp, wrapper_path)
 os.replace(manifest_temp, manifest_path)
 
 metrics = entry["expected_common_test"]
 print(f"Registered {version} in {manifest_path}")
-print(f"Created {wrapper_path}")
 print(
     "Common test: "
     f"mIoU={metrics['mIoU']:.2f}, mDice={metrics['mDice']:.2f}, "

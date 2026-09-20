@@ -18,7 +18,7 @@ import '../../../auth/presentation/bloc/auth_bloc.dart';
 ///  • Greeting section
 ///  • Upload card (opens image picker via [HomeCubit.pickImage])
 ///  • Safety Tips bento grid
-///  • Recent scan history (3 mock items)
+///  • Recent scan history (up to 3 items from HistoryBloc)
 ///
 /// Navigation:
 ///  • On [HomeImageSelected] → navigates to `/crop` with file info in `extra`
@@ -76,18 +76,20 @@ class _HomeViewState extends State<_HomeView>
     return BlocConsumer<HomeCubit, HomeState>(
       listener: (context, state) {
         if (state is HomeImageSelected) {
-          context.push('/crop', extra: {
-            'filePath': state.filePath,
-            'fileSizeBytes': state.fileSizeBytes,
-          });
+          context.push(
+            '/crop',
+            extra: {
+              'filePath': state.filePath,
+              'fileSizeBytes': state.fileSizeBytes,
+            },
+          );
         }
       },
       builder: (context, state) {
         final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
         return Scaffold(
-          backgroundColor:
-              Theme.of(context).scaffoldBackgroundColor,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           appBar: AppTopBar(
             automaticallyImplyLeading: false,
             actions: [
@@ -140,7 +142,8 @@ class _HomeViewState extends State<_HomeView>
                 // ── Greeting ──────────────────────────────────────────────
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.safeMargin),
+                    horizontal: AppSpacing.safeMargin,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -178,7 +181,8 @@ class _HomeViewState extends State<_HomeView>
                 // ── Upload Card ───────────────────────────────────────────
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.safeMargin),
+                    horizontal: AppSpacing.safeMargin,
+                  ),
                   child: _UploadCard(
                     isDark: isDark,
                     state: state,
@@ -191,7 +195,8 @@ class _HomeViewState extends State<_HomeView>
                 // ── Safety Tips ───────────────────────────────────────────
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.safeMargin),
+                    horizontal: AppSpacing.safeMargin,
+                  ),
                   child: _SafetyTipsSection(isDark: isDark),
                 ),
 
@@ -200,7 +205,8 @@ class _HomeViewState extends State<_HomeView>
                 // ── Recent History ────────────────────────────────────────
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.safeMargin),
+                    horizontal: AppSpacing.safeMargin,
+                  ),
                   child: _RecentHistorySection(isDark: isDark),
                 ),
               ],
@@ -234,11 +240,13 @@ class _UploadCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: isDark
-              ? [Theme.of(context).colorScheme.surface, Theme.of(context).scaffoldBackgroundColor]
+              ? [
+                  Theme.of(context).colorScheme.surface,
+                  Theme.of(context).scaffoldBackgroundColor,
+                ]
               : [Colors.white, const Color(0xFFEDF4FF)],
           stops: const [0.0, 1.0],
-          transform:
-              const GradientRotation(135 * 3.141592653589793 / 180),
+          transform: const GradientRotation(135 * 3.141592653589793 / 180),
         ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
@@ -266,8 +274,7 @@ class _UploadCard extends StatelessWidget {
             child: Icon(
               Icons.upload_outlined,
               size: 40,
-              color:
-                  isDark ? AppColors.primaryFixedDim : AppColors.primary,
+              color: isDark ? AppColors.primaryFixedDim : AppColors.primary,
               semanticLabel: 'upload_btn'.tr(context),
             ),
           ),
@@ -278,8 +285,7 @@ class _UploadCard extends StatelessWidget {
           Text(
             'upload_title'.tr(context),
             style: AppTypography.sectionHeader(
-              color:
-                  isDark ? AppColors.primaryFixedDim : AppColors.primary,
+              color: isDark ? AppColors.primaryFixedDim : AppColors.primary,
             ),
             textAlign: TextAlign.center,
           ),
@@ -300,10 +306,9 @@ class _UploadCard extends StatelessWidget {
           Text(
             '(jpg, jpeg, png, webp)',
             style: AppTypography.caption(
-              color: (isDark
-                      ? AppColors.outlineVariant
-                      : AppColors.textSecondary)
-                  .withValues(alpha: 0.7),
+              color:
+                  (isDark ? AppColors.outlineVariant : AppColors.textSecondary)
+                      .withValues(alpha: 0.7),
             ),
             textAlign: TextAlign.center,
           ),
@@ -317,8 +322,7 @@ class _UploadCard extends StatelessWidget {
                 // Platform open-settings is handled at app level or via
                 // app_settings package in a later integration task.
               },
-              onRetry: () =>
-                  context.read<HomeCubit>().pickImage(),
+              onRetry: () => context.read<HomeCubit>().pickImage(),
             )
           else
             ScaleTransition(
@@ -329,10 +333,7 @@ class _UploadCard extends StatelessWidget {
                 onPressed: state is HomeImagePickerLoading
                     ? null
                     : () => context.read<HomeCubit>().pickImage(),
-                leadingIcon: const Icon(
-                  Icons.add_photo_alternate,
-                  size: 20,
-                ),
+                leadingIcon: const Icon(Icons.add_photo_alternate, size: 20),
               ),
             ),
         ],
@@ -408,7 +409,8 @@ class _SafetyTipsSection extends StatelessWidget {
               isDark: isDark,
               icon: Icons.error_outline,
               iconColor: isDark
-                  ? AppColors.inversePrimary // #6CD2FF
+                  ? AppColors
+                        .inversePrimary // #6CD2FF
                   : AppColors.error,
               text: 'tip_3'.tr(context),
               fullWidth: true,
@@ -487,7 +489,9 @@ class _TipCard extends StatelessWidget {
             ),
     );
 
-    return fullWidth ? SizedBox(width: double.infinity, child: content) : content;
+    return fullWidth
+        ? SizedBox(width: double.infinity, child: content)
+        : content;
   }
 }
 
@@ -524,9 +528,7 @@ class _RecentHistorySection extends StatelessWidget {
               child: Text(
                 'see_all'.tr(context),
                 style: AppTypography.caption(
-                  color: isDark
-                      ? AppColors.primaryFixedDim
-                      : AppColors.primary,
+                  color: isDark ? AppColors.primaryFixedDim : AppColors.primary,
                 ).copyWith(fontWeight: FontWeight.w600),
               ),
             ),
@@ -534,7 +536,7 @@ class _RecentHistorySection extends StatelessWidget {
         ),
 
         const SizedBox(height: AppSpacing.md),
-        
+
         BlocBuilder<HistoryBloc, HistoryState>(
           builder: (context, state) {
             if (state is HistoryLoading || state is HistoryInitial) {
@@ -545,7 +547,9 @@ class _RecentHistorySection extends StatelessWidget {
                   padding: const EdgeInsets.all(AppSpacing.md),
                   child: Text(
                     'ไม่มีประวัติการตรวจสอบ',
-                    style: AppTypography.bodyBase(color: isDark ? Colors.white54 : Colors.black54),
+                    style: AppTypography.bodyBase(
+                      color: isDark ? Colors.white54 : Colors.black54,
+                    ),
                   ),
                 ),
               );
@@ -559,8 +563,11 @@ class _RecentHistorySection extends StatelessWidget {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: AppSpacing.md),
                     child: HistoryListItem(
-                      title: 'สแกนเมื่อ ${DateFormat('HH:mm').format(item.createdAt)}',
-                      date: DateFormat('dd MMM yyyy • HH:mm').format(item.createdAt),
+                      title:
+                          'สแกนเมื่อ ${DateFormat('HH:mm').format(item.createdAt)}',
+                      date: DateFormat(
+                        'dd MMM yyyy • HH:mm',
+                      ).format(item.createdAt),
                       riskLevel: RiskBadge.levelFromString(item.riskLevel.name),
                       thumbnailUrl: item.thumbnailUrl,
                       onTap: () => context.push('/result/${item.scanId}'),

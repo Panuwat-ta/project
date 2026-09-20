@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 
 import '../../../../core/errors/exceptions.dart';
+import '../../../../core/network/dio_error_mapper.dart';
 import '../../../../core/network/api_endpoints.dart';
 import '../models/analysis_task_model.dart';
 
@@ -22,12 +23,6 @@ abstract class ScanRemoteDataSource {
   /// Throws [ServerException] on non-2xx responses.
   /// Throws [NetworkException] on connectivity / timeout errors.
   Future<AnalysisTaskModel> getScanStatus(String taskId);
-
-  /// Cancels an in-progress scan task.
-  ///
-  /// Throws [ServerException] on non-2xx responses.
-  /// Throws [NetworkException] on connectivity / timeout errors.
-  Future<void> cancelScan(String taskId);
 }
 
 /// Concrete implementation of [ScanRemoteDataSource] backed by [Dio].
@@ -48,17 +43,17 @@ class ScanRemoteDataSourceImpl implements ScanRemoteDataSource {
       // Compression for files > 10 MB is handled by the repository / calling
       // code before reaching this method, so we upload as-is here.
       final fileName = filePath.split(RegExp(r'[\\/]')).last;
-      
+
       final Map<String, dynamic> formMap = {
         'file': await MultipartFile.fromFile(filePath, filename: fileName),
         'consentForResearch': consentForResearch.toString(),
         'clientRequestId': clientRequestId,
       };
-      
+
       if (scanName != null && scanName.trim().isNotEmpty) {
         formMap['title'] = scanName.trim();
       }
-      
+
       final formData = FormData.fromMap(formMap);
 
       final response = await dio.post<Map<String, dynamic>>(
@@ -68,10 +63,13 @@ class ScanRemoteDataSourceImpl implements ScanRemoteDataSource {
 
       final body = _requireBody(response);
       // Backend returns the full ScanResponse immediately. We just need its ID.
-      final taskId = body['id'] as String? ?? '';
+      final taskId = body['id'];
+      if (taskId is! String || taskId.trim().isEmpty) {
+        throw const ServerException('Scan response missing id');
+      }
       return taskId;
     } on DioException catch (e) {
-      throw _mapDioException(e);
+      throw mapDioException(e);
     }
   }
 
@@ -84,16 +82,7 @@ class ScanRemoteDataSourceImpl implements ScanRemoteDataSource {
       final body = _requireBody(response);
       return AnalysisTaskModel.fromJson(body);
     } on DioException catch (e) {
-      throw _mapDioException(e);
-    }
-  }
-
-  @override
-  Future<void> cancelScan(String taskId) async {
-    try {
-      await dio.delete<void>(ApiEndpoints.scanById(taskId));
-    } on DioException catch (e) {
-      throw _mapDioException(e);
+      throw mapDioException(e);
     }
   }
 
@@ -105,32 +94,5 @@ class ScanRemoteDataSourceImpl implements ScanRemoteDataSource {
       throw const ServerException('Empty response body');
     }
     return body;
-  }
-
-  Exception _mapDioException(DioException e) {
-    switch (e.type) {
-      case DioExceptionType.connectionTimeout:
-      case DioExceptionType.receiveTimeout:
-      case DioExceptionType.sendTimeout:
-      case DioExceptionType.connectionError:
-        return NetworkException(e.message ?? 'Connection error');
-      case DioExceptionType.badResponse:
-        final statusCode = e.response?.statusCode;
-        final data = e.response?.data;
-        String message = 'Server error';
-        
-        if (data is Map<String, dynamic>) {
-          message = data['message'] as String? ?? data['detail'] as String? ?? message;
-        } else if (data is String) {
-          message = data;
-        }
-
-        if (statusCode == 401 || statusCode == 403) {
-          return AuthException(message == 'Server error' ? 'Unauthorised' : message);
-        }
-        return ServerException(message, statusCode: statusCode);
-      default:
-        return NetworkException(e.message ?? 'Network error');
-    }
   }
 }

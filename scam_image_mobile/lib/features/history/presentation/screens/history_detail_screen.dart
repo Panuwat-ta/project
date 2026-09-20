@@ -10,6 +10,7 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../../core/localization/app_translations.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../result/presentation/bloc/result_bloc.dart';
+import '../bloc/history_bloc.dart';
 import '../../../result/domain/entities/analysis_result.dart';
 import '../../../result/domain/entities/risk_factor.dart';
 import '../../../../core/utils/risk_level_helper.dart';
@@ -109,7 +110,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                     const SizedBox(height: AppSpacing.md),
                     _buildImageAnomalyCard(isDark, result),
                     const SizedBox(height: AppSpacing.xl),
-                    _buildActionButtons(context, isDark),
+                    _buildActionButtons(context, isDark, result),
                     const SizedBox(height: AppSpacing.xl),
                   ],
                 ),
@@ -693,16 +694,27 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
     return _buildPill('$score%', bgColor, textColor);
   }
 
-  Widget _buildActionButtons(BuildContext context, bool isDark) {
+  Widget _buildActionButtons(
+    BuildContext context,
+    bool isDark,
+    AnalysisResult result,
+  ) {
     return Column(
       children: [
         Row(
           children: [
             Expanded(
               child: ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: () => context.push(
+                  '/heatmap/${result.taskId}',
+                  extra: <String, dynamic>{
+                    if (result.imageUrl != null) 'imageUrl': result.imageUrl,
+                    if (result.heatmapUrl != null)
+                      'heatmapUrl': result.heatmapUrl,
+                  },
+                ),
                 icon: const Icon(Icons.visibility_outlined, size: 20),
-                label: Text('result_details'.tr(context)),
+                label: Text('result_view_heatmap'.tr(context)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
@@ -718,7 +730,10 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
             const SizedBox(width: AppSpacing.sm),
             Expanded(
               child: OutlinedButton.icon(
-                onPressed: () {},
+                onPressed: () => context.go(
+                  '/main/report',
+                  extra: {'scanId': result.taskId},
+                ),
                 icon: const Icon(Icons.flag_outlined, size: 20),
                 label: Text('result_report_scam'.tr(context)),
                 style: OutlinedButton.styleFrom(
@@ -769,7 +784,34 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
             const SizedBox(width: AppSpacing.sm),
             Expanded(
               child: ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: () async {
+                  final confirm = await showDialog<bool>(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: Text('delete_confirm'.tr(context)),
+                      content: Text('delete_desc'.tr(context)),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx, false),
+                          child: Text('cancel'.tr(context)),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx, true),
+                          child: Text(
+                            'delete'.tr(context),
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                  if (confirm == true && context.mounted) {
+                    context.read<HistoryBloc>().add(
+                      HistoryItemDeleted(result.taskId),
+                    );
+                    context.go('/main/home');
+                  }
+                },
                 icon: const Icon(Icons.delete_outline, size: 20),
                 label: Text('delete'.tr(context)),
                 style: ElevatedButton.styleFrom(

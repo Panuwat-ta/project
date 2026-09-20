@@ -1,4 +1,3 @@
-import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import {
   Activity,
@@ -28,12 +27,10 @@ import {
   CartesianGrid,
 } from "recharts";
 import { fetchDashboard, fetchHealth } from "@/lib/api";
-import { useDashboardWebSocket } from "@/lib/use-dashboard-ws";
-import { useAutoRefresh } from "@/lib/use-auto-refresh";
+import { useAdminQuery } from "@/lib/use-admin-query";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import { CardSkeleton } from "@/components/ui/Skeleton";
-import { useToast } from "@/components/ui/ToastContext";
 import { formatNumber } from "@/lib/utils";
 
 const RISK_PALETTE = {
@@ -53,55 +50,32 @@ const CATEGORY_LABELS = {
 };
 
 export function Dashboard() {
-  const [data, setData] = useState(null);
-  const [health, setHealth] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [error, setError] = useState(null);
-  const [lastUpdated, setLastUpdated] = useState(null);
   const navigate = useNavigate();
-  const toast = useToast();
   const { setIsWsConnected } = useOutletContext() || {};
-  const loadData = useCallback(async (manual = false, quiet = false) => {
-    try {
-      if (manual) setIsRefreshing(true);
-      else if (!quiet) setIsLoading(true);
-      if (!quiet) setError(null);
-
+  const {
+    data,
+    isLoading,
+    isRefreshing,
+    error,
+    lastUpdated,
+    reload: loadData,
+  } = useAdminQuery(
+    async () => {
       const [dash, hlth] = await Promise.all([fetchDashboard(), fetchHealth()]);
-      setData(dash);
-      setHealth(hlth);
-      setLastUpdated(new Date());
-
-      if (manual) {
-        toast.success("อัปเดตข้อมูลสถิติล่าสุดเรียบร้อยแล้ว");
-      }
-    } catch (err) {
-      if (quiet) return;
-      console.error("Dashboard data load error:", err);
-      setError(err.message || "ไม่สามารถเรียกข้อมูลแดชบอร์ดได้");
-      toast.error("เกิดข้อผิดพลาดในการโหลดข้อมูล: " + err.message);
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  }, [toast]);
-
-  // Initial load once; live updates arrive via the persistent WebSocket below.
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
-  // WebSocket Live Updates (single connection + backoff reconnect)
-  useDashboardWebSocket({
-    onRefresh: () => loadData(false, true),
-    onStatusChange: (ok) => {
-      if (setIsWsConnected) setIsWsConnected(ok);
+      return { dashboard: dash, health: hlth };
     },
-  });
-
-  // Polling fallback: backend pushes WS only on review/decision/deploy events.
-  useAutoRefresh(() => loadData(false, true), 30000);
+    {
+      resetOnError: false,
+      successMessage: "อัปเดตข้อมูลสถิติล่าสุดเรียบร้อยแล้ว",
+      errorMessage: "เกิดข้อผิดพลาดในการโหลดข้อมูล",
+      logPrefix: "Dashboard data load error:",
+      onStatusChange: (ok) => {
+        if (setIsWsConnected) setIsWsConnected(ok);
+      },
+    }
+  );
+  const dash = data?.dashboard;
+  const health = data?.health;
 
   if (error && !data) {
     return (
@@ -147,20 +121,20 @@ export function Dashboard() {
   }
 
   // Risk Donut Data
-  const riskTotal = (data.risk_distribution.low || 0) + (data.risk_distribution.medium || 0) + (data.risk_distribution.high || 0);
+  const riskTotal = (dash.risk_distribution.low || 0) + (dash.risk_distribution.medium || 0) + (dash.risk_distribution.high || 0);
   const riskDonut = [
-    { name: "ต่ำ", value: data.risk_distribution.low || 0, color: RISK_PALETTE.low },
-    { name: "กลาง", value: data.risk_distribution.medium || 0, color: RISK_PALETTE.medium },
-    { name: "สูง", value: data.risk_distribution.high || 0, color: RISK_PALETTE.high },
+    { name: "ต่ำ", value: dash.risk_distribution.low || 0, color: RISK_PALETTE.low },
+    { name: "กลาง", value: dash.risk_distribution.medium || 0, color: RISK_PALETTE.medium },
+    { name: "สูง", value: dash.risk_distribution.high || 0, color: RISK_PALETTE.high },
   ];
 
   // Category breakdown formatted
-  const categoryData = Object.entries(data.category_breakdown || {}).map(([key, val]) => ({
+  const categoryData = Object.entries(dash.category_breakdown || {}).map(([key, val]) => ({
     name: CATEGORY_LABELS[key] || key,
     count: val,
   }));
 
-  const highRiskRatio = riskTotal > 0 ? Math.round(((data.risk_distribution.high || 0) / riskTotal) * 100) : 0;
+  const highRiskRatio = riskTotal > 0 ? Math.round(((dash.risk_distribution.high || 0) / riskTotal) * 100) : 0;
 
   return (
     <div className="space-y-6">
@@ -204,7 +178,7 @@ export function Dashboard() {
           <ShieldCheck className="size-4 text-primary shrink-0" />
           <span className="text-muted-foreground font-medium">โมเดลที่ใช้งาน</span>
           <span className="font-semibold font-mono text-foreground truncate">
-            {data?.model?.active_version ? `SegFormer ${data.model.active_version}` : (health?.models ? "SegFormer v1.0.0" : "SegFormer-B2")}
+            {dash?.model?.active_version ? `SegFormer ${dash.model.active_version}` : (health?.models ? "SegFormer v1.0.0" : "SegFormer-B2")}
           </span>
         </div>
       </div>
@@ -219,11 +193,11 @@ export function Dashboard() {
               <Zap className="size-4 text-primary" />
             </div>
             <div className="text-2xl font-bold font-mono text-foreground tracking-tight">
-              {formatNumber(data.overview.scans_today)}
+              {formatNumber(dash.overview.scans_today)}
             </div>
             <div className="flex items-center justify-between text-xs text-muted-foreground pt-1 border-t border-border-subtle font-medium">
               <span>สะสมทั้งหมด</span>
-              <span className="font-bold text-foreground"><span className="font-mono">{formatNumber(data.overview.total_scans)}</span> ครั้ง</span>
+              <span className="font-bold text-foreground"><span className="font-mono">{formatNumber(dash.overview.total_scans)}</span> ครั้ง</span>
             </div>
           </CardContent>
         </Card>
@@ -231,7 +205,7 @@ export function Dashboard() {
         {/* KPI 2: Pending Scam Reports */}
         <Card
           className={
-            data.reports.pending > 0
+            dash.reports.pending > 0
               ? "border-danger-border/40 bg-danger-subtle/30 cursor-pointer hover:border-danger-border transition-all"
               : "hover:border-border transition-all cursor-pointer"
           }
@@ -244,10 +218,10 @@ export function Dashboard() {
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-2xl font-bold font-mono text-danger tracking-tight">
-                {formatNumber(data.reports.pending)}
+                {formatNumber(dash.reports.pending)}
               </span>
               <span className="text-xs text-muted-foreground font-medium">
-                / <span className="font-mono">{formatNumber(data.reports.reviewing)}</span> กำลังตรวจ
+                / <span className="font-mono">{formatNumber(dash.reports.reviewing)}</span> กำลังตรวจ
               </span>
             </div>
             <div className="flex items-center justify-between text-[13px] text-danger font-semibold pt-1 border-t border-border-subtle">
@@ -269,13 +243,13 @@ export function Dashboard() {
                 {highRiskRatio}%
               </span>
               <span className="text-xs text-muted-foreground font-medium">
-                (<span className="font-mono">{formatNumber(data.risk_distribution.high)}</span> ภาพ)
+                (<span className="font-mono">{formatNumber(dash.risk_distribution.high)}</span> ภาพ)
               </span>
             </div>
             <div className="flex items-center justify-between text-xs text-muted-foreground pt-1 border-t border-border-subtle font-medium">
               <span>สัดส่วนความเสี่ยง</span>
               <span className="font-bold text-foreground">
-                L:{data.risk_distribution.low} M:{data.risk_distribution.medium} H:{data.risk_distribution.high}
+                L:{dash.risk_distribution.low} M:{dash.risk_distribution.medium} H:{dash.risk_distribution.high}
               </span>
             </div>
           </CardContent>
@@ -289,11 +263,11 @@ export function Dashboard() {
               <Users className="size-4 text-primary" />
             </div>
             <div className="text-2xl font-bold font-mono text-foreground tracking-tight">
-              {formatNumber(data.overview.active_users_today)}
+              {formatNumber(dash.overview.active_users_today)}
             </div>
             <div className="flex items-center justify-between text-xs text-muted-foreground pt-1 border-t border-border-subtle font-medium">
               <span>บัญชีทั้งหมด</span>
-              <span className="font-bold text-foreground"><span className="font-mono">{formatNumber(data.overview.total_users)}</span> บัญชี</span>
+              <span className="font-bold text-foreground"><span className="font-mono">{formatNumber(dash.overview.total_users)}</span> บัญชี</span>
             </div>
           </CardContent>
         </Card>
@@ -318,7 +292,7 @@ export function Dashboard() {
             <div className="h-64 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
-                  data={data.scan_trend || []}
+                  data={dash.scan_trend || []}
                   margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
                 >
                   <defs>
@@ -419,9 +393,9 @@ export function Dashboard() {
               {/* Level bars */}
               <div className="flex-1 w-full space-y-3">
                 {[
-                  { label: "สูง", value: data.risk_distribution.high || 0, color: RISK_PALETTE.high },
-                  { label: "กลาง", value: data.risk_distribution.medium || 0, color: RISK_PALETTE.medium },
-                  { label: "ต่ำ", value: data.risk_distribution.low || 0, color: RISK_PALETTE.low },
+                  { label: "สูง", value: dash.risk_distribution.high || 0, color: RISK_PALETTE.high },
+                  { label: "กลาง", value: dash.risk_distribution.medium || 0, color: RISK_PALETTE.medium },
+                  { label: "ต่ำ", value: dash.risk_distribution.low || 0, color: RISK_PALETTE.low },
                 ].map((row) => (
                   <div key={row.label} className="flex items-center gap-3">
                     <span className="w-10 shrink-0 text-[13px] text-muted-foreground font-sans">{row.label}</span>

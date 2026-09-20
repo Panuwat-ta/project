@@ -12,8 +12,8 @@ abstract class SettingsRepository {
   /// Requests a privacy data export for the authenticated user.
   Future<void> exportPrivacyData();
 
-  /// Permanently deletes the authenticated user's account.
-  Future<void> deleteAccount();
+  /// Deletes the authenticated user's account after password confirmation.
+  Future<void> deleteAccount(String password);
 
   /// Gets the saved theme mode.
   Future<ThemeMode> getThemeMode();

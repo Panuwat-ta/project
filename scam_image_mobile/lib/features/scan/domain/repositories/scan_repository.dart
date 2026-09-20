@@ -11,7 +11,4 @@ abstract class ScanRepository {
 
   /// Polls the current status of an analysis task.
   Future<AnalysisTask> getAnalysisStatus(String taskId);
-
-  /// Cancels an in-progress scan.
-  Future<void> cancelScan(String taskId);
 }

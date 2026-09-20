@@ -1,5 +1,8 @@
 import 'package:go_router/go_router.dart';
 
+import '../di/injection_container.dart';
+import '../../features/auth/domain/repositories/auth_repository.dart';
+
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/main_shell.dart';
 import '../../features/auth/presentation/screens/onboarding_screen.dart';
@@ -43,113 +46,144 @@ import '../../features/settings/presentation/screens/privacy_consent_screen.dart
 class AppRouter {
   AppRouter._();
 
-  static final GoRouter router = GoRouter(
-    initialLocation: '/splash',
-    debugLogDiagnostics: false,
-    routes: [
-      // ── Auth / entry flow ─────────────────────────────────────────────────
-      GoRoute(
-        path: '/splash',
-        builder: (context, state) => const SplashScreen(),
-      ),
-      GoRoute(
-        path: '/onboarding',
-        builder: (context, state) => const OnboardingScreen(),
-      ),
-      GoRoute(
-        path: '/login',
-        builder: (context, state) => const LoginScreen(),
-      ),
-      GoRoute(
-        path: '/register',
-        builder: (context, state) => const RegisterScreen(),
-      ),
+  static GoRouter? _router;
 
-      // ── Main shell (bottom navigation) ────────────────────────────────────
-      ShellRoute(
-        builder: (context, state, child) => MainShell(child: child),
-        routes: [
-          GoRoute(
-            path: '/main/home',
-            builder: (context, state) => const HomeScreen(),
-          ),
-          GoRoute(
-            path: '/main/history',
-            builder: (context, state) => const HistoryScreen(),
-          ),
-          GoRoute(
-            path: '/main/report',
-            builder: (context, state) => ReportScamScreen(
-              scanId: (state.extra as Map<String, dynamic>?)?['scanId']
-                  as String?,
+  static GoRouter get router =>
+      _router ??= createRouter(authRepository: ServiceLocator.authRepository);
+
+  static GoRouter createRouter({required AuthRepository authRepository}) {
+    return GoRouter(
+      initialLocation: '/splash',
+      debugLogDiagnostics: false,
+      redirect: (context, state) => guardPath(authRepository, state.uri.path),
+      routes: [
+        // ── Auth / entry flow ─────────────────────────────────────────────────
+        GoRoute(
+          path: '/splash',
+          builder: (context, state) => const SplashScreen(),
+        ),
+        GoRoute(
+          path: '/onboarding',
+          builder: (context, state) => const OnboardingScreen(),
+        ),
+        GoRoute(
+          path: '/login',
+          builder: (context, state) => const LoginScreen(),
+        ),
+        GoRoute(
+          path: '/register',
+          builder: (context, state) => const RegisterScreen(),
+        ),
+
+        // ── Main shell (bottom navigation) ────────────────────────────────────
+        ShellRoute(
+          builder: (context, state, child) => MainShell(child: child),
+          routes: [
+            GoRoute(
+              path: '/main/home',
+              builder: (context, state) => const HomeScreen(),
             ),
-          ),
-          GoRoute(
-            path: '/main/settings',
-            builder: (context, state) => const SettingsScreen(),
-            routes: [
-              GoRoute(
-                path: 'profile',
-                builder: (context, state) => const UserProfileScreen(),
+            GoRoute(
+              path: '/main/history',
+              builder: (context, state) => const HistoryScreen(),
+            ),
+            GoRoute(
+              path: '/main/report',
+              builder: (context, state) => ReportScamScreen(
+                scanId:
+                    (state.extra as Map<String, dynamic>?)?['scanId']
+                        as String?,
               ),
-              GoRoute(
-                path: 'privacy',
-                builder: (context, state) => const PrivacyConsentScreen(),
-              ),
-            ],
-          ),
-        ],
-      ),
+            ),
+            GoRoute(
+              path: '/main/settings',
+              builder: (context, state) => const SettingsScreen(),
+              routes: [
+                GoRoute(
+                  path: 'profile',
+                  builder: (context, state) => const UserProfileScreen(),
+                ),
+                GoRoute(
+                  path: 'privacy',
+                  builder: (context, state) => const PrivacyConsentScreen(),
+                ),
+              ],
+            ),
+          ],
+        ),
 
-      // ── Standalone screens ────────────────────────────────────────────────
-      GoRoute(
-        path: '/crop',
-        builder: (context, state) => ImageCropScreen(
-          filePath: (state.extra as Map<String, dynamic>?)?['filePath']
-                  as String? ??
-              '',
+        // ── Standalone screens ────────────────────────────────────────────────
+        GoRoute(
+          path: '/crop',
+          builder: (context, state) => ImageCropScreen(
+            filePath:
+                (state.extra as Map<String, dynamic>?)?['filePath']
+                    as String? ??
+                '',
+          ),
         ),
-      ),
-      GoRoute(
-        path: '/loading',
-        builder: (context, state) => AnalysisLoadingScreen(
-          filePath: (state.extra as Map<String, dynamic>?)?['filePath']
-                  as String? ??
-              '',
-          scanName: (state.extra as Map<String, dynamic>?)?['scanName']
-                  as String?,
+        GoRoute(
+          path: '/loading',
+          builder: (context, state) => AnalysisLoadingScreen(
+            filePath:
+                (state.extra as Map<String, dynamic>?)?['filePath']
+                    as String? ??
+                '',
+            scanName:
+                (state.extra as Map<String, dynamic>?)?['scanName'] as String?,
+          ),
         ),
-      ),
-      GoRoute(
-        path: '/result/:scanId',
-        builder: (context, state) => AnalysisResultScreen(
-          taskId: state.pathParameters['scanId']!,
-          scanName: (state.extra as Map<String, dynamic>?)?['scanName']
-              as String?,
+        GoRoute(
+          path: '/result/:scanId',
+          builder: (context, state) => AnalysisResultScreen(
+            taskId: state.pathParameters['scanId']!,
+            scanName:
+                (state.extra as Map<String, dynamic>?)?['scanName'] as String?,
+          ),
         ),
-      ),
-      GoRoute(
-        path: '/heatmap/:scanId',
-        builder: (context, state) => HeatmapViewerScreen(
-          taskId: state.pathParameters['scanId']!,
-          imageUrl: (state.extra as Map<String, dynamic>?)?['imageUrl']
-              as String?,
-          heatmapUrl: (state.extra as Map<String, dynamic>?)?['heatmapUrl']
-              as String?,
+        GoRoute(
+          path: '/heatmap/:scanId',
+          builder: (context, state) => HeatmapViewerScreen(
+            taskId: state.pathParameters['scanId']!,
+            imageUrl:
+                (state.extra as Map<String, dynamic>?)?['imageUrl'] as String?,
+            heatmapUrl:
+                (state.extra as Map<String, dynamic>?)?['heatmapUrl']
+                    as String?,
+          ),
         ),
-      ),
-      GoRoute(
-        path: '/notifications',
-        builder: (context, state) => const NotificationsScreen(),
-      ),
-      GoRoute(
-        path: '/detail/:scanId',
-        builder: (context, state) => HistoryDetailScreen(
-          scanId: state.pathParameters['scanId']!,
+        GoRoute(
+          path: '/notifications',
+          builder: (context, state) => const NotificationsScreen(),
         ),
-      ),
-    ],
-  );
+        GoRoute(
+          path: '/detail/:scanId',
+          builder: (context, state) =>
+              HistoryDetailScreen(scanId: state.pathParameters['scanId']!),
+        ),
+      ],
+    );
+  }
+
+  static Future<String?> guardPath(
+    AuthRepository authRepository,
+    String path,
+  ) async {
+    if (path == '/splash' || path == '/onboarding') return null;
+
+    try {
+      final hasSeenOnboarding = await authRepository.hasSeenOnboarding();
+      if (!hasSeenOnboarding) return '/onboarding';
+
+      if (path == '/login' || path == '/register') return null;
+
+      final hasValidToken = await authRepository.hasValidToken();
+      if (!hasValidToken) return '/login';
+      return null;
+    } catch (_) {
+      // Fail closed for protected routes when secure storage cannot be read.
+      if (path == '/login' || path == '/register') return null;
+      return '/login';
+    }
+  }
 }
-
-

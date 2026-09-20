@@ -52,7 +52,9 @@ class _SettingsViewState extends State<_SettingsView> {
       // watcher (settings, profile) flips from placeholder to real data.
       context.read<AuthBloc>().add(AuthSessionRestored(user));
       setState(() {
-        _fetchedName = user.displayName.isNotEmpty ? user.displayName : user.email;
+        _fetchedName = user.displayName.isNotEmpty
+            ? user.displayName
+            : user.email;
         _fetchedAvatar = user.avatarUrl;
       });
     } catch (_) {
@@ -75,11 +77,15 @@ class _SettingsViewState extends State<_SettingsView> {
         backgroundColor: Theme.of(context).colorScheme.surface,
         title: Text(
           'clear_cache_title'.tr(context),
-          style: AppTypography.titleMd(color: isDark ? Colors.white : AppColors.textPrimary),
+          style: AppTypography.titleMd(
+            color: isDark ? Colors.white : AppColors.textPrimary,
+          ),
         ),
         content: Text(
           'clear_cache_desc'.tr(context),
-          style: AppTypography.bodyBase(color: isDark ? Colors.white70 : AppColors.textSecondary),
+          style: AppTypography.bodyBase(
+            color: isDark ? Colors.white70 : AppColors.textSecondary,
+          ),
         ),
         actions: [
           TextButton(
@@ -88,8 +94,12 @@ class _SettingsViewState extends State<_SettingsView> {
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child:
-                Text('clear_cache'.tr(context), style: TextStyle(color: isDark ? Colors.white : AppColors.primary)),
+            child: Text(
+              'clear_cache'.tr(context),
+              style: TextStyle(
+                color: isDark ? Colors.white : AppColors.primary,
+              ),
+            ),
           ),
         ],
       ),
@@ -113,11 +123,15 @@ class _SettingsViewState extends State<_SettingsView> {
         backgroundColor: Theme.of(context).colorScheme.surface,
         title: Text(
           'logout_title'.tr(context),
-          style: AppTypography.titleMd(color: isDark ? Colors.white : AppColors.textPrimary),
+          style: AppTypography.titleMd(
+            color: isDark ? Colors.white : AppColors.textPrimary,
+          ),
         ),
         content: Text(
           'logout_desc'.tr(context),
-          style: AppTypography.bodyBase(color: isDark ? Colors.white70 : AppColors.textSecondary),
+          style: AppTypography.bodyBase(
+            color: isDark ? Colors.white70 : AppColors.textSecondary,
+          ),
         ),
         actions: [
           TextButton(
@@ -148,21 +162,40 @@ class _SettingsViewState extends State<_SettingsView> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: Theme.of(context).colorScheme.surface,
-        title: Text('select_language'.tr(context), style: AppTypography.titleMd(color: isDark ? Colors.white : AppColors.textPrimary)),
+        title: Text(
+          'select_language'.tr(context),
+          style: AppTypography.titleMd(
+            color: isDark ? Colors.white : AppColors.textPrimary,
+          ),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              title: Text('language_th'.tr(context), style: TextStyle(color: isDark ? Colors.white : AppColors.textPrimary)),
-              trailing: currentLanguage == 'th' ? const Icon(Icons.check, color: AppColors.primary) : null,
+              title: Text(
+                'language_th'.tr(context),
+                style: TextStyle(
+                  color: isDark ? Colors.white : AppColors.textPrimary,
+                ),
+              ),
+              trailing: currentLanguage == 'th'
+                  ? const Icon(Icons.check, color: AppColors.primary)
+                  : null,
               onTap: () {
                 context.read<SettingsCubit>().setLanguage('th');
                 Navigator.pop(ctx);
               },
             ),
             ListTile(
-              title: Text('language_en'.tr(context), style: TextStyle(color: isDark ? Colors.white : AppColors.textPrimary)),
-              trailing: currentLanguage == 'en' ? const Icon(Icons.check, color: AppColors.primary) : null,
+              title: Text(
+                'language_en'.tr(context),
+                style: TextStyle(
+                  color: isDark ? Colors.white : AppColors.textPrimary,
+                ),
+              ),
+              trailing: currentLanguage == 'en'
+                  ? const Icon(Icons.check, color: AppColors.primary)
+                  : null,
               onTap: () {
                 context.read<SettingsCubit>().setLanguage('en');
                 Navigator.pop(ctx);
@@ -181,21 +214,55 @@ class _SettingsViewState extends State<_SettingsView> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: Theme.of(context).colorScheme.surface,
-        title: Text('select_theme'.tr(context), style: AppTypography.titleMd(color: isDark ? Colors.white : AppColors.textPrimary)),
+        title: Text(
+          'select_theme'.tr(context),
+          style: AppTypography.titleMd(
+            color: isDark ? Colors.white : AppColors.textPrimary,
+          ),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              title: Text('theme_light'.tr(context), style: TextStyle(color: isDark ? Colors.white : AppColors.textPrimary)),
-              trailing: currentMode == ThemeMode.light ? const Icon(Icons.check, color: AppColors.primary) : null,
+              title: Text(
+                'theme_system'.tr(context),
+                style: TextStyle(
+                  color: isDark ? Colors.white : AppColors.textPrimary,
+                ),
+              ),
+              trailing: currentMode == ThemeMode.system
+                  ? const Icon(Icons.check, color: AppColors.primary)
+                  : null,
+              onTap: () {
+                context.read<SettingsCubit>().setTheme(ThemeMode.system);
+                Navigator.pop(ctx);
+              },
+            ),
+            ListTile(
+              title: Text(
+                'theme_light'.tr(context),
+                style: TextStyle(
+                  color: isDark ? Colors.white : AppColors.textPrimary,
+                ),
+              ),
+              trailing: currentMode == ThemeMode.light
+                  ? const Icon(Icons.check, color: AppColors.primary)
+                  : null,
               onTap: () {
                 context.read<SettingsCubit>().setTheme(ThemeMode.light);
                 Navigator.pop(ctx);
               },
             ),
             ListTile(
-              title: Text('theme_dark'.tr(context), style: TextStyle(color: isDark ? Colors.white : AppColors.textPrimary)),
-              trailing: currentMode == ThemeMode.dark ? const Icon(Icons.check, color: AppColors.primary) : null,
+              title: Text(
+                'theme_dark'.tr(context),
+                style: TextStyle(
+                  color: isDark ? Colors.white : AppColors.textPrimary,
+                ),
+              ),
+              trailing: currentMode == ThemeMode.dark
+                  ? const Icon(Icons.check, color: AppColors.primary)
+                  : null,
               onTap: () {
                 context.read<SettingsCubit>().setTheme(ThemeMode.dark);
                 Navigator.pop(ctx);
@@ -244,13 +311,18 @@ class _SettingsViewState extends State<_SettingsView> {
     }
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF141921) : const Color(0xFFF5F6F8),
+      backgroundColor: isDark
+          ? const Color(0xFF141921)
+          : const Color(0xFFF5F6F8),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: isDark ? const Color(0xFF1B222C) : Colors.white,
         title: Row(
           children: [
-            Icon(Icons.shield_outlined, color: isDark ? AppColors.primaryFixedDim : AppColors.primary),
+            Icon(
+              Icons.shield_outlined,
+              color: isDark ? AppColors.primaryFixedDim : AppColors.primary,
+            ),
             const SizedBox(width: 8),
             Text(
               'ScamGuard',
@@ -264,7 +336,10 @@ class _SettingsViewState extends State<_SettingsView> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.notifications_none, color: isDark ? Colors.white : AppColors.textPrimary),
+            icon: Icon(
+              Icons.notifications_none,
+              color: isDark ? Colors.white : AppColors.textPrimary,
+            ),
             onPressed: () => context.push('/notifications'),
           ),
         ],
@@ -291,13 +366,29 @@ class _SettingsViewState extends State<_SettingsView> {
                       Container(
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          border: Border.all(color: isDark ? AppColors.primaryFixedDim : AppColors.primary, width: 2),
+                          border: Border.all(
+                            color: isDark
+                                ? AppColors.primaryFixedDim
+                                : AppColors.primary,
+                            width: 2,
+                          ),
                         ),
                         child: CircleAvatar(
                           radius: 28,
-                          backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
-                          backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
-                          child: avatarUrl == null ? Icon(Icons.person, color: isDark ? Colors.white54 : Colors.grey[400]) : null,
+                          backgroundColor: isDark
+                              ? Colors.grey[800]
+                              : Colors.grey[200],
+                          backgroundImage: avatarUrl != null
+                              ? NetworkImage(avatarUrl)
+                              : null,
+                          child: avatarUrl == null
+                              ? Icon(
+                                  Icons.person,
+                                  color: isDark
+                                      ? Colors.white54
+                                      : Colors.grey[400],
+                                )
+                              : null,
                         ),
                       ),
                       Positioned(
@@ -309,7 +400,11 @@ class _SettingsViewState extends State<_SettingsView> {
                             color: Colors.green,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.check, color: Colors.white, size: 12),
+                          child: const Icon(
+                            Icons.check,
+                            color: Colors.white,
+                            size: 12,
+                          ),
                         ),
                       ),
                     ],
@@ -324,7 +419,11 @@ class _SettingsViewState extends State<_SettingsView> {
                             Expanded(
                               child: Text(
                                 userName,
-                                style: AppTypography.titleMd(color: isDark ? Colors.white : AppColors.textPrimary).copyWith(fontWeight: FontWeight.bold),
+                                style: AppTypography.titleMd(
+                                  color: isDark
+                                      ? Colors.white
+                                      : AppColors.textPrimary,
+                                ).copyWith(fontWeight: FontWeight.bold),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
@@ -335,7 +434,9 @@ class _SettingsViewState extends State<_SettingsView> {
                                 height: 14,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  color: isDark ? Colors.white54 : AppColors.textSecondary,
+                                  color: isDark
+                                      ? Colors.white54
+                                      : AppColors.textSecondary,
                                 ),
                               ),
                             ],
@@ -344,12 +445,21 @@ class _SettingsViewState extends State<_SettingsView> {
                         const SizedBox(height: 4),
                         Text(
                           '${'basic_protection'.tr(context)} • v1.0.0',
-                          style: AppTypography.caption(color: isDark ? Colors.white54 : AppColors.textSecondary),
+                          style: AppTypography.caption(
+                            color: isDark
+                                ? Colors.white54
+                                : AppColors.textSecondary,
+                          ),
                         ),
                       ],
                     ),
                   ),
-                  Icon(Icons.edit, color: isDark ? AppColors.primaryFixedDim : AppColors.primary),
+                  Icon(
+                    Icons.edit,
+                    color: isDark
+                        ? AppColors.primaryFixedDim
+                        : AppColors.primary,
+                  ),
                 ],
               ),
             ),
@@ -361,7 +471,9 @@ class _SettingsViewState extends State<_SettingsView> {
             padding: const EdgeInsets.only(left: 8, bottom: 8),
             child: Text(
               'settings_category_account'.tr(context),
-              style: AppTypography.caption(color: isDark ? Colors.white54 : AppColors.textSecondary).copyWith(fontWeight: FontWeight.bold),
+              style: AppTypography.caption(
+                color: isDark ? Colors.white54 : AppColors.textSecondary,
+              ).copyWith(fontWeight: FontWeight.bold),
             ),
           ),
           Material(
@@ -375,7 +487,13 @@ class _SettingsViewState extends State<_SettingsView> {
                   title: 'account'.tr(context),
                   onTap: () => context.go('/main/settings/profile'),
                 ),
-                Divider(height: 1, thickness: 1, color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
+                Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: isDark ? Colors.white10 : Colors.black12,
+                  indent: 16,
+                  endIndent: 16,
+                ),
                 _SettingsListItem(
                   icon: Icons.notifications_none,
                   title: 'notifications'.tr(context),
@@ -391,7 +509,9 @@ class _SettingsViewState extends State<_SettingsView> {
             padding: const EdgeInsets.only(left: 8, bottom: 8),
             child: Text(
               'settings_category_preferences'.tr(context),
-              style: AppTypography.caption(color: isDark ? Colors.white54 : AppColors.textSecondary).copyWith(fontWeight: FontWeight.bold),
+              style: AppTypography.caption(
+                color: isDark ? Colors.white54 : AppColors.textSecondary,
+              ).copyWith(fontWeight: FontWeight.bold),
             ),
           ),
           Material(
@@ -402,7 +522,9 @@ class _SettingsViewState extends State<_SettingsView> {
               children: [
                 BlocBuilder<SettingsCubit, SettingsState>(
                   builder: (context, state) {
-                    final languageText = state.language == 'th' ? 'ไทย' : 'English';
+                    final languageText = state.language == 'th'
+                        ? 'ไทย'
+                        : 'English';
                     return _SettingsListItem(
                       icon: Icons.language_outlined,
                       title: 'language'.tr(context),
@@ -411,12 +533,20 @@ class _SettingsViewState extends State<_SettingsView> {
                     );
                   },
                 ),
-                Divider(height: 1, thickness: 1, color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
+                Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: isDark ? Colors.white10 : Colors.black12,
+                  indent: 16,
+                  endIndent: 16,
+                ),
                 BlocBuilder<SettingsCubit, SettingsState>(
                   builder: (context, state) {
-                    final themeText = state.themeMode == ThemeMode.dark
-                        ? 'theme_dark'.tr(context)
-                        : 'theme_light'.tr(context);
+                    final themeText = switch (state.themeMode) {
+                      ThemeMode.system => 'theme_system'.tr(context),
+                      ThemeMode.dark => 'theme_dark'.tr(context),
+                      ThemeMode.light => 'theme_light'.tr(context),
+                    };
                     return _SettingsListItem(
                       icon: Icons.palette_outlined,
                       title: 'theme'.tr(context),
@@ -435,7 +565,9 @@ class _SettingsViewState extends State<_SettingsView> {
             padding: const EdgeInsets.only(left: 8, bottom: 8),
             child: Text(
               'settings_category_data_privacy'.tr(context),
-              style: AppTypography.caption(color: isDark ? Colors.white54 : AppColors.textSecondary).copyWith(fontWeight: FontWeight.bold),
+              style: AppTypography.caption(
+                color: isDark ? Colors.white54 : AppColors.textSecondary,
+              ).copyWith(fontWeight: FontWeight.bold),
             ),
           ),
           Material(
@@ -449,7 +581,13 @@ class _SettingsViewState extends State<_SettingsView> {
                   title: 'privacy'.tr(context),
                   onTap: () => context.go('/main/settings/privacy'),
                 ),
-                Divider(height: 1, thickness: 1, color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
+                Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: isDark ? Colors.white10 : Colors.black12,
+                  indent: 16,
+                  endIndent: 16,
+                ),
                 BlocBuilder<SettingsCubit, SettingsState>(
                   builder: (context, state) {
                     return _SettingsListItem(
@@ -470,7 +608,10 @@ class _SettingsViewState extends State<_SettingsView> {
           OutlinedButton.icon(
             onPressed: () => _confirmLogout(context),
             icon: const Icon(Icons.logout, color: AppColors.danger),
-            label: Text('logout'.tr(context), style: const TextStyle(color: AppColors.danger, fontSize: 16)),
+            label: Text(
+              'logout'.tr(context),
+              style: const TextStyle(color: AppColors.danger, fontSize: 16),
+            ),
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
               side: const BorderSide(color: AppColors.danger),
@@ -510,11 +651,17 @@ class _SettingsListItem extends StatelessWidget {
           color: isDark ? const Color(0xFF2A3441) : const Color(0xFFF0F4F8),
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(icon, color: isDark ? AppColors.primaryFixedDim : AppColors.primary, size: 20),
+        child: Icon(
+          icon,
+          color: isDark ? AppColors.primaryFixedDim : AppColors.primary,
+          size: 20,
+        ),
       ),
       title: Text(
         title,
-        style: AppTypography.bodyBase(color: isDark ? Colors.white : AppColors.textPrimary),
+        style: AppTypography.bodyBase(
+          color: isDark ? Colors.white : AppColors.textPrimary,
+        ),
       ),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
@@ -528,10 +675,16 @@ class _SettingsListItem extends StatelessWidget {
           else if (trailingText != null)
             Text(
               trailingText!,
-              style: TextStyle(color: isDark ? Colors.white70 : AppColors.textSecondary, fontSize: 14),
+              style: TextStyle(
+                color: isDark ? Colors.white70 : AppColors.textSecondary,
+                fontSize: 14,
+              ),
             ),
           if (trailingText != null || showSpinner) const SizedBox(width: 8),
-          Icon(Icons.chevron_right, color: isDark ? Colors.white54 : Colors.black38),
+          Icon(
+            Icons.chevron_right,
+            color: isDark ? Colors.white54 : Colors.black38,
+          ),
         ],
       ),
       onTap: onTap,

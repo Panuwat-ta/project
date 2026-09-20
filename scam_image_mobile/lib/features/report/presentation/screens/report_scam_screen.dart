@@ -73,6 +73,15 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
 
   // ── Submit ────────────────────────────────────────────────────────────────
   void _submit() {
+    if (widget.scanId == null || widget.scanId!.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('report_scan_required'.tr(context)),
+          backgroundColor: AppColors.danger,
+        ),
+      );
+      return;
+    }
     if (!(_formKey.currentState?.validate() ?? false)) return;
     if (_selectedCategory == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -91,10 +100,11 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
     // category ส่ง key มาตรฐานเสมอ; ข้อความ custom ของ Other ย้ายไปนำหน้า description
     final finalCategory = _selectedCategory!;
     final details = _detailsController.text.trim();
-    final finalDescription = (_selectedCategory == 'other' && customCat.isNotEmpty)
+    final finalDescription =
+        (_selectedCategory == 'other' && customCat.isNotEmpty)
         ? '[$customCat] $details'
         : details;
-    
+
     final finalPlatform = _selectedPlatform == 'cat_other'.tr(context)
         ? _platformController.text.trim()
         : _selectedPlatform;
@@ -131,11 +141,11 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
       // Pop after snackbar is visible
       Future.delayed(const Duration(milliseconds: 1500), () {
         if (context.mounted) {
-           if (GoRouter.of(context).canPop()) {
-             context.pop();
-           } else {
-             context.go('/main/home');
-           }
+          if (GoRouter.of(context).canPop()) {
+            context.pop();
+          } else {
+            context.go('/main/home');
+          }
         }
       });
     } else if (state is ReportError) {
@@ -155,7 +165,7 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return BlocProvider.value(
       value: _bloc,
       child: BlocListener<ReportBloc, ReportState>(
@@ -163,14 +173,17 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
         child: Scaffold(
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           appBar: AppTopBar(
-            automaticallyImplyLeading: false, // In Figma, this acts like a main tab
+            automaticallyImplyLeading:
+                false, // In Figma, this acts like a main tab
             actions: [
               IconButton(
                 tooltip: 'notifications'.tr(context),
                 onPressed: () => context.push('/notifications'),
                 icon: Icon(
                   Icons.notifications_outlined,
-                  color: isDark ? AppColors.outlineVariant : AppColors.onSurfaceVariant,
+                  color: isDark
+                      ? AppColors.outlineVariant
+                      : AppColors.onSurfaceVariant,
                 ),
               ),
             ],
@@ -188,13 +201,15 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                   Text(
                     'report_title'.tr(context),
                     style: AppTypography.headlineLgMobile(
-                        color: Theme.of(context).colorScheme.onSurface),
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.xs),
                   Text(
                     'report_subtitle'.tr(context),
                     style: AppTypography.bodyBase(
-                        color: AppColors.textSecondary),
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.lg),
 
@@ -206,13 +221,15 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                       border: Border.all(
                         color: AppColors.outlineVariant.withValues(alpha: 0.3),
                       ),
-                      boxShadow: isDark ? [] : [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
+                      boxShadow: isDark
+                          ? []
+                          : [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.05),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
                     ),
                     padding: const EdgeInsets.all(AppSpacing.md),
                     child: Column(
@@ -228,9 +245,7 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                               ),
                             ),
                             TextButton.icon(
-                              onPressed: () {
-                                // TODO: Pick or change image
-                              },
+                              onPressed: () => context.go('/main/home'),
                               icon: const Icon(Icons.refresh, size: 18),
                               label: Text('report_change_image'.tr(context)),
                               style: TextButton.styleFrom(
@@ -241,25 +256,32 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                           ],
                         ),
                         const SizedBox(height: AppSpacing.md),
-                        // Mock Image Placeholder (QR Code)
+                        // Scan reference card
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child: Container(
                             height: 180,
                             width: double.infinity,
-                            color: isDark ? AppColors.inverseSurface : AppColors.bgLight,
+                            color: isDark
+                                ? AppColors.inverseSurface
+                                : AppColors.bgLight,
                             child: Stack(
                               alignment: Alignment.center,
                               children: [
                                 Icon(
-                                  Icons.qr_code,
+                                  widget.scanId == null
+                                      ? Icons.add_photo_alternate_outlined
+                                      : Icons.image_search_outlined,
                                   size: 64,
-                                  color: AppColors.outlineVariant.withValues(alpha: 0.5),
+                                  color: AppColors.outlineVariant.withValues(
+                                    alpha: 0.5,
+                                  ),
                                 ),
                                 Container(
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                    color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
+                                    color: Theme.of(context).colorScheme.surface
+                                        .withValues(alpha: 0.8),
                                     shape: BoxShape.circle,
                                   ),
                                   child: const Icon(
@@ -277,11 +299,15 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                   const SizedBox(height: AppSpacing.xl),
 
                   // ── Category Dropdown ──────────────────────────────────
-                  _SectionLabel(label: 'report_cat_label'.tr(context), isDark: isDark),
+                  _SectionLabel(
+                    label: 'report_cat_label'.tr(context),
+                    isDark: isDark,
+                  ),
                   const SizedBox(height: AppSpacing.sm),
                   FormField<String>(
                     initialValue: _selectedCategory,
-                    validator: (v) => v == null ? 'report_cat_error'.tr(context) : null,
+                    validator: (v) =>
+                        v == null ? 'report_cat_error'.tr(context) : null,
                     builder: (FormFieldState<String> state) {
                       return DropdownMenu<String>(
                         initialSelection: state.value,
@@ -290,14 +316,20 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                         errorText: state.errorText,
                         menuStyle: MenuStyle(
                           shape: WidgetStateProperty.all(
-                            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
                           ),
                           elevation: WidgetStateProperty.all(4),
-                          backgroundColor: WidgetStateProperty.all(Theme.of(context).colorScheme.surface),
+                          backgroundColor: WidgetStateProperty.all(
+                            Theme.of(context).colorScheme.surface,
+                          ),
                         ),
                         inputDecorationTheme: InputDecorationTheme(
                           filled: true,
-                          fillColor: isDark ? AppColors.inverseSurface : Colors.white,
+                          fillColor: isDark
+                              ? AppColors.inverseSurface
+                              : Colors.white,
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: AppSpacing.md,
                             vertical: AppSpacing.md,
@@ -305,21 +337,34 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: BorderSide(
-                                color: AppColors.outlineVariant.withValues(alpha: 0.5)),
+                              color: AppColors.outlineVariant.withValues(
+                                alpha: 0.5,
+                              ),
+                            ),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: BorderSide(
-                                color: AppColors.outlineVariant.withValues(alpha: 0.5)),
+                              color: AppColors.outlineVariant.withValues(
+                                alpha: 0.5,
+                              ),
+                            ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: BorderSide(
-                                color: isDark ? AppColors.primaryFixedDim : AppColors.primary, width: 1.5),
+                              color: isDark
+                                  ? AppColors.primaryFixedDim
+                                  : AppColors.primary,
+                              width: 1.5,
+                            ),
                           ),
                           errorBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: AppColors.error, width: 1),
+                            borderSide: const BorderSide(
+                              color: AppColors.error,
+                              width: 1,
+                            ),
                           ),
                         ),
                         textStyle: AppTypography.bodyBase(
@@ -350,18 +395,23 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                     TextFormField(
                       controller: _otherCategoryController,
                       style: AppTypography.bodyBase(
-                          color: Theme.of(context).colorScheme.onSurface),
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                       decoration: _inputDecoration(
                         hint: 'โปรดระบุ (Please specify)',
                         isDark: isDark,
                       ),
-                      validator: (v) => v == null || v.isEmpty ? 'กรุณาระบุประเภท' : null,
+                      validator: (v) =>
+                          v == null || v.isEmpty ? 'กรุณาระบุประเภท' : null,
                     ),
                   ],
                   const SizedBox(height: AppSpacing.lg),
 
                   // ── Platform TextField ─────────────────────────────────
-                  _SectionLabel(label: 'report_platform_label'.tr(context), isDark: isDark),
+                  _SectionLabel(
+                    label: 'report_platform_label'.tr(context),
+                    isDark: isDark,
+                  ),
                   const SizedBox(height: AppSpacing.sm),
                   FormField<String>(
                     initialValue: _selectedPlatform,
@@ -373,14 +423,20 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                         errorText: state.errorText,
                         menuStyle: MenuStyle(
                           shape: WidgetStateProperty.all(
-                            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
                           ),
                           elevation: WidgetStateProperty.all(4),
-                          backgroundColor: WidgetStateProperty.all(Theme.of(context).colorScheme.surface),
+                          backgroundColor: WidgetStateProperty.all(
+                            Theme.of(context).colorScheme.surface,
+                          ),
                         ),
                         inputDecorationTheme: InputDecorationTheme(
                           filled: true,
-                          fillColor: isDark ? AppColors.inverseSurface : Colors.white,
+                          fillColor: isDark
+                              ? AppColors.inverseSurface
+                              : Colors.white,
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: AppSpacing.md,
                             vertical: AppSpacing.md,
@@ -388,17 +444,27 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: BorderSide(
-                                color: AppColors.outlineVariant.withValues(alpha: 0.5)),
+                              color: AppColors.outlineVariant.withValues(
+                                alpha: 0.5,
+                              ),
+                            ),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: BorderSide(
-                                color: AppColors.outlineVariant.withValues(alpha: 0.5)),
+                              color: AppColors.outlineVariant.withValues(
+                                alpha: 0.5,
+                              ),
+                            ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: BorderSide(
-                                color: isDark ? AppColors.primaryFixedDim : AppColors.primary, width: 1.5),
+                              color: isDark
+                                  ? AppColors.primaryFixedDim
+                                  : AppColors.primary,
+                              width: 1.5,
+                            ),
                           ),
                         ),
                         textStyle: AppTypography.bodyBase(
@@ -429,31 +495,37 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                     TextFormField(
                       controller: _platformController,
                       style: AppTypography.bodyBase(
-                          color: Theme.of(context).colorScheme.onSurface),
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                       decoration: _inputDecoration(
                         hint: 'โปรดระบุ (Please specify)',
                         isDark: isDark,
                       ),
-                      validator: (v) => v == null || v.isEmpty ? 'กรุณาระบุแพลตฟอร์ม' : null,
+                      validator: (v) =>
+                          v == null || v.isEmpty ? 'กรุณาระบุแพลตฟอร์ม' : null,
                     ),
                   ],
                   const SizedBox(height: AppSpacing.lg),
 
                   // ── Details Field ──────────────────────────────────────
-                  _SectionLabel(label: 'report_details_label'.tr(context), isDark: isDark),
+                  _SectionLabel(
+                    label: 'report_details_label'.tr(context),
+                    isDark: isDark,
+                  ),
                   const SizedBox(height: AppSpacing.sm),
                   TextFormField(
                     controller: _detailsController,
                     minLines: 4,
                     maxLines: 6,
                     style: AppTypography.bodyBase(
-                        color: Theme.of(context).colorScheme.onSurface),
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                     decoration: _inputDecoration(
                       hint: 'report_details_hint'.tr(context),
                       isDark: isDark,
                     ),
                     validator: (v) {
-                      if (v == null || v.trim().length < 5) {
+                      if (v == null || v.trim().length < 10) {
                         return 'report_details_error'.tr(context);
                       }
                       return null;
@@ -470,8 +542,11 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                         height: 24,
                         child: Checkbox(
                           value: _allowAIModel,
-                          onChanged: (v) => setState(() => _allowAIModel = v ?? false),
-                          activeColor: isDark ? AppColors.primaryFixedDim : AppColors.primary,
+                          onChanged: (v) =>
+                              setState(() => _allowAIModel = v ?? false),
+                          activeColor: isDark
+                              ? AppColors.primaryFixedDim
+                              : AppColors.primary,
                           checkColor: isDark ? AppColors.bgDark : Colors.white,
                           side: const BorderSide(
                             color: AppColors.outlineVariant,
@@ -485,7 +560,8 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                       const SizedBox(width: AppSpacing.sm),
                       Expanded(
                         child: GestureDetector(
-                          onTap: () => setState(() => _allowAIModel = !_allowAIModel),
+                          onTap: () =>
+                              setState(() => _allowAIModel = !_allowAIModel),
                           child: Text(
                             'report_consent'.tr(context),
                             style: AppTypography.bodyBase(
@@ -517,12 +593,14 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                     TextFormField(
                       controller: _otherCategoryController,
                       style: AppTypography.bodyBase(
-                          color: Theme.of(context).colorScheme.onSurface),
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                       decoration: _inputDecoration(
                         hint: 'โปรดระบุ (Please specify)',
                         isDark: isDark,
                       ),
-                      validator: (v) => v == null || v.isEmpty ? 'กรุณาระบุประเภท' : null,
+                      validator: (v) =>
+                          v == null || v.isEmpty ? 'กรุณาระบุประเภท' : null,
                     ),
                   ],
                   const SizedBox(height: AppSpacing.lg),
@@ -531,7 +609,9 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                   Text(
                     'report_footer'.tr(context),
                     textAlign: TextAlign.center,
-                    style: AppTypography.caption(color: AppColors.textSecondary),
+                    style: AppTypography.caption(
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.xxl),
                 ],
@@ -549,42 +629,45 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
     required String hint,
     required bool isDark,
     Widget? prefixIcon,
-  }) =>
-      InputDecoration(
-        hintText: hint,
-        hintStyle: AppTypography.bodyBase(color: AppColors.outlineVariant),
-        prefixIcon: prefixIcon,
-        filled: true,
-        fillColor: isDark ? AppColors.inverseSurface : Colors.white,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md,
-          vertical: AppSpacing.md,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
-              color: AppColors.outlineVariant.withValues(alpha: 0.5)),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
-              color: AppColors.outlineVariant.withValues(alpha: 0.5)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
-              color: isDark ? AppColors.primaryFixedDim : AppColors.primary, width: 1.5),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.danger),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.danger, width: 1.5),
-        ),
-        errorStyle: AppTypography.caption(color: AppColors.danger),
-      );
+  }) => InputDecoration(
+    hintText: hint,
+    hintStyle: AppTypography.bodyBase(color: AppColors.outlineVariant),
+    prefixIcon: prefixIcon,
+    filled: true,
+    fillColor: isDark ? AppColors.inverseSurface : Colors.white,
+    contentPadding: const EdgeInsets.symmetric(
+      horizontal: AppSpacing.md,
+      vertical: AppSpacing.md,
+    ),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: BorderSide(
+        color: AppColors.outlineVariant.withValues(alpha: 0.5),
+      ),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: BorderSide(
+        color: AppColors.outlineVariant.withValues(alpha: 0.5),
+      ),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: BorderSide(
+        color: isDark ? AppColors.primaryFixedDim : AppColors.primary,
+        width: 1.5,
+      ),
+    ),
+    errorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: const BorderSide(color: AppColors.danger),
+    ),
+    focusedErrorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: const BorderSide(color: AppColors.danger, width: 1.5),
+    ),
+    errorStyle: AppTypography.caption(color: AppColors.danger),
+  );
 }
 
 // ── Private helper widget ─────────────────────────────────────────────────
@@ -597,8 +680,9 @@ class _SectionLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Text(
-        label,
-        style: AppTypography.titleMd(
-            color: Theme.of(context).colorScheme.onSurface),
-      );
+    label,
+    style: AppTypography.titleMd(
+      color: Theme.of(context).colorScheme.onSurface,
+    ),
+  );
 }

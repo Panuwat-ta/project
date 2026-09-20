@@ -34,27 +34,26 @@ class SettingsState extends Equatable {
     int? cacheSizeBytes,
     bool? isClearingCache,
     String? error,
-  }) =>
-      SettingsState(
-        themeMode: themeMode ?? this.themeMode,
-        language: language ?? this.language,
-        consent: consent ?? this.consent,
-        isLoading: isLoading ?? this.isLoading,
-        cacheSizeBytes: cacheSizeBytes ?? this.cacheSizeBytes,
-        isClearingCache: isClearingCache ?? this.isClearingCache,
-        error: error,
-      );
+  }) => SettingsState(
+    themeMode: themeMode ?? this.themeMode,
+    language: language ?? this.language,
+    consent: consent ?? this.consent,
+    isLoading: isLoading ?? this.isLoading,
+    cacheSizeBytes: cacheSizeBytes ?? this.cacheSizeBytes,
+    isClearingCache: isClearingCache ?? this.isClearingCache,
+    error: error,
+  );
 
   @override
   List<Object?> get props => [
-        themeMode,
-        language,
-        consent,
-        isLoading,
-        cacheSizeBytes,
-        isClearingCache,
-        error,
-      ];
+    themeMode,
+    language,
+    consent,
+    isLoading,
+    cacheSizeBytes,
+    isClearingCache,
+    error,
+  ];
 }
 
 // ── Settings Cubit ────────────────────────────────────────────────────────────
@@ -105,20 +104,26 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   /// Requests a data export for the authenticated user.
-  Future<void> exportData() async {
+  Future<bool> exportData() async {
     try {
       await repository.exportPrivacyData();
+      if (state.error != null) emit(state.copyWith(error: null));
+      return true;
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
+      return false;
     }
   }
 
-  /// Permanently deletes the authenticated user's account.
-  Future<void> deleteAccount() async {
+  /// Deletes the authenticated user's account after password confirmation.
+  Future<bool> deleteAccount(String password) async {
     try {
-      await repository.deleteAccount();
+      await repository.deleteAccount(password);
+      if (state.error != null) emit(state.copyWith(error: null));
+      return true;
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
+      return false;
     }
   }
 
@@ -144,4 +149,3 @@ class SettingsCubit extends Cubit<SettingsState> {
     }
   }
 }
-

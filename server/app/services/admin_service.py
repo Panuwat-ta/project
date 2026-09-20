@@ -22,6 +22,7 @@ from app.models.admin import Admin
 from app.models.admin_session import AdminSession
 from app.schemas.admin import ReportDecisionRequest, UserUpdateRequest, ExportRequest
 from app.core.config import TH_TIMEZONE, settings
+from app.utils.onnx_runner import run_onnx_worker
 from app.utils.risk_calculator import grade_for, LOW_MAX, MEDIUM_MAX
 from app.core.security import (
     hash_token, create_access_token, create_refresh_token,
@@ -627,12 +628,7 @@ async def update_user(db: AsyncSession, user_id: int, admin_id: int, req, ip: st
     }
 
 async def dry_run_model(db: AsyncSession, model_id: int) -> Dict[str, Any]:
-    import time
-    import base64
-    import subprocess
-    import sys
     import os
-    import json
     from PIL import Image
     import io
     
@@ -655,39 +651,13 @@ async def dry_run_model(db: AsyncSession, model_id: int) -> Dict[str, Any]:
         img_byte_arr = io.BytesIO()
         img.save(img_byte_arr, format='JPEG')
         img_bytes = img_byte_arr.getvalue()
-        b64_image = base64.b64encode(img_bytes).decode('utf-8')
-        
-        env = os.environ.copy()
-        import glob
-        venv_lib_path = os.path.join(os.getcwd(), "venv/lib/python3.10/site-packages/nvidia")
-        nvidia_lib_dirs = glob.glob(f"{venv_lib_path}/*/lib")
-        if nvidia_lib_dirs:
-            env["LD_LIBRARY_PATH"] = ":".join(nvidia_lib_dirs)
-        
-        env["ONNX_MODEL_PATH"] = model.file_path
-        env["ONNX_TILE_SIZE"] = str(settings.ONNX_TILE_SIZE)
-        env["ONNX_TILE_OVERLAP"] = str(settings.ONNX_TILE_OVERLAP)
 
-        if "CUDA_VISIBLE_DEVICES" in env and env["CUDA_VISIBLE_DEVICES"] == "":
-            del env["CUDA_VISIBLE_DEVICES"]
+        # Spawn via shared runner seam (no timeout — dry-run behavior unchanged)
+        run = run_onnx_worker(img_bytes, model.file_path, timeout=None)
+        latency_ms = run["latency_ms"]
 
-        worker_path = os.path.join(os.path.dirname(__file__), "onnx_worker.py")
-        
-        start_time = time.time()
-        process = subprocess.Popen(
-            [sys.executable, worker_path],
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            env=env
-        )
-        
-        stdout, stderr = process.communicate(input=b64_image.encode('utf-8'))
-        latency_ms = int((time.time() - start_time) * 1000)
-        
-        if process.returncode == 0:
-            lines = stdout.decode('utf-8').strip().split('\n')
-            result_json = json.loads(lines[-1])
+        if run["returncode"] == 0 and run["stdout_json"] is not None:
+            result_json = run["stdout_json"]
             
             # Approximate memory usage based on file size + 200MB overhead
             file_size_mb = os.path.getsize(model.file_path) / (1024 * 1024)
@@ -710,7 +680,7 @@ async def dry_run_model(db: AsyncSession, model_id: int) -> Dict[str, Any]:
                 "message": "Model inference failed during dry run.",
                 "details": {
                     "model_version": model.version_tag,
-                    "error": stderr.decode('utf-8').strip()[:500],
+                    "error": run["stderr_text"].strip()[:500],
                     "latency_ms": latency_ms
                 }
             }
@@ -902,7 +872,7 @@ async def global_search(db: AsyncSession, q: str) -> Dict[str, Any]:
                 "id": f"scan_{s.id}",
                 "type": "scan",
                 "title": f"การสแกน #{str(s.id)[:8]}...",
-                "subtitle": f"Risk Score: {s.risk_score or 0}% • Grade: {s.risk_level or '-'}",
+                "subtitle": f"Risk Score: {s.total_risk_score or 0}% • Grade: {grade_for(s.total_risk_score or 0, s.visual_score or 0)}",
                 "url": "/admin/dashboard"
             })
     except Exception:

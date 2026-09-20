@@ -19,6 +19,7 @@ from evaluation_core import (
     MaskCase,
     OnnxSegmenter,
     binary_confusion,
+    det_score_image,
     discover_mask_cases,
     metrics_from_confusion,
 )
@@ -132,30 +133,6 @@ def read_case(case: MaskCase) -> tuple[Image.Image, np.ndarray]:
             f"Image/mask size mismatch for {case.case_id}: {image.size} != {mask_image.size}"
         )
     return image, (np.asarray(mask_image, dtype=np.uint8) > 0).astype(np.uint8)
-
-
-def det_score_image(session: ort.InferenceSession, image: Image.Image) -> float | None:
-    """คะแนน det head (Track B) จากภาพทั้งใบย่อ 512x512.
-
-    คืน None ถ้าโมเดลมีแค่ 1 output (backward compatible กับ ONNX เดิม)
-    """
-    try:
-        if len(session.get_outputs()) < 2:
-            return None
-        small = image.resize((512, 512), Image.BILINEAR)
-        pixels = np.asarray(small).astype(np.float32) / 255.0
-        normalized = (pixels - np.array([0.485, 0.456, 0.406], dtype=np.float32)) / np.array(
-            [0.229, 0.224, 0.225], dtype=np.float32
-        )
-        tensor = np.expand_dims(np.transpose(normalized, (2, 0, 1)), axis=0)
-        input_name = session.get_inputs()[0].name
-        outputs = session.run(None, {input_name: tensor})
-        if len(outputs) < 2:
-            return None
-        logit = float(np.asarray(outputs[1]).ravel()[0])
-        return float(1.0 / (1.0 + np.exp(-logit)))
-    except Exception:
-        return None
 
 
 def evaluate_entry(

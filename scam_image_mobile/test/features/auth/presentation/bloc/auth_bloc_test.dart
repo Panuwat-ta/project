@@ -36,35 +36,40 @@ void main() {
     blocTest<AuthBloc, AuthState>(
       'emits [AuthLoading, AuthAuthenticated] on login success',
       build: () {
-        when(() => mockRepo.login(
-              email: any(named: 'email'),
-              password: any(named: 'password'),
-            )).thenAnswer((_) async => tUser);
+        when(
+          () => mockRepo.login(
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+          ),
+        ).thenAnswer((_) async => tUser);
         return AuthBloc(mockRepo);
       },
-      act: (bloc) => bloc.add(const LoginRequested(
-        email: 'test@example.com',
-        password: 'password123',
-      )),
-      expect: () => const [
-        AuthLoading(),
-        AuthAuthenticated(tUser),
-      ],
+      act: (bloc) => bloc.add(
+        const LoginRequested(
+          email: 'test@example.com',
+          password: 'password123',
+        ),
+      ),
+      expect: () => const [AuthLoading(), AuthAuthenticated(tUser)],
     );
 
     blocTest<AuthBloc, AuthState>(
       'emits [AuthLoading, AuthError] on login failure with invalid credentials',
       build: () {
-        when(() => mockRepo.login(
-              email: any(named: 'email'),
-              password: any(named: 'password'),
-            )).thenThrow(Exception('invalid credentials'));
+        when(
+          () => mockRepo.login(
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+          ),
+        ).thenThrow(Exception('Incorrect email or password'));
         return AuthBloc(mockRepo);
       },
-      act: (bloc) => bloc.add(const LoginRequested(
-        email: 'test@example.com',
-        password: 'wrongpassword',
-      )),
+      act: (bloc) => bloc.add(
+        const LoginRequested(
+          email: 'test@example.com',
+          password: 'wrongpassword',
+        ),
+      ),
       expect: () => [
         const AuthLoading(),
         isA<AuthError>().having(
@@ -78,16 +83,20 @@ void main() {
     blocTest<AuthBloc, AuthState>(
       'emits [AuthLoading, AuthError] on login network failure',
       build: () {
-        when(() => mockRepo.login(
-              email: any(named: 'email'),
-              password: any(named: 'password'),
-            )).thenThrow(Exception('network error'));
+        when(
+          () => mockRepo.login(
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+          ),
+        ).thenThrow(Exception('NetworkException: timeout'));
         return AuthBloc(mockRepo);
       },
-      act: (bloc) => bloc.add(const LoginRequested(
-        email: 'test@example.com',
-        password: 'password123',
-      )),
+      act: (bloc) => bloc.add(
+        const LoginRequested(
+          email: 'test@example.com',
+          password: 'password123',
+        ),
+      ),
       expect: () => [
         const AuthLoading(),
         isA<AuthError>().having(
@@ -105,39 +114,52 @@ void main() {
     blocTest<AuthBloc, AuthState>(
       'emits [AuthLoading, AuthAuthenticated] on register success',
       build: () {
-        when(() => mockRepo.register(
-              email: any(named: 'email'),
-              password: any(named: 'password'),
-              displayName: any(named: 'displayName'),
-            )).thenAnswer((_) async => tUser);
+        when(
+          () => mockRepo.register(
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+            displayName: any(named: 'displayName'),
+            systemConsent: any(named: 'systemConsent'),
+            researchConsent: any(named: 'researchConsent'),
+          ),
+        ).thenAnswer((_) async => tUser);
         return AuthBloc(mockRepo);
       },
-      act: (bloc) => bloc.add(const RegisterRequested(
-        email: 'test@example.com',
-        password: 'password123',
-        displayName: 'Test User',
-      )),
-      expect: () => const [
-        AuthLoading(),
-        AuthAuthenticated(tUser),
-      ],
+      act: (bloc) => bloc.add(
+        const RegisterRequested(
+          email: 'test@example.com',
+          password: 'password123',
+          displayName: 'Test User',
+          systemConsent: true,
+          researchConsent: true,
+        ),
+      ),
+      expect: () => const [AuthLoading(), AuthAuthenticated(tUser)],
     );
 
     blocTest<AuthBloc, AuthState>(
       'emits [AuthLoading, AuthError] when email is already in use',
       build: () {
-        when(() => mockRepo.register(
-              email: any(named: 'email'),
-              password: any(named: 'password'),
-              displayName: any(named: 'displayName'),
-            )).thenThrow(Exception('email already in use'));
+        when(
+          () => mockRepo.register(
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+            displayName: any(named: 'displayName'),
+            systemConsent: any(named: 'systemConsent'),
+            researchConsent: any(named: 'researchConsent'),
+          ),
+        ).thenThrow(Exception('Email already registered'));
         return AuthBloc(mockRepo);
       },
-      act: (bloc) => bloc.add(const RegisterRequested(
-        email: 'existing@example.com',
-        password: 'password123',
-        displayName: 'Test User',
-      )),
+      act: (bloc) => bloc.add(
+        const RegisterRequested(
+          email: 'existing@example.com',
+          password: 'password123',
+          displayName: 'Test User',
+          systemConsent: true,
+          researchConsent: true,
+        ),
+      ),
       expect: () => [
         const AuthLoading(),
         isA<AuthError>().having(
@@ -159,10 +181,7 @@ void main() {
         return AuthBloc(mockRepo);
       },
       act: (bloc) => bloc.add(const LogoutRequested()),
-      expect: () => const [
-        AuthLoading(),
-        AuthUnauthenticated(),
-      ],
+      expect: () => const [AuthLoading(), AuthUnauthenticated()],
     );
   });
 
@@ -184,8 +203,9 @@ void main() {
     });
 
     test('refreshToken throws AuthException on expired token', () async {
-      when(() => mockRepo.refreshToken())
-          .thenThrow(Exception('invalid refresh token'));
+      when(
+        () => mockRepo.refreshToken(),
+      ).thenThrow(Exception('invalid refresh token'));
 
       expect(() async => mockRepo.refreshToken(), throwsA(isA<Exception>()));
     });

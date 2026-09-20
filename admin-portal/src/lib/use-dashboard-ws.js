@@ -23,14 +23,14 @@ export function useDashboardWebSocket({ onRefresh, onStatusChange }) {
     let attempt = 0;
     let closed = false;
 
-    const schedule = () => {
+    function schedule() {
       if (closed) return;
       attempt += 1;
       const delay = Math.min(1000 * 2 ** (attempt - 1), MAX_DELAY);
       timer = setTimeout(connect, delay);
-    };
+    }
 
-    const connect = () => {
+    function connect() {
       if (closed) return;
       const token = getAccessToken();
       if (!token) {
@@ -64,7 +64,7 @@ export function useDashboardWebSocket({ onRefresh, onStatusChange }) {
       };
       ws.onerror = down;
       ws.onclose = down;
-    };
+    }
 
     connect();
     return () => {

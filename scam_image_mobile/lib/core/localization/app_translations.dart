@@ -71,7 +71,8 @@ class AppTranslations {
       'result_overall_risk': 'ความเสี่ยงโดยรวม',
       'result_details': 'รายละเอียด',
       'result_xai_explain': 'คำอธิบายจาก AI (XAI)',
-      'result_xai_desc': 'ภาพนี้มีความสม่ำเสมอของพิกเซล ไม่พบร่องรอยการตัดต่อที่ผิดปกติ หรือยังไม่มีคำอธิบายเพิ่มเติมจากโมเดล AI',
+      'result_xai_desc':
+          'ภาพนี้มีความสม่ำเสมอของพิกเซล ไม่พบร่องรอยการตัดต่อที่ผิดปกติ หรือยังไม่มีคำอธิบายเพิ่มเติมจากโมเดล AI',
       'result_ocr': 'การวิเคราะห์ข้อความ',
       'result_ocr_detected': 'ข้อความที่ตรวจพบ:',
       'result_ocr_suspicious': 'คำที่น่าสงสัย',
@@ -87,7 +88,8 @@ class AppTranslations {
       'result_share_text': 'ผลการตรวจสอบรูปภาพจาก ScamGuard',
       // Report Screen
       'report_title': 'แจ้งรายงานการหลอกลวง',
-      'report_subtitle': 'ช่วยเราสร้างสังคมดิจิทัลที่ปลอดภัยยิ่งขึ้นโดยการแจ้งเบาะแส',
+      'report_subtitle':
+          'ช่วยเราสร้างสังคมดิจิทัลที่ปลอดภัยยิ่งขึ้นโดยการแจ้งเบาะแส',
       'report_image_label': 'รูปภาพที่ตรวจสอบ',
       'report_change_image': 'เปลี่ยนรูป',
       'report_cat_label': 'ประเภทเหตุการณ์',
@@ -98,10 +100,13 @@ class AppTranslations {
       'report_platform_hint': 'เช่น Facebook, Line, TikTok',
       'report_details_label': 'รายละเอียดเพิ่มเติม',
       'report_details_hint': 'ระบุลำดับเหตุการณ์ หรือข้อมูลที่น่าสงสัย...',
-      'report_details_error': 'กรุณาระบุรายละเอียดเพิ่มเติม',
-      'report_consent': 'ยินยอมให้ใช้ข้อมูลเพื่อพัฒนาโมเดล AI ในการตรวจสอบและป้องกันภัยไซเบอร์',
+      'report_details_error': 'กรุณาระบุรายละเอียดอย่างน้อย 10 ตัวอักษร',
+      'report_scan_required': 'กรุณาสแกนรูปภาพก่อนส่งรายงาน',
+      'report_consent':
+          'ยินยอมให้ใช้ข้อมูลเพื่อพัฒนาโมเดล AI ในการตรวจสอบและป้องกันภัยไซเบอร์',
       'report_submit': 'ส่งรายงาน',
-      'report_footer': 'ข้อมูลของคุณจะถูกเก็บเป็นความลับและใช้เพื่อความปลอดภัยส่วนรวมเท่านั้น',
+      'report_footer':
+          'ข้อมูลของคุณจะถูกเก็บเป็นความลับและใช้เพื่อความปลอดภัยส่วนรวมเท่านั้น',
       'report_success': 'ส่งรายงานสำเร็จ ขอบคุณที่ช่วยปกป้องผู้ใช้คนอื่น',
       'cat_romance': 'Romance Scam',
       'cat_ecommerce': 'ซื้อขายออนไลน์',
@@ -159,13 +164,16 @@ class AppTranslations {
       'loading_step3_desc_active': 'กำลังประมวลผลด้วย AI...',
       'loading_step_done': 'เสร็จสิ้น',
       'loading_step_wait': 'รอการประมวลผล',
-      'loading_encryption': 'การวิเคราะห์แบบเข้ารหัส ข้อมูลของคุณจะถูกเก็บเป็นความลับ',
-      'loading_cancel_title': 'ยืนยันการยกเลิก?',
-      'loading_cancel_desc': 'คุณต้องการยกเลิกการวิเคราะห์รูปภาพนี้ใช่หรือไม่?',
-      'loading_cancel_no': 'ไม่, ทำงานต่อ',
-      'loading_cancel_yes': 'ใช่, ยกเลิก',
+      'loading_encryption':
+          'การวิเคราะห์แบบเข้ารหัส ข้อมูลของคุณจะถูกเก็บเป็นความลับ',
+      'loading_cancel_title': 'หยุดรอผล?',
+      'loading_cancel_desc':
+          'ระบบฝั่งเซิร์ฟเวอร์จะวิเคราะห์ต่อ แต่แอปจะหยุดรอผลและกลับหน้าหลัก',
+      'loading_cancel_no': 'รอผลต่อ',
+      'loading_cancel_yes': 'หยุดรอและกลับ',
       'loading_bg_title': 'ทำงานเบื้องหลัง',
-      'loading_bg_desc': 'การวิเคราะห์จะทำงานต่อไปในเบื้องหลัง คุณสามารถตรวจสอบผลลัพธ์ได้ในหน้า "ประวัติ" เมื่อการวิเคราะห์เสร็จสิ้น ระบบจะส่งการแจ้งเตือนให้คุณทราบ',
+      'loading_bg_desc':
+          'การวิเคราะห์จะทำงานต่อไปในเบื้องหลัง คุณสามารถตรวจสอบผลลัพธ์ได้ในหน้า "ประวัติ" เมื่อการวิเคราะห์เสร็จสิ้น ระบบจะส่งการแจ้งเตือนให้คุณทราบ',
       'loading_bg_ok': 'ตกลง',
       'loading_timeout': 'หมดเวลา กรุณาลองใหม่',
       // Notifications
@@ -185,14 +193,16 @@ class AppTranslations {
       'crop_yes': 'ใช่',
       'crop_back_tooltip': 'ย้อนกลับ',
       'crop_check_image': 'ตรวจสอบรูปภาพ',
-      'crop_subtitle': 'ปรับแต่งรูปภาพของคุณให้เห็นส่วนที่ต้องการวิเคราะห์ได้ชัดเจนที่สุด',
+      'crop_subtitle':
+          'ปรับแต่งรูปภาพของคุณให้เห็นส่วนที่ต้องการวิเคราะห์ได้ชัดเจนที่สุด',
       'crop_error_load': 'ไม่สามารถโหลดรูปภาพได้',
       'crop_rotate_left': 'หมุนซ้าย',
       'crop_rotate_right': 'หมุนขวา',
       'crop_aspect_ratio': 'สัดส่วน',
       'crop_zoom': 'ขยาย',
       'crop_reset': 'รีเซ็ต',
-      'crop_info': 'รูปภาพจะถูกส่งไปวิเคราะห์บนระบบคลาวด์อย่างปลอดภัย ข้อมูลของคุณจะได้รับการเข้ารหัสและไม่มีการเปิดเผยต่อสาธารณะ',
+      'crop_info':
+          'รูปภาพจะถูกส่งไปวิเคราะห์บนระบบคลาวด์อย่างปลอดภัย ข้อมูลของคุณจะได้รับการเข้ารหัสและไม่มีการเปิดเผยต่อสาธารณะ',
       'crop_start_analysis': 'เริ่มวิเคราะห์',
       'crop_change_image': 'เปลี่ยนรูป',
       'crop_error_empty_name': 'กรุณาตั้งชื่อรูปภาพก่อนเริ่มการวิเคราะห์',
@@ -201,7 +211,8 @@ class AppTranslations {
       'heatmap_ready': 'พร้อมดู',
       'heatmap_check_details': 'ตรวจสอบรายละเอียด',
       'heatmap_original_image': 'ภาพต้นฉบับ',
-      'heatmap_desc': 'พื้นที่สีแดงแสดงถึงจุดที่ AI ตรวจพบความผิดปกติของพิกเซลที่มักเกิดจากการตัดต่อหรือการสร้างภาพปลอม',
+      'heatmap_desc':
+          'พื้นที่สีแดงแสดงถึงจุดที่ AI ตรวจพบความผิดปกติของพิกเซลที่มักเกิดจากการตัดต่อหรือการสร้างภาพปลอม',
       'heatmap_intensity': 'ความเข้มของ Heatmap',
       'heatmap_drag_to_pan': 'ลากเพื่อเลื่อน',
       'heatmap_pinch_to_zoom': 'จีบเพื่อซูม',
@@ -210,7 +221,8 @@ class AppTranslations {
       'result_high_risk': 'High',
       'result_high': 'High',
       'result_summary_title': 'สรุปผลการวิเคราะห์',
-      'result_summary_desc': 'พบสัญญาณหลายอย่างที่เกี่ยวข้องกับการหลอกลวง ระบบตรวจพบองค์ประกอบที่น่าสงสัยภายในรูปภาพนี้',
+      'result_summary_desc':
+          'พบสัญญาณหลายอย่างที่เกี่ยวข้องกับการหลอกลวง ระบบตรวจพบองค์ประกอบที่น่าสงสัยภายในรูปภาพนี้',
       'result_contact_info': 'ข้อมูลติดต่อ',
       'result_suspicious': 'Medium',
       'result_transaction': 'ธุรกรรม',
@@ -219,12 +231,14 @@ class AppTranslations {
       'result_visual_heatmap': 'Visual Heatmap',
       'result_scan_details': 'รายละเอียดผลการตรวจ',
       'result_text_detected': 'ข้อความที่ตรวจพบ:',
-      'result_sample_ocr_text': '"ยินดีด้วย! คุณได้รับรางวัลมูลค่า 50,000 บาท คลิกที่ลิงก์เพื่อรับสิทธิ์ด่วนก่อนหมดเวลา..."',
+      'result_sample_ocr_text':
+          '"ยินดีด้วย! คุณได้รับรางวัลมูลค่า 50,000 บาท คลิกที่ลิงก์เพื่อรับสิทธิ์ด่วนก่อนหมดเวลา..."',
       'result_suspicious_words': 'คำที่น่าสงสัย',
       'result_suspicious_word_1': 'รางวัล',
       'result_suspicious_word_2': 'ด่วน',
       'result_suspicious_word_3': 'คลิกที่ลิงก์',
-      'result_ocr_analysis_desc': 'พบรูปแบบประโยคเร่งเร้าและสร้างความตื่นตระหนก ซึ่งเป็นลักษณะเฉพาะของการหลอกลวงแบบ Phishing',
+      'result_ocr_analysis_desc':
+          'พบรูปแบบประโยคเร่งเร้าและสร้างความตื่นตระหนก ซึ่งเป็นลักษณะเฉพาะของการหลอกลวงแบบ Phishing',
       'result_accuracy': 'ความแม่นยำ',
       'result_first_detected': 'ตรวจพบครั้งแรก',
       'result_sample_date': '12 ม.ค. 2567',
@@ -243,21 +257,32 @@ class AppTranslations {
       // Privacy Settings
       'privacy_title': 'ความเป็นส่วนตัว',
       'privacy_manage_consent': 'จัดการความยินยอม',
-      'privacy_manage_desc': 'เลือกการตั้งค่าที่คุณต้องการให้ ScamGuard ดูแลข้อมูลของคุณ',
+      'privacy_manage_desc':
+          'เลือกการตั้งค่าที่คุณต้องการให้ ScamGuard ดูแลข้อมูลของคุณ',
       'privacy_consent_process_title': 'ยินยอมให้ประมวลผลรูปภาพ',
-      'privacy_consent_process_desc': 'ใช้เพื่อวิเคราะห์ความเสี่ยงในรูปภาพที่คุณอัปโหลด',
+      'privacy_consent_process_desc':
+          'ใช้เพื่อวิเคราะห์ความเสี่ยงในรูปภาพที่คุณอัปโหลด',
       'privacy_consent_history_title': 'ยินยอมให้เก็บประวัติการสแกน',
-      'privacy_consent_history_desc': 'ดูประวัติการวิเคราะห์ย้อนหลังได้ทุกเมื่อ',
+      'privacy_consent_history_desc':
+          'ดูประวัติการวิเคราะห์ย้อนหลังได้ทุกเมื่อ',
       'privacy_consent_ai_title': 'ยินยอมให้ใช้ข้อมูลเพื่อพัฒนา AI',
-      'privacy_consent_ai_desc': 'ช่วยให้ระบบตรวจจับกลโกงได้แม่นยำยิ่งขึ้นสำหรับทุกคน',
+      'privacy_consent_ai_desc':
+          'ช่วยให้ระบบตรวจจับกลโกงได้แม่นยำยิ่งขึ้นสำหรับทุกคน',
       'privacy_export_data': 'ขอสำเนาข้อมูลส่วนตัว',
       'privacy_delete_all_data': 'ลบข้อมูลการใช้งานทั้งหมด',
-      'privacy_info_desc': 'ScamGuard ให้ความสำคัญกับความเป็นส่วนตัวของคุณ ข้อมูลของคุณจะถูกประมวลผลตามพระราชบัญญัติคุ้มครองข้อมูลส่วนตัว (PDPA) เราจะเก็บรักษาข้อมูลอย่างปลอดภัยและไม่ส่งต่อให้บุคคลที่สามโดยไม่ได้รับความยินยอม',
-      'privacy_disable_process_warning': 'หากปิดการยินยอมนี้ แอปจะไม่สามารถวิเคราะห์รูปภาพได้ คุณต้องการปิดจริงหรือ?',
+      'privacy_info_desc':
+          'ScamGuard ให้ความสำคัญกับความเป็นส่วนตัวของคุณ ข้อมูลของคุณจะถูกประมวลผลตามพระราชบัญญัติคุ้มครองข้อมูลส่วนตัว (PDPA) เราจะเก็บรักษาข้อมูลอย่างปลอดภัยและไม่ส่งต่อให้บุคคลที่สามโดยไม่ได้รับความยินยอม',
+      'privacy_disable_process_warning':
+          'หากปิดการยินยอมนี้ แอปจะไม่สามารถวิเคราะห์รูปภาพได้ คุณต้องการปิดจริงหรือ?',
       'confirm': 'ยืนยัน',
       'privacy_exporting': 'กำลังดำเนินการส่งสำเนาข้อมูลของคุณ',
+      'privacy_export_unavailable':
+          'เซิร์ฟเวอร์ยังไม่รองรับการส่งออกข้อมูลส่วนตัว',
+      'privacy_delete_unavailable':
+          'เซิร์ฟเวอร์ยังไม่รองรับการลบข้อมูลการใช้งานทั้งหมด',
       'privacy_delete_title': 'ลบข้อมูลการใช้งาน',
-      'privacy_delete_desc': 'คุณต้องการลบข้อมูลการใช้งานทั้งหมดใช่หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้',
+      'privacy_delete_desc':
+          'คุณต้องการลบข้อมูลการใช้งานทั้งหมดใช่หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้',
       'privacy_deleted': 'ข้อมูลของคุณถูกลบเรียบร้อยแล้ว',
       'delete_data': 'ลบข้อมูล',
       // Profile
@@ -269,6 +294,8 @@ class AppTranslations {
       'password_changed': 'เปลี่ยนรหัสผ่านสำเร็จ',
       'profile_change_password': 'เปลี่ยนรหัสผ่าน',
       'profile_delete_account': 'ลบบัญชีผู้ใช้งาน',
+      'profile_delete_failed':
+          'ไม่สามารถลบบัญชีได้ กรุณาตรวจสอบรหัสผ่านแล้วลองใหม่',
       'visual_anomaly_title': 'ตรวจจับความผิดปกติ',
       'anomaly_edit_title': 'ร่องรอยการตัดต่อ',
       'anomaly_edit_desc': 'พบรอยต่อที่ไม่เป็นธรรมชาติบริเวณมุมขวาบน',
@@ -336,7 +363,8 @@ class AppTranslations {
       'result_overall_risk': 'Overall Risk',
       'result_details': 'Scan Details',
       'result_xai_explain': 'AI Explanation (XAI)',
-      'result_xai_desc': 'Pixel structure appears consistent with no abnormal manipulation detected, or no further explanation was provided by the AI model.',
+      'result_xai_desc':
+          'Pixel structure appears consistent with no abnormal manipulation detected, or no further explanation was provided by the AI model.',
       'result_ocr': 'Text Analysis',
       'result_ocr_detected': 'Detected Text:',
       'result_ocr_suspicious': 'Suspicious Words',
@@ -352,7 +380,8 @@ class AppTranslations {
       'result_share_text': 'Image Scan Result from ScamGuard',
       // Report Screen
       'report_title': 'Report Scam',
-      'report_subtitle': 'Help us build a safer digital society by reporting suspicious activities',
+      'report_subtitle':
+          'Help us build a safer digital society by reporting suspicious activities',
       'report_image_label': 'Analyzed Image',
       'report_change_image': 'Change Image',
       'report_cat_label': 'Incident Category',
@@ -362,12 +391,17 @@ class AppTranslations {
       'report_platform_label': 'Platform found on',
       'report_platform_hint': 'e.g. Facebook, Line, TikTok',
       'report_details_label': 'Additional Details',
-      'report_details_hint': 'Specify sequence of events or suspicious information...',
-      'report_details_error': 'Please provide additional details',
-      'report_consent': 'I consent to use this data to improve AI models for cybersecurity',
+      'report_details_hint':
+          'Specify sequence of events or suspicious information...',
+      'report_details_error': 'Please provide at least 10 characters of detail',
+      'report_scan_required': 'Please scan an image before submitting a report',
+      'report_consent':
+          'I consent to use this data to improve AI models for cybersecurity',
       'report_submit': 'Submit Report',
-      'report_footer': 'Your information will be kept confidential and used for public safety only',
-      'report_success': 'Report submitted successfully. Thank you for protecting other users.',
+      'report_footer':
+          'Your information will be kept confidential and used for public safety only',
+      'report_success':
+          'Report submitted successfully. Thank you for protecting other users.',
       'cat_romance': 'Romance Scam',
       'cat_ecommerce': 'Online Shopping',
       'cat_fake_slip': 'Fake Slip',
@@ -424,13 +458,16 @@ class AppTranslations {
       'loading_step3_desc_active': 'Processing with AI...',
       'loading_step_done': 'Completed',
       'loading_step_wait': 'Waiting for processing',
-      'loading_encryption': 'Encrypted analysis. Your data is kept confidential.',
-      'loading_cancel_title': 'Confirm cancellation?',
-      'loading_cancel_desc': 'Are you sure you want to cancel the analysis?',
-      'loading_cancel_no': 'No, continue',
-      'loading_cancel_yes': 'Yes, cancel',
+      'loading_encryption':
+          'Encrypted analysis. Your data is kept confidential.',
+      'loading_cancel_title': 'Stop waiting?',
+      'loading_cancel_desc':
+          'Server analysis will continue, but the app will stop polling and return home.',
+      'loading_cancel_no': 'Keep waiting',
+      'loading_cancel_yes': 'Stop waiting',
       'loading_bg_title': 'Run in background',
-      'loading_bg_desc': 'Analysis will continue in background. You can check results in "History". You will be notified when done.',
+      'loading_bg_desc':
+          'Analysis will continue in background. You can check results in "History". You will be notified when done.',
       'loading_bg_ok': 'OK',
       'loading_timeout': 'Timeout, please try again',
       // Notifications
@@ -450,14 +487,16 @@ class AppTranslations {
       'crop_yes': 'Yes',
       'crop_back_tooltip': 'Back',
       'crop_check_image': 'Inspect Image',
-      'crop_subtitle': 'Adjust your image to clearly show the part you want to analyze.',
+      'crop_subtitle':
+          'Adjust your image to clearly show the part you want to analyze.',
       'crop_error_load': 'Failed to load image',
       'crop_rotate_left': 'Rotate L',
       'crop_rotate_right': 'Rotate R',
       'crop_aspect_ratio': 'Ratio',
       'crop_zoom': 'Zoom',
       'crop_reset': 'Reset',
-      'crop_info': 'The image will be sent for cloud analysis securely. Your data is encrypted and kept confidential.',
+      'crop_info':
+          'The image will be sent for cloud analysis securely. Your data is encrypted and kept confidential.',
       'crop_start_analysis': 'Start Analysis',
       'crop_change_image': 'Change Image',
       'crop_error_empty_name': 'Please enter a name before starting analysis',
@@ -466,7 +505,8 @@ class AppTranslations {
       'heatmap_ready': 'Ready',
       'heatmap_check_details': 'Check Details',
       'heatmap_original_image': 'Original Image',
-      'heatmap_desc': 'Red areas indicate spots where AI detected pixel anomalies often caused by editing or AI generation.',
+      'heatmap_desc':
+          'Red areas indicate spots where AI detected pixel anomalies often caused by editing or AI generation.',
       'heatmap_intensity': 'Heatmap Intensity',
       'heatmap_drag_to_pan': 'Drag to pan',
       'heatmap_pinch_to_zoom': 'Pinch to zoom',
@@ -475,7 +515,8 @@ class AppTranslations {
       'result_high_risk': 'High Risk',
       'result_high': 'High Risk',
       'result_summary_title': 'Analysis Summary',
-      'result_summary_desc': 'Found multiple signals related to scams. The system detected suspicious elements within this image.',
+      'result_summary_desc':
+          'Found multiple signals related to scams. The system detected suspicious elements within this image.',
       'result_contact_info': 'Contact Info',
       'result_suspicious': 'Suspicious',
       'result_transaction': 'Transaction',
@@ -484,12 +525,14 @@ class AppTranslations {
       'result_visual_heatmap': 'Visual Heatmap',
       'result_scan_details': 'Scan Details',
       'result_text_detected': 'Detected Text:',
-      'result_sample_ocr_text': '"Congratulations! You won 50,000 THB. Click the link to claim your prize now..."',
+      'result_sample_ocr_text':
+          '"Congratulations! You won 50,000 THB. Click the link to claim your prize now..."',
       'result_suspicious_words': 'Suspicious Words',
       'result_suspicious_word_1': 'Prize',
       'result_suspicious_word_2': 'Urgent',
       'result_suspicious_word_3': 'Click link',
-      'result_ocr_analysis_desc': 'Found urgent and alarming phrasing typical of phishing scams.',
+      'result_ocr_analysis_desc':
+          'Found urgent and alarming phrasing typical of phishing scams.',
       'result_accuracy': 'Accuracy',
       'result_first_detected': 'First Detected',
       'result_sample_date': 'Jan 12, 2024',
@@ -514,21 +557,31 @@ class AppTranslations {
       // Privacy Settings
       'privacy_title': 'Privacy',
       'privacy_manage_consent': 'Manage Consents',
-      'privacy_manage_desc': 'Choose how you want ScamGuard to handle your data',
+      'privacy_manage_desc':
+          'Choose how you want ScamGuard to handle your data',
       'privacy_consent_process_title': 'Allow Image Processing',
-      'privacy_consent_process_desc': 'Used to analyze risk in your uploaded images',
+      'privacy_consent_process_desc':
+          'Used to analyze risk in your uploaded images',
       'privacy_consent_history_title': 'Allow Saving Scan History',
       'privacy_consent_history_desc': 'View your past analysis history anytime',
       'privacy_consent_ai_title': 'Allow Data Usage for AI Development',
-      'privacy_consent_ai_desc': 'Help improve fraud detection accuracy for everyone',
+      'privacy_consent_ai_desc':
+          'Help improve fraud detection accuracy for everyone',
       'privacy_export_data': 'Request Personal Data Copy',
       'privacy_delete_all_data': 'Delete All Usage Data',
-      'privacy_info_desc': 'ScamGuard values your privacy. Your data is processed in accordance with PDPA. We will keep your data secure and not share it with third parties without consent.',
-      'privacy_disable_process_warning': 'If you disable this, the app cannot analyze images. Are you sure?',
+      'privacy_info_desc':
+          'ScamGuard values your privacy. Your data is processed in accordance with PDPA. We will keep your data secure and not share it with third parties without consent.',
+      'privacy_disable_process_warning':
+          'If you disable this, the app cannot analyze images. Are you sure?',
       'confirm': 'Confirm',
       'privacy_exporting': 'Processing your data export request',
+      'privacy_export_unavailable':
+          'Personal data export is not supported by the server yet',
+      'privacy_delete_unavailable':
+          'Deleting all usage data is not supported by the server yet',
       'privacy_delete_title': 'Delete Usage Data',
-      'privacy_delete_desc': 'Are you sure you want to delete all usage data? This action cannot be undone.',
+      'privacy_delete_desc':
+          'Are you sure you want to delete all usage data? This action cannot be undone.',
       'privacy_deleted': 'Your data has been successfully deleted',
       'delete_data': 'Delete Data',
       // Profile
@@ -540,12 +593,15 @@ class AppTranslations {
       'password_changed': 'Password changed successfully',
       'profile_change_password': 'Change Password',
       'profile_delete_account': 'Delete Account',
+      'profile_delete_failed':
+          'Unable to delete account. Check your password and try again.',
       'visual_anomaly_title': 'Visual Anomaly',
       'anomaly_edit_title': 'Editing traces detected',
-      'anomaly_edit_desc': 'Unnatural editing traces found in the upper right corner',
+      'anomaly_edit_desc':
+          'Unnatural editing traces found in the upper right corner',
       'anomaly_pixel_title': 'Inconsistent pixel quality',
       'anomaly_pixel_desc': 'Multiple layers of image compression detected',
-    }
+    },
   };
 }
 
@@ -553,7 +609,9 @@ extension StringTranslateExtension on String {
   String tr(BuildContext context) {
     try {
       final lang = context.read<SettingsCubit>().state.language;
-      return AppTranslations.localizedValues[lang]?[this] ?? AppTranslations.localizedValues['th']?[this] ?? this;
+      return AppTranslations.localizedValues[lang]?[this] ??
+          AppTranslations.localizedValues['th']?[this] ??
+          this;
     } catch (_) {
       return AppTranslations.localizedValues['th']?[this] ?? this;
     }

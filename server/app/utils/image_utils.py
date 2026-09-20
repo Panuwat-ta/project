@@ -60,6 +60,34 @@ def encode_lossless_png(image: Image.Image) -> bytes:
     return buf.getvalue()
 
 
+def save_evidence_png(png_bytes: bytes, image_hash: str) -> str:
+    """เขียน PNG หลักฐานลง LOCAL_UPLOAD_DIR/{hash}.png คืน path ที่เขียน"""
+    import os
+
+    os.makedirs(settings.LOCAL_UPLOAD_DIR, exist_ok=True)
+    file_path = os.path.join(settings.LOCAL_UPLOAD_DIR, f"{image_hash}.png")
+    with open(file_path, "wb") as buffer:
+        buffer.write(png_bytes)
+    return file_path
+
+
+def heatmap_path(image_hash: str) -> str:
+    """path ปลายทางของ heatmap (ยังไม่เขียนไฟล์)"""
+    import os
+
+    heatmap_dir = os.path.join(settings.LOCAL_UPLOAD_DIR, "heatmaps")
+    os.makedirs(heatmap_dir, exist_ok=True)
+    return os.path.join(heatmap_dir, f"{image_hash}_heatmap.jpg")
+
+
+def save_heatmap_file(heatmap_bytes: bytes, image_hash: str) -> str:
+    """เขียน heatmap bytes ลง disk คืน path ที่เขียน"""
+    path = heatmap_path(image_hash)
+    with open(path, "wb") as f:
+        f.write(heatmap_bytes)
+    return path
+
+
 def _extract_exif(image: Image.Image) -> Dict[str, Any]:
     """ดึง EXIF จาก PIL Image (ยังไม่ถูก re-encode)"""
     try:

@@ -43,62 +43,77 @@ void main() {
     blocTest<HistoryBloc, HistoryState>(
       'emits [HistoryLoading, HistoryDataLoaded] when items are available',
       build: () {
-        when(() => mockRepo.getScanHistory(
-              page: any(named: 'page'),
-              limit: any(named: 'limit'),
-              riskLevel: any(named: 'riskLevel'),
-              fromDate: any(named: 'fromDate'),
-              toDate: any(named: 'toDate'),
-              keyword: any(named: 'keyword'),
-            )).thenAnswer((_) async => tItems);
+        when(
+          () => mockRepo.getScanHistory(
+            page: any(named: 'page'),
+            limit: any(named: 'limit'),
+            riskLevel: any(named: 'riskLevel'),
+            fromDate: any(named: 'fromDate'),
+            toDate: any(named: 'toDate'),
+            keyword: any(named: 'keyword'),
+          ),
+        ).thenAnswer((_) async => tItems);
         return HistoryBloc(repository: mockRepo);
       },
       act: (bloc) => bloc.add(const HistoryLoaded()),
       expect: () => [
         const HistoryLoading(),
-        isA<HistoryDataLoaded>()
-            .having((s) => s.items.length, 'items.length', 2),
+        isA<HistoryDataLoaded>().having(
+          (s) => s.items.length,
+          'items.length',
+          2,
+        ),
       ],
+      verify: (_) {
+        verify(
+          () => mockRepo.getScanHistory(
+            page: any(named: 'page'),
+            limit: 100,
+            riskLevel: any(named: 'riskLevel'),
+            fromDate: any(named: 'fromDate'),
+            toDate: any(named: 'toDate'),
+            keyword: any(named: 'keyword'),
+          ),
+        ).called(1);
+      },
     );
 
     blocTest<HistoryBloc, HistoryState>(
       'emits [HistoryLoading, HistoryEmpty] when no items',
       build: () {
-        when(() => mockRepo.getScanHistory(
-              page: any(named: 'page'),
-              limit: any(named: 'limit'),
-              riskLevel: any(named: 'riskLevel'),
-              fromDate: any(named: 'fromDate'),
-              toDate: any(named: 'toDate'),
-              keyword: any(named: 'keyword'),
-            )).thenAnswer((_) async => []);
+        when(
+          () => mockRepo.getScanHistory(
+            page: any(named: 'page'),
+            limit: any(named: 'limit'),
+            riskLevel: any(named: 'riskLevel'),
+            fromDate: any(named: 'fromDate'),
+            toDate: any(named: 'toDate'),
+            keyword: any(named: 'keyword'),
+          ),
+        ).thenAnswer((_) async => []);
         return HistoryBloc(repository: mockRepo);
       },
       act: (bloc) => bloc.add(const HistoryLoaded()),
-      expect: () => const [
-        HistoryLoading(),
-        HistoryEmpty(),
-      ],
+      expect: () => const [HistoryLoading(), HistoryEmpty()],
     );
 
     blocTest<HistoryBloc, HistoryState>(
       'emits [HistoryLoading, HistoryError] on failure',
       build: () {
-        when(() => mockRepo.getScanHistory(
-              page: any(named: 'page'),
-              limit: any(named: 'limit'),
-              riskLevel: any(named: 'riskLevel'),
-              fromDate: any(named: 'fromDate'),
-              toDate: any(named: 'toDate'),
-              keyword: any(named: 'keyword'),
-            )).thenThrow(Exception('Network error'));
+        when(
+          () => mockRepo.getScanHistory(
+            page: any(named: 'page'),
+            limit: any(named: 'limit'),
+            riskLevel: any(named: 'riskLevel'),
+            fromDate: any(named: 'fromDate'),
+            toDate: any(named: 'toDate'),
+            keyword: any(named: 'keyword'),
+          ),
+        ).thenThrow(Exception('Network error'));
         return HistoryBloc(repository: mockRepo);
       },
       act: (bloc) => bloc.add(const HistoryLoaded()),
-      expect: () => [
-        const HistoryLoading(),
-        isA<HistoryError>(),
-      ],
+      expect: () => [const HistoryLoading(), isA<HistoryError>()],
     );
   });
 
@@ -106,32 +121,39 @@ void main() {
     blocTest<HistoryBloc, HistoryState>(
       'emits HistoryDataLoaded on refresh',
       build: () {
-        when(() => mockRepo.getScanHistory(
-              page: any(named: 'page'),
-              limit: any(named: 'limit'),
-              riskLevel: any(named: 'riskLevel'),
-              fromDate: any(named: 'fromDate'),
-              toDate: any(named: 'toDate'),
-              keyword: any(named: 'keyword'),
-            )).thenAnswer((_) async => tItems);
-        return HistoryBloc(repository: mockRepo);
-      },
-      act: (bloc) => bloc.add(const HistoryRefreshed()),
-      expect: () => [
-        isA<HistoryDataLoaded>()
-            .having((s) => s.items.length, 'items.length', 2),
-      ],
-    );
-
-    test('completes completer on refresh completion', () async {
-      when(() => mockRepo.getScanHistory(
+        when(
+          () => mockRepo.getScanHistory(
             page: any(named: 'page'),
             limit: any(named: 'limit'),
             riskLevel: any(named: 'riskLevel'),
             fromDate: any(named: 'fromDate'),
             toDate: any(named: 'toDate'),
             keyword: any(named: 'keyword'),
-          )).thenAnswer((_) async => tItems);
+          ),
+        ).thenAnswer((_) async => tItems);
+        return HistoryBloc(repository: mockRepo);
+      },
+      act: (bloc) => bloc.add(const HistoryRefreshed()),
+      expect: () => [
+        isA<HistoryDataLoaded>().having(
+          (s) => s.items.length,
+          'items.length',
+          2,
+        ),
+      ],
+    );
+
+    test('completes completer on refresh completion', () async {
+      when(
+        () => mockRepo.getScanHistory(
+          page: any(named: 'page'),
+          limit: any(named: 'limit'),
+          riskLevel: any(named: 'riskLevel'),
+          fromDate: any(named: 'fromDate'),
+          toDate: any(named: 'toDate'),
+          keyword: any(named: 'keyword'),
+        ),
+      ).thenAnswer((_) async => tItems);
 
       final bloc = HistoryBloc(repository: mockRepo);
       final completer = Completer<void>();
@@ -148,34 +170,41 @@ void main() {
     blocTest<HistoryBloc, HistoryState>(
       'fetches with keyword and emits HistoryDataLoaded',
       build: () {
-        when(() => mockRepo.getScanHistory(
-              page: any(named: 'page'),
-              limit: any(named: 'limit'),
-              riskLevel: any(named: 'riskLevel'),
-              fromDate: any(named: 'fromDate'),
-              toDate: any(named: 'toDate'),
-              keyword: any(named: 'keyword'),
-            )).thenAnswer((_) async => [tItems.first]);
+        when(
+          () => mockRepo.getScanHistory(
+            page: any(named: 'page'),
+            limit: any(named: 'limit'),
+            riskLevel: any(named: 'riskLevel'),
+            fromDate: any(named: 'fromDate'),
+            toDate: any(named: 'toDate'),
+            keyword: any(named: 'keyword'),
+          ),
+        ).thenAnswer((_) async => [tItems.first]);
         return HistoryBloc(repository: mockRepo);
       },
       act: (bloc) => bloc.add(const HistorySearched('HIGH')),
       expect: () => [
-        isA<HistoryDataLoaded>()
-            .having((s) => s.items.length, 'items.length', 1),
+        isA<HistoryDataLoaded>().having(
+          (s) => s.items.length,
+          'items.length',
+          1,
+        ),
       ],
     );
 
     blocTest<HistoryBloc, HistoryState>(
       'emits HistoryEmpty when search returns no results',
       build: () {
-        when(() => mockRepo.getScanHistory(
-              page: any(named: 'page'),
-              limit: any(named: 'limit'),
-              riskLevel: any(named: 'riskLevel'),
-              fromDate: any(named: 'fromDate'),
-              toDate: any(named: 'toDate'),
-              keyword: any(named: 'keyword'),
-            )).thenAnswer((_) async => []);
+        when(
+          () => mockRepo.getScanHistory(
+            page: any(named: 'page'),
+            limit: any(named: 'limit'),
+            riskLevel: any(named: 'riskLevel'),
+            fromDate: any(named: 'fromDate'),
+            toDate: any(named: 'toDate'),
+            keyword: any(named: 'keyword'),
+          ),
+        ).thenAnswer((_) async => []);
         return HistoryBloc(repository: mockRepo);
       },
       act: (bloc) => bloc.add(const HistorySearched('nonexistent')),
@@ -187,8 +216,9 @@ void main() {
     blocTest<HistoryBloc, HistoryState>(
       'removes item and emits updated HistoryDataLoaded',
       build: () {
-        when(() => mockRepo.deleteScanHistoryItem('scan-1'))
-            .thenAnswer((_) async {});
+        when(
+          () => mockRepo.deleteScanHistoryItem('scan-1'),
+        ).thenAnswer((_) async {});
         return HistoryBloc(repository: mockRepo);
       },
       seed: () => HistoryDataLoaded(tItems),
@@ -206,8 +236,9 @@ void main() {
     blocTest<HistoryBloc, HistoryState>(
       'emits HistoryEmpty when last item is deleted',
       build: () {
-        when(() => mockRepo.deleteScanHistoryItem('scan-1'))
-            .thenAnswer((_) async {});
+        when(
+          () => mockRepo.deleteScanHistoryItem('scan-1'),
+        ).thenAnswer((_) async {});
         return HistoryBloc(repository: mockRepo);
       },
       seed: () => HistoryDataLoaded([tItems.first]),
@@ -218,8 +249,9 @@ void main() {
     blocTest<HistoryBloc, HistoryState>(
       'emits HistoryError when delete fails',
       build: () {
-        when(() => mockRepo.deleteScanHistoryItem('scan-1'))
-            .thenThrow(Exception('Delete failed'));
+        when(
+          () => mockRepo.deleteScanHistoryItem('scan-1'),
+        ).thenThrow(Exception('Delete failed'));
         return HistoryBloc(repository: mockRepo);
       },
       seed: () => HistoryDataLoaded(tItems),

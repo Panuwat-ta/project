@@ -1,10 +1,10 @@
 import os
 import base64
-import json
 import subprocess
 import sys
 import threading
 from app.core.config import settings
+from app.utils.onnx_runner import run_onnx_worker
 
 # Llama instance ไม่ thread-safe: XAI ซ้อนกัน 2 Jobs -> ggml-cuda race -> SIGABRT
 # ตายทั้ง process (จับด้วย try ไม่ได้) ต้อง serialize ที่ต้นตอ
@@ -129,7 +129,7 @@ class InferenceService:
         """
         scam_keywords = scam_keywords or []
         if not self.xai_model:
-            return self._fallback_xai_explanation(region, visual_score, ai_gen_probability, scam_keywords)
+            return self.fallback_xai_explanation(region, visual_score, ai_gen_probability, scam_keywords)
 
         # 1. Semantic classification based on project 3-level scale
         if visual_score >= 70:
@@ -201,13 +201,13 @@ class InferenceService:
                 text += "การหลอกลวง"
 
             if len(text) < 15:
-                return self._fallback_xai_explanation(region, visual_score, ai_gen_probability, scam_keywords)
+                return self.fallback_xai_explanation(region, visual_score, ai_gen_probability, scam_keywords)
             return text
         except Exception as e:
             print(f"XAI Generation error: {e}")
-            return self._fallback_xai_explanation(region, visual_score, ai_gen_probability, scam_keywords)
+            return self.fallback_xai_explanation(region, visual_score, ai_gen_probability, scam_keywords)
 
-    def _fallback_xai_explanation(
+    def fallback_xai_explanation(
         self,
         region: str,
         visual_score: int,
@@ -342,40 +342,14 @@ class InferenceService:
         ai_gen_probability = 0.5
         heatmap_bytes = self.generate_mock_heatmap(image_bytes)
         
-        # 1. Run ONNX in isolated subprocess
+        # 1. Run ONNX in isolated subprocess via shared runner seam
         try:
-            env = os.environ.copy()
-            # Force LD_LIBRARY_PATH for ONNX worker to find pip CUDA 12 libs
-            import glob
-            venv_lib_path = os.path.join(os.getcwd(), "venv/lib/python3.10/site-packages/nvidia")
-            nvidia_lib_dirs = glob.glob(f"{venv_lib_path}/*/lib")
-            env["LD_LIBRARY_PATH"] = ":".join(nvidia_lib_dirs)
-            env["ONNX_MODEL_PATH"] = settings.ONNX_MODEL_PATH
-            env["ONNX_TILE_SIZE"] = str(settings.ONNX_TILE_SIZE)
-            env["ONNX_TILE_OVERLAP"] = str(settings.ONNX_TILE_OVERLAP)
-            
-            # Re-enable CUDA for ONNX worker
-            if "CUDA_VISIBLE_DEVICES" in env and env["CUDA_VISIBLE_DEVICES"] == "":
-                del env["CUDA_VISIBLE_DEVICES"]
-            
-            worker_path = os.path.join(os.path.dirname(__file__), "onnx_worker.py")
-            process = subprocess.Popen(
-                [sys.executable, worker_path],
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                env=env
+            run = run_onnx_worker(
+                image_bytes,
+                settings.ONNX_MODEL_PATH,
+                timeout=settings.ONNX_WORKER_TIMEOUT,
             )
-            
-            b64_image = base64.b64encode(image_bytes).decode('utf-8')
-            try:
-                stdout, stderr = process.communicate(
-                    input=b64_image.encode('utf-8'),
-                    timeout=settings.ONNX_WORKER_TIMEOUT,
-                )
-            except subprocess.TimeoutExpired:
-                process.kill()
-                stdout, stderr = process.communicate()
+            if run["timed_out"]:
                 print(f"ONNX worker timeout after {settings.ONNX_WORKER_TIMEOUT}s, using defaults")
                 return {
                     "visual_risk_score": visual_risk_score,
@@ -384,18 +358,17 @@ class InferenceService:
                     "heatmap_bytes": heatmap_bytes,
                     "ocr_text": self._run_ocr_with_timeout(image_bytes),
                 }
-            
-            if process.returncode == 0:
+
+            if run["returncode"] == 0 and run["stdout_json"] is not None:
                 # Parse only the last line as JSON to ignore any other print statements
-                lines = stdout.decode('utf-8').strip().split('\n')
-                result = json.loads(lines[-1])
+                result = run["stdout_json"]
                 visual_risk_score = result.get("visual_risk_score", visual_risk_score)
                 ai_gen_probability = result.get("ai_gen_probability", ai_gen_probability)
                 anomaly_region = result.get("anomaly_region", "บริเวณที่น่าสงสัยในภาพ")
                 if result.get("heatmap_b64"):
                     heatmap_bytes = base64.b64decode(result["heatmap_b64"])
             else:
-                print(f"ONNX worker failed: {stderr.decode('utf-8')}")
+                print(f"ONNX worker failed: {run['stderr_text']}")
         except Exception as e:
             print(f"Failed to run ONNX worker: {e}")
             

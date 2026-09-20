@@ -81,7 +81,7 @@ class ScanTimeout extends ScanState {
 
 class ScanBloc extends Bloc<ScanEvent, ScanState> {
   ScanBloc({required this.repository, this.consentForResearch = false})
-      : super(ScanInitial()) {
+    : super(ScanInitial()) {
     on<CropConfirmed>(_onCropConfirmed);
     on<AnalysisPollTick>(_onPollTick);
     on<AnalysisCancelled>(_onCancelled);
@@ -91,15 +91,24 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
   final bool consentForResearch;
 
   Timer? _pollingTimer;
+  String? _activeTaskId;
+  final Set<String> _pollsInFlight = <String>{};
+  int _scanGeneration = 0;
   int _elapsedSeconds = 0;
-  String? _currentTaskId;
 
   static const int _timeoutSeconds = 3600;
   static const int _pollIntervalSeconds = 3;
 
   Future<void> _onCropConfirmed(
-      CropConfirmed event, Emitter<ScanState> emit) async {
+    CropConfirmed event,
+    Emitter<ScanState> emit,
+  ) async {
+    final generation = ++_scanGeneration;
+    _pollingTimer?.cancel();
+    _activeTaskId = null;
+    _elapsedSeconds = 0;
     emit(ScanUploading());
+
     try {
       final String taskId = await repository.submitImage(
         filePath: event.filePath,
@@ -107,66 +116,92 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
         clientRequestId: const Uuid().v4(),
         scanName: event.scanName,
       );
-      _currentTaskId = taskId;
-      
-      _elapsedSeconds = 0;
-      _pollingTimer?.cancel();
+
+      // A newer scan/cancel may have happened while the upload was awaiting.
+      if (generation != _scanGeneration || isClosed) return;
+
+      _activeTaskId = taskId;
       _pollingTimer = Timer.periodic(
         const Duration(seconds: _pollIntervalSeconds),
         (_) {
-          if (!isClosed) {
+          if (!isClosed && _activeTaskId == taskId) {
             add(AnalysisPollTick(taskId));
           }
         },
       );
-      
-      emit(ScanPolling(
-        taskId: taskId,
-        progress: 0,
-        step: AnalysisTaskStatus.queued,
-      ));
+
+      emit(
+        ScanPolling(
+          taskId: taskId,
+          progress: 0,
+          step: AnalysisTaskStatus.queued,
+        ),
+      );
     } catch (e) {
-      emit(ScanError(_friendlyError(e)));
+      if (generation == _scanGeneration && !isClosed) {
+        emit(ScanError(_friendlyError(e)));
+      }
     }
   }
 
-
-
   Future<void> _onPollTick(
-      AnalysisPollTick event, Emitter<ScanState> emit) async {
-    _elapsedSeconds += _pollIntervalSeconds;
-    if (_elapsedSeconds >= _timeoutSeconds) {
-      _pollingTimer?.cancel();
-      emit(ScanTimeout());
+    AnalysisPollTick event,
+    Emitter<ScanState> emit,
+  ) async {
+    if (_activeTaskId != event.taskId || !_pollsInFlight.add(event.taskId)) {
       return;
     }
+
     try {
+      _elapsedSeconds += _pollIntervalSeconds;
+      if (_elapsedSeconds >= _timeoutSeconds) {
+        _pollingTimer?.cancel();
+        _activeTaskId = null;
+        emit(ScanTimeout());
+        return;
+      }
+
       final task = await repository.getAnalysisStatus(event.taskId);
+      // Ignore a response that belongs to a task which is no longer active.
+      if (_activeTaskId != event.taskId || isClosed) return;
+
       if (task.isCompleted) {
         _pollingTimer?.cancel();
+        _activeTaskId = null;
         emit(ScanCompleted(event.taskId));
       } else if (task.isFailed) {
         _pollingTimer?.cancel();
+        _activeTaskId = null;
         emit(ScanError(task.errorMessage ?? 'การวิเคราะห์ล้มเหลว'));
       } else {
-        emit(ScanPolling(
+        emit(
+          ScanPolling(
             taskId: event.taskId,
-            progress: task.progress,
-            step: task.status));
+            progress: task.progress.clamp(0, 100),
+            step: task.status,
+          ),
+        );
       }
     } catch (_) {
-      // transient network errors: keep polling
+      // Transient network errors keep the active polling loop alive.
+    } finally {
+      _pollsInFlight.remove(event.taskId);
     }
   }
 
   Future<void> _onCancelled(
-      AnalysisCancelled event, Emitter<ScanState> emit) async {
+    AnalysisCancelled event,
+    Emitter<ScanState> emit,
+  ) async {
+    _scanGeneration += 1;
     _pollingTimer?.cancel();
+    _activeTaskId = null;
+    _elapsedSeconds = 0;
     emit(ScanInitial());
   }
 
   String _friendlyError(Object e) {
-    final msg = e.toString();
+    final msg = e.toString().toLowerCase();
     if (msg.contains('network') || msg.contains('socket')) {
       return 'ไม่สามารถเชื่อมต่ออินเทอร์เน็ตได้';
     }
@@ -179,5 +214,3 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
     return super.close();
   }
 }
-
-

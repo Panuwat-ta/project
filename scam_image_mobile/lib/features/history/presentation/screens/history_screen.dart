@@ -40,10 +40,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
     if (mounted) setState(() {});
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 400), () {
-      if (mounted)
+      if (mounted) {
         context.read<HistoryBloc>().add(
           HistorySearched(_searchController.text),
         );
+      }
     });
   }
 

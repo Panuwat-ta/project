@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -16,14 +16,16 @@ class PrivacyConsentScreen extends StatefulWidget {
 }
 
 class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
-
   Future<void> _exportData() async {
-    await context.read<SettingsCubit>().exportData();
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('privacy_exporting'.tr(context))),
-      );
-    }
+    final cubit = context.read<SettingsCubit>();
+    final success = await cubit.exportData();
+    if (!mounted) return;
+    final message = success
+        ? 'privacy_exporting'.tr(context)
+        : 'privacy_export_unavailable'.tr(context);
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   Future<void> _deleteAllData() async {
@@ -38,7 +40,9 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
         ),
         content: Text(
           'privacy_delete_desc'.tr(context),
-          style: AppTypography.bodyBase(color: isDark ? Colors.white70 : AppColors.textSecondary),
+          style: AppTypography.bodyBase(
+            color: isDark ? Colors.white70 : AppColors.textSecondary,
+          ),
         ),
         actions: [
           TextButton(
@@ -56,29 +60,13 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
         ],
       ),
     );
-    
+
     if (confirmed == true && mounted) {
-      try {
-        await context.read<SettingsCubit>().deleteAccount();
-        if (mounted) {
-          final error = context.read<SettingsCubit>().state.error;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(error ?? 'privacy_deleted'.tr(context))),
-          );
-          if (error == null) {
-            // Clear local scan history as part of local data deletion
-            try {
-              await context.read<SettingsCubit>().clearCache();
-            } catch (_) {}
-          }
-        }
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(e.toString())),
-          );
-        }
-      }
+      // The backend has no server-wide privacy-delete endpoint yet. Do not
+      // repurpose account deletion for a button labelled "delete usage data".
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('privacy_delete_unavailable'.tr(context))),
+      );
     }
   }
 
@@ -86,179 +74,277 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF141921) : const Color(0xFFF5F6F8),
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: isDark ? const Color(0xFF1B222C) : Colors.white,
-          leading: const BackButton(),
-          title: Text(
-            'privacy_title'.tr(context),
-            style: TextStyle(
-              color: isDark ? AppColors.primaryFixedDim : AppColors.primary,
-              fontWeight: FontWeight.bold,
-            ),
+      backgroundColor: isDark
+          ? const Color(0xFF141921)
+          : const Color(0xFFF5F6F8),
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: isDark ? const Color(0xFF1B222C) : Colors.white,
+        leading: const BackButton(),
+        title: Text(
+          'privacy_title'.tr(context),
+          style: TextStyle(
+            color: isDark ? AppColors.primaryFixedDim : AppColors.primary,
+            fontWeight: FontWeight.bold,
           ),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.notifications_none, color: isDark ? Colors.white : AppColors.textPrimary),
-              onPressed: () {},
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.notifications_none,
+              color: isDark ? Colors.white : AppColors.textPrimary,
             ),
-          ],
-        ),
-        body: BlocBuilder<SettingsCubit, SettingsState>(
-          builder: (context, state) {
-            if (state.isLoading) {
-              return const Center(child: CircularProgressIndicator(color: AppColors.primary));
-            }
-            return ListView(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.md,
-                vertical: AppSpacing.lg,
-              ),
-              children: [
-                // ── Header Icon and Titles ─────────────────────────────────
-                Center(
-                  child: Column(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: isDark ? const Color(0xFF1B222C) : const Color(0xFFDFF1FF),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(Icons.security, size: 40, color: isDark ? AppColors.primaryFixedDim : AppColors.primary),
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      Text(
-                        'privacy_manage_consent'.tr(context),
-                        style: AppTypography.headlineLgMobile(color: isDark ? Colors.white : AppColors.textPrimary).copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'privacy_manage_desc'.tr(context),
-                        textAlign: TextAlign.center,
-                        style: AppTypography.bodyBase(color: isDark ? Colors.white54 : AppColors.textSecondary),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.lg),
-
-                // ── Consent List Container ─────────────────────────────────
-                Container(
-                  decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF1B222C) : Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Column(
-                    children: [
-                      _ConsentTile(
-                        title: 'privacy_consent_process_title'.tr(context),
-                        subtitle: 'privacy_consent_process_desc'.tr(context),
-                        value: state.consent.processingConsent,
-                        onChanged: (val) async {
-                          if (!val) {
-                            final isDark2 = Theme.of(context).brightness == Brightness.dark;
-                            final confirm = await showDialog<bool>(
-                              context: context,
-                              builder: (ctx) => AlertDialog(
-                                backgroundColor: Theme.of(ctx).colorScheme.surface,
-                                title: Text('privacy_consent_process_title'.tr(ctx), style: AppTypography.titleMd(color: isDark2 ? Colors.white : AppColors.textPrimary)),
-                                content: Text('privacy_disable_process_warning'.tr(ctx), style: AppTypography.bodyBase(color: isDark2 ? Colors.white70 : AppColors.textSecondary)),
-                                actions: [
-                                  TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('cancel'.tr(ctx))),
-                                  TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text('confirm'.tr(ctx), style: const TextStyle(color: AppColors.danger))),
-                                ],
-                              ),
-                            );
-                            if (confirm != true) return;
-                          }
-                          final updated = state.consent.copyWith(processingConsent: val);
-                          context.read<SettingsCubit>().updateConsents(updated);
-                        },
-                      ),
-                      Divider(height: 1, thickness: 1, color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
-                      _ConsentTile(
-                        title: 'privacy_consent_history_title'.tr(context),
-                        subtitle: 'privacy_consent_history_desc'.tr(context),
-                        value: state.consent.historyConsent,
-                        onChanged: (val) {
-                          final updated = state.consent.copyWith(historyConsent: val);
-                          context.read<SettingsCubit>().updateConsents(updated);
-                        },
-                      ),
-                      Divider(height: 1, thickness: 1, color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
-                      _ConsentTile(
-                        title: 'privacy_consent_ai_title'.tr(context),
-                        subtitle: 'privacy_consent_ai_desc'.tr(context),
-                        value: state.consent.researchConsent,
-                        onChanged: (val) {
-                          final updated = state.consent.copyWith(researchConsent: val);
-                          context.read<SettingsCubit>().updateConsents(updated);
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.lg),
-
-                // ── Action Buttons ────────────────────────────────────────
-                OutlinedButton.icon(
-                  onPressed: _exportData,
-                  icon: const Icon(Icons.download_outlined),
-                  label: Text('privacy_export_data'.tr(context), style: const TextStyle(fontSize: 16)),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: isDark ? AppColors.primaryFixedDim : AppColors.primary,
-                    side: BorderSide(color: isDark ? AppColors.primaryFixedDim : AppColors.primary),
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.md),
-                OutlinedButton.icon(
-                  onPressed: _deleteAllData,
-                  icon: const Icon(Icons.cancel_presentation, color: AppColors.danger),
-                  label: Text('privacy_delete_all_data'.tr(context), style: const TextStyle(color: AppColors.danger, fontSize: 16)),
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppColors.danger),
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.lg),
-
-                // ── Info Box ──────────────────────────────────────────────
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF2A3441) : const Color(0xFFEAF5FF),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(Icons.info_outline, color: isDark ? AppColors.primaryFixedDim : AppColors.primary),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'privacy_info_desc'.tr(context),
-                          style: AppTypography.caption(color: isDark ? Colors.white70 : AppColors.textSecondary).copyWith(height: 1.5),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                
-                const SizedBox(height: AppSpacing.xxl),
-
-                // ── Bottom Shield Watermark ──────────────────────────────
-                Opacity(
-                  opacity: 0.05,
-                  child: Center(
-                    child: Icon(Icons.security, size: 200, color: isDark ? Colors.white : Colors.black),
-                  ),
-                ),
-              ],
+            onPressed: () => context.push('/notifications'),
+          ),
+        ],
+      ),
+      body: BlocBuilder<SettingsCubit, SettingsState>(
+        builder: (context, state) {
+          if (state.isLoading) {
+            return const Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
             );
-          },
-        ),
-      );
+          }
+          return ListView(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.lg,
+            ),
+            children: [
+              // ── Header Icon and Titles ─────────────────────────────────
+              Center(
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? const Color(0xFF1B222C)
+                            : const Color(0xFFDFF1FF),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.security,
+                        size: 40,
+                        color: isDark
+                            ? AppColors.primaryFixedDim
+                            : AppColors.primary,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    Text(
+                      'privacy_manage_consent'.tr(context),
+                      style: AppTypography.headlineLgMobile(
+                        color: isDark ? Colors.white : AppColors.textPrimary,
+                      ).copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'privacy_manage_desc'.tr(context),
+                      textAlign: TextAlign.center,
+                      style: AppTypography.bodyBase(
+                        color: isDark
+                            ? Colors.white54
+                            : AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+
+              // ── Consent List Container ─────────────────────────────────
+              Container(
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF1B222C) : Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  children: [
+                    _ConsentTile(
+                      title: 'privacy_consent_process_title'.tr(context),
+                      subtitle: 'privacy_consent_process_desc'.tr(context),
+                      value: state.consent.processingConsent,
+                      onChanged: (val) async {
+                        if (!val) {
+                          final isDark2 =
+                              Theme.of(context).brightness == Brightness.dark;
+                          final confirm = await showDialog<bool>(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              backgroundColor: Theme.of(
+                                ctx,
+                              ).colorScheme.surface,
+                              title: Text(
+                                'privacy_consent_process_title'.tr(ctx),
+                                style: AppTypography.titleMd(
+                                  color: isDark2
+                                      ? Colors.white
+                                      : AppColors.textPrimary,
+                                ),
+                              ),
+                              content: Text(
+                                'privacy_disable_process_warning'.tr(ctx),
+                                style: AppTypography.bodyBase(
+                                  color: isDark2
+                                      ? Colors.white70
+                                      : AppColors.textSecondary,
+                                ),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx, false),
+                                  child: Text('cancel'.tr(ctx)),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx, true),
+                                  child: Text(
+                                    'confirm'.tr(ctx),
+                                    style: const TextStyle(
+                                      color: AppColors.danger,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                          if (confirm != true) return;
+                        }
+                        if (!context.mounted) return;
+                        final updated = state.consent.copyWith(
+                          processingConsent: val,
+                        );
+                        context.read<SettingsCubit>().updateConsents(updated);
+                      },
+                    ),
+                    Divider(
+                      height: 1,
+                      thickness: 1,
+                      color: isDark ? Colors.white10 : Colors.black12,
+                      indent: 16,
+                      endIndent: 16,
+                    ),
+                    _ConsentTile(
+                      title: 'privacy_consent_history_title'.tr(context),
+                      subtitle: 'privacy_consent_history_desc'.tr(context),
+                      value: state.consent.historyConsent,
+                      onChanged: (val) {
+                        final updated = state.consent.copyWith(
+                          historyConsent: val,
+                        );
+                        context.read<SettingsCubit>().updateConsents(updated);
+                      },
+                    ),
+                    Divider(
+                      height: 1,
+                      thickness: 1,
+                      color: isDark ? Colors.white10 : Colors.black12,
+                      indent: 16,
+                      endIndent: 16,
+                    ),
+                    _ConsentTile(
+                      title: 'privacy_consent_ai_title'.tr(context),
+                      subtitle: 'privacy_consent_ai_desc'.tr(context),
+                      value: state.consent.researchConsent,
+                      onChanged: (val) {
+                        final updated = state.consent.copyWith(
+                          researchConsent: val,
+                        );
+                        context.read<SettingsCubit>().updateConsents(updated);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+
+              // ── Action Buttons ────────────────────────────────────────
+              OutlinedButton.icon(
+                onPressed: _exportData,
+                icon: const Icon(Icons.download_outlined),
+                label: Text(
+                  'privacy_export_data'.tr(context),
+                  style: const TextStyle(fontSize: 16),
+                ),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: isDark
+                      ? AppColors.primaryFixedDim
+                      : AppColors.primary,
+                  side: BorderSide(
+                    color: isDark
+                        ? AppColors.primaryFixedDim
+                        : AppColors.primary,
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              OutlinedButton.icon(
+                onPressed: _deleteAllData,
+                icon: const Icon(
+                  Icons.cancel_presentation,
+                  color: AppColors.danger,
+                ),
+                label: Text(
+                  'privacy_delete_all_data'.tr(context),
+                  style: const TextStyle(color: AppColors.danger, fontSize: 16),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: AppColors.danger),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+
+              // ── Info Box ──────────────────────────────────────────────
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? const Color(0xFF2A3441)
+                      : const Color(0xFFEAF5FF),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      color: isDark
+                          ? AppColors.primaryFixedDim
+                          : AppColors.primary,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'privacy_info_desc'.tr(context),
+                        style: AppTypography.caption(
+                          color: isDark
+                              ? Colors.white70
+                              : AppColors.textSecondary,
+                        ).copyWith(height: 1.5),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: AppSpacing.xxl),
+
+              // ── Bottom Shield Watermark ──────────────────────────────
+              Opacity(
+                opacity: 0.05,
+                child: Center(
+                  child: Icon(
+                    Icons.security,
+                    size: 200,
+                    color: isDark ? Colors.white : Colors.black,
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
   }
 }
 
@@ -284,18 +370,24 @@ class _ConsentTile extends StatelessWidget {
         value: value,
         onChanged: onChanged,
         activeThumbColor: Colors.white,
-        activeTrackColor: isDark ? AppColors.primaryFixedDim : AppColors.primary,
+        activeTrackColor: isDark
+            ? AppColors.primaryFixedDim
+            : AppColors.primary,
         inactiveThumbColor: Colors.white,
         inactiveTrackColor: Colors.grey[400],
         title: Text(
           title,
-          style: AppTypography.bodyBase(color: isDark ? Colors.white : AppColors.textPrimary).copyWith(fontWeight: FontWeight.bold),
+          style: AppTypography.bodyBase(
+            color: isDark ? Colors.white : AppColors.textPrimary,
+          ).copyWith(fontWeight: FontWeight.bold),
         ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 4.0),
           child: Text(
             subtitle,
-            style: AppTypography.caption(color: isDark ? Colors.white54 : AppColors.textSecondary),
+            style: AppTypography.caption(
+              color: isDark ? Colors.white54 : AppColors.textSecondary,
+            ),
           ),
         ),
       ),

@@ -5,10 +5,7 @@ import '../datasources/result_local_datasource.dart';
 import '../datasources/result_remote_datasource.dart';
 
 class ResultRepositoryImpl implements ResultRepository {
-  ResultRepositoryImpl({
-    required this.remoteDataSource,
-    this.localDataSource,
-  });
+  ResultRepositoryImpl({required this.remoteDataSource, this.localDataSource});
 
   final ResultRemoteDataSource remoteDataSource;
   final ResultLocalDataSource? localDataSource;
@@ -31,14 +28,9 @@ class ResultRepositoryImpl implements ResultRepository {
         if (cached != null) return cached;
       }
       rethrow;
-    } catch (e) {
-      // For other errors (e.g. 404), still try cache as fallback
-      if (localDataSource != null) {
-        try {
-          final cached = await localDataSource!.getResult(taskId);
-          if (cached != null) return cached;
-        } catch (_) {}
-      }
+    } catch (_) {
+      // Authentication, validation and 4xx/5xx responses are authoritative.
+      // Only genuine network failures are eligible for offline cache fallback.
       rethrow;
     }
   }

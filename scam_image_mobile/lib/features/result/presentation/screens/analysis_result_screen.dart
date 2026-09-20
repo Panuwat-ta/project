@@ -71,7 +71,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
                 Icons.notifications_none,
                 color: isDark ? Colors.white : AppColors.onSurface,
               ),
-              onPressed: () {},
+              onPressed: () => context.push('/notifications'),
             ),
           ],
         ),
@@ -294,7 +294,10 @@ class _ResultBody extends StatelessWidget {
             const SizedBox(width: AppSpacing.sm),
             Expanded(
               child: OutlinedButton.icon(
-                onPressed: () => context.go('/main/report'),
+                onPressed: () => context.go(
+                  '/main/report',
+                  extra: {'scanId': result.taskId},
+                ),
                 icon: const Icon(Icons.flag_outlined, size: 20),
                 label: Text('result_report_scam'.tr(context)),
                 style: OutlinedButton.styleFrom(

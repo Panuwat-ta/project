@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entities/scan_history_item.dart';
 import '../../domain/repositories/history_repository.dart';
 
-
 // ── Events ──────────────────────────────────────────────────────────────────
 
 abstract class HistoryEvent extends Equatable {
@@ -127,8 +126,7 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
       // Remove from current list without full reload
       if (state is HistoryDataLoaded) {
         final current = (state as HistoryDataLoaded).items;
-        final updated =
-            current.where((i) => i.scanId != event.scanId).toList();
+        final updated = current.where((i) => i.scanId != event.scanId).toList();
         if (updated.isEmpty) {
           emit(const HistoryEmpty());
         } else {
@@ -145,7 +143,24 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     String? keyword,
   }) async {
     try {
-      final items = await repository.getScanHistory(keyword: keyword);
+      const pageSize = 100;
+      final items = <ScanHistoryItem>[];
+      final seenScanIds = <String>{};
+      var page = 1;
+
+      while (true) {
+        final batch = await repository.getScanHistory(
+          page: page,
+          limit: pageSize,
+          keyword: keyword,
+        );
+        final before = items.length;
+        for (final item in batch) {
+          if (seenScanIds.add(item.scanId)) items.add(item);
+        }
+        if (batch.length < pageSize || items.length == before) break;
+        page += 1;
+      }
       // Client-side fallback filtering: server may ignore keyword, so filter locally too
       List<ScanHistoryItem> filtered = items;
       if (keyword != null && keyword.trim().isNotEmpty) {
@@ -168,5 +183,3 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     }
   }
 }
-
-

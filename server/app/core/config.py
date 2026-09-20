@@ -29,6 +29,8 @@ class Settings(BaseSettings):
 
     # Redis Cache 
     REDIS_URL: str
+    # TTL ผลสแกนแคชตาม image_hash (30 วัน)
+    SCAN_CACHE_TTL_SECONDS: int = 2592000
 
     # Storage
     STORAGE_BACKEND: str = "local"  # "local" สำหรับ dev, "gcs" สำหรับ production

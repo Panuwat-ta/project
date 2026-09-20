@@ -16,7 +16,6 @@ class DioClient {
         baseUrl: baseUrl,
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
-        headers: {'Content-Type': 'application/json'},
       ),
     );
 
@@ -33,10 +32,7 @@ class DioClient {
 /// request. On a 401 response it attempts a token refresh; if the refresh
 /// also fails it clears all stored tokens so the app can redirect to login.
 class AuthInterceptor extends Interceptor {
-  AuthInterceptor({
-    required this.secureStorage,
-    required this.dio,
-  });
+  AuthInterceptor({required this.secureStorage, required this.dio});
 
   final SecureStorage secureStorage;
 
@@ -68,7 +64,7 @@ class AuthInterceptor extends Interceptor {
 
     // Prevent refresh-endpoint itself from looping.
     if (err.requestOptions.path.contains(ApiEndpoints.refresh)) {
-      await secureStorage.deleteAll();
+      await secureStorage.clearAuthTokens();
       handler.next(err);
       return;
     }
@@ -76,7 +72,7 @@ class AuthInterceptor extends Interceptor {
     try {
       final refreshToken = await secureStorage.getToken(kRefreshToken);
       if (refreshToken == null || refreshToken.isEmpty) {
-        await secureStorage.deleteAll();
+        await secureStorage.clearAuthTokens();
         handler.next(err);
         return;
       }
@@ -96,7 +92,7 @@ class AuthInterceptor extends Interceptor {
 
       final data = response.data;
       if (data == null) {
-        await secureStorage.deleteAll();
+        await secureStorage.clearAuthTokens();
         handler.next(err);
         return;
       }
@@ -107,7 +103,7 @@ class AuthInterceptor extends Interceptor {
           data['refreshToken'] as String? ?? data['refresh_token'] as String?;
 
       if (newAccessToken == null || newRefreshToken == null) {
-        await secureStorage.deleteAll();
+        await secureStorage.clearAuthTokens();
         handler.next(err);
         return;
       }
@@ -122,7 +118,7 @@ class AuthInterceptor extends Interceptor {
       final retryResponse = await dio.fetch<dynamic>(retryOptions);
       handler.resolve(retryResponse);
     } on DioException {
-      await secureStorage.deleteAll();
+      await secureStorage.clearAuthTokens();
       handler.next(err);
     }
   }

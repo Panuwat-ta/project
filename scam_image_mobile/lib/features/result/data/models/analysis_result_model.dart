@@ -2,6 +2,7 @@ import '../../domain/entities/analysis_result.dart';
 import 'risk_factor_model.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../../../../core/network/url_resolver.dart';
 
 class AnalysisResultModel extends AnalysisResult {
   const AnalysisResultModel({
@@ -90,32 +91,8 @@ class AnalysisResultModel extends AnalysisResult {
       }
     }
 
-    String? parseUrl(String? url) {
-      if (url == null || url.isEmpty) return null;
-      if (url.startsWith('http')) return url;
-
-      final baseUrl = dotenv.env['API_BASE_URL'];
-      if (baseUrl == null || baseUrl.trim().isEmpty) {
-        throw StateError(
-          'API_BASE_URL is required and must be configured in .env',
-        );
-      }
-      final uri = Uri.parse(baseUrl.trim());
-      final hostUrl = '${uri.scheme}://${uri.host}:${uri.port}';
-
-      String cleanUrl = url.replaceAll(r'\', '/');
-      if (cleanUrl.startsWith('./')) {
-        cleanUrl = cleanUrl.substring(2);
-      }
-      if (!cleanUrl.startsWith('/')) {
-        cleanUrl = '/$cleanUrl';
-      }
-      if (!cleanUrl.toLowerCase().startsWith('/uploads')) {
-        cleanUrl = '/uploads$cleanUrl';
-      }
-
-      return '$hostUrl$cleanUrl';
-    }
+    String? parseUrl(String? url) =>
+        resolveUploadUrl(dotenv.env['API_BASE_URL'], url);
 
     final xaiExplanation =
         json['xai_explanation'] as String? ?? json['xaiExplanation'] as String?;
