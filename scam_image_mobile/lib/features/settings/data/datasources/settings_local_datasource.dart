@@ -29,10 +29,20 @@ abstract class SettingsLocalDataSource {
   Future<void> clearCache();
 }
 
+Future<void> _clearDefaultImageCache() => DefaultCacheManager().emptyCache();
+
 class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
-  SettingsLocalDataSourceImpl({required this.secureStorage});
+  SettingsLocalDataSourceImpl({
+    required this.secureStorage,
+    Future<Directory> Function()? temporaryDirectoryProvider,
+    Future<void> Function()? imageCacheClearer,
+  }) : _temporaryDirectoryProvider =
+           temporaryDirectoryProvider ?? getTemporaryDirectory,
+       _imageCacheClearer = imageCacheClearer ?? _clearDefaultImageCache;
 
   final SecureStorage secureStorage;
+  final Future<Directory> Function() _temporaryDirectoryProvider;
+  final Future<void> Function() _imageCacheClearer;
 
   @override
   Future<ThemeMode> getThemeMode() async {
@@ -97,7 +107,7 @@ class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
   @override
   Future<int> getCacheSizeBytes() async {
     try {
-      final dir = await getTemporaryDirectory();
+      final dir = await _temporaryDirectoryProvider();
       return await _directorySize(dir);
     } catch (_) {
       return 0;
@@ -108,12 +118,12 @@ class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
   Future<void> clearCache() async {
     // Clear the downloaded-image cache (cached_network_image) first.
     try {
-      await DefaultCacheManager().emptyCache();
+      await _imageCacheClearer();
     } catch (_) {}
 
     // Then remove leftover temp files (scan crops, etc.).
     try {
-      final dir = await getTemporaryDirectory();
+      final dir = await _temporaryDirectoryProvider();
       if (dir.existsSync()) {
         await for (final entity in dir.list(followLinks: false)) {
           try {

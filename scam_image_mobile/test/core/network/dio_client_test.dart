@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -47,6 +48,36 @@ String _baseUrl(HttpServer server) =>
     'http://${server.address.host}:${server.port}';
 
 void main() {
+  test('network logging never exposes Authorization tokens', () async {
+    final storage = MemorySecureStorage()
+      ..values[kAccessToken] = 'sensitive-access-token';
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    final logs = <String>[];
+
+    server.listen((request) async {
+      await request.drain<void>();
+      await _writeJson(request, HttpStatus.ok, {'ok': true});
+    });
+
+    await runZoned(
+      () async {
+        final dio = DioClient.createDio(
+          secureStorage: storage,
+          baseUrl: _baseUrl(server),
+        );
+        await dio.get<Map<String, dynamic>>('/protected');
+      },
+      zoneSpecification: ZoneSpecification(
+        print: (self, parent, zone, line) => logs.add(line),
+      ),
+    );
+
+    final output = logs.join('\n');
+    expect(output, isNot(contains('sensitive-access-token')));
+    expect(output, isNot(contains('Authorization: Bearer')));
+    await server.close(force: true);
+  });
+
   test('FormData request is sent as multipart/form-data, not JSON', () async {
     final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
     final requestFuture = server.first;
@@ -296,4 +327,182 @@ void main() {
       await server.close(force: true);
     },
   );
+
+  test(
+    'protected request without access token is sent without Authorization',
+    () async {
+      final storage = MemorySecureStorage();
+      final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+      String? authorization;
+      server.listen((request) async {
+        authorization = request.headers.value(HttpHeaders.authorizationHeader);
+        await request.drain<void>();
+        await _writeJson(request, HttpStatus.ok, {'ok': true});
+      });
+
+      final dio = DioClient.createDio(
+        secureStorage: storage,
+        baseUrl: _baseUrl(server),
+      );
+      final response = await dio.get<Map<String, dynamic>>('/protected');
+
+      expect(response.data?['ok'], isTrue);
+      expect(authorization, isNull);
+      await server.close(force: true);
+    },
+  );
+
+  test('non-401 response error does not refresh or clear tokens', () async {
+    final storage = MemorySecureStorage()
+      ..values[kAccessToken] = 'old-access'
+      ..values[kRefreshToken] = 'old-refresh';
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    var refreshCount = 0;
+    server.listen((request) async {
+      if (request.uri.path == '/auth/refresh') refreshCount += 1;
+      await request.drain<void>();
+      await _writeJson(request, HttpStatus.internalServerError, {
+        'detail': 'boom',
+      });
+    });
+
+    final dio = DioClient.createDio(
+      secureStorage: storage,
+      baseUrl: _baseUrl(server),
+    );
+    await expectLater(
+      dio.get<void>('/protected'),
+      throwsA(isA<DioException>()),
+    );
+
+    expect(refreshCount, 0);
+    expect(storage.clearCount, 0);
+    expect(storage.values[kAccessToken], 'old-access');
+    await server.close(force: true);
+  });
+
+  test('protected 401 without refresh token clears local auth', () async {
+    final storage = MemorySecureStorage()..values[kAccessToken] = 'old-access';
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    server.listen((request) async {
+      await request.drain<void>();
+      await _writeJson(request, HttpStatus.unauthorized, {'detail': 'expired'});
+    });
+
+    final dio = DioClient.createDio(
+      secureStorage: storage,
+      baseUrl: _baseUrl(server),
+    );
+    await expectLater(
+      dio.get<void>('/protected'),
+      throwsA(isA<DioException>()),
+    );
+
+    expect(storage.clearCount, 1);
+    expect(storage.values[kAccessToken], isNull);
+    await server.close(force: true);
+  });
+
+  test(
+    '401 from refresh endpoint clears tokens without recursive refresh',
+    () async {
+      final storage = MemorySecureStorage()
+        ..values[kAccessToken] = 'old-access'
+        ..values[kRefreshToken] = 'old-refresh';
+      final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+      var requestCount = 0;
+      server.listen((request) async {
+        requestCount += 1;
+        await request.drain<void>();
+        await _writeJson(request, HttpStatus.unauthorized, {
+          'detail': 'invalid',
+        });
+      });
+
+      final dio = DioClient.createDio(
+        secureStorage: storage,
+        baseUrl: _baseUrl(server),
+      );
+      await expectLater(
+        dio.post<void>('/auth/refresh', data: {'refresh_token': 'old-refresh'}),
+        throwsA(isA<DioException>()),
+      );
+
+      expect(requestCount, 1);
+      expect(storage.clearCount, 1);
+      expect(storage.values[kAccessToken], isNull);
+      expect(storage.values[kRefreshToken], isNull);
+      await server.close(force: true);
+    },
+  );
+
+  test(
+    'incomplete refresh payload clears tokens and preserves original 401',
+    () async {
+      final storage = MemorySecureStorage()
+        ..values[kAccessToken] = 'old-access'
+        ..values[kRefreshToken] = 'old-refresh';
+      final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+      server.listen((request) async {
+        await request.drain<void>();
+        if (request.uri.path == '/auth/refresh') {
+          await _writeJson(request, HttpStatus.ok, {
+            'access_token': 'new-access',
+          });
+        } else {
+          await _writeJson(request, HttpStatus.unauthorized, {
+            'detail': 'expired',
+          });
+        }
+      });
+
+      final dio = DioClient.createDio(
+        secureStorage: storage,
+        baseUrl: _baseUrl(server),
+      );
+      await expectLater(
+        dio.get<void>('/protected'),
+        throwsA(isA<DioException>()),
+      );
+
+      expect(storage.clearCount, 1);
+      expect(storage.values[kAccessToken], isNull);
+      expect(storage.values[kRefreshToken], isNull);
+      await server.close(force: true);
+    },
+  );
+
+  test('camelCase refresh payload is accepted', () async {
+    final storage = MemorySecureStorage()
+      ..values[kAccessToken] = 'old-access'
+      ..values[kRefreshToken] = 'old-refresh';
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    server.listen((request) async {
+      await request.drain<void>();
+      if (request.uri.path == '/auth/refresh') {
+        await _writeJson(request, HttpStatus.ok, {
+          'accessToken': 'camel-access',
+          'refreshToken': 'camel-refresh',
+        });
+      } else if (request.headers.value(HttpHeaders.authorizationHeader) ==
+          'Bearer camel-access') {
+        await _writeJson(request, HttpStatus.ok, {'ok': true});
+      } else {
+        await _writeJson(request, HttpStatus.unauthorized, {
+          'detail': 'expired',
+        });
+      }
+    });
+
+    final dio = DioClient.createDio(
+      secureStorage: storage,
+      baseUrl: _baseUrl(server),
+    );
+    final response = await dio.get<Map<String, dynamic>>('/protected');
+
+    expect(response.data?['ok'], isTrue);
+    expect(storage.values[kAccessToken], 'camel-access');
+    expect(storage.values[kRefreshToken], 'camel-refresh');
+    await server.close(force: true);
+  });
 }

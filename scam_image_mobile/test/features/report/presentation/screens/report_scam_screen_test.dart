@@ -173,7 +173,9 @@ void main() {
       Size(390, 844),
       Size(412, 915),
       Size(600, 960),
+      Size(844, 390),
       Size(840, 1180),
+      Size(1180, 840),
     ];
 
     for (final size in sizes) {

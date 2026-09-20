@@ -21,7 +21,13 @@ class DioClient {
 
     dio.interceptors.addAll([
       AuthInterceptor(secureStorage: secureStorage, dio: dio),
-      LogInterceptor(request: false, responseBody: false),
+      LogInterceptor(
+        request: false,
+        requestHeader: false,
+        requestBody: false,
+        responseHeader: false,
+        responseBody: false,
+      ),
     ]);
 
     return dio;
