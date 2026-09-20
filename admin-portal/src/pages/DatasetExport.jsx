@@ -25,8 +25,7 @@ import { TableSkeleton } from "@/components/ui/Skeleton";
 import { useToast } from "@/components/ui/ToastContext";
 import { Input } from "@/components/ui/Input";
 import { formatDate, formatNumber, formatFileSize } from "@/lib/utils";
-import { useAutoRefresh } from "@/lib/use-auto-refresh";
-import { useDashboardWebSocket } from "@/lib/use-dashboard-ws";
+import { useAdminQuery } from "@/lib/use-admin-query";
 
 const CATEGORIES = [
   { key: "romance_scam", label: "หลอกลวงความรัก" },
@@ -48,11 +47,27 @@ export function DatasetExport() {
   const [isExporting, setIsExporting] = useState(false);
 
   // Export Jobs History
-  const [jobs, setJobs] = useState([]);
-  const [jobsLoading, setJobsLoading] = useState(true);
-  const [isRefreshingJobs, setIsRefreshingJobs] = useState(false);
   const [page, setPage] = useState(1);
-  const [totalJobs, setTotalJobs] = useState(0);
+
+  const {
+    data: { jobs, totalJobs },
+    isLoading: jobsLoading,
+    isRefreshing: isRefreshingJobs,
+    reload: loadJobs,
+  } = useAdminQuery(
+    async () => {
+      const data = await fetchExportJobs({ page, limit: 10 });
+      return { jobs: data.items || [], totalJobs: data.total || 0 };
+    },
+    {
+      deps: [page],
+      initialData: { jobs: [], totalJobs: 0 },
+      resetOnError: false,
+      successMessage: "รีเฟรชประวัติงานส่งออกสำเร็จ",
+      errorMessage: "ไม่สามารถโหลดประวัติงานส่งออกได้",
+      logPrefix: "Load export jobs failed:",
+    }
+  );
 
   const pollingRef = useRef(null);
   const toast = useToast();
@@ -66,36 +81,9 @@ export function DatasetExport() {
     }
   }, []);
 
-  const loadJobs = useCallback(async (manual = false, quiet = false) => {
-    try {
-      if (manual) setIsRefreshingJobs(true);
-      else if (!quiet) setJobsLoading(true);
-
-      const data = await fetchExportJobs({ page, limit: 10 });
-      setJobs(data.items || []);
-      setTotalJobs(data.total || 0);
-
-      if (manual) toast.success("รีเฟรชประวัติงานส่งออกสำเร็จ");
-    } catch (err) {
-      if (quiet) return;
-      console.error("Load export jobs failed:", err);
-      toast.error("ไม่สามารถโหลดประวัติงานส่งออกได้");
-    } finally {
-      setJobsLoading(false);
-      setIsRefreshingJobs(false);
-    }
-  }, [page, toast]);
-
   useEffect(() => {
     loadApprovedOverview();
-    loadJobs();
-  }, [loadApprovedOverview, loadJobs]);
-
-  // Silent auto-refresh of the job list every 30s (visible tab only)
-  useAutoRefresh(() => loadJobs(false, true), 30000);
-
-  // Instant refresh on server push (job completed / failed)
-  useDashboardWebSocket({ onRefresh: () => loadJobs(false, true) });
+  }, [loadApprovedOverview]);
 
   // Polling for active jobs
   useEffect(() => {
@@ -103,9 +91,8 @@ export function DatasetExport() {
     if (hasActive && !pollingRef.current) {
       pollingRef.current = setInterval(async () => {
         try {
-          const updated = await fetchExportJobs({ page, limit: 10 });
-          setJobs(updated.items || []);
-          const stillActive = updated.items?.some(
+          const updated = await loadJobs(false, true);
+          const stillActive = updated?.jobs?.some(
             (j) => j.status === "queued" || j.status === "running"
           );
           if (!stillActive && pollingRef.current) {
@@ -127,6 +114,8 @@ export function DatasetExport() {
         pollingRef.current = null;
       }
     };
+    // loadJobs is a stable reload; jobs/page drive the polling lifecycle.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jobs, page]);
 
   const toggleCategory = (key) => {

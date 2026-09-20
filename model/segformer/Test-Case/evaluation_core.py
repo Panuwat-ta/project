@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping
@@ -10,10 +11,29 @@ import cv2
 import numpy as np
 from PIL import Image
 
+# Single-truth tiling math lives next to the ONNX worker subprocess.
+# Explicit path insert (not a hidden dependency): Test-Case -> segformer ->
+# model -> project, then server/app/services/tiling.py.
+_REPO_ROOT = Path(__file__).resolve().parents[3]
+_SERVICES_DIR = str(_REPO_ROOT / "server" / "app" / "services")
+if _SERVICES_DIR not in sys.path:
+    sys.path.insert(0, _SERVICES_DIR)
+from tiling import (  # noqa: E402
+    IMAGENET_MEAN,
+    IMAGENET_STD,
+    det_score_image,
+    tile_inference,
+)
+
+__all__ = [
+    "IMAGENET_MEAN",
+    "IMAGENET_STD",
+    "det_score_image",
+    "tile_inference",
+]
+
 
 Confusion = dict[str, int]
-IMAGENET_MEAN = np.array([0.485, 0.456, 0.406], dtype=np.float32)
-IMAGENET_STD = np.array([0.229, 0.224, 0.225], dtype=np.float32)
 
 
 @dataclass(frozen=True)
@@ -114,55 +134,21 @@ class OnnxSegmenter:
         self.stride = tile_size - overlap
 
     def _run_patch(self, patch: np.ndarray) -> np.ndarray:
-        height, width = patch.shape[:2]
-        resized = cv2.resize(
-            patch,
-            (self.tile_size, self.tile_size),
-            interpolation=cv2.INTER_LANCZOS4,
-        )
-        pixels = resized.astype(np.float32) / 255.0
-        normalized = (pixels - IMAGENET_MEAN) / IMAGENET_STD
-        tensor = np.transpose(normalized, (2, 0, 1))[None].astype(np.float32)
-        outputs = self.session.run(None, {self.input_name: tensor})
-        if not outputs:
-            raise RuntimeError("ONNX session returned no outputs")
-        logits = np.asarray(outputs[0], dtype=np.float32)
-        if logits.ndim != 4 or logits.shape[:2] != (1, 2):
-            raise RuntimeError(f"Expected ONNX output [1,2,H,W], got {logits.shape}")
-        shifted = logits - np.max(logits, axis=1, keepdims=True)
-        exponent = np.exp(shifted)
-        probability = exponent / np.sum(exponent, axis=1, keepdims=True)
-        return cv2.resize(
-            probability[0, 1],
-            (width, height),
-            interpolation=cv2.INTER_LINEAR,
+        from tiling import run_patch
+
+        return run_patch(
+            self.session, self.input_name, patch, self.tile_size, strict=True
         )
 
     def probability_map(self, image: Image.Image) -> np.ndarray:
-        image_array = np.asarray(image.convert("RGB"), dtype=np.uint8)
-        height, width = image_array.shape[:2]
-        if height <= self.tile_size and width <= self.tile_size:
-            return self._run_patch(image_array)
-
-        accumulated = np.zeros((height, width), dtype=np.float64)
-        weights = np.zeros((height, width), dtype=np.float64)
-        for y0 in range(0, height, self.stride):
-            for x0 in range(0, width, self.stride):
-                y1 = min(y0 + self.tile_size, height)
-                x1 = min(x0 + self.tile_size, width)
-                tile_height = y1 - y0
-                tile_width = x1 - x0
-                if tile_height < self.tile_size or tile_width < self.tile_size:
-                    tile = np.zeros(
-                        (self.tile_size, self.tile_size, 3), dtype=np.uint8
-                    )
-                    tile[:tile_height, :tile_width] = image_array[y0:y1, x0:x1]
-                else:
-                    tile = image_array[y0:y1, x0:x1]
-                probability = self._run_patch(tile)
-                accumulated[y0:y1, x0:x1] += probability[:tile_height, :tile_width]
-                weights[y0:y1, x0:x1] += 1.0
-        return (accumulated / np.maximum(weights, 1e-8)).astype(np.float32)
+        return tile_inference(
+            self.session,
+            self.input_name,
+            image,
+            self.tile_size,
+            self.overlap,
+            strict=True,
+        )
 
 
 def binary_confusion(prediction: np.ndarray, target: np.ndarray) -> Confusion:

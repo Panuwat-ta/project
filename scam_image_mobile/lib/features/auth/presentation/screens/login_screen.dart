@@ -39,7 +39,6 @@ class _LoginViewState extends State<_LoginView> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _rememberMe = false;
   bool _obscurePassword = true;
 
   @override
@@ -60,11 +59,17 @@ class _LoginViewState extends State<_LoginView> {
     }
   }
 
+  void _showComingSoon(BuildContext context) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('coming_soon'.tr(context))));
+  }
+
   void _showOtherLogins(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark ? const Color(0xFF1E2936) : Colors.white;
     final textColor = isDark ? Colors.white : const Color(0xFF111827);
-    
+
     showModalBottomSheet(
       context: context,
       backgroundColor: bgColor,
@@ -80,7 +85,11 @@ class _LoginViewState extends State<_LoginView> {
             children: [
               Text(
                 'auth_login_choose_method'.tr(context),
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: textColor,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
@@ -89,7 +98,10 @@ class _LoginViewState extends State<_LoginView> {
                 label: 'auth_login_facebook'.tr(context),
                 textColor: textColor,
                 isDark: isDark,
-                onTap: () {},
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _showComingSoon(context);
+                },
               ),
               const SizedBox(height: 12),
               _buildLoginOption(
@@ -98,7 +110,10 @@ class _LoginViewState extends State<_LoginView> {
                 textColor: textColor,
                 isDarkIcon: true,
                 isDark: isDark,
-                onTap: () {},
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _showComingSoon(context);
+                },
               ),
             ],
           ),
@@ -119,7 +134,9 @@ class _LoginViewState extends State<_LoginView> {
       onPressed: onTap,
       style: OutlinedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 14),
-        side: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
+        side: BorderSide(
+          color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+        ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -128,10 +145,19 @@ class _LoginViewState extends State<_LoginView> {
             iconPath,
             width: 24,
             height: 24,
-            colorFilter: isDarkIcon && isDark ? const ColorFilter.mode(Colors.white, BlendMode.srcIn) : null,
+            colorFilter: isDarkIcon && isDark
+                ? const ColorFilter.mode(Colors.white, BlendMode.srcIn)
+                : null,
           ),
           const SizedBox(width: 12),
-          Text(label, style: TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.w500)),
+          Text(
+            label,
+            style: TextStyle(
+              color: textColor,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ],
       ),
     );
@@ -146,7 +172,9 @@ class _LoginViewState extends State<_LoginView> {
     final subtitleColor = isDark ? Colors.white70 : const Color(0xFF6B7280);
     final primaryColor = const Color(0xFF007293);
     final inputFillColor = isDark ? const Color(0xFF141F2B) : Colors.white;
-    final inputBorderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+    final inputBorderColor = isDark
+        ? const Color(0xFF334155)
+        : const Color(0xFFE2E8F0);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -170,7 +198,11 @@ class _LoginViewState extends State<_LoginView> {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: const Center(
-                          child: Icon(Icons.shield, color: Colors.white, size: 40),
+                          child: Icon(
+                            Icons.shield,
+                            color: Colors.white,
+                            size: 40,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -185,10 +217,7 @@ class _LoginViewState extends State<_LoginView> {
                       const SizedBox(height: 8),
                       Text(
                         'auth_login_title'.tr(context),
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: subtitleColor,
-                        ),
+                        style: TextStyle(fontSize: 14, color: subtitleColor),
                       ),
                     ],
                   ),
@@ -206,7 +235,9 @@ class _LoginViewState extends State<_LoginView> {
                           offset: const Offset(0, 10),
                         ),
                       ],
-                      border: isDark ? Border.all(color: const Color(0xFF334155), width: 1) : null,
+                      border: isDark
+                          ? Border.all(color: const Color(0xFF334155), width: 1)
+                          : null,
                     ),
                     padding: const EdgeInsets.all(24),
                     child: Form(
@@ -227,7 +258,11 @@ class _LoginViewState extends State<_LoginView> {
                           // Email field
                           Text(
                             'auth_email'.tr(context),
-                            style: TextStyle(fontSize: 14, color: subtitleColor, fontWeight: FontWeight.w500),
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: subtitleColor,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                           const SizedBox(height: 8),
                           TextFormField(
@@ -236,19 +271,40 @@ class _LoginViewState extends State<_LoginView> {
                             style: TextStyle(color: textColor),
                             decoration: InputDecoration(
                               hintText: 'example@email.com',
-                              hintStyle: TextStyle(color: subtitleColor.withValues(alpha: 0.5)),
-                              prefixIcon: Icon(Icons.mail_outline, color: subtitleColor),
+                              hintStyle: TextStyle(
+                                color: subtitleColor.withValues(alpha: 0.5),
+                              ),
+                              prefixIcon: Icon(
+                                Icons.mail_outline,
+                                color: subtitleColor,
+                              ),
                               filled: true,
                               fillColor: inputFillColor,
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: inputBorderColor)),
-                              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: inputBorderColor)),
-                              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: primaryColor)),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 16,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(color: inputBorderColor),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(color: inputBorderColor),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(color: primaryColor),
+                              ),
                             ),
                             validator: (v) {
-                              if (v == null || v.isEmpty) return 'auth_email_hint'.tr(context);
-                              if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(v)) {
-                                return 'รูปแบบอีเมลไม่ถูกต้อง';
+                              if (v == null || v.isEmpty) {
+                                return 'auth_email_hint'.tr(context);
+                              }
+                              if (!RegExp(
+                                r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+                              ).hasMatch(v)) {
+                                return 'auth_email_invalid'.tr(context);
                               }
                               return null;
                             },
@@ -261,17 +317,26 @@ class _LoginViewState extends State<_LoginView> {
                             children: [
                               Text(
                                 'auth_password'.tr(context),
-                                style: TextStyle(fontSize: 14, color: subtitleColor, fontWeight: FontWeight.w500),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: subtitleColor,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                               TextButton(
-                                onPressed: () {},
+                                onPressed: () => _showComingSoon(context),
                                 style: TextButton.styleFrom(
                                   padding: EdgeInsets.zero,
-                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
                                 ),
                                 child: Text(
                                   'auth_password_forgot'.tr(context),
-                                  style: TextStyle(fontSize: 12, color: primaryColor, fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: primaryColor,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ],
@@ -283,52 +348,51 @@ class _LoginViewState extends State<_LoginView> {
                             style: TextStyle(color: textColor),
                             decoration: InputDecoration(
                               hintText: '••••••••',
-                              hintStyle: TextStyle(color: subtitleColor.withValues(alpha: 0.5)),
-                              prefixIcon: Icon(Icons.lock_outline, color: subtitleColor),
+                              hintStyle: TextStyle(
+                                color: subtitleColor.withValues(alpha: 0.5),
+                              ),
+                              prefixIcon: Icon(
+                                Icons.lock_outline,
+                                color: subtitleColor,
+                              ),
                               suffixIcon: IconButton(
                                 icon: Icon(
-                                  _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                                  _obscurePassword
+                                      ? Icons.visibility_outlined
+                                      : Icons.visibility_off_outlined,
                                   color: subtitleColor,
                                 ),
-                                onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                                onPressed: () => setState(
+                                  () => _obscurePassword = !_obscurePassword,
+                                ),
                               ),
                               filled: true,
                               fillColor: inputFillColor,
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: inputBorderColor)),
-                              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: inputBorderColor)),
-                              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: primaryColor)),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 16,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(color: inputBorderColor),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(color: inputBorderColor),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(color: primaryColor),
+                              ),
                             ),
                             validator: (v) {
-                              if (v == null || v.isEmpty) return 'auth_password_hint'.tr(context);
-                              if (v.length < 6) return 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร';
+                              if (v == null || v.isEmpty) {
+                                return 'auth_password_hint'.tr(context);
+                              }
                               return null;
                             },
                           ),
                           const SizedBox(height: 16),
-
-                          // Remember me
-                          Row(
-                            children: [
-                              SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: Checkbox(
-                                  value: _rememberMe,
-                                  onChanged: (v) => setState(() => _rememberMe = v ?? false),
-                                  activeColor: primaryColor,
-                                  checkColor: Colors.white,
-                                  side: BorderSide(color: subtitleColor.withValues(alpha: 0.5)),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Text(
-                                'auth_remember_me'.tr(context),
-                                style: TextStyle(fontSize: 14, color: subtitleColor),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 24),
 
                           // Login Button
                           SizedBox(
@@ -337,15 +401,30 @@ class _LoginViewState extends State<_LoginView> {
                             child: BlocBuilder<AuthBloc, AuthState>(
                               builder: (context, state) {
                                 return ElevatedButton(
-                                  onPressed: state is AuthLoading ? null : _submit,
+                                  onPressed: state is AuthLoading
+                                      ? null
+                                      : _submit,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: primaryColor,
                                     foregroundColor: Colors.white,
                                     elevation: 0,
                                   ),
                                   child: state is AuthLoading
-                                      ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                                      : Text('auth_login_button'.tr(context), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                      ? const SizedBox(
+                                          width: 24,
+                                          height: 24,
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                            strokeWidth: 2,
+                                          ),
+                                        )
+                                      : Text(
+                                          'auth_login_button'.tr(context),
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
                                 );
                               },
                             ),
@@ -355,12 +434,32 @@ class _LoginViewState extends State<_LoginView> {
                           // Divider
                           Row(
                             children: [
-                              Expanded(child: Divider(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16),
-                                child: Text('auth_or'.tr(context), style: TextStyle(color: subtitleColor, fontSize: 14)),
+                              Expanded(
+                                child: Divider(
+                                  color: isDark
+                                      ? const Color(0xFF334155)
+                                      : const Color(0xFFE2E8F0),
+                                ),
                               ),
-                              Expanded(child: Divider(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                ),
+                                child: Text(
+                                  'auth_or'.tr(context),
+                                  style: TextStyle(
+                                    color: subtitleColor,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Divider(
+                                  color: isDark
+                                      ? const Color(0xFF334155)
+                                      : const Color(0xFFE2E8F0),
+                                ),
+                              ),
                             ],
                           ),
                           const SizedBox(height: 24),
@@ -370,10 +469,12 @@ class _LoginViewState extends State<_LoginView> {
                             width: double.infinity,
                             height: 54,
                             child: OutlinedButton(
-                              onPressed: () {},
+                              onPressed: () => _showComingSoon(context),
                               style: OutlinedButton.styleFrom(
                                 side: BorderSide(color: inputBorderColor),
-                                backgroundColor: isDark ? const Color(0xFF141F2B) : Colors.white,
+                                backgroundColor: isDark
+                                    ? const Color(0xFF141F2B)
+                                    : Colors.white,
                               ),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -384,7 +485,17 @@ class _LoginViewState extends State<_LoginView> {
                                     height: 24,
                                   ),
                                   const SizedBox(width: 12),
-                                  Flexible(child: Text('auth_login_google'.tr(context), style: TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.w500), overflow: TextOverflow.ellipsis)),
+                                  Flexible(
+                                    child: Text(
+                                      'auth_login_google'.tr(context),
+                                      style: TextStyle(
+                                        color: textColor,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -398,14 +509,30 @@ class _LoginViewState extends State<_LoginView> {
                               onPressed: () => _showOtherLogins(context),
                               style: OutlinedButton.styleFrom(
                                 side: BorderSide(color: inputBorderColor),
-                                backgroundColor: isDark ? const Color(0xFF141F2B) : Colors.white,
+                                backgroundColor: isDark
+                                    ? const Color(0xFF141F2B)
+                                    : Colors.white,
                               ),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.more_horiz, color: isDark ? Colors.white : Colors.black, size: 28),
+                                  Icon(
+                                    Icons.more_horiz,
+                                    color: isDark ? Colors.white : Colors.black,
+                                    size: 28,
+                                  ),
                                   const SizedBox(width: 12),
-                                  Flexible(child: Text('auth_login_other'.tr(context), style: TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.w500), overflow: TextOverflow.ellipsis)),
+                                  Flexible(
+                                    child: Text(
+                                      'auth_login_other'.tr(context),
+                                      style: TextStyle(
+                                        color: textColor,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -433,7 +560,11 @@ class _LoginViewState extends State<_LoginView> {
                         ),
                         child: Text(
                           'auth_register_link'.tr(context),
-                          style: TextStyle(color: primaryColor, fontSize: 14, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            color: primaryColor,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],
@@ -447,4 +578,3 @@ class _LoginViewState extends State<_LoginView> {
     );
   }
 }
-

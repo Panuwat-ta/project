@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../constants/app_spacing.dart';
 import '../theme/app_typography.dart';
+import '../localization/app_translations.dart';
 
 /// Displayed when the user has denied gallery / camera permission.
 ///
@@ -32,7 +33,7 @@ class PermissionRequestView extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.md),
         Text(
-          'ต้องการสิทธิ์เข้าถึงรูปภาพ',
+          'permission_photo_title'.tr(context),
           style: AppTypography.sectionHeader(
             color: isDark ? AppColors.inverseOnSurface : AppColors.onSurface,
           ),
@@ -40,7 +41,7 @@ class PermissionRequestView extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.sm),
         Text(
-          'กรุณาอนุญาตให้แอปเข้าถึงคลังรูปภาพของคุณเพื่อเลือกรูปที่ต้องการตรวจสอบ',
+          'permission_photo_desc'.tr(context),
           style: AppTypography.bodyBase(
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
@@ -54,14 +55,14 @@ class PermissionRequestView extends StatelessWidget {
             onPressed: onOpenSettings,
             icon: const Icon(Icons.settings_outlined),
             label: Text(
-              'เปิดการตั้งค่า',
+              'permission_open_settings'.tr(context),
               style: AppTypography.buttonLabel(),
             ),
             style: ElevatedButton.styleFrom(
-              backgroundColor:
-                  isDark ? AppColors.primaryFixedDim : AppColors.primary,
-              foregroundColor:
-                  isDark ? AppColors.bgDark : AppColors.onPrimary,
+              backgroundColor: isDark
+                  ? AppColors.primaryFixedDim
+                  : AppColors.primary,
+              foregroundColor: isDark ? AppColors.bgDark : AppColors.onPrimary,
               shape: const StadiumBorder(),
               elevation: 0,
             ),
@@ -72,7 +73,7 @@ class PermissionRequestView extends StatelessWidget {
           TextButton(
             onPressed: onRetry,
             child: Text(
-              'ลองอีกครั้ง',
+              'common_retry'.tr(context),
               style: AppTypography.buttonLabel(
                 color: isDark ? AppColors.primaryFixedDim : AppColors.primary,
               ),

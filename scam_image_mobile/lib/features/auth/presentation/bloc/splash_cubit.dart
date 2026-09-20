@@ -9,14 +9,18 @@ part 'splash_state.dart';
 /// Checks the stored session on app launch and emits the appropriate routing state.
 class SplashCubit extends Cubit<SplashState> {
   final AuthRepository _authRepository;
+  final Duration splashDelay;
 
-  SplashCubit(this._authRepository) : super(const SplashInitial());
+  SplashCubit(
+    this._authRepository, {
+    this.splashDelay = const Duration(seconds: 3),
+  }) : super(const SplashInitial());
 
   /// Verifies token validity and resolves the current user.
   Future<void> checkSession() async {
     emit(const CheckingSession());
     // หน่วงเวลา 3 วินาทีเพื่อให้แสดงหน้า Splash Screen ก่อนเข้าแอป
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(splashDelay);
     try {
       final hasSeenOnboarding = await _authRepository.hasSeenOnboarding();
       if (!hasSeenOnboarding) {

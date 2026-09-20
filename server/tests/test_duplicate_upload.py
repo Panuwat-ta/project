@@ -1,27 +1,48 @@
-import asyncio
-from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.database import SessionLocal
-from app.services.scan_service import analyze_image
-from fastapi import UploadFile
 import io
+import uuid
 
-async def run():
-    async with SessionLocal() as db:
-        # Create a mock file
-        content = b"fake image data 12345"
-        file = UploadFile(filename="test.png", file=io.BytesIO(content))
-        
-        try:
-            scan1 = await analyze_image(file, 1, db, "Test 1")
-            print("Scan 1 success, id:", scan1.id)
-            
-            # Reset file pointer
-            await file.seek(0)
-            
-            scan2 = await analyze_image(file, 1, db, "Test 2")
-            print("Scan 2 success, id:", scan2.id)
-        except Exception as e:
-            print("Error:", e)
+import pytest
+from fastapi import UploadFile
+from PIL import Image
 
-if __name__ == "__main__":
-    asyncio.run(run())
+from app.services.scan_service import create_scan_task
+
+
+class FakeDb:
+    def __init__(self):
+        self.added = []
+
+    def add(self, instance):
+        self.added.append(instance)
+
+    async def commit(self):
+        return None
+
+    async def refresh(self, instance):
+        if instance.id is None:
+            instance.id = uuid.uuid4()
+
+
+def _image_bytes() -> bytes:
+    buffer = io.BytesIO()
+    Image.new("RGB", (32, 32), color="black").save(buffer, format="PNG")
+    return buffer.getvalue()
+
+
+@pytest.mark.asyncio
+async def test_duplicate_uploads_keep_same_hash_but_create_distinct_scan_records():
+    content = _image_bytes()
+    db = FakeDb()
+
+    scan1, _bytes1, hash1 = await create_scan_task(
+        UploadFile(filename="first.png", file=io.BytesIO(content)), 1, db, "First"
+    )
+    scan2, _bytes2, hash2 = await create_scan_task(
+        UploadFile(filename="second.png", file=io.BytesIO(content)), 1, db, "Second"
+    )
+
+    assert hash1 == hash2
+    assert scan1.id != scan2.id
+    assert scan1.title == "First"
+    assert scan2.title == "Second"
+    assert db.added == [scan1, scan2]

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../constants/app_spacing.dart';
 import '../theme/app_typography.dart';
+import '../theme/app_radius.dart';
 
 /// A tappable row containing a [Checkbox], a label, and an optional description.
 ///
@@ -25,27 +26,26 @@ class ConsentCheckboxTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final Color checkColor =
-        isDark ? AppColors.primaryFixedDim : AppColors.primary;
+    final Color checkColor = isDark
+        ? AppColors.primaryFixedDim
+        : AppColors.primary;
 
     return InkWell(
       onTap: () => onChanged(!value),
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: AppRadius.smBorder,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              width: 24,
-              height: 24,
+              width: 48,
+              height: 48,
               child: Checkbox(
                 value: value,
                 onChanged: onChanged,
                 activeColor: checkColor,
                 checkColor: AppColors.bgDark,
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                visualDensity: VisualDensity.compact,
               ),
             ),
             const SizedBox(width: AppSpacing.sm),
@@ -53,16 +53,14 @@ class ConsentCheckboxTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    label,
-                    style: AppTypography.bodyBase(),
-                  ),
+                  Text(label, style: AppTypography.bodyBase()),
                   if (description != null) ...[
                     const SizedBox(height: AppSpacing.xs),
                     Text(
                       description!,
                       style: AppTypography.caption(
-                          color: AppColors.textSecondary),
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                   ],
                 ],

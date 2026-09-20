@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -19,49 +19,29 @@ import { Textarea } from "@/components/ui/Input";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell, TableEmpty } from "@/components/ui/Table";
 import { useToast } from "@/components/ui/ToastContext";
 import { formatDate, formatNumber } from "@/lib/utils";
-import { useAutoRefresh } from "@/lib/use-auto-refresh";
-import { useDashboardWebSocket } from "@/lib/use-dashboard-ws";
+import { useAdminQuery } from "@/lib/use-admin-query";
 
 export function UserDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
 
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const {
+    data: user,
+    isLoading: loading,
+    error,
+    reload: fetchUserData,
+  } = useAdminQuery(() => getUser(id), {
+    deps: [id],
+    errorMessage: "เกิดข้อผิดพลาดในการโหลดข้อมูลผู้ใช้",
+    logPrefix: "Fetch user detail error:",
+  });
 
   // Status Modal State
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [reason, setReason] = useState("");
   const [reasonError, setReasonError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const fetchUserData = useCallback(async (quiet = false) => {
-    try {
-      if (!quiet) setLoading(true);
-      if (!quiet) setError(null);
-      const data = await getUser(id);
-      setUser(data);
-    } catch (err) {
-      if (quiet) return;
-      console.error("Fetch user detail error:", err);
-      setError(err.message || "ไม่สามารถโหลดข้อมูลผู้ใช้ได้");
-      toast.error("เกิดข้อผิดพลาดในการโหลดข้อมูลผู้ใช้");
-    } finally {
-      setLoading(false);
-    }
-  }, [id, toast]);
-
-  useEffect(() => {
-    fetchUserData();
-  }, [fetchUserData]);
-
-  // Silent auto-refresh every 30s (visible tab only)
-  useAutoRefresh(() => fetchUserData(true), 30000);
-
-  // Instant refresh on server push (ban/unban by another admin)
-  useDashboardWebSocket({ onRefresh: () => fetchUserData(true) });
 
   const handleToggleStatus = async () => {
     if (!reason.trim()) {

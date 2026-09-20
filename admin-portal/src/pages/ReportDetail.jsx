@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -19,17 +19,12 @@ import { Textarea } from "@/components/ui/Input";
 import { HeatmapComparator } from "@/components/ui/HeatmapComparator";
 import { useToast } from "@/components/ui/ToastContext";
 import { formatDate } from "@/lib/utils";
-import { useAutoRefresh } from "@/lib/use-auto-refresh";
-import { useDashboardWebSocket } from "@/lib/use-dashboard-ws";
+import { useAdminQuery } from "@/lib/use-admin-query";
 
 export function ReportDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
-
-  const [report, setReport] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
 
   const [isStartingReview, setIsStartingReview] = useState(false);
   const [isSubmittingDecision, setIsSubmittingDecision] = useState(false);
@@ -42,43 +37,38 @@ export function ReportDetail() {
   const [adminNote, setAdminNote] = useState("");
   const [noteError, setNoteError] = useState("");
 
-  const loadReport = useCallback(async (quiet = false) => {
-    if (!quiet) setIsLoading(true);
-    if (!quiet) setError("");
-    try {
-      const data = await fetchReportDetail(id);
-      setReport(data);
-      // Don't clobber the note the admin may be typing during background polls.
-      if (!quiet && data.admin_note) {
-        setAdminNote(data.admin_note);
-      }
-    } catch (err) {
-      if (quiet) return;
-      console.error("Load report detail failed:", err);
-      setError(err.message || "ไม่สามารถโหลดข้อมูลรายงานได้");
-      toast.error("เกิดข้อผิดพลาดในการโหลดรายงาน: " + err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [id, toast]);
+  const {
+    data: report,
+    isLoading,
+    error,
+    reload: loadReport,
+  } = useAdminQuery(() => fetchReportDetail(id), {
+    deps: [id],
+    errorMessage: "ไม่สามารถโหลดข้อมูลรายงานได้",
+    logPrefix: "Load report detail failed:",
+  });
 
+  // Sync the decision note on visible loads only — quiet polls must never
+  // clobber what the admin is typing. Mutation handlers sync explicitly.
+  const noteSynced = useRef(false);
   useEffect(() => {
-    loadReport();
-  }, [loadReport]);
+    if (!noteSynced.current && report?.admin_note) {
+      setAdminNote(report.admin_note);
+      noteSynced.current = true;
+    }
+  }, [report]);
 
-  // Silent auto-refresh every 30s (visible tab only, never touches the typed note)
-  useAutoRefresh(() => loadReport(true), 30000);
-
-  // Instant refresh on server push (decision by another admin)
-  useDashboardWebSocket({ onRefresh: () => loadReport(true) });
+  const syncNote = (data) => {
+    if (data?.admin_note) setAdminNote(data.admin_note);
+  };
 
   // Handle "Start Review" transition: pending -> reviewing
   const handleStartReview = async () => {
     if (!report) return;
     setIsStartingReview(true);
     try {
-      const updated = await startReviewReport(report.id, report.version);
-      setReport(updated);
+      await startReviewReport(report.id, report.version);
+      syncNote(await loadReport());
       toast.success("เริ่มตรวจสอบรายงานแล้ว");
     } catch (err) {
       if (err.status === 409) {
@@ -113,13 +103,13 @@ export function ReportDetail() {
 
     setIsSubmittingDecision(true);
     try {
-      const updated = await updateReportStatus(
+      await updateReportStatus(
         report.id,
         report.version,
         decision,
         adminNote.trim()
       );
-      setReport(updated);
+      syncNote(await loadReport());
       closeDecisionModal();
       toast.success(
         decision === "approved"
@@ -137,18 +127,6 @@ export function ReportDetail() {
       setIsSubmittingDecision(false);
     }
   };
-
-  if (isLoading || !report) {
-    return (
-      <div className="space-y-6">
-        <div className="h-8 bg-muted rounded animate-pulse w-48" />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 h-[500px] bg-muted rounded-xl animate-pulse" />
-          <div className="h-[500px] bg-muted rounded-xl animate-pulse" />
-        </div>
-      </div>
-    );
-  }
 
   if (error && !report) {
     return (
@@ -170,6 +148,18 @@ export function ReportDetail() {
         >
           กลับไปหน้ารายการ
         </Button>
+      </div>
+    );
+  }
+
+  if (isLoading || !report) {
+    return (
+      <div className="space-y-6">
+        <div className="h-8 bg-muted rounded animate-pulse w-48" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 h-[500px] bg-muted rounded-xl animate-pulse" />
+          <div className="h-[500px] bg-muted rounded-xl animate-pulse" />
+        </div>
       </div>
     );
   }

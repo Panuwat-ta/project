@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../features/result/domain/entities/analysis_result.dart';
 import '../theme/app_colors.dart';
 import '../constants/app_spacing.dart';
 import '../theme/app_typography.dart';
+import '../theme/app_radius.dart';
 import 'risk_badge.dart';
 
 /// A card-style list item that represents a single scan history entry.
@@ -37,7 +39,7 @@ class HistoryListItem extends StatelessWidget {
         padding: const EdgeInsets.all(AppSpacing.sm),
         decoration: BoxDecoration(
           color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: AppRadius.lgBorder,
           border: Border.all(
             color: AppColors.outlineVariant.withValues(alpha: 0.3),
           ),
@@ -46,20 +48,22 @@ class HistoryListItem extends StatelessWidget {
           children: [
             // Thumbnail
             ClipRRect(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: AppRadius.smBorder,
               child: Container(
                 width: 56,
                 height: 56,
                 color: isDark
                     ? AppColors.inverseSurface
-                    : const Color(0xFFE4EFFD),
+                    : AppColors.thumbnailSurface,
                 child: thumbnailUrl != null
                     ? Image.network(
                         thumbnailUrl!,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) =>
-                            const Icon(Icons.image_not_supported_outlined,
-                                size: 24),
+                            const Icon(
+                              Icons.image_not_supported_outlined,
+                              size: 24,
+                            ),
                       )
                     : Icon(
                         Icons.image_outlined,

@@ -22,10 +22,7 @@ void main() {
     });
 
     test('parses task with snake_case task_id', () {
-      final json = {
-        'task_id': 'task-snake',
-        'status': 'queued',
-      };
+      final json = {'task_id': 'task-snake', 'status': 'queued'};
 
       final model = AnalysisTaskModel.fromJson(json);
 
@@ -53,9 +50,26 @@ void main() {
           'taskId': 'test',
           'status': entry.key,
         });
-        expect(model.status, entry.value,
-            reason: 'Status "${entry.key}" should map to ${entry.value}');
+        expect(
+          model.status,
+          entry.value,
+          reason: 'Status "${entry.key}" should map to ${entry.value}',
+        );
       }
+    });
+
+    test('parses the current backend ScanResponse id and snake_case error', () {
+      final model = AnalysisTaskModel.fromJson({
+        'id': 'scan-uuid',
+        'status': 'processing_visual',
+        'progress': 50.0,
+        'error_message': 'worker failed',
+      });
+
+      expect(model.taskId, 'scan-uuid');
+      expect(model.status, AnalysisTaskStatus.processingVisual);
+      expect(model.progress, 50);
+      expect(model.errorMessage, 'worker failed');
     });
 
     test('defaults unknown status to queued', () {
@@ -68,9 +82,7 @@ void main() {
     });
 
     test('defaults missing status to queued', () {
-      final model = AnalysisTaskModel.fromJson({
-        'taskId': 'test',
-      });
+      final model = AnalysisTaskModel.fromJson({'taskId': 'test'});
 
       expect(model.status, AnalysisTaskStatus.queued);
     });
@@ -85,9 +97,7 @@ void main() {
     });
 
     test('defaults missing taskId to empty string', () {
-      final model = AnalysisTaskModel.fromJson({
-        'status': 'queued',
-      });
+      final model = AnalysisTaskModel.fromJson({'status': 'queued'});
 
       expect(model.taskId, '');
     });
@@ -150,8 +160,7 @@ void main() {
 
     test('different tasks are not equal', () {
       const a = AnalysisTask(taskId: 'a', status: AnalysisTaskStatus.queued);
-      const b =
-          AnalysisTask(taskId: 'a', status: AnalysisTaskStatus.completed);
+      const b = AnalysisTask(taskId: 'a', status: AnalysisTaskStatus.completed);
       expect(a, isNot(equals(b)));
     });
   });

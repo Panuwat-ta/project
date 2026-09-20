@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import {
   Cpu,
   RefreshCw,
@@ -9,8 +9,7 @@ import {
   Play,
 } from "lucide-react";
 import { fetchModels, deployModel, dryRunModel } from "@/lib/api";
-import { useDashboardWebSocket } from "@/lib/use-dashboard-ws";
-import { useAutoRefresh } from "@/lib/use-auto-refresh";
+import { useAdminQuery } from "@/lib/use-admin-query";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import { Modal } from "@/components/ui/Modal";
@@ -20,9 +19,34 @@ import { useToast } from "@/components/ui/ToastContext";
 import { formatDate } from "@/lib/utils";
 
 export function ModelsList() {
-  const [models, setModels] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const {
+    data: models,
+    isLoading: loading,
+    isRefreshing,
+    reload: loadModels,
+  } = useAdminQuery(
+    async () => {
+      const data = await fetchModels();
+      return (data.items || []).slice().sort((a, b) => {
+        const aActive = Boolean(a.is_active || a.status === "active");
+        const bActive = Boolean(b.is_active || b.status === "active");
+        if (aActive && !bActive) return -1;
+        if (!aActive && bActive) return 1;
+
+        if (a.version_tag && b.version_tag) {
+          return b.version_tag.localeCompare(a.version_tag, undefined, { numeric: true, sensitivity: "base" });
+        }
+        return (b.id || 0) - (a.id || 0);
+      });
+    },
+    {
+      initialData: [],
+      resetOnError: false,
+      successMessage: "รีเฟรชข้อมูลโมเดล AI สำเร็จ",
+      errorMessage: "ไม่สามารถโหลดข้อมูลโมเดลได้",
+      logPrefix: "Load models failed:",
+    }
+  );
 
   // Deploy / Rollback Modal
   const [deployModal, setDeployModal] = useState({
@@ -42,47 +66,6 @@ export function ModelsList() {
   });
 
   const toast = useToast();
-
-  const loadModels = useCallback(async (manual = false, quiet = false) => {
-    try {
-      if (manual) setIsRefreshing(true);
-      else if (!quiet) setLoading(true);
-
-      const data = await fetchModels();
-      const sortedItems = (data.items || []).slice().sort((a, b) => {
-        const aActive = Boolean(a.is_active || a.status === "active");
-        const bActive = Boolean(b.is_active || b.status === "active");
-        if (aActive && !bActive) return -1;
-        if (!aActive && bActive) return 1;
-
-        if (a.version_tag && b.version_tag) {
-          return b.version_tag.localeCompare(a.version_tag, undefined, { numeric: true, sensitivity: "base" });
-        }
-        return (b.id || 0) - (a.id || 0);
-      });
-      setModels(sortedItems);
-      if (manual) toast.success("รีเฟรชข้อมูลโมเดล AI สำเร็จ");
-    } catch (err) {
-      if (quiet) return;
-      console.error("Load models failed:", err);
-      toast.error("ไม่สามารถโหลดข้อมูลโมเดลได้: " + err.message);
-    } finally {
-      setLoading(false);
-      setIsRefreshing(false);
-    }
-  }, [toast]);
-
-  useEffect(() => {
-    loadModels();
-  }, [loadModels]);
-
-  // WebSocket real-time updates (single connection + backoff reconnect)
-  useDashboardWebSocket({
-    onRefresh: () => loadModels(false, true),
-  });
-
-  // Polling fallback every 30s (visible tab only, silent)
-  useAutoRefresh(() => loadModels(false, true), 30000);
 
   const handleDryRun = async (model) => {
     setDryRunState({ isLoading: true, modelId: model.id, result: null });

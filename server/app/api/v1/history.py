@@ -1,7 +1,7 @@
 from fastapi import Request, APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy import func, desc, or_
+from sqlalchemy import func, desc
 from uuid import UUID
 import os
 
@@ -30,25 +30,10 @@ async def get_history(request: Request,
     # Base filter for user's scans
     base_filters = [Scan.user_id == current_user.id]
 
-    # Keyword search: title, status, scan id
+    # Keyword search intentionally targets the user-defined scan title only.
     if keyword and keyword.strip():
         kw = f"%{keyword.strip()}%"
-        try:
-            from sqlalchemy import cast, String as SAString
-            base_filters.append(
-                or_(
-                    Scan.title.ilike(kw),
-                    Scan.status.ilike(kw),
-                    cast(Scan.id, SAString).ilike(kw),
-                )
-            )
-        except Exception:
-            base_filters.append(
-                or_(
-                    Scan.title.ilike(kw),
-                    Scan.status.ilike(kw),
-                )
-            )
+        base_filters.append(Scan.title.ilike(kw))
     
     # Query total
     total_query = select(func.count()).select_from(Scan).where(*base_filters)

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { RefreshCw, Eye, Ban, CheckCircle2 } from "lucide-react";
 import { fetchUsers, updateUserStatus } from "@/lib/api";
@@ -11,20 +11,34 @@ import { Modal } from "@/components/ui/Modal";
 import { SearchInput, Textarea } from "@/components/ui/Input";
 import { useToast } from "@/components/ui/ToastContext";
 import { formatDate, formatNumber } from "@/lib/utils";
-import { useAutoRefresh } from "@/lib/use-auto-refresh";
-import { useDashboardWebSocket } from "@/lib/use-dashboard-ws";
+import { useAdminQuery } from "@/lib/use-admin-query";
+import { useDebouncedValue } from "@/lib/use-debounced-value";
 
 const LIMIT = 15;
 
 export function UsersList() {
-  const [users, setUsers] = useState([]);
-  const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const searchTimer = useRef(null);
+  const debouncedSearch = useDebouncedValue(search, 300, () => setPage(1));
+
+  const {
+    data: { users, total },
+    isLoading,
+    isRefreshing,
+    reload: loadUsers,
+  } = useAdminQuery(
+    async () => {
+      const data = await fetchUsers(page, LIMIT, debouncedSearch);
+      return { users: data.items || [], total: data.total || 0 };
+    },
+    {
+      deps: [page, debouncedSearch],
+      initialData: { users: [], total: 0 },
+      successMessage: "รีเฟรชรายชื่อผู้ใช้สำเร็จ",
+      errorMessage: "ไม่สามารถโหลดรายชื่อผู้ใช้ได้",
+      logPrefix: "Load users error:",
+    }
+  );
 
   // Status Change Modal State
   const [modalState, setModalState] = useState({
@@ -38,50 +52,6 @@ export function UsersList() {
 
   const navigate = useNavigate();
   const toast = useToast();
-
-  useEffect(() => {
-    clearTimeout(searchTimer.current);
-    searchTimer.current = setTimeout(() => {
-      setDebouncedSearch(search.trim());
-      setPage(1);
-    }, 300);
-    return () => clearTimeout(searchTimer.current);
-  }, [search]);
-
-  const loadUsers = useCallback(
-    async (manual = false, quiet = false) => {
-      try {
-        if (manual) setIsRefreshing(true);
-        else if (!quiet) setIsLoading(true);
-
-        const data = await fetchUsers(page, LIMIT, debouncedSearch);
-        setUsers(data.items || []);
-        setTotal(data.total || 0);
-
-        if (manual) toast.success("รีเฟรชรายชื่อผู้ใช้สำเร็จ");
-      } catch (err) {
-        if (quiet) return;
-        console.error("Load users error:", err);
-        toast.error("ไม่สามารถโหลดรายชื่อผู้ใช้ได้: " + err.message);
-        setUsers([]);
-        setTotal(0);
-      } finally {
-        setIsLoading(false);
-        setIsRefreshing(false);
-      }
-    },
-    [page, debouncedSearch, toast]
-  );
-
-  useEffect(() => {
-    loadUsers();
-  }, [loadUsers]);
-
-  // Silent auto-refresh every 30s (visible tab only)
-  useAutoRefresh(() => loadUsers(false, true), 30000);
-
-  // Instant refresh on server push (ban/unban by another admin)
-  useDashboardWebSocket({ onRefresh: () => loadUsers(false, true) });
 
   const openStatusModal = (user, targetActive) => {
     setModalState({ isOpen: true, user, targetActive });

@@ -26,10 +26,10 @@ void main() {
     blocTest<SettingsCubit, SettingsState>(
       'emits state with loaded themeMode and language',
       build: () {
-        when(() => mockRepo.getThemeMode())
-            .thenAnswer((_) async => ThemeMode.dark);
-        when(() => mockRepo.getLanguage())
-            .thenAnswer((_) async => 'en');
+        when(
+          () => mockRepo.getThemeMode(),
+        ).thenAnswer((_) async => ThemeMode.dark);
+        when(() => mockRepo.getLanguage()).thenAnswer((_) async => 'en');
         return SettingsCubit(repository: mockRepo);
       },
       act: (cubit) => cubit.loadSettings(),
@@ -45,14 +45,16 @@ void main() {
     blocTest<SettingsCubit, SettingsState>(
       'saves theme mode and emits updated state',
       build: () {
-        when(() => mockRepo.saveThemeMode(any()))
-            .thenAnswer((_) async {});
+        when(() => mockRepo.saveThemeMode(any())).thenAnswer((_) async {});
         return SettingsCubit(repository: mockRepo);
       },
       act: (cubit) => cubit.setTheme(ThemeMode.dark),
       expect: () => [
-        isA<SettingsState>()
-            .having((s) => s.themeMode, 'themeMode', ThemeMode.dark),
+        isA<SettingsState>().having(
+          (s) => s.themeMode,
+          'themeMode',
+          ThemeMode.dark,
+        ),
       ],
       verify: (_) {
         verify(() => mockRepo.saveThemeMode(ThemeMode.dark)).called(1);
@@ -64,14 +66,12 @@ void main() {
     blocTest<SettingsCubit, SettingsState>(
       'saves language and emits updated state',
       build: () {
-        when(() => mockRepo.saveLanguage(any()))
-            .thenAnswer((_) async {});
+        when(() => mockRepo.saveLanguage(any())).thenAnswer((_) async {});
         return SettingsCubit(repository: mockRepo);
       },
       act: (cubit) => cubit.setLanguage('en'),
       expect: () => [
-        isA<SettingsState>()
-            .having((s) => s.language, 'language', 'en'),
+        isA<SettingsState>().having((s) => s.language, 'language', 'en'),
       ],
       verify: (_) {
         verify(() => mockRepo.saveLanguage('en')).called(1);
@@ -89,8 +89,7 @@ void main() {
     blocTest<SettingsCubit, SettingsState>(
       'emits [loading, loaded] on success',
       build: () {
-        when(() => mockRepo.getConsents())
-            .thenAnswer((_) async => tConsent);
+        when(() => mockRepo.getConsents()).thenAnswer((_) async => tConsent);
         return SettingsCubit(repository: mockRepo);
       },
       act: (cubit) => cubit.loadConsents(),
@@ -105,8 +104,9 @@ void main() {
     blocTest<SettingsCubit, SettingsState>(
       'emits [loading, error] on failure',
       build: () {
-        when(() => mockRepo.getConsents())
-            .thenThrow(Exception('Failed to load'));
+        when(
+          () => mockRepo.getConsents(),
+        ).thenThrow(Exception('Failed to load'));
         return SettingsCubit(repository: mockRepo);
       },
       act: (cubit) => cubit.loadConsents(),
@@ -129,14 +129,12 @@ void main() {
     blocTest<SettingsCubit, SettingsState>(
       'emits updated consent on success',
       build: () {
-        when(() => mockRepo.updateConsents(any()))
-            .thenAnswer((_) async {});
+        when(() => mockRepo.updateConsents(any())).thenAnswer((_) async {});
         return SettingsCubit(repository: mockRepo);
       },
       act: (cubit) => cubit.updateConsents(tConsent),
       expect: () => [
-        isA<SettingsState>()
-            .having((s) => s.consent, 'consent', tConsent),
+        isA<SettingsState>().having((s) => s.consent, 'consent', tConsent),
       ],
       verify: (_) {
         verify(() => mockRepo.updateConsents(tConsent)).called(1);
@@ -146,14 +144,14 @@ void main() {
     blocTest<SettingsCubit, SettingsState>(
       'emits error on failure',
       build: () {
-        when(() => mockRepo.updateConsents(any()))
-            .thenThrow(Exception('Update failed'));
+        when(
+          () => mockRepo.updateConsents(any()),
+        ).thenThrow(Exception('Update failed'));
         return SettingsCubit(repository: mockRepo);
       },
       act: (cubit) => cubit.updateConsents(tConsent),
       expect: () => [
-        isA<SettingsState>()
-            .having((s) => s.error, 'error', isNotNull),
+        isA<SettingsState>().having((s) => s.error, 'error', isNotNull),
       ],
     );
   });
@@ -162,8 +160,7 @@ void main() {
     blocTest<SettingsCubit, SettingsState>(
       'calls exportPrivacyData without emitting on success',
       build: () {
-        when(() => mockRepo.exportPrivacyData())
-            .thenAnswer((_) async {});
+        when(() => mockRepo.exportPrivacyData()).thenAnswer((_) async {});
         return SettingsCubit(repository: mockRepo);
       },
       act: (cubit) => cubit.exportData(),
@@ -176,14 +173,14 @@ void main() {
     blocTest<SettingsCubit, SettingsState>(
       'emits error on failure',
       build: () {
-        when(() => mockRepo.exportPrivacyData())
-            .thenThrow(Exception('Export failed'));
+        when(
+          () => mockRepo.exportPrivacyData(),
+        ).thenThrow(Exception('Export failed'));
         return SettingsCubit(repository: mockRepo);
       },
       act: (cubit) => cubit.exportData(),
       expect: () => [
-        isA<SettingsState>()
-            .having((s) => s.error, 'error', isNotNull),
+        isA<SettingsState>().having((s) => s.error, 'error', isNotNull),
       ],
     );
   });
@@ -192,28 +189,29 @@ void main() {
     blocTest<SettingsCubit, SettingsState>(
       'calls deleteAccount without emitting on success',
       build: () {
-        when(() => mockRepo.deleteAccount())
-            .thenAnswer((_) async {});
+        when(
+          () => mockRepo.deleteAccount('secret123'),
+        ).thenAnswer((_) async {});
         return SettingsCubit(repository: mockRepo);
       },
-      act: (cubit) => cubit.deleteAccount(),
+      act: (cubit) => cubit.deleteAccount('secret123'),
       expect: () => <SettingsState>[],
       verify: (_) {
-        verify(() => mockRepo.deleteAccount()).called(1);
+        verify(() => mockRepo.deleteAccount('secret123')).called(1);
       },
     );
 
     blocTest<SettingsCubit, SettingsState>(
       'emits error on failure',
       build: () {
-        when(() => mockRepo.deleteAccount())
-            .thenThrow(Exception('Delete failed'));
+        when(
+          () => mockRepo.deleteAccount('secret123'),
+        ).thenThrow(Exception('Delete failed'));
         return SettingsCubit(repository: mockRepo);
       },
-      act: (cubit) => cubit.deleteAccount(),
+      act: (cubit) => cubit.deleteAccount('secret123'),
       expect: () => [
-        isA<SettingsState>()
-            .having((s) => s.error, 'error', isNotNull),
+        isA<SettingsState>().having((s) => s.error, 'error', isNotNull),
       ],
     );
   });
@@ -222,22 +220,25 @@ void main() {
     blocTest<SettingsCubit, SettingsState>(
       'emits state with real cache size on success',
       build: () {
-        when(() => mockRepo.getCacheSizeBytes())
-            .thenAnswer((_) async => 13002341);
+        when(
+          () => mockRepo.getCacheSizeBytes(),
+        ).thenAnswer((_) async => 13002341);
         return SettingsCubit(repository: mockRepo);
       },
       act: (cubit) => cubit.loadCacheSize(),
       expect: () => [
-        isA<SettingsState>()
-            .having((s) => s.cacheSizeBytes, 'cacheSizeBytes', 13002341),
+        isA<SettingsState>().having(
+          (s) => s.cacheSizeBytes,
+          'cacheSizeBytes',
+          13002341,
+        ),
       ],
     );
 
     blocTest<SettingsCubit, SettingsState>(
       'keeps previous size and emits nothing on failure',
       build: () {
-        when(() => mockRepo.getCacheSizeBytes())
-            .thenThrow(Exception('Failed'));
+        when(() => mockRepo.getCacheSizeBytes()).thenThrow(Exception('Failed'));
         return SettingsCubit(repository: mockRepo);
       },
       act: (cubit) => cubit.loadCacheSize(),
@@ -255,8 +256,11 @@ void main() {
       },
       act: (cubit) => cubit.clearCache(),
       expect: () => [
-        isA<SettingsState>()
-            .having((s) => s.isClearingCache, 'isClearingCache', true),
+        isA<SettingsState>().having(
+          (s) => s.isClearingCache,
+          'isClearingCache',
+          true,
+        ),
         isA<SettingsState>()
             .having((s) => s.isClearingCache, 'isClearingCache', false)
             .having((s) => s.cacheSizeBytes, 'cacheSizeBytes', 0),
@@ -269,14 +273,16 @@ void main() {
     blocTest<SettingsCubit, SettingsState>(
       'emits error on failure',
       build: () {
-        when(() => mockRepo.clearCache())
-            .thenThrow(Exception('Clear failed'));
+        when(() => mockRepo.clearCache()).thenThrow(Exception('Clear failed'));
         return SettingsCubit(repository: mockRepo);
       },
       act: (cubit) => cubit.clearCache(),
       expect: () => [
-        isA<SettingsState>()
-            .having((s) => s.isClearingCache, 'isClearingCache', true),
+        isA<SettingsState>().having(
+          (s) => s.isClearingCache,
+          'isClearingCache',
+          true,
+        ),
         isA<SettingsState>()
             .having((s) => s.isClearingCache, 'isClearingCache', false)
             .having((s) => s.error, 'error', isNotNull),
@@ -302,5 +308,56 @@ void main() {
       expect(copied.language, 'en');
       expect(copied.themeMode, ThemeMode.dark);
     });
+  });
+
+  group('settings persistence failures', () {
+    blocTest<SettingsCubit, SettingsState>(
+      'loadSettings keeps defaults and emits error when storage read fails',
+      build: () {
+        when(
+          () => mockRepo.getThemeMode(),
+        ).thenThrow(Exception('storage read failed'));
+        return SettingsCubit(repository: mockRepo);
+      },
+      act: (cubit) => cubit.loadSettings(),
+      expect: () => [
+        isA<SettingsState>()
+            .having((s) => s.themeMode, 'themeMode', ThemeMode.light)
+            .having((s) => s.language, 'language', 'th')
+            .having((s) => s.error, 'error', contains('storage read failed')),
+      ],
+    );
+
+    blocTest<SettingsCubit, SettingsState>(
+      'setTheme does not change UI state when persistence fails',
+      build: () {
+        when(
+          () => mockRepo.saveThemeMode(ThemeMode.dark),
+        ).thenThrow(Exception('theme write failed'));
+        return SettingsCubit(repository: mockRepo);
+      },
+      act: (cubit) => cubit.setTheme(ThemeMode.dark),
+      expect: () => [
+        isA<SettingsState>()
+            .having((s) => s.themeMode, 'themeMode', ThemeMode.light)
+            .having((s) => s.error, 'error', contains('theme write failed')),
+      ],
+    );
+
+    blocTest<SettingsCubit, SettingsState>(
+      'setLanguage does not change UI state when persistence fails',
+      build: () {
+        when(
+          () => mockRepo.saveLanguage('en'),
+        ).thenThrow(Exception('language write failed'));
+        return SettingsCubit(repository: mockRepo);
+      },
+      act: (cubit) => cubit.setLanguage('en'),
+      expect: () => [
+        isA<SettingsState>()
+            .having((s) => s.language, 'language', 'th')
+            .having((s) => s.error, 'error', contains('language write failed')),
+      ],
+    );
   });
 }

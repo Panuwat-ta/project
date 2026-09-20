@@ -122,6 +122,10 @@ cd "${SCRIPT_DIR}"
 # Activate virtual environment
 source venv/bin/activate
 
+# Custom training modules (e.g. forgery_aug.py) are imported by configs at
+# runtime and must resolve from this directory.
+export PYTHONPATH="${SCRIPT_DIR}${PYTHONPATH:+:${PYTHONPATH}}"
+
 python library/mmsegmentation/tools/train.py \
     "${CONFIG}" \
     --work-dir "${WORK_DIR}" \

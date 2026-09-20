@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { RefreshCw, Eye, Image as ImageIcon } from "lucide-react";
 import { fetchReports } from "@/lib/api";
@@ -9,10 +9,9 @@ import { RiskBadge, StatusBadge } from "@/components/ui/Badge";
 import { TableSkeleton } from "@/components/ui/Skeleton";
 import { Card } from "@/components/ui/Card";
 import { SearchInput, Select } from "@/components/ui/Input";
-import { useToast } from "@/components/ui/ToastContext";
 import { formatDate } from "@/lib/utils";
-import { useAutoRefresh } from "@/lib/use-auto-refresh";
-import { useDashboardWebSocket } from "@/lib/use-dashboard-ws";
+import { useAdminQuery } from "@/lib/use-admin-query";
+import { useDebouncedValue } from "@/lib/use-debounced-value";
 
 const LIMIT = 15;
 
@@ -40,7 +39,6 @@ const CATEGORY_LABELS = Object.fromEntries(CATEGORIES.filter((c) => c.key !== "A
 export function ReportsList() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const toast = useToast();
 
   const activeTab = searchParams.get("status") || "All";
   const category = searchParams.get("category") || "All";
@@ -48,23 +46,10 @@ export function ReportsList() {
   const initialSearch = searchParams.get("search") || "";
 
   const [search, setSearch] = useState(initialSearch);
-  const [debouncedSearch, setDebouncedSearch] = useState(initialSearch);
   const [page, setPage] = useState(pageParam);
-  const [reports, setReports] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const searchTimer = useRef(null);
 
-  // Debounce search input
-  useEffect(() => {
-    clearTimeout(searchTimer.current);
-    searchTimer.current = setTimeout(() => {
-      setDebouncedSearch(search.trim());
-      setPage(1);
-    }, 300);
-    return () => clearTimeout(searchTimer.current);
-  }, [search]);
+  // Debounced search (resets to page 1)
+  const debouncedSearch = useDebouncedValue(search, 300, () => setPage(1));
 
   // Sync params to URL
   const updateUrlParams = useCallback(
@@ -79,50 +64,34 @@ export function ReportsList() {
     [setSearchParams]
   );
 
-  const loadReports = useCallback(
-    async (manual = false, quiet = false) => {
-      try {
-        if (manual) setIsRefreshing(true);
-        else if (!quiet) setIsLoading(true);
-
-        const data = await fetchReports({
-          page,
-          limit: LIMIT,
-          status: activeTab,
-          category,
-          search: debouncedSearch,
-        });
-
-        setReports(data.items || []);
-        setTotal(data.total || 0);
-
-        if (manual) {
-          toast.success("รีเฟรชคิวรายงานสำเร็จ");
-        }
-      } catch (err) {
-        if (quiet) return;
-        console.error("Load reports error:", err);
-        toast.error("ไม่สามารถโหลดรายการรายงานได้: " + err.message);
-        setReports([]);
-        setTotal(0);
-      } finally {
-        setIsLoading(false);
-        setIsRefreshing(false);
-      }
+  const {
+    data: { reports, total },
+    isLoading,
+    isRefreshing,
+    reload: loadReports,
+  } = useAdminQuery(
+    async () => {
+      const data = await fetchReports({
+        page,
+        limit: LIMIT,
+        status: activeTab,
+        category,
+        search: debouncedSearch,
+      });
+      return { reports: data.items || [], total: data.total || 0 };
     },
-    [page, activeTab, category, debouncedSearch, toast]
+    {
+      deps: [page, activeTab, category, debouncedSearch],
+      initialData: { reports: [], total: 0 },
+      successMessage: "รีเฟรชคิวรายงานสำเร็จ",
+      errorMessage: "ไม่สามารถโหลดรายการรายงานได้",
+      logPrefix: "Load reports error:",
+    }
   );
 
   useEffect(() => {
     updateUrlParams(activeTab, category, page, debouncedSearch);
-    loadReports();
-  }, [activeTab, category, page, debouncedSearch, updateUrlParams, loadReports]);
-
-  // Silent auto-refresh every 30s (visible tab only)
-  useAutoRefresh(() => loadReports(false, true), 30000);
-
-  // Instant refresh on server push (new report / decision by another admin)
-  useDashboardWebSocket({ onRefresh: () => loadReports(false, true) });
+  }, [activeTab, category, page, debouncedSearch, updateUrlParams]);
 
   const handleTabChange = (newTab) => {
     setPage(1);
@@ -229,7 +198,6 @@ export function ReportsList() {
                         size="xs"
                         onClick={() => {
                           setSearch("");
-                          setDebouncedSearch("");
                           handleTabChange("All");
                         }}
                         className="mt-2 text-primary"

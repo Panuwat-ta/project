@@ -1,3 +1,51 @@
+"""Single authority for Overall Risk Score (Hybrid Worst-Case & Multi-Factor Breakdown).
+
+Wiki source of truth: [[concepts/risk-scoring]].
+Every caller (scan/history/admin) must grade through this module so the
+threshold table, the Visual Override rule and the score input builders
+keep locality in exactly one place.
+"""
+
+from app.core.config import settings
+
+# --- Threshold table (Low 0-39 / Medium 40-69 / High 70-100) ---
+LOW_MAX = 39
+MEDIUM_MAX = 69
+COMPOUND_THRESHOLD = 40
+COMPOUND_BONUS = 5
+VISUAL_OVERRIDE = 80
+
+# --- Textual input builder (moved from scan_service; behavior unchanged) ---
+SCAM_KEYWORDS = ["ด่วน", "โบนัส", "กู้เงิน", "รับเงิน", "ลงทุน", "อนุมัติไว", "ได้เงินจริง", "คลิก", "เครดิตฟรี", "แจกฟรี", "หลุด"]
+KEYWORD_SCORE = 25
+
+
+def grade_for(total: int, visual_score: int) -> str:
+    """sole grade authority: total bands + Visual Override (S_visual >= 80 -> high)."""
+    if total >= 70 or visual_score >= VISUAL_OVERRIDE:
+        return "high"
+    if total >= 40:
+        return "medium"
+    return "low"
+
+
+def build_text_analysis(ocr_text: str) -> tuple[int, list[str]]:
+    """keyword heuristic -> (text_score, found_keywords). No text -> (0, [])."""
+    if not ocr_text:
+        return 0, []
+    found = [kw for kw in SCAM_KEYWORDS if kw in ocr_text]
+    return min(len(found) * KEYWORD_SCORE, 100), found
+
+
+def build_source_score() -> int:
+    """Source Verification is optional in v1 (Google Vision not wired).
+
+    Returns the neutral-unavailable default; never invent a per-image score.
+    See technology-choices #6.
+    """
+    return settings.DEFAULT_SOURCE_SCORE
+
+
 def calculate_risk_score(text_score: int, visual_score: int, source_score: int) -> dict:
     """
     ระบบประเมินความเสี่ยงแบบ Hybrid Worst-Case & Multi-Factor Breakdown ตาม configs.md:
@@ -6,6 +54,9 @@ def calculate_risk_score(text_score: int, visual_score: int, source_score: int) 
        S_base = max(visual_score, text_score, source_score)
     3. Multi-factor Compounding: หากพบความเสี่ยงระดับน่าสงสัยในมิติอื่น (>= 40)
        จะเพิ่มคะแนนความเสี่ยง +5 คะแนนต่อมิติ (สูงสุดไม่เกิน 100)
+
+    Canonical contract keys: total_risk_score, grade, primary_factor,
+    is_multi_risk, breakdown{visual_score, text_score, source_score}.
     """
     # ตรวจสอบขอบเขตค่าอินพุต (0 - 100)
     t = max(0, min(100, int(round(text_score))))
@@ -21,20 +72,16 @@ def calculate_risk_score(text_score: int, visual_score: int, source_score: int) 
         primary_factor = "none"
 
     # 2. คำนวณ Multi-Factor Compounding (หากมีมิติอื่นที่มีความเสี่ยง >= 40)
-    secondary_risks = [k for k, val in scores.items() if k != primary_factor and val >= 40]
-    is_multi_risk = len(secondary_risks) > 0 and max_score >= 40
+    secondary_risks = [k for k, val in scores.items() if k != primary_factor and val >= COMPOUND_THRESHOLD]
+    is_multi_risk = len(secondary_risks) > 0 and max_score >= COMPOUND_THRESHOLD
 
-    compounding_bonus = len(secondary_risks) * 5 if is_multi_risk else 0
+    compounding_bonus = len(secondary_risks) * COMPOUND_BONUS if is_multi_risk else 0
     total = min(100, max_score + compounding_bonus)
 
-    # 3. คำนวณ Grade ตามเกณฑ์ 3 ระดับ (Low: 0-39, Medium: 40-69, High: 70-100)
-    if total >= 70 or v >= 80:
-        grade = "high"
+    # 3. เกรดผ่าน authority เดียว (รวม Visual Override + clamp)
+    grade = grade_for(total, v)
+    if grade == "high":
         total = max(70, total)
-    elif total >= 40:
-        grade = "medium"
-    else:
-        grade = "low"
 
     return {
         "total_risk_score": total,

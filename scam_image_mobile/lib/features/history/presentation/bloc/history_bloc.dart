@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entities/scan_history_item.dart';
 import '../../domain/repositories/history_repository.dart';
 
-
 // ── Events ──────────────────────────────────────────────────────────────────
 
 abstract class HistoryEvent extends Equatable {
@@ -33,7 +32,8 @@ class HistorySearched extends HistoryEvent {
 
 class HistoryItemDeleted extends HistoryEvent {
   final String scanId;
-  const HistoryItemDeleted(this.scanId);
+  final Completer<bool>? completer;
+  const HistoryItemDeleted(this.scanId, [this.completer]);
   @override
   List<Object?> get props => [scanId];
 }
@@ -124,19 +124,24 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
   ) async {
     try {
       await repository.deleteScanHistoryItem(event.scanId);
-      // Remove from current list without full reload
+      // Remove from current list only after the server confirms deletion.
       if (state is HistoryDataLoaded) {
         final current = (state as HistoryDataLoaded).items;
-        final updated =
-            current.where((i) => i.scanId != event.scanId).toList();
+        final updated = current.where((i) => i.scanId != event.scanId).toList();
         if (updated.isEmpty) {
           emit(const HistoryEmpty());
         } else {
           emit(HistoryDataLoaded(updated));
         }
       }
+      if (event.completer?.isCompleted == false) {
+        event.completer?.complete(true);
+      }
     } catch (e) {
       emit(HistoryError(e.toString()));
+      if (event.completer?.isCompleted == false) {
+        event.completer?.complete(false);
+      }
     }
   }
 
@@ -145,17 +150,30 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     String? keyword,
   }) async {
     try {
-      final items = await repository.getScanHistory(keyword: keyword);
+      const pageSize = 100;
+      final items = <ScanHistoryItem>[];
+      final seenScanIds = <String>{};
+      var page = 1;
+
+      while (true) {
+        final batch = await repository.getScanHistory(
+          page: page,
+          limit: pageSize,
+          keyword: keyword,
+        );
+        final before = items.length;
+        for (final item in batch) {
+          if (seenScanIds.add(item.scanId)) items.add(item);
+        }
+        if (batch.length < pageSize || items.length == before) break;
+        page += 1;
+      }
       // Client-side fallback filtering: server may ignore keyword, so filter locally too
       List<ScanHistoryItem> filtered = items;
       if (keyword != null && keyword.trim().isNotEmpty) {
         final kw = keyword.trim().toLowerCase();
         filtered = items.where((it) {
-          return (it.title?.toLowerCase().contains(kw) ?? false) ||
-              it.scanId.toLowerCase().contains(kw) ||
-              it.status.toLowerCase().contains(kw) ||
-              it.riskLevel.name.toLowerCase().contains(kw) ||
-              it.riskScore.toString().contains(kw);
+          return it.title?.toLowerCase().contains(kw) ?? false;
         }).toList();
       }
       if (filtered.isEmpty) {
@@ -168,5 +186,3 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     }
   }
 }
-
-

@@ -1,6 +1,7 @@
+export 'adaptive_content.dart';
 // Barrel export — all shared core widgets.
 export 'analysis_step_tile.dart';
-export 'app_bottom_navigation.dart';
+export 'main_navigation_shell.dart';
 export 'app_top_bar.dart';
 export 'consent_checkbox_tile.dart';
 export 'empty_state_view.dart';

@@ -16,6 +16,8 @@ abstract class AuthRepository {
     required String email,
     required String password,
     required String displayName,
+    required bool systemConsent,
+    required bool researchConsent,
   });
 
   /// Invalidates the current session on the server and clears local tokens.

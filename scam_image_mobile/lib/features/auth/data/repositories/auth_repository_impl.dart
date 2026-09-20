@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 
-import '../../../../core/errors/exceptions.dart';
+import '../../../../core/network/dio_error_mapper.dart';
 import '../../domain/entities/auth_token.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
@@ -23,10 +23,7 @@ class AuthRepositoryImpl implements AuthRepository {
   final AuthLocalDataSource localDataSource;
 
   @override
-  Future<User> login({
-    required String email,
-    required String password,
-  }) async {
+  Future<User> login({required String email, required String password}) async {
     try {
       final (user, token) = await remoteDataSource.login(
         email: email,
@@ -35,7 +32,7 @@ class AuthRepositoryImpl implements AuthRepository {
       await saveTokens(token);
       return user;
     } on DioException catch (e) {
-      throw _mapDioException(e);
+      throw mapDioException(e);
     }
     // Typed exceptions from the data source propagate as-is.
   }
@@ -45,28 +42,32 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String password,
     required String displayName,
+    required bool systemConsent,
+    required bool researchConsent,
   }) async {
     try {
       final (user, token) = await remoteDataSource.register(
         email: email,
         password: password,
         displayName: displayName,
+        systemConsent: systemConsent,
+        researchConsent: researchConsent,
       );
       await saveTokens(token);
       return user;
     } on DioException catch (e) {
-      throw _mapDioException(e);
+      throw mapDioException(e);
     }
   }
 
   @override
   Future<void> logout() async {
     try {
+      // The current backend uses stateless JWT logout, so this is best-effort.
       await remoteDataSource.logout();
-    } on DioException catch (e) {
-      throw _mapDioException(e);
+    } catch (_) {
+      // Network/server failure must not trap the user in an authenticated UI.
     } finally {
-      // Always clear local tokens regardless of server response.
       await localDataSource.clearTokens();
     }
   }
@@ -77,14 +78,13 @@ class AuthRepositoryImpl implements AuthRepository {
     if (storedRefreshToken == null || storedRefreshToken.isEmpty) return null;
 
     try {
-      final token =
-          await remoteDataSource.refreshToken(storedRefreshToken);
+      final token = await remoteDataSource.refreshToken(storedRefreshToken);
       if (token != null) {
         await localDataSource.saveTokens(token);
       }
       return token;
     } on DioException catch (e) {
-      throw _mapDioException(e);
+      throw mapDioException(e);
     }
   }
 
@@ -93,7 +93,7 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       return await remoteDataSource.getMe();
     } on DioException catch (e) {
-      throw _mapDioException(e);
+      throw mapDioException(e);
     }
   }
 
@@ -122,27 +122,4 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> markOnboardingSeen() => localDataSource.markOnboardingSeen();
 
   // ── Helper ─────────────────────────────────────────────────────────────────
-
-  Exception _mapDioException(DioException e) {
-    switch (e.type) {
-      case DioExceptionType.connectionTimeout:
-      case DioExceptionType.receiveTimeout:
-      case DioExceptionType.sendTimeout:
-      case DioExceptionType.connectionError:
-        return NetworkException(e.message ?? 'Connection error');
-      case DioExceptionType.badResponse:
-        final statusCode = e.response?.statusCode;
-        if (statusCode == 401 || statusCode == 403) {
-          return AuthException(
-            e.response?.data?['message'] as String? ?? 'Unauthorised',
-          );
-        }
-        return ServerException(
-          e.response?.data?['message'] as String? ?? 'Server error',
-          statusCode: statusCode,
-        );
-      default:
-        return NetworkException(e.message ?? 'Network error');
-    }
-  }
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,13 +7,16 @@ import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/localization/app_translations.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../result/presentation/bloc/result_bloc.dart';
+import '../bloc/history_bloc.dart';
 import '../../../result/domain/entities/analysis_result.dart';
 import '../../../result/domain/entities/risk_factor.dart';
+import '../../../../core/utils/risk_level_helper.dart';
 import 'package:intl/intl.dart';
 
 class HistoryDetailScreen extends StatefulWidget {
@@ -46,24 +51,31 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
     return BlocProvider.value(
       value: _bloc,
       child: Scaffold(
-        backgroundColor: isDark ? const Color(0xFF0F1720) : const Color(0xFFF6F8FB),
+        backgroundColor: isDark ? AppColors.bgDark : AppColors.bgLight,
         appBar: AppBar(
-          backgroundColor: isDark ? const Color(0xFF0F1720) : const Color(0xFFF6F8FB),
+          backgroundColor: isDark ? AppColors.bgDark : AppColors.bgLight,
           elevation: 0,
           scrolledUnderElevation: 0,
           centerTitle: true,
           title: Text(
             'result_scan_details'.tr(context),
             style: AppTypography.sectionHeader(
-                color: isDark ? Colors.white : AppColors.primary),
+              color: isDark ? Colors.white : AppColors.primary,
+            ),
           ),
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: isDark ? AppColors.primaryFixedDim : AppColors.primary),
+            icon: Icon(
+              Icons.arrow_back,
+              color: isDark ? AppColors.primaryFixedDim : AppColors.primary,
+            ),
             onPressed: () => context.pop(),
           ),
           actions: [
             IconButton(
-              icon: Icon(Icons.share_outlined, color: isDark ? AppColors.primaryFixedDim : AppColors.primary),
+              icon: Icon(
+                Icons.share_outlined,
+                color: isDark ? AppColors.primaryFixedDim : AppColors.primary,
+              ),
               onPressed: () {
                 // ignore: deprecated_member_use
                 Share.share('result_share_text'.tr(context));
@@ -83,7 +95,9 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
               final result = state.result;
               return SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.safeMargin, vertical: AppSpacing.md),
+                  horizontal: AppSpacing.safeMargin,
+                  vertical: AppSpacing.md,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -95,7 +109,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                     const SizedBox(height: AppSpacing.md),
                     _buildImageAnomalyCard(isDark, result),
                     const SizedBox(height: AppSpacing.xl),
-                    _buildActionButtons(context, isDark),
+                    _buildActionButtons(context, isDark, result),
                     const SizedBox(height: AppSpacing.xl),
                   ],
                 ),
@@ -112,8 +126,8 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF162230) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: isDark ? AppColors.surfaceDark : Colors.white,
+        borderRadius: AppRadius.lgBorder,
         border: isDark
             ? Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.1))
             : Border.all(color: AppColors.border),
@@ -127,11 +141,13 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: bgColor,
-        borderRadius: BorderRadius.circular(9999),
+        borderRadius: AppRadius.pillBorder,
       ),
       child: Text(
         text,
-        style: AppTypography.caption(color: textColor).copyWith(fontWeight: FontWeight.w600),
+        style: AppTypography.caption(
+          color: textColor,
+        ).copyWith(fontWeight: FontWeight.w600),
       ),
     );
   }
@@ -152,17 +168,20 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                     Text(
                       'result_overall_risk'.tr(context),
                       style: AppTypography.titleMd(
-                          color: isDark ? Colors.white : AppColors.onSurface),
+                        color: isDark ? Colors.white : AppColors.onSurface,
+                      ),
                     ),
                     Text(
                       result.summary,
-                      style: AppTypography.caption(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      style: AppTypography.caption(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(width: AppSpacing.sm),
-              _buildScorePill(result.riskScore, isDark),
+              _buildScorePill(result.riskLevel, result.riskScore, isDark),
             ],
           ),
           const SizedBox(height: AppSpacing.xl),
@@ -183,13 +202,16 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                   Text(
                     '${result.riskScore}%',
                     style: AppTypography.displayHero(
-                            color: isDark ? Colors.white : _getRiskColor(result.riskLevel))
-                        .copyWith(fontSize: 36, height: 1.1),
+                      color: isDark
+                          ? Colors.white
+                          : _getRiskColor(result.riskLevel),
+                    ).copyWith(fontSize: 36, height: 1.1),
                   ),
                   Text(
-                    'Scam Score',
+                    'result_risk_score'.tr(context),
                     style: AppTypography.caption(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),
@@ -203,11 +225,17 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
 
   Widget _buildOcrCard(bool isDark, AnalysisResult result) {
     final texts = result.factors.where((f) => f.type == 'textual');
-    final textFactor = texts.isNotEmpty ? texts.first : const RiskFactor(type: 'textual', score: 0, title: '', details: []);
-    final ocrText = (result.ocrText != null && result.ocrText!.trim().isNotEmpty)
+    final hasTextFactor = texts.isNotEmpty;
+    final textFactor = hasTextFactor
+        ? texts.first
+        : const RiskFactor(type: 'textual', score: 0, title: '', details: []);
+    final ocrText =
+        (result.ocrText != null && result.ocrText!.trim().isNotEmpty)
         ? result.ocrText!
-        : (textFactor.details.isNotEmpty ? textFactor.details.join(', ') : 'ไม่พบข้อความในภาพ');
-    
+        : (textFactor.details.isNotEmpty
+              ? textFactor.details.join(', ')
+              : 'history_ocr_unavailable'.tr(context));
+
     return _buildCard(
       isDark: isDark,
       child: Column(
@@ -219,14 +247,20 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
               Expanded(
                 child: Row(
                   children: [
-                    Icon(Icons.description_outlined,
-                        color: isDark ? AppColors.primaryFixedDim : AppColors.primary, size: 24),
+                    Icon(
+                      Icons.description_outlined,
+                      color: isDark
+                          ? AppColors.primaryFixedDim
+                          : AppColors.primary,
+                      size: 24,
+                    ),
                     const SizedBox(width: AppSpacing.sm),
                     Expanded(
                       child: Text(
                         'result_ocr'.tr(context),
                         style: AppTypography.sectionHeader(
-                            color: isDark ? Colors.white : AppColors.onSurface),
+                          color: isDark ? Colors.white : AppColors.onSurface,
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -234,28 +268,43 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                 ),
               ),
               const SizedBox(width: AppSpacing.sm),
-              _buildScorePill(textFactor.score, isDark),
+              if (hasTextFactor)
+                _buildScorePill(
+                  RiskLevelHelper.factorLevelForScore(textFactor.score),
+                  textFactor.score,
+                  isDark,
+                )
+              else
+                Text(
+                  'result_evidence_unavailable'.tr(context),
+                  style: AppTypography.caption(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
             ],
           ),
           const SizedBox(height: AppSpacing.md),
           Container(
             padding: const EdgeInsets.all(AppSpacing.md),
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF27313C) : const Color(0xFFF0F4F8),
-              borderRadius: BorderRadius.circular(8),
+              color: isDark ? AppColors.inverseSurface : AppColors.softSurface,
+              borderRadius: AppRadius.smBorder,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'result_text_detected'.tr(context),
-                  style: AppTypography.caption(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  style: AppTypography.caption(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
                   ocrText,
                   style: AppTypography.bodyBase(
-                      color: isDark ? Colors.white : AppColors.onSurface).copyWith(fontStyle: FontStyle.italic),
+                    color: isDark ? Colors.white : AppColors.onSurface,
+                  ).copyWith(fontStyle: FontStyle.italic),
                 ),
               ],
             ),
@@ -266,19 +315,24 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
             children: [
               Text(
                 'result_suspicious_words'.tr(context),
-                style: AppTypography.caption(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: AppTypography.caption(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
                     'result_accuracy'.tr(context),
-                    style: AppTypography.caption(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    style: AppTypography.caption(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                   Text(
-                    '${textFactor.score}% Match',
+                    '${textFactor.score}%',
                     style: AppTypography.codeData(
-                        color: isDark ? Colors.white : AppColors.onSurface),
+                      color: isDark ? Colors.white : AppColors.onSurface,
+                    ),
                   ),
                 ],
               ),
@@ -288,19 +342,33 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: textFactor.details.isNotEmpty 
-                ? textFactor.details.map((word) => _buildSuspiciousChip(word, isDark)).toList()
-                : [Text('ไม่มีข้อความอันตราย', style: AppTypography.caption(color: AppColors.textSecondary))],
+            children: textFactor.details.isNotEmpty
+                ? textFactor.details
+                      .map((word) => _buildSuspiciousChip(word, isDark))
+                      .toList()
+                : [
+                    Text(
+                      'history_no_suspicious_keywords'.tr(context),
+                      style: AppTypography.caption(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
           ),
           const SizedBox(height: AppSpacing.md),
           Divider(color: AppColors.border.withValues(alpha: isDark ? 0.2 : 1)),
           const SizedBox(height: AppSpacing.sm),
           Text(
-            textFactor.details.isNotEmpty
-                ? 'ระบบตรวจพบคำสำคัญที่มีความเสี่ยงจำนวน ${textFactor.details.length} คำ ได้แก่ ${textFactor.details.join(", ")} ซึ่งมักพบในบริบทของการหลอกลวง'
+            !hasTextFactor
+                ? 'result_evidence_unavailable'.tr(context)
+                : textFactor.details.isNotEmpty
+                ? 'history_text_keywords_summary'
+                      .tr(context)
+                      .replaceAll('{count}', '${textFactor.details.length}')
+                      .replaceAll('{keywords}', textFactor.details.join(', '))
                 : (textFactor.score > 0
-                    ? 'ตรวจพบข้อความที่มีความเสี่ยงจากการวิเคราะห์ทางภาษา'
-                    : 'ผลการตรวจสอบข้อความไม่พบคำสำคัญหรือประโยคที่บ่งชี้ถึงความเสี่ยงการหลอกลวง'),
+                      ? 'history_text_risk_detected'.tr(context)
+                      : 'history_text_no_risk_detected'.tr(context)),
             style: AppTypography.bodyBase(color: AppColors.textSecondary),
           ),
         ],
@@ -312,21 +380,26 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF4A1818) : Colors.white,
+        color: isDark ? AppColors.dangerDarkContainer : Colors.white,
         border: Border.all(color: AppColors.danger.withValues(alpha: 0.5)),
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: AppRadius.smBorder,
       ),
       child: Text(
         label,
-        style: AppTypography.caption(color: isDark ? const Color(0xFFFFB4B4) : AppColors.danger),
+        style: AppTypography.caption(
+          color: isDark ? AppColors.dangerDarkForeground : AppColors.danger,
+        ),
       ),
     );
   }
 
   Widget _buildSourceCard(bool isDark, AnalysisResult result) {
     final sources = result.factors.where((f) => f.type == 'source');
-    final sourceFactor = sources.isNotEmpty ? sources.first : const RiskFactor(type: 'source', score: 0, title: '', details: []);
-    
+    final hasSourceFactor = sources.isNotEmpty;
+    final sourceFactor = hasSourceFactor
+        ? sources.first
+        : const RiskFactor(type: 'source', score: 0, title: '', details: []);
+
     return _buildCard(
       isDark: isDark,
       child: Column(
@@ -338,14 +411,20 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
               Expanded(
                 child: Row(
                   children: [
-                    Icon(Icons.manage_search_outlined,
-                        color: isDark ? AppColors.primaryFixedDim : AppColors.primary, size: 24),
+                    Icon(
+                      Icons.manage_search_outlined,
+                      color: isDark
+                          ? AppColors.primaryFixedDim
+                          : AppColors.primary,
+                      size: 24,
+                    ),
                     const SizedBox(width: AppSpacing.sm),
                     Expanded(
                       child: Text(
                         'result_source_check'.tr(context),
                         style: AppTypography.sectionHeader(
-                            color: isDark ? Colors.white : AppColors.onSurface),
+                          color: isDark ? Colors.white : AppColors.onSurface,
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -353,15 +432,29 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                 ),
               ),
               const SizedBox(width: AppSpacing.sm),
-              _buildScorePill(sourceFactor.score, isDark),
+              if (hasSourceFactor)
+                _buildScorePill(
+                  RiskLevelHelper.factorLevelForScore(sourceFactor.score),
+                  sourceFactor.score,
+                  isDark,
+                )
+              else
+                Text(
+                  'result_evidence_unavailable'.tr(context),
+                  style: AppTypography.caption(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
             ],
           ),
           const SizedBox(height: AppSpacing.md),
           Container(
             padding: const EdgeInsets.all(AppSpacing.md),
             decoration: BoxDecoration(
-              border: Border.all(color: AppColors.border.withValues(alpha: isDark ? 0.2 : 1)),
-              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: AppColors.border.withValues(alpha: isDark ? 0.2 : 1),
+              ),
+              borderRadius: AppRadius.smBorder,
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -371,12 +464,15 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                   children: [
                     Text(
                       'result_first_detected'.tr(context),
-                      style: AppTypography.caption(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      style: AppTypography.caption(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                     Text(
                       DateFormat('dd MMM yyyy').format(result.createdAt),
                       style: AppTypography.bodyBase(
-                          color: isDark ? Colors.white : AppColors.onSurface).copyWith(fontWeight: FontWeight.w600),
+                        color: isDark ? Colors.white : AppColors.onSurface,
+                      ).copyWith(fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -385,14 +481,19 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                   children: [
                     Text(
                       'result_recurring'.tr(context),
-                      style: AppTypography.caption(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      style: AppTypography.caption(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                     Text(
                       sourceFactor.details.isNotEmpty
                           ? sourceFactor.details.join(', ')
-                          : (sourceFactor.score > 40 ? 'พบการเผยแพร่ซ้ำ' : 'ไม่พบประวัติการใช้งานซ้ำ'),
+                          : hasSourceFactor
+                          ? 'result_evidence_score_only'.tr(context)
+                          : 'result_evidence_unavailable'.tr(context),
                       style: AppTypography.bodyBase(
-                          color: isDark ? Colors.white : AppColors.onSurface).copyWith(fontWeight: FontWeight.w600),
+                        color: isDark ? Colors.white : AppColors.onSurface,
+                      ).copyWith(fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -405,11 +506,13 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
     );
   }
 
-
   Widget _buildImageAnomalyCard(bool isDark, AnalysisResult result) {
     final visuals = result.factors.where((f) => f.type == 'visual');
-    final visualFactor = visuals.isNotEmpty ? visuals.first : const RiskFactor(type: 'visual', score: 0, title: '', details: []);
-    
+    final hasVisualFactor = visuals.isNotEmpty;
+    final visualFactor = hasVisualFactor
+        ? visuals.first
+        : const RiskFactor(type: 'visual', score: 0, title: '', details: []);
+
     return _buildCard(
       isDark: isDark,
       child: Column(
@@ -421,14 +524,20 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
               Expanded(
                 child: Row(
                   children: [
-                    Icon(Icons.visibility_outlined,
-                        color: isDark ? AppColors.primaryFixedDim : AppColors.primary, size: 24),
+                    Icon(
+                      Icons.visibility_outlined,
+                      color: isDark
+                          ? AppColors.primaryFixedDim
+                          : AppColors.primary,
+                      size: 24,
+                    ),
                     const SizedBox(width: AppSpacing.sm),
                     Expanded(
                       child: Text(
                         'result_visual_analysis'.tr(context),
                         style: AppTypography.sectionHeader(
-                            color: isDark ? Colors.white : AppColors.onSurface),
+                          color: isDark ? Colors.white : AppColors.onSurface,
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -436,7 +545,19 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                 ),
               ),
               const SizedBox(width: AppSpacing.sm),
-              _buildScorePill(visualFactor.score, isDark),
+              if (hasVisualFactor)
+                _buildScorePill(
+                  RiskLevelHelper.factorLevelForScore(visualFactor.score),
+                  visualFactor.score,
+                  isDark,
+                )
+              else
+                Text(
+                  'result_evidence_unavailable'.tr(context),
+                  style: AppTypography.caption(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
             ],
           ),
           const SizedBox(height: AppSpacing.md),
@@ -446,14 +567,14 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                 width: 120,
                 height: 120,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: const Color(0xFF1E293B),
+                  borderRadius: AppRadius.smBorder,
+                  color: AppColors.slate800,
                 ),
                 child: Stack(
                   children: [
                     if (result.heatmapUrl != null || result.imageUrl != null)
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: AppRadius.smBorder,
                         child: CachedNetworkImage(
                           imageUrl: (result.heatmapUrl ?? result.imageUrl)!,
                           fit: BoxFit.cover,
@@ -464,27 +585,35 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                           placeholder: (context, url) => Container(
                             width: 120,
                             height: 120,
-                            color: const Color(0xFF1E293B),
+                            color: AppColors.slate800,
                           ),
                           errorWidget: (context, url, error) => Container(
                             width: 120,
                             height: 120,
-                            color: const Color(0xFF1E293B),
-                            child: const Icon(Icons.broken_image_outlined, color: Colors.white24, size: 32),
+                            color: AppColors.slate800,
+                            child: const Icon(
+                              Icons.broken_image_outlined,
+                              color: Colors.white24,
+                              size: 32,
+                            ),
                           ),
                         ),
                       )
                     else
                       const Center(
-                        child: Icon(Icons.image, color: Colors.white54, size: 40),
+                        child: Icon(
+                          Icons.image,
+                          color: Colors.white54,
+                          size: 40,
+                        ),
                       ),
                     Positioned(
                       top: 8,
                       left: 8,
                       child: _buildPill(
                         'HEATMAP',
-                        const Color(0xFF7CF994),
-                        const Color(0xFF006E2D),
+                        AppColors.successDarkForeground,
+                        AppColors.successDarkText,
                       ),
                     ),
                   ],
@@ -496,30 +625,42 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'AI-Generated Prob.',
-                      style: AppTypography.caption(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      'result_ai_generated_probability'.tr(context),
+                      style: AppTypography.caption(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                     Text(
                       result.aiGenProbability != null
                           ? '${(result.aiGenProbability! * 100).toStringAsFixed(0)}%'
-                          : (visualFactor.score > 0 ? '${visualFactor.score}%' : '0%'),
+                          : 'result_evidence_unavailable'.tr(context),
                       style: AppTypography.titleMd(
-                        color: (result.aiGenProbability != null && result.aiGenProbability! >= 0.7) || visualFactor.score >= 70
+                        color:
+                            (result.aiGenProbability != null &&
+                                    result.aiGenProbability! >= 0.7) ||
+                                visualFactor.score >= 70
                             ? AppColors.danger
-                            : (result.aiGenProbability != null && result.aiGenProbability! >= 0.4) || visualFactor.score >= 40
-                                ? AppColors.warning
-                                : (isDark ? Colors.white : AppColors.onSurface),
+                            : (result.aiGenProbability != null &&
+                                      result.aiGenProbability! >= 0.4) ||
+                                  visualFactor.score >= 40
+                            ? AppColors.warning
+                            : (isDark ? Colors.white : AppColors.onSurface),
                       ),
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     Text(
-                      'Anomaly Score',
-                      style: AppTypography.caption(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      'result_anomaly_score'.tr(context),
+                      style: AppTypography.caption(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                     Text(
-                      (visualFactor.score / 100.0).toStringAsFixed(2),
+                      hasVisualFactor
+                          ? (visualFactor.score / 100.0).toStringAsFixed(2)
+                          : 'result_evidence_unavailable'.tr(context),
                       style: AppTypography.titleMd(
-                          color: isDark ? Colors.white : AppColors.onSurface),
+                        color: isDark ? Colors.white : AppColors.onSurface,
+                      ),
                     ),
                   ],
                 ),
@@ -530,8 +671,8 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
           Container(
             padding: const EdgeInsets.all(AppSpacing.md),
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF27313C) : const Color(0xFFF0F4F8),
-              borderRadius: BorderRadius.circular(8),
+              color: isDark ? AppColors.inverseSurface : AppColors.softSurface,
+              borderRadius: AppRadius.smBorder,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -539,16 +680,18 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                 Text(
                   'result_xai'.tr(context),
                   style: AppTypography.bodyBase(
-                      color: isDark ? Colors.white : AppColors.onSurface).copyWith(fontWeight: FontWeight.w600),
+                    color: isDark ? Colors.white : AppColors.onSurface,
+                  ).copyWith(fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
-                  (result.xaiExplanation != null && result.xaiExplanation!.trim().isNotEmpty)
+                  (result.xaiExplanation != null &&
+                          result.xaiExplanation!.trim().isNotEmpty)
                       ? result.xaiExplanation!
-                      : (result.riskScore < 40
-                          ? 'ภาพมีความสม่ำเสมอของพิกเซลเป็นปกติ ไม่พบร่องรอยความผิดปกติหรือการตัดต่อที่ส่งผลต่อความเสี่ยง'
-                          : 'ไม่พบคำอธิบายเพิ่มเติมจากระบบ AI สำหรับรายการนี้'),
-                  style: AppTypography.caption(color: isDark ? Colors.white70 : AppColors.textSecondary),
+                      : 'result_xai_unavailable'.tr(context),
+                  style: AppTypography.caption(
+                    color: isDark ? Colors.white70 : AppColors.textSecondary,
+                  ),
                 ),
               ],
             ),
@@ -565,47 +708,50 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
       case RiskLevel.medium:
         return AppColors.warning;
       case RiskLevel.low:
-        return AppColors.primary;
+        return AppColors.success;
+      case RiskLevel.unknown:
+        return Colors.grey;
     }
   }
 
-  Widget _buildScorePill(int score, bool isDark) {
-    final Color bgColor;
-    final Color textColor;
-    
-    if (score >= 80) {
-      bgColor = isDark ? const Color(0xFF4A1818) : const Color(0xFFFFEBEB);
-      textColor = isDark ? const Color(0xFFFFB4B4) : AppColors.danger;
-    } else if (score >= 60) {
-      bgColor = isDark ? const Color(0xFF4A3818) : const Color(0xFFFFF4E5);
-      textColor = isDark ? const Color(0xFFFFD494) : AppColors.warning;
-    } else if (score >= 40) {
-      bgColor = isDark ? const Color(0xFF16324A) : const Color(0xFFE5F6FB);
-      textColor = isDark ? const Color(0xFF94DFFF) : AppColors.primary;
-    } else {
-      bgColor = isDark ? const Color(0xFF184A2A) : const Color(0xFFE5FBF0);
-      textColor = isDark ? const Color(0xFF94FFC8) : AppColors.success;
-    }
-    
+  /// Score pill colored by server grade ([RiskLevel]), never by raw-score bands.
+  /// Factor pills pass [RiskLevelHelper.factorLevelForScore] (presentation-only).
+  Widget _buildScorePill(RiskLevel level, int score, bool isDark) {
+    final bgColor = RiskLevelHelper.toBgColor(level, isDark: isDark);
+    final textColor = RiskLevelHelper.toTextColor(level, isDark: isDark);
+
     return _buildPill('$score%', bgColor, textColor);
   }
 
-  Widget _buildActionButtons(BuildContext context, bool isDark) {
+  Widget _buildActionButtons(
+    BuildContext context,
+    bool isDark,
+    AnalysisResult result,
+  ) {
     return Column(
       children: [
         Row(
           children: [
             Expanded(
               child: ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: () => context.push(
+                  '/heatmap/${result.taskId}',
+                  extra: <String, dynamic>{
+                    if (result.imageUrl != null) 'imageUrl': result.imageUrl,
+                    if (result.heatmapUrl != null)
+                      'heatmapUrl': result.heatmapUrl,
+                  },
+                ),
                 icon: const Icon(Icons.visibility_outlined, size: 20),
-                label: Text('result_details'.tr(context)),
+                label: Text('result_view_heatmap'.tr(context)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: AppRadius.mdBorder,
+                  ),
                   textStyle: AppTypography.buttonLabel(),
                 ),
               ),
@@ -613,14 +759,28 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
             const SizedBox(width: AppSpacing.sm),
             Expanded(
               child: OutlinedButton.icon(
-                onPressed: () {},
+                onPressed: () => context.go(
+                  '/main/report',
+                  extra: <String, dynamic>{
+                    'scanId': result.scanId.isNotEmpty
+                        ? result.scanId
+                        : result.taskId,
+                    if (result.imageUrl != null) 'imageUrl': result.imageUrl,
+                  },
+                ),
                 icon: const Icon(Icons.flag_outlined, size: 20),
                 label: Text('result_report_scam'.tr(context)),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.danger,
-                  side: BorderSide(color: isDark ? AppColors.danger.withValues(alpha: 0.5) : AppColors.danger),
+                  side: BorderSide(
+                    color: isDark
+                        ? AppColors.danger.withValues(alpha: 0.5)
+                        : AppColors.danger,
+                  ),
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: AppRadius.mdBorder,
+                  ),
                   textStyle: AppTypography.buttonLabel(),
                 ),
               ),
@@ -639,10 +799,18 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                 icon: const Icon(Icons.share_outlined, size: 20),
                 label: Text('result_share'.tr(context)),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: isDark ? AppColors.primaryFixedDim : AppColors.primary,
-                  side: BorderSide(color: isDark ? AppColors.primaryFixedDim.withValues(alpha: 0.5) : AppColors.primary),
+                  foregroundColor: isDark
+                      ? AppColors.primaryFixedDim
+                      : AppColors.primary,
+                  side: BorderSide(
+                    color: isDark
+                        ? AppColors.primaryFixedDim.withValues(alpha: 0.5)
+                        : AppColors.primary,
+                  ),
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: AppRadius.mdBorder,
+                  ),
                   textStyle: AppTypography.buttonLabel(),
                 ),
               ),
@@ -650,15 +818,59 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
             const SizedBox(width: AppSpacing.sm),
             Expanded(
               child: ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: () async {
+                  final confirm = await showDialog<bool>(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: Text('delete_confirm'.tr(context)),
+                      content: Text('delete_desc'.tr(context)),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx, false),
+                          child: Text('cancel'.tr(context)),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx, true),
+                          child: Text(
+                            'delete'.tr(context),
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                  if (confirm == true && context.mounted) {
+                    final completer = Completer<bool>();
+                    context.read<HistoryBloc>().add(
+                      HistoryItemDeleted(result.taskId, completer),
+                    );
+                    final deleted = await completer.future;
+                    if (!context.mounted) return;
+                    if (deleted) {
+                      context.go('/main/home');
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('history_delete_failed'.tr(context)),
+                        ),
+                      );
+                    }
+                  }
+                },
                 icon: const Icon(Icons.delete_outline, size: 20),
                 label: Text('delete'.tr(context)),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isDark ? const Color(0xFF3F191D) : const Color(0xFFFFEBEB),
-                  foregroundColor: isDark ? const Color(0xFFFFB4B4) : AppColors.danger,
+                  backgroundColor: isDark
+                      ? AppColors.dangerDarkSurface
+                      : AppColors.dangerLightContainer,
+                  foregroundColor: isDark
+                      ? AppColors.dangerDarkForeground
+                      : AppColors.danger,
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: AppRadius.mdBorder,
+                  ),
                   textStyle: AppTypography.buttonLabel(),
                 ),
               ),
@@ -668,5 +880,4 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
       ],
     );
   }
-
 }

@@ -1,18 +1,17 @@
-import sys
-import asyncio
 import asyncpg
-from pathlib import Path
+import pytest
 
-# Add server directory to path if needed
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from app.core.config import settings
 
-async def main():
-    db_dsn = settings.DATABASE_URL.replace("postgresql+asyncpg://", "postgresql://")
+
+def _asyncpg_dsn() -> str:
+    return settings.DATABASE_URL.replace("postgresql+asyncpg://", "postgresql://")
+
+
+@pytest.mark.asyncio
+async def test_database_accepts_select_one():
+    conn = await asyncpg.connect(_asyncpg_dsn(), timeout=3)
     try:
-        conn = await asyncpg.connect(db_dsn)
-        print("Success:", db_dsn)
+        assert await conn.fetchval("SELECT 1") == 1
+    finally:
         await conn.close()
-    except Exception as e:
-        print("Failed connection:", e)
-asyncio.run(main())

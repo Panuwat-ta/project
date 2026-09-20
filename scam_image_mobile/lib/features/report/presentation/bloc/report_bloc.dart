@@ -79,12 +79,13 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
     if (raw.contains('NetworkException') ||
         raw.contains('Connection error') ||
         raw.contains('SocketException')) {
-      return 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต';
+      return 'report_error_network';
     }
-    if (raw.contains('401') || raw.contains('403') || raw.contains('AuthException')) {
-      return 'เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่';
+    if (raw.contains('401') ||
+        raw.contains('403') ||
+        raw.contains('AuthException')) {
+      return 'report_error_auth';
     }
-    return 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง';
+    return 'report_error_generic';
   }
 }
-
