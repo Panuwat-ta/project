@@ -4,7 +4,7 @@ import '../di/injection_container.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
 
 import '../../features/auth/presentation/screens/login_screen.dart';
-import '../../features/auth/presentation/screens/main_shell.dart';
+import '../widgets/main_navigation_shell.dart';
 import '../../features/auth/presentation/screens/onboarding_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/screens/splash_screen.dart';
@@ -81,7 +81,7 @@ class AppRouter {
 
         // ── Main shell (bottom navigation) ────────────────────────────────────
         ShellRoute(
-          builder: (context, state, child) => MainShell(child: child),
+          builder: (context, state, child) => MainNavigationShell(child: child),
           routes: [
             GoRoute(
               path: '/main/home',

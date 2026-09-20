@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/localization/app_translations.dart';
@@ -19,8 +20,7 @@ import 'package:scam_image_mobile/features/scan/domain/entities/analysis_task.da
 ///
 /// BLoC listener:
 /// - [ScanCompleted] → navigate to `/result/:taskId`
-/// - [ScanError]     → show SnackBar, then pop after 1 second
-/// - [ScanTimeout]   → show SnackBar "หมดเวลา กรุณาลองใหม่", then pop
+/// - [ScanError]/[ScanTimeout] stay on this screen and expose recovery actions.
 class AnalysisLoadingScreen extends StatefulWidget {
   const AnalysisLoadingScreen({
     super.key,
@@ -52,7 +52,7 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
     _scanLineCtrl = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 3),
-    )..repeat();
+    );
     _scanLineAnim = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -62,7 +62,7 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
     _dotsCtrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
-    )..repeat();
+    );
 
     // Start the scan on first frame using the context-provided ScanBloc
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -70,6 +70,21 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
         CropConfirmed(widget.filePath, scanName: widget.scanName),
       );
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final disableAnimations = MediaQuery.of(context).disableAnimations;
+    if (disableAnimations) {
+      _scanLineCtrl.stop();
+      _dotsCtrl.stop();
+      _scanLineCtrl.value = 0.5;
+      _dotsCtrl.value = 0;
+    } else {
+      if (!_scanLineCtrl.isAnimating) _scanLineCtrl.repeat();
+      if (!_dotsCtrl.isAnimating) _dotsCtrl.repeat();
+    }
   }
 
   @override
@@ -146,13 +161,13 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
               children: [
                 // Image
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: AppRadius.lgBorder,
                   child: Container(
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: AppColors.primaryFixedDim.withValues(alpha: 0.2),
                       ),
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: AppRadius.lgBorder,
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(11),
@@ -211,7 +226,7 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
               ),
               decoration: BoxDecoration(
                 color: AppColors.primaryFixedDim,
-                borderRadius: BorderRadius.circular(99),
+                borderRadius: AppRadius.pillBorder,
               ),
               child: Text(
                 '$progress%',
@@ -262,7 +277,7 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.lgBorder,
         border: Border.all(
           color: AppColors.outlineVariant.withValues(alpha: 0.3),
         ),
@@ -312,7 +327,7 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
         color: isDark
             ? AppColors.inverseSurface.withValues(alpha: 0.5)
             : AppColors.bgLight.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.lgBorder,
         border: Border.all(
           color: AppColors.outlineVariant.withValues(alpha: 0.2),
         ),
@@ -391,35 +406,71 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
     }
   }
 
+  Widget _buildRecoveryState({required String message, required bool isDark}) {
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.cloud_off_outlined,
+              size: 56,
+              color: Theme.of(context).colorScheme.error,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              'loading_error_title'.tr(context),
+              style: AppTypography.headlineLgMobile(
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              message,
+              style: AppTypography.bodyBase(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            PrimaryButton(
+              label: 'loading_retry'.tr(context),
+              leadingIcon: const Icon(Icons.refresh),
+              onPressed: () => context.read<ScanBloc>().add(
+                CropConfirmed(widget.filePath, scanName: widget.scanName),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            SecondaryButton(
+              label: 'loading_edit_image'.tr(context),
+              leadingIcon: const Icon(Icons.edit_outlined),
+              onPressed: () =>
+                  context.go('/crop', extra: {'filePath': widget.filePath}),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            TextButton(
+              onPressed: () => context.go('/main/history'),
+              child: Text('loading_go_history'.tr(context)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return BlocListener<ScanBloc, ScanState>(
-      listener: (context, state) async {
+      listener: (context, state) {
         if (state is ScanCompleted) {
           context.go(
             '/result/${state.taskId}',
             extra: {'scanName': widget.scanName},
           );
-        } else if (state is ScanError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: AppColors.error,
-            ),
-          );
-          await Future.delayed(const Duration(seconds: 1));
-          if (context.mounted) context.go('/main/home');
-        } else if (state is ScanTimeout) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('loading_timeout'.tr(context)),
-              backgroundColor: AppColors.error,
-            ),
-          );
-          await Future.delayed(const Duration(seconds: 1));
-          if (context.mounted) context.go('/main/home');
         }
       },
       child: Scaffold(
@@ -440,6 +491,19 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
         ),
         body: BlocBuilder<ScanBloc, ScanState>(
           builder: (context, state) {
+            if (state is ScanError) {
+              return _buildRecoveryState(
+                message: state.message.tr(context),
+                isDark: isDark,
+              );
+            }
+            if (state is ScanTimeout) {
+              return _buildRecoveryState(
+                message: 'loading_timeout'.tr(context),
+                isDark: isDark,
+              );
+            }
+
             final int progress = state is ScanPolling
                 ? state.progress
                 : state is ScanUploading

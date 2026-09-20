@@ -21,39 +21,45 @@ void main() {
   }
 
   group('RiskBadge', () {
-    testWidgets('low — shows "ต่ำ" with success green background', (
-      tester,
-    ) async {
-      await tester.pumpWidget(buildBadge(RiskLevel.low));
-      await tester.pump();
+    testWidgets(
+      'low — shows localized low-risk label with success green background',
+      (tester) async {
+        await tester.pumpWidget(buildBadge(RiskLevel.low));
+        await tester.pump();
 
-      // Text is correct
-      expect(find.text('ต่ำ'), findsOneWidget);
+        // Text is correct
+        expect(find.text('ความเสี่ยงต่ำ'), findsOneWidget);
 
-      // Background color is AppColors.success
-      final container = tester.widget<Container>(find.byType(Container).first);
-      final decoration = container.decoration as BoxDecoration;
-      expect(
-        decoration.color,
-        equals(AppColors.success.withValues(alpha: 0.15)),
-      );
-    });
+        // Background color is AppColors.success
+        final container = tester.widget<Container>(
+          find.byType(Container).first,
+        );
+        final decoration = container.decoration as BoxDecoration;
+        expect(
+          decoration.color,
+          equals(AppColors.success.withValues(alpha: 0.15)),
+        );
+      },
+    );
 
-    testWidgets('medium — shows "ปานกลาง" with warning amber background', (
-      tester,
-    ) async {
-      await tester.pumpWidget(buildBadge(RiskLevel.medium));
-      await tester.pump();
+    testWidgets(
+      'medium — shows localized medium-risk label with warning amber background',
+      (tester) async {
+        await tester.pumpWidget(buildBadge(RiskLevel.medium));
+        await tester.pump();
 
-      expect(find.text('ปานกลาง'), findsOneWidget);
+        expect(find.text('ความเสี่ยงปานกลาง'), findsOneWidget);
 
-      final container = tester.widget<Container>(find.byType(Container).first);
-      final decoration = container.decoration as BoxDecoration;
-      expect(
-        decoration.color,
-        equals(AppColors.warning.withValues(alpha: 0.15)),
-      );
-    });
+        final container = tester.widget<Container>(
+          find.byType(Container).first,
+        );
+        final decoration = container.decoration as BoxDecoration;
+        expect(
+          decoration.color,
+          equals(AppColors.warning.withValues(alpha: 0.15)),
+        );
+      },
+    );
 
     testWidgets('high — shows "สูง" with danger red background', (
       tester,
@@ -93,11 +99,14 @@ void main() {
       });
     });
 
-    testWidgets('unknown — shows "ไม่ทราบ" grey badge', (tester) async {
+    testWidgets('unknown — uses readable neutral foreground in dark mode', (
+      tester,
+    ) async {
       await tester.pumpWidget(buildBadge(RiskLevel.unknown));
       await tester.pump();
 
-      expect(find.text('ไม่ทราบ'), findsOneWidget);
+      final text = tester.widget<Text>(find.text('ยังประเมินไม่ได้'));
+      expect(text.style?.color, AppColors.outlineVariant);
     });
   });
 }

@@ -4,9 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/localization/app_translations.dart';
+import '../image_crop_navigation.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../../../core/utils/image_file_transform.dart';
 
@@ -33,8 +35,6 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
   final ImageCropper _imageCropper = ImageCropper();
   final ImagePicker _imagePicker = ImagePicker();
   final TextEditingController _nameController = TextEditingController();
-  bool _hasNameError = false;
-
   bool _isTransforming = false;
   double _scale = 1.0;
 
@@ -234,13 +234,13 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                         width: double.infinity,
                         decoration: BoxDecoration(
                           color: isDark ? Colors.black26 : Colors.black12,
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: AppRadius.lgBorder,
                         ),
                         child: Stack(
                           alignment: Alignment.center,
                           children: [
                             ClipRRect(
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: AppRadius.lgBorder,
                               child: Transform.scale(
                                 scale: _scale,
                                 child: Image.file(
@@ -297,7 +297,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                           ),
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.surface,
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: AppRadius.lgBorder,
                             border: Border.all(
                               color: AppColors.outlineVariant.withValues(
                                 alpha: 0.3,
@@ -355,8 +355,8 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                                 ? AppColors.primaryFixedDim.withValues(
                                     alpha: 0.1,
                                   )
-                                : const Color(0xFFF0F5FF),
-                            borderRadius: BorderRadius.circular(16),
+                                : AppColors.primarySoftMuted,
+                            borderRadius: AppRadius.lgBorder,
                             border: Border.all(
                               color: isDark
                                   ? Colors.transparent
@@ -399,16 +399,8 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                                 ? Colors.white
                                 : AppColors.textPrimary,
                           ),
-                          onChanged: (value) {
-                            if (_hasNameError) {
-                              setState(() => _hasNameError = false);
-                            }
-                          },
                           decoration: InputDecoration(
                             hintText: 'crop_name_hint'.tr(context),
-                            errorText: _hasNameError
-                                ? 'crop_error_empty_name'.tr(context)
-                                : null,
                             hintStyle: AppTypography.bodyBase(
                               color: AppColors.outlineVariant,
                             ),
@@ -426,7 +418,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                               vertical: AppSpacing.md,
                             ),
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: AppRadius.lgBorder,
                               borderSide: BorderSide(
                                 color: AppColors.outlineVariant.withValues(
                                   alpha: 0.5,
@@ -434,7 +426,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                               ),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: AppRadius.lgBorder,
                               borderSide: BorderSide(
                                 color: AppColors.outlineVariant.withValues(
                                   alpha: 0.5,
@@ -442,7 +434,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                               ),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: AppRadius.lgBorder,
                               borderSide: BorderSide(
                                 color: isDark
                                     ? AppColors.primaryFixedDim
@@ -459,19 +451,12 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                           label: 'crop_start_analysis'.tr(context),
                           leadingIcon: const Icon(Icons.search, size: 20),
                           onPressed: () {
-                            if (_nameController.text.trim().isEmpty) {
-                              setState(() {
-                                _hasNameError = true;
-                              });
-                              FocusScope.of(context).unfocus();
-                              return;
-                            }
                             context.go(
                               '/loading',
-                              extra: {
-                                'filePath': _displayPath,
-                                'scanName': _nameController.text.trim(),
-                              },
+                              extra: buildAnalysisNavigationExtra(
+                                filePath: _displayPath,
+                                scanName: _nameController.text,
+                              ),
                             );
                           },
                         ),
@@ -528,25 +513,33 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
     required bool isDark,
     VoidCallback? onTap,
   }) {
-    return GestureDetector(
-      onTap: onTap ?? () {},
-      behavior: HitTestBehavior.opaque,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            color: isDark ? AppColors.outlineVariant : AppColors.onSurface,
-            size: 24,
+    return Semantics(
+      button: true,
+      label: label,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: AppRadius.smBorder,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minWidth: 64, minHeight: 56),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                color: isDark ? AppColors.outlineVariant : AppColors.onSurface,
+                size: 24,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: AppTypography.caption(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: AppTypography.caption(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

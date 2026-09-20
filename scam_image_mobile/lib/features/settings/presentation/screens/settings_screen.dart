@@ -9,6 +9,8 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/localization/app_translations.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/widgets/app_top_bar.dart';
+import '../../../../core/widgets/adaptive_content.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../bloc/settings_bloc.dart';
 
@@ -294,7 +296,7 @@ class _SettingsViewState extends State<_SettingsView> {
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    String userName = _fetchedName ?? 'ผู้ใช้งาน';
+    String userName = _fetchedName ?? 'default_user'.tr(context);
     String? avatarUrl = _fetchedAvatar;
     bool showUserLoading = _fetchingUser && authState is! AuthAuthenticated;
     if (authState is AuthAuthenticated) {
@@ -307,319 +309,303 @@ class _SettingsViewState extends State<_SettingsView> {
       avatarUrl = authState.user.avatarUrl ?? _fetchedAvatar;
       showUserLoading = false;
     } else if (_fetchingUser) {
-      userName = 'กำลังโหลด...';
+      userName = 'common_loading'.tr(context);
     }
 
     return Scaffold(
-      backgroundColor: isDark
-          ? const Color(0xFF141921)
-          : const Color(0xFFF5F6F8),
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: isDark ? const Color(0xFF1B222C) : Colors.white,
-        title: Row(
-          children: [
-            Icon(
-              Icons.shield_outlined,
-              color: isDark ? AppColors.primaryFixedDim : AppColors.primary,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              'ScamGuard',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-                color: isDark ? AppColors.primaryFixedDim : AppColors.primary,
-              ),
-            ),
-          ],
-        ),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: AppTopBar(
+        automaticallyImplyLeading: false,
         actions: [
           IconButton(
-            icon: Icon(
-              Icons.notifications_none,
-              color: isDark ? Colors.white : AppColors.textPrimary,
-            ),
+            tooltip: 'notifications'.tr(context),
+            icon: const Icon(Icons.notifications_none),
             onPressed: () => context.push('/notifications'),
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md,
-          vertical: AppSpacing.lg,
-        ),
-        children: [
-          // ── User Header Card ────────────────────────────────────────────────
-          GestureDetector(
-            onTap: () => context.go('/main/settings/profile'),
-            child: Container(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF1B222C) : Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Row(
-                children: [
-                  Stack(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: isDark
-                                ? AppColors.primaryFixedDim
-                                : AppColors.primary,
-                            width: 2,
-                          ),
-                        ),
-                        child: CircleAvatar(
-                          radius: 28,
-                          backgroundColor: isDark
-                              ? Colors.grey[800]
-                              : Colors.grey[200],
-                          backgroundImage: avatarUrl != null
-                              ? NetworkImage(avatarUrl)
-                              : null,
-                          child: avatarUrl == null
-                              ? Icon(
-                                  Icons.person,
-                                  color: isDark
-                                      ? Colors.white54
-                                      : Colors.grey[400],
-                                )
-                              : null,
-                        ),
-                      ),
-                      Positioned(
-                        right: 0,
-                        bottom: 0,
-                        child: Container(
-                          padding: const EdgeInsets.all(2),
-                          decoration: const BoxDecoration(
-                            color: Colors.green,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.check,
-                            color: Colors.white,
-                            size: 12,
-                          ),
-                        ),
-                      ),
-                    ],
+      body: AdaptiveContent(
+        maxWidth: 720,
+        child: ListView(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.lg,
+          ),
+          children: [
+            // ── User Header Card ────────────────────────────────────────────────
+            GestureDetector(
+              onTap: () => context.go('/main/settings/profile'),
+              child: Container(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Theme.of(context).colorScheme.outlineVariant,
+                    ),
                   ),
-                  const SizedBox(width: AppSpacing.md),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                ),
+                child: Row(
+                  children: [
+                    Stack(
                       children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                userName,
-                                style: AppTypography.titleMd(
-                                  color: isDark
-                                      ? Colors.white
-                                      : AppColors.textPrimary,
-                                ).copyWith(fontWeight: FontWeight.bold),
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                        Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: isDark
+                                  ? AppColors.primaryFixedDim
+                                  : AppColors.primary,
+                              width: 2,
                             ),
-                            if (showUserLoading) ...[
-                              const SizedBox(width: 8),
-                              SizedBox(
-                                width: 14,
-                                height: 14,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: isDark
-                                      ? Colors.white54
-                                      : AppColors.textSecondary,
-                                ),
-                              ),
-                            ],
-                          ],
+                          ),
+                          child: CircleAvatar(
+                            radius: 28,
+                            backgroundColor: isDark
+                                ? Colors.grey[800]
+                                : Colors.grey[200],
+                            backgroundImage: avatarUrl != null
+                                ? NetworkImage(avatarUrl)
+                                : null,
+                            child: avatarUrl == null
+                                ? Icon(
+                                    Icons.person,
+                                    color: isDark
+                                        ? Colors.white54
+                                        : Colors.grey[400],
+                                  )
+                                : null,
+                          ),
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${'basic_protection'.tr(context)} • v1.0.0',
-                          style: AppTypography.caption(
-                            color: isDark
-                                ? Colors.white54
-                                : AppColors.textSecondary,
+                        Positioned(
+                          right: 0,
+                          bottom: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: const BoxDecoration(
+                              color: Colors.green,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.check,
+                              color: Colors.white,
+                              size: 12,
+                            ),
                           ),
                         ),
                       ],
                     ),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  userName,
+                                  style: AppTypography.titleMd(
+                                    color: isDark
+                                        ? Colors.white
+                                        : AppColors.textPrimary,
+                                  ).copyWith(fontWeight: FontWeight.bold),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              if (showUserLoading) ...[
+                                const SizedBox(width: 8),
+                                SizedBox(
+                                  width: 14,
+                                  height: 14,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: isDark
+                                        ? Colors.white54
+                                        : AppColors.textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'basic_protection'.tr(context),
+                            style: AppTypography.caption(
+                              color: isDark
+                                  ? Colors.white54
+                                  : AppColors.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.edit,
+                      color: isDark
+                          ? AppColors.primaryFixedDim
+                          : AppColors.primary,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+
+            // ── Account Settings ────────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.only(left: 8, bottom: 8),
+              child: Text(
+                'settings_category_account'.tr(context),
+                style: AppTypography.caption(
+                  color: isDark ? Colors.white54 : AppColors.textSecondary,
+                ).copyWith(fontWeight: FontWeight.bold),
+              ),
+            ),
+            Material(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.zero,
+              clipBehavior: Clip.none,
+              child: Column(
+                children: [
+                  _SettingsListItem(
+                    icon: Icons.person_outline,
+                    title: 'account'.tr(context),
+                    onTap: () => context.go('/main/settings/profile'),
                   ),
-                  Icon(
-                    Icons.edit,
-                    color: isDark
-                        ? AppColors.primaryFixedDim
-                        : AppColors.primary,
+                  Divider(
+                    height: 1,
+                    thickness: 1,
+                    color: isDark ? Colors.white10 : Colors.black12,
+                    indent: 16,
+                    endIndent: 16,
+                  ),
+                  _SettingsListItem(
+                    icon: Icons.notifications_none,
+                    title: 'notifications'.tr(context),
+                    onTap: () => context.push('/notifications'),
                   ),
                 ],
               ),
             ),
-          ),
-          const SizedBox(height: AppSpacing.lg),
+            const SizedBox(height: AppSpacing.lg),
 
-          // ── Account Settings ────────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.only(left: 8, bottom: 8),
-            child: Text(
-              'settings_category_account'.tr(context),
-              style: AppTypography.caption(
-                color: isDark ? Colors.white54 : AppColors.textSecondary,
-              ).copyWith(fontWeight: FontWeight.bold),
+            // ── App Preferences ────────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.only(left: 8, bottom: 8),
+              child: Text(
+                'settings_category_preferences'.tr(context),
+                style: AppTypography.caption(
+                  color: isDark ? Colors.white54 : AppColors.textSecondary,
+                ).copyWith(fontWeight: FontWeight.bold),
+              ),
             ),
-          ),
-          Material(
-            color: isDark ? const Color(0xFF1B222C) : Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            clipBehavior: Clip.antiAlias,
-            child: Column(
-              children: [
-                _SettingsListItem(
-                  icon: Icons.person_outline,
-                  title: 'account'.tr(context),
-                  onTap: () => context.go('/main/settings/profile'),
-                ),
-                Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: isDark ? Colors.white10 : Colors.black12,
-                  indent: 16,
-                  endIndent: 16,
-                ),
-                _SettingsListItem(
-                  icon: Icons.notifications_none,
-                  title: 'notifications'.tr(context),
-                  onTap: () => context.push('/notifications'),
-                ),
-              ],
+            Material(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.zero,
+              clipBehavior: Clip.none,
+              child: Column(
+                children: [
+                  BlocBuilder<SettingsCubit, SettingsState>(
+                    builder: (context, state) {
+                      final languageText = state.language == 'th'
+                          ? 'language_th'.tr(context)
+                          : 'language_en'.tr(context);
+                      return _SettingsListItem(
+                        icon: Icons.language_outlined,
+                        title: 'language'.tr(context),
+                        trailingText: languageText,
+                        onTap: () => _showLanguageDialog(context),
+                      );
+                    },
+                  ),
+                  Divider(
+                    height: 1,
+                    thickness: 1,
+                    color: isDark ? Colors.white10 : Colors.black12,
+                    indent: 16,
+                    endIndent: 16,
+                  ),
+                  BlocBuilder<SettingsCubit, SettingsState>(
+                    builder: (context, state) {
+                      final themeText = switch (state.themeMode) {
+                        ThemeMode.system => 'theme_system'.tr(context),
+                        ThemeMode.dark => 'theme_dark'.tr(context),
+                        ThemeMode.light => 'theme_light'.tr(context),
+                      };
+                      return _SettingsListItem(
+                        icon: Icons.palette_outlined,
+                        title: 'theme'.tr(context),
+                        trailingText: themeText,
+                        onTap: () => _showThemeDialog(context),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: AppSpacing.lg),
+            const SizedBox(height: AppSpacing.lg),
 
-          // ── App Preferences ────────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.only(left: 8, bottom: 8),
-            child: Text(
-              'settings_category_preferences'.tr(context),
-              style: AppTypography.caption(
-                color: isDark ? Colors.white54 : AppColors.textSecondary,
-              ).copyWith(fontWeight: FontWeight.bold),
+            // ── Data & Privacy ────────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.only(left: 8, bottom: 8),
+              child: Text(
+                'settings_category_data_privacy'.tr(context),
+                style: AppTypography.caption(
+                  color: isDark ? Colors.white54 : AppColors.textSecondary,
+                ).copyWith(fontWeight: FontWeight.bold),
+              ),
             ),
-          ),
-          Material(
-            color: isDark ? const Color(0xFF1B222C) : Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            clipBehavior: Clip.antiAlias,
-            child: Column(
-              children: [
-                BlocBuilder<SettingsCubit, SettingsState>(
-                  builder: (context, state) {
-                    final languageText = state.language == 'th'
-                        ? 'ไทย'
-                        : 'English';
-                    return _SettingsListItem(
-                      icon: Icons.language_outlined,
-                      title: 'language'.tr(context),
-                      trailingText: languageText,
-                      onTap: () => _showLanguageDialog(context),
-                    );
-                  },
-                ),
-                Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: isDark ? Colors.white10 : Colors.black12,
-                  indent: 16,
-                  endIndent: 16,
-                ),
-                BlocBuilder<SettingsCubit, SettingsState>(
-                  builder: (context, state) {
-                    final themeText = switch (state.themeMode) {
-                      ThemeMode.system => 'theme_system'.tr(context),
-                      ThemeMode.dark => 'theme_dark'.tr(context),
-                      ThemeMode.light => 'theme_light'.tr(context),
-                    };
-                    return _SettingsListItem(
-                      icon: Icons.palette_outlined,
-                      title: 'theme'.tr(context),
-                      trailingText: themeText,
-                      onTap: () => _showThemeDialog(context),
-                    );
-                  },
-                ),
-              ],
+            Material(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.zero,
+              clipBehavior: Clip.none,
+              child: Column(
+                children: [
+                  _SettingsListItem(
+                    icon: Icons.privacy_tip_outlined,
+                    title: 'privacy'.tr(context),
+                    onTap: () => context.go('/main/settings/privacy'),
+                  ),
+                  Divider(
+                    height: 1,
+                    thickness: 1,
+                    color: isDark ? Colors.white10 : Colors.black12,
+                    indent: 16,
+                    endIndent: 16,
+                  ),
+                  BlocBuilder<SettingsCubit, SettingsState>(
+                    builder: (context, state) {
+                      return _SettingsListItem(
+                        icon: Icons.delete_outline,
+                        title: 'clear_cache'.tr(context),
+                        trailingText: _formatBytes(state.cacheSizeBytes),
+                        showSpinner: state.isClearingCache,
+                        onTap: () => _confirmClearCache(context),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: AppSpacing.lg),
+            const SizedBox(height: AppSpacing.lg),
 
-          // ── Data & Privacy ────────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.only(left: 8, bottom: 8),
-            child: Text(
-              'settings_category_data_privacy'.tr(context),
-              style: AppTypography.caption(
-                color: isDark ? Colors.white54 : AppColors.textSecondary,
-              ).copyWith(fontWeight: FontWeight.bold),
+            // ── Logout Button ────────────────────────────────────────────────
+            OutlinedButton.icon(
+              onPressed: () => _confirmLogout(context),
+              icon: const Icon(Icons.logout, color: AppColors.danger),
+              label: Text(
+                'logout'.tr(context),
+                style: const TextStyle(color: AppColors.danger, fontSize: 16),
+              ),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                side: const BorderSide(color: AppColors.danger),
+                backgroundColor: Colors.transparent,
+              ),
             ),
-          ),
-          Material(
-            color: isDark ? const Color(0xFF1B222C) : Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            clipBehavior: Clip.antiAlias,
-            child: Column(
-              children: [
-                _SettingsListItem(
-                  icon: Icons.privacy_tip_outlined,
-                  title: 'privacy'.tr(context),
-                  onTap: () => context.go('/main/settings/privacy'),
-                ),
-                Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: isDark ? Colors.white10 : Colors.black12,
-                  indent: 16,
-                  endIndent: 16,
-                ),
-                BlocBuilder<SettingsCubit, SettingsState>(
-                  builder: (context, state) {
-                    return _SettingsListItem(
-                      icon: Icons.delete_outline,
-                      title: 'clear_cache'.tr(context),
-                      trailingText: _formatBytes(state.cacheSizeBytes),
-                      showSpinner: state.isClearingCache,
-                      onTap: () => _confirmClearCache(context),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-
-          // ── Logout Button ────────────────────────────────────────────────
-          OutlinedButton.icon(
-            onPressed: () => _confirmLogout(context),
-            icon: const Icon(Icons.logout, color: AppColors.danger),
-            label: Text(
-              'logout'.tr(context),
-              style: const TextStyle(color: AppColors.danger, fontSize: 16),
-            ),
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              side: const BorderSide(color: AppColors.danger),
-              backgroundColor: isDark ? Colors.transparent : Colors.white,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.xl),
-        ],
+            const SizedBox(height: AppSpacing.xl),
+          ],
+        ),
       ),
     );
   }
@@ -645,17 +631,10 @@ class _SettingsListItem extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      leading: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF2A3441) : const Color(0xFFF0F4F8),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Icon(
-          icon,
-          color: isDark ? AppColors.primaryFixedDim : AppColors.primary,
-          size: 20,
-        ),
+      leading: Icon(
+        icon,
+        color: isDark ? AppColors.primaryFixedDim : AppColors.primary,
+        size: 24,
       ),
       title: Text(
         title,

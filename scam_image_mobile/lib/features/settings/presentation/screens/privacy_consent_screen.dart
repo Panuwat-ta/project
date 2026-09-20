@@ -75,11 +75,11 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       backgroundColor: isDark
-          ? const Color(0xFF141921)
-          : const Color(0xFFF5F6F8),
+          ? AppColors.settingsBgDark
+          : AppColors.settingsBgLight,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: isDark ? const Color(0xFF1B222C) : Colors.white,
+        backgroundColor: isDark ? AppColors.settingsSurfaceDark : Colors.white,
         leading: const BackButton(),
         title: Text(
           'privacy_title'.tr(context),
@@ -119,8 +119,8 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: isDark
-                            ? const Color(0xFF1B222C)
-                            : const Color(0xFFDFF1FF),
+                            ? AppColors.settingsSurfaceDark
+                            : AppColors.primarySoft,
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -156,7 +156,7 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
               // ── Consent List Container ─────────────────────────────────
               Container(
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF1B222C) : Colors.white,
+                  color: isDark ? AppColors.settingsSurfaceDark : Colors.white,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Column(
@@ -299,8 +299,8 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: isDark
-                      ? const Color(0xFF2A3441)
-                      : const Color(0xFFEAF5FF),
+                      ? AppColors.darkIconSurface
+                      : AppColors.primarySoftAlt,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Row(

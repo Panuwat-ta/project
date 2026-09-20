@@ -55,16 +55,15 @@ class NotificationsCubit extends Cubit<NotificationsState> {
               ? NotificationType.scamAlert
               : NotificationType.scanCompleted,
           title: isFailed
-              ? 'การสแกนล้มเหลว'
+              ? 'notif_scan_failed_title'
               : isHigh
-              ? 'ตรวจพบความเสี่ยงสูง'
-              : 'สแกนเสร็จสิ้น',
-          body: isFailed
-              ? 'รูป $shortId ประมวลผลไม่สำเร็จ'
-              : '${item.title ?? 'รูปภาพ'} — คะแนนความเสี่ยง ${item.riskScore}%',
+              ? 'notif_high_risk_title'
+              : 'notif_scan_completed_title',
+          body: isFailed ? shortId : (item.title ?? ''),
           createdAt: item.createdAt.isAfter(now) ? now : item.createdAt,
           isRead: _readIds.contains(notificationId),
           scanId: item.scanId,
+          riskScore: item.riskScore,
         ),
       );
     }

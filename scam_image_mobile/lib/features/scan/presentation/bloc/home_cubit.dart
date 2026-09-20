@@ -87,7 +87,7 @@ class HomeCubit extends Cubit<HomeState> {
       if (e.code == 'photo_access_denied' || e.code == 'camera_access_denied') {
         emit(const HomePermissionDenied());
       } else {
-        emit(HomeError(e.message ?? 'เกิดข้อผิดพลาด'));
+        emit(HomeError(e.message ?? 'home_error_generic'));
       }
     } catch (e) {
       emit(HomeError(e.toString()));

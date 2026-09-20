@@ -10,6 +10,7 @@ class AppNotification extends Equatable {
   final DateTime createdAt;
   final bool isRead;
   final String? scanId;
+  final int? riskScore;
 
   const AppNotification({
     required this.id,
@@ -19,13 +20,29 @@ class AppNotification extends Equatable {
     required this.createdAt,
     this.isRead = false,
     this.scanId,
+    this.riskScore,
   });
 
   AppNotification copyWith({bool? isRead}) => AppNotification(
-    id: id, type: type, title: title, body: body,
-    createdAt: createdAt, isRead: isRead ?? this.isRead, scanId: scanId,
+    id: id,
+    type: type,
+    title: title,
+    body: body,
+    createdAt: createdAt,
+    isRead: isRead ?? this.isRead,
+    scanId: scanId,
+    riskScore: riskScore,
   );
 
   @override
-  List<Object?> get props => [id, type, title, body, createdAt, isRead, scanId];
+  List<Object?> get props => [
+    id,
+    type,
+    title,
+    body,
+    createdAt,
+    isRead,
+    scanId,
+    riskScore,
+  ];
 }

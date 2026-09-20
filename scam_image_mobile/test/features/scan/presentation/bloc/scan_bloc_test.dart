@@ -74,7 +74,7 @@ void main() {
         isA<ScanError>().having(
           (s) => s.message,
           'message',
-          'ไม่สามารถเชื่อมต่ออินเทอร์เน็ตได้',
+          'scan_error_network',
         ),
       ],
     );

@@ -145,8 +145,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     }
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    String userName = _fetchedName ?? 'ผู้ใช้งาน';
-    String userEmail = _fetchedEmail ?? 'ไม่มีอีเมล';
+    String userName = _fetchedName ?? 'default_user'.tr(context);
+    String userEmail = _fetchedEmail ?? 'profile_no_email'.tr(context);
     String? avatarUrl = _fetchedAvatar;
     if (authState is AuthAuthenticated) {
       if (authState.user.displayName.isNotEmpty) {
@@ -157,17 +157,17 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       userEmail = authState.user.email;
       avatarUrl = authState.user.avatarUrl ?? _fetchedAvatar;
     } else if (_fetchingUser) {
-      userName = 'กำลังโหลด...';
-      userEmail = 'กำลังโหลด...';
+      userName = 'common_loading'.tr(context);
+      userEmail = 'common_loading'.tr(context);
     }
 
     return Scaffold(
       backgroundColor: isDark
-          ? const Color(0xFF141921)
-          : const Color(0xFFF5F6F8),
+          ? AppColors.settingsBgDark
+          : AppColors.settingsBgLight,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: isDark ? const Color(0xFF1B222C) : Colors.white,
+        backgroundColor: isDark ? AppColors.settingsSurfaceDark : Colors.white,
         leading: const BackButton(),
         centerTitle: true,
         title: Text(
@@ -189,7 +189,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 horizontal: AppSpacing.lg,
               ),
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF1B222C) : Colors.white,
+                color: isDark ? AppColors.settingsSurfaceDark : Colors.white,
               ),
               child: Column(
                 children: [
@@ -236,7 +236,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                             shape: BoxShape.circle,
                             border: Border.all(
                               color: isDark
-                                  ? const Color(0xFF1B222C)
+                                  ? AppColors.settingsSurfaceDark
                                   : Colors.white,
                               width: 2,
                             ),
@@ -280,7 +280,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
               child: Container(
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF1B222C) : Colors.white,
+                  color: isDark ? AppColors.settingsSurfaceDark : Colors.white,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Column(
@@ -366,7 +366,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'ScamGuard v1.0.0',
+                    'ScamGuard',
                     style: TextStyle(
                       color: isDark ? Colors.white : Colors.black,
                     ),

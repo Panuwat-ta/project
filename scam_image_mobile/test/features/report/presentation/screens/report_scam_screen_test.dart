@@ -1,20 +1,28 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:scam_image_mobile/core/di/injection_container.dart';
+import 'package:scam_image_mobile/features/history/domain/entities/scan_history_item.dart';
+import 'package:scam_image_mobile/features/history/domain/repositories/history_repository.dart';
+import 'package:scam_image_mobile/features/history/presentation/bloc/history_bloc.dart';
+import 'package:scam_image_mobile/features/result/domain/entities/analysis_result.dart';
 import 'package:scam_image_mobile/features/report/domain/entities/scam_report.dart';
 import 'package:scam_image_mobile/features/report/domain/repositories/report_repository.dart';
 import 'package:scam_image_mobile/features/report/presentation/screens/report_scam_screen.dart';
 
 class MockReportRepository extends Mock implements ReportRepository {}
 
+class MockHistoryRepository extends Mock implements HistoryRepository {}
+
 class FakeScamReport extends Fake implements ScamReport {}
 
 void main() {
   late MockReportRepository repo;
+  late MockHistoryRepository historyRepo;
 
   setUpAll(() {
     GoogleFonts.config.allowRuntimeFetching = false;
@@ -23,10 +31,32 @@ void main() {
 
   setUp(() {
     repo = MockReportRepository();
+    historyRepo = MockHistoryRepository();
     ServiceLocator.reportRepository = repo;
+    when(
+      () => historyRepo.getScanHistory(
+        page: any(named: 'page'),
+        limit: any(named: 'limit'),
+        riskLevel: any(named: 'riskLevel'),
+        fromDate: any(named: 'fromDate'),
+        toDate: any(named: 'toDate'),
+        keyword: any(named: 'keyword'),
+      ),
+    ).thenAnswer(
+      (_) async => [
+        ScanHistoryItem(
+          scanId: 'scan-select-1',
+          riskScore: 72,
+          riskLevel: RiskLevel.high,
+          status: 'completed',
+          createdAt: DateTime(2026, 9, 20),
+          title: 'หลักฐานจากประวัติ',
+        ),
+      ],
+    );
   });
 
-  Widget buildApp({String? scanId, String? imageUrl}) {
+  Widget buildApp({String? scanId, String? imageUrl, double textScale = 1.0}) {
     final router = GoRouter(
       initialLocation: '/main/report',
       routes: [
@@ -49,7 +79,19 @@ void main() {
         ),
       ],
     );
-    return MaterialApp.router(routerConfig: router, theme: ThemeData.dark());
+    return BlocProvider<HistoryBloc>(
+      create: (_) => HistoryBloc(repository: historyRepo),
+      child: MaterialApp.router(
+        routerConfig: router,
+        theme: ThemeData.dark(),
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(textScale)),
+          child: child!,
+        ),
+      ),
+    );
   }
 
   void usePhoneViewport(WidgetTester tester) {
@@ -89,7 +131,7 @@ void main() {
     expect(imageFinder, findsOneWidget);
   });
 
-  testWidgets('change image returns to history', (tester) async {
+  testWidgets('change image returns to scan selector', (tester) async {
     usePhoneViewport(tester);
     await tester.pumpWidget(
       buildApp(scanId: '00000000-0000-0000-0000-000000000001'),
@@ -99,26 +141,69 @@ void main() {
     await tester.tap(find.text('เปลี่ยนรูป'));
     await tester.pumpAndSettle();
 
-    expect(find.text('History'), findsOneWidget);
+    expect(find.text('เลือกผลตรวจที่ต้องการรายงาน'), findsOneWidget);
+    expect(find.text('หลักฐานจากประวัติ'), findsOneWidget);
   });
 
   testWidgets(
-    'main report route without scan id blocks submission before form validation',
+    'main report route lets user select a completed scan before form',
     (tester) async {
       usePhoneViewport(tester);
       await tester.pumpWidget(buildApp());
       await tester.pumpAndSettle();
 
-      final label = find.text('ส่งรายงาน');
-      final scrollable = find.byType(Scrollable).first;
-      await tester.scrollUntilVisible(label, 350, scrollable: scrollable);
-      await tester.ensureVisible(label);
-      await tester.pumpAndSettle();
-      await tester.tap(label);
-      await tester.pump();
+      expect(find.text('เลือกผลตรวจที่ต้องการรายงาน'), findsOneWidget);
+      expect(find.text('หลักฐานจากประวัติ'), findsOneWidget);
+      expect(find.text('ส่งรายงาน'), findsNothing);
 
-      expect(find.text('กรุณาสแกนรูปภาพก่อนส่งรายงาน'), findsOneWidget);
+      await tester.tap(find.text('หลักฐานจากประวัติ'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('แจ้งรายงานการหลอกลวง'), findsOneWidget);
+      expect(find.text('รูปภาพที่ตรวจสอบ'), findsOneWidget);
       verifyNever(() => repo.submitReport(any()));
     },
   );
+
+  testWidgets('viewport matrix renders without overflow at text scale 1.3', (
+    tester,
+  ) async {
+    const sizes = <Size>[
+      Size(360, 800),
+      Size(390, 844),
+      Size(412, 915),
+      Size(600, 960),
+      Size(840, 1180),
+    ];
+
+    for (final size in sizes) {
+      tester.view.physicalSize = size;
+      tester.view.devicePixelRatio = 1;
+      await tester.pumpWidget(
+        buildApp(
+          scanId: '00000000-0000-0000-0000-000000000001',
+          textScale: 1.3,
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(
+        tester.takeException(),
+        isNull,
+        reason: 'layout exception at ${size.width}x${size.height}',
+      );
+    }
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+  });
+
+  testWidgets('390 phone remains usable at text scale 1.5', (tester) async {
+    usePhoneViewport(tester);
+    await tester.pumpWidget(
+      buildApp(scanId: '00000000-0000-0000-0000-000000000001', textScale: 1.5),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('แจ้งรายงานการหลอกลวง'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }

@@ -167,7 +167,7 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
       } else if (task.isFailed) {
         _pollingTimer?.cancel();
         _activeTaskId = null;
-        emit(ScanError(task.errorMessage ?? 'การวิเคราะห์ล้มเหลว'));
+        emit(ScanError(task.errorMessage ?? 'scan_error_analysis_failed'));
       } else {
         emit(
           ScanPolling(
@@ -198,9 +198,9 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
   String _friendlyError(Object e) {
     final msg = e.toString().toLowerCase();
     if (msg.contains('network') || msg.contains('socket')) {
-      return 'ไม่สามารถเชื่อมต่ออินเทอร์เน็ตได้';
+      return 'scan_error_network';
     }
-    return 'เกิดข้อผิดพลาดในการอัปโหลด กรุณาลองใหม่';
+    return 'scan_error_upload';
   }
 
   @override

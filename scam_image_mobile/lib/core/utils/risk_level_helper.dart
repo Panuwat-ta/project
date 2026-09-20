@@ -36,13 +36,13 @@ class RiskLevelHelper {
   static Color toColor(RiskLevel level) {
     switch (level) {
       case RiskLevel.low:
-        return AppColors.tertiary;
+        return AppColors.success;
       case RiskLevel.medium:
-        return const Color(0xFFEA580C); // orange-600
+        return AppColors.warning;
       case RiskLevel.high:
         return AppColors.danger;
       case RiskLevel.unknown:
-        return Colors.grey;
+        return AppColors.outline;
     }
   }
 
@@ -50,13 +50,13 @@ class RiskLevelHelper {
   static Color toBgColor(RiskLevel level, {required bool isDark}) {
     switch (level) {
       case RiskLevel.low:
-        return isDark ? const Color(0xFF332B14) : const Color(0xFFFEF9C3);
+        return AppColors.success.withValues(alpha: isDark ? 0.22 : 0.12);
       case RiskLevel.medium:
-        return isDark ? const Color(0xFF33200E) : const Color(0xFFFFF7ED);
+        return AppColors.warning.withValues(alpha: isDark ? 0.22 : 0.12);
       case RiskLevel.high:
-        return isDark ? const Color(0xFF4A1818) : const Color(0xFFFFEBEB);
+        return AppColors.danger.withValues(alpha: isDark ? 0.22 : 0.10);
       case RiskLevel.unknown:
-        return isDark ? const Color(0xFF2A2A2A) : const Color(0xFFF0F0F0);
+        return AppColors.outline.withValues(alpha: isDark ? 0.22 : 0.10);
     }
   }
 
@@ -64,13 +64,13 @@ class RiskLevelHelper {
   static Color toTextColor(RiskLevel level, {required bool isDark}) {
     switch (level) {
       case RiskLevel.low:
-        return isDark ? const Color(0xFFFDE68A) : AppColors.tertiary;
+        return isDark ? AppColors.successDark : AppColors.success;
       case RiskLevel.medium:
-        return isDark ? const Color(0xFFFDBA74) : const Color(0xFFEA580C);
+        return isDark ? AppColors.warningDark : AppColors.warning;
       case RiskLevel.high:
-        return isDark ? const Color(0xFFFFB4B4) : AppColors.danger;
+        return isDark ? AppColors.dangerDark : AppColors.danger;
       case RiskLevel.unknown:
-        return isDark ? const Color(0xFFBDBDBD) : const Color(0xFF757575);
+        return isDark ? AppColors.outlineVariant : AppColors.outline;
     }
   }
 

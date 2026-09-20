@@ -62,7 +62,7 @@ class AnalysisResultModel extends AnalysisResult {
           RiskFactorModel(
             type: 'textual',
             score: json['text_score'] as int,
-            title: 'ข้อความน่าสงสัย',
+            title: 'textual',
             details: List<String>.from(json['scam_keywords_found'] ?? []),
           ),
         );
@@ -72,7 +72,7 @@ class AnalysisResultModel extends AnalysisResult {
           RiskFactorModel(
             type: 'visual',
             score: json['visual_score'] as int,
-            title: 'ภาพน่าสงสัย',
+            title: 'visual',
             details: json['ai_gen_probability'] != null
                 ? ['AI Probability: ${json['ai_gen_probability']}']
                 : [],
@@ -84,7 +84,7 @@ class AnalysisResultModel extends AnalysisResult {
           RiskFactorModel(
             type: 'source',
             score: json['source_score'] as int,
-            title: 'แหล่งที่มา',
+            title: 'source',
             details: [],
           ),
         );
@@ -116,10 +116,7 @@ class AnalysisResultModel extends AnalysisResult {
       status: json['status'] as String? ?? 'completed',
       riskScore: riskScore,
       riskLevel: riskLevel,
-      summary:
-          json['summary'] as String? ??
-          xaiExplanation ??
-          'ตรวจพบความเสี่ยงระดับ ${riskLevelStr ?? 'ปกติ'}',
+      summary: json['summary'] as String? ?? xaiExplanation ?? '',
       imageUrl: parseUrl(
         json['imageUrl'] as String? ?? json['raw_image_url'] as String?,
       ),

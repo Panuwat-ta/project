@@ -76,6 +76,8 @@ void main() {
       expect(cubit.state.items, hasLength(1));
       expect(cubit.state.items.single.type, NotificationType.scanFailed);
       expect(cubit.state.items.single.body, contains('abc'));
+      expect(cubit.state.items.single.title, 'notif_scan_failed_title');
+      expect(cubit.state.items.single.riskScore, 25);
     });
 
     test('read state survives later history synchronization', () {
@@ -185,7 +187,7 @@ void main() {
     });
 
     test('props includes all fields', () {
-      expect(tNotification1.props.length, 7);
+      expect(tNotification1.props.length, 8);
     });
   });
 }

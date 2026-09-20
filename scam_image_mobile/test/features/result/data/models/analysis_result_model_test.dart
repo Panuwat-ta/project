@@ -215,7 +215,7 @@ void main() {
       );
     });
 
-    test('generates summary when missing', () {
+    test('leaves summary empty when server and XAI summary are missing', () {
       final json = {
         'id': 'scan-1',
         'risk_grade': 'high',
@@ -223,7 +223,7 @@ void main() {
       };
 
       final model = AnalysisResultModel.fromJson(json);
-      expect(model.summary, contains('high'));
+      expect(model.summary, isEmpty);
     });
 
     test('empty factors when no score fields', () {

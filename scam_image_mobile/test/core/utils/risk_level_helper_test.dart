@@ -77,15 +77,12 @@ void main() {
   });
 
   group('RiskLevelHelper.toColor', () {
-    test('low returns tertiary yellow', () {
-      expect(RiskLevelHelper.toColor(RiskLevel.low), AppColors.tertiary);
+    test('low returns success green', () {
+      expect(RiskLevelHelper.toColor(RiskLevel.low), AppColors.success);
     });
 
-    test('medium returns orange', () {
-      expect(
-        RiskLevelHelper.toColor(RiskLevel.medium),
-        const Color(0xFFEA580C),
-      );
+    test('medium returns warning amber', () {
+      expect(RiskLevelHelper.toColor(RiskLevel.medium), AppColors.warning);
     });
 
     test('high returns danger red', () {
@@ -171,7 +168,7 @@ void main() {
         RiskLevelHelper.toLabelKey(RiskLevel.unknown),
         'result_unknown_risk',
       );
-      expect(RiskLevelHelper.toColor(RiskLevel.unknown), Colors.grey);
+      expect(RiskLevelHelper.toColor(RiskLevel.unknown), AppColors.outline);
     });
   });
 }
