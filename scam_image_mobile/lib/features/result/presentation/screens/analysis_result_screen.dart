@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -296,7 +298,12 @@ class _ResultBody extends StatelessWidget {
               child: OutlinedButton.icon(
                 onPressed: () => context.go(
                   '/main/report',
-                  extra: {'scanId': result.taskId},
+                  extra: <String, dynamic>{
+                    'scanId': result.scanId.isNotEmpty
+                        ? result.scanId
+                        : result.taskId,
+                    if (result.imageUrl != null) 'imageUrl': result.imageUrl,
+                  },
                 ),
                 icon: const Icon(Icons.flag_outlined, size: 20),
                 label: Text('result_report_scam'.tr(context)),
@@ -370,10 +377,21 @@ class _ResultBody extends StatelessWidget {
                     ),
                   );
                   if (confirm == true && context.mounted) {
+                    final completer = Completer<bool>();
                     context.read<HistoryBloc>().add(
-                      HistoryItemDeleted(result.taskId),
+                      HistoryItemDeleted(result.taskId, completer),
                     );
-                    context.go('/main/home');
+                    final deleted = await completer.future;
+                    if (!context.mounted) return;
+                    if (deleted) {
+                      context.go('/main/home');
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('history_delete_failed'.tr(context)),
+                        ),
+                      );
+                    }
                   }
                 },
                 icon: const Icon(Icons.delete_outline, size: 20),

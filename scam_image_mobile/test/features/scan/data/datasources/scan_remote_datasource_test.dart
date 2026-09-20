@@ -41,8 +41,6 @@ void main() {
 
     final id = await dataSource.submitScan(
       filePath: image.path,
-      consentForResearch: true,
-      clientRequestId: 'request-1',
       scanName: 'sample',
     );
 
@@ -64,11 +62,7 @@ void main() {
     );
 
     expect(
-      () => dataSource.submitScan(
-        filePath: image.path,
-        consentForResearch: false,
-        clientRequestId: 'request-2',
-      ),
+      () => dataSource.submitScan(filePath: image.path),
       throwsA(isA<ServerException>()),
     );
   });

@@ -9,11 +9,13 @@ class DatabaseHelper {
   static const tableHistory = 'scan_history';
   static const tableDetails = 'scan_details';
 
-  // Make this a singleton class
+  // Production uses a singleton. Tests can inject an in-memory database so
+  // migrations/cache behavior are exercised without platform channels.
   DatabaseHelper._privateConstructor();
+  DatabaseHelper.forTesting(Database database) : _database = database;
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
 
-  static Database? _database;
+  Database? _database;
   Future<Database> get database async {
     if (_database != null) return _database!;
     _database = await _initDatabase();
@@ -92,4 +94,15 @@ class DatabaseHelper {
       )
       ''');
   }
+
+  /// Test seam that executes the exact production create migration.
+  Future<void> createSchemaForTesting(Database db, int version) =>
+      _onCreate(db, version);
+
+  /// Test seam that executes the exact production upgrade migration.
+  Future<void> upgradeSchemaForTesting(
+    Database db,
+    int oldVersion,
+    int newVersion,
+  ) => _onUpgrade(db, oldVersion, newVersion);
 }

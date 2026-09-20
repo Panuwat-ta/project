@@ -309,4 +309,55 @@ void main() {
       expect(copied.themeMode, ThemeMode.dark);
     });
   });
+
+  group('settings persistence failures', () {
+    blocTest<SettingsCubit, SettingsState>(
+      'loadSettings keeps defaults and emits error when storage read fails',
+      build: () {
+        when(
+          () => mockRepo.getThemeMode(),
+        ).thenThrow(Exception('storage read failed'));
+        return SettingsCubit(repository: mockRepo);
+      },
+      act: (cubit) => cubit.loadSettings(),
+      expect: () => [
+        isA<SettingsState>()
+            .having((s) => s.themeMode, 'themeMode', ThemeMode.light)
+            .having((s) => s.language, 'language', 'th')
+            .having((s) => s.error, 'error', contains('storage read failed')),
+      ],
+    );
+
+    blocTest<SettingsCubit, SettingsState>(
+      'setTheme does not change UI state when persistence fails',
+      build: () {
+        when(
+          () => mockRepo.saveThemeMode(ThemeMode.dark),
+        ).thenThrow(Exception('theme write failed'));
+        return SettingsCubit(repository: mockRepo);
+      },
+      act: (cubit) => cubit.setTheme(ThemeMode.dark),
+      expect: () => [
+        isA<SettingsState>()
+            .having((s) => s.themeMode, 'themeMode', ThemeMode.light)
+            .having((s) => s.error, 'error', contains('theme write failed')),
+      ],
+    );
+
+    blocTest<SettingsCubit, SettingsState>(
+      'setLanguage does not change UI state when persistence fails',
+      build: () {
+        when(
+          () => mockRepo.saveLanguage('en'),
+        ).thenThrow(Exception('language write failed'));
+        return SettingsCubit(repository: mockRepo);
+      },
+      act: (cubit) => cubit.setLanguage('en'),
+      expect: () => [
+        isA<SettingsState>()
+            .having((s) => s.language, 'language', 'th')
+            .having((s) => s.error, 'error', contains('language write failed')),
+      ],
+    );
+  });
 }

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -8,13 +9,15 @@ import '../../../../core/localization/app_translations.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../domain/entities/scam_report.dart';
 import '../bloc/report_bloc.dart';
+import '../report_form_mapper.dart';
 import '../../../../core/di/injection_container.dart';
 
 class ReportScamScreen extends StatefulWidget {
-  const ReportScamScreen({super.key, this.scanId});
+  const ReportScamScreen({super.key, this.scanId, this.imageUrl});
 
   /// Optional — set when navigating from an analysis result.
   final String? scanId;
+  final String? imageUrl;
 
   @override
   State<ReportScamScreen> createState() => _ReportScamScreenState();
@@ -47,13 +50,13 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
     (key: 'other', label: 'cat_other'.tr(context)),
   ];
 
-  List<String> get _platforms => [
-    'Facebook',
-    'Instagram',
-    'LINE',
-    'TikTok',
-    'X (Twitter)',
-    'cat_other'.tr(context),
+  List<({String key, String label})> get _platforms => [
+    (key: 'Facebook', label: 'Facebook'),
+    (key: 'Instagram', label: 'Instagram'),
+    (key: 'LINE', label: 'LINE'),
+    (key: 'TikTok', label: 'TikTok'),
+    (key: 'X (Twitter)', label: 'X (Twitter)'),
+    (key: 'other', label: 'cat_other'.tr(context)),
   ];
 
   @override
@@ -96,18 +99,16 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
       return;
     }
 
-    final customCat = _otherCategoryController.text.trim();
-    // category ส่ง key มาตรฐานเสมอ; ข้อความ custom ของ Other ย้ายไปนำหน้า description
     final finalCategory = _selectedCategory!;
-    final details = _detailsController.text.trim();
-    final finalDescription =
-        (_selectedCategory == 'other' && customCat.isNotEmpty)
-        ? '[$customCat] $details'
-        : details;
-
-    final finalPlatform = _selectedPlatform == 'cat_other'.tr(context)
-        ? _platformController.text.trim()
-        : _selectedPlatform;
+    final finalDescription = buildReportDescription(
+      category: finalCategory,
+      customCategory: _otherCategoryController.text,
+      details: _detailsController.text,
+    );
+    final finalPlatform = resolveReportPlatform(
+      selectedPlatform: _selectedPlatform,
+      customPlatform: _platformController.text,
+    );
 
     _bloc.add(
       ReportSubmitted(
@@ -236,16 +237,22 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              'report_image_label'.tr(context),
-                              style: AppTypography.titleMd(
-                                color: Theme.of(context).colorScheme.onSurface,
+                            Expanded(
+                              child: Text(
+                                'report_image_label'.tr(context),
+                                style: AppTypography.titleMd(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
+                            const SizedBox(width: AppSpacing.sm),
                             TextButton.icon(
-                              onPressed: () => context.go('/main/home'),
+                              onPressed: () => context.go('/main/history'),
                               icon: const Icon(Icons.refresh, size: 18),
                               label: Text('report_change_image'.tr(context)),
                               style: TextButton.styleFrom(
@@ -265,32 +272,55 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                             color: isDark
                                 ? AppColors.inverseSurface
                                 : AppColors.bgLight,
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Icon(
-                                  widget.scanId == null
-                                      ? Icons.add_photo_alternate_outlined
-                                      : Icons.image_search_outlined,
-                                  size: 64,
-                                  color: AppColors.outlineVariant.withValues(
-                                    alpha: 0.5,
+                            child:
+                                widget.imageUrl != null &&
+                                    widget.imageUrl!.isNotEmpty
+                                ? CachedNetworkImage(
+                                    imageUrl: widget.imageUrl!,
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    height: 180,
+                                    placeholder: (context, url) => const Center(
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    ),
+                                    errorWidget: (context, url, error) =>
+                                        const Center(
+                                          child: Icon(
+                                            Icons.broken_image_outlined,
+                                            size: 48,
+                                            color: AppColors.outlineVariant,
+                                          ),
+                                        ),
+                                  )
+                                : Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      Icon(
+                                        widget.scanId == null
+                                            ? Icons.add_photo_alternate_outlined
+                                            : Icons.image_search_outlined,
+                                        size: 64,
+                                        color: AppColors.outlineVariant
+                                            .withValues(alpha: 0.5),
+                                      ),
+                                      Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .surface
+                                              .withValues(alpha: 0.8),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: const Icon(
+                                          Icons.search,
+                                          color: AppColors.primary,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context).colorScheme.surface
-                                        .withValues(alpha: 0.8),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(
-                                    Icons.search,
-                                    color: AppColors.primary,
-                                  ),
-                                ),
-                              ],
-                            ),
                           ),
                         ),
                       ],
@@ -478,8 +508,8 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                         },
                         dropdownMenuEntries: _platforms.map((plat) {
                           return DropdownMenuEntry<String>(
-                            value: plat,
-                            label: plat,
+                            value: plat.key,
+                            label: plat.label,
                             style: MenuItemButton.styleFrom(
                               textStyle: AppTypography.bodyBase(
                                 color: Theme.of(context).colorScheme.onSurface,
@@ -490,7 +520,7 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                       );
                     },
                   ),
-                  if (_selectedPlatform == 'cat_other'.tr(context)) ...[
+                  if (_selectedPlatform == 'other') ...[
                     const SizedBox(height: AppSpacing.sm),
                     TextFormField(
                       controller: _platformController,
@@ -588,21 +618,6 @@ class _ReportScamScreenState extends State<ReportScamScreen> {
                       );
                     },
                   ),
-                  if (_selectedCategory == 'other') ...[
-                    const SizedBox(height: AppSpacing.sm),
-                    TextFormField(
-                      controller: _otherCategoryController,
-                      style: AppTypography.bodyBase(
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                      decoration: _inputDecoration(
-                        hint: 'โปรดระบุ (Please specify)',
-                        isDark: isDark,
-                      ),
-                      validator: (v) =>
-                          v == null || v.isEmpty ? 'กรุณาระบุประเภท' : null,
-                    ),
-                  ],
                   const SizedBox(height: AppSpacing.lg),
 
                   // ── Footer note ────────────────────────────────────────

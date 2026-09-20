@@ -55,7 +55,11 @@ class AppRouter {
     return GoRouter(
       initialLocation: '/splash',
       debugLogDiagnostics: false,
-      redirect: (context, state) => guardPath(authRepository, state.uri.path),
+      redirect: (context, state) {
+        final path = state.uri.path;
+        if (path == '/splash' || path == '/onboarding') return null;
+        return guardPath(authRepository, path);
+      },
       routes: [
         // ── Auth / entry flow ─────────────────────────────────────────────────
         GoRoute(
@@ -92,6 +96,9 @@ class AppRouter {
               builder: (context, state) => ReportScamScreen(
                 scanId:
                     (state.extra as Map<String, dynamic>?)?['scanId']
+                        as String?,
+                imageUrl:
+                    (state.extra as Map<String, dynamic>?)?['imageUrl']
                         as String?,
               ),
             ),

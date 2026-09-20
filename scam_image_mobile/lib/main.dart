@@ -71,7 +71,7 @@ class ScamGuardApp extends StatelessWidget {
                 ..loadCacheSize(),
         ),
 
-        // Notifications (no external repository — loads mock/push data)
+        // Notifications are derived from real scan history on-device.
         BlocProvider<NotificationsCubit>(
           create: (_) => NotificationsCubit()..loadNotifications(),
         ),

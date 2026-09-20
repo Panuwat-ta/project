@@ -91,19 +91,19 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
           step2: AnalysisStepStatus.pending,
           step3: AnalysisStepStatus.pending,
         );
-      case AnalysisTaskStatus.processingText:
+      case AnalysisTaskStatus.processingSource:
         return _StepStatuses(
           step1: AnalysisStepStatus.active,
           step2: AnalysisStepStatus.pending,
           step3: AnalysisStepStatus.pending,
         );
-      case AnalysisTaskStatus.processingSource:
+      case AnalysisTaskStatus.processingVisual:
         return _StepStatuses(
           step1: AnalysisStepStatus.done,
           step2: AnalysisStepStatus.active,
           step3: AnalysisStepStatus.pending,
         );
-      case AnalysisTaskStatus.processingVisual:
+      case AnalysisTaskStatus.processingText:
         return _StepStatuses(
           step1: AnalysisStepStatus.done,
           step2: AnalysisStepStatus.done,

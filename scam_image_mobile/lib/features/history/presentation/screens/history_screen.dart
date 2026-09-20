@@ -407,11 +407,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               size: 28,
                             ),
                           ),
-                          onDismissed: (_) => context.read<HistoryBloc>().add(
-                            HistoryItemDeleted(item.scanId),
-                          ),
                           confirmDismiss: (direction) async {
-                            return await showDialog(
+                            final confirmed = await showDialog<bool>(
                               context: context,
                               builder: (ctx) => AlertDialog(
                                 title: Text('delete_confirm'.tr(context)),
@@ -431,6 +428,24 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                 ],
                               ),
                             );
+                            if (confirmed != true || !context.mounted) {
+                              return false;
+                            }
+                            final completer = Completer<bool>();
+                            context.read<HistoryBloc>().add(
+                              HistoryItemDeleted(item.scanId, completer),
+                            );
+                            final deleted = await completer.future;
+                            if (!deleted && context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'history_delete_failed'.tr(context),
+                                  ),
+                                ),
+                              );
+                            }
+                            return deleted;
                           },
                           child: GestureDetector(
                             onTap: () => context.push('/result/${item.scanId}'),

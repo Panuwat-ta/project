@@ -23,8 +23,6 @@ class ScanRepositoryImpl implements ScanRepository {
   @override
   Future<String> submitImage({
     required String filePath,
-    required bool consentForResearch,
-    required String clientRequestId,
     String? scanName,
   }) async {
     // Log a debug warning when the file exceeds the recommended size.
@@ -42,12 +40,7 @@ class ScanRepositoryImpl implements ScanRepository {
       return true;
     }());
 
-    return remoteDataSource.submitScan(
-      filePath: filePath,
-      consentForResearch: consentForResearch,
-      clientRequestId: clientRequestId,
-      scanName: scanName,
-    );
+    return remoteDataSource.submitScan(filePath: filePath, scanName: scanName);
   }
 
   @override

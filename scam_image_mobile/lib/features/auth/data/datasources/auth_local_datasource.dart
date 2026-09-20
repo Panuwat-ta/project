@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import '../../../../core/storage/secure_storage.dart';
 import '../models/auth_token_model.dart';
 
@@ -17,6 +19,10 @@ class AuthLocalDataSource {
         kTokenExpiresAt,
         token.expiresAt!.toIso8601String(),
       );
+    } else {
+      // Never carry an expiry timestamp from a previous session into a new
+      // token that does not explicitly provide one.
+      await secureStorage.deleteToken(kTokenExpiresAt);
     }
   }
 
@@ -29,13 +35,48 @@ class AuthLocalDataSource {
   /// Removes auth credentials only. Onboarding/settings must survive logout.
   Future<void> clearTokens() => secureStorage.clearAuthTokens();
 
-  /// Returns `true` if an access token is present in storage.
+  /// Returns `true` when a non-empty access token has not expired.
   ///
-  /// This is a lightweight check (existence only).  Callers that need
-  /// cryptographic validity should use the refresh flow.
+  /// The backend currently encodes expiry in the JWT `exp` claim rather than
+  /// returning a separate expiry field, so we use a persisted expiry when one
+  /// exists and otherwise read `exp` from the JWT payload. This is only a local
+  /// freshness check; the server remains authoritative for token validity.
   Future<bool> hasValidToken() async {
     final token = await secureStorage.getToken(kAccessToken);
-    return token != null && token.isNotEmpty;
+    if (token == null || token.isEmpty) return false;
+
+    final storedExpiry = await secureStorage.getToken(kTokenExpiresAt);
+    DateTime? expiresAt;
+    if (storedExpiry != null && storedExpiry.isNotEmpty) {
+      expiresAt = DateTime.tryParse(storedExpiry)?.toUtc();
+    }
+    expiresAt ??= _jwtExpiry(token);
+
+    if (expiresAt != null && !expiresAt.isAfter(DateTime.now().toUtc())) {
+      await secureStorage.clearAuthTokens();
+      return false;
+    }
+    return true;
+  }
+
+  DateTime? _jwtExpiry(String token) {
+    try {
+      final parts = token.split('.');
+      if (parts.length != 3) return null;
+      final payload = jsonDecode(
+        utf8.decode(base64Url.decode(base64Url.normalize(parts[1]))),
+      );
+      if (payload is! Map<String, dynamic>) return null;
+      final exp = payload['exp'];
+      if (exp is! num) return null;
+      return DateTime.fromMillisecondsSinceEpoch(
+        exp.toInt() * 1000,
+        isUtc: true,
+      );
+    } catch (_) {
+      // Opaque/non-JWT tokens are still allowed; the server will validate them.
+      return null;
+    }
   }
 
   Future<bool> hasSeenOnboarding() async {

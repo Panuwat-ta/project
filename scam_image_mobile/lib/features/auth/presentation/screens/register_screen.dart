@@ -68,17 +68,27 @@ class _RegisterViewState extends State<_RegisterView> {
       );
       return;
     }
-    final consents = await ServiceLocator.settingsRepository.getConsents();
-    if (!mounted) return;
-    context.read<AuthBloc>().add(
-      RegisterRequested(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
-        displayName: _displayNameController.text.trim(),
-        systemConsent: true,
-        researchConsent: consents.researchConsent,
-      ),
-    );
+    try {
+      final consents = await ServiceLocator.settingsRepository.getConsents();
+      if (!mounted) return;
+      context.read<AuthBloc>().add(
+        RegisterRequested(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+          displayName: _displayNameController.text.trim(),
+          systemConsent: true,
+          researchConsent: consents.researchConsent,
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('auth_consent_load_error'.tr(context)),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
@@ -269,9 +279,17 @@ class _RegisterViewState extends State<_RegisterView> {
                                 borderSide: BorderSide(color: primaryColor),
                               ),
                             ),
-                            validator: (v) => (v == null || v.isEmpty)
-                                ? 'auth_email_hint'.tr(context)
-                                : null,
+                            validator: (v) {
+                              if (v == null || v.isEmpty) {
+                                return 'auth_email_hint'.tr(context);
+                              }
+                              if (!RegExp(
+                                r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+                              ).hasMatch(v)) {
+                                return 'auth_email_invalid'.tr(context);
+                              }
+                              return null;
+                            },
                           ),
                           const SizedBox(height: 16),
 
@@ -328,9 +346,15 @@ class _RegisterViewState extends State<_RegisterView> {
                                 borderSide: BorderSide(color: primaryColor),
                               ),
                             ),
-                            validator: (v) => (v == null || v.length < 8)
-                                ? 'auth_password_min_error'.tr(context)
-                                : null,
+                            validator: (v) {
+                              if (v == null || v.length < 8) {
+                                return 'auth_password_min_error'.tr(context);
+                              }
+                              if (v.length > 128) {
+                                return 'auth_password_max_error'.tr(context);
+                              }
+                              return null;
+                            },
                           ),
                           const SizedBox(height: 16),
 
@@ -537,8 +561,9 @@ class _RegisterViewState extends State<_RegisterView> {
                           const SizedBox(height: 24),
 
                           // Login Link
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          Wrap(
+                            alignment: WrapAlignment.center,
+                            crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
                               Text(
                                 'auth_has_account'.tr(context),

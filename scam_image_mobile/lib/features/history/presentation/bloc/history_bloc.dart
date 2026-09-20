@@ -32,7 +32,8 @@ class HistorySearched extends HistoryEvent {
 
 class HistoryItemDeleted extends HistoryEvent {
   final String scanId;
-  const HistoryItemDeleted(this.scanId);
+  final Completer<bool>? completer;
+  const HistoryItemDeleted(this.scanId, [this.completer]);
   @override
   List<Object?> get props => [scanId];
 }
@@ -123,7 +124,7 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
   ) async {
     try {
       await repository.deleteScanHistoryItem(event.scanId);
-      // Remove from current list without full reload
+      // Remove from current list only after the server confirms deletion.
       if (state is HistoryDataLoaded) {
         final current = (state as HistoryDataLoaded).items;
         final updated = current.where((i) => i.scanId != event.scanId).toList();
@@ -133,8 +134,14 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
           emit(HistoryDataLoaded(updated));
         }
       }
+      if (event.completer?.isCompleted == false) {
+        event.completer?.complete(true);
+      }
     } catch (e) {
       emit(HistoryError(e.toString()));
+      if (event.completer?.isCompleted == false) {
+        event.completer?.complete(false);
+      }
     }
   }
 
@@ -166,11 +173,7 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
       if (keyword != null && keyword.trim().isNotEmpty) {
         final kw = keyword.trim().toLowerCase();
         filtered = items.where((it) {
-          return (it.title?.toLowerCase().contains(kw) ?? false) ||
-              it.scanId.toLowerCase().contains(kw) ||
-              it.status.toLowerCase().contains(kw) ||
-              it.riskLevel.name.toLowerCase().contains(kw) ||
-              it.riskScore.toString().contains(kw);
+          return it.title?.toLowerCase().contains(kw) ?? false;
         }).toList();
       }
       if (filtered.isEmpty) {

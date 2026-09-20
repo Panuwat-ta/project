@@ -304,7 +304,7 @@ class _LoginViewState extends State<_LoginView> {
                               if (!RegExp(
                                 r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
                               ).hasMatch(v)) {
-                                return 'รูปแบบอีเมลไม่ถูกต้อง';
+                                return 'auth_email_invalid'.tr(context);
                               }
                               return null;
                             },
@@ -388,9 +388,6 @@ class _LoginViewState extends State<_LoginView> {
                             validator: (v) {
                               if (v == null || v.isEmpty) {
                                 return 'auth_password_hint'.tr(context);
-                              }
-                              if (v.length < 6) {
-                                return 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร';
                               }
                               return null;
                             },

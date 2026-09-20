@@ -65,21 +65,34 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   /// Loads the theme and language settings on app startup.
   Future<void> loadSettings() async {
-    final mode = await repository.getThemeMode();
-    final lang = await repository.getLanguage();
-    emit(state.copyWith(themeMode: mode, language: lang));
+    try {
+      final mode = await repository.getThemeMode();
+      final lang = await repository.getLanguage();
+      emit(state.copyWith(themeMode: mode, language: lang));
+    } catch (e) {
+      // Keep safe defaults/current values if secure storage is unavailable.
+      emit(state.copyWith(error: e.toString()));
+    }
   }
 
   /// Sets the application theme mode.
   Future<void> setTheme(ThemeMode mode) async {
-    await repository.saveThemeMode(mode);
-    emit(state.copyWith(themeMode: mode));
+    try {
+      await repository.saveThemeMode(mode);
+      emit(state.copyWith(themeMode: mode));
+    } catch (e) {
+      emit(state.copyWith(error: e.toString()));
+    }
   }
 
   /// Sets the application language.
   Future<void> setLanguage(String lang) async {
-    await repository.saveLanguage(lang);
-    emit(state.copyWith(language: lang));
+    try {
+      await repository.saveLanguage(lang);
+      emit(state.copyWith(language: lang));
+    } catch (e) {
+      emit(state.copyWith(error: e.toString()));
+    }
   }
 
   /// Loads current consent settings from the repository.

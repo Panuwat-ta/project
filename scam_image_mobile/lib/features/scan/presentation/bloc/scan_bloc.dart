@@ -3,7 +3,6 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scam_image_mobile/features/scan/domain/entities/analysis_task.dart';
 import 'package:scam_image_mobile/features/scan/domain/repositories/scan_repository.dart';
-import 'package:uuid/uuid.dart';
 
 // ── Events ────────────────────────────────────────────────────────────────────
 
@@ -80,24 +79,25 @@ class ScanTimeout extends ScanState {
 // ── Bloc ──────────────────────────────────────────────────────────────────────
 
 class ScanBloc extends Bloc<ScanEvent, ScanState> {
-  ScanBloc({required this.repository, this.consentForResearch = false})
-    : super(ScanInitial()) {
+  ScanBloc({
+    required this.repository,
+    this.timeoutSeconds = 3600,
+    this.pollInterval = const Duration(seconds: 3),
+  }) : super(ScanInitial()) {
     on<CropConfirmed>(_onCropConfirmed);
     on<AnalysisPollTick>(_onPollTick);
     on<AnalysisCancelled>(_onCancelled);
   }
 
   final ScanRepository repository;
-  final bool consentForResearch;
+  final int timeoutSeconds;
+  final Duration pollInterval;
 
   Timer? _pollingTimer;
   String? _activeTaskId;
   final Set<String> _pollsInFlight = <String>{};
   int _scanGeneration = 0;
   int _elapsedSeconds = 0;
-
-  static const int _timeoutSeconds = 3600;
-  static const int _pollIntervalSeconds = 3;
 
   Future<void> _onCropConfirmed(
     CropConfirmed event,
@@ -112,8 +112,6 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
     try {
       final String taskId = await repository.submitImage(
         filePath: event.filePath,
-        consentForResearch: consentForResearch,
-        clientRequestId: const Uuid().v4(),
         scanName: event.scanName,
       );
 
@@ -121,14 +119,11 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
       if (generation != _scanGeneration || isClosed) return;
 
       _activeTaskId = taskId;
-      _pollingTimer = Timer.periodic(
-        const Duration(seconds: _pollIntervalSeconds),
-        (_) {
-          if (!isClosed && _activeTaskId == taskId) {
-            add(AnalysisPollTick(taskId));
-          }
-        },
-      );
+      _pollingTimer = Timer.periodic(pollInterval, (_) {
+        if (!isClosed && _activeTaskId == taskId) {
+          add(AnalysisPollTick(taskId));
+        }
+      });
 
       emit(
         ScanPolling(
@@ -153,8 +148,8 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
     }
 
     try {
-      _elapsedSeconds += _pollIntervalSeconds;
-      if (_elapsedSeconds >= _timeoutSeconds) {
+      _elapsedSeconds += pollInterval.inSeconds;
+      if (_elapsedSeconds >= timeoutSeconds) {
         _pollingTimer?.cancel();
         _activeTaskId = null;
         emit(ScanTimeout());

@@ -11,12 +11,7 @@ abstract class ScanRemoteDataSource {
   ///
   /// Throws [ServerException] on non-2xx responses.
   /// Throws [NetworkException] on connectivity / timeout errors.
-  Future<String> submitScan({
-    required String filePath,
-    required bool consentForResearch,
-    required String clientRequestId,
-    String? scanName,
-  });
+  Future<String> submitScan({required String filePath, String? scanName});
 
   /// Polls the current status of a scan task.
   ///
@@ -34,8 +29,6 @@ class ScanRemoteDataSourceImpl implements ScanRemoteDataSource {
   @override
   Future<String> submitScan({
     required String filePath,
-    required bool consentForResearch,
-    required String clientRequestId,
     String? scanName,
   }) async {
     try {
@@ -46,8 +39,6 @@ class ScanRemoteDataSourceImpl implements ScanRemoteDataSource {
 
       final Map<String, dynamic> formMap = {
         'file': await MultipartFile.fromFile(filePath, filename: fileName),
-        'consentForResearch': consentForResearch.toString(),
-        'clientRequestId': clientRequestId,
       };
 
       if (scanName != null && scanName.trim().isNotEmpty) {

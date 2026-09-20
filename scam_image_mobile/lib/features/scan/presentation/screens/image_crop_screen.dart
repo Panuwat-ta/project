@@ -8,6 +8,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/localization/app_translations.dart';
 import '../../../../core/widgets/widgets.dart';
+import '../../../../core/utils/image_file_transform.dart';
 
 /// Full-screen image preview + crop screen.
 ///
@@ -34,47 +35,53 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
   final TextEditingController _nameController = TextEditingController();
   bool _hasNameError = false;
 
-  double _rotation = 0.0;
+  bool _isTransforming = false;
   double _scale = 1.0;
 
   String get _displayPath => _croppedPath ?? _currentPath;
 
   Future<void> _cropImage() async {
+    if (_isTransforming) return;
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final croppedFile = await _imageCropper.cropImage(
-      sourcePath: _currentPath,
-      compressQuality: 85,
-      uiSettings: [
-        AndroidUiSettings(
-          toolbarTitle: 'crop_title'.tr(context),
-          lockAspectRatio: false,
-          toolbarColor: Theme.of(context).scaffoldBackgroundColor,
-          toolbarWidgetColor: isDark ? Colors.white : AppColors.onSurface,
-        ),
-        IOSUiSettings(title: 'crop_title'.tr(context)),
-      ],
-    );
-    if (!mounted) return;
-    if (croppedFile != null) {
-      setState(() {
-        _croppedPath = croppedFile.path;
-      });
+    setState(() => _isTransforming = true);
+    try {
+      final croppedFile = await _imageCropper.cropImage(
+        sourcePath: _displayPath,
+        compressQuality: 85,
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: 'crop_title'.tr(context),
+            lockAspectRatio: false,
+            toolbarColor: Theme.of(context).scaffoldBackgroundColor,
+            toolbarWidgetColor: isDark ? Colors.white : AppColors.onSurface,
+          ),
+          IOSUiSettings(title: 'crop_title'.tr(context)),
+        ],
+      );
+      if (!mounted) return;
+      if (croppedFile != null) {
+        setState(() => _croppedPath = croppedFile.path);
+      }
+    } catch (_) {
+      if (mounted) _showImageEditError();
+    } finally {
+      if (mounted) setState(() => _isTransforming = false);
     }
   }
 
   Future<bool> _confirmDiscard(BuildContext context) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: Text('crop_discard_title'.tr(context)),
         content: Text('crop_discard_desc'.tr(context)),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => Navigator.pop(dialogContext, false),
             child: Text('crop_no'.tr(context)),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => Navigator.pop(dialogContext, true),
             child: Text('crop_yes'.tr(context)),
           ),
         ],
@@ -84,29 +91,50 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
   }
 
   Future<void> _pickNewImage() async {
-    final XFile? image = await _imagePicker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 85,
-      maxWidth: 2048,
-      maxHeight: 2048,
-    );
-    if (!mounted) return;
-    if (image != null) {
-      setState(() {
-        _currentPath = image.path;
-        _croppedPath = null;
-        _rotation = 0.0;
-        _scale = 1.0;
-      });
+    try {
+      final XFile? image = await _imagePicker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 85,
+        maxWidth: 2048,
+        maxHeight: 2048,
+      );
+      if (!mounted) return;
+      if (image != null) {
+        setState(() {
+          _currentPath = image.path;
+          _croppedPath = null;
+          _scale = 1.0;
+        });
+      }
+    } catch (_) {
+      if (mounted) _showImageEditError();
     }
   }
 
-  void _rotateLeft() {
-    setState(() => _rotation -= 3.14159 / 2);
+  Future<void> _rotateImage(int angleDegrees) async {
+    if (_isTransforming) return;
+    setState(() => _isTransforming = true);
+    try {
+      final path = await rotateImageFile(
+        sourcePath: _displayPath,
+        angleDegrees: angleDegrees,
+      );
+      if (!mounted) return;
+      setState(() {
+        _croppedPath = path;
+        _scale = 1.0;
+      });
+    } catch (_) {
+      if (mounted) _showImageEditError();
+    } finally {
+      if (mounted) setState(() => _isTransforming = false);
+    }
   }
 
-  void _rotateRight() {
-    setState(() => _rotation += 3.14159 / 2);
+  void _showImageEditError() {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('crop_edit_error'.tr(context))));
   }
 
   @override
@@ -126,9 +154,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
 
   void _resetImage() {
     setState(() {
-      _currentPath = widget.filePath;
       _croppedPath = null;
-      _rotation = 0.0;
       _scale = 1.0;
     });
   }
@@ -217,161 +243,32 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                               borderRadius: BorderRadius.circular(16),
                               child: Transform.scale(
                                 scale: _scale,
-                                child: Transform.rotate(
-                                  angle: _rotation,
-                                  child: Image.file(
-                                    File(_displayPath),
-                                    fit: BoxFit.contain,
-                                    errorBuilder:
-                                        (context, error, stackTrace) => Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Icon(
-                                              Icons.broken_image,
+                                child: Image.file(
+                                  File(_displayPath),
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.broken_image,
+                                            color: isDark
+                                                ? Colors.white54
+                                                : AppColors.textSecondary,
+                                            size: 64,
+                                          ),
+                                          const SizedBox(height: AppSpacing.sm),
+                                          Text(
+                                            'crop_error_load'.tr(context),
+                                            style: AppTypography.bodyBase(
                                               color: isDark
                                                   ? Colors.white54
                                                   : AppColors.textSecondary,
-                                              size: 64,
-                                            ),
-                                            const SizedBox(
-                                              height: AppSpacing.sm,
-                                            ),
-                                            Text(
-                                              'crop_error_load'.tr(context),
-                                              style: AppTypography.bodyBase(
-                                                color: isDark
-                                                    ? Colors.white54
-                                                    : AppColors.textSecondary,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            // Fake crop corners (Cyan)
-                            Positioned.fill(
-                              child: Padding(
-                                padding: const EdgeInsets.all(24.0),
-                                child: Stack(
-                                  children: [
-                                    // Grid lines
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        Container(
-                                          height: 1,
-                                          color: Colors.white.withValues(
-                                            alpha: 0.3,
-                                          ),
-                                        ),
-                                        Container(
-                                          height: 1,
-                                          color: Colors.white.withValues(
-                                            alpha: 0.3,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        Container(
-                                          width: 1,
-                                          color: Colors.white.withValues(
-                                            alpha: 0.3,
-                                          ),
-                                        ),
-                                        Container(
-                                          width: 1,
-                                          color: Colors.white.withValues(
-                                            alpha: 0.3,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    // Corners
-                                    Align(
-                                      alignment: Alignment.topLeft,
-                                      child: Container(
-                                        width: 24,
-                                        height: 24,
-                                        decoration: const BoxDecoration(
-                                          border: Border(
-                                            top: BorderSide(
-                                              color: AppColors.primaryFixedDim,
-                                              width: 3,
-                                            ),
-                                            left: BorderSide(
-                                              color: AppColors.primaryFixedDim,
-                                              width: 3,
                                             ),
                                           ),
-                                        ),
+                                        ],
                                       ),
-                                    ),
-                                    Align(
-                                      alignment: Alignment.topRight,
-                                      child: Container(
-                                        width: 24,
-                                        height: 24,
-                                        decoration: const BoxDecoration(
-                                          border: Border(
-                                            top: BorderSide(
-                                              color: AppColors.primaryFixedDim,
-                                              width: 3,
-                                            ),
-                                            right: BorderSide(
-                                              color: AppColors.primaryFixedDim,
-                                              width: 3,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Align(
-                                      alignment: Alignment.bottomLeft,
-                                      child: Container(
-                                        width: 24,
-                                        height: 24,
-                                        decoration: const BoxDecoration(
-                                          border: Border(
-                                            bottom: BorderSide(
-                                              color: AppColors.primaryFixedDim,
-                                              width: 3,
-                                            ),
-                                            left: BorderSide(
-                                              color: AppColors.primaryFixedDim,
-                                              width: 3,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Align(
-                                      alignment: Alignment.bottomRight,
-                                      child: Container(
-                                        width: 24,
-                                        height: 24,
-                                        decoration: const BoxDecoration(
-                                          border: Border(
-                                            bottom: BorderSide(
-                                              color: AppColors.primaryFixedDim,
-                                              width: 3,
-                                            ),
-                                            right: BorderSide(
-                                              color: AppColors.primaryFixedDim,
-                                              width: 3,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
                                 ),
                               ),
                             ),
@@ -415,14 +312,14 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                                 icon: Icons.rotate_left,
                                 label: 'crop_rotate_left'.tr(context),
                                 isDark: isDark,
-                                onTap: _rotateLeft,
+                                onTap: () => _rotateImage(-90),
                               ),
                               _buildActionItem(
                                 context,
                                 icon: Icons.rotate_right,
                                 label: 'crop_rotate_right'.tr(context),
                                 isDark: isDark,
-                                onTap: _rotateRight,
+                                onTap: () => _rotateImage(90),
                               ),
                               _buildActionItem(
                                 context,
