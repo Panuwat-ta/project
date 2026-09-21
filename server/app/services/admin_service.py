@@ -29,14 +29,38 @@ from app.core.security import (
 )
 
 
-def _to_media_url(path: Optional[str]) -> Optional[str]:
-    """Convert a local storage path (e.g. ./uploads/abc.png) to a publicly served URL."""
+def _to_media_url(path: Optional[str], *, require_exists: bool = False) -> Optional[str]:
+    """Map a stored upload path to its public URL without flattening subdirectories."""
     if not path:
         return None
-    name = os.path.basename(str(path))
-    if not name:
+
+    raw = str(path)
+    upload_root = os.path.abspath(settings.LOCAL_UPLOAD_DIR)
+    public_prefix = "/uploads/"
+
+    if raw.replace("\\", "/").startswith(public_prefix):
+        relative = os.path.normpath(raw.replace("\\", "/")[len(public_prefix):]).replace("\\", "/")
+        if relative in ("", ".", "..") or relative.startswith("../") or relative.startswith("/"):
+            return None
+        local_path = os.path.join(upload_root, *relative.split("/"))
+    else:
+        absolute = os.path.abspath(raw)
+        try:
+            inside_upload_root = os.path.commonpath((upload_root, absolute)) == upload_root
+        except ValueError:
+            inside_upload_root = False
+        if inside_upload_root:
+            relative = os.path.relpath(absolute, upload_root).replace(os.sep, "/")
+            local_path = absolute
+        else:
+            relative = os.path.basename(raw)
+            local_path = absolute
+
+    if not relative or relative in (".", "..") or relative.startswith("../"):
         return None
-    return f"/uploads/{name}"
+    if require_exists and not os.path.isfile(local_path):
+        return None
+    return f"{public_prefix}{relative}"
 
 
 def _admin_claims(admin: Admin) -> dict:
@@ -387,7 +411,7 @@ async def get_report_detail(db: AsyncSession, report_id: int) -> Dict[str, Any]:
                 "image_hash": scan.image_hash,
                 "thumbnail_url": _to_media_url(scan.raw_image_url),
                 "raw_image_url": _to_media_url(scan.raw_image_url),
-                "heatmap_image_url": _to_media_url(scan.heatmap_image_url),
+                "heatmap_image_url": _to_media_url(scan.heatmap_image_url, require_exists=True),
                 "total_risk_score": scan.total_risk_score,
                 "risk_grade": grade_for(scan.total_risk_score or 0, scan.visual_score or 0),
                 "text_score": scan.text_score,
@@ -436,17 +460,28 @@ def _resolve_export_file(path: Optional[str]) -> Optional[str]:
 async def get_health_status(db: AsyncSession) -> dict:
     from sqlalchemy import text
     from datetime import datetime
+    from app.core import redis as redis_core
+
     try:
         await db.execute(text("SELECT 1"))
         db_status = "ok"
     except Exception:
         db_status = "error"
-        
+
+    try:
+        if redis_core.redis_client is None:
+            queue_status = "error"
+        else:
+            await redis_core.redis_client.ping()
+            queue_status = "ok"
+    except Exception:
+        queue_status = "error"
+
     return {
         "database": db_status,
         "storage": "ok",
         "models": "ok",
-        "queue": "ok",
+        "queue": queue_status,
         "last_check": datetime.utcnow()
     }
 
@@ -529,6 +564,13 @@ async def get_user_detail(db: AsyncSession, user_id: int) -> Dict[str, Any]:
         raise HTTPException(status_code=404, detail="User not found")
         
     scan_count = await db.scalar(select(func.count()).select_from(Scan).where(Scan.user_id == user.id)) or 0
+    month_start = datetime.now(TH_TIMEZONE).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    scans_this_month = await db.scalar(
+        select(func.count()).select_from(Scan).where(
+            Scan.user_id == user.id,
+            Scan.created_at >= month_start,
+        )
+    ) or 0
     report_count = await db.scalar(select(func.count()).select_from(ScamReport).where(ScamReport.user_id == user.id)) or 0
     
     # Recent scans
@@ -544,6 +586,7 @@ async def get_user_detail(db: AsyncSession, user_id: int) -> Dict[str, Any]:
             "image_url": s.raw_image_url or "",
             "total_risk_score": score,
             "risk_grade": grade_for(score, s.visual_score or 0),
+            "status": s.status,
             "created_at": s.created_at.isoformat() if s.created_at else None,
         })
     
@@ -568,7 +611,7 @@ async def get_user_detail(db: AsyncSession, user_id: int) -> Dict[str, Any]:
 
     stats = {
         "total_scans": scan_count,
-        "scans_this_month": scan_count,
+        "scans_this_month": scans_this_month,
         "total_reports_submitted": report_count,
         "reports_approved": approved_count,
         "reports_rejected": rejected_count,
@@ -609,6 +652,7 @@ async def update_user(db: AsyncSession, user_id: int, admin_id: int, req, ip: st
         action="update_user",
         entity_type="user",
         entity_id=str(user_id),
+        reason=getattr(req, "reason", None),
         ip_address=ip,
         user_agent=user_agent,
         details=f"Updated user {user_id}: active={user.is_active}"
@@ -694,7 +738,7 @@ async def dry_run_model(db: AsyncSession, model_id: int) -> Dict[str, Any]:
 
 async def deploy_model(db: AsyncSession, model_id: int, admin_id: int, reason: str) -> ModelVersion:
     import os
-    stmt = select(ModelVersion).where(ModelVersion.id == model_id)
+    stmt = select(ModelVersion).where(ModelVersion.id == model_id).with_for_update()
     result = await db.execute(stmt)
     model = result.scalars().first()
     if not model:
@@ -704,7 +748,7 @@ async def deploy_model(db: AsyncSession, model_id: int, admin_id: int, reason: s
     if not model_path or not os.path.exists(model_path):
         raise HTTPException(status_code=400, detail=f"Model file not found at {model_path or '-'}; cannot deploy")
 
-    stmt = select(ModelVersion).where(ModelVersion.is_active == True)
+    stmt = select(ModelVersion).where(ModelVersion.is_active == True).with_for_update()
     result = await db.execute(stmt)
     active_models = result.scalars().all()
     previous = next((m.version_tag for m in active_models if m.id != model.id), None)

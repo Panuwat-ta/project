@@ -49,23 +49,28 @@ export const Input = forwardRef(
 Input.displayName = "Input";
 
 export const SearchInput = forwardRef(
-  ({ className, containerClassName, value, onChange, placeholder = "Search...", ...props }, ref) => (
-    <div className={cn("relative w-full", containerClassName)}>
-      <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
-      <input
-        ref={ref}
-        type="search"
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        className={cn(
-          "w-full h-9 rounded-md border border-input bg-card pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground transition-colors outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/35",
-          className
-        )}
-        {...props}
-      />
-    </div>
-  )
+  ({ className, containerClassName, value, onChange, placeholder = "Search...", id, ...props }, ref) => {
+    const generatedId = useId();
+    const fieldId = id || generatedId;
+    return (
+      <div className={cn("relative w-full", containerClassName)}>
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+        <input
+          ref={ref}
+          id={fieldId}
+          type="search"
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          className={cn(
+            "w-full h-9 rounded-md border border-input bg-card pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground transition-colors outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/35",
+            className
+          )}
+          {...props}
+        />
+      </div>
+    );
+  }
 );
 SearchInput.displayName = "SearchInput";
 

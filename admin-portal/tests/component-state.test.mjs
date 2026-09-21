@@ -11,6 +11,7 @@ let RiskBadge;
 let OperationalStatusBadge;
 let EvidenceState;
 let HeatmapComparator;
+let SearchInput;
 
 before(async () => {
   vite = await createServer({
@@ -27,6 +28,9 @@ before(async () => {
   ));
   ({ HeatmapComparator } = await vite.ssrLoadModule(
     "/src/components/ui/HeatmapComparator.jsx"
+  ));
+  ({ SearchInput } = await vite.ssrLoadModule(
+    "/src/components/ui/Input.jsx"
   ));
 });
 
@@ -86,4 +90,15 @@ test("available Heatmap renders model evidence and accessible comparator", () =>
   assert.match(html, /role="slider"/);
   assert.match(html, /src="\/heatmap\.png"/);
   assert.match(html, /ความน่าจะเป็นของความผิดปกติ/);
+});
+
+
+test("SearchInput renders a stable field id for browser tooling", () => {
+  const html = render(SearchInput, {
+    value: "",
+    onChange: () => {},
+    "aria-label": "ค้นหารายงาน",
+  });
+  assert.match(html, /type="search"/);
+  assert.match(html, /id="[^"]+"/);
 });

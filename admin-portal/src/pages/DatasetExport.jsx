@@ -237,10 +237,10 @@ export function DatasetExport() {
         <CardContent>
           <form onSubmit={handleCreateExport} className="space-y-5">
             {/* Category Filter Pills */}
-            <div className="space-y-2">
-              <label className="block text-[13px] font-semibold text-foreground">
+            <fieldset className="space-y-2">
+              <legend className="block text-[13px] font-semibold text-foreground">
                 เลือกหมวดหมู่ที่ต้องการส่งออก
-              </label>
+              </legend>
               <div className="flex flex-wrap gap-2">
                 {CATEGORIES.map((cat) => {
                   const isSelected = selectedCategories.includes(cat.key);
@@ -261,7 +261,7 @@ export function DatasetExport() {
                   );
                 })}
               </div>
-            </div>
+            </fieldset>
 
             {/* Date Range & Metadata Options */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
@@ -282,8 +282,10 @@ export function DatasetExport() {
               />
 
               <div className="flex items-end pb-1.5">
-                <label className="flex items-center gap-2 cursor-pointer select-none text-[13px] text-foreground font-medium">
+                <label htmlFor="include-metadata" className="flex items-center gap-2 cursor-pointer select-none text-[13px] text-foreground font-medium">
                   <input
+                    id="include-metadata"
+                    name="include_metadata"
                     type="checkbox"
                     checked={includeMetadata}
                     onChange={(e) => setIncludeMetadata(e.target.checked)}

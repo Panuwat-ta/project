@@ -113,3 +113,17 @@ test("clear-all reports filter resets status, category, page, and search", () =>
     /updateUrlParams\("All",\s*"All",\s*1,\s*""\)/
   );
 });
+
+
+test("dataset metadata checkbox has explicit browser field identity and label", () => {
+  assert.match(datasetSource, /htmlFor="include-metadata"/);
+  assert.match(datasetSource, /id="include-metadata"/);
+  assert.match(datasetSource, /name="include_metadata"/);
+});
+
+
+test("dataset category controls use a semantic fieldset legend", () => {
+  assert.match(datasetSource, /<fieldset className="space-y-2">/);
+  assert.match(datasetSource, /<legend className="block text-\[13px\] font-semibold text-foreground">\s*เลือกหมวดหมู่ที่ต้องการส่งออก\s*<\/legend>/);
+  assert.doesNotMatch(datasetSource, /<label className="block text-\[13px\] font-semibold text-foreground">\s*เลือกหมวดหมู่ที่ต้องการส่งออก/);
+});

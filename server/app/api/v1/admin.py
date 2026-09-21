@@ -123,7 +123,16 @@ async def admin_refresh_token(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    result = await db.execute(select(Admin).where(Admin.id == int(admin_id)))
+    try:
+        admin_id_int = int(admin_id)
+    except (TypeError, ValueError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid refresh token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    result = await db.execute(select(Admin).where(Admin.id == admin_id_int))
     admin = result.scalars().first()
     if admin is None:
         raise HTTPException(status_code=403, detail="Admin not found")
