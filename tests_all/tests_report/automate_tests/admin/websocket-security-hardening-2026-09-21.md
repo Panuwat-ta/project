@@ -34,3 +34,9 @@
 ## ข้อจำกัดที่ยังเปิดอยู่
 - Authenticated browser matrix เต็มชุดยังไม่ได้ยืนยัน เนื่องจากไม่มี valid browser Admin session และไม่ได้สร้าง/reset credential เพื่อหลบข้อจำกัดเครื่องมือ
 - การส่ง JWT ผ่าน WebSocket subprotocol ป้องกันการรั่วใน URL/access log แบบเดิม แต่ reverse proxy ที่ตั้งค่า log headers เองยังต้องมีนโยบาย redact headers ตาม deployment environment
+
+## Independent review retry
+- เรียก `agy` แบบ scope แคบเฉพาะ hardening diff และสั่งห้ามรัน test/แก้ไฟล์/ใช้ network
+- รอบล่าสุด timeout ที่ 75 วินาทีโดยไม่คืน verdict
+- จึงไม่บันทึกเป็น PASS และไม่อ้าง `NO_CONFIRMED_P0_P2`
+- deterministic gates ที่บันทึกไว้ในรายงานนี้ยังผ่านตามผลทดสอบจริง
