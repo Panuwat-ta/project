@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { getOperationalStatus, getRiskState } from "@/lib/display-state";
+import { getEvidenceState, getOperationalStatus, getRiskState } from "@/lib/display-state";
 
 export function Badge({
   children,
@@ -92,6 +92,15 @@ export function OperationalStatusBadge({ status, className }) {
       withDot={item.variant !== "default"}
       className={cn("font-semibold", className)}
     >
+      {item.label}
+    </Badge>
+  );
+}
+
+export function EvidenceState({ status, className }) {
+  const item = getEvidenceState(status);
+  return (
+    <Badge variant={item.variant} className={cn("font-semibold", className)}>
       {item.label}
     </Badge>
   );

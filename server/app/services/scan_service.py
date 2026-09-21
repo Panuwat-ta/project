@@ -150,7 +150,10 @@ async def process_image_background(scan_id, file_bytes: bytes, image_hash: str,
             # Phase 1: ส่งผล visual/OCR/cscore ให้ client ก่อน XAI (Qwen รันบน CPU ช้ากว่า)
             scan.text_score = text_score
             scan.visual_score = visual_score
-            scan.source_score = source_score
+            # DB column is non-null in the current schema. Keep 0 only as a
+            # storage compatibility placeholder; unavailable source evidence is
+            # exposed through source_status and source_score=null at the API.
+            scan.source_score = source_score if source_score is not None else 0
             scan.total_risk_score = risk_result["total_risk_score"]
             scan.ocr_text = ocr_text
             scan.scam_keywords_found = found_keywords

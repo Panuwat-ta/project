@@ -39,9 +39,6 @@ class Settings(BaseSettings):
     # Decompression-bomb guard: สูงสุดที่อนุญาต decode (พิกเซล)
     MAX_IMAGE_PIXELS: int = 100_000_000  # 100 MP
 
-    # Risk scoring (ค่าเริ่มต้นของ source score)
-    DEFAULT_SOURCE_SCORE: int = 20
-
     # AI Inference 
     ONNX_MODEL_PATH: str
     ONNX_TILE_SIZE: int = 512

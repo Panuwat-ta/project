@@ -1,6 +1,6 @@
 # ScamGuard Admin Portal — Implementation Design Authority
 
-อัปเดต: 2026-09-20
+อัปเดต: 2026-09-21
 
 เอกสารนี้เป็น source of truth สำหรับ UI ที่ implement อยู่ใน `admin-portal/src` และใช้ร่วมกับ `design/admin.md` ซึ่งเก็บ product/design intent ระดับสูง หากรายละเอียดขัดกัน ให้ยึดไฟล์นี้สำหรับ implementation ปัจจุบัน แล้วปรับเอกสารระดับสูงให้ตามภายหลัง
 
@@ -18,10 +18,19 @@ Admin Portal เป็น **Operate surface**: ผู้ดูแลระบบ
 
 - ห้ามสร้างตัวเลข, timestamp, IP, model version, health state หรือผลวิเคราะห์ใน client เพื่อเติม field ที่ backend ไม่ส่ง
 - Risk score ที่ไม่มีข้อมูลแสดง `ไม่ทราบ`; ค่า `0` เป็นข้อมูลจริงและยังคงจัดเป็นระดับต่ำ
-- Source verification ที่ยังไม่เชื่อม backend แสดง `ยังไม่มีข้อมูล`; ห้ามสรุปว่า “ไม่พบภาพที่ตรงกัน”
+- Source verification ที่ยังไม่เชื่อม backend ใช้ EvidenceState `unavailable` และแสดง `ยังไม่พร้อมใช้งาน`; ห้ามสรุปว่า “ไม่พบภาพที่ตรงกัน”
 - Heatmap ที่ไม่มีข้อมูลต้องแสดง unavailable state; ห้ามเอาภาพต้นฉบับมาแทน heatmap
 - Model dry-run แสดง latency/memory เฉพาะเมื่อ response ส่งค่าจริง
 - Dashboard health อ่านจาก `/admin/health`; field ที่หายใช้สถานะ `ไม่ทราบ`
+
+Evidence state vocabulary ใช้ authority กลางใน `src/lib/display-state.js`:
+
+- `unavailable` → `ยังไม่พร้อมใช้งาน`
+- `not_checked` → `ยังไม่ได้ตรวจ`
+- `checked_no_match` → `ตรวจแล้ว: ไม่พบภาพตรงกัน`
+- `matches_found` → `ตรวจแล้ว: พบแหล่งที่มา`
+- `error` → `ตรวจไม่สำเร็จ`
+- missing/unknown → `ไม่ทราบ`
 
 ## 3. Typography
 
@@ -96,14 +105,15 @@ Risk grade ของรายงานเป็นอีก domain หนึ่�
 
 ก่อนส่งมอบ UI change:
 
-1. `npm run lint`
-2. `npm run build`
-3. ตรวจ fabricated fallback gate (`98ms`, `235MB`, loopback fallback, fake model version, original-as-heatmap, missing-risk-as-zero)
-4. Runtime visual QA ทั้ง Dark/Light/System และ breakpoint 390/768/1440
-5. Keyboard-only flow สำหรับ navigation, modal, filters และ heatmap
-6. ตรวจ empty/error/loading/unavailable states ที่เปลี่ยน
-7. รัน Impeccable mechanical detector หลัง implementation เสร็จเพียงรอบเดียว
-8. independent review เปรียบเทียบกับ audit/plan และแก้เฉพาะ finding ที่ยืนยันจาก source/runtime
+1. `npm test`
+2. `npm run lint`
+3. `npm run build`
+4. ตรวจ fabricated fallback gate (`98ms`, `235MB`, loopback fallback, fake model version, original-as-heatmap, missing-risk-as-zero)
+5. Runtime visual QA ทั้ง Dark/Light/System และ breakpoint 390/768/1440
+6. Keyboard-only flow สำหรับ navigation, modal, filters และ heatmap
+7. ตรวจ empty/error/loading/unavailable states ที่เปลี่ยน
+8. รัน Impeccable mechanical detector หลัง implementation เสร็จเพียงรอบเดียว
+9. independent review เปรียบเทียบกับ audit/plan และแก้เฉพาะ finding ที่ยืนยันจาก source/runtime
 
 เอกสารที่เกี่ยวข้อง:
 

@@ -13,7 +13,7 @@ import {
 import { fetchReportDetail, updateReportStatus, startReviewReport } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
-import { RiskBadge, StatusBadge, Badge } from "@/components/ui/Badge";
+import { RiskBadge, StatusBadge, Badge, EvidenceState } from "@/components/ui/Badge";
 import { Modal } from "@/components/ui/Modal";
 import { Textarea } from "@/components/ui/Input";
 import { HeatmapComparator } from "@/components/ui/HeatmapComparator";
@@ -174,6 +174,14 @@ export function ReportDetail() {
   }
 
   const scan = report.scan || {};
+  const sourceStatus = scan.source_status || "unavailable";
+  const sourceStatusCopy = {
+    unavailable: "Source Verification ยังไม่พร้อมใช้งาน จึงยังสรุปไม่ได้ว่าพบหรือไม่พบภาพที่ตรงกัน",
+    not_checked: "ยังไม่ได้ตรวจสอบแหล่งที่มาของภาพนี้",
+    checked_no_match: "ระบบตรวจสอบแหล่งที่มาแล้วและไม่พบภาพที่ตรงกัน",
+    matches_found: "ระบบตรวจสอบแหล่งที่มาแล้วและพบภาพหรือแหล่งที่มาที่เกี่ยวข้อง",
+    error: "การตรวจสอบแหล่งที่มาไม่สำเร็จ จึงยังสรุปผลไม่ได้",
+  };
   const isPending = report.status === "pending";
   const isReviewing = report.status === "reviewing";
 
@@ -324,16 +332,16 @@ export function ReportDetail() {
                 )}
               </div>
 
-              {/* Source verification is not wired in the current admin API contract. */}
+              {/* Source verification state comes from the backend contract; never infer from score alone. */}
               <div className="px-5 py-4 space-y-2">
                 <div className="flex items-center justify-between gap-3">
                   <span className="text-[13px] font-semibold text-foreground">
                     การตรวจสอบแหล่งที่มา
                   </span>
-                  <Badge variant="default" size="sm">ยังไม่มีข้อมูล</Badge>
+                  <EvidenceState status={sourceStatus} className="text-xs" />
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  ยังไม่มีข้อมูลการตรวจสอบแหล่งที่มาจากระบบ จึงยังสรุปไม่ได้ว่าพบหรือไม่พบภาพที่ตรงกัน
+                  {sourceStatusCopy[sourceStatus] || "ไม่ทราบสถานะการตรวจสอบแหล่งที่มา"}
                 </p>
               </div>
             </CardContent>

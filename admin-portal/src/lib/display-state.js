@@ -58,3 +58,18 @@ export function getOperationalStatus(status) {
     variant: "default",
   };
 }
+
+const EVIDENCE_STATUS = {
+  available: { label: "มีข้อมูล", variant: "primary" },
+  unavailable: { label: "ยังไม่พร้อมใช้งาน", variant: "default" },
+  not_checked: { label: "ยังไม่ได้ตรวจ", variant: "default" },
+  checked_no_match: { label: "ตรวจแล้ว: ไม่พบภาพตรงกัน", variant: "info" },
+  matches_found: { label: "ตรวจแล้ว: พบแหล่งที่มา", variant: "info" },
+  error: { label: "ตรวจไม่สำเร็จ", variant: "danger" },
+};
+
+export function getEvidenceState(status) {
+  if (!hasDisplayValue(status)) return { label: "ไม่ทราบ", variant: "default" };
+  const key = String(status).toLowerCase().replaceAll("-", "_");
+  return EVIDENCE_STATUS[key] || { label: "ไม่ทราบ", variant: "default" };
+}

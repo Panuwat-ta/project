@@ -8,7 +8,7 @@
 """
 import itertools
 
-from app.core.config import settings
+from app.schemas.scan import ScanResponse
 from app.utils.risk_calculator import (
     build_source_score,
     build_text_analysis,
@@ -56,5 +56,31 @@ def test_build_text_analysis_caps_at_100():
     assert len(found) == 6
 
 
-def test_build_source_score_matches_settings_default():
-    assert build_source_score() == settings.DEFAULT_SOURCE_SCORE
+def test_unavailable_source_has_no_score_and_does_not_affect_risk():
+    assert build_source_score() is None
+    res = calculate_risk_score(text_score=10, visual_score=20, source_score=None)
+    assert res["total_risk_score"] == 20
+    assert res["primary_factor"] == "visual"
+    assert res["breakdown"]["source_score"] is None
+
+
+def test_scan_response_hides_legacy_storage_placeholder_when_source_unavailable():
+    from datetime import datetime, timezone
+    from uuid import uuid4
+
+    response = ScanResponse(
+        id=uuid4(),
+        image_hash="abc",
+        raw_image_url="/uploads/a.png",
+        text_score=10,
+        visual_score=20,
+        source_score=20,
+        source_status="unavailable",
+        total_risk_score=20,
+        ai_gen_probability=0.0,
+        status="completed",
+        created_at=datetime.now(timezone.utc),
+    )
+    dumped = response.model_dump()
+    assert dumped["source_status"] == "unavailable"
+    assert dumped["source_score"] is None
