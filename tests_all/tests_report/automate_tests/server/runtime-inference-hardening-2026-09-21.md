@@ -1,36 +1,35 @@
-# รายงาน Runtime Inference Hardening — 2026-09-21
+# ผลทดสอบ Runtime Inference Hardening
 
-## ขอบเขต
-ตรวจและแก้ runtime crash/timeout ของ scan pipeline บนเครื่องทดสอบ NVIDIA GPU VRAM 4 GiB รวมถึง live scan test harness ที่ใช้ตรวจ pipeline จริงผ่าน API
+## 2026-09-21 - Live scan pipeline หลัง hardening
 
-## ปัญหาที่พบจากหลักฐานจริง
-- Live test อ้าง `server/tests/test.png` ซึ่งไม่มีอยู่จริง; เปลี่ยนมาใช้ `server/tests/test1.png` ที่อยู่ใน repository
-- Live test hardcode user id `6` ซึ่งไม่มีใน DB ปัจจุบัน; เปลี่ยนเป็นเลือก active user จาก DB แบบ read-only
-- Poll deadline เดิม 30 วินาทีสั้นกว่างบ timeout ของ pipeline จริง และ polling GET สามารถ timeout ชั่วคราวเมื่อ inference ใช้ทรัพยากรหนัก
-- XAI timeout เดิมใช้ worker thread ที่ไม่ยอมคืน control เมื่อ host task ถูก cancel
-- OCR timeout เดิมอยู่ใน `ThreadPoolExecutor` context manager ซึ่งจะ `shutdown(wait=True)` ตอนออกจาก `with` ทำให้ timeout แล้วก็ยังรอ worker ต่อ
-- Coredump PID 863064 ยืนยัน `SIGABRT` ใน `libggml-cuda` ระหว่าง `llama_decode`; Python ไม่สามารถ catch native abort นี้ได้
+- Target: `server/tests/api/test_scan_xai_live.py`
+- Command: ไม่ได้บันทึกในผลรันเดิม
+- Result: PASS
+- Summary: Total: 1 | Passed: 1 | Failed: 0 | Skipped: 0 | Duration: ประมาณ 6 s
+- Requirement/TC mapping: TC IDs: `TC-AI-XAI-01`, `TC-AI-XAI-02` | Requirement IDs: `FR-SYS-11`
+- Commit/Build/Env: ไม่ได้บันทึกในผลรันเดิม ห้ามอนุมานย้อนหลัง
 
-## การแก้ไข
-- เพิ่ม XAI worker timeout ที่คืน deterministic fallback เมื่อหมดเวลา
-- แก้ OCR executor ให้ไม่ wait worker ที่ยังค้างหลัง timeout
-- เพิ่ม GPU preflight: เมื่อ GPU มี total VRAM ต่ำกว่า 4097 MiB หรือ free VRAM ต่ำกว่า 1500 MiB จะไม่โหลด Qwen GPU XAI และใช้ deterministic fallback
-- ปรับ live test ให้ใช้ fixture/user/deadline ตาม runtime contract และทน transient polling timeout
-## ผลทดสอบ
-- Targeted hardening tests: PASS
-- Live scan pipeline หลัง hardening: `1 passed` ในประมาณ 6 วินาที
-- Full server suite รอบสุดท้าย: `66 passed, 3 skipped, 0 failed, 3 warnings` ใน 11.96 วินาที
-- Startup log ของ test process ยืนยัน `Deferring GPU XAI model to deterministic fallback (VRAM total=4096 MiB, free=2731 MiB)`
-- Server health ตอบ HTTP 200; health payload เป็น `degraded` เพราะ Redis local ไม่ได้รัน (`database=ok`, `redis=error`)
+### 1. Passed Tests and Runtime Behavior (How it Passed)
+- **live scan pipeline**:
+  - Verification & Runtime Behavior: scan สิ้นสุดสถานะ `completed` และผลลัพธ์มี `visual_score`, `ai_gen_probability` และ `xai_explanation` ตาม assertions ของ test
 
-## Cleanup
-- Final test suite สร้าง `Live GPU Verification Test` 1 แถว
-- ลบ test row สำเร็จ 1 แถว เหลือ 0
-- ลบ generated files ที่ไม่มี scan อื่นอ้างอิง 2 ไฟล์
-- ไม่ลบไฟล์ที่มี reference อื่น
+### 2. Failed Tests and Root Cause (How & Why it Failed)
+ไม่มีข้อผิดพลาด (0 Failed)
 
-## Warning / ข้อจำกัด
-- Dependency warnings เดิม: Surya Pydantic deprecation, Hugging Face `resume_download`, FastAPI TestClient/Starlette deprecation
-- system coredump เก่าจาก native CUDA crashes ยังอยู่ใน OS และไม่ได้ลบอัตโนมัติ
-- XAI บน 4 GiB ใช้ deterministic fallback เพื่อรักษา availability; ไม่อ้างว่า Qwen GPU inference สำเร็จบน hardware นี้
-- `loop-context --check` ไม่มีใน environment และ fallback command timed out; attempts ถูกบันทึกใน loop ledger ตามจริง
+## 2026-09-21 - Full server regression suite
+
+- Target: `server/tests/`
+- Command: `server/venv/bin/python -m pytest -q`
+- Result: PASS
+- Summary: Total: 69 | Passed: 66 | Failed: 0 | Skipped: 3 | Warnings: 3 | Duration: 11.96 s
+- Requirement/TC mapping: หลาย Requirement/TC ตาม `tests_all/rtm.md`; ผลรันเดิมไม่ได้บันทึกรายการ mapping ราย test
+- Commit/Build/Env: ไม่ได้บันทึกในผลรันเดิม ห้ามอนุมานย้อนหลัง
+
+### 1. Passed Tests and Runtime Behavior (How it Passed)
+- **Full server suite**:
+  - Verification & Runtime Behavior: test runner จบครบ suite โดยไม่มี failed test; 66 tests ผ่านและ 3 tests ถูก skip ตามเงื่อนไขของ suite
+- **Inference startup ภายใน test process**:
+  - Verification & Runtime Behavior: process เริ่ม inference dependencies และ test suite ดำเนินต่อจนจบโดยไม่เกิด native process abort ในรอบนี้
+
+### 2. Failed Tests and Root Cause (How & Why it Failed)
+ไม่มีข้อผิดพลาด (0 Failed)

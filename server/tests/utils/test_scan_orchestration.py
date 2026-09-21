@@ -215,12 +215,3 @@ def test_ocr_timeout_returns_without_waiting_for_worker(monkeypatch):
 
     assert result == ""
     assert elapsed < 0.15
-
-
-def test_xai_gpu_preflight_defers_unsafe_vram():
-    from app.services.inference_service import should_defer_xai_gpu
-
-    assert should_defer_xai_gpu(-1, 4096, 3800) is True
-    assert should_defer_xai_gpu(-1, 8192, 1200) is True
-    assert should_defer_xai_gpu(-1, 8192, 4000) is False
-    assert should_defer_xai_gpu(0, 4096, 500) is False

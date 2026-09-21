@@ -4,6 +4,7 @@ import subprocess
 import sys
 import threading
 from app.core.config import settings
+from app.utils.gpu_safety import parse_nvidia_smi_memory, should_defer_xai_gpu
 from app.utils.onnx_runner import run_onnx_worker
 
 # Llama instance ไม่ thread-safe: XAI ซ้อนกัน 2 Jobs -> ggml-cuda race -> SIGABRT
@@ -11,19 +12,6 @@ from app.utils.onnx_runner import run_onnx_worker
 _xai_lock = threading.Lock()
 # ย้ายโมเดล Surya ข้าม device ใน fallback ก็ต้องห้ามซ้อนกันเช่นกัน
 _ocr_device_lock = threading.Lock()
-
-# Qwen 1.5B GPU offload can abort the whole process on 4 GiB cards when
-# Surya/ONNX share the same device. Prefer the existing deterministic fallback
-# instead of risking a native ggml-cuda abort that Python cannot catch.
-_XAI_MIN_SAFE_TOTAL_VRAM_MB = 4097
-_XAI_MIN_FREE_VRAM_MB = 1500
-
-def should_defer_xai_gpu(target_gpu_layers: int, total_vram_mb: int, free_vram_mb: int) -> bool:
-    if target_gpu_layers == 0:
-        return False
-    low_capacity = 0 < total_vram_mb < _XAI_MIN_SAFE_TOTAL_VRAM_MB
-    low_headroom = 0 < free_vram_mb < _XAI_MIN_FREE_VRAM_MB
-    return low_capacity or low_headroom
 
 class InferenceService:
     def __init__(self):
@@ -63,31 +51,28 @@ class InferenceService:
                                     pass
                 from llama_cpp import Llama
 
-                total_vram = 0
-                free_vram = 0
-                try:
-                    import subprocess
-                    out = subprocess.check_output(
-                        [
-                            "nvidia-smi",
-                            "--query-gpu=memory.total,memory.free",
-                            "--format=csv,noheader,nounits",
-                        ],
-                        timeout=2,
-                    ).decode()
-                    total_raw, free_raw = out.strip().split(",", 1)
-                    total_vram = int(total_raw.strip())
-                    free_vram = int(free_raw.strip())
-                except Exception:
-                    pass
-
                 target_gpu_layers = getattr(settings, "XAI_GPU_LAYERS", -1)
                 context_size = getattr(settings, "XAI_CONTEXT_SIZE", 1024)
+                gpu_memory = []
+                if target_gpu_layers != 0:
+                    try:
+                        import subprocess
+                        out = subprocess.check_output(
+                            [
+                                "nvidia-smi",
+                                "--query-gpu=memory.total,memory.free",
+                                "--format=csv,noheader,nounits",
+                            ],
+                            timeout=2,
+                        ).decode()
+                        gpu_memory = parse_nvidia_smi_memory(out)
+                    except Exception:
+                        print("Unable to verify GPU memory; deferring GPU XAI model for safety.")
 
-                if should_defer_xai_gpu(target_gpu_layers, total_vram, free_vram):
+                if should_defer_xai_gpu(target_gpu_layers, gpu_memory):
                     print(
                         "Deferring GPU XAI model to deterministic fallback "
-                        f"(VRAM total={total_vram} MiB, free={free_vram} MiB)."
+                        f"(visible GPU memory={gpu_memory or 'unavailable'})."
                     )
                     self.xai_model = None
                 else:

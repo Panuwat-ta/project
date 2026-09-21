@@ -67,6 +67,11 @@ ScamGuard Admin Portal ออกแบบภายใต้แนวคิด **
     - สลับธีมได้ทันทีผ่านปุ่มบน TopBar พร้อมบันทึกสถานะลงใน LocalStorage
     - ตัวอักษรและป้ายกำกับปรับแต่งความเข้มและความเปรียบต่างตามเกณฑ์มาตรฐาน WCAG AA เพื่อให้อ่านข้อมูล ตัวเลขสถิติ และ Hash ได้อย่างคมชัดในทุกสภาพแสง
 
+11. **WebMCP Site Tool**
+    - ลงทะเบียน `get_admin_page_context` เมื่อ browser รองรับ `document.modelContext.registerTool`
+    - Tool เป็น read-only และคืนเฉพาะ route, page title, heading, rendered theme และ online state
+    - ไม่อ่านหรือคืน access token, refresh cookie, credential หรือข้อมูลลับของ Admin session
+
 ---
 
 ## สถาปัตยกรรมเทคโนโลยี (Tech Stack)
@@ -80,6 +85,7 @@ ScamGuard Admin Portal ออกแบบภายใต้แนวคิด **
 - **Charts:** Recharts (ปรับแต่ง Zero-Delay Animation เพื่อการแสดงผลแบบเรียลไทม์ที่แม่นยำ)
 - **Design System:** Operate Mode, restrained Cyan accent, semantic status colors และ evidence-integrity rules ใน `DESIGN.md`
 - **Notifications & Dialogs:** In-App Toast Provider และ Accessible Modal Dialogs (ปราศจาก native browser `alert()` หรือ `confirm()`)
+- **Agent Integration:** WebMCP Site Tool แบบ progressive enhancement; browser ที่ไม่รองรับยังใช้งาน Admin Portal ตามปกติ
 
 ---
 
@@ -108,6 +114,7 @@ admin-portal/
 │   │   └── AdminLayout.jsx     # โครงร่างหน้าหลัก รองรับ Responsive & Mobile Drawer
 │   ├── lib/
 │   │   ├── api.js              # เลเยอร์เชื่อมต่อ API, จัดการ Token, และ WebSocket Helper
+│   │   ├── webmcp.js           # ลงทะเบียน read-only WebMCP Site Tool
 │   │   └── utils.js            # ยูทิลิตี้ cn, ตัวจัดรูปแบบตัวเลข, วันที่, และสีความเสี่ยง
 │   ├── pages/                  # หน้าจอระบบครบทั้ง 10 หน้า
 │   │   ├── AuditLogsList.jsx   # บันทึก Audit Log
