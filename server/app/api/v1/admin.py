@@ -333,6 +333,11 @@ async def list_export_jobs(request: Request,
     current_admin: AdminModel = Depends(require_super_admin),
 ):
     """GET /api/v1/admin/dataset/export-jobs"""
+    if page < 1:
+        raise HTTPException(status_code=400, detail="page must be >= 1")
+    if limit < 1 or limit > 100:
+        raise HTTPException(status_code=400, detail="limit must be between 1 and 100")
+
     from sqlalchemy import select, func, desc
     from app.models import ExportJob
     

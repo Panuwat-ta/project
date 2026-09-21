@@ -99,12 +99,16 @@ export function ModelsList() {
     setDeployTargetError("");
   };
 
-  const closeDeployModal = () => {
-    if (isDeploying) return;
+  const resetDeployModal = () => {
     setDeployModal({ isOpen: false, model: null, currentModel: null, isRollback: false });
     setDeployReason("");
     setDeployReasonError("");
     setDeployTargetError("");
+  };
+
+  const closeDeployModal = () => {
+    if (isDeploying) return;
+    resetDeployModal();
   };
 
   const handleExecuteDeploy = async () => {
@@ -125,7 +129,7 @@ export function ModelsList() {
           ? `ย้อนกลับไปใช้โมเดล ${deployModal.model.version_tag || deployModal.model.name} แล้ว`
           : `นำโมเดล ${deployModal.model.version_tag || deployModal.model.name} ไปใช้งานแล้ว`
       );
-      closeDeployModal();
+      resetDeployModal();
       await loadModels();
     } catch (err) {
       toast.error("เปลี่ยนโมเดลไม่สำเร็จ: " + err.message);

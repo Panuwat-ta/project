@@ -44,16 +44,14 @@ export function ReportsList() {
     (tab) => tab.id.toLowerCase() === String(statusParam || "").toLowerCase()
   )?.id || "All";
   const category = searchParams.get("category") || "All";
-  const pageParam = parseInt(searchParams.get("page") || "1", 10);
-  const initialSearch = searchParams.get("search") || "";
+  const rawPageParam = searchParams.get("page");
+  const parsedPage = Number(rawPageParam ?? "1");
+  const pageParam = Number.isInteger(parsedPage) && parsedPage >= 1 ? parsedPage : 1;
+  const appliedSearch = searchParams.get("search") || "";
+  const page = pageParam;
+  const [search, setSearch] = useState(appliedSearch);
 
-  const [search, setSearch] = useState(initialSearch);
-  const [page, setPage] = useState(pageParam);
-
-  // Debounced search (resets to page 1)
-  const debouncedSearch = useDebouncedValue(search, 300, () => setPage(1));
-
-  // Sync params to URL
+  // URL is the source of truth for applied filters/page; search input is a draft.
   const updateUrlParams = useCallback(
     (newTab, newCat, newPage, newSearch) => {
       const params = new URLSearchParams();
@@ -65,6 +63,23 @@ export function ReportsList() {
     },
     [setSearchParams]
   );
+
+  // Canonicalize malformed page query values before they can be shared/bookmarked.
+  useEffect(() => {
+    if (rawPageParam !== null && String(pageParam) !== rawPageParam) {
+      updateUrlParams(activeTab, category, pageParam, appliedSearch);
+    }
+  }, [rawPageParam, pageParam, activeTab, category, appliedSearch, updateUrlParams]);
+
+  // Browser navigation may change the applied URL search independently of the draft input.
+  useEffect(() => {
+    setSearch(appliedSearch);
+  }, [appliedSearch]);
+
+  useDebouncedValue(search, 300, (nextSearch) => {
+    if (nextSearch === appliedSearch) return;
+    updateUrlParams(activeTab, category, 1, nextSearch);
+  });
 
   const {
     data: { reports, total },
@@ -78,12 +93,12 @@ export function ReportsList() {
         limit: LIMIT,
         status: activeTab,
         category,
-        search: debouncedSearch,
+        search: appliedSearch,
       });
       return { reports: data.items || [], total: data.total || 0 };
     },
     {
-      deps: [page, activeTab, category, debouncedSearch],
+      deps: [page, activeTab, category, appliedSearch],
       initialData: { reports: [], total: 0 },
       successMessage: "รีเฟรชคิวรายงานสำเร็จ",
       errorMessage: "ไม่สามารถโหลดรายการรายงานได้",
@@ -91,19 +106,17 @@ export function ReportsList() {
     }
   );
 
-  useEffect(() => {
-    updateUrlParams(activeTab, category, page, debouncedSearch);
-  }, [activeTab, category, page, debouncedSearch, updateUrlParams]);
-
   const handleTabChange = (newTab) => {
-    setPage(1);
-    updateUrlParams(newTab, category, 1, debouncedSearch);
+    updateUrlParams(newTab, category, 1, appliedSearch);
   };
 
   const handleCategoryChange = (e) => {
-    const newCat = e.target.value;
-    setPage(1);
-    updateUrlParams(activeTab, newCat, 1, debouncedSearch);
+    updateUrlParams(activeTab, e.target.value, 1, appliedSearch);
+  };
+
+  const clearAllFilters = () => {
+    setSearch("");
+    updateUrlParams("All", "All", 1, "");
   };
 
   const totalPages = Math.max(1, Math.ceil(total / LIMIT));
@@ -199,10 +212,7 @@ export function ReportsList() {
                       <Button
                         variant="ghost"
                         size="xs"
-                        onClick={() => {
-                          setSearch("");
-                          handleTabChange("All");
-                        }}
+                        onClick={clearAllFilters}
                         className="mt-2 text-primary"
                       >
                         ล้างตัวกรองทั้งหมด
@@ -297,7 +307,7 @@ export function ReportsList() {
                     <Button
                       variant="ghost"
                       size="xs"
-                      onClick={() => { setSearch(""); handleTabChange("All"); }}
+                      onClick={clearAllFilters}
                       className="mt-2 text-primary"
                     >
                       ล้างตัวกรองทั้งหมด
@@ -355,7 +365,7 @@ export function ReportsList() {
               page={page}
               totalPages={totalPages}
               totalItems={total}
-              onPageChange={(p) => setPage(p)}
+              onPageChange={(p) => updateUrlParams(activeTab, category, p, appliedSearch)}
               limit={LIMIT}
             />
           </div>

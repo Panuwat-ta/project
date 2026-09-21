@@ -59,11 +59,15 @@ export function UsersList() {
     setReasonError("");
   };
 
-  const closeStatusModal = () => {
-    if (isSubmitting) return;
+  const resetStatusModal = () => {
     setModalState({ isOpen: false, user: null, targetActive: false });
     setReason("");
     setReasonError("");
+  };
+
+  const closeStatusModal = () => {
+    if (isSubmitting) return;
+    resetStatusModal();
   };
 
   const handleUpdateStatus = async () => {
@@ -80,7 +84,7 @@ export function UsersList() {
           ? `ปลดการระงับบัญชี ${modalState.user.email} สำเร็จ`
           : `ระงับการใช้งานบัญชี ${modalState.user.email} สำเร็จ`
       );
-      closeStatusModal();
+      resetStatusModal();
       loadUsers();
     } catch (err) {
       toast.error("ดำเนินการไม่สำเร็จ: " + err.message);

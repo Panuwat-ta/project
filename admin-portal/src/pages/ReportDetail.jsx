@@ -77,7 +77,8 @@ export function ReportDetail() {
     setIsStartingReview(true);
     try {
       await startReviewReport(report.id, report.version);
-      syncNote(await loadReport());
+      const updatedReport = await loadReport();
+      if (updatedReport) syncNote(updatedReport);
       toast.success("เริ่มตรวจสอบรายงานแล้ว");
     } catch (err) {
       if (err.status === 409) {
@@ -96,10 +97,14 @@ export function ReportDetail() {
     setNoteError("");
   };
 
-  const closeDecisionModal = () => {
-    if (isSubmittingDecision) return;
+  const resetDecisionModal = () => {
     setModalState({ isOpen: false, decision: null });
     setNoteError("");
+  };
+
+  const closeDecisionModal = () => {
+    if (isSubmittingDecision) return;
+    resetDecisionModal();
   };
 
   // Submit Final Decision: approved or rejected
@@ -118,8 +123,9 @@ export function ReportDetail() {
         decision,
         adminNote.trim()
       );
-      syncNote(await loadReport());
-      closeDecisionModal();
+      const updatedReport = await loadReport();
+      if (updatedReport) syncNote(updatedReport);
+      resetDecisionModal();
       toast.success(
         decision === "approved"
           ? "ยืนยันรายงานว่าเป็นการหลอกลวงแล้ว"

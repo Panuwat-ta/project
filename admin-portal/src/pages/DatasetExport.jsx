@@ -15,7 +15,7 @@ import {
   createExportJob,
   fetchExportJobs,
   cancelExportJob,
-  getExportDownloadUrl,
+  downloadExportJob,
 } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
@@ -45,6 +45,7 @@ export function DatasetExport() {
 
   const [totalApprovedCount, setTotalApprovedCount] = useState(0);
   const [isExporting, setIsExporting] = useState(false);
+  const [downloadingJobId, setDownloadingJobId] = useState(null);
 
   // Export Jobs History
   const [page, setPage] = useState(1);
@@ -92,7 +93,8 @@ export function DatasetExport() {
       pollingRef.current = setInterval(async () => {
         try {
           const updated = await loadJobs(false, true);
-          const stillActive = updated?.jobs?.some(
+          if (!updated) return;
+          const stillActive = updated.jobs?.some(
             (j) => j.status === "queued" || j.status === "running"
           );
           if (!stillActive && pollingRef.current) {
@@ -156,6 +158,26 @@ export function DatasetExport() {
       loadJobs();
     } catch (err) {
       toast.error("ยกเลิกงานล้มเหลว: " + err.message);
+    }
+  };
+
+  const handleDownloadJob = async (job) => {
+    setDownloadingJobId(job.id);
+    try {
+      const response = await downloadExportJob(job.id);
+      const blob = await response.blob();
+      const objectUrl = window.URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = objectUrl;
+      anchor.download = `scamguard-export-${job.id}.zip`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      window.URL.revokeObjectURL(objectUrl);
+    } catch (err) {
+      toast.error("ดาวน์โหลดไฟล์ส่งออกล้มเหลว: " + err.message);
+    } finally {
+      setDownloadingJobId(null);
     }
   };
 
@@ -318,7 +340,6 @@ export function DatasetExport() {
                     jobs.map((job) => {
                       const isDone = job.status === "succeeded";
                       const isRunning = job.status === "running" || job.status === "queued";
-                      const downloadUrl = getExportDownloadUrl(job.id);
 
                       return (
                         <TableRow key={job.id}>
@@ -347,15 +368,16 @@ export function DatasetExport() {
                           <TableCell className="text-right">
                             <div className="flex items-center justify-end gap-2">
                               {isDone && (
-                                <a
-                                  href={downloadUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary-subtle border border-primary-border text-primary hover:bg-primary/20 text-[13px] font-semibold transition-colors"
+                                <Button
+                                  variant="outline"
+                                  size="xs"
+                                  icon={Download}
+                                  isLoading={downloadingJobId === job.id}
+                                  onClick={() => handleDownloadJob(job)}
+                                  className="text-primary border-primary-border hover:bg-primary-subtle"
                                 >
-                                  <Download className="size-3.5" />
-                                  <span>ดาวน์โหลด ZIP</span>
-                                </a>
+                                  ดาวน์โหลด ZIP
+                                </Button>
                               )}
 
                               {isRunning && (

@@ -18,7 +18,7 @@ before(async () => {
     logLevel: "error",
     plugins: [react()],
     resolve: { alias: { "@": path.resolve(process.cwd(), "src") } },
-    server: { middlewareMode: true },
+    server: { middlewareMode: true, hmr: false },
     appType: "custom",
   });
 

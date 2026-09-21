@@ -277,8 +277,8 @@ export function cancelExportJob(jobId) {
   return apiRequest(`/admin/dataset/export-jobs/${jobId}/cancel`, { method: "POST" });
 }
 
-export function getExportDownloadUrl(jobId) {
-  return `${API_BASE}/admin/dataset/export-jobs/${jobId}/download`;
+export function downloadExportJob(jobId) {
+  return apiRequest(`/admin/dataset/export-jobs/${jobId}/download`, { parse: "raw" });
 }
 
 export function getWebSocketUrl(path = "/admin/dashboard") {
