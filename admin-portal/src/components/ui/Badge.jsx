@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { getOperationalStatus, getRiskState } from "@/lib/display-state";
 
 export function Badge({
   children,
@@ -65,23 +66,33 @@ export function Badge({
 }
 
 export function RiskBadge({ score, className }) {
-  const numericScore = typeof score === "number" ? score : Number(score) || 0;
+  const risk = getRiskState(score);
 
-  let variant = "success";
-  let label = "ต่ำ";
-
-  if (numericScore >= 70) {
-    variant = "danger";
-    label = "สูง";
-  } else if (numericScore >= 40) {
-    variant = "warning";
-    label = "กลาง";
+  if (!risk.available) {
+    return (
+      <Badge variant="default" className={cn("font-semibold", className)}>
+        ไม่ทราบ
+      </Badge>
+    );
   }
 
   return (
-    <Badge variant={variant} withDot className={cn("font-semibold", className)}>
-      <span>{label}</span>
-      <span className="opacity-80 font-mono">({numericScore})</span>
+    <Badge variant={risk.variant} withDot className={cn("font-semibold", className)}>
+      <span>{risk.label}</span>
+      <span className="opacity-80 font-mono">({risk.score})</span>
+    </Badge>
+  );
+}
+
+export function OperationalStatusBadge({ status, className }) {
+  const item = getOperationalStatus(status);
+  return (
+    <Badge
+      variant={item.variant}
+      withDot={item.variant !== "default"}
+      className={cn("font-semibold", className)}
+    >
+      {item.label}
     </Badge>
   );
 }

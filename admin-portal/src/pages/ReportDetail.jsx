@@ -19,6 +19,7 @@ import { Textarea } from "@/components/ui/Input";
 import { HeatmapComparator } from "@/components/ui/HeatmapComparator";
 import { useToast } from "@/components/ui/ToastContext";
 import { formatDate } from "@/lib/utils";
+import { formatOptionalMetric } from "@/lib/display-state";
 import { useAdminQuery } from "@/lib/use-admin-query";
 
 export function ReportDetail() {
@@ -48,18 +49,26 @@ export function ReportDetail() {
     logPrefix: "Load report detail failed:",
   });
 
-  // Sync the decision note on visible loads only — quiet polls must never
-  // clobber what the admin is typing. Mutation handlers sync explicitly.
+  // Sync the decision note once per report identity. Quiet refreshes must never
+  // clobber text the admin is currently editing.
   const noteSynced = useRef(false);
+
   useEffect(() => {
-    if (!noteSynced.current && report?.admin_note) {
-      setAdminNote(report.admin_note);
+    noteSynced.current = false;
+    setAdminNote("");
+    setNoteError("");
+  }, [id]);
+
+  useEffect(() => {
+    if (!noteSynced.current && report?.id) {
+      setAdminNote(report.admin_note || "");
       noteSynced.current = true;
     }
-  }, [report]);
+  }, [report?.id, report?.admin_note]);
 
   const syncNote = (data) => {
-    if (data?.admin_note) setAdminNote(data.admin_note);
+    setAdminNote(data?.admin_note || "");
+    noteSynced.current = true;
   };
 
   // Handle "Start Review" transition: pending -> reviewing
@@ -164,7 +173,7 @@ export function ReportDetail() {
     );
   }
 
-  const multiLayer = report.multi_layer_analysis || {};
+  const scan = report.scan || {};
   const isPending = report.status === "pending";
   const isReviewing = report.status === "reviewing";
 
@@ -174,9 +183,11 @@ export function ReportDetail() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <button
+            type="button"
             onClick={() => navigate("/admin/reports")}
             className="p-1.5 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
             title="กลับไปหน้ารายการ"
+            aria-label="กลับไปหน้ารายการรายงาน"
           >
             <ArrowLeft className="size-4" />
           </button>
@@ -188,14 +199,14 @@ export function ReportDetail() {
               <StatusBadge status={report.status} />
               <RiskBadge score={report.scan?.total_risk_score} />
             </div>
-            <p className="text-xs text-muted-foreground mt-0.5">
+            <p className="text-[13px] text-muted-foreground mt-0.5">
               ส่งตรวจเมื่อ <span className="font-mono">{formatDate(report.created_at)}</span>
             </p>
           </div>
         </div>
 
         {/* Workflow Actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {isPending && (
             <Button
               variant="primary"
@@ -277,56 +288,52 @@ export function ReportDetail() {
                 <span>ผลการวิเคราะห์</span>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Layer 1: Visual Anomaly (SegFormer AI) */}
-              <div className="p-3.5 rounded-lg bg-muted/40 border border-border space-y-2">
-                <div className="flex items-center justify-between">
+            <CardContent className="p-0 divide-y divide-border-subtle">
+              {/* Layer 1: Visual anomaly evidence from the report API only. */}
+              <div className="px-5 py-4 space-y-2">
+                <div className="flex items-center justify-between gap-3">
                   <span className="text-[13px] font-semibold text-foreground">
                     ความผิดปกติของภาพ
                   </span>
-                  <Badge variant={multiLayer.visual_anomaly?.score >= 70 ? "danger" : "primary"} size="sm">
-                    {multiLayer.visual_anomaly?.score ?? report.scan?.total_risk_score ?? 0}%
+                  <Badge variant={scan.visual_score == null ? "default" : "primary"} size="sm">
+                    {formatOptionalMetric(scan.visual_score, { suffix: "%" })}
                   </Badge>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {multiLayer.visual_anomaly?.summary || "ตรวจพบจุดรบกวนของพิกเซลและร่องรอยการตัดต่อด้วยโมเดล Semantic Segmentation"}
+                  {scan.xai_explanation || "ไม่มีคำอธิบายจากระบบ"}
                 </p>
               </div>
 
-              {/* Layer 2: Textual OCR (Surya OCR) */}
-              <div className="p-3.5 rounded-lg bg-muted/40 border border-border space-y-2">
-                <div className="flex items-center justify-between">
+              {/* Layer 2: Text analysis. Missing score is unavailable, never zero. */}
+              <div className="px-5 py-4 space-y-2">
+                <div className="flex items-center justify-between gap-3">
                   <span className="text-[13px] font-semibold text-foreground">
                     ข้อความในภาพ (OCR)
                   </span>
-                  <Badge variant={multiLayer.textual_analysis?.score >= 70 ? "danger" : "default"} size="sm">
-                    {multiLayer.textual_analysis?.score ?? 0}%
+                  <Badge variant={scan.text_score == null ? "default" : "primary"} size="sm">
+                    {formatOptionalMetric(scan.text_score, { suffix: "%" })}
                   </Badge>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {multiLayer.textual_analysis?.summary || "สกัดข้อความในภาพเพื่อตรวจสอบคำต้องสงสัยและรูปแบบข้อความหลอกลวง"}
+                  {scan.text_summary || "ไม่มีคำอธิบายจากระบบ"}
                 </p>
-                {multiLayer.textual_analysis?.extracted_text && (
+                {scan.ocr_text && (
                   <div className="p-2 rounded bg-muted border border-border text-xs font-mono text-foreground max-h-24 overflow-y-auto">
-                    {multiLayer.textual_analysis.extracted_text}
+                    {scan.ocr_text}
                   </div>
                 )}
               </div>
 
-              {/* Layer 3: Source Verification (Reverse Search) */}
-              <div className="p-3.5 rounded-lg bg-muted/40 border border-border space-y-2">
-                <div className="flex items-center justify-between">
+              {/* Source verification is not wired in the current admin API contract. */}
+              <div className="px-5 py-4 space-y-2">
+                <div className="flex items-center justify-between gap-3">
                   <span className="text-[13px] font-semibold text-foreground">
                     การตรวจสอบแหล่งที่มา
                   </span>
-                  <Badge variant="default" size="sm">
-                    {(multiLayer.source_verification?.matches_count ?? 0) > 0
-                      ? `${multiLayer.source_verification.matches_count} รายการ`
-                      : "ไม่พบภาพที่ตรงกัน"}
-                  </Badge>
+                  <Badge variant="default" size="sm">ยังไม่มีข้อมูล</Badge>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {multiLayer.source_verification?.summary || "ค้นหาแหล่งที่มาของภาพผ่านฐานข้อมูลภาพสาธารณะ"}
+                  ยังไม่มีข้อมูลการตรวจสอบแหล่งที่มาจากระบบ จึงยังสรุปไม่ได้ว่าพบหรือไม่พบภาพที่ตรงกัน
                 </p>
               </div>
             </CardContent>

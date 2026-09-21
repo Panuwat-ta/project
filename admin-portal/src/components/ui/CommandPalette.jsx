@@ -90,7 +90,7 @@ export function CommandPalette({ isOpen, onClose }) {
       />
 
       <div
-        className="relative z-10 w-full max-w-xl rounded-xl bg-card border border-border shadow-2xl overflow-hidden transition-all animate-in zoom-in-95 duration-150"
+        className="relative z-10 w-full max-w-xl rounded-xl bg-card border border-border shadow-xl overflow-hidden transition-[opacity,transform] animate-in zoom-in-95 duration-150"
         role="dialog"
         aria-modal="true"
         aria-label="ค้นหาและนำทาง"

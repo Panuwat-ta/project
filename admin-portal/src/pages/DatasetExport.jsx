@@ -168,7 +168,7 @@ export function DatasetExport() {
             <Database className="size-5 text-primary" />
             <span>ส่งออกชุดข้อมูล</span>
           </h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <p className="text-[13px] text-muted-foreground mt-0.5">
             สร้างชุดข้อมูลจากรายงานที่ยืนยันแล้วและได้รับอนุญาตให้นำไปใช้วิจัย
           </p>
         </div>
@@ -186,50 +186,23 @@ export function DatasetExport() {
         </div>
       </div>
 
-      {/* Overview Stat Bar */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="size-10 rounded-lg bg-success-subtle border border-success-border text-success flex items-center justify-center">
-              <CheckCircle2 className="size-5" />
-            </div>
-            <div>
-              <div className="text-xs text-muted-foreground font-medium">รายงานที่ยืนยันแล้ว</div>
-              <div className="text-xl font-bold text-foreground">
-                <span className="font-mono">{formatNumber(totalApprovedCount)}</span> รูปภาพ
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="size-10 rounded-lg bg-primary-subtle border border-primary-border text-primary flex items-center justify-center">
-              <ShieldCheck className="size-5" />
-            </div>
-            <div>
-              <div className="text-xs text-muted-foreground font-medium">สิทธิ์ใช้ข้อมูลเพื่อการวิจัย</div>
-              <div className="text-[13px] font-semibold text-success mt-0.5">
-                ใช้เฉพาะรายการที่ได้รับอนุญาต
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="size-10 rounded-lg bg-warning-subtle border border-warning-border text-warning flex items-center justify-center">
-              <FileArchive className="size-5" />
-            </div>
-            <div>
-              <div className="text-xs text-muted-foreground font-medium">รูปแบบไฟล์</div>
-              <div className="text-xs font-bold text-foreground font-mono mt-0.5">
-                ZIP Archive + Manifest.json
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Export constraints and availability */}
+      <Card>
+        <CardContent className="p-0 grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-border-subtle">
+          <div className="p-4">
+            <div className="flex items-center gap-2 text-[13px] text-muted-foreground font-medium"><CheckCircle2 className="size-4 text-success" />รายงานที่ยืนยันแล้ว</div>
+            <div className="mt-1 text-lg font-bold text-foreground"><span className="font-mono">{formatNumber(totalApprovedCount)}</span> รูปภาพ</div>
+          </div>
+          <div className="p-4">
+            <div className="flex items-center gap-2 text-[13px] text-muted-foreground font-medium"><ShieldCheck className="size-4 text-primary" />สิทธิ์ใช้ข้อมูลเพื่อการวิจัย</div>
+            <div className="mt-1 text-[13px] font-semibold text-foreground">ใช้เฉพาะรายการที่ได้รับอนุญาต</div>
+          </div>
+          <div className="p-4">
+            <div className="flex items-center gap-2 text-[13px] text-muted-foreground font-medium"><FileArchive className="size-4 text-muted-foreground" />รูปแบบไฟล์</div>
+            <div className="mt-1 text-[13px] font-semibold text-foreground font-mono">ZIP + Manifest.json</div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Export Configuration Form Card */}
       <Card>
@@ -254,7 +227,8 @@ export function DatasetExport() {
                       key={cat.key}
                       type="button"
                       onClick={() => toggleCategory(cat.key)}
-                      className={`h-8 px-3 rounded-lg text-xs font-medium border transition-all ${
+                      aria-pressed={isSelected}
+                      className={`h-8 px-3 rounded-lg text-xs font-medium border transition-colors ${
                         isSelected
                           ? "bg-primary-subtle border-primary-border text-primary font-semibold shadow-sm"
                           : "bg-muted/40 border-border text-muted-foreground hover:text-foreground hover:bg-muted"

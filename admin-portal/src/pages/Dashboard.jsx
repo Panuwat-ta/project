@@ -1,4 +1,4 @@
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Activity,
   Zap,
@@ -7,6 +7,8 @@ import {
   RefreshCw,
   AlertCircle,
   Database,
+  HardDrive,
+  ListChecks,
   Cpu,
   ShieldCheck,
   ArrowUpRight,
@@ -31,7 +33,9 @@ import { useAdminQuery } from "@/lib/use-admin-query";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import { CardSkeleton } from "@/components/ui/Skeleton";
+import { OperationalStatusBadge } from "@/components/ui/Badge";
 import { formatNumber } from "@/lib/utils";
+import { formatOptionalDate, formatOptionalMetric, toFiniteNumber } from "@/lib/display-state";
 
 const RISK_PALETTE = {
   low: "var(--chart-risk-low)",
@@ -51,7 +55,6 @@ const CATEGORY_LABELS = {
 
 export function Dashboard() {
   const navigate = useNavigate();
-  const { setIsWsConnected } = useOutletContext() || {};
   const {
     data,
     isLoading,
@@ -61,7 +64,13 @@ export function Dashboard() {
     reload: loadData,
   } = useAdminQuery(
     async () => {
-      const [dash, hlth] = await Promise.all([fetchDashboard(), fetchHealth()]);
+      const dash = await fetchDashboard();
+      let hlth = null;
+      try {
+        hlth = await fetchHealth();
+      } catch {
+        // Dashboard metrics remain useful even when health telemetry is unavailable.
+      }
       return { dashboard: dash, health: hlth };
     },
     {
@@ -69,9 +78,6 @@ export function Dashboard() {
       successMessage: "อัปเดตข้อมูลสถิติล่าสุดเรียบร้อยแล้ว",
       errorMessage: "เกิดข้อผิดพลาดในการโหลดข้อมูล",
       logPrefix: "Dashboard data load error:",
-      onStatusChange: (ok) => {
-        if (setIsWsConnected) setIsWsConnected(ok);
-      },
     }
   );
   const dash = data?.dashboard;
@@ -120,21 +126,31 @@ export function Dashboard() {
     );
   }
 
-  // Risk Donut Data
-  const riskTotal = (dash.risk_distribution.low || 0) + (dash.risk_distribution.medium || 0) + (dash.risk_distribution.high || 0);
-  const riskDonut = [
-    { name: "ต่ำ", value: dash.risk_distribution.low || 0, color: RISK_PALETTE.low },
-    { name: "กลาง", value: dash.risk_distribution.medium || 0, color: RISK_PALETTE.medium },
-    { name: "สูง", value: dash.risk_distribution.high || 0, color: RISK_PALETTE.high },
-  ];
+  const overview = dash?.overview || {};
+  const reports = dash?.reports || {};
+  const riskDistribution = dash?.risk_distribution || {};
+  const modelStatus = dash?.model || {};
+  const riskValues = ["low", "medium", "high"].map((key) => toFiniteNumber(riskDistribution[key]));
+  const hasRiskDistribution = riskValues.every((value) => value !== null);
+  const riskTotal = hasRiskDistribution ? riskValues.reduce((sum, value) => sum + value, 0) : null;
+  const riskDonut = hasRiskDistribution
+    ? [
+        { name: "ต่ำ", value: riskValues[0], color: RISK_PALETTE.low },
+        { name: "กลาง", value: riskValues[1], color: RISK_PALETTE.medium },
+        { name: "สูง", value: riskValues[2], color: RISK_PALETTE.high },
+      ]
+    : [];
 
-  // Category breakdown formatted
-  const categoryData = Object.entries(dash.category_breakdown || {}).map(([key, val]) => ({
+  const categoryData = Object.entries(dash?.category_breakdown || {}).map(([key, val]) => ({
     name: CATEGORY_LABELS[key] || key,
     count: val,
   }));
 
-  const highRiskRatio = riskTotal > 0 ? Math.round(((dash.risk_distribution.high || 0) / riskTotal) * 100) : 0;
+  const highRiskRatio = hasRiskDistribution && riskTotal > 0
+    ? Math.round((riskValues[2] / riskTotal) * 100)
+    : hasRiskDistribution && riskTotal === 0
+      ? 0
+      : null;
 
   return (
     <div className="space-y-6">
@@ -144,7 +160,7 @@ export function Dashboard() {
            <h2 className="text-xl font-bold tracking-tight text-foreground">
             ภาพรวมระบบ
           </h2>
-          <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
+          <p className="text-[13px] text-muted-foreground mt-1.5 leading-relaxed">
             {lastUpdated ? `อัปเดตข้อมูลล่าสุด: ${lastUpdated.toLocaleTimeString("th-TH")}` : ""}
           </p>
         </div>
@@ -162,112 +178,124 @@ export function Dashboard() {
         </div>
       </div>
 
-      {/* System status summary */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 rounded-xl bg-muted/40 border border-border text-[13px]">
-        <div className="flex items-center gap-2">
-          <Database className="size-4 text-primary shrink-0" />
-          <span className="text-muted-foreground font-medium">ฐานข้อมูล</span>
-          <span className="font-semibold text-success">ปกติ</span>
+      {/* Operational health comes from /admin/health. Missing data stays unknown. */}
+      <div className="rounded-xl bg-muted/40 border border-border p-3 space-y-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-[repeat(4,minmax(150px,1fr))_minmax(240px,1.4fr)] gap-3 text-[13px]">
+          {[
+            { label: "ฐานข้อมูล", icon: Database, value: health?.database },
+            { label: "พื้นที่จัดเก็บ", icon: HardDrive, value: health?.storage },
+            { label: "โมเดล AI", icon: Cpu, value: health?.models },
+            { label: "คิวงาน", icon: ListChecks, value: health?.queue },
+          ].map(({ label, icon: Icon, value }) => (
+            <div key={label} className="flex items-center gap-2 min-w-0">
+              <Icon className="size-4 text-primary shrink-0" />
+              <span className="text-muted-foreground font-medium">{label}</span>
+              <OperationalStatusBadge status={value} />
+            </div>
+          ))}
+          <div className="flex items-center gap-2 min-w-0">
+            <ShieldCheck className="size-4 text-primary shrink-0" />
+            <span className="text-muted-foreground font-medium whitespace-nowrap">โมเดลที่ใช้งาน</span>
+            <span className="font-semibold font-mono text-foreground truncate">
+              {modelStatus.active_version ? `SegFormer ${modelStatus.active_version}` : "ไม่ทราบ"}
+            </span>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Cpu className="size-4 text-primary shrink-0" />
-          <span className="text-muted-foreground font-medium">โมเดล AI</span>
-          <span className="font-semibold text-success">พร้อมใช้งาน</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <ShieldCheck className="size-4 text-primary shrink-0" />
-          <span className="text-muted-foreground font-medium">โมเดลที่ใช้งาน</span>
-          <span className="font-semibold font-mono text-foreground truncate">
-            {dash?.model?.active_version ? `SegFormer ${dash.model.active_version}` : (health?.models ? "SegFormer v1.0.0" : "SegFormer-B2")}
-          </span>
-        </div>
+        <p className="text-xs text-muted-foreground">
+          ตรวจสถานะระบบล่าสุด: {formatOptionalDate(health?.last_check)}
+        </p>
       </div>
 
       {/* Primary KPI Instruments */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* KPI 1: Scan Velocity Today */}
-        <Card className="hover:border-primary-border transition-all">
+        <Card className="hover:border-primary-border transition-colors">
           <CardContent className="p-4 space-y-2">
             <div className="flex items-center justify-between text-[13px] text-muted-foreground font-medium">
               <span>สแกนวันนี้</span>
               <Zap className="size-4 text-primary" />
             </div>
             <div className="text-2xl font-bold font-mono text-foreground tracking-tight">
-              {formatNumber(dash.overview.scans_today)}
+              {formatOptionalMetric(overview.scans_today, { fallback: "—" })}
             </div>
             <div className="flex items-center justify-between text-xs text-muted-foreground pt-1 border-t border-border-subtle font-medium">
               <span>สะสมทั้งหมด</span>
-              <span className="font-bold text-foreground"><span className="font-mono">{formatNumber(dash.overview.total_scans)}</span> ครั้ง</span>
+              <span className="font-bold text-foreground"><span className="font-mono">{formatOptionalMetric(overview.total_scans, { fallback: "—" })}</span> ครั้ง</span>
             </div>
           </CardContent>
         </Card>
 
         {/* KPI 2: Pending Scam Reports */}
-        <Card
-          className={
-            dash.reports.pending > 0
-              ? "border-danger-border/40 bg-danger-subtle/30 cursor-pointer hover:border-danger-border transition-all"
-              : "hover:border-border transition-all cursor-pointer"
-          }
-          onClick={() => navigate("/admin/reports?status=pending")}
+        <Link
+          to="/admin/reports?status=pending"
+          className="block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          aria-label="เปิดรายการรายงานที่รอตรวจ"
         >
-          <CardContent className="p-4 space-y-2">
-            <div className="flex items-center justify-between text-[13px] text-muted-foreground font-medium">
-              <span>รอตรวจ</span>
-              <Flag className="size-4 text-danger" />
-            </div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold font-mono text-danger tracking-tight">
-                {formatNumber(dash.reports.pending)}
-              </span>
-              <span className="text-xs text-muted-foreground font-medium">
-                / <span className="font-mono">{formatNumber(dash.reports.reviewing)}</span> กำลังตรวจ
-              </span>
-            </div>
-            <div className="flex items-center justify-between text-[13px] text-danger font-semibold pt-1 border-t border-border-subtle">
-              <span>เปิดรายการรอตรวจ</span>
-              <ArrowUpRight className="size-3.5" />
-            </div>
-          </CardContent>
-        </Card>
+          <Card
+            className={
+              reports.pending > 0
+                ? "h-full border-danger-border/40 bg-danger-subtle/30 hover:border-danger-border transition-colors"
+                : "h-full hover:border-border transition-colors"
+            }
+          >
+            <CardContent className="p-4 space-y-2">
+              <div className="flex items-center justify-between text-[13px] text-muted-foreground font-medium">
+                <span>รอตรวจ</span>
+                <Flag className="size-4 text-danger" />
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-bold font-mono text-danger tracking-tight">
+                  {formatOptionalMetric(reports.pending, { fallback: "—" })}
+                </span>
+                <span className="text-xs text-muted-foreground font-medium">
+                  / <span className="font-mono">{formatOptionalMetric(reports.reviewing, { fallback: "—" })}</span> กำลังตรวจ
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-[13px] text-danger font-semibold pt-1 border-t border-border-subtle">
+                <span>เปิดรายการรอตรวจ</span>
+                <ArrowUpRight className="size-3.5" />
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
 
         {/* KPI 3: High Risk Anomaly Ratio */}
-        <Card className="hover:border-warning-border transition-all">
+        <Card className="hover:border-danger-border transition-colors">
           <CardContent className="p-4 space-y-2">
             <div className="flex items-center justify-between text-[13px] text-muted-foreground font-medium">
               <span>ภาพความเสี่ยงสูง</span>
-              <Activity className="size-4 text-warning" />
+              <Activity className="size-4 text-danger" />
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold font-mono text-warning tracking-tight">
-                {highRiskRatio}%
+              <span className="text-2xl font-bold font-mono text-danger tracking-tight">
+                {formatOptionalMetric(highRiskRatio, { suffix: "%", fallback: "—" })}
               </span>
               <span className="text-xs text-muted-foreground font-medium">
-                (<span className="font-mono">{formatNumber(dash.risk_distribution.high)}</span> ภาพ)
+                (<span className="font-mono">{formatOptionalMetric(riskDistribution.high, { fallback: "—" })}</span> ภาพ)
               </span>
             </div>
             <div className="flex items-center justify-between text-xs text-muted-foreground pt-1 border-t border-border-subtle font-medium">
               <span>สัดส่วนความเสี่ยง</span>
               <span className="font-bold text-foreground">
-                L:{dash.risk_distribution.low} M:{dash.risk_distribution.medium} H:{dash.risk_distribution.high}
+                L:{formatOptionalMetric(riskDistribution.low, { fallback: "—" })} M:{formatOptionalMetric(riskDistribution.medium, { fallback: "—" })} H:{formatOptionalMetric(riskDistribution.high, { fallback: "—" })}
               </span>
             </div>
           </CardContent>
         </Card>
 
         {/* KPI 4: Active Registered Users */}
-        <Card className="hover:border-primary-border transition-all">
+        <Card className="hover:border-primary-border transition-colors">
           <CardContent className="p-4 space-y-2">
             <div className="flex items-center justify-between text-[13px] text-muted-foreground font-medium">
               <span>ผู้ใช้งานวันนี้</span>
               <Users className="size-4 text-primary" />
             </div>
             <div className="text-2xl font-bold font-mono text-foreground tracking-tight">
-              {formatNumber(dash.overview.active_users_today)}
+              {formatOptionalMetric(overview.active_users_today, { fallback: "—" })}
             </div>
             <div className="flex items-center justify-between text-xs text-muted-foreground pt-1 border-t border-border-subtle font-medium">
               <span>บัญชีทั้งหมด</span>
-              <span className="font-bold text-foreground"><span className="font-mono">{formatNumber(dash.overview.total_users)}</span> บัญชี</span>
+              <span className="font-bold text-foreground"><span className="font-mono">{formatOptionalMetric(overview.total_users, { fallback: "—" })}</span> บัญชี</span>
             </div>
           </CardContent>
         </Card>
@@ -283,7 +311,7 @@ export function Dashboard() {
                 <TrendingUp className="size-4 text-primary" />
                 <span>แนวโน้มการสแกน</span>
               </CardTitle>
-              <p className="text-xs text-muted-foreground mt-0.5">
+              <p className="text-[13px] text-muted-foreground mt-0.5">
                 จำนวนการสแกนรายวัน
               </p>
             </div>
@@ -292,7 +320,7 @@ export function Dashboard() {
             <div className="h-64 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
-                  data={dash.scan_trend || []}
+                  data={dash?.scan_trend || []}
                   margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
                 >
                   <defs>
@@ -346,13 +374,14 @@ export function Dashboard() {
           <CardHeader>
             <div>
               <CardTitle>ระดับความเสี่ยง</CardTitle>
-              <p className="text-xs text-muted-foreground mt-0.5">
+              <p className="text-[13px] text-muted-foreground mt-0.5">
                 เกณฑ์ 3 ระดับ: ต่ำ, ปานกลาง, สูง
               </p>
             </div>
           </CardHeader>
           <CardContent className="p-4 pt-0">
             <div className="flex flex-col sm:flex-row items-center gap-4">
+              {hasRiskDistribution ? (
               <div className="h-44 w-44 shrink-0 flex items-center justify-center relative">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -389,13 +418,18 @@ export function Dashboard() {
                   <span className="text-xs text-muted-foreground font-medium">ทั้งหมด</span>
                 </div>
               </div>
+              ) : (
+                <div className="h-44 w-44 shrink-0 rounded-lg border border-border bg-muted/40 flex items-center justify-center text-center px-4">
+                  <span className="text-xs text-muted-foreground">ไม่มีข้อมูลการกระจายความเสี่ยง</span>
+                </div>
+              )}
 
               {/* Level bars */}
               <div className="flex-1 w-full space-y-3">
                 {[
-                  { label: "สูง", value: dash.risk_distribution.high || 0, color: RISK_PALETTE.high },
-                  { label: "กลาง", value: dash.risk_distribution.medium || 0, color: RISK_PALETTE.medium },
-                  { label: "ต่ำ", value: dash.risk_distribution.low || 0, color: RISK_PALETTE.low },
+                  { label: "สูง", value: hasRiskDistribution ? riskValues[2] : null, color: RISK_PALETTE.high },
+                  { label: "กลาง", value: hasRiskDistribution ? riskValues[1] : null, color: RISK_PALETTE.medium },
+                  { label: "ต่ำ", value: hasRiskDistribution ? riskValues[0] : null, color: RISK_PALETTE.low },
                 ].map((row) => (
                   <div key={row.label} className="flex items-center gap-3">
                     <span className="w-10 shrink-0 text-[13px] text-muted-foreground font-sans">{row.label}</span>
@@ -403,13 +437,13 @@ export function Dashboard() {
                       <div
                         className="h-full rounded-full"
                         style={{
-                          width: `${riskTotal > 0 ? Math.max((row.value / riskTotal) * 100, row.value > 0 ? 4 : 0) : 0}%`,
+                          width: `${hasRiskDistribution && riskTotal > 0 ? Math.max((row.value / riskTotal) * 100, row.value > 0 ? 4 : 0) : 0}%`,
                           backgroundColor: row.color,
                         }}
                       />
                     </div>
                     <span className="w-8 shrink-0 text-right text-sm font-mono font-bold text-foreground">
-                      {formatNumber(row.value)}
+                      {formatOptionalMetric(row.value, { fallback: "—" })}
                     </span>
                   </div>
                 ))}
@@ -433,7 +467,7 @@ export function Dashboard() {
         }>
           <div>
             <CardTitle>ประเภทการหลอกลวง</CardTitle>
-            <p className="text-xs text-muted-foreground mt-0.5">
+            <p className="text-[13px] text-muted-foreground mt-0.5">
               จำนวนรายการในแต่ละประเภท
             </p>
           </div>

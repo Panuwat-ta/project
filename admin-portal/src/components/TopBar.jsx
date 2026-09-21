@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Menu, Sun, Moon, Monitor, Search, User, ShieldCheck } from "lucide-react";
+import { Menu, Sun, Moon, Monitor, Search, User } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
 
 const ROUTE_TITLES = {
@@ -12,7 +12,7 @@ const ROUTE_TITLES = {
   "/admin/profile": "บัญชีและความปลอดภัย",
 };
 
-export function TopBar({ onMenuClick, onOpenCommandPalette, isWsConnected = true }) {
+export function TopBar({ onMenuClick, onOpenCommandPalette }) {
   const { theme, setTheme } = useTheme();
   const location = useLocation();
 
@@ -36,24 +36,19 @@ export function TopBar({ onMenuClick, onOpenCommandPalette, isWsConnected = true
 
   return (
     <header className="h-14 shrink-0 flex items-center justify-between border-b border-border bg-card text-card-foreground px-4 md:px-6 z-20">
-      {/* Left: Mobile Menu & Current Context */}
-      <div className="flex items-center gap-3">
+      {/* Mobile context only. Desktop page headers own the page title. */}
+      <div className="flex items-center gap-3 md:hidden">
         <button
           type="button"
           onClick={onMenuClick}
-          className="size-9 -ml-1.5 inline-flex items-center justify-center text-muted-foreground hover:text-foreground rounded-md md:hidden hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="size-9 -ml-1.5 inline-flex items-center justify-center text-muted-foreground hover:text-foreground rounded-md hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           aria-label="เปิดเมนูด้านข้าง"
         >
           <Menu className="size-5" />
         </button>
-
-        <div className="flex items-center gap-2">
-          <ShieldCheck className="size-4 text-primary hidden sm:inline-block" />
-          <h1 className="text-sm font-semibold text-foreground">
-            {activeTitle}
-          </h1>
-        </div>
+        <h1 className="text-sm font-semibold text-foreground">{activeTitle}</h1>
       </div>
+      <div className="hidden md:block" aria-hidden="true" />
 
       {/* Right: Quick Command Search, Live Status, Theme & Profile */}
       <div className="flex items-center gap-2.5">
@@ -61,7 +56,7 @@ export function TopBar({ onMenuClick, onOpenCommandPalette, isWsConnected = true
         <button
           type="button"
           onClick={onOpenCommandPalette}
-          className="h-9 flex items-center gap-2 px-3 rounded-lg border border-border bg-muted/60 text-[13px] text-muted-foreground hover:border-primary hover:text-foreground transition-all cursor-pointer select-none font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="h-9 flex items-center gap-2 px-3 rounded-lg border border-border bg-muted/60 text-[13px] text-muted-foreground hover:border-primary hover:text-foreground transition-colors cursor-pointer select-none font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <Search className="size-3.5 text-muted-foreground" />
           <span className="hidden sm:inline">ค้นหาด่วน...</span>
@@ -69,19 +64,6 @@ export function TopBar({ onMenuClick, onOpenCommandPalette, isWsConnected = true
             Ctrl K
           </kbd>
         </button>
-
-        {/* Live System Status Pulse */}
-        <div
-          className="hidden lg:flex h-8 items-center gap-1.5 px-2.5 rounded-full bg-muted border border-border text-xs font-medium text-foreground select-none"
-          title={isWsConnected ? "เชื่อมต่อแบบเรียลไทม์" : "ขาดการเชื่อมต่อ"}
-        >
-          <span
-            className={`size-2 rounded-full ${
-              isWsConnected ? "bg-success animate-pulse" : "bg-danger"
-            }`}
-          />
-          <span>{isWsConnected ? "เรียลไทม์" : "ขาดการเชื่อมต่อ"}</span>
-        </div>
 
         {/* Theme Toggle */}
         <button

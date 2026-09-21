@@ -57,9 +57,9 @@ export function TableRow({ className, children, isHoverable = true, ...props }) 
   );
 }
 
-export function TableHead({ className, children, ...props }) {
+export function TableHead({ className, children, scope = "col", ...props }) {
   return (
-    <th className={cn("px-4 py-3 align-middle font-medium", className)} {...props}>
+    <th scope={scope} className={cn("px-4 py-3 align-middle font-medium", className)} {...props}>
       {children}
     </th>
   );

@@ -13,12 +13,13 @@ import {
 import { getUser, updateUserStatus } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
-import { StatusBadge, Badge } from "@/components/ui/Badge";
+import { StatusBadge, Badge, RiskBadge } from "@/components/ui/Badge";
 import { Modal } from "@/components/ui/Modal";
 import { Textarea } from "@/components/ui/Input";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell, TableEmpty } from "@/components/ui/Table";
 import { useToast } from "@/components/ui/ToastContext";
 import { formatDate, formatNumber } from "@/lib/utils";
+import { formatOptionalMetric } from "@/lib/display-state";
 import { useAdminQuery } from "@/lib/use-admin-query";
 
 export function UserDetail() {
@@ -107,6 +108,7 @@ export function UserDetail() {
           <Link
             to="/admin/users"
             className="p-1.5 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            aria-label="กลับไปหน้ารายชื่อผู้ใช้"
           >
             <ArrowLeft className="size-4" />
           </Link>
@@ -144,50 +146,23 @@ export function UserDetail() {
         )}
       </div>
 
-      {/* Overview Metric Panels */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="p-4 flex items-center gap-3.5">
-            <div className="size-10 rounded-lg bg-primary-subtle border border-primary-border text-primary flex items-center justify-center">
-              <Activity className="size-5" />
-            </div>
-            <div>
-              <div className="text-xs font-medium text-muted-foreground">สแกนสะสมทั้งหมด</div>
-              <div className="text-xl font-bold font-mono text-foreground">
-                {formatNumber(user.total_scans ?? user.scans_count ?? 0)} ครั้ง
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4 flex items-center gap-3.5">
-            <div className="size-10 rounded-lg bg-danger-subtle border border-danger-border text-danger flex items-center justify-center">
-              <Flag className="size-5" />
-            </div>
-            <div>
-              <div className="text-xs font-medium text-muted-foreground">รายงานทั้งหมด</div>
-              <div className="text-xl font-bold font-mono text-foreground">
-                {formatNumber(user.total_reports ?? 0)} รายการ
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4 flex items-center gap-3.5">
-            <div className="size-10 rounded-lg bg-success-subtle border border-success-border text-success flex items-center justify-center">
-              <Clock className="size-5" />
-            </div>
-            <div>
-              <div className="text-xs font-medium text-muted-foreground">ลงทะเบียนเมื่อ</div>
-              <div className="text-xs font-semibold font-mono text-foreground mt-1">
-                {formatDate(user.created_at)}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Account metrics share one surface so status and activity remain comparable. */}
+      <Card>
+        <CardContent className="p-0 grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-border-subtle">
+          <div className="p-4">
+            <div className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground"><Activity className="size-4 text-primary" />สแกนสะสมทั้งหมด</div>
+            <div className="mt-1 text-lg font-bold font-mono text-foreground">{formatNumber(user.total_scans ?? user.scans_count ?? 0)} ครั้ง</div>
+          </div>
+          <div className="p-4">
+            <div className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground"><Flag className="size-4 text-danger" />รายงานทั้งหมด</div>
+            <div className="mt-1 text-lg font-bold font-mono text-foreground">{formatNumber(user.total_reports ?? 0)} รายการ</div>
+          </div>
+          <div className="p-4">
+            <div className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground"><Clock className="size-4 text-muted-foreground" />ลงทะเบียนเมื่อ</div>
+            <div className="mt-1 text-[13px] font-semibold font-mono text-foreground">{formatDate(user.created_at)}</div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Details & Activity Table */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -261,15 +236,10 @@ export function UserDetail() {
                         #{scan.id}
                       </TableCell>
                       <TableCell className="font-mono text-[13px] font-bold text-foreground">
-                        {scan.total_risk_score ?? 0}%
+                        {formatOptionalMetric(scan.total_risk_score, { suffix: "%" })}
                       </TableCell>
                       <TableCell>
-                        <Badge
-                          variant={(scan.total_risk_score ?? 0) >= 70 ? "danger" : (scan.total_risk_score ?? 0) >= 40 ? "warning" : "success"}
-                          size="sm"
-                        >
-                          {(scan.total_risk_score ?? 0) >= 70 ? "สูง" : (scan.total_risk_score ?? 0) >= 40 ? "กลาง" : "ต่ำ"}
-                        </Badge>
+                        <RiskBadge score={scan.total_risk_score} />
                       </TableCell>
                       <TableCell className="font-mono text-[13px] text-muted-foreground">
                         {formatDate(scan.created_at)}

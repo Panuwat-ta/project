@@ -37,18 +37,14 @@ export function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4 font-sans text-foreground select-none relative overflow-hidden">
-      {/* Background ambient lighting */}
-      <div className="absolute top-1/4 -left-32 size-96 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 -right-32 size-96 rounded-full bg-primary/5 blur-3xl pointer-events-none" />
-
-      <div className="w-full max-w-md bg-card rounded-2xl shadow-2xl border border-border p-8 backdrop-blur-xl relative z-10">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4 font-sans text-foreground relative overflow-hidden">
+      <div className="w-full max-w-md bg-card rounded-xl border border-border p-7 shadow-sm">
         {/* Header Branding */}
-        <div className="flex flex-col items-center text-center mb-8">
-          <div className="size-14 rounded-2xl bg-primary-subtle border border-primary-border flex items-center justify-center mb-4">
-            <Shield className="size-7 text-primary" />
+        <div className="flex flex-col items-center text-center mb-7">
+          <div className="size-10 rounded-lg bg-primary-subtle border border-primary-border flex items-center justify-center mb-4">
+            <Shield className="size-5 text-primary" />
           </div>
-          <h1 className="text-xl font-bold tracking-tight text-foreground">
+          <h1 className="text-lg font-bold tracking-tight text-foreground">
             ScamGuard Admin
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
@@ -59,39 +55,47 @@ export function Login() {
         {/* Form */}
         <form onSubmit={handleLogin} className="space-y-4">
           {error && (
-            <div className="p-3 rounded-lg bg-danger-subtle border border-danger-border text-danger text-xs flex items-start gap-2.5">
+            <div id="login-error" role="alert" className="p-3 rounded-lg bg-danger-subtle border border-danger-border text-danger text-xs flex items-start gap-2.5">
               <AlertCircle className="size-4 shrink-0 mt-0.5 text-danger" />
               <span>{error}</span>
             </div>
           )}
 
           <div className="space-y-1.5">
-            <label className="block text-[13px] font-semibold text-foreground">อีเมลผู้ดูแลระบบ</label>
+            <label htmlFor="admin-email" className="block text-[13px] font-semibold text-foreground">อีเมลผู้ดูแลระบบ</label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
               <input
                 ref={emailInputRef}
+                id="admin-email"
                 type="email"
+                autoComplete="username"
+                aria-invalid={error ? true : undefined}
+                aria-describedby={error ? "login-error" : undefined}
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@scamguard.local"
-                className="w-full h-10 pl-9 pr-3 rounded-lg bg-muted/40 border border-input text-sm text-foreground placeholder:text-muted-foreground outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/35 transition-all font-mono"
+                className="w-full h-10 pl-9 pr-3 rounded-lg bg-muted/40 border border-input text-sm text-foreground placeholder:text-muted-foreground outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/35 transition-colors font-mono"
               />
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <label className="block text-[13px] font-semibold text-foreground">รหัสผ่าน</label>
+            <label htmlFor="admin-password" className="block text-[13px] font-semibold text-foreground">รหัสผ่าน</label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
               <input
+                id="admin-password"
                 type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                aria-invalid={error ? true : undefined}
+                aria-describedby={error ? "login-error" : undefined}
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full h-10 pl-9 pr-10 rounded-lg bg-muted/40 border border-input text-sm text-foreground placeholder:text-muted-foreground outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/35 transition-all font-mono"
+                className="w-full h-10 pl-9 pr-10 rounded-lg bg-muted/40 border border-input text-sm text-foreground placeholder:text-muted-foreground outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/35 transition-colors font-mono"
               />
               <button
                 type="button"
