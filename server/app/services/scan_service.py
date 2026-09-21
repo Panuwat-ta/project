@@ -1,5 +1,7 @@
 import os
 import asyncio
+import functools
+import anyio
 from fastapi import UploadFile, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -22,6 +24,36 @@ from app.services.inference_service import inference_service
 import app.core.redis as redis_core
 
 MAX_UPLOAD_BYTES = settings.MAX_UPLOAD_SIZE_MB * 1024 * 1024
+
+async def _generate_xai_with_timeout(region: str, visual_score: int, ai_gen_probability: float, found_keywords: list[str]) -> str:
+    """Generate XAI without letting a blocking worker defeat the async timeout.
+
+    AnyIO worker threads ignore host-task cancellation by default. Using
+    abandon_on_cancel=True lets asyncio.wait_for return on time; the worker may
+    finish in the background, but its late result is discarded.
+    """
+    call = functools.partial(
+        inference_service.generate_xai_explanation,
+        region=region,
+        visual_score=visual_score,
+        ai_gen_probability=ai_gen_probability,
+        scam_keywords=found_keywords,
+    )
+    try:
+        return await asyncio.wait_for(
+            anyio.to_thread.run_sync(call, abandon_on_cancel=True),
+            timeout=settings.XAI_TIMEOUT,
+        )
+    except (asyncio.TimeoutError, TimeoutError):
+        print(f"XAI timeout after {settings.XAI_TIMEOUT}s, using fallback")
+        return inference_service.fallback_xai_explanation(
+            region, visual_score, ai_gen_probability, found_keywords
+        )
+    except Exception as exc:
+        print(f"XAI phase failed, using fallback: {exc}")
+        return inference_service.fallback_xai_explanation(
+            region, visual_score, ai_gen_probability, found_keywords
+        )
 
 async def create_scan_task(file: UploadFile, user_id: int, db: AsyncSession, title: str | None = None) -> tuple[Scan, bytes, str]:
     file_bytes = await file.read()
@@ -167,27 +199,9 @@ async def process_image_background(scan_id, file_bytes: bytes, image_hash: str,
             await manager.broadcast({"type": "refresh_dashboard"})
 
             # Phase 2: XAI explanation ตามมาทีหลัง — พัง/หมดเวลาก็ไม่ล้มสแกน ใช้ fallback แทน
-            try:
-                xai_explanation = await asyncio.wait_for(
-                    run_in_threadpool(
-                        inference_service.generate_xai_explanation,
-                        region=anomaly_region,
-                        visual_score=visual_score,
-                        ai_gen_probability=ai_gen_probability,
-                        scam_keywords=found_keywords
-                    ),
-                    timeout=settings.XAI_TIMEOUT,
-                )
-            except (asyncio.TimeoutError, TimeoutError):
-                print(f"XAI timeout after {settings.XAI_TIMEOUT}s, using fallback")
-                xai_explanation = inference_service.fallback_xai_explanation(
-                    anomaly_region, visual_score, ai_gen_probability, found_keywords
-                )
-            except Exception as e:
-                print(f"XAI phase failed, using fallback: {e}")
-                xai_explanation = inference_service.fallback_xai_explanation(
-                    anomaly_region, visual_score, ai_gen_probability, found_keywords
-                )
+            xai_explanation = await _generate_xai_with_timeout(
+                anomaly_region, visual_score, ai_gen_probability, found_keywords
+            )
 
             scan.xai_explanation = xai_explanation
             scan.status = "completed"

@@ -281,18 +281,17 @@ export function getExportDownloadUrl(jobId) {
   return `${API_BASE}/admin/dataset/export-jobs/${jobId}/download`;
 }
 
-export function getWebSocketUrl(path = "/admin/dashboard", token = "") {
+export function getWebSocketUrl(path = "/admin/dashboard") {
   const customWsUrl = import.meta.env.VITE_WS_URL;
   const cleanPath = path.startsWith("/") ? path : `/${path}`;
-  const queryParam = token ? `?token=${encodeURIComponent(token)}` : "";
 
   if (customWsUrl) {
     const base = customWsUrl.replace(/\/$/, "");
-    return `${base}${cleanPath}${queryParam}`;
+    return `${base}${cleanPath}`;
   }
 
   const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-  return `${protocol}//${window.location.host}/api/v1/ws${cleanPath}${queryParam}`;
+  return `${protocol}//${window.location.host}/api/v1/ws${cleanPath}`;
 }
 
 // Add these for profile logic

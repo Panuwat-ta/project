@@ -45,3 +45,9 @@ Authenticated pages ถูก BLOCKED เพราะ Chrome profile ปัจ�
 - ลบการอ้าง `admin@gmail.local` / `password123` เป็น default credential
 - ตัวแปร `VITE_DEFAULT_ADMIN_USERNAME` และ `VITE_DEFAULT_ADMIN_PASSWORD` ใน template เว้นว่างและอธิบายว่าเป็น dev pre-fill เท่านั้น
 - หลังแก้: Admin test 5/5, lint/build และ diff-check ผ่าน
+## Authenticated matrix retry — 2026-09-21
+- เปิด headless Chrome ด้วย audit profile เดิมเท่านั้น โดยไม่สร้าง/reset credential
+- นำทางไป `/admin/dashboard` แล้วแอป redirect กลับ `/login` ทันที
+- จึงยืนยันว่า profile เดิมไม่มี authenticated session ที่ restore ได้
+- ปิด Chrome audit หลังตรวจเสร็จ
+- สถานะ authenticated full-page matrix: BLOCKED จากการไม่มี valid browser session; ไม่ใช่ UI assertion failure

@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { getAccessToken, getWebSocketUrl } from "@/lib/api";
 
 const MAX_DELAY = 30000;
+const WS_PROTOCOL = "scamguard-admin";
 
 /**
  * Persistent admin-dashboard WebSocket with exponential-backoff reconnect
@@ -24,10 +25,13 @@ export function useDashboardWebSocket({ onRefresh, onStatusChange }) {
     let closed = false;
 
     function schedule() {
-      if (closed) return;
+      if (closed || timer) return;
       attempt += 1;
       const delay = Math.min(1000 * 2 ** (attempt - 1), MAX_DELAY);
-      timer = setTimeout(connect, delay);
+      timer = setTimeout(() => {
+        timer = null;
+        connect();
+      }, delay);
     }
 
     function connect() {
@@ -35,11 +39,14 @@ export function useDashboardWebSocket({ onRefresh, onStatusChange }) {
       const token = getAccessToken();
       if (!token) {
         // Not logged in (or session expired) — retry, don't spin.
-        timer = setTimeout(connect, 2000);
+        timer = setTimeout(() => {
+          timer = null;
+          connect();
+        }, 2000);
         return;
       }
       try {
-        ws = new WebSocket(getWebSocketUrl("/admin/dashboard", token));
+        ws = new WebSocket(getWebSocketUrl("/admin/dashboard"), [WS_PROTOCOL, token]);
       } catch {
         schedule();
         return;
@@ -62,7 +69,9 @@ export function useDashboardWebSocket({ onRefresh, onStatusChange }) {
         handlers.current.onStatusChange?.(false);
         schedule();
       };
-      ws.onerror = down;
+      ws.onerror = () => {
+        if (ws && ws.readyState !== WebSocket.CLOSED) ws.close();
+      };
       ws.onclose = down;
     }
 

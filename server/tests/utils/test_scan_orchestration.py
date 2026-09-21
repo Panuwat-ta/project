@@ -1,4 +1,5 @@
 import json
+import time
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
@@ -166,3 +167,60 @@ async def test_process_image_background_cache_hit_skips_model(monkeypatch, tmp_p
     assert scan.progress == 100
     assert scan.visual_score == 42
     assert scan.heatmap_image_url == str(heatmap)
+
+
+@pytest.mark.asyncio
+async def test_xai_timeout_returns_fallback_without_waiting_for_worker(monkeypatch):
+    monkeypatch.setattr(scan_service.settings, "XAI_TIMEOUT", 0.02)
+
+    def slow_xai(**_kwargs):
+        time.sleep(0.25)
+        return "ผลลัพธ์ที่มาช้า"
+
+    monkeypatch.setattr(scan_service.inference_service, "generate_xai_explanation", slow_xai)
+    monkeypatch.setattr(
+        scan_service.inference_service,
+        "fallback_xai_explanation",
+        lambda *_args: "fallback-xai",
+    )
+
+    started = time.monotonic()
+    result = await scan_service._generate_xai_with_timeout("กลางภาพ", 55, 0.2, [])
+    elapsed = time.monotonic() - started
+
+    assert result == "fallback-xai"
+    assert elapsed < 0.15
+
+
+def test_ocr_timeout_returns_without_waiting_for_worker(monkeypatch):
+    import io
+    from PIL import Image
+
+    service = scan_service.inference_service
+    monkeypatch.setattr(scan_service.settings, "OCR_TIMEOUT", 0.02)
+    monkeypatch.setattr(service, "det_model", object())
+    monkeypatch.setattr(service, "rec_model", object())
+
+    def slow_ocr(*_args, **_kwargs):
+        time.sleep(0.25)
+        return "late-ocr"
+
+    monkeypatch.setattr(service, "_run_ocr_fallback", slow_ocr)
+    buf = io.BytesIO()
+    Image.new("RGB", (8, 8), "white").save(buf, format="PNG")
+
+    started = time.monotonic()
+    result = service._run_ocr_with_timeout(buf.getvalue())
+    elapsed = time.monotonic() - started
+
+    assert result == ""
+    assert elapsed < 0.15
+
+
+def test_xai_gpu_preflight_defers_unsafe_vram():
+    from app.services.inference_service import should_defer_xai_gpu
+
+    assert should_defer_xai_gpu(-1, 4096, 3800) is True
+    assert should_defer_xai_gpu(-1, 8192, 1200) is True
+    assert should_defer_xai_gpu(-1, 8192, 4000) is False
+    assert should_defer_xai_gpu(0, 4096, 500) is False

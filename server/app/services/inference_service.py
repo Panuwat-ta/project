@@ -12,6 +12,19 @@ _xai_lock = threading.Lock()
 # ย้ายโมเดล Surya ข้าม device ใน fallback ก็ต้องห้ามซ้อนกันเช่นกัน
 _ocr_device_lock = threading.Lock()
 
+# Qwen 1.5B GPU offload can abort the whole process on 4 GiB cards when
+# Surya/ONNX share the same device. Prefer the existing deterministic fallback
+# instead of risking a native ggml-cuda abort that Python cannot catch.
+_XAI_MIN_SAFE_TOTAL_VRAM_MB = 4097
+_XAI_MIN_FREE_VRAM_MB = 1500
+
+def should_defer_xai_gpu(target_gpu_layers: int, total_vram_mb: int, free_vram_mb: int) -> bool:
+    if target_gpu_layers == 0:
+        return False
+    low_capacity = 0 < total_vram_mb < _XAI_MIN_SAFE_TOTAL_VRAM_MB
+    low_headroom = 0 < free_vram_mb < _XAI_MIN_FREE_VRAM_MB
+    return low_capacity or low_headroom
+
 class InferenceService:
     def __init__(self):
         # We run ONNX in a separate subprocess to avoid CUDA 12 vs 13.3 conflicts.
@@ -50,25 +63,32 @@ class InferenceService:
                                     pass
                 from llama_cpp import Llama
 
+                total_vram = 0
                 free_vram = 0
                 try:
                     import subprocess
                     out = subprocess.check_output(
-                        ["nvidia-smi", "--query-gpu=memory.free", "--format=csv,noheader,nounits"],
-                        timeout=2
+                        [
+                            "nvidia-smi",
+                            "--query-gpu=memory.total,memory.free",
+                            "--format=csv,noheader,nounits",
+                        ],
+                        timeout=2,
                     ).decode()
-                    free_vram = int(out.strip().split()[0])
+                    total_raw, free_raw = out.strip().split(",", 1)
+                    total_vram = int(total_raw.strip())
+                    free_vram = int(free_raw.strip())
                 except Exception:
                     pass
 
                 target_gpu_layers = getattr(settings, "XAI_GPU_LAYERS", -1)
                 context_size = getattr(settings, "XAI_CONTEXT_SIZE", 1024)
 
-                # Qwen2.5-1.5B Q4_K_M requires ~1500 MiB VRAM for full GPU offload.
-                # If free VRAM is below 1500 MiB (e.g. concurrent server process or test suite), defer XAI model
-                # to prevent multi-process GPU memory contention and CUDA errors on 4GB VRAM.
-                if target_gpu_layers != 0 and free_vram > 0 and free_vram < 1500:
-                    print(f"Available VRAM ({free_vram} MiB) < 1500 MiB. Deferring duplicate XAI model to avoid GPU contention.")
+                if should_defer_xai_gpu(target_gpu_layers, total_vram, free_vram):
+                    print(
+                        "Deferring GPU XAI model to deterministic fallback "
+                        f"(VRAM total={total_vram} MiB, free={free_vram} MiB)."
+                    )
                     self.xai_model = None
                 else:
                     self.xai_model = Llama(
@@ -323,16 +343,21 @@ class InferenceService:
 
         image = Image.open(io.BytesIO(image_bytes))
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
-            future = pool.submit(self._run_ocr_fallback, run_ocr, image, ["th", "en"])
-            try:
-                return future.result(timeout=settings.OCR_TIMEOUT)
-            except concurrent.futures.TimeoutError:
-                print(f"OCR timeout after {settings.OCR_TIMEOUT}s, continuing without OCR text")
-                return ""
-            except Exception as e:
-                print(f"Surya OCR error: {e}")
-                return ""
+        pool = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+        future = pool.submit(self._run_ocr_fallback, run_ocr, image, ["th", "en"])
+        try:
+            return future.result(timeout=settings.OCR_TIMEOUT)
+        except concurrent.futures.TimeoutError:
+            print(f"OCR timeout after {settings.OCR_TIMEOUT}s, continuing without OCR text")
+            future.cancel()
+            return ""
+        except Exception as e:
+            print(f"Surya OCR error: {e}")
+            return ""
+        finally:
+            # Do not wait for a running torch worker after timeout; it cannot be
+            # killed safely from Python, so abandon its late result instead.
+            pool.shutdown(wait=False, cancel_futures=True)
 
     def predict(self, image_bytes: bytes) -> dict:
         """
