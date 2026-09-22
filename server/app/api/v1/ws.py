@@ -24,7 +24,6 @@ async def _authenticate_admin_websocket(websocket: WebSocket, db: AsyncSession) 
         await resolve_admin_access(token, db, require_superadmin=True)
     except AdminAccessError:
         return False
-    await db.commit()
     return True
 
 

@@ -19,7 +19,10 @@ const bootstrap=`(()=>{
   const userDetail={...userSummary,total_reports:1,recent_scans:[{id:'scan-1',total_risk_score:42,status:'completed',created_at:'2026-09-20T10:00:00Z'}]};
   const model={id:1,version_tag:'v1.0.0',is_active:true,status:'active',m_iou:.81,a_acc:.91,m_acc:.85,m_dice:.88,deployed_at:'2026-09-20T10:00:00Z',dataset_reference:'runtime-fixture',artifact_checksum:'abc123',file_path:'/models/model.onnx',framework_compatibility:'ONNX'};
   const audit={id:1,action:'user_status_update',entity_type:'user',entity_id:'1',admin_email:'runtime@example.test',ip_address:'127.0.0.1',user_agent:'Runtime Browser',created_at:'2026-09-21T12:00:00Z',reason:'runtime fixture',before_state:{is_active:true},after_state:{is_active:false}};
-  const session={id:'session-1',is_current:true,user_agent:'Chrome Runtime',ip_address:'127.0.0.1',created_at:'2026-09-21T12:00:00Z',last_used_at:'2026-09-21T12:05:00Z'};
+  const sessions=[
+    {id:'session-1',is_current:true,user_agent:'Chrome Runtime',ip_address:'127.0.0.1',created_at:'2026-09-21T12:00:00Z',last_used_at:'2026-09-21T12:05:00Z'},
+    {id:'session-2',is_current:false,user_agent:'Firefox Linux',ip_address:'127.0.0.2',created_at:'2026-09-21T11:00:00Z',last_used_at:'2026-09-21T11:30:00Z'},
+  ];
   const dashboard={overview:{scans_today:12,total_scans:100,active_users_today:5,total_users:50},reports:{pending:2,reviewing:1},risk_distribution:{low:50,medium:30,high:20},model:{active_version:'v1.0.0'},category_breakdown:{fake_slip:3,romance_scam:2},scan_trend:[{date:'20 ก.ย.',count:8},{date:'21 ก.ย.',count:12}]};
   const health={database:'healthy',storage:'healthy',models:'healthy',queue:'healthy',last_check:'2026-09-21T12:00:00Z'};
   const json=(body,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json'}});
@@ -39,7 +42,7 @@ const bootstrap=`(()=>{
     if(p==='/api/v1/admin/dataset/export-jobs') return json({items:[{id:'job-1',status:'succeeded',progress:100,total_rows:5,file_size_bytes:2048,created_at:'2026-09-21T12:00:00Z'}],total:1,page:1,limit:10});
     if(p==='/api/v1/admin/audit-logs') return json({items:[audit],total:1,page:1,limit:50});
     if(p==='/api/v1/admin/me') return json({...user,last_login_at:'2026-09-21T12:00:00Z'});
-    if(p==='/api/v1/admin/sessions') return json({items:[session],total:1});
+    if(p==='/api/v1/admin/sessions') return json({items:sessions,total:sessions.length});
     if(p==='/api/v1/admin/search') return json({items:[]});
     return json({detail:'Unhandled runtime fixture endpoint: '+method+' '+p},500);
   };
@@ -91,13 +94,13 @@ for(const [vp,width,height] of viewports){
         if(document.modelContext){try{const tools=await document.modelContext.getTools();const tool=tools.find(t=>t.name==='get_admin_page_context');webmcp.toolFound=!!tool;if(tool){const raw=await document.modelContext.executeTool(tool,'{}');webmcp.result=JSON.parse(raw);}}catch(e){webmcp.error=String(e)}}
         const root=document.documentElement;const text=document.body?.innerText||'';
         const visibleError=[...document.querySelectorAll('[role="alert"]')].map(e=>e.textContent?.trim()).filter(Boolean);
-        return {path:location.pathname,title:document.title,h1:document.querySelector('h1')?.textContent?.trim()||null,h2:document.querySelector('h2')?.textContent?.trim()||null,theme:root.classList.contains('dark')?'dark':root.classList.contains('light')?'light':'unknown',overflow:root.scrollWidth>root.clientWidth+1,scrollWidth:root.scrollWidth,clientWidth:root.clientWidth,unexpected:text.includes('Unexpected Application Error'),loadError:/ไม่สามารถโหลด|เกิดข้อผิดพลาดในการโหลด/.test(text),alerts:visibleError,scanStatusVisible:text.includes('เสร็จสิ้น'),webmcp,bodySample:text.slice(0,160)};
+        return {path:location.pathname,title:document.title,h1:document.querySelector('h1')?.textContent?.trim()||null,h2:document.querySelector('h2')?.textContent?.trim()||null,theme:root.classList.contains('dark')?'dark':root.classList.contains('light')?'light':'unknown',overflow:root.scrollWidth>root.clientWidth+1,scrollWidth:root.scrollWidth,clientWidth:root.clientWidth,unexpected:text.includes('Unexpected Application Error'),loadError:/ไม่สามารถโหลด|เกิดข้อผิดพลาดในการโหลด/.test(text),alerts:visibleError,scanStatusVisible:text.includes('เสร็จสิ้น'),profileSessionsOk:location.pathname!=='/admin/profile'||(text.includes('เซสชันปัจจุบัน')&&text.includes('เชื่อมต่ออยู่')&&text.includes('เข้าสู่ระบบล่าสุด')&&text.includes('21 ก.ย. 2569 19:00:00')),webmcp,bodySample:text.slice(0,160)};
       })()`);
       const runtimeExceptions=events.filter(e=>e.method==='Runtime.exceptionThrown').map(e=>({text:e.params?.exceptionDetails?.text||'exception',description:e.params?.exceptionDetails?.exception?.description||null,stack:e.params?.exceptionDetails?.stackTrace||null}));
       const consoleErrors=events.filter(e=>e.method==='Runtime.consoleAPICalled'&&e.params?.type==='error').map(e=>(e.params?.args||[]).map(a=>a.value||a.description||'').join(' '));
       const value=info.value||{};
       const web=value.webmcp?.result;
-      const pass=!info.exception && value.path===route && value.theme===theme && !value.overflow && !value.unexpected && !value.loadError && runtimeExceptions.length===0 && consoleErrors.length===0 && (route!=='/admin/users/1' || value.scanStatusVisible) && value.webmcp?.available && value.webmcp?.toolFound && web?.path===route && web?.theme===theme && web?.heading===expectedHeading;
+      const pass=!info.exception && value.path===route && value.theme===theme && !value.overflow && !value.unexpected && !value.loadError && runtimeExceptions.length===0 && consoleErrors.length===0 && (route!=='/admin/users/1' || value.scanStatusVisible) && (route!=='/admin/profile' || value.profileSessionsOk) && value.webmcp?.available && value.webmcp?.toolFound && web?.path===route && web?.theme===theme && web?.heading===expectedHeading;
       results.push({vp,width,height,theme,route,expectedHeading,pass,info:value,runtimeExceptions,consoleErrors,evalException:info.exception?.text||null});
     }
   }

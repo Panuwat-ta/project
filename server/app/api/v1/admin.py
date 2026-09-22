@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from fastapi import APIRouter, Depends, Request, Response, Cookie
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
@@ -41,6 +42,10 @@ def _user_payload(admin: Admin) -> dict:
         "role": "admin",
         "is_superadmin": admin.is_superadmin,
     }
+
+
+def _profile_payload(admin: Admin, *, last_login_at=None) -> dict:
+    return {**_user_payload(admin), "last_login_at": last_login_at}
 
 
 @router.post("/login", response_model=TokenResponse)
@@ -184,10 +189,12 @@ async def admin_logout(
 
 @router.get("/me", response_model=AdminProfileResponse)
 @limiter.limit(ADMIN_LIMIT)
-async def get_me(request: Request, 
+async def get_me(request: Request,
+    db: AsyncSession = Depends(get_db),
     current_admin: AdminModel = Depends(require_super_admin),
 ):
-    return _user_payload(current_admin)
+    last_login_at = await admin_service.get_admin_last_login_at(db, current_admin.id)
+    return _profile_payload(current_admin, last_login_at=last_login_at)
 
 
 @router.patch("/me", response_model=AdminProfileResponse)
@@ -208,7 +215,8 @@ async def update_me(request: Request,
         current_admin.hashed_password = hash_password(body.new_password)
     await db.commit()
     await db.refresh(current_admin)
-    return _user_payload(current_admin)
+    last_login_at = await admin_service.get_admin_last_login_at(db, current_admin.id)
+    return _profile_payload(current_admin, last_login_at=last_login_at)
 
 
 @router.get("/sessions", response_model=AdminSessionListResponse)
@@ -223,9 +231,14 @@ async def get_sessions(
     from app.core.security import decode_access_token
     current_sid = decode_access_token(token).get("sid") if token else None
 
+    now = datetime.now(TH_TIMEZONE)
     result = await db.execute(
         select(AdminSession)
-        .where(AdminSession.admin_id == current_admin.id)
+        .where(
+            AdminSession.admin_id == current_admin.id,
+            AdminSession.revoked_at.is_(None),
+            AdminSession.expires_at > now,
+        )
         .order_by(desc(AdminSession.created_at))
     )
     sessions = result.scalars().all()

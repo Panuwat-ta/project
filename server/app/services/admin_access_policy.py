@@ -64,4 +64,5 @@ async def resolve_admin_access(
         raise InvalidAdminCredentials
 
     session.last_used_at = now
+    await db.commit()
     return admin, session

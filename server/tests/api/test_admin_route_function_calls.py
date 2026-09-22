@@ -45,9 +45,14 @@ async def test_profile_get_and_update_functions(monkeypatch):
     db.commit = AsyncMock()
     db.refresh = AsyncMock()
 
-    profile = await _route(admin_router.get_me)(_request(), current_admin=admin)
+    last_login = datetime.now(TH_TIMEZONE)
+    last_login_service = AsyncMock(return_value=last_login)
+    monkeypatch.setattr(admin_router.admin_service, "get_admin_last_login_at", last_login_service)
+    profile = await _route(admin_router.get_me)(_request(), db=db, current_admin=admin)
     assert profile["email"] == admin.email
     assert profile["is_superadmin"] is True
+    assert profile["last_login_at"] == last_login
+    last_login_service.assert_awaited_once_with(db, admin.id)
 
     body = SimpleNamespace(full_name="Renamed Admin", current_password=None, new_password=None)
     updated = await _route(admin_router.update_me)(_request(), body, db=db, current_admin=admin)
@@ -62,6 +67,7 @@ async def test_profile_password_update_hashes_after_verification(monkeypatch):
     db = MagicMock()
     db.commit = AsyncMock()
     db.refresh = AsyncMock()
+    db.scalar = AsyncMock(return_value=datetime.now(TH_TIMEZONE))
     monkeypatch.setattr(admin_router, "verify_password", lambda plain, hashed: plain == "old-pass")
     monkeypatch.setattr(admin_router, "hash_password", lambda value: f"hashed:{value}")
 
@@ -77,12 +83,16 @@ async def test_session_list_marks_current_and_revoke_delegates(monkeypatch):
     token = create_access_token({"sub": "1", "role": "admin"}, sid=current_sid)
     sessions = [
         SimpleNamespace(id=current_sid, user_agent="pytest", ip_address="127.0.0.1", created_at=now, last_used_at=now, expires_at=now + timedelta(hours=1), revoked_at=None),
-        SimpleNamespace(id="sid-old", user_agent="other", ip_address="127.0.0.2", created_at=now, last_used_at=now, expires_at=now + timedelta(hours=1), revoked_at=now),
+        SimpleNamespace(id="sid-other", user_agent="other", ip_address="127.0.0.2", created_at=now, last_used_at=now, expires_at=now + timedelta(hours=1), revoked_at=None),
     ]
     db = MagicMock()
     db.execute = AsyncMock(return_value=_scalar_result(items=sessions))
 
     result = await _route(admin_router.get_sessions)(_request(token), db=db, current_admin=_admin())
+    session_stmt = db.execute.await_args.args[0]
+    session_sql = str(session_stmt.compile(dialect=postgresql.dialect())).upper()
+    assert "REVOKED_AT IS NULL" in session_sql
+    assert "EXPIRES_AT >" in session_sql
     assert result["total"] == 2
     assert result["items"][0]["is_current"] is True
     assert result["items"][1]["is_current"] is False

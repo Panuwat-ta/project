@@ -91,14 +91,26 @@ async def test_require_super_admin_rejects_normal_admin():
 
 
 @pytest.mark.asyncio
-async def test_super_admin_allowed():
+async def test_super_admin_allowed(monkeypatch):
     app.dependency_overrides[get_current_admin] = _superadmin
+
+    db = MagicMock()
+    async def db_gen():
+        yield db
+    app.dependency_overrides[get_db] = db_gen
+    expected_login = "2026-09-22T07:00:00+07:00"
+    monkeypatch.setattr(
+        admin_router.admin_service,
+        "get_admin_last_login_at",
+        AsyncMock(return_value=expected_login),
+    )
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         response = await ac.get("/api/v1/admin/me")
 
     assert response.status_code == 200
     assert response.json()["is_superadmin"] is True
+    assert response.json()["last_login_at"] == expected_login
 
 
 @pytest.mark.asyncio

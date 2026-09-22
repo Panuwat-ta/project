@@ -29,9 +29,13 @@ class _Result:
 class _Db:
     def __init__(self, admin, session):
         self.values = iter((admin, session))
+        self.commit_count = 0
 
     async def execute(self, _stmt):
         return _Result(next(self.values))
+
+    async def commit(self):
+        self.commit_count += 1
 
 
 def _context(*, active=True, superadmin=True, revoked=False, expired=False):
@@ -54,13 +58,15 @@ def _token(*, sub="1", role="admin", sid="session-1"):
 @pytest.mark.asyncio
 async def test_resolve_admin_access_accepts_active_session():
     admin, session = _context()
+    db = _Db(admin, session)
     resolved_admin, resolved_session = await resolve_admin_access(
-        _token(), _Db(admin, session), require_superadmin=True
+        _token(), db, require_superadmin=True
     )
 
     assert resolved_admin is admin
     assert resolved_session is session
     assert session.last_used_at is not None
+    assert db.commit_count == 1
 
 
 @pytest.mark.asyncio

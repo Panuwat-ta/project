@@ -5,6 +5,7 @@ import uuid
 
 import pytest
 
+from app.core.config import TH_TIMEZONE
 from app.models.admin import Admin
 from app.models.admin_session import AdminSession
 from app.services import admin_service
@@ -598,3 +599,19 @@ def test_media_url_preserves_nested_upload_path(monkeypatch, tmp_path):
     url = admin_service._to_media_url(str(nested), require_exists=True)
 
     assert url == "/uploads/heatmaps/evidence.jpg"
+
+
+@pytest.mark.asyncio
+async def test_admin_last_login_uses_latest_root_session_timestamp():
+    expected = datetime.now(TH_TIMEZONE)
+    db = MagicMock()
+    db.scalar = AsyncMock(return_value=expected)
+
+    actual = await admin_service.get_admin_last_login_at(db, 7)
+
+    assert actual == expected
+    stmt = db.scalar.await_args.args[0]
+    sql = str(stmt.compile(compile_kwargs={"literal_binds": True})).upper()
+    assert "MAX(ADMIN_SESSIONS.CREATED_AT)" in sql
+    assert "REPLACED_BY IS NOT NULL" in sql
+    assert "NOT IN" in sql

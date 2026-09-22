@@ -125,6 +125,21 @@ async def revoke_admin_session(db: AsyncSession, admin_id: int, sid: str) -> Adm
         await db.commit()
     return session
 
+async def get_admin_last_login_at(db: AsyncSession, admin_id: int) -> Optional[datetime]:
+    """Return the newest real login time, excluding refresh-rotation child sessions."""
+    rotated_session_ids = (
+        select(AdminSession.replaced_by)
+        .where(
+            AdminSession.admin_id == admin_id,
+            AdminSession.replaced_by.is_not(None),
+        )
+    )
+    stmt = select(func.max(AdminSession.created_at)).where(
+        AdminSession.admin_id == admin_id,
+        AdminSession.id.not_in(rotated_session_ids),
+    )
+    return await db.scalar(stmt)
+
 async def get_dashboard_stats(db: AsyncSession) -> Dict[str, Any]:
     now = datetime.now(TH_TIMEZONE)
     today = now.replace(hour=0, minute=0, second=0, microsecond=0)
