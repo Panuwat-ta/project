@@ -114,6 +114,34 @@ test("apiRequest retries one 401 through refresh and uses the rotated access tok
   assert.equal(calls[2].options.headers.Authorization, "Bearer new-token");
   assert.equal(api.getAccessToken(), "new-token");
 });
+
+test("forced refresh reauth clears auth and redirects to login", async () => {
+  const originalFetch = globalThis.fetch;
+  api.setAuth("expired-session-token", { id: 1 });
+  globalThis.fetch = async (url) => {
+    if (String(url).endsWith("/admin/refresh")) {
+      return jsonResponse({
+        detail: "Session expired after too many page refreshes. Please sign in again.",
+        code: "ADMIN_REFRESH_LIMIT_REAUTH",
+      }, 401);
+    }
+    return jsonResponse({ detail: "expired access token" }, 401);
+  };
+
+  try {
+    await assert.rejects(
+      api.fetchDashboard(),
+      /เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่/
+    );
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+
+  assert.equal(api.getAccessToken(), null);
+  assert.equal(api.getStoredUser(), null);
+  assert.deepEqual(redirects, ["/login"]);
+});
+
 test("concurrent 401 responses share one refresh request", async () => {
   const originalFetch = globalThis.fetch;
   let refreshCount = 0;

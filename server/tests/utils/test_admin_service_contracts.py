@@ -49,6 +49,64 @@ async def test_create_and_revoke_admin_session_round_trip(monkeypatch):
     assert revoked is created
     assert created.revoked_at is not None
 @pytest.mark.asyncio
+async def test_expire_admin_session_revokes_and_expires_immediately():
+    future = datetime.now(TH_TIMEZONE) + timedelta(days=1)
+    session = SimpleNamespace(admin_id=5, revoked_at=None, expires_at=future)
+    db = MagicMock()
+    db.execute = AsyncMock(return_value=_result(first=session))
+    db.commit = AsyncMock()
+
+    expired = await admin_service.expire_admin_session(db, 5, "sid-1")
+
+    assert expired is session
+    assert session.revoked_at is not None
+    assert session.expires_at <= datetime.now(TH_TIMEZONE)
+    db.commit.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_register_admin_refresh_attempt_uses_atomic_redis_window(monkeypatch):
+    import app.core.redis as redis_core
+
+    redis = MagicMock()
+    redis.eval = AsyncMock(side_effect=[1, 2])
+    monkeypatch.setattr(redis_core, "redis_client", redis)
+
+    first = await admin_service.register_admin_refresh_attempt("family-1")
+    second = await admin_service.register_admin_refresh_attempt("family-1")
+
+    assert (first, second) == (1, 2)
+    assert redis.eval.await_count == 2
+    first_args = redis.eval.await_args_list[0].args
+    second_args = redis.eval.await_args_list[1].args
+    assert first_args[1] == 1
+    assert first_args[2] == second_args[2]
+    assert first_args[2].startswith("admin:refresh-attempts:")
+    assert first_args[3] == 60
+
+
+@pytest.mark.asyncio
+async def test_register_admin_refresh_attempt_falls_back_when_redis_is_unreachable(monkeypatch):
+    import app.core.redis as redis_core
+
+    redis = MagicMock()
+    redis.eval = AsyncMock(side_effect=ConnectionError("redis unavailable"))
+    monkeypatch.setattr(redis_core, "redis_client", redis)
+    family = "outage-family"
+    key = f"admin:refresh-attempts:{admin_service.hash_token(family)}"
+    admin_service._admin_refresh_fallback.pop(key, None)
+
+    try:
+        counts = [await admin_service.register_admin_refresh_attempt(family) for _ in range(61)]
+    finally:
+        admin_service._admin_refresh_fallback.pop(key, None)
+
+    assert counts[0] == 1
+    assert counts[59] == 60
+    assert counts[60] == 61
+
+
+@pytest.mark.asyncio
 async def test_user_detail_reports_real_monthly_scan_count_and_recent_scan_status():
     created = datetime(2026, 9, 1, tzinfo=timezone.utc)
     user = SimpleNamespace(

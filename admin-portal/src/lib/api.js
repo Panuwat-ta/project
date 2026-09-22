@@ -74,7 +74,13 @@ export async function refreshAccessToken() {
       method: "POST",
       credentials: "include",
     });
-    if (!res.ok) throw new Error("Refresh token failed");
+    if (!res.ok) {
+      const data = await res.json().catch(() => null);
+      const error = new Error(data?.detail || "Refresh token failed");
+      error.status = res.status;
+      error.code = data?.code;
+      throw error;
+    }
 
     const data = await res.json();
     setAuth(data.access_token, data.user || getStoredUser());

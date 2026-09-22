@@ -17,7 +17,7 @@ from app.services import admin_service
 from app.core.websocket import manager
 
 from fastapi import HTTPException, status
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.background import BackgroundTasks
 from sqlalchemy.future import select
@@ -29,7 +29,7 @@ from app.core.security import (
 from app.models.admin import Admin
 from app.schemas.auth import TokenResponse, RefreshTokenRequest
 from app.core.config import TH_TIMEZONE, settings
-from app.core.rate_limit import limiter, GUEST_LIMIT, USER_LIMIT, ADMIN_LIMIT, SCAN_CREATE_LIMIT
+from app.core.rate_limit import limiter, GUEST_LIMIT, USER_LIMIT, ADMIN_LIMIT, SCAN_CREATE_LIMIT, ADMIN_REFRESH_MAX_ATTEMPTS
 
 router = APIRouter()
 
@@ -70,9 +70,9 @@ async def admin_login(
     if not admin.is_active:
         raise HTTPException(status_code=403, detail="Admin account is disabled")
 
-    claims = {"sub": str(admin.id), "role": "admin"}
     import uuid
     sid = uuid.uuid4().hex
+    claims = {"sub": str(admin.id), "role": "admin", "fid": sid}
     refresh_raw = create_refresh_token(data=claims, sid=sid)
     await admin_service.create_admin_session(
         db, admin, refresh_raw,
@@ -99,7 +99,6 @@ async def admin_login(
 
 
 @router.post("/refresh", response_model=TokenResponse)
-@limiter.limit("5/minute")
 async def admin_refresh_token(
     request: Request,
     response: Response,
@@ -144,7 +143,22 @@ async def admin_refresh_token(
     if not admin.is_active:
         raise HTTPException(status_code=403, detail="Admin account is disabled")
 
-    claims = {"sub": str(admin.id), "role": "admin"}
+    session_family_id = payload.get("fid") or old_sid
+    refresh_count = await admin_service.register_admin_refresh_attempt(session_family_id)
+    if refresh_count > ADMIN_REFRESH_MAX_ATTEMPTS:
+        await admin_service.expire_admin_session(db, admin_id_int, old_sid)
+        forced_logout = JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content={
+                "detail": "Session expired after too many page refreshes. Please sign in again.",
+                "code": "ADMIN_REFRESH_LIMIT_REAUTH",
+            },
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        forced_logout.delete_cookie("admin_refresh_token", path="/api/v1/admin/")
+        return forced_logout
+
+    claims = {"sub": str(admin.id), "role": "admin", "fid": session_family_id}
     access_token, refresh_raw, _ = await admin_service.rotate_admin_session(
         db, old_sid, claims,
         ip=request.client.host if request else None,

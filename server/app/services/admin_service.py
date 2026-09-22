@@ -4,6 +4,7 @@ import uuid
 import tempfile
 import zipfile
 import asyncio
+import time
 from datetime import datetime, timedelta, date
 from typing import List, Tuple, Dict, Any, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -22,6 +23,7 @@ from app.models.admin import Admin
 from app.models.admin_session import AdminSession
 from app.schemas.admin import ReportDecisionRequest, UserUpdateRequest, ExportRequest
 from app.core.config import TH_TIMEZONE, settings
+from app.core.rate_limit import ADMIN_REFRESH_WINDOW_SECONDS
 from app.utils.onnx_runner import run_onnx_worker
 from app.utils.risk_calculator import grade_for, LOW_MAX, MEDIUM_MAX
 from app.core.security import (
@@ -124,6 +126,69 @@ async def revoke_admin_session(db: AsyncSession, admin_id: int, sid: str) -> Adm
         session.revoked_at = datetime.now(TH_TIMEZONE)
         await db.commit()
     return session
+
+async def expire_admin_session(db: AsyncSession, admin_id: int, sid: str) -> AdminSession:
+    """Expire an admin session immediately so both access and refresh tokens become unusable."""
+    result = await db.execute(select(AdminSession).where(AdminSession.id == sid))
+    session = result.scalars().first()
+    if session is None or session.admin_id != admin_id:
+        raise HTTPException(status_code=404, detail="Session not found")
+    now = datetime.now(TH_TIMEZONE)
+    session.revoked_at = session.revoked_at or now
+    session.expires_at = now
+    await db.commit()
+    return session
+
+
+_ADMIN_REFRESH_COUNTER_SCRIPT = """
+local count = redis.call('INCR', KEYS[1])
+if count == 1 then
+  redis.call('EXPIRE', KEYS[1], ARGV[1])
+end
+return count
+"""
+_admin_refresh_fallback: dict[str, tuple[int, float]] = {}
+
+
+def _register_admin_refresh_attempt_fallback(key: str) -> int:
+    """Process-local fixed-window fallback used only when Redis is unavailable."""
+    now = time.monotonic()
+    count, started_at = _admin_refresh_fallback.get(key, (0, now))
+    if now - started_at >= ADMIN_REFRESH_WINDOW_SECONDS:
+        count, started_at = 0, now
+    count += 1
+    _admin_refresh_fallback[key] = (count, started_at)
+
+    # Keep the outage-only fallback bounded during long-lived processes.
+    if len(_admin_refresh_fallback) > 1024:
+        cutoff = now - ADMIN_REFRESH_WINDOW_SECONDS
+        stale = [k for k, (_, started) in _admin_refresh_fallback.items() if started <= cutoff]
+        for stale_key in stale:
+            _admin_refresh_fallback.pop(stale_key, None)
+    return count
+
+
+async def register_admin_refresh_attempt(session_family_id: str) -> int:
+    """Count refreshes for one logical login session in a 60-second fixed window."""
+    from app.core import redis as redis_core
+
+    family_hash = hash_token(session_family_id)
+    key = f"admin:refresh-attempts:{family_hash}"
+    if redis_core.redis_client is None:
+        return _register_admin_refresh_attempt_fallback(key)
+
+    try:
+        count = await redis_core.redis_client.eval(
+            _ADMIN_REFRESH_COUNTER_SCRIPT,
+            1,
+            key,
+            ADMIN_REFRESH_WINDOW_SECONDS,
+        )
+        return int(count)
+    except Exception:
+        # Redis clients are created lazily; a non-None client can still be unreachable.
+        # Keep admin authentication functional and preserve the 60/minute rule per process.
+        return _register_admin_refresh_attempt_fallback(key)
 
 async def get_admin_last_login_at(db: AsyncSession, admin_id: int) -> Optional[datetime]:
     """Return the newest real login time, excluding refresh-rotation child sessions."""
