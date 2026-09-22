@@ -35,6 +35,31 @@
 ### 2. รายการที่ไม่ผ่าน
 - ไม่มีข้อผิดพลาด (0 Failed) ในรอบ final
 
-### 3. Harness correction
-- Attempt ก่อน final ได้ 0/40 จาก `ReferenceError: route is not defined` เพราะ assertion ใช้ตัวแปร Node ภายใน browser context
-- แก้ harness ให้ใช้ `location.pathname`; rerun แล้ว 40/40 PASS จึงไม่นับ attempt แรกเป็น product failure
+## 2026-09-22 09:47 +07 - Final Browser Re-run
+
+- Target: `admin-portal/tests/runtime/admin-all-pages-webmcp-matrix.mjs` + direct `chrome-devtools-mcp` Profile inspection
+- Result: PASS
+- Summary: WebMCP matrix Total 40 | Passed 40 | Failed 0 | Skipped 0
+
+### 1. รายการที่ผ่านและพฤติกรรมที่ยืนยัน
+- `/admin/profile` แสดง `เซสชันปัจจุบัน`, active session อื่น และ `เข้าสู่ระบบล่าสุด` เป็นเวลาไทยจาก fixture
+- `chrome-devtools-mcp` ตรวจ DOM แล้ว `overflow=false`; console ไม่มี `error`, `warn`, `issue`; network ไม่มี HTTP 4xx/5xx
+- Matrix ครบ 10 routes × 2 viewports × 2 themes และผ่านทั้งหมด
+
+### 2. รายการที่ไม่ผ่าน
+- ไม่มีข้อผิดพลาด (0 Failed)
+
+## 2026-09-22 09:56 +07 - Final Admin regression re-run
+
+- Target: `admin-portal/tests/*.test.mjs`
+- Command: `npm test`
+- Result: PASS
+- Summary: Total 40 | Passed 40 | Failed 0 | Skipped 0 | Duration 1.80 s
+
+### 1. รายการที่ผ่านและพฤติกรรมที่ยืนยัน
+- API/token/session wrapper contracts ผ่านทั้งหมด รวม Profile/Session APIs
+- Theme selector, User Detail status, timezone formatter, WebSocket controller และ WebMCP context tests ผ่าน
+- ไม่มี regression จาก session-device fixes ที่อยู่ใน `HEAD a598316a`
+
+### 2. รายการที่ไม่ผ่าน
+- ไม่มีข้อผิดพลาด (0 Failed)

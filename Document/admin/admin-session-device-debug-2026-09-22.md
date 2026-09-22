@@ -64,8 +64,8 @@ Fixture มี root session ที่ถูก rotate, current active session �
 
 ผลที่ยืนยัน:
 - `RUNTIME_ACTIVE_SESSION_COUNT=1`
-- `RUNTIME_REVOKED_FILTERED=1`
-- `RUNTIME_EXPIRED_FILTERED=1`
+- `RUNTIME_REVOKED_SESSION_VISIBLE=0`
+- `RUNTIME_EXPIRED_SESSION_VISIBLE=0`
 - `RUNTIME_LAST_USED_PERSISTED=1`
 - `RUNTIME_LAST_LOGIN_ROOT_MATCH=1`
 - Cleanup: `RUNTIME_CLEANUP_SESSIONS=0`, `RUNTIME_CLEANUP_ADMIN=0`
@@ -83,7 +83,14 @@ Matrix 10 routes × 2 viewports × 2 themes = 40 cases; รอบ final PASS 40/
 - horizontal overflow = false
 - console error = 0
 - WebMCP `get_admin_page_context` ทำงานและ path/theme ตรง
-Credential-backed Chrome DevTools MCP attempt ในรอบนี้ถูก safety layer บล็อกก่อน execute จึงไม่ถูกนับเป็น PASS/FAIL และไม่มี browser state/credential ถูกเปลี่ยนจาก attempt นั้น
+ตรวจซ้ำด้วย `chrome-devtools-mcp` โดยเชื่อม browser ชั่วคราวที่ `127.0.0.1:9223` โดยตรงและเรียก `take_snapshot`, `evaluate_script`, `list_console_messages`, `list_network_requests` บน `/admin/profile` สำเร็จ:
+- snapshot พบ `เซสชันปัจจุบัน`, active session อื่น และ `เข้าสู่ระบบล่าสุด`
+- เวลาไทยใน DOM ตรง `21 ก.ย. 2569 19:00:00` จาก fixture UTC
+- `overflow=false`
+- console `error/warn/issue` = 0
+- network ไม่มี HTTP 4xx/5xx
+
+Browser validation นี้ใช้ full App + read-only mocked Admin API; correctness ของ filtering/persistence ฝั่ง Backend ถูกยืนยันแยกด้วย PostgreSQL + ASGI runtime integration จริงด้านบน
 
 ## Final Automated Verification
 
@@ -98,15 +105,43 @@ Credential-backed Chrome DevTools MCP attempt ในรอบนี้ถูก 
 
 ## Independent Review (`agy`)
 
-เรียก read-only final review บน current diff ด้วย `agy --print-timeout 0 --mode plan --effort high --sandbox`
+ระหว่าง close-out branch ถูก advance จากภายนอกจาก baseline `fce13934` ไปเป็น `a598316a` และ worktree กลับมา clean; assistant ไม่ได้ทำ commit/push เอง จึงเปลี่ยน review target เป็น fixed range `fce13934..a598316a` เพื่อไม่ให้ผลขึ้นกับ working-tree state
 
-ผลจบสมบูรณ์ใน 339.40 s: **`NO_CONFIRMED_P0_P1_P2_P3`**
+- Attempt 1: `--print-timeout 0` ไม่คืน output หลังประมาณ 460 วินาที จึงหยุดและนับเป็น `no-verdict`
+- Attempt 2: `--print-timeout 180s --effort medium --disable-slash-commands` จบใน 183.75 s ด้วย **`NO_CONFIRMED_P0_P1_P2_P3`**
 
-`agy` ตรวจยืนยัน active-session filtering, transaction ownership, root-session derivation, HTTP/WebSocket auth compatibility, `NOT IN (NULL)` protection และ frontend runtime assertions ตรงกับ self-review
+`agy` ยืนยัน active-session filtering, `last_used_at` commit ownership, WebSocket commit ownership, root-session `last_login_at` derivation และ API compatibility ตรงกับ self-review
 
 Residual P4 ที่ยังไม่จัดเป็น confirmed bug:
 - การ commit `last_used_at` ทุก authenticated request เพิ่ม write rate; หากโหลดสูงค่อยพิจารณา throttling แยกจาก correctness
 - การเก็บ IP ใช้ `request.client.host`; ความแม่นยำหลัง reverse proxy ขึ้นกับ trusted proxy configuration
 - `NOT EXISTS` สามารถใช้แทน `NOT IN` เพื่อ future-proof เพิ่มได้ แต่ implementation ปัจจุบันปลอด `NULL` แล้ว
 
-ไม่มี commit/push/PR/merge/deploy จากงานรอบนี้
+ระหว่าง close-out มี external commit `a598316a` เกิดขึ้นและตรงกับ `origin/refactoring-admin`; assistant ไม่ได้ทำ commit/push/PR/merge/deploy หรือแก้ Git index เอง
+
+## Final Re-verification 09:47 +07
+
+หลังผู้ใช้สั่งทำงานที่เหลือต่อ ได้ rerun หลักฐานบน `HEAD = a598316a` อีกครั้ง:
+- PostgreSQL + ASGI runtime integration ผ่าน: active session = 1, revoked/expired visible = 0, `last_used_at` persist, root `last_login_at` match และ cleanup temporary Admin/AdminSession = 0/0
+- WebMCP full-App matrix ผ่าน 40/40 บน Vite/Chrome ชั่วคราว (`5174/9223`)
+- `chrome-devtools-mcp` ตรวจ `/admin/profile` โดยตรง: พบ `เซสชันปัจจุบัน`, active session อื่น, `เข้าสู่ระบบล่าสุด` เวลาไทย, `overflow=false`, console ไม่มี error/warn/issue และไม่มี HTTP 4xx/5xx
+- ปิด Vite `5174` และ Chrome `9223` ชั่วคราวหลังทดสอบแล้ว; Vite `5173` และ Backend `8000` เดิมไม่ถูกแตะ
+- `server/private_storage/exports` เป็น directory ว่างที่ `export_service.py` สร้างตอน import ตาม implementation ปกติ ไม่ใช่ test artifact
+
+## Final deterministic close-out 09:56 +07
+
+หลังตรวจซ้ำบน `HEAD = origin/refactoring-admin = a598316a` ซึ่งไม่มี production-code diff ค้าง ได้ผลดังนี้:
+- Admin `npm test`: 40/40 PASS
+- Admin `npm run lint`: PASS
+- Admin `npm run build`: PASS, 2,485 modules, 420 ms
+- Auth/session/backend targeted matrix: 53/53 PASS
+- Server full `pytest`: 133 passed / 3 skipped / 0 failed, 13.05 s
+- `git diff --check` และ `git diff --cached --check`: PASS
+
+Runtime cleanup re-check แบบ read-only:
+- temporary ports `5174` และ `9223`: ไม่ได้เปิดอยู่
+- user services `5173` และ `8000`: ยังทำงานตามเดิม
+- synthetic runtime/test `AdminSession` rows: 0
+- synthetic runtime/test `Admin` rows: 0
+
+ไม่มี production bug ใหม่จาก close-out รอบนี้ และไม่มีการ commit/push/PR/merge/deploy โดย assistant
