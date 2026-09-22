@@ -1,7 +1,7 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, model_validator
 from uuid import UUID
 from datetime import datetime
-from typing import Optional, Any, Dict, List
+from typing import Optional, Any, Dict, List, Literal
 
 class ScanCreateRequest(BaseModel):
     pass # Will use Form Data for file upload
@@ -20,7 +20,8 @@ class ScanResponse(BaseModel):
     # Risk Scores
     text_score: int
     visual_score: int
-    source_score: int
+    source_score: Optional[int] = None
+    source_status: Literal["unavailable", "not_checked", "checked_no_match", "matches_found", "error"] = "unavailable"
     total_risk_score: int
     risk_grade: Optional[str] = None
     
@@ -36,5 +37,11 @@ class ScanResponse(BaseModel):
     progress: int = 0
     created_at: datetime
     completed_at: Optional[datetime] = None
+
+    @model_validator(mode="after")
+    def hide_unavailable_source_score(self):
+        if self.source_status not in {"checked_no_match", "matches_found"}:
+            self.source_score = None
+        return self
 
     model_config = ConfigDict(from_attributes=True)

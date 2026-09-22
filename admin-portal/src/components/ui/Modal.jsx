@@ -74,7 +74,7 @@ export function Modal({
         aria-modal="true"
         aria-labelledby={title ? "modal-title" : undefined}
         className={cn(
-          "relative z-10 w-full rounded-xl bg-card border border-border shadow-2xl transition-all animate-in zoom-in-95 duration-150 overflow-hidden flex flex-col max-h-[90vh]",
+          "relative z-10 w-full rounded-xl bg-card border border-border shadow-xl transition-[opacity,transform] animate-in zoom-in-95 duration-150 overflow-hidden flex flex-col max-h-[90vh]",
           maxWidth
         )}
       >

@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from fastapi import APIRouter, Depends, Request, Response, Cookie
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
@@ -16,7 +17,7 @@ from app.services import admin_service
 from app.core.websocket import manager
 
 from fastapi import HTTPException, status
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.background import BackgroundTasks
 from sqlalchemy.future import select
@@ -28,7 +29,7 @@ from app.core.security import (
 from app.models.admin import Admin
 from app.schemas.auth import TokenResponse, RefreshTokenRequest
 from app.core.config import TH_TIMEZONE, settings
-from app.core.rate_limit import limiter, GUEST_LIMIT, USER_LIMIT, ADMIN_LIMIT, SCAN_CREATE_LIMIT
+from app.core.rate_limit import limiter, GUEST_LIMIT, USER_LIMIT, ADMIN_LIMIT, SCAN_CREATE_LIMIT, ADMIN_REFRESH_MAX_ATTEMPTS
 
 router = APIRouter()
 
@@ -41,6 +42,10 @@ def _user_payload(admin: Admin) -> dict:
         "role": "admin",
         "is_superadmin": admin.is_superadmin,
     }
+
+
+def _profile_payload(admin: Admin, *, last_login_at=None) -> dict:
+    return {**_user_payload(admin), "last_login_at": last_login_at}
 
 
 @router.post("/login", response_model=TokenResponse)
@@ -65,9 +70,9 @@ async def admin_login(
     if not admin.is_active:
         raise HTTPException(status_code=403, detail="Admin account is disabled")
 
-    claims = {"sub": str(admin.id), "role": "admin"}
     import uuid
     sid = uuid.uuid4().hex
+    claims = {"sub": str(admin.id), "role": "admin", "fid": sid}
     refresh_raw = create_refresh_token(data=claims, sid=sid)
     await admin_service.create_admin_session(
         db, admin, refresh_raw,
@@ -94,7 +99,6 @@ async def admin_login(
 
 
 @router.post("/refresh", response_model=TokenResponse)
-@limiter.limit("5/minute")
 async def admin_refresh_token(
     request: Request,
     response: Response,
@@ -123,14 +127,38 @@ async def admin_refresh_token(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    result = await db.execute(select(Admin).where(Admin.id == int(admin_id)))
+    try:
+        admin_id_int = int(admin_id)
+    except (TypeError, ValueError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid refresh token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    result = await db.execute(select(Admin).where(Admin.id == admin_id_int))
     admin = result.scalars().first()
     if admin is None:
         raise HTTPException(status_code=403, detail="Admin not found")
     if not admin.is_active:
         raise HTTPException(status_code=403, detail="Admin account is disabled")
 
-    claims = {"sub": str(admin.id), "role": "admin"}
+    session_family_id = payload.get("fid") or old_sid
+    refresh_count = await admin_service.register_admin_refresh_attempt(session_family_id)
+    if refresh_count > ADMIN_REFRESH_MAX_ATTEMPTS:
+        await admin_service.expire_admin_session(db, admin_id_int, old_sid)
+        forced_logout = JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content={
+                "detail": "Session expired after too many page refreshes. Please sign in again.",
+                "code": "ADMIN_REFRESH_LIMIT_REAUTH",
+            },
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        forced_logout.delete_cookie("admin_refresh_token", path="/api/v1/admin/")
+        return forced_logout
+
+    claims = {"sub": str(admin.id), "role": "admin", "fid": session_family_id}
     access_token, refresh_raw, _ = await admin_service.rotate_admin_session(
         db, old_sid, claims,
         ip=request.client.host if request else None,
@@ -175,10 +203,12 @@ async def admin_logout(
 
 @router.get("/me", response_model=AdminProfileResponse)
 @limiter.limit(ADMIN_LIMIT)
-async def get_me(request: Request, 
+async def get_me(request: Request,
+    db: AsyncSession = Depends(get_db),
     current_admin: AdminModel = Depends(require_super_admin),
 ):
-    return _user_payload(current_admin)
+    last_login_at = await admin_service.get_admin_last_login_at(db, current_admin.id)
+    return _profile_payload(current_admin, last_login_at=last_login_at)
 
 
 @router.patch("/me", response_model=AdminProfileResponse)
@@ -199,7 +229,8 @@ async def update_me(request: Request,
         current_admin.hashed_password = hash_password(body.new_password)
     await db.commit()
     await db.refresh(current_admin)
-    return _user_payload(current_admin)
+    last_login_at = await admin_service.get_admin_last_login_at(db, current_admin.id)
+    return _profile_payload(current_admin, last_login_at=last_login_at)
 
 
 @router.get("/sessions", response_model=AdminSessionListResponse)
@@ -214,9 +245,14 @@ async def get_sessions(
     from app.core.security import decode_access_token
     current_sid = decode_access_token(token).get("sid") if token else None
 
+    now = datetime.now(TH_TIMEZONE)
     result = await db.execute(
         select(AdminSession)
-        .where(AdminSession.admin_id == current_admin.id)
+        .where(
+            AdminSession.admin_id == current_admin.id,
+            AdminSession.revoked_at.is_(None),
+            AdminSession.expires_at > now,
+        )
         .order_by(desc(AdminSession.created_at))
     )
     sessions = result.scalars().all()
@@ -333,6 +369,11 @@ async def list_export_jobs(request: Request,
     current_admin: AdminModel = Depends(require_super_admin),
 ):
     """GET /api/v1/admin/dataset/export-jobs"""
+    if page < 1:
+        raise HTTPException(status_code=400, detail="page must be >= 1")
+    if limit < 1 or limit > 100:
+        raise HTTPException(status_code=400, detail="limit must be between 1 and 100")
+
     from sqlalchemy import select, func, desc
     from app.models import ExportJob
     
@@ -372,7 +413,7 @@ async def cancel_export_job(request: Request,
     """POST /api/v1/admin/dataset/export-jobs/{job_id}/cancel"""
     from sqlalchemy import select
     from app.models import ExportJob
-    stmt = select(ExportJob).where(ExportJob.id == job_id)
+    stmt = select(ExportJob).where(ExportJob.id == job_id).with_for_update()
     job = (await db.execute(stmt)).scalar_one_or_none()
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")

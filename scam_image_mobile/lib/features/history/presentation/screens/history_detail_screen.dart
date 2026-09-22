@@ -457,45 +457,52 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
               borderRadius: AppRadius.smBorder,
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'result_first_detected'.tr(context),
-                      style: AppTypography.caption(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'result_first_detected'.tr(context),
+                        style: AppTypography.caption(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                       ),
-                    ),
-                    Text(
-                      DateFormat('dd MMM yyyy').format(result.createdAt),
-                      style: AppTypography.bodyBase(
-                        color: isDark ? Colors.white : AppColors.onSurface,
-                      ).copyWith(fontWeight: FontWeight.w600),
-                    ),
-                  ],
+                      Text(
+                        DateFormat('dd MMM yyyy').format(result.createdAt),
+                        style: AppTypography.bodyBase(
+                          color: isDark ? Colors.white : AppColors.onSurface,
+                        ).copyWith(fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  ),
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      'result_recurring'.tr(context),
-                      style: AppTypography.caption(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        'result_recurring'.tr(context),
+                        textAlign: TextAlign.end,
+                        style: AppTypography.caption(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                       ),
-                    ),
-                    Text(
-                      sourceFactor.details.isNotEmpty
-                          ? sourceFactor.details.join(', ')
-                          : hasSourceFactor
-                          ? 'result_evidence_score_only'.tr(context)
-                          : 'result_evidence_unavailable'.tr(context),
-                      style: AppTypography.bodyBase(
-                        color: isDark ? Colors.white : AppColors.onSurface,
-                      ).copyWith(fontWeight: FontWeight.w600),
-                    ),
-                  ],
+                      Text(
+                        sourceFactor.details.isNotEmpty
+                            ? sourceFactor.details.join(', ')
+                            : hasSourceFactor
+                            ? 'result_evidence_score_only'.tr(context)
+                            : 'result_evidence_unavailable'.tr(context),
+                        textAlign: TextAlign.end,
+                        style: AppTypography.bodyBase(
+                          color: isDark ? Colors.white : AppColors.onSurface,
+                        ).copyWith(fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

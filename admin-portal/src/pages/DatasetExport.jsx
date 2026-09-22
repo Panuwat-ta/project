@@ -15,7 +15,7 @@ import {
   createExportJob,
   fetchExportJobs,
   cancelExportJob,
-  getExportDownloadUrl,
+  downloadExportJob,
 } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
@@ -45,6 +45,7 @@ export function DatasetExport() {
 
   const [totalApprovedCount, setTotalApprovedCount] = useState(0);
   const [isExporting, setIsExporting] = useState(false);
+  const [downloadingJobId, setDownloadingJobId] = useState(null);
 
   // Export Jobs History
   const [page, setPage] = useState(1);
@@ -92,7 +93,8 @@ export function DatasetExport() {
       pollingRef.current = setInterval(async () => {
         try {
           const updated = await loadJobs(false, true);
-          const stillActive = updated?.jobs?.some(
+          if (!updated) return;
+          const stillActive = updated.jobs?.some(
             (j) => j.status === "queued" || j.status === "running"
           );
           if (!stillActive && pollingRef.current) {
@@ -159,6 +161,26 @@ export function DatasetExport() {
     }
   };
 
+  const handleDownloadJob = async (job) => {
+    setDownloadingJobId(job.id);
+    try {
+      const response = await downloadExportJob(job.id);
+      const blob = await response.blob();
+      const objectUrl = window.URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = objectUrl;
+      anchor.download = `scamguard-export-${job.id}.zip`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      window.URL.revokeObjectURL(objectUrl);
+    } catch (err) {
+      toast.error("ดาวน์โหลดไฟล์ส่งออกล้มเหลว: " + err.message);
+    } finally {
+      setDownloadingJobId(null);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -168,7 +190,7 @@ export function DatasetExport() {
             <Database className="size-5 text-primary" />
             <span>ส่งออกชุดข้อมูล</span>
           </h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <p className="text-[13px] text-muted-foreground mt-0.5">
             สร้างชุดข้อมูลจากรายงานที่ยืนยันแล้วและได้รับอนุญาตให้นำไปใช้วิจัย
           </p>
         </div>
@@ -186,50 +208,23 @@ export function DatasetExport() {
         </div>
       </div>
 
-      {/* Overview Stat Bar */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="size-10 rounded-lg bg-success-subtle border border-success-border text-success flex items-center justify-center">
-              <CheckCircle2 className="size-5" />
-            </div>
-            <div>
-              <div className="text-xs text-muted-foreground font-medium">รายงานที่ยืนยันแล้ว</div>
-              <div className="text-xl font-bold text-foreground">
-                <span className="font-mono">{formatNumber(totalApprovedCount)}</span> รูปภาพ
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="size-10 rounded-lg bg-primary-subtle border border-primary-border text-primary flex items-center justify-center">
-              <ShieldCheck className="size-5" />
-            </div>
-            <div>
-              <div className="text-xs text-muted-foreground font-medium">สิทธิ์ใช้ข้อมูลเพื่อการวิจัย</div>
-              <div className="text-[13px] font-semibold text-success mt-0.5">
-                ใช้เฉพาะรายการที่ได้รับอนุญาต
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="size-10 rounded-lg bg-warning-subtle border border-warning-border text-warning flex items-center justify-center">
-              <FileArchive className="size-5" />
-            </div>
-            <div>
-              <div className="text-xs text-muted-foreground font-medium">รูปแบบไฟล์</div>
-              <div className="text-xs font-bold text-foreground font-mono mt-0.5">
-                ZIP Archive + Manifest.json
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Export constraints and availability */}
+      <Card>
+        <CardContent className="p-0 grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-border-subtle">
+          <div className="p-4">
+            <div className="flex items-center gap-2 text-[13px] text-muted-foreground font-medium"><CheckCircle2 className="size-4 text-success" />รายงานที่ยืนยันแล้ว</div>
+            <div className="mt-1 text-lg font-bold text-foreground"><span className="font-mono">{formatNumber(totalApprovedCount)}</span> รูปภาพ</div>
+          </div>
+          <div className="p-4">
+            <div className="flex items-center gap-2 text-[13px] text-muted-foreground font-medium"><ShieldCheck className="size-4 text-primary" />สิทธิ์ใช้ข้อมูลเพื่อการวิจัย</div>
+            <div className="mt-1 text-[13px] font-semibold text-foreground">ใช้เฉพาะรายการที่ได้รับอนุญาต</div>
+          </div>
+          <div className="p-4">
+            <div className="flex items-center gap-2 text-[13px] text-muted-foreground font-medium"><FileArchive className="size-4 text-muted-foreground" />รูปแบบไฟล์</div>
+            <div className="mt-1 text-[13px] font-semibold text-foreground font-mono">ZIP + Manifest.json</div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Export Configuration Form Card */}
       <Card>
@@ -242,10 +237,10 @@ export function DatasetExport() {
         <CardContent>
           <form onSubmit={handleCreateExport} className="space-y-5">
             {/* Category Filter Pills */}
-            <div className="space-y-2">
-              <label className="block text-[13px] font-semibold text-foreground">
+            <fieldset className="space-y-2">
+              <legend className="block text-[13px] font-semibold text-foreground">
                 เลือกหมวดหมู่ที่ต้องการส่งออก
-              </label>
+              </legend>
               <div className="flex flex-wrap gap-2">
                 {CATEGORIES.map((cat) => {
                   const isSelected = selectedCategories.includes(cat.key);
@@ -254,7 +249,8 @@ export function DatasetExport() {
                       key={cat.key}
                       type="button"
                       onClick={() => toggleCategory(cat.key)}
-                      className={`h-8 px-3 rounded-lg text-xs font-medium border transition-all ${
+                      aria-pressed={isSelected}
+                      className={`h-8 px-3 rounded-lg text-xs font-medium border transition-colors ${
                         isSelected
                           ? "bg-primary-subtle border-primary-border text-primary font-semibold shadow-sm"
                           : "bg-muted/40 border-border text-muted-foreground hover:text-foreground hover:bg-muted"
@@ -265,7 +261,7 @@ export function DatasetExport() {
                   );
                 })}
               </div>
-            </div>
+            </fieldset>
 
             {/* Date Range & Metadata Options */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
@@ -286,8 +282,10 @@ export function DatasetExport() {
               />
 
               <div className="flex items-end pb-1.5">
-                <label className="flex items-center gap-2 cursor-pointer select-none text-[13px] text-foreground font-medium">
+                <label htmlFor="include-metadata" className="flex items-center gap-2 cursor-pointer select-none text-[13px] text-foreground font-medium">
                   <input
+                    id="include-metadata"
+                    name="include_metadata"
                     type="checkbox"
                     checked={includeMetadata}
                     onChange={(e) => setIncludeMetadata(e.target.checked)}
@@ -344,7 +342,6 @@ export function DatasetExport() {
                     jobs.map((job) => {
                       const isDone = job.status === "succeeded";
                       const isRunning = job.status === "running" || job.status === "queued";
-                      const downloadUrl = getExportDownloadUrl(job.id);
 
                       return (
                         <TableRow key={job.id}>
@@ -373,15 +370,16 @@ export function DatasetExport() {
                           <TableCell className="text-right">
                             <div className="flex items-center justify-end gap-2">
                               {isDone && (
-                                <a
-                                  href={downloadUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary-subtle border border-primary-border text-primary hover:bg-primary/20 text-[13px] font-semibold transition-colors"
+                                <Button
+                                  variant="outline"
+                                  size="xs"
+                                  icon={Download}
+                                  isLoading={downloadingJobId === job.id}
+                                  onClick={() => handleDownloadJob(job)}
+                                  className="text-primary border-primary-border hover:bg-primary-subtle"
                                 >
-                                  <Download className="size-3.5" />
-                                  <span>ดาวน์โหลด ZIP</span>
-                                </a>
+                                  ดาวน์โหลด ZIP
+                                </Button>
                               )}
 
                               {isRunning && (

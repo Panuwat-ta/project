@@ -223,6 +223,7 @@ class AdminProfileResponse(BaseModel):
     full_name: Optional[str]
     role: str
     is_superadmin: bool
+    last_login_at: Optional[datetime] = None
 
 class AdminProfileUpdateRequest(BaseModel):
     full_name: Optional[str] = None

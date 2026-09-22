@@ -118,7 +118,7 @@ export function AppSidebar({ isOpen, setIsOpen }) {
                   to={item.path}
                   onClick={handleClose}
                   className={cn(
-                    "flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-all group outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                    "flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors group outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     isActive
                       ? "bg-primary/10 text-primary border border-primary/20 font-semibold"
                       : "text-sidebar-muted hover:bg-sidebar-accent hover:text-sidebar-foreground border border-transparent"

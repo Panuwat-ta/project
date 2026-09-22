@@ -63,7 +63,7 @@ export function ToastProvider({ children }) {
               key={t.id}
               role="status"
               className={cn(
-                "pointer-events-auto flex items-start gap-3 p-3.5 rounded-lg border shadow-xl backdrop-blur-md transition-all animate-in slide-in-from-bottom-3 duration-200",
+                "pointer-events-auto flex items-start gap-3 p-3.5 rounded-lg border shadow-lg transition-[opacity,transform] animate-in slide-in-from-bottom-3 duration-200",
                 borders[t.type] || "border-border bg-card text-foreground"
               )}
             >

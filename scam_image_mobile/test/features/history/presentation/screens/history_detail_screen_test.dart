@@ -112,7 +112,7 @@ void main() {
   ) async {
     await pumpDetail(tester);
 
-    expect(find.text('88%'), findsOneWidget);
+    expect(find.text('88%'), findsWidgets);
     expect(find.text('ข้อความ OCR'), findsOneWidget);
     expect(find.text('โอนด่วน'), findsWidgets);
     expect(find.text('source-a'), findsOneWidget);
@@ -189,8 +189,8 @@ void main() {
       ),
     );
 
-    expect(find.text('20%'), findsOneWidget);
-    expect(find.text('10%'), findsOneWidget);
+    expect(find.text('20%'), findsWidgets);
+    expect(find.text('10%'), findsWidgets);
     expect(tester.takeException(), isNull);
   });
 

@@ -6,7 +6,8 @@ threshold table, the Visual Override rule and the score input builders
 keep locality in exactly one place.
 """
 
-from app.core.config import settings
+from typing import Optional
+
 
 # --- Threshold table (Low 0-39 / Medium 40-69 / High 70-100) ---
 LOW_MAX = 39
@@ -37,16 +38,17 @@ def build_text_analysis(ocr_text: str) -> tuple[int, list[str]]:
     return min(len(found) * KEYWORD_SCORE, 100), found
 
 
-def build_source_score() -> int:
-    """Source Verification is optional in v1 (Google Vision not wired).
+def build_source_score() -> Optional[int]:
+    """Return no score while Source Verification is unavailable in v1.
 
-    Returns the neutral-unavailable default; never invent a per-image score.
-    See technology-choices #6.
+    A missing provider is not evidence and must not contribute a synthetic
+    neutral value to Overall Risk. API responses pair this with
+    ``source_status="unavailable"``.
     """
-    return settings.DEFAULT_SOURCE_SCORE
+    return None
 
 
-def calculate_risk_score(text_score: int, visual_score: int, source_score: int) -> dict:
+def calculate_risk_score(text_score: int, visual_score: int, source_score: Optional[int]) -> dict:
     """
     ระบบประเมินความเสี่ยงแบบ Hybrid Worst-Case & Multi-Factor Breakdown ตาม configs.md:
     1. ประเมินคะแนนแยกมิติอิสระเต็ม 100% (Visual, Textual, Source)
@@ -61,10 +63,12 @@ def calculate_risk_score(text_score: int, visual_score: int, source_score: int) 
     # ตรวจสอบขอบเขตค่าอินพุต (0 - 100)
     t = max(0, min(100, int(round(text_score))))
     v = max(0, min(100, int(round(visual_score))))
-    s = max(0, min(100, int(round(source_score))))
+    s = None if source_score is None else max(0, min(100, int(round(source_score))))
 
-    # 1. ฐานคะแนนสูงสุด (Worst-Case Base)
-    scores = {"visual": v, "textual": t, "source": s}
+    # 1. ฐานคะแนนสูงสุด (Worst-Case Base). Unavailable dimensions are omitted.
+    scores = {"visual": v, "textual": t}
+    if s is not None:
+        scores["source"] = s
     primary_factor = max(scores, key=scores.get)
     max_score = scores[primary_factor]
 

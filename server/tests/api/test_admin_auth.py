@@ -91,14 +91,26 @@ async def test_require_super_admin_rejects_normal_admin():
 
 
 @pytest.mark.asyncio
-async def test_super_admin_allowed():
+async def test_super_admin_allowed(monkeypatch):
     app.dependency_overrides[get_current_admin] = _superadmin
+
+    db = MagicMock()
+    async def db_gen():
+        yield db
+    app.dependency_overrides[get_db] = db_gen
+    expected_login = "2026-09-22T07:00:00+07:00"
+    monkeypatch.setattr(
+        admin_router.admin_service,
+        "get_admin_last_login_at",
+        AsyncMock(return_value=expected_login),
+    )
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         response = await ac.get("/api/v1/admin/me")
 
     assert response.status_code == 200
     assert response.json()["is_superadmin"] is True
+    assert response.json()["last_login_at"] == expected_login
 
 
 @pytest.mark.asyncio
@@ -112,6 +124,7 @@ async def test_refresh_rotates_and_old_token_fails(monkeypatch):
     store = {"sessions": {old_sid: {"revoked": False}}, "next": 2}
 
     async def fake_rotate(db, old_sid_arg, claims, ip=None, user_agent=None):
+        store["claims"] = claims
         session = store["sessions"][old_sid_arg]
         if session["revoked"]:
             from fastapi import HTTPException
@@ -130,8 +143,94 @@ async def test_refresh_rotates_and_old_token_fails(monkeypatch):
         r2 = await ac.post("/api/v1/admin/refresh")
 
     assert r1.status_code == 200
+    assert store["claims"]["fid"] == old_sid
     assert store["sessions"][old_sid]["revoked"] is True
     assert r2.status_code == 401  # refresh token ที่ถูก rotation แล้วใช้ต่อไม่ได้
+
+
+@pytest.mark.asyncio
+async def test_refresh_boundary_allows_60_and_forces_61(monkeypatch):
+    admin = Admin(id=1, email="admin@scamguard.com", is_active=True, is_superadmin=True)
+    app.dependency_overrides[get_db] = await _override_db(admin)
+
+    current_sid = "session-0"
+    family_id = "login-family-boundary"
+    current_refresh = create_refresh_token(
+        data={"sub": "1", "role": "admin", "fid": family_id}, sid=current_sid
+    )
+    count = {"value": 0}
+    state = {"sid": current_sid, "expired": None}
+
+    async def fake_register(family):
+        assert family == family_id
+        count["value"] += 1
+        return count["value"]
+
+    async def fake_rotate(db, old_sid, claims, ip=None, user_agent=None):
+        assert old_sid == state["sid"]
+        assert claims["fid"] == family_id
+        new_sid = f"session-{count['value']}"
+        state["sid"] = new_sid
+        new_refresh = create_refresh_token(
+            data={"sub": "1", "role": "admin", "fid": family_id}, sid=new_sid
+        )
+        return "new-access", new_refresh, new_sid
+
+    async def fake_expire(db, admin_id, sid):
+        state["expired"] = (admin_id, sid)
+        return MagicMock()
+
+    monkeypatch.setattr(admin_router.admin_service, "register_admin_refresh_attempt", fake_register)
+    monkeypatch.setattr(admin_router.admin_service, "rotate_admin_session", fake_rotate)
+    monkeypatch.setattr(admin_router.admin_service, "expire_admin_session", fake_expire)
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="https://test") as ac:
+        ac.cookies.set("admin_refresh_token", current_refresh, path="/api/v1/admin/")
+        for expected in range(1, 61):
+            response = await ac.post("/api/v1/admin/refresh")
+            assert response.status_code == 200, (expected, response.text)
+            assert count["value"] == expected
+        response = await ac.post("/api/v1/admin/refresh")
+
+    assert count["value"] == 61
+    assert response.status_code == 401
+    assert response.json()["code"] == "ADMIN_REFRESH_LIMIT_REAUTH"
+    assert state["expired"] == (1, "session-60")
+    assert "Max-Age=0" in response.headers.get("set-cookie", "")
+
+
+@pytest.mark.asyncio
+async def test_refresh_limit_expires_session_and_forces_login(monkeypatch):
+    admin = Admin(id=1, email="admin@scamguard.com", is_active=True, is_superadmin=True)
+    app.dependency_overrides[get_db] = await _override_db(admin)
+
+    sid = "session-rate-limited"
+    family_id = "login-family-1"
+    refresh_raw = create_refresh_token(
+        data={"sub": "1", "role": "admin", "fid": family_id},
+        sid=sid,
+    )
+
+    register = AsyncMock(return_value=61)
+    expire = AsyncMock(return_value=MagicMock())
+    rotate = AsyncMock()
+    monkeypatch.setattr(admin_router.admin_service, "register_admin_refresh_attempt", register)
+    monkeypatch.setattr(admin_router.admin_service, "expire_admin_session", expire)
+    monkeypatch.setattr(admin_router.admin_service, "rotate_admin_session", rotate)
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+        ac.cookies.set("admin_refresh_token", refresh_raw)
+        response = await ac.post("/api/v1/admin/refresh")
+
+    assert response.status_code == 401
+    assert response.json()["code"] == "ADMIN_REFRESH_LIMIT_REAUTH"
+    register.assert_awaited_once_with(family_id)
+    expire.assert_awaited_once()
+    assert expire.await_args.args[1:] == (1, sid)
+    rotate.assert_not_awaited()
+    set_cookie = response.headers.get("set-cookie", "")
+    assert "admin_refresh_token=" in set_cookie
+    assert "Max-Age=0" in set_cookie
 
 
 @pytest.mark.asyncio

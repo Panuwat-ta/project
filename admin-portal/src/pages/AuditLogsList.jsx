@@ -83,7 +83,7 @@ export function AuditLogsList() {
             <Shield className="size-5 text-primary" />
             <span>บันทึกกิจกรรมผู้ดูแล</span>
           </h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <p className="text-[13px] text-muted-foreground mt-0.5">
             ประวัติการดำเนินการและการเปลี่ยนแปลงที่เกิดขึ้นในระบบ
           </p>
         </div>
@@ -141,6 +141,7 @@ export function AuditLogsList() {
           <TableSkeleton rows={8} cols={6} />
         ) : (
           <div>
+            <div className="hidden md:block">
             <Table>
               <TableHeader>
                 <TableRow isHoverable={false}>
@@ -163,14 +164,14 @@ export function AuditLogsList() {
 
                     return (
                       <Fragment key={log.id}>
-                        <TableRow
-                          className="cursor-pointer"
-                          onClick={() => toggleExpand(log.id)}
-                        >
+                        <TableRow>
                           <TableCell>
                             <button
                               type="button"
-                              className="p-1 rounded text-muted-foreground hover:text-foreground"
+                              onClick={() => toggleExpand(log.id)}
+                              aria-expanded={isExpanded}
+                              aria-label={isExpanded ? `ย่อรายละเอียดกิจกรรม #${log.id}` : `ขยายรายละเอียดกิจกรรม #${log.id}`}
+                              className="p-1 rounded text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                             >
                               {isExpanded ? (
                                 <ChevronUp className="size-3.5" />
@@ -267,6 +268,60 @@ export function AuditLogsList() {
                 )}
               </TableBody>
             </Table>
+            </div>
+
+            <div className="md:hidden divide-y divide-border-subtle">
+              {logs.length === 0 ? (
+                <div className="px-4 py-10 text-center text-sm text-muted-foreground">ไม่พบบันทึกกิจกรรมที่ตรงกับเงื่อนไข</div>
+              ) : logs.map((log) => {
+                const isExpanded = expandedLogId === log.id;
+                const variant = getActionBadgeVariant(log.action);
+                return (
+                  <article key={log.id} className="p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0 space-y-1.5">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-mono text-xs text-muted-foreground">#{log.id}</span>
+                          <Badge variant={variant} size="sm" withDot>{log.action}</Badge>
+                        </div>
+                        <p className="text-[13px] text-foreground">
+                          <span className="text-muted-foreground">{log.entity_type || "ไม่ระบุรายการ"}</span>{" "}
+                          <span className="font-mono font-semibold">#{log.entity_id || "—"}</span>
+                        </p>
+                        <p className="text-xs text-muted-foreground break-words">{log.admin_email || log.admin_id || "ไม่ทราบผู้ดำเนินการ"}</p>
+                        <p className="text-xs font-mono text-muted-foreground">{formatDate(log.created_at)}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => toggleExpand(log.id)}
+                        aria-expanded={isExpanded}
+                        aria-label={isExpanded ? `ย่อรายละเอียดกิจกรรม #${log.id}` : `ขยายรายละเอียดกิจกรรม #${log.id}`}
+                        className="size-9 shrink-0 inline-flex items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        {isExpanded ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
+                      </button>
+                    </div>
+                    {isExpanded && (
+                      <div className="mt-3 border-t border-border-subtle pt-3 space-y-3 text-xs">
+                        <div className="grid grid-cols-2 gap-3">
+                          <div><span className="text-muted-foreground">IP</span><div className="mt-0.5 font-mono text-foreground break-all">{log.ip_address || "ไม่ทราบ"}</div></div>
+                          <div><span className="text-muted-foreground">อุปกรณ์</span><div className="mt-0.5 text-foreground break-words">{log.user_agent || "ไม่ทราบ"}</div></div>
+                        </div>
+                        {log.reason && <div className="rounded-md border border-border bg-muted/30 p-2.5"><span className="font-semibold">เหตุผล: </span>{log.reason}</div>}
+                        <div>
+                          <div className="mb-1 font-semibold text-muted-foreground">ก่อนเปลี่ยน</div>
+                          <pre className="max-h-44 overflow-auto rounded-md border border-border bg-card p-2 font-mono text-muted-foreground">{log.before_state ? JSON.stringify(log.before_state, null, 2) : "null"}</pre>
+                        </div>
+                        <div>
+                          <div className="mb-1 font-semibold text-muted-foreground">หลังเปลี่ยน</div>
+                          <pre className="max-h-44 overflow-auto rounded-md border border-border bg-card p-2 font-mono text-foreground">{log.after_state || log.details ? JSON.stringify(log.after_state || log.details, null, 2) : "null"}</pre>
+                        </div>
+                      </div>
+                    )}
+                  </article>
+                );
+              })}
+            </div>
 
             <Pagination
               page={page}

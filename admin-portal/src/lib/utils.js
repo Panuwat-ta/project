@@ -11,12 +11,14 @@ export function formatDate(dateString) {
     const d = new Date(dateString);
     if (isNaN(d.getTime())) return String(dateString);
     return new Intl.DateTimeFormat("th-TH", {
+      timeZone: "Asia/Bangkok",
       year: "numeric",
       month: "short",
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
       second: "2-digit",
+      hour12: false,
     }).format(d);
   } catch {
     return String(dateString);

@@ -4,6 +4,7 @@ import subprocess
 import sys
 import threading
 from app.core.config import settings
+from app.utils.gpu_safety import parse_nvidia_smi_memory, should_defer_xai_gpu
 from app.utils.onnx_runner import run_onnx_worker
 
 # Llama instance ไม่ thread-safe: XAI ซ้อนกัน 2 Jobs -> ggml-cuda race -> SIGABRT
@@ -50,25 +51,29 @@ class InferenceService:
                                     pass
                 from llama_cpp import Llama
 
-                free_vram = 0
-                try:
-                    import subprocess
-                    out = subprocess.check_output(
-                        ["nvidia-smi", "--query-gpu=memory.free", "--format=csv,noheader,nounits"],
-                        timeout=2
-                    ).decode()
-                    free_vram = int(out.strip().split()[0])
-                except Exception:
-                    pass
-
                 target_gpu_layers = getattr(settings, "XAI_GPU_LAYERS", -1)
                 context_size = getattr(settings, "XAI_CONTEXT_SIZE", 1024)
+                gpu_memory = []
+                if target_gpu_layers != 0:
+                    try:
+                        import subprocess
+                        out = subprocess.check_output(
+                            [
+                                "nvidia-smi",
+                                "--query-gpu=memory.total,memory.free",
+                                "--format=csv,noheader,nounits",
+                            ],
+                            timeout=2,
+                        ).decode()
+                        gpu_memory = parse_nvidia_smi_memory(out)
+                    except Exception:
+                        print("Unable to verify GPU memory; deferring GPU XAI model for safety.")
 
-                # Qwen2.5-1.5B Q4_K_M requires ~1500 MiB VRAM for full GPU offload.
-                # If free VRAM is below 1500 MiB (e.g. concurrent server process or test suite), defer XAI model
-                # to prevent multi-process GPU memory contention and CUDA errors on 4GB VRAM.
-                if target_gpu_layers != 0 and free_vram > 0 and free_vram < 1500:
-                    print(f"Available VRAM ({free_vram} MiB) < 1500 MiB. Deferring duplicate XAI model to avoid GPU contention.")
+                if should_defer_xai_gpu(target_gpu_layers, gpu_memory):
+                    print(
+                        "Deferring GPU XAI model to deterministic fallback "
+                        f"(visible GPU memory={gpu_memory or 'unavailable'})."
+                    )
                     self.xai_model = None
                 else:
                     self.xai_model = Llama(
@@ -323,16 +328,21 @@ class InferenceService:
 
         image = Image.open(io.BytesIO(image_bytes))
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
-            future = pool.submit(self._run_ocr_fallback, run_ocr, image, ["th", "en"])
-            try:
-                return future.result(timeout=settings.OCR_TIMEOUT)
-            except concurrent.futures.TimeoutError:
-                print(f"OCR timeout after {settings.OCR_TIMEOUT}s, continuing without OCR text")
-                return ""
-            except Exception as e:
-                print(f"Surya OCR error: {e}")
-                return ""
+        pool = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+        future = pool.submit(self._run_ocr_fallback, run_ocr, image, ["th", "en"])
+        try:
+            return future.result(timeout=settings.OCR_TIMEOUT)
+        except concurrent.futures.TimeoutError:
+            print(f"OCR timeout after {settings.OCR_TIMEOUT}s, continuing without OCR text")
+            future.cancel()
+            return ""
+        except Exception as e:
+            print(f"Surya OCR error: {e}")
+            return ""
+        finally:
+            # Do not wait for a running torch worker after timeout; it cannot be
+            # killed safely from Python, so abandon its late result instead.
+            pool.shutdown(wait=False, cancel_futures=True)
 
     def predict(self, image_bytes: bytes) -> dict:
         """

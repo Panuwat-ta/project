@@ -24,7 +24,7 @@ import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell, Paginati
 import { Modal } from "@/components/ui/Modal";
 import { useToast } from "@/components/ui/ToastContext";
 import { Input } from "@/components/ui/Input";
-import { formatDate } from "@/lib/utils";
+import { formatOptionalDate, formatOptionalIdentifier } from "@/lib/display-state";
 
 const SESSION_PAGE_SIZE = 10;
 
@@ -124,6 +124,7 @@ export function ProfileSettings() {
   };
 
   const parseDevice = (ua = "") => {
+    if (!ua) return { icon: Monitor, label: "ไม่ทราบอุปกรณ์" };
     const l = ua.toLowerCase();
     if (l.includes("mobile") || l.includes("android") || l.includes("iphone")) {
       return { icon: Smartphone, label: "อุปกรณ์เคลื่อนที่" };
@@ -155,7 +156,7 @@ export function ProfileSettings() {
             <Shield className="size-5 text-primary" />
             <span>บัญชีและความปลอดภัย</span>
           </h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <p className="text-[13px] text-muted-foreground mt-0.5">
             จัดการข้อมูลบัญชี รหัสผ่าน และอุปกรณ์ที่เข้าสู่ระบบ
           </p>
         </div>
@@ -191,10 +192,7 @@ export function ProfileSettings() {
                 <div className="text-xs text-muted-foreground font-mono font-medium">{profile?.email}</div>
                 <div className="flex items-center gap-2 mt-1">
                   <Badge variant="primary" size="sm" withDot>
-                    ผู้ดูแลระบบ
-                  </Badge>
-                  <Badge variant="success" size="sm">
-                    ใช้งาน
+                    {profile?.is_superadmin ? "Superadmin" : (profile?.role || "ไม่ทราบสิทธิ์")}
                   </Badge>
                 </div>
               </div>
@@ -203,15 +201,15 @@ export function ProfileSettings() {
             <div className="space-y-2 text-[13px]">
               <div className="flex justify-between py-1.5 border-b border-border-subtle">
                 <span className="text-muted-foreground font-medium">รหัสบัญชี:</span>
-                <span className="text-foreground font-mono font-bold">#{profile?.id || "1"}</span>
+                <span className="text-foreground font-mono font-bold">{formatOptionalIdentifier(profile?.id, { prefix: "#" })}</span>
               </div>
               <div className="flex justify-between py-1.5 border-b border-border-subtle">
                 <span className="text-muted-foreground font-medium">สิทธิ์การเข้าถึง:</span>
-                <span className="text-success font-bold">สิทธิ์ผู้ดูแลระบบทั้งหมด</span>
+                <span className="text-foreground font-bold">{profile?.is_superadmin ? "Superadmin" : (profile?.role || "ไม่ทราบ")}</span>
               </div>
               <div className="flex justify-between py-1.5">
                 <span className="text-muted-foreground font-medium">เข้าสู่ระบบล่าสุด:</span>
-                <span className="text-foreground font-mono font-bold">{formatDate(profile?.last_login_at || new Date())}</span>
+                <span className="text-foreground font-mono font-bold">{formatOptionalDate(profile?.last_login_at)}</span>
               </div>
             </div>
           </CardContent>
@@ -286,6 +284,7 @@ export function ProfileSettings() {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
+          <div className="hidden md:block">
           <Table>
             <TableHeader>
               <TableRow isHoverable={false}>
@@ -320,19 +319,19 @@ export function ProfileSettings() {
                             <div className="text-sm font-semibold text-foreground">
                               {dev.label}
                             </div>
-                            <div className="text-xs text-muted-foreground font-mono truncate max-w-xs" title={sess.user_agent || "เว็บเบราว์เซอร์"}>
-                              {sess.user_agent || "เว็บเบราว์เซอร์"}
+                            <div className="text-xs text-muted-foreground font-mono truncate max-w-xs" title={sess.user_agent || "ไม่ทราบข้อมูลไคลเอนต์"}>
+                              {sess.user_agent || "ไม่ทราบข้อมูลไคลเอนต์"}
                             </div>
                           </div>
                         </div>
                       </TableCell>
 
                       <TableCell className="font-mono text-[13px] font-medium text-foreground">
-                        {sess.ip_address || "127.0.0.1"}
+                        {sess.ip_address || "ไม่ทราบ"}
                       </TableCell>
 
                       <TableCell className="font-mono text-[13px] text-muted-foreground">
-                        {formatDate(sess.last_active_at || sess.created_at)}
+                        {formatOptionalDate(sess.last_used_at || sess.created_at)}
                       </TableCell>
 
                       <TableCell>
@@ -365,6 +364,43 @@ export function ProfileSettings() {
               )}
             </TableBody>
           </Table>
+          </div>
+
+          <div className="md:hidden divide-y divide-border-subtle">
+            {sessions.length === 0 ? (
+              <div className="px-4 py-8 text-center text-sm text-muted-foreground">ไม่พบข้อมูลเซสชันอื่นในระบบ</div>
+            ) : visibleSessions.map((sess) => {
+              const dev = parseDevice(sess.user_agent);
+              const Icon = dev.icon;
+              const isCurrent = sess.is_current;
+              return (
+                <article key={sess.id} className="p-4 space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="size-9 rounded-md bg-muted flex items-center justify-center text-muted-foreground shrink-0">
+                      <Icon className="size-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-sm font-semibold text-foreground">{dev.label}</span>
+                        {isCurrent ? <Badge variant="primary" size="sm" withDot>เซสชันปัจจุบัน</Badge> : <Badge variant="default" size="sm">เชื่อมต่ออยู่</Badge>}
+                      </div>
+                      <p className="mt-1 text-xs text-muted-foreground font-mono break-words line-clamp-2">{sess.user_agent || "ไม่ทราบข้อมูลไคลเอนต์"}</p>
+                    </div>
+                  </div>
+                  <dl className="grid grid-cols-2 gap-3 text-xs">
+                    <div><dt className="text-muted-foreground">IP Address</dt><dd className="mt-0.5 font-mono text-foreground break-all">{sess.ip_address || "ไม่ทราบ"}</dd></div>
+                    <div><dt className="text-muted-foreground">เข้าใช้งานล่าสุด</dt><dd className="mt-0.5 font-mono text-foreground">{formatOptionalDate(sess.last_used_at || sess.created_at)}</dd></div>
+                  </dl>
+                  {!isCurrent && (
+                    <div className="flex justify-end border-t border-border-subtle pt-3">
+                      <Button variant="dangerOutline" size="sm" onClick={() => setRevokeSessionId(sess.id)}>ออกจากระบบอุปกรณ์นี้</Button>
+                    </div>
+                  )}
+                </article>
+              );
+            })}
+          </div>
+
           <Pagination
             page={sessionPage}
             totalPages={totalSessionPages}

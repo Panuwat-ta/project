@@ -11,12 +11,12 @@ import {
 import { fetchModels, deployModel, dryRunModel } from "@/lib/api";
 import { useAdminQuery } from "@/lib/use-admin-query";
 import { Button } from "@/components/ui/Button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
+import { Card } from "@/components/ui/Card";
 import { Modal } from "@/components/ui/Modal";
-import { Textarea } from "@/components/ui/Input";
+import { Select, Textarea } from "@/components/ui/Input";
 import { TableSkeleton } from "@/components/ui/Skeleton";
 import { useToast } from "@/components/ui/ToastContext";
-import { formatDate } from "@/lib/utils";
+import { formatOptionalDate, formatOptionalMetric } from "@/lib/display-state";
 
 export function ModelsList() {
   const {
@@ -52,10 +52,12 @@ export function ModelsList() {
   const [deployModal, setDeployModal] = useState({
     isOpen: false,
     model: null,
+    currentModel: null,
     isRollback: false,
   });
   const [deployReason, setDeployReason] = useState("");
   const [deployReasonError, setDeployReasonError] = useState("");
+  const [deployTargetError, setDeployTargetError] = useState("");
   const [isDeploying, setIsDeploying] = useState(false);
 
   // Dry-run state
@@ -83,20 +85,37 @@ export function ModelsList() {
     }
   };
 
-  const openDeployModal = (model, isRollback = false) => {
-    setDeployModal({ isOpen: true, model, isRollback });
-    setDeployReason(isRollback ? "ย้อนกลับไปใช้โมเดลเวอร์ชันก่อนหน้า" : "");
+  const openDeployModal = (model) => {
+    setDeployModal({ isOpen: true, model, currentModel: null, isRollback: false });
+    setDeployReason("");
     setDeployReasonError("");
+    setDeployTargetError("");
+  };
+
+  const openRollbackModal = (currentModel) => {
+    setDeployModal({ isOpen: true, model: null, currentModel, isRollback: true });
+    setDeployReason("");
+    setDeployReasonError("");
+    setDeployTargetError("");
+  };
+
+  const resetDeployModal = () => {
+    setDeployModal({ isOpen: false, model: null, currentModel: null, isRollback: false });
+    setDeployReason("");
+    setDeployReasonError("");
+    setDeployTargetError("");
   };
 
   const closeDeployModal = () => {
     if (isDeploying) return;
-    setDeployModal({ isOpen: false, model: null, isRollback: false });
-    setDeployReason("");
-    setDeployReasonError("");
+    resetDeployModal();
   };
 
   const handleExecuteDeploy = async () => {
+    if (!deployModal.model) {
+      setDeployTargetError("กรุณาเลือกเวอร์ชันเป้าหมายก่อนดำเนินการ");
+      return;
+    }
     if (!deployReason.trim()) {
       setDeployReasonError("กรุณาระบุเหตุผลในการเปลี่ยนโมเดล");
       return;
@@ -110,7 +129,7 @@ export function ModelsList() {
           ? `ย้อนกลับไปใช้โมเดล ${deployModal.model.version_tag || deployModal.model.name} แล้ว`
           : `นำโมเดล ${deployModal.model.version_tag || deployModal.model.name} ไปใช้งานแล้ว`
       );
-      closeDeployModal();
+      resetDeployModal();
       await loadModels();
     } catch (err) {
       toast.error("เปลี่ยนโมเดลไม่สำเร็จ: " + err.message);
@@ -127,7 +146,7 @@ export function ModelsList() {
           <h2 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2.5">
             <span>โมเดล AI</span>
           </h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <p className="text-[13px] text-muted-foreground mt-0.5">
             ดูเวอร์ชัน ทดสอบ และเลือกโมเดลที่ระบบใช้งาน
           </p>
         </div>
@@ -163,168 +182,75 @@ export function ModelsList() {
           </Button>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {models.map((model) => {
-            const isActive = model.is_active || model.status === "active";
-            const isTesting = dryRunState.isLoading && dryRunState.modelId === model.id;
-            const dryResult = dryRunState.modelId === model.id ? dryRunState.result : null;
-
-            return (
-              <Card
-                key={model.id}
-                className={
-                  isActive
-                    ? "border-primary-border relative"
-                    : "hover:border-border transition-all"
-                }
-              >
-                {isActive && (
-                  <div className="absolute -top-2.5 right-4 px-2.5 py-0.5 rounded-full bg-card border border-primary-border text-primary font-semibold text-xs flex items-center gap-1">
-                    <span className="size-1.5 rounded-full bg-success" />
-                    <span>กำลังใช้งาน</span>
-                  </div>
-                )}
-
-                <CardHeader>
-                  <div className="space-y-1">
-                    <CardTitle className="flex items-center gap-2">
-                      <Cpu className={isActive ? "size-4 text-primary" : "size-4 text-muted-foreground"} />
-                      <span>{model.version_tag ? `SegFormer ${model.version_tag}` : (model.name || `Model Version v${model.version}`)}</span>
-                    </CardTitle>
-                    <p className="text-xs text-muted-foreground font-medium">
-                      ID: <span className="font-mono">#{model.id}</span> • สถาปัตยกรรม:{" "}
-                      <span className="font-mono">{model.framework_compatibility || model.framework || "SegFormer (MiT-B2)"}</span>
-                    </p>
-                  </div>
-                </CardHeader>
-
-                <CardContent className="space-y-4">
-                  {/* Model Performance Metrics */}
-                  <div className="grid grid-cols-2 gap-2 p-3 rounded-lg bg-muted/40 border border-border font-mono text-xs">
-                    <div>
-                      <span className="text-muted-foreground text-xs font-medium">mIoU</span>
-                      <div className="text-sm font-bold text-primary">
-                        {model.m_iou != null ? `${(model.m_iou * 100).toFixed(2)}%` : "-"}
+        <Card className="overflow-hidden">
+          <div className="hidden lg:grid grid-cols-[minmax(220px,1.4fr)_repeat(4,minmax(70px,.55fr))_minmax(160px,.9fr)_minmax(230px,1.2fr)] gap-3 px-4 py-3 border-b border-border bg-muted/50 text-xs font-semibold text-muted-foreground">
+            <span>เวอร์ชัน</span><span>mIoU</span><span>aAcc</span><span>mAcc</span><span>mDice</span><span>เริ่มใช้งาน</span><span className="text-right">การจัดการ</span>
+          </div>
+          <div className="divide-y divide-border-subtle">
+            {models.map((model) => {
+              const isActive = model.is_active || model.status === "active";
+              const isTesting = dryRunState.isLoading && dryRunState.modelId === model.id;
+              const dryResult = dryRunState.modelId === model.id ? dryRunState.result : null;
+              const metric = (value) => value != null ? `${(value * 100).toFixed(2)}%` : "—";
+              return (
+                <section key={model.id} className={isActive ? "bg-primary-subtle/30" : "bg-card"}>
+                  <div className="grid grid-cols-1 lg:grid-cols-[minmax(220px,1.4fr)_repeat(4,minmax(70px,.55fr))_minmax(160px,.9fr)_minmax(230px,1.2fr)] gap-3 items-center px-4 py-4">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <Cpu className={isActive ? "size-4 text-primary" : "size-4 text-muted-foreground"} />
+                        <span className="text-sm font-semibold text-foreground">{model.version_tag ? `SegFormer ${model.version_tag}` : "ไม่ระบุเวอร์ชัน"}</span>
+                        {isActive && <span className="text-xs font-semibold text-primary">กำลังใช้งาน</span>}
+                      </div>
+                      <div className="mt-1 text-xs text-muted-foreground">
+                        <span className="font-mono">ID #{model.id}</span> · {model.framework_compatibility || "ไม่ระบุสถาปัตยกรรม"}
+                      </div>
+                      <div className="mt-2 lg:hidden grid grid-cols-4 gap-2 text-xs">
+                        <div><span className="block text-muted-foreground">mIoU</span><span className="font-mono font-semibold text-foreground">{metric(model.m_iou)}</span></div>
+                        <div><span className="block text-muted-foreground">aAcc</span><span className="font-mono font-semibold text-foreground">{metric(model.a_acc)}</span></div>
+                        <div><span className="block text-muted-foreground">mAcc</span><span className="font-mono font-semibold text-foreground">{metric(model.m_acc)}</span></div>
+                        <div><span className="block text-muted-foreground">mDice</span><span className="font-mono font-semibold text-foreground">{metric(model.m_dice)}</span></div>
                       </div>
                     </div>
-                    <div>
-                      <span className="text-muted-foreground text-xs font-medium">aAcc</span>
-                      <div className="text-sm font-bold text-success">
-                        {model.a_acc != null ? `${(model.a_acc * 100).toFixed(2)}%` : "-"}
-                      </div>
+                    <span className="hidden lg:block font-mono text-[13px] font-semibold text-foreground">{metric(model.m_iou)}</span>
+                    <span className="hidden lg:block font-mono text-[13px] font-semibold text-foreground">{metric(model.a_acc)}</span>
+                    <span className="hidden lg:block font-mono text-[13px] font-semibold text-foreground">{metric(model.m_acc)}</span>
+                    <span className="hidden lg:block font-mono text-[13px] font-semibold text-foreground">{metric(model.m_dice)}</span>
+                    <div className="text-xs text-muted-foreground">
+                      <span className="lg:hidden mr-2">เริ่มใช้งาน:</span>
+                      <span className="font-mono text-foreground">{formatOptionalDate(model.deployed_at)}</span>
                     </div>
-                    <div>
-                      <span className="text-muted-foreground text-xs font-medium">mAcc</span>
-                      <div className="text-sm font-bold text-foreground">
-                        {model.m_acc != null ? `${(model.m_acc * 100).toFixed(2)}%` : "-"}
-                      </div>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground text-xs font-medium">mDice</span>
-                      <div className="text-sm font-bold text-info">
-                        {model.m_dice != null ? `${(model.m_dice * 100).toFixed(2)}%` : "-"}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Model Metadata Notes */}
-                  <div className="space-y-1.5 text-xs text-muted-foreground">
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium">ชุดข้อมูล:</span>
-                      <span className="text-foreground font-mono font-semibold truncate max-w-[150px]">{model.dataset_reference || "ไม่ระบุ"}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium">Checksum:</span>
-                      <span className="text-foreground font-mono font-semibold truncate max-w-[140px]" title={model.artifact_checksum}>
-                        {model.artifact_checksum || "-"}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium">เริ่มใช้งาน:</span>
-                      <span className="text-foreground font-mono font-semibold">{formatDate(model.deployed_at || model.created_at)}</span>
-                    </div>
-                    {model.file_path && (
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium">ไฟล์:</span>
-                        <span className="text-foreground font-mono font-semibold truncate max-w-[140px]" title={model.file_path}>
-                          {model.file_path.split("/").pop()}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Dry Run Output Panel */}
-                  {dryResult && (
-                    <div
-                      className={`p-3 rounded-lg border text-xs space-y-1 ${
-                        dryResult.success !== false
-                          ? "bg-success-subtle border-success-border text-success"
-                          : "bg-danger-subtle border-danger-border text-danger"
-                      }`}
-                    >
-                      <div className="font-semibold flex items-center gap-1.5">
-                        {dryResult.success !== false ? (
-                          <CheckCircle2 className="size-3.5 text-success" />
-                        ) : (
-                          <AlertTriangle className="size-3.5 text-danger" />
-                        )}
-                        <span>{dryResult.success !== false ? "ทดสอบผ่าน" : "ทดสอบไม่ผ่าน"}</span>
-                      </div>
-                      <div className="text-xs opacity-90">
-                        Latency: {dryResult.details?.latency_ms || dryResult.latency_ms || 98}ms • Memory: {dryResult.details?.memory_usage_mb ? `${dryResult.details.memory_usage_mb}MB` : "235MB"}
-                      </div>
-                      {dryResult.message && (
-                        <div className="text-xs text-foreground truncate">
-                          {dryResult.message}
-                        </div>
+                    <div className="flex items-center gap-2 lg:justify-end">
+                      <Button variant="outline" size="xs" icon={Play} isLoading={isTesting} onClick={() => handleDryRun(model)}>ทดสอบ</Button>
+                      {!isActive ? (
+                        <Button variant="primary" size="xs" icon={Rocket} onClick={() => openDeployModal(model)}>นำไปใช้งาน</Button>
+                      ) : (
+                        <Button variant="secondary" size="xs" icon={RotateCcw} onClick={() => {
+                          const hasTarget = models.some((m) => m.id !== model.id && !(m.is_active || m.status === "active"));
+                          if (hasTarget) openRollbackModal(model); else toast.warning("ไม่มีโมเดลเวอร์ชันอื่นสำหรับย้อนกลับ");
+                        }}>ย้อนกลับ</Button>
                       )}
                     </div>
-                  )}
-
-                  {/* Action Buttons */}
-                  <div className="flex items-center gap-2 pt-2 border-t border-border-subtle">
-                    <Button
-                      variant="outline"
-                      size="xs"
-                      icon={Play}
-                      isLoading={isTesting}
-                      onClick={() => handleDryRun(model)}
-                      className="flex-1"
-                    >
-                      ทดสอบโมเดล
-                    </Button>
-
-                    {!isActive ? (
-                      <Button
-                        variant="primary"
-                        size="xs"
-                        icon={Rocket}
-                        onClick={() => openDeployModal(model, false)}
-                        className="flex-1"
-                      >
-                        นำไปใช้งาน
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="secondary"
-                        size="xs"
-                        icon={RotateCcw}
-                        onClick={() => {
-                          const backup = models.find((m) => m.id !== model.id);
-                          if (backup) openDeployModal(backup, true);
-                          else toast.warning("ไม่มีโมเดลเวอร์ชันก่อนหน้าสำหรับย้อนกลับ");
-                        }}
-                        className="flex-1"
-                      >
-                        ย้อนกลับเวอร์ชัน
-                      </Button>
-                    )}
                   </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+                  <div className="px-4 pb-4 grid grid-cols-1 md:grid-cols-3 gap-2 text-xs text-muted-foreground">
+                    <div>ชุดข้อมูล: <span className="text-foreground font-mono">{model.dataset_reference || "ไม่ระบุ"}</span></div>
+                    <div className="min-w-0">Checksum: <span className="text-foreground font-mono break-all">{model.artifact_checksum || "ไม่ระบุ"}</span></div>
+                    <div className="min-w-0">ไฟล์: <span className="text-foreground font-mono break-all">{model.file_path ? model.file_path.split("/").pop() : "ไม่ระบุ"}</span></div>
+                  </div>
+                  {dryResult && (
+                    <div className={`mx-4 mb-4 rounded-md border px-3 py-2.5 text-xs ${dryResult.success !== false ? "bg-success-subtle border-success-border" : "bg-danger-subtle border-danger-border"}`}>
+                      <div className="flex items-center gap-1.5 font-semibold text-foreground">
+                        {dryResult.success !== false ? <CheckCircle2 className="size-3.5 text-success" /> : <AlertTriangle className="size-3.5 text-danger" />}
+                        <span>{dryResult.success !== false ? "ทดสอบผ่าน" : "ทดสอบไม่ผ่าน"}</span>
+                      </div>
+                      <div className="mt-1 text-muted-foreground">Latency: {formatOptionalMetric(dryResult.details?.latency_ms ?? dryResult.latency_ms, { suffix: " ms" })} · Memory: {formatOptionalMetric(dryResult.details?.memory_usage_mb, { suffix: " MB" })}</div>
+                      {dryResult.message && <div className="mt-1 text-foreground break-words">{dryResult.message}</div>}
+                    </div>
+                  )}
+                </section>
+              );
+            })}
+          </div>
+        </Card>
       )}
 
       {/* Deployment & Rollback Confirmation Modal */}
@@ -333,10 +259,10 @@ export function ModelsList() {
         onClose={closeDeployModal}
         title={
           deployModal.isRollback
-            ? `ย้อนกลับไปใช้โมเดล ${deployModal.model?.version_tag || deployModal.model?.name || deployModal.model?.version}?`
-            : `นำโมเดล ${deployModal.model?.version_tag || deployModal.model?.name || deployModal.model?.version} ไปใช้งาน?`
+            ? "ย้อนกลับเวอร์ชันโมเดล"
+            : `นำโมเดล ${deployModal.model?.version_tag || "ไม่ระบุเวอร์ชัน"} ไปใช้งาน?`
         }
-        description="การเปลี่ยนแปลงจะมีผลกับการวิเคราะห์รูปภาพครั้งถัดไป กรุณาระบุเหตุผล"
+        description="การเปลี่ยนแปลงจะมีผลกับการวิเคราะห์รูปภาพครั้งถัดไป กรุณาตรวจสอบเป้าหมายและระบุเหตุผล"
         footer={
           <>
             <Button variant="ghost" size="sm" onClick={closeDeployModal} disabled={isDeploying}>
@@ -355,10 +281,41 @@ export function ModelsList() {
         }
       >
         <div className="space-y-4 pt-2">
-          <div className="p-3 rounded-lg bg-primary-subtle border border-primary-border text-xs text-primary space-y-1">
-            <div>โมเดล: {deployModal.model?.version_tag || deployModal.model?.name} (ID: #{deployModal.model?.id})</div>
-            <div>สถาปัตยกรรม: {deployModal.model?.framework_compatibility || "SegFormer (MiT-B2)"}</div>
-            <div>mIoU: {deployModal.model?.m_iou ? `${(deployModal.model.m_iou * 100).toFixed(2)}%` : "-"}</div>
+          {deployModal.isRollback && (
+            <Select
+              label="เวอร์ชันเป้าหมาย"
+              value={deployModal.model?.id || ""}
+              onChange={(event) => {
+                const target = models.find((model) => String(model.id) === event.target.value) || null;
+                setDeployModal((current) => ({ ...current, model: target }));
+                setDeployTargetError("");
+              }}
+              error={deployTargetError}
+              aria-label="เลือกเวอร์ชันโมเดลสำหรับย้อนกลับ"
+            >
+              <option value="">เลือกเวอร์ชัน...</option>
+              {models
+                .filter((model) => model.id !== deployModal.currentModel?.id && !(model.is_active || model.status === "active"))
+                .map((model) => (
+                  <option key={model.id} value={model.id}>
+                    {model.version_tag || "ไม่ระบุเวอร์ชัน"} · ID #{model.id}
+                  </option>
+                ))}
+            </Select>
+          )}
+
+          <div className="p-3 rounded-lg bg-muted/40 border border-border text-xs text-foreground space-y-2">
+            {deployModal.isRollback && (
+              <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 pb-2 border-b border-border-subtle">
+                <span className="text-muted-foreground">ปัจจุบัน</span>
+                <span className="font-mono font-semibold">{deployModal.currentModel?.version_tag || "ไม่ระบุ"} · ID #{deployModal.currentModel?.id ?? "—"}</span>
+                <span className="text-muted-foreground">เป้าหมาย</span>
+                <span className="font-mono font-semibold">{deployModal.model ? `${deployModal.model.version_tag || "ไม่ระบุ"} · ID #${deployModal.model.id}` : "ยังไม่ได้เลือก"}</span>
+              </div>
+            )}
+            <div>Checksum: <span className="font-mono">{deployModal.model?.artifact_checksum || "ไม่ระบุ"}</span></div>
+            <div>สถาปัตยกรรม: <span className="font-mono">{deployModal.model?.framework_compatibility || "ไม่ระบุ"}</span></div>
+            <div>mIoU: {deployModal.model?.m_iou != null ? `${(deployModal.model.m_iou * 100).toFixed(2)}%` : "ไม่ได้รายงาน"}</div>
           </div>
 
           <Textarea

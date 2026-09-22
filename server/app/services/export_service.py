@@ -25,6 +25,17 @@ try:
 except Exception:
     pass
 
+def _resolve_scan_image(path: Optional[str]) -> Optional[str]:
+    if not path:
+        return None
+    raw = str(path)
+    candidates = [raw]
+    candidates.append(os.path.join(settings.LOCAL_UPLOAD_DIR, os.path.basename(raw)))
+    for candidate in candidates:
+        if os.path.isfile(candidate):
+            return candidate
+    return None
+
 async def _cleanup_expired_jobs(db: AsyncSession):
     now = datetime.now(TH_TIMEZONE)
     stmt = select(ExportJob).where(ExportJob.status == "succeeded", ExportJob.expires_at < now)
@@ -73,7 +84,8 @@ async def process_export_job(job_id: str):
             
         job.status = "running"
         await db.commit()
-        
+        filepath = None
+
         try:
             config = job.filter_config
             
@@ -100,63 +112,104 @@ async def process_export_job(job_id: str):
             if total_rows > 100000:
                 raise Exception("Dataset too large (limit 100,000 rows). Please narrow your date range.")
                 
-            # We process them in chunks
             filename = f"scamguard_export_{job_id}.zip"
             filepath = os.path.join(STORAGE_DIR, filename)
-            
+
+            result = await db.execute(stmt)
+            reports = result.scalars().all()
+            scan_ids = {r.scan_id for r in reports if r.scan_id}
+            scan_map = {}
+            if scan_ids:
+                scan_result = await db.execute(select(Scan).where(Scan.id.in_(scan_ids)))
+                scan_map = {scan.id: scan for scan in scan_result.scalars().all()}
+
             manifest_entries = []
-            
+            metadata_entries = []
+            canceled_during_export = False
+
             with zipfile.ZipFile(filepath, 'w', zipfile.ZIP_DEFLATED) as zf:
-                result = await db.execute(stmt)
-                reports = result.scalars().all() # In production we would yield in chunks, but for now fetch all is fine if limit < 100k
-                
                 for i, r in enumerate(reports):
-                    # add metadata
-                    if config.get("include_metadata", True):
-                        meta = {
-                            "id": r.id,
-                            "category": r.category,
-                            "platform": r.platform,
-                            "reason": getattr(r, "reason", None) or getattr(r, "description", None),
-                            "description": getattr(r, "reason", None) or getattr(r, "description", None),
-                            "created_at": r.created_at.isoformat() if r.created_at else None,
-                        }
-                        meta_filename = f"{r.id}_meta.json"
-                        zf.writestr(meta_filename, json.dumps(meta, ensure_ascii=False, indent=2))
-                        manifest_entries.append({"id": r.id, "file": meta_filename})
-                        
-                    # progress update every 100 items
-                    if i % 100 == 0:
-                        job.progress = min(99.0, (i / total_rows) * 100.0)
+                    scan = scan_map.get(r.scan_id)
+                    if scan is None:
+                        raise RuntimeError(f"Scan {r.scan_id} not found for report {r.id}")
+                    source_image = _resolve_scan_image(scan.raw_image_url)
+                    if source_image is None:
+                        raise RuntimeError(f"Source image not found for scan {scan.id}")
+
+                    suffix = Path(source_image).suffix.lower() or ".jpg"
+                    image_filename = f"{scan.id}{suffix}"
+                    image_archive_path = f"images/{r.category}/{image_filename}"
+                    zf.write(source_image, image_archive_path)
+                    manifest_entries.append({
+                        "report_id": r.id,
+                        "scan_id": str(scan.id),
+                        "file": image_archive_path,
+                    })
+                    metadata_entries.append({
+                        "filename": f"{r.category}/{image_filename}",
+                        "category": r.category,
+                        "risk_score": scan.total_risk_score,
+                        "report_id": r.id,
+                        "reported_at": r.created_at.isoformat() if r.created_at else None,
+                        "approved_at": r.moderated_at.isoformat() if r.moderated_at else None,
+                    })
+
+                    if (i + 1) % 100 == 0:
+                        job.progress = min(99.0, ((i + 1) / total_rows) * 100.0)
                         await db.commit()
-                        await asyncio.sleep(0) # yield event loop
-                        
-                # Add Manifest
-                manifest = {
-                    "schema_version": "1.0",
-                    "filter_config": config,
-                    "total_rows": total_rows,
-                    "exported_at": datetime.now(TH_TIMEZONE).isoformat(),
-                    "entries": manifest_entries
-                }
-                zf.writestr("manifest.json", json.dumps(manifest, ensure_ascii=False, indent=2))
-            
+                        await db.refresh(job)
+                        if job.status == "canceled":
+                            canceled_during_export = True
+                            break
+                        await asyncio.sleep(0)
+
+                if not canceled_during_export:
+                    if config.get("include_metadata", True):
+                        zf.writestr("metadata.json", json.dumps(metadata_entries, ensure_ascii=False, indent=2))
+                    zf.writestr(
+                        "README.md",
+                        "# ScamGuard Research Dataset\n\n"
+                        "ไฟล์นี้สร้างจากรายงานที่อนุมัติและยินยอมให้ใช้เพื่อการวิจัยเท่านั้น\n"
+                        "ข้อมูลผู้รายงานส่วนบุคคลไม่ถูกรวมในชุดข้อมูลนี้\n",
+                    )
+                    manifest = {
+                        "schema_version": "1.0",
+                        "filter_config": config,
+                        "total_rows": len(manifest_entries),
+                        "exported_at": datetime.now(TH_TIMEZONE).isoformat(),
+                        "entries": manifest_entries,
+                    }
+                    zf.writestr("manifest.json", json.dumps(manifest, ensure_ascii=False, indent=2))
+
+            # Periodic checkpoints already refresh the row every 100 items.
+            # Short exports still need one final refresh before publishing success.
+            if not canceled_during_export:
+                await db.refresh(job, with_for_update=True)
+            if job.status == "canceled":
+                if os.path.exists(filepath):
+                    os.remove(filepath)
+                job.file_path = None
+                job.completed_at = datetime.now(TH_TIMEZONE)
+                await db.commit()
+                await manager.broadcast({"type": "refresh_dashboard"})
+                return
+
             # success
             file_size = os.path.getsize(filepath)
             
             job.status = "succeeded"
             job.progress = 100.0
-            job.total_rows = total_rows
+            job.total_rows = len(manifest_entries)
             job.file_size_bytes = file_size
             job.file_path = filepath
-            job.manifest = {"schema_version": "1.0", "total_rows": total_rows, "size_bytes": file_size}
+            job.manifest = {"schema_version": "1.0", "total_rows": len(manifest_entries), "size_bytes": file_size}
             job.completed_at = datetime.now(TH_TIMEZONE)
             job.expires_at = datetime.now(TH_TIMEZONE) + timedelta(days=7) # keep for 7 days
             
             audit = AuditLog(
                 admin_id=job.admin_id,
                 action="dataset_exported",
-                details=f"Exported {total_rows} reports. Job ID: {job_id}",
+                details=f"Exported {len(manifest_entries)} images. Job ID: {job_id}",
                 entity_type="export_job",
                 entity_id=str(job_id)
             )
@@ -165,7 +218,13 @@ async def process_export_job(job_id: str):
             await manager.broadcast({"type": "refresh_dashboard"})
             
         except Exception as e:
+            if filepath and os.path.exists(filepath):
+                try:
+                    os.remove(filepath)
+                except OSError:
+                    pass
             job.status = "failed"
+            job.file_path = None
             job.error_message = str(e)
             job.completed_at = datetime.now(TH_TIMEZONE)
             await db.commit()

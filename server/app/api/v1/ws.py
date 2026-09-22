@@ -1,25 +1,44 @@
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
+from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.database import get_db
+from app.api.deps import get_db
 from app.core.websocket import manager
-from app.core.security import decode_access_token
-from app.models.user import User
+from app.services.admin_access_policy import AdminAccessError, resolve_admin_access
 
 router = APIRouter()
+WS_PROTOCOL = "scamguard-admin"
+
+
+def _extract_protocol_token(websocket: WebSocket) -> str | None:
+    offered = websocket.headers.get("sec-websocket-protocol", "")
+    protocols = [item.strip() for item in offered.split(",") if item.strip()]
+    if len(protocols) != 2 or protocols[0] != WS_PROTOCOL:
+        return None
+    return protocols[1]
+
+
+async def _authenticate_admin_websocket(websocket: WebSocket, db: AsyncSession) -> bool:
+    token = _extract_protocol_token(websocket)
+    if not token:
+        return False
+    try:
+        await resolve_admin_access(token, db, require_superadmin=True)
+    except AdminAccessError:
+        return False
+    return True
+
 
 @router.websocket("/admin/dashboard")
-async def websocket_admin_dashboard(websocket: WebSocket, token: str):
-    # Authenticate via query param
-    payload = decode_access_token(token)
-    if not payload or payload.get("role") != "admin":
+async def websocket_admin_dashboard(
+    websocket: WebSocket,
+    db: AsyncSession = Depends(get_db),
+):
+    if not await _authenticate_admin_websocket(websocket, db):
         await websocket.close(code=1008)
         return
 
-    await manager.connect(websocket)
+    await manager.connect(websocket, subprotocol=WS_PROTOCOL)
     try:
         while True:
-            # We just keep connection alive and wait for messages (e.g. ping)
-            # The server will broadcast events to the client independently
-            data = await websocket.receive_text()
+            await websocket.receive_text()
     except WebSocketDisconnect:
         manager.disconnect(websocket)

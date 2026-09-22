@@ -104,6 +104,8 @@ async def test_get_report_detail():
     assert data["category"] == "fake_slip"
     assert data["status"] == "pending"
     assert data["scan"]["total_risk_score"] == 85
+    assert data["scan"]["source_status"] == "unavailable"
+    assert data["scan"]["source_score"] is None
     assert data["user"]["total_reports_submitted"] == 12
 
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { RefreshCw, Eye, Ban, CheckCircle2 } from "lucide-react";
 import { fetchUsers, updateUserStatus } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
@@ -59,11 +59,15 @@ export function UsersList() {
     setReasonError("");
   };
 
-  const closeStatusModal = () => {
-    if (isSubmitting) return;
+  const resetStatusModal = () => {
     setModalState({ isOpen: false, user: null, targetActive: false });
     setReason("");
     setReasonError("");
+  };
+
+  const closeStatusModal = () => {
+    if (isSubmitting) return;
+    resetStatusModal();
   };
 
   const handleUpdateStatus = async () => {
@@ -80,7 +84,7 @@ export function UsersList() {
           ? `ปลดการระงับบัญชี ${modalState.user.email} สำเร็จ`
           : `ระงับการใช้งานบัญชี ${modalState.user.email} สำเร็จ`
       );
-      closeStatusModal();
+      resetStatusModal();
       loadUsers();
     } catch (err) {
       toast.error("ดำเนินการไม่สำเร็จ: " + err.message);
@@ -99,7 +103,7 @@ export function UsersList() {
           <h2 className="text-xl font-bold tracking-tight text-foreground">
             ผู้ใช้งาน
           </h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <p className="text-[13px] text-muted-foreground mt-0.5">
             ดูข้อมูลผู้ใช้และจัดการสถานะบัญชี
           </p>
         </div>
@@ -137,6 +141,7 @@ export function UsersList() {
           <TableSkeleton rows={8} cols={6} />
         ) : (
           <div>
+            <div className="hidden md:block">
             <Table>
               <TableHeader>
                 <TableRow isHoverable={false}>
@@ -156,14 +161,15 @@ export function UsersList() {
                   users.map((user) => {
                     const isAdmin = user.role === "admin" || user.is_superadmin;
                     return (
-                      <TableRow
-                        key={user.id}
-                        className="cursor-pointer"
-                        onClick={() => navigate(`/admin/users/${user.id}`)}
-                      >
+                      <TableRow key={user.id}>
                         {/* ID */}
-                        <TableCell className="font-mono text-[13px] font-semibold text-foreground">
-                          #{user.id}
+                        <TableCell>
+                          <Link
+                            to={`/admin/users/${user.id}`}
+                            className="font-mono text-[13px] font-semibold text-foreground hover:text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
+                          >
+                            #{user.id}
+                          </Link>
                         </TableCell>
 
                         {/* Name / Email */}
@@ -197,7 +203,7 @@ export function UsersList() {
                         </TableCell>
 
                         {/* Actions */}
-                        <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+                        <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-2">
                             <Button
                               variant="ghost"
@@ -238,6 +244,53 @@ export function UsersList() {
                 )}
               </TableBody>
             </Table>
+            </div>
+
+            <div className="md:hidden divide-y divide-border-subtle">
+              {users.length === 0 ? (
+                <div className="px-4 py-10 text-center text-sm text-muted-foreground">ไม่พบบัญชีผู้ใช้ที่ค้นหา</div>
+              ) : users.map((user) => {
+                const isAdmin = user.role === "admin" || user.is_superadmin;
+                return (
+                  <article key={user.id} className="p-4 space-y-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <Link
+                          to={`/admin/users/${user.id}`}
+                          className="text-sm font-semibold text-foreground hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
+                        >
+                          {user.full_name || "ไม่มีชื่อระบุ"}
+                        </Link>
+                        <div className="mt-0.5 text-xs font-mono text-muted-foreground truncate">{user.email}</div>
+                        <div className="mt-1 text-xs font-mono text-muted-foreground">#{user.id}</div>
+                      </div>
+                      <StatusBadge status={user.is_active ? "active" : "banned"} />
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2 text-[13px]">
+                      <Badge variant={isAdmin ? "primary" : "default"} size="sm">{user.role}</Badge>
+                      <span className="text-muted-foreground">สแกน <span className="font-mono font-semibold text-foreground">{formatNumber(user.total_scans ?? user.scans_count ?? 0)}</span> ครั้ง</span>
+                    </div>
+                    <div className="flex items-center justify-between gap-3 border-t border-border-subtle pt-3">
+                      <span className="text-xs font-mono text-muted-foreground">{formatDate(user.created_at)}</span>
+                      <div className="flex items-center gap-2">
+                        <Link
+                          to={`/admin/users/${user.id}`}
+                          className="inline-flex h-9 items-center justify-center gap-1.5 rounded-md border border-border px-3 text-[13px] font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        >
+                          <Eye className="size-4" />
+                          โปรไฟล์
+                        </Link>
+                        {!isAdmin && (user.is_active ? (
+                          <Button variant="dangerOutline" size="sm" icon={Ban} onClick={() => openStatusModal(user, false)}>ระงับ</Button>
+                        ) : (
+                          <Button variant="outline" size="sm" icon={CheckCircle2} onClick={() => openStatusModal(user, true)} className="text-success border-success-border hover:bg-success-subtle">ปลดระงับ</Button>
+                        ))}
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
 
             <Pagination
               page={page}

@@ -45,6 +45,7 @@ export function useAdminQuery(
   const toast = useToast();
   const fetcherRef = useRef(fetcher);
   const optsRef = useRef({ successMessage, errorMessage, logPrefix, resetOnError });
+  const requestIdRef = useRef(0);
 
   useEffect(() => {
     fetcherRef.current = fetcher;
@@ -52,6 +53,7 @@ export function useAdminQuery(
   });
 
   const reload = useCallback(async (manual = false, quiet = false) => {
+    const requestId = ++requestIdRef.current;
     const opts = optsRef.current;
     try {
       if (manual) setIsRefreshing(true);
@@ -59,6 +61,7 @@ export function useAdminQuery(
       if (!quiet) setError(null);
 
       const result = await fetcherRef.current();
+      if (requestId !== requestIdRef.current) return null;
       setData(result);
       setLastUpdated(new Date());
 
@@ -67,17 +70,23 @@ export function useAdminQuery(
       }
       return result;
     } catch (err) {
-      if (quiet) return null;
+      if (requestId !== requestIdRef.current || quiet) return null;
       console.error(opts.logPrefix, err);
       setError(err.message || opts.errorMessage);
       if (opts.resetOnError) setData(initialData);
       toast.error(`${opts.errorMessage}: ` + err.message);
       return null;
     } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
+      if (requestId === requestIdRef.current) {
+        setIsLoading(false);
+        setIsRefreshing(false);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => () => {
+    requestIdRef.current += 1;
   }, []);
 
   // Visible reload when query deps change (filters, page, id).

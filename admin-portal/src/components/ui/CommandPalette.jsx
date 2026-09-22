@@ -20,39 +20,50 @@ export function CommandPalette({ isOpen, onClose }) {
   const [isSearching, setIsSearching] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef(null);
+  const searchRequestIdRef = useRef(0);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isOpen) {
-      setTimeout(() => inputRef.current?.focus(), 50);
-      setQuery("");
-      setResults([]);
-      setSelectedIndex(0);
-    }
+    if (!isOpen) return undefined;
+    const focusTimer = setTimeout(() => inputRef.current?.focus(), 50);
+    setQuery("");
+    setResults([]);
+    setSelectedIndex(0);
+    return () => clearTimeout(focusTimer);
   }, [isOpen]);
 
   useEffect(() => {
+    const requestId = ++searchRequestIdRef.current;
     if (!query.trim() || query.length < 2) {
       setResults([]);
       setIsSearching(false);
-      return;
+      return undefined;
     }
 
     const timer = setTimeout(async () => {
       setIsSearching(true);
       try {
         const res = await searchGlobal(query.trim());
+        if (requestId !== searchRequestIdRef.current) return;
         setResults(res.items || []);
         setSelectedIndex(0);
       } catch (err) {
+        if (requestId !== searchRequestIdRef.current) return;
         console.error("Command palette search failed", err);
         setResults([]);
       } finally {
-        setIsSearching(false);
+        if (requestId === searchRequestIdRef.current) {
+          setIsSearching(false);
+        }
       }
     }, 250);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      if (requestId === searchRequestIdRef.current) {
+        searchRequestIdRef.current += 1;
+      }
+    };
   }, [query]);
 
   // Combined items: either search results or default shortcuts
@@ -90,7 +101,7 @@ export function CommandPalette({ isOpen, onClose }) {
       />
 
       <div
-        className="relative z-10 w-full max-w-xl rounded-xl bg-card border border-border shadow-2xl overflow-hidden transition-all animate-in zoom-in-95 duration-150"
+        className="relative z-10 w-full max-w-xl rounded-xl bg-card border border-border shadow-xl overflow-hidden transition-[opacity,transform] animate-in zoom-in-95 duration-150"
         role="dialog"
         aria-modal="true"
         aria-label="ค้นหาและนำทาง"

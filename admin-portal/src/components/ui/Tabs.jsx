@@ -45,7 +45,7 @@ export function Tabs({ tabs, activeTab, onChange, className }) {
             aria-selected={isActive}
             tabIndex={isActive ? 0 : -1}
             className={cn(
-              "shrink-0 h-9 px-3 text-[13px] font-medium rounded-md transition-all outline-none flex items-center gap-1.5 select-none focus-visible:ring-2 focus-visible:ring-ring",
+              "shrink-0 h-9 px-3 text-[13px] font-medium rounded-md transition-colors outline-none flex items-center gap-1.5 select-none focus-visible:ring-2 focus-visible:ring-ring",
               isActive
                 ? "bg-card text-primary shadow-sm border border-border font-bold"
                 : "text-muted-foreground hover:text-foreground font-medium"
