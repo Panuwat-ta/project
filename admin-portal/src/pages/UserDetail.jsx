@@ -223,12 +223,13 @@ export function UserDetail() {
                   <TableHead>รหัสการสแกน</TableHead>
                   <TableHead>คะแนนความเสี่ยง</TableHead>
                   <TableHead>ระดับผลการตรวจ</TableHead>
+                  <TableHead>สถานะ</TableHead>
                   <TableHead>วันที่สแกน</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {recentScans.length === 0 ? (
-                  <TableEmpty colSpan={4} message="ยังไม่มีประวัติการสแกนรูปภาพจากผู้ใช้นี้" />
+                  <TableEmpty colSpan={5} message="ยังไม่มีประวัติการสแกนรูปภาพจากผู้ใช้นี้" />
                 ) : (
                   recentScans.map((scan) => (
                     <TableRow key={scan.id}>
@@ -240,6 +241,9 @@ export function UserDetail() {
                       </TableCell>
                       <TableCell>
                         <RiskBadge score={scan.total_risk_score} />
+                      </TableCell>
+                      <TableCell>
+                        <StatusBadge status={scan.status} />
                       </TableCell>
                       <TableCell className="font-mono text-[13px] text-muted-foreground">
                         {formatDate(scan.created_at)}

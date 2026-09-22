@@ -7,13 +7,15 @@ import path from "node:path";
 const readSource = (relativePath) =>
   readFile(new URL(relativePath, import.meta.url), "utf8");
 
-const [modelsSource, usersSource, reportSource, datasetSource, reportsListSource] =
+const [modelsSource, usersSource, reportSource, datasetSource, reportsListSource, userDetailSource, topBarSource] =
   await Promise.all([
     readSource("../src/pages/ModelsList.jsx"),
     readSource("../src/pages/UsersList.jsx"),
     readSource("../src/pages/ReportDetail.jsx"),
     readSource("../src/pages/DatasetExport.jsx"),
     readSource("../src/pages/ReportsList.jsx"),
+    readSource("../src/pages/UserDetail.jsx"),
+    readSource("../src/components/TopBar.jsx"),
   ]);
 
 let vite;
@@ -126,4 +128,21 @@ test("dataset category controls use a semantic fieldset legend", () => {
   assert.match(datasetSource, /<fieldset className="space-y-2">/);
   assert.match(datasetSource, /<legend className="block text-\[13px\] font-semibold text-foreground">\s*เลือกหมวดหมู่ที่ต้องการส่งออก\s*<\/legend>/);
   assert.doesNotMatch(datasetSource, /<label className="block text-\[13px\] font-semibold text-foreground">\s*เลือกหมวดหมู่ที่ต้องการส่งออก/);
+});
+
+
+test("user detail renders recent scan execution status", () => {
+  assert.match(userDetailSource, /<TableHead>สถานะ<\/TableHead>/);
+  assert.match(userDetailSource, /<StatusBadge status=\{scan\.status\} \/>/);
+});
+
+
+test("theme selector exposes direct system, light, and dark choices", () => {
+  assert.match(topBarSource, /role="group"/);
+  assert.match(topBarSource, /aria-label="เลือกธีม"/);
+  assert.match(topBarSource, /value: "system"/);
+  assert.match(topBarSource, /value: "light"/);
+  assert.match(topBarSource, /value: "dark"/);
+  assert.match(topBarSource, /onClick=\{\(\) => setTheme\(value\)\}/);
+  assert.match(topBarSource, /aria-pressed=\{isActive\}/);
 });

@@ -121,6 +121,7 @@ async def test_process_export_job_builds_documented_dataset_zip(monkeypatch, tmp
 
     await export_service.process_export_job(str(job.id))
 
+    db.refresh.assert_awaited_once_with(job, with_for_update=True)
     assert job.status == "succeeded"
     archive = tmp_path / f"scamguard_export_{job.id}.zip"
     assert archive.exists()
@@ -169,7 +170,7 @@ async def test_running_export_honors_external_cancellation(monkeypatch, tmp_path
             return _result(items=[report])
         return _result(items=[scan])
 
-    async def refresh(obj):
+    async def refresh(obj, **kwargs):
         calls["refresh"] += 1
         obj.status = "canceled"
 
@@ -186,6 +187,65 @@ async def test_running_export_honors_external_cancellation(monkeypatch, tmp_path
     await export_service.process_export_job(str(job.id))
 
     assert calls["refresh"] >= 1
+    assert job.status == "canceled"
+    assert not (tmp_path / f"scamguard_export_{job.id}.zip").exists()
+
+
+@pytest.mark.asyncio
+async def test_running_export_stops_within_batch_after_external_cancellation(monkeypatch, tmp_path):
+    image_file = tmp_path / "source.jpg"
+    image_file.write_bytes(b"jpeg-bytes")
+    now = datetime.now(TH_TIMEZONE)
+    scan_ids = [uuid.uuid4() for _ in range(205)]
+    reports = [
+        SimpleNamespace(id=i + 1, category="fake_slip", created_at=now, moderated_at=now, scan_id=scan_id)
+        for i, scan_id in enumerate(scan_ids)
+    ]
+    scans = [
+        SimpleNamespace(id=scan_id, raw_image_url=str(image_file), total_risk_score=80)
+        for scan_id in scan_ids
+    ]
+    job = SimpleNamespace(
+        id=uuid.uuid4(), admin_id=1, status="queued", progress=0.0,
+        filter_config={"include_metadata": False}, file_path=None,
+        total_rows=None, file_size_bytes=None, error_message=None,
+        completed_at=None, expires_at=None, manifest=None,
+    )
+    db = MagicMock()
+    execute_calls = {"count": 0}
+    async def execute(stmt):
+        execute_calls["count"] += 1
+        if execute_calls["count"] == 1:
+            return _result(one=job)
+        if execute_calls["count"] == 2:
+            return _result(items=reports)
+        return _result(items=scans)
+
+    refresh_calls = {"count": 0}
+    async def refresh(obj, **kwargs):
+        refresh_calls["count"] += 1
+        obj.status = "canceled"
+
+    writes = {"count": 0}
+    original_write = export_service.zipfile.ZipFile.write
+    def tracked_write(archive, *args, **kwargs):
+        writes["count"] += 1
+        return original_write(archive, *args, **kwargs)
+
+    db.execute = AsyncMock(side_effect=execute)
+    db.scalar = AsyncMock(return_value=len(reports))
+    db.commit = AsyncMock()
+    db.add = MagicMock()
+    db.refresh = AsyncMock(side_effect=refresh)
+    monkeypatch.setattr(export_service, "STORAGE_DIR", str(tmp_path))
+    monkeypatch.setattr(export_service, "async_session", lambda: _SessionContext(db))
+    monkeypatch.setattr(export_service.manager, "broadcast", AsyncMock())
+    monkeypatch.setattr(export_service.zipfile.ZipFile, "write", tracked_write)
+
+    await export_service.process_export_job(str(job.id))
+
+    assert writes["count"] <= 100
+    assert refresh_calls["count"] >= 1
     assert job.status == "canceled"
     assert not (tmp_path / f"scamguard_export_{job.id}.zip").exists()
 

@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 import uuid
@@ -550,6 +550,8 @@ async def test_admin_health_reports_queue_error_when_redis_is_unavailable(monkey
 
     assert status["database"] == "ok"
     assert status["queue"] == "error"
+    assert status["last_check"].tzinfo is not None
+    assert status["last_check"].utcoffset() == timedelta(hours=7)
 
 
 @pytest.mark.asyncio

@@ -482,7 +482,7 @@ async def get_health_status(db: AsyncSession) -> dict:
         "storage": "ok",
         "models": "ok",
         "queue": queue_status,
-        "last_check": datetime.utcnow()
+        "last_check": datetime.now(TH_TIMEZONE)
     }
 
 async def get_model_versions(db: AsyncSession) -> Tuple[List[Dict[str, Any]], int]:

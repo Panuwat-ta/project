@@ -120,8 +120,13 @@ export function StatusBadge({ status, className }) {
     staged: { variant: "default", label: "รอใช้งาน", withDot: false },
     queued: { variant: "info", label: "รอคิว", withDot: true },
     running: { variant: "warning", label: "กำลังทำงาน", withDot: true },
+    processing_source: { variant: "warning", label: "กำลังตรวจแหล่งที่มา", withDot: true },
+    processing_visual: { variant: "warning", label: "กำลังวิเคราะห์ภาพ", withDot: true },
+    processing_text: { variant: "warning", label: "กำลังวิเคราะห์ข้อความ", withDot: true },
+    completed: { variant: "success", label: "เสร็จสิ้น", withDot: true },
     succeeded: { variant: "success", label: "สำเร็จ", withDot: true },
     failed: { variant: "danger", label: "ล้มเหลว", withDot: true },
+    canceled: { variant: "default", label: "ยกเลิก", withDot: false },
     cancelled: { variant: "default", label: "ยกเลิก", withDot: false },
   };
 

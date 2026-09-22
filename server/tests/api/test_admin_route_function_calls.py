@@ -5,6 +5,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from fastapi import BackgroundTasks
+from sqlalchemy.dialects import postgresql
 
 import app.api.v1.admin as admin_router
 from app.core.config import TH_TIMEZONE
@@ -141,6 +142,9 @@ async def test_export_route_functions_create_list_get_cancel_download(monkeypatc
     db.execute = AsyncMock(return_value=_scalar_result(one=job))
     assert await _route(admin_router.get_export_job)(_request(), "job-1", db=db, current_admin=admin) is job
     canceled = await _route(admin_router.cancel_export_job)(_request(), "job-1", db=db, current_admin=admin)
+    cancel_stmt = db.execute.await_args_list[-1].args[0]
+    cancel_sql = str(cancel_stmt.compile(dialect=postgresql.dialect())).upper()
+    assert "FOR UPDATE" in cancel_sql
     assert canceled["message"] == "Job canceled"
     assert job.status == "canceled"
     export_file = tmp_path / "dataset.zip"

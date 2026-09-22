@@ -283,9 +283,17 @@ test("WebSocket URL uses current secure origin and never adds auth query data", 
   assert.equal(api.getWebSocketUrl("admin/dashboard"), "wss://admin.example.test/api/v1/ws/admin/dashboard");
   assert.doesNotMatch(api.getWebSocketUrl(), /[?&]token=/);
 });
-test("formatting helpers handle empty, invalid, and scaled values deterministically", () => {
+test("formatting helpers handle empty, invalid, Thai timezone, and scaled values deterministically", () => {
   assert.equal(utils.formatDate(null), "-");
   assert.equal(utils.formatDate("not-a-date"), "not-a-date");
+  const originalTz = process.env.TZ;
+  process.env.TZ = "UTC";
+  try {
+    assert.equal(utils.formatDate("2026-09-22T00:29:54Z"), "22 ก.ย. 2569 07:29:54");
+  } finally {
+    if (originalTz === undefined) delete process.env.TZ;
+    else process.env.TZ = originalTz;
+  }
   assert.equal(utils.formatNumber(null), "0");
   assert.equal(utils.formatFileSize(null), "-");
   assert.equal(utils.formatFileSize("not-a-number"), "-");

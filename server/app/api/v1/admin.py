@@ -386,7 +386,7 @@ async def cancel_export_job(request: Request,
     """POST /api/v1/admin/dataset/export-jobs/{job_id}/cancel"""
     from sqlalchemy import select
     from app.models import ExportJob
-    stmt = select(ExportJob).where(ExportJob.id == job_id)
+    stmt = select(ExportJob).where(ExportJob.id == job_id).with_for_update()
     job = (await db.execute(stmt)).scalar_one_or_none()
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")

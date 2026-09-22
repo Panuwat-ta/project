@@ -125,6 +125,7 @@ async def process_export_job(job_id: str):
 
             manifest_entries = []
             metadata_entries = []
+            canceled_during_export = False
 
             with zipfile.ZipFile(filepath, 'w', zipfile.ZIP_DEFLATED) as zf:
                 for i, r in enumerate(reports):
@@ -153,31 +154,37 @@ async def process_export_job(job_id: str):
                         "approved_at": r.moderated_at.isoformat() if r.moderated_at else None,
                     })
 
-                    if i % 100 == 0:
-                        job.progress = min(99.0, (i / total_rows) * 100.0)
+                    if (i + 1) % 100 == 0:
+                        job.progress = min(99.0, ((i + 1) / total_rows) * 100.0)
                         await db.commit()
+                        await db.refresh(job)
+                        if job.status == "canceled":
+                            canceled_during_export = True
+                            break
                         await asyncio.sleep(0)
 
-                if config.get("include_metadata", True):
-                    zf.writestr("metadata.json", json.dumps(metadata_entries, ensure_ascii=False, indent=2))
-                zf.writestr(
-                    "README.md",
-                    "# ScamGuard Research Dataset\n\n"
-                    "ไฟล์นี้สร้างจากรายงานที่อนุมัติและยินยอมให้ใช้เพื่อการวิจัยเท่านั้น\n"
-                    "ข้อมูลผู้รายงานส่วนบุคคลไม่ถูกรวมในชุดข้อมูลนี้\n",
-                )
-                manifest = {
-                    "schema_version": "1.0",
-                    "filter_config": config,
-                    "total_rows": len(manifest_entries),
-                    "exported_at": datetime.now(TH_TIMEZONE).isoformat(),
-                    "entries": manifest_entries,
-                }
-                zf.writestr("manifest.json", json.dumps(manifest, ensure_ascii=False, indent=2))
-            
-            # Re-read status before publishing success so a cancel from another
-            # admin session cannot be overwritten by this long-running worker.
-            await db.refresh(job)
+                if not canceled_during_export:
+                    if config.get("include_metadata", True):
+                        zf.writestr("metadata.json", json.dumps(metadata_entries, ensure_ascii=False, indent=2))
+                    zf.writestr(
+                        "README.md",
+                        "# ScamGuard Research Dataset\n\n"
+                        "ไฟล์นี้สร้างจากรายงานที่อนุมัติและยินยอมให้ใช้เพื่อการวิจัยเท่านั้น\n"
+                        "ข้อมูลผู้รายงานส่วนบุคคลไม่ถูกรวมในชุดข้อมูลนี้\n",
+                    )
+                    manifest = {
+                        "schema_version": "1.0",
+                        "filter_config": config,
+                        "total_rows": len(manifest_entries),
+                        "exported_at": datetime.now(TH_TIMEZONE).isoformat(),
+                        "entries": manifest_entries,
+                    }
+                    zf.writestr("manifest.json", json.dumps(manifest, ensure_ascii=False, indent=2))
+
+            # Periodic checkpoints already refresh the row every 100 items.
+            # Short exports still need one final refresh before publishing success.
+            if not canceled_during_export:
+                await db.refresh(job, with_for_update=True)
             if job.status == "canceled":
                 if os.path.exists(filepath):
                     os.remove(filepath)

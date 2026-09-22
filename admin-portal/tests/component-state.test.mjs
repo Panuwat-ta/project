@@ -8,6 +8,7 @@ import react from "@vitejs/plugin-react";
 
 let vite;
 let RiskBadge;
+let StatusBadge;
 let OperationalStatusBadge;
 let EvidenceState;
 let HeatmapComparator;
@@ -23,7 +24,7 @@ before(async () => {
     appType: "custom",
   });
 
-  ({ RiskBadge, OperationalStatusBadge, EvidenceState } = await vite.ssrLoadModule(
+  ({ RiskBadge, StatusBadge, OperationalStatusBadge, EvidenceState } = await vite.ssrLoadModule(
     "/src/components/ui/Badge.jsx"
   ));
   ({ HeatmapComparator } = await vite.ssrLoadModule(
@@ -101,4 +102,14 @@ test("SearchInput renders a stable field id for browser tooling", () => {
   });
   assert.match(html, /type="search"/);
   assert.match(html, /id="[^"]+"/);
+});
+
+
+test("scan lifecycle statuses render localized labels", () => {
+  assert.match(render(StatusBadge, { status: "queued" }), /รอคิว/);
+  assert.match(render(StatusBadge, { status: "processing_visual" }), /กำลังวิเคราะห์ภาพ/);
+  assert.match(render(StatusBadge, { status: "processing_text" }), /กำลังวิเคราะห์ข้อความ/);
+  assert.match(render(StatusBadge, { status: "completed" }), /เสร็จสิ้น/);
+  assert.match(render(StatusBadge, { status: "failed" }), /ล้มเหลว/);
+  assert.match(render(StatusBadge, { status: "canceled" }), /ยกเลิก/);
 });
