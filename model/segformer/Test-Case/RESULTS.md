@@ -89,3 +89,39 @@ casia 83.92%, splicing 91.13%, face 98.89%,
 authentic FPR 0.01% หมวดที่ยังอ่อนที่สุดคือ imd2020
 
 สำเนาสำหรับคนอ่านอยู่ใน `spreadsheets/quantitative/` (overall/per_category/per_image/summary) และ `spreadsheets/qualitative/` (combined + แยก 7 ไฟล์รายเวอร์ชัน)
+
+---
+
+# Test Run Results — 2026-09-23 (v1.0.7)
+
+คำสั่งหลักที่ใช้รูปแบบเดียวกับรุ่นก่อน:
+
+```bash
+cd /home/panuwat/project/model/segformer
+./Test-Case/run_test_cases.sh v1.0.7
+```
+
+Locked common test ใช้ checkpoint `best_mIoU_iter_240000.pth` และชุด `scamguard-locked-multisource-test-v1` เดิมครบ **2504/2504 batches** (run `20260923_164151`): mIoU **94.96**, mDice **97.36**, Forgery IoU **90.50**, Forgery Dice **95.01**, Forgery Accuracy **95.11**, aAcc **99.44**. เทียบ `v1.0.6` เพิ่มขึ้น +0.13 mIoU, +0.07 mDice, +0.24 Forgery IoU และ +0.13 Forgery Dice percentage points.
+
+ONNX parity ระหว่าง PyTorch checkpoint กับ `segformer_v1_0_7_dynamic.onnx` ผ่าน: output shape ตรงกัน `(1, 2, 64, 80)`, finite ทั้งคู่, max absolute difference `4.0531e-06`, mean absolute difference `1.1682e-06`, และ `allclose(rtol=1e-4, atol=1e-4)` เป็น True.
+
+## Execution summary
+
+- Core unit + data inventory: **6/6 passed**
+- ONNX contract tests: **3/3 passed**
+- Quantitative masked cases: **105/105 completed**
+- Qualitative pairs: **30/30 completed**
+- Runner status: **PASS** สำหรับการรันเฉพาะ `v1.0.7` (ไม่บังคับ legacy release gate ของ v1.0.5)
+
+## Local masked Test-Case comparison
+
+| Version | mIoU | mDice | Forgery IoU | Forgery Dice | Accuracy | FPR |
+|---|---:|---:|---:|---:|---:|---:|
+| v1.0.6 | 83.14 | 90.17 | 69.35 | 81.90 | 97.13 | 0.83 |
+| v1.0.7 | 81.13 | 88.78 | 65.76 | 79.34 | 96.72 | 1.08 |
+
+รายหมวด `v1.0.7`: CopyMove Forgery Dice **74.62%** (v1.0.6: 65.86%), IMD2020 **49.62%** (42.13%), Inpainting **88.02%** (84.79%), Splicing **91.73%** (91.13%); แต่ CASIA ลดเป็น **72.57%** (83.92%) และ Face ลดเป็น **96.56%** (98.89%). Authentic FPR เพิ่มจาก **0.01%** เป็น **0.19%**.
+
+ตาม promotion gate ที่ระบุใน config v12: locked mDice ≥ 97.29 **ผ่าน** (97.36), local IMD2020 Forgery Dice > 50% **ยังไม่ผ่าน** (49.62), และ overall FPR ≤ 1.0% **ยังไม่ผ่าน** (1.08). ดังนั้นผลทดสอบถูกบันทึกครบแล้ว แต่ยังไม่มีการเปลี่ยน production deployment จาก `v1.0.6`.
+
+สำเนาสำหรับคนอ่านถูกอัปเดตใน `spreadsheets/quantitative/` เป็น 8 รุ่น (840 image rows) และ `spreadsheets/qualitative/` เป็น 240 pair rows พร้อมไฟล์ `qualitative_pair_scores_v1.0.7.csv`.

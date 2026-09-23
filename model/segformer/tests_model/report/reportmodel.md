@@ -2,7 +2,7 @@
 
 รายงานนี้แยกหลักฐานออกเป็น 3 ประเภทอย่างชัดเจน:
 
-1. **Common Test** — ชุดทดสอบล็อกเดียวกันสำหรับ `v1.0.0`–`v1.0.6` ใช้จัดอันดับโมเดล
+1. **Common Test** — ชุดทดสอบล็อกเดียวกันสำหรับ `v1.0.0`–`v1.0.7` ใช้จัดอันดับโมเดล
 2. **Validation / Training** — ใช้ติดตามการเทรนของแต่ละรุ่นเท่านั้น เพราะ protocol ต่างกัน
 3. **Qualitative Demo** — ภาพเลือกมาสาธิตพฤติกรรม ไม่มี ground truth และไม่ใช่ benchmark
 
@@ -14,18 +14,19 @@ Dataset identifier: `scamguard-locked-multisource-test-v1`
 
 | อันดับ | เวอร์ชัน | Checkpoint iteration | Test run ID | mIoU (%) | mDice (%) | Forgery IoU (%) | Forgery Dice (%) | Forgery Accuracy (%) |
 |:---:|:---:|---:|:---:|---:|---:|---:|---:|---:|
-| **1** | **`v1.0.6`** | **195,000** | `20260918_092047` | **94.83** | **97.29** | **90.26** | **94.88** | **95.25** |
-| 2 | `v1.0.5` | 197,500 | `20260915_084109` | 91.24 | 95.25 | 83.51 | 91.01 | 89.01 |
-| 3 | `v1.0.4` | 495,000 | `20260915_095832` | 81.21 | 88.74 | 64.94 | 78.74 | 79.87 |
-| 4 | `v1.0.0` | 112,000 | `20260915_101330` | 48.70 | 51.42 | 2.92 | 5.67 | 2.97 |
-| 5 | `v1.0.3` | 160,000 | `20260915_094407` | 47.99 | 50.08 | 1.53 | 3.01 | 1.54 |
-| 6 | `v1.0.2` | 132,000 | `20260915_092949` | 47.81 | 49.72 | 1.16 | 2.29 | 1.17 |
-| 7 | `v1.0.1` | 152,000 | `20260915_091531` | 47.80 | 49.69 | 1.12 | 2.22 | 1.13 |
+| **1** | **`v1.0.7`** | **240,000** | `20260923_164151` | **94.96** | **97.36** | **90.50** | **95.01** | **95.11** |
+| 2 | `v1.0.6` | 195,000 | `20260918_092047` | 94.83 | 97.29 | 90.26 | 94.88 | 95.25 |
+| 3 | `v1.0.5` | 197,500 | `20260915_084109` | 91.24 | 95.25 | 83.51 | 91.01 | 89.01 |
+| 4 | `v1.0.4` | 495,000 | `20260915_095832` | 81.21 | 88.74 | 64.94 | 78.74 | 79.87 |
+| 5 | `v1.0.0` | 112,000 | `20260915_101330` | 48.70 | 51.42 | 2.92 | 5.67 | 2.97 |
+| 6 | `v1.0.3` | 160,000 | `20260915_094407` | 47.99 | 50.08 | 1.53 | 3.01 | 1.54 |
+| 7 | `v1.0.2` | 132,000 | `20260915_092949` | 47.81 | 49.72 | 1.16 | 2.29 | 1.17 |
+| 8 | `v1.0.1` | 152,000 | `20260915_091531` | 47.80 | 49.69 | 1.12 | 2.22 | 1.13 |
 
 ข้อสรุปจากข้อมูลที่เปรียบเทียบได้:
 
-- `v1.0.6` เป็นอันดับหนึ่งทั้ง overall และ Forgery-class metrics บน common test ที่ล็อกไว้
-- `v1.0.5` เป็นอันดับสอง และ `v1.0.4` เป็นอันดับสาม โดยทั้งสามรุ่นผ่านเกณฑ์ NFR-AI-01 เดิมที่กำหนด mDice ≥ 85%
+- `v1.0.7` มีค่าหลักบน locked common test สูงกว่า `v1.0.6` เล็กน้อย: mIoU +0.13, mDice +0.07, Forgery IoU +0.24 และ Forgery Dice +0.13 percentage points
+- `v1.0.7`, `v1.0.6`, `v1.0.5` และ `v1.0.4` ผ่านเกณฑ์ NFR-AI-01 เดิมที่กำหนด mDice ≥ 85%
 - `v1.0.0`–`v1.0.3` มี Forgery-class performance ต่ำบน common test แม้ background metrics สูง จึงไม่ควรใช้ overall accuracy เพียงค่าเดียวสรุปคุณภาพ
 - ผลนี้ยังไม่มี confidence interval หรือผลจากหลาย random seeds ตามขอบเขตของโครงงาน
 
@@ -42,6 +43,7 @@ Dataset identifier: `scamguard-locked-multisource-test-v1`
 | `v1.0.4` | `20260814_062529` | 495,000 | 86.38 | 92.22 |
 | `v1.0.5` | `20260910_151223` | 197,500 | 91.31 | 95.29 |
 | `v1.0.6` | `20260915_201918` | 195,000 | 94.84 | 97.30 |
+| `v1.0.7` | `20260918_191514` | 240,000 | 94.04 | 96.85 |
 
 > **Validation sets differ — not for model ranking.** ค่านี้ใช้เลือก checkpoint และวิเคราะห์ convergence ภายใน run เท่านั้น กราฟข้ามรุ่นอยู่ใน `figs/diagnostics/` และระบุข้อจำกัดนี้ไว้บนภาพ
 
@@ -61,7 +63,7 @@ Dataset identifier: `scamguard-locked-multisource-test-v1`
 
 ## 4. Qualitative ONNX Example
 
-แต่ละเวอร์ชันมี `tests_model/v/<version>/test_qualitative_onnx.py` สำหรับรัน ONNX เฉพาะรุ่น และสร้างภาพ `<version>_qualitative_onnx_example.{png,svg}` ด้วย input/preprocessing เดียวกัน ภาพแสดง Forgery probability map ด้วย colormap `magma` และ threshold overlay เพื่อเปรียบเทียบพฤติกรรมเชิงคุณภาพ แต่ไม่มี ground-truth mask จึงไม่รายงาน IoU, Dice หรือ accuracy และไม่ใช้จัดอันดับโมเดล
+ใช้ `tests_model/test_qualitative_onnx.py` ร่วมกันสำหรับแต่ละเวอร์ชัน และสร้างภาพใน `tests_model/v/<version>/<version>_qualitative_onnx_example.{png,svg}` ด้วย input/preprocessing เดียวกัน ภาพแสดง Forgery probability map ด้วย colormap `magma` และ threshold overlay เพื่อเปรียบเทียบพฤติกรรมเชิงคุณภาพ แต่ไม่มี ground-truth mask จึงไม่รายงาน IoU, Dice หรือ accuracy และไม่ใช้จัดอันดับโมเดล
 
 ## 5. ประวัติการตั้งค่าหลัก
 
@@ -74,12 +76,14 @@ Dataset identifier: `scamguard-locked-multisource-test-v1`
 | `v1.0.4` | `segformer_mit-b2-v7.py` | รวม 6 ชุดข้อมูล, checkpoint ที่ 495k |
 | `v1.0.5` | `segformer_mit-b2-v10.py` | Balanced multi-dataset, checkpoint ที่ 197.5k |
 | `v1.0.6` | `segformer_mit-b2-v11.py` | Fresh training (`load_from=None`) 7 แหล่ง PNG lossless, repeat casia5/inpainting3/copymove4/imd2020x2, lr 1e-5 head x10, checkpoint ที่ 195k |
+| `v1.0.7` | `segformer_mit-b2-v12.py` | เพิ่ม aiforge/realtext, CopyPasteForgery, rebalance CASIA/IMD2020, 250k iterations; best checkpoint 240k; locked test ยังคง 7 แหล่งเดิม |
 
-ผล demo ในอดีตเคยชี้สัญญาณ domain shift ของ `v1.0.4` แต่ไม่เพียงพอจะสรุปว่าโมเดลล้มเหลวทั่วไป ผล common test ปัจจุบันแสดงว่า `v1.0.6` เป็นอันดับหนึ่ง รองลงมาคือ `v1.0.5` และ `v1.0.4` โดย `v1.0.6` ปรับ Forgery-class performance ขึ้นอย่างชัดเจน
+ผล demo ในอดีตเคยชี้สัญญาณ domain shift ของ `v1.0.4` แต่ไม่เพียงพอจะสรุปว่าโมเดลล้มเหลวทั่วไป ผล common test ปัจจุบันแสดงว่า `v1.0.7` สูงกว่า `v1.0.6` เล็กน้อยบนชุดล็อกเดียวกัน แต่ local masked regression set ของ `v1.0.7` มี mDice 88.78%, Forgery Dice 79.34% และ FPR 1.08% ซึ่งถอยจาก `v1.0.6` ในภาพรวม จึงต้องพิจารณา regression รายโดเมนแยกจาก locked ranking
 
 ## 6. สถานะ Production
 
 - Production ปัจจุบันคือ `v1.0.6` (deploy 2026-09-18 ผ่าน `POST /api/v1/admin/models/14/deploy` พร้อม audit log; รุ่นก่อนหน้าคือ `v1.0.5`)
+- `v1.0.7` ผ่าน locked common test และ ONNX parity แล้ว แต่ยัง **ไม่ถูก deploy**; local promotion checks ยังไม่ครบตามเป้า: IMD2020 Forgery Dice 49.62% (< 50%) และ overall FPR 1.08% (> 1.0%)
 - เกณฑ์ก่อน deploy ที่ตรวจผ่าน: PyTorch–ONNX parity (CPU-vs-CPU max diff 8.3e-06), dry-run ผ่าน (latency 4303ms / memory 202MB / compatibility Passed), end-to-end scan ผ่าน API สำเร็จ, ล้าง Redis `scan_result:*` ค้างเก่า 7 keys แล้ว
 - Rollback: deploy `v1.0.5` (id 12) กลับได้ทันทีผ่าน endpoint เดียวกัน
 

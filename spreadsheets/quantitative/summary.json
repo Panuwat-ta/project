@@ -17,7 +17,8 @@
     "v1.0.3",
     "v1.0.4",
     "v1.0.5",
-    "v1.0.6"
+    "v1.0.6",
+    "v1.0.7"
   ],
   "inference": {
     "strategy": "overlapping_tiles",
@@ -166,6 +167,26 @@
       "onnx_model": "/home/panuwat/project/model/segformer/work_dirs/v1.0.6/segformer_v1_0_6_dynamic.onnx",
       "checkpoint": "work_dirs/v1.0.6/best_mIoU_iter_195000.pth",
       "elapsed_seconds": 80.334
+    },
+    {
+      "version": "v1.0.7",
+      "group": "all",
+      "sample_count": 105,
+      "tp": 2128930,
+      "fp": 334072,
+      "fn": 774591,
+      "tn": 30554408,
+      "mIoU_percent": 81.127564,
+      "mDice_percent": 88.779607,
+      "background_IoU_percent": 96.498561,
+      "background_Dice_percent": 98.218084,
+      "forgery_IoU_percent": 65.756567,
+      "forgery_Dice_percent": 79.34113,
+      "accuracy_percent": 96.719156,
+      "false_positive_rate_percent": 1.081542,
+      "onnx_model": "/home/panuwat/project/model/segformer/work_dirs/v1.0.7/segformer_v1_0_7_dynamic.onnx",
+      "checkpoint": "work_dirs/v1.0.7/best_mIoU_iter_240000.pth",
+      "elapsed_seconds": 78.756
     }
   ],
   "release_gate": {

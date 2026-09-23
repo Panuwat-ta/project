@@ -6,3 +6,4 @@ v1.0.3,work_dirs/v1.0.3/best_mIoU_iter_160000.pth,20260915_094407,scamguard-lock
 v1.0.4,work_dirs/v1.0.4/best_mIoU_iter_495000.pth,20260915_095832,scamguard-locked-multisource-test-v1,,2504,97.49,98.65,98.73,64.94,79.87,78.74,97.60,81.21,89.26,88.74,0.0114,0.3306
 v1.0.5,work_dirs/v1.0.5/best_mIoU_iter_197500.pth,20260915_084109,scamguard-locked-multisource-test-v1,,2504,98.97,99.61,99.48,83.51,89.01,91.01,99.02,91.24,94.31,95.25,0.0112,0.3289
 v1.0.6,work_dirs/v1.0.6/best_mIoU_iter_195000.pth,20260918_092047,scamguard-locked-multisource-test-v1,,2504,99.40,99.67,99.70,90.26,95.25,94.88,99.43,94.83,97.46,97.29,0.0123,0.5175
+v1.0.7,work_dirs/v1.0.7/best_mIoU_iter_240000.pth,20260923_164151,scamguard-locked-multisource-test-v1,,2504,99.41,99.70,99.71,90.50,95.11,95.01,99.44,94.96,97.41,97.36,0.0115,0.3361
