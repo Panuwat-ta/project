@@ -4,7 +4,7 @@
 
 # Plan: ScamGuard Forgery Detection Improvement Pipeline
 
-> หมายเหตุ (2026-09-18): เอกสารนี้มี 2 track — Track A (หัวข้อ 1-31) คือการสร้าง SegFormer candidate แบบเต็มตัวจาก dataset ผสม ส่วน Track B (หัวข้อ 32) ที่เพิ่มทีหลังคือการต่อ det head ให้ SegFormer แล้วเทรนเฉพาะ det head ด้วย feedback ล้วนผ่านปุ่มบนเว็บ ทั้งสอง track ใช้วงจร feedback → consent → admin verify → benchmark → manual approve ร่วมกัน
+> หมายเหตุ (อัปเดต 2026-09-23): เอกสารนี้มี 2 track — Track A (หัวข้อ 1-31) คือการสร้าง SegFormer candidate แบบเต็มตัวจาก dataset ผสม ส่วน Track B (หัวข้อ 32-36) คือการต่อ det head ให้ SegFormer v1.0.6 ที่ freeze ไว้ โดยเริ่มจาก bootstrap ด้วย train/val ของ CASIA, Authentic, Splicing, Inpainting, CopyMove, Face, IMD2020, AIForge และ RealText แล้วจึงใช้ verified feedback เพื่อ adaptation หลังเปิดระบบ ทั้งสอง track ใช้วงจร benchmark → manual approve ร่วมกัน และห้ามใช้ Locked Test หรือ Local Test-Case 105 รูปเป็น training data
 
 ## 1. เป้าหมายของระบบใหม่
 
@@ -1581,19 +1581,38 @@ Production
 
 ---
 
-# 32. Track B: SegFormer Det Head (Feedback-only Classifier)
+# 32. Track B: SegFormer Det Head (Base-dataset Bootstrap + Feedback Adaptation)
 
-Track นี้ต่างจาก Track A ตรงที่ไม่เทรน SegFormer ทั้งตัว แต่ต่อหัว image-level classifier (det head) เพิ่ม แล้วเทรนเฉพาะหัวนั้นด้วย feedback ล้วน เหตุผลคือ feedback ของผู้ใช้เป็น label ระดับภาพ ("ปลอม/จริง") อยู่แล้ว เอามาใช้ตรงๆ ได้โดยไม่ต้องมี mask ไม่ต้องผ่าน teacher หรือ pseudo-mask
+Track นี้ต่างจาก Track A ตรงที่ไม่เทรน SegFormer ทั้งตัว แต่ต่อหัว image-level classifier (det head) เพิ่มบน SegFormer v1.0.6 แล้ว freeze backbone + seg head เดิมทั้งหมด เพื่อให้ heatmap และพฤติกรรม localization ของ baseline ไม่เปลี่ยน
 
-ความสัมพันธ์กับ Track A: Track B ไม่แทน Track A (Track A ยังใช้สร้าง candidate แบบเต็มตัว) แต่เป็นทางลัดราคาถูกสำหรับปรับคะแนนภาพรวมจาก feedback ส่วน heatmap ยังมาจาก seg head เดิมที่ไม่ถูกแตะ
-
-งานที่ต้องทำครั้งเดียวก่อนเริ่ม Track B (แล้วรอบถัดไปไม่ต้องแตะโค้ดอีก):
+Track B แบ่งเป็น 2 ระยะ:
 
 ```text
-1. ต่อ det head ให้ SegFormer
-2. Export ONNX 2 outputs (logits + det_logit)
-3. Server อ่าน det score + กฎรวมคะแนน
-4. Eval ระดับภาพใน Test-Case
+Stage B1 — Pre-launch Bootstrap
+ใช้ TRAIN/VAL ของ dataset เดิม 9 แหล่ง
+CASIA + Authentic + Splicing + Inpainting + CopyMove + Face + IMD2020 + AIForge + RealText
+→ สร้าง image-level label จาก ground-truth mask
+→ train เฉพาะ det head
+→ ได้ det-v1 สำหรับใช้ก่อนมี feedback จริง
+
+Stage B2 — Post-launch Feedback Adaptation
+Verified Feedback + PDPA Consent + Admin Verify
+→ ใช้เป็น hard examples ปรับ det head ต่อแบบ controlled candidate
+→ benchmark
+→ manual approve/reject
+```
+
+ความสัมพันธ์กับ Track A: Track B ไม่แทน Track A (Track A ยังใช้สร้าง candidate แบบเต็มตัวและแก้ localization) แต่เป็นเส้นทางที่เบากว่าสำหรับปรับ image-level forgery score โดยไม่แตะ seg head เดิม ถ้า localization พลาดเพราะ feature ไม่เห็นร่องรอย การจูน det head อย่างเดียวไม่สามารถแก้ได้ ต้องกลับไป Track A หรือพิจารณา architecture อื่น
+
+งานที่ต้องทำครั้งเดียวก่อนเริ่ม Track B:
+
+```text
+1. ต่อ det head ให้ SegFormer v1.0.6
+2. Freeze backbone + seg head
+3. สร้าง image-level label จาก train/val ของ dataset เดิม
+4. Export ONNX 2 outputs (seg logits + det_logit)
+5. Server อ่าน det score + กฎรวมคะแนน
+6. Eval ระดับภาพโดยใช้ validation/test ที่แยกจาก training
 ```
 
 ---
@@ -1629,55 +1648,103 @@ Trainable: det head เท่านั้น
 
 ---
 
-# 34. นโยบาย Feedback-only + Guardrail
+# 34. นโยบาย Dataset + Guardrail ของ Track B
 
-ข้อมูลเทรนใช้แค่ feedback ที่ผ่านครบ 3 เงื่อนไข (ไม่ใช้ dataset ทั้งหมด):
+## Stage B1 — Pre-launch Bootstrap
+
+ก่อนมี feedback จริง ให้ใช้เฉพาะ TRAIN/VAL split ของ dataset เดิม 9 แหล่ง:
+
+```text
+CASIA
+Authentic
+Splicing
+Inpainting
+CopyMove
+Face
+IMD2020
+AIForge
+RealText
+```
+
+กฎสร้าง image-level label:
+
+```text
+mask มี forgery pixel อย่างน้อย 1 pixel → manipulated (1)
+mask เป็นศูนย์ทั้งภาพ                 → authentic (0)
+```
+
+ข้อบังคับ:
+
+```text
+1. ใช้ TRAIN สำหรับ train det head
+2. ใช้ VAL สำหรับ model selection / early stopping
+3. ห้ามใช้ Locked Common Test เป็น training หรือ tuning data
+4. ห้ามใช้ Local Test-Case 105 รูปเป็น training หรือ tuning data
+5. รักษา split/group ของต้นฉบับเพื่อป้องกัน leakage
+6. balance authentic/manipulated และตรวจ source imbalance ก่อน train โดยเฉพาะ AIForge/RealText ที่มี distribution ต่างจาก 7 แหล่งเดิม
+7. backbone + seg head ของ v1.0.6 ต้อง frozen ตลอด Stage B1
+```
+
+## Stage B2 — Post-launch Feedback Adaptation
+
+หลังระบบเปิดจริง feedback ที่นำมา train ได้ต้องผ่านครบ:
 
 ```text
 Admin Verify (authentic / manipulated ที่ยืนยันแล้ว)
         AND
 PDPA Consent รายภาพสำหรับ training
         AND
-Deduplicate ด้วย image_hash
+Deduplicate ด้วย image_hash/source_hash
 ```
 
-Guardrail บังคับ (เพราะ feedback ไม่ใช่ตัวอย่างสุ่ม แต่เป็นเคสที่คนรายงานมา):
+Guardrail สำหรับ feedback adaptation:
 
 ```text
-1. ปุ่ม Train เปิดเมื่อครบขั้นต่ำ เช่นคลาสละ 50 ภาพ
-2. แบ่ง feedback เป็น train/val ทุกครั้ง
-3. Learning rate ต่ำ + epoch น้อย + early stopping บน val
-4. วัด Locked Test ทุกครั้ง ตก → Reject
-5. ห้าม auto deploy (admin approve ก่อนเสมอ)
+1. ปุ่ม Train เปิดเมื่อมี verified feedback เพียงพอและมีความหลากหลาย
+2. ค่าเริ่มต้นเช่นคลาสละ 50 ภาพเป็นเพียง minimum bootstrap ไม่ใช่เกณฑ์ถาวร
+3. split feedback แบบ group-safe เพื่อกันภาพต้นฉบับเดียวกันข้าม train/val
+4. Learning rate ต่ำ + epoch น้อย + early stopping บน feedback val
+5. ใช้ Local/Hard-case regression ตรวจ candidate ระหว่างพัฒนา
+6. Locked Common Test ใช้กับ candidate ที่เลือกแล้วก่อน promotion ไม่ใช้เป็น feedback loop
+7. ห้าม auto deploy — ต้อง admin/ML approve ก่อนเสมอ
 ```
 
-ความเสี่ยงที่ยอมรับ: โมเดลอาจ bias ไปทางเคสที่ถูกรายงาน ถ้ายอมผ่อนปรนได้ ให้เพิ่ม anchor set แช่แข็ง 200–300 ภาพที่สมดุลผสมตอนเทรน (ยังไม่ใช่ dataset ทั้งหมด) จะกัน bias ได้ดีกว่ามาก
+ความเสี่ยงหลักคือ feedback มี sampling bias เพราะเป็นเคสที่ผู้ใช้เลือกมารายงาน ดังนั้น Stage B2 ควร anchor กับข้อมูลฐานที่ freeze ไว้บางส่วนหรือใช้ replay subset ที่สมดุล เพื่อกัน det head drift ออกจาก distribution เดิม
 
 ---
 
-# 35. Web Training Job (Admin กดเทรนจากเว็บ)
+# 35. Web Training Job (Stage B2: Admin กดเทรนจากเว็บ)
 
-ห้ามเทรนใน request เดียวกัน ใช้คิวงาน:
+Stage B1 bootstrap เป็นงานเตรียม baseline det head ก่อนเปิดระบบ ไม่จำเป็นต้องเริ่มจากปุ่มบนเว็บ ส่วนหลังเปิดระบบ Stage B2 ห้ามเทรนใน request เดียวกัน ต้องใช้คิวงาน:
 
 ```text
-Admin กด Train (เมื่อ feedback ครบขั้นต่ำ)
+Admin กด Train (เมื่อ verified feedback ผ่าน guardrail)
         ↓
-สร้าง Training Job (snapshot รายการ feedback + hash)
+สร้าง Training Job
+  - snapshot feedback IDs
+  - dataset/source hash
+  - base seg version
+  - current det version
+  - train config + seed
         ↓
 Worker รันเบื้องหลัง
-  - เตรียม train/val split
+  - สร้าง group-safe train/val split
   - เทรน det head (backbone + seg แช่)
-  - Benchmark: feedback val + Locked Test + Local 105 ภาพ
+  - Evaluate: feedback val + Local/Hard-case regression
         ↓
-แจ้งผล + เปรียบเทียบ det ปัจจุบัน
+เลือก Candidate
+        ↓
+Final gate: Locked Common Test + ONNX parity
+        ↓
+แจ้งผล + เปรียบเทียบ det production
         ↓
   ┌─────┴─────┐
   │           │
 Approve      Reject
   │           │
   ▼           ▼
-เปลี่ยน     ทิ้ง
-น้ำหนัก det
+Promote     Archive/ทิ้ง candidate
+Det version
 ```
 
 ข้อจำกัดเครื่องจริง: GPU 4GB ถูก API server ใช้เต็มอยู่แล้ว ช่วง worker เทรนต้องจอง GPU (หยุด server ชั่วคราวเหมือนตอนทดสอบ TruFor) หรือจัดคิวนอกเวลา ต้องออกแบบ worker ให้จอง GPU ได้ก่อนรัน
@@ -1690,7 +1757,9 @@ seg checkpoint ไม่เปลี่ยน version ส่วนน้ำห�
 
 ```text
 seg: v1.0.6 (frozen, ไม่ขยับ)
-det: v1.0.6+det1 → v1.0.6+det2 → v1.0.6+det3 ...
+det: v1.0.6+det1-bootstrap
+     → v1.0.6+det2-feedback
+     → v1.0.6+det3-feedback ...
 ```
 
 Registry ต้องผูก:
@@ -1698,10 +1767,11 @@ Registry ต้องผูก:
 ```text
 det_version
 seg_version (ที่แช่อยู่)
-feedback_dataset_hash (snapshot ของ feedback ที่ใช้)
+training_dataset_hash (base bootstrap หรือ feedback snapshot)
 train_config (LR, epochs, seed)
-metrics (det accuracy/AUC + Locked Test)
-status (training / candidate / production / rejected)
+metrics (Accuracy, Precision, Recall, F1, ROC-AUC, PR-AUC, FPR/FNR + regression gates)
+onnx_hash / ONNX parity result
+status (training / candidate / approved / production / rejected / archived)
 ```
 
-ข้อดี: rollback ได้เฉพาะ det โดย heatmap และ seg ไม่กระทบ และรู้เสมอว่า det แต่ละรุ่นเรียนจาก feedback ชุดไหน
+ข้อดี: rollback ได้เฉพาะ det โดย heatmap และ seg ไม่กระทบ และรู้เสมอว่า det แต่ละรุ่นเรียนจาก dataset/bootstrap หรือ feedback snapshot ชุดไหน
