@@ -11,20 +11,27 @@
 #   but worse CASIA/Face and higher false positives.
 # - Lower CopyPasteForgery p 0.30 -> 0.20 to reduce synthetic-distribution bias.
 # - Reduce aiforge repeat 10 -> 6 and realtext 6 -> 4 so the new domains remain
-#   represented without dominating the original seven-source training mixture.
-# - Freeze checkpoint-selection validation to the original seven sources. New
-#   aiforge/realtext remain training data, but do not steer save_best selection.
-# - Keep the proven v11/v12 loss, optimizer, LR policy, crop policy and 250k budget.
-# - Seed 43 -> 44 for an independent fresh run.
+#   represented with less influence on the original seven-source mixture.
+# - Validate all nine sources, but pool mIoU/mDice over the seven core sources.
+#   Report new-domain metrics separately; they do not steer save_best selection.
+# - Keep best core mIoU AND best equal-source core Forgery Dice checkpoints.
+#   Inspect validation FPR/per-source tradeoffs before final checkpoint selection.
+# - Keep v11 loss, optimizer, LR and crop policy; retain the v12 250k budget.
+# - Use seed 42, matching v11, to remove an unnecessary changed setting.
+#   This does not guarantee identical RNG streams across different data mixtures.
 #
 # Selection rule: choose checkpoint on validation only. Run the locked common test
 # once after selection. Promotion target: at least v1.0.6 production robustness
 # (local mDice >= 90.17), locked mDice >= 97.29, IMD2020 Forgery Dice > 50%,
-# and overall local FPR <= 1.0%.
+# and overall local FPR <= 1.0%. These are post-training checks, not automatic
+# training gates. Local regression feedback is not an untouched holdout.
+# No config-only comparison can establish optimal hyperparameters; gains need
+# validation and a fresh independent holdout before claiming generalization.
 #
 # CopyPasteForgery lives in ../forgery_aug.py. Keep the bare __import__ side-effect
 # registration pattern; train.sh places the segformer directory on PYTHONPATH.
 __import__('forgery_aug')
+__import__('forgery_metrics')
 
 DATA_ROOT = '/run/media/panuwat/USB/dataset'
 
@@ -43,7 +50,7 @@ checkpoint = (
 # An explicit train.sh --load-from can override this for a separate experiment.
 load_from = None
 resume = False
-randomness = dict(seed=44, diff_rank_seed=False, deterministic=False)
+randomness = dict(seed=42, diff_rank_seed=False, deterministic=False)
 
 
 model = dict(
@@ -170,15 +177,15 @@ _TRAIN_ROOTS = [casia_root, authentic_root, defacto_splicing_root,
 
 # Frozen core evaluation sources. The official ranking set
 # (scamguard-locked-multisource-test-v1, 2,504 batches) contains only the 7
-# original sources, so val/test stay frozen to keep v1.0.8 selection focused
-# on the original distribution and the locked test comparable across versions.
-# New sources are training-only here; evaluate them separately on a dedicated
-# validation/report path rather than letting their size bias save_best.
+# original sources. Keep test frozen and pool validation checkpoint metrics
+# over those same core sources. AIForge/RealText validation is reported separately
+# on every validation pass, so new-domain regressions remain visible.
 _TEST_FROZEN_ROOTS = [casia_root, authentic_root, defacto_splicing_root,
                       defacto_inpaint_root, defacto_copymove_root,
                       defacto_face_root, imd2020_root]
 
-# Fixed training-only repeats, based on the current training file counts.
+# Fixed training-only repeats; counts below are historical v12 inventory,
+# not a fresh count of the currently unmounted training dataset.
 # Effective entries: CASIA 44,565; authentic 85,130; splicing 76,500;
 # inpainting 53,748; copymove 52,424; face 57,308; IMD2020 79,497;
 # aiforge 11,772 (1,962 x6); realtext 38,824 (9,706 x4).
@@ -227,7 +234,7 @@ val_dataloader = dict(
     dataset=dict(
         _delete_=True,
         type='ConcatDataset',
-        datasets=[_ds(r, 'val', test_pipeline) for r in _TEST_FROZEN_ROOTS]
+        datasets=[_ds(r, 'val', test_pipeline) for r in _TRAIN_ROOTS]
     )
 )
 
@@ -235,7 +242,7 @@ val_dataloader = dict(
 # Frozen at the 7 original sources (see _TEST_FROZEN_ROOTS above).
 test_dataloader = dict(
     batch_size=16,
-    num_workers=8,
+    num_workers=4,
     persistent_workers=True,
     dataset=dict(
         _delete_=True,
@@ -245,11 +252,14 @@ test_dataloader = dict(
 )
 
 val_evaluator = dict(
-    type='IoUMetric',
-    iou_metrics=['mIoU', 'mDice']
+    type='SourceAwareIoUMetric',
+    iou_metrics=['mIoU', 'mDice'],
+    source_roots={r.rstrip('/').rsplit('/', 1)[-1]: r for r in _TRAIN_ROOTS},
+    core_sources=[r.rstrip('/').rsplit('/', 1)[-1] for r in _TEST_FROZEN_ROOTS]
 )
 
-test_evaluator = val_evaluator
+# Keep the official locked-test evaluator identical to v11/v12.
+test_evaluator = dict(type='IoUMetric', iou_metrics=['mIoU', 'mDice'])
 
 optim_wrapper = dict(
     # Clear inherited custom_keys so no broad backbone rule shadows norm policy.
@@ -310,7 +320,7 @@ default_hooks = dict(
         type='CheckpointHook',
         by_epoch=False,
         interval=2500,
-        save_best='mIoU',
+        save_best=['mIoU', 'core_macro_forgery_dice'],
         rule='greater',
         max_keep_ckpts=5
     )
