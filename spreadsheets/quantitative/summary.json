@@ -44,9 +44,10 @@
       "forgery_Dice_percent": 11.135103,
       "accuracy_percent": 90.977794,
       "false_positive_rate_percent": 1.088674,
+      "det_accuracy_percent": null,
       "onnx_model": "/home/panuwat/project/model/segformer/work_dirs/v1.0.0/segformer_v1_0_0_dynamic.onnx",
       "checkpoint": "work_dirs/v1.0.0/best_mIoU_iter_112000.pth",
-      "elapsed_seconds": 76.764
+      "elapsed_seconds": 100.296
     },
     {
       "version": "v1.0.1",
@@ -64,9 +65,10 @@
       "forgery_Dice_percent": 7.733354,
       "accuracy_percent": 91.67358,
       "false_positive_rate_percent": 0.090833,
+      "det_accuracy_percent": null,
       "onnx_model": "/home/panuwat/project/model/segformer/work_dirs/v1.0.1/segformer_v1_0_1_dynamic.onnx",
       "checkpoint": "work_dirs/v1.0.1/best_mIoU_iter_152000.pth",
-      "elapsed_seconds": 78.334
+      "elapsed_seconds": 86.75
     },
     {
       "version": "v1.0.2",
@@ -84,9 +86,10 @@
       "forgery_Dice_percent": 14.704443,
       "accuracy_percent": 91.729279,
       "false_positive_rate_percent": 0.428082,
+      "det_accuracy_percent": null,
       "onnx_model": "/home/panuwat/project/model/segformer/work_dirs/v1.0.2/segformer_v1_0_2_dynamic.onnx",
       "checkpoint": "work_dirs/v1.0.2/best_mIoU_iter_132000.pth",
-      "elapsed_seconds": 79.366
+      "elapsed_seconds": 81.037
     },
     {
       "version": "v1.0.3",
@@ -104,9 +107,10 @@
       "forgery_Dice_percent": 16.301189,
       "accuracy_percent": 91.749331,
       "false_positive_rate_percent": 0.505195,
+      "det_accuracy_percent": null,
       "onnx_model": "/home/panuwat/project/model/segformer/work_dirs/v1.0.3/segformer_v1_0_3_dynamic.onnx",
       "checkpoint": "work_dirs/v1.0.3/best_mIoU_iter_160000.pth",
-      "elapsed_seconds": 80.116
+      "elapsed_seconds": 79.655
     },
     {
       "version": "v1.0.4",
@@ -124,9 +128,10 @@
       "forgery_Dice_percent": 47.241973,
       "accuracy_percent": 92.799095,
       "false_positive_rate_percent": 2.004848,
+      "det_accuracy_percent": null,
       "onnx_model": "/home/panuwat/project/model/segformer/work_dirs/v1.0.4/segformer_v1_0_4_dynamic.onnx",
       "checkpoint": "work_dirs/v1.0.4/best_mIoU_iter_495000.pth",
-      "elapsed_seconds": 83.282
+      "elapsed_seconds": 83.431
     },
     {
       "version": "v1.0.5",
@@ -144,9 +149,10 @@
       "forgery_Dice_percent": 71.886187,
       "accuracy_percent": 96.013802,
       "false_positive_rate_percent": 0.536236,
+      "det_accuracy_percent": null,
       "onnx_model": "/home/panuwat/project/model/segformer/work_dirs/v1.0.5/segformer_v1_0_5_dynamic.onnx",
       "checkpoint": "work_dirs/v1.0.5/best_mIoU_iter_197500.pth",
-      "elapsed_seconds": 80.875
+      "elapsed_seconds": 90.441
     },
     {
       "version": "v1.0.6",
@@ -164,9 +170,10 @@
       "forgery_Dice_percent": 81.904077,
       "accuracy_percent": 97.134186,
       "false_positive_rate_percent": 0.830316,
+      "det_accuracy_percent": null,
       "onnx_model": "/home/panuwat/project/model/segformer/work_dirs/v1.0.6/segformer_v1_0_6_dynamic.onnx",
       "checkpoint": "work_dirs/v1.0.6/best_mIoU_iter_195000.pth",
-      "elapsed_seconds": 80.334
+      "elapsed_seconds": 89.47
     },
     {
       "version": "v1.0.7",
@@ -184,9 +191,10 @@
       "forgery_Dice_percent": 79.34113,
       "accuracy_percent": 96.719156,
       "false_positive_rate_percent": 1.081542,
+      "det_accuracy_percent": null,
       "onnx_model": "/home/panuwat/project/model/segformer/work_dirs/v1.0.7/segformer_v1_0_7_dynamic.onnx",
       "checkpoint": "work_dirs/v1.0.7/best_mIoU_iter_240000.pth",
-      "elapsed_seconds": 78.756
+      "elapsed_seconds": 87.6
     }
   ],
   "release_gate": {
