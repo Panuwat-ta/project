@@ -1,0 +1,55 @@
+{
+  "dataset_root": "/run/media/panuwat/USB/model/Test-Cases/with_mask",
+  "case_count": 105,
+  "categories": [
+    "authentic",
+    "casia",
+    "copymove",
+    "face",
+    "imd2020",
+    "inpainting",
+    "splicing"
+  ],
+  "versions": [
+    "v1.0.8-macro"
+  ],
+  "inference": {
+    "strategy": "overlapping_tiles",
+    "tile_size": 512,
+    "tile_overlap": 64,
+    "forgery_threshold_percent": 50.0,
+    "provider": "CPUExecutionProvider"
+  },
+  "overall": [
+    {
+      "version": "v1.0.8-macro",
+      "group": "all",
+      "sample_count": 105,
+      "tp": 2254146,
+      "fp": 727192,
+      "fn": 649375,
+      "tn": 30161288,
+      "mIoU_percent": 78.860341,
+      "mDice_percent": 87.188615,
+      "background_IoU_percent": 95.635191,
+      "background_Dice_percent": 97.768904,
+      "forgery_IoU_percent": 62.085491,
+      "forgery_Dice_percent": 76.608327,
+      "accuracy_percent": 95.926353,
+      "false_positive_rate_percent": 2.35425,
+      "det_accuracy_percent": null,
+      "onnx_model": "/home/panuwat/project/model/segformer/work_dirs/v1.0.8/segformer_v1_0_8_macro_dynamic.onnx",
+      "checkpoint": "work_dirs/v1.0.8/best_core_macro_forgery_dice_iter_250000.pth",
+      "elapsed_seconds": 128.175
+    }
+  ],
+  "release_gate": {
+    "version": "v1.0.8-macro",
+    "metric": "mDice_percent",
+    "minimum_percent": 85.0,
+    "actual_percent": 87.188615,
+    "passed": true,
+    "enforced": true
+  },
+  "scope_note": "This local image regression set does not replace the locked common test set used for official model ranking."
+}

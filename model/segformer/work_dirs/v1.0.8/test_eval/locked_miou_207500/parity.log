@@ -1,0 +1,10 @@
+/home/panuwat/project/model/segformer/venv/lib64/python3.10/site-packages/mmcv/cnn/bricks/transformer.py:33: UserWarning: Fail to import ``MultiScaleDeformableAttention`` from ``mmcv.ops.multi_scale_deform_attn``, You should install ``mmcv`` rather than ``mmcv-lite`` if you need this module. 
+  warnings.warn('Fail to import ``MultiScaleDeformableAttention`` from '
+/home/panuwat/project/model/segformer/library/mmsegmentation/mmseg/models/decode_heads/decode_head.py:120: UserWarning: For binary segmentation, we suggest using`out_channels = 1` to define the outputchannels of segmentor, and use `threshold`to convert `seg_logits` into a predictionapplying a threshold
+  warnings.warn('For binary segmentation, we suggest using'
+Loads checkpoint by local backend from path: work_dirs/v1.0.8/best_mIoU_iter_207500.pth
+PyTorch 256x256: (1, 2, 64, 64)
+PyTorch 320x448: (1, 2, 80, 112)
+ONNX 256x256: max_abs=0.00000477, mean_abs=0.00000087, argmax_mismatch_pct=0.000000
+ONNX 320x448: max_abs=0.00000435, mean_abs=0.00000082, argmax_mismatch_pct=0.000000
+PyTorch/ONNX parity: PASS

@@ -125,3 +125,22 @@ ONNX parity ระหว่าง PyTorch checkpoint กับ `segformer_v1_0_7
 ตาม promotion gate ที่ระบุใน config v12: locked mDice ≥ 97.29 **ผ่าน** (97.36), local IMD2020 Forgery Dice > 50% **ยังไม่ผ่าน** (49.62), และ overall FPR ≤ 1.0% **ยังไม่ผ่าน** (1.08). ดังนั้นผลทดสอบถูกบันทึกครบแล้ว แต่ยังไม่มีการเปลี่ยน production deployment จาก `v1.0.6`.
 
 สำเนาสำหรับคนอ่านถูกอัปเดตใน `spreadsheets/quantitative/` เป็น 8 รุ่น (840 image rows) และ `spreadsheets/qualitative/` เป็น 240 pair rows พร้อมไฟล์ `qualitative_pair_scores_v1.0.7.csv`.
+
+
+---
+
+# Test Run Results — 2026-09-25 (v1.0.8)
+
+ประเมิน checkpoint `best_mIoU_iter_207500.pth` ที่เลือกจาก validation ของ config v13 ก่อนดู locked test; ONNX ที่ใช้คือ `segformer_v1_0_8_dynamic.onnx` ผล raw อยู่ใน `work_dirs/v1.0.8/test_eval/` และเพิ่มผลที่เลือกแล้วเข้า `Test-Case/output/` กับ `tests_model/evaluation_manifest.json`
+
+Locked common test `scamguard-locked-multisource-test-v1` ครบ 2,504/2,504 batches (run `20260925_232201`): mIoU **94.99**, mDice **97.38**, Forgery IoU **90.56**, Forgery Dice **95.04** สูงกว่า `v1.0.6` เล็กน้อย แต่ไม่เพียงพอให้เลื่อนใช้จริงเพราะผล local regression ถอยลง
+
+| Version | Local mIoU | Local mDice | Forgery Dice | Overall FPR | IMD2020 Forgery Dice |
+|---|---:|---:|---:|---:|---:|
+| `v1.0.6` | 83.14 | 90.17 | 81.90 | 0.83 | 42.13 |
+| `v1.0.7` | 81.13 | 88.78 | 79.34 | 1.08 | 49.62 |
+| `v1.0.8` | 78.72 | 87.06 | 76.27 | 1.86 | 47.73 |
+
+Local masked set มี 105 ภาพ 7 หมวด; ผลเชิงปริมาณรวมใน `output/quantitative/` ขณะนี้มี 315 per-image rows, 21 per-category rows และ 3 overall rows สำหรับ `v1.0.6`–`v1.0.8` ภาพ qualitative แบบไม่มี mask ครบ 30 คู่ต่อรุ่น รวม 90 rows ใน `output/qualitative/` และมี `v1.0.8/pair001.png`–`pair030.png` สำหรับตรวจด้วยตา ผล qualitative ไม่ใช่ accuracy
+
+Promotion gate ของ v13: locked mDice ≥97.29 **ผ่าน**; local mDice ≥90.17 **ไม่ผ่าน**; IMD2020 Forgery Dice >50 **ไม่ผ่าน**; overall FPR ≤1 **ไม่ผ่าน** แม้ local release gate แบบ legacy ที่กำหนด mDice ≥85 ผ่าน จึงยังคง `v1.0.6` เป็น production baseline และไม่เปลี่ยน deployment

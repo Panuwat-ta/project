@@ -1,0 +1,14 @@
+[v1.0.8] loading segformer_v1_0_8_dynamic.onnx
+[v1.0.8] 10/105 cases
+[v1.0.8] 20/105 cases
+[v1.0.8] 30/105 cases
+[v1.0.8] 40/105 cases
+[v1.0.8] 50/105 cases
+[v1.0.8] 60/105 cases
+[v1.0.8] 70/105 cases
+[v1.0.8] 80/105 cases
+[v1.0.8] 90/105 cases
+[v1.0.8] 100/105 cases
+[v1.0.8] 105/105 cases
+Wrote quantitative results to work_dirs/v1.0.8/test_eval/local105_miou207500
+Release gate passed: v1.0.8 mDice 87.06% >= 85.00%
