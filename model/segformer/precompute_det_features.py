@@ -46,9 +46,25 @@ def write_paths(path: str, items) -> None:
             w.writerow([i, img, label, '' if teacher is None else teacher])
 
 
+def _infer_resume_offset(features) -> int:
+    """Return first unwritten row for an interrupted cache.
+
+    Newly allocated memmap rows are all-zero. Real pooled MiT-B2 features are
+    not expected to be exactly all-zero across all 1024 dimensions.
+    """
+    chunk = 4096
+    for start in range(0, len(features), chunk):
+        block = np.asarray(features[start:start + chunk])
+        written = np.any(block != 0, axis=1)
+        if not written.all():
+            return start + int(np.where(~written)[0][0])
+    return len(features)
+
+
 def extract_split(seg, split_name: str, csv_path: str, out_root: str,
                   device: torch.device, batch_size: int, workers: int,
-                  use_amp: bool, limit: int | None = None) -> dict:
+                  use_amp: bool, limit: int | None = None,
+                  resume: bool = False) -> dict:
     items = load_csv(csv_path)
     if limit is not None:
         items = items[:limit]
@@ -57,17 +73,33 @@ def extract_split(seg, split_name: str, csv_path: str, out_root: str,
 
     split_dir = os.path.join(out_root, split_name)
     os.makedirs(split_dir, exist_ok=True)
-    features = open_memmap(os.path.join(split_dir, 'features.npy'), mode='w+',
-                           dtype='float32', shape=(len(items), VECTOR_DIM))
-    labels = open_memmap(os.path.join(split_dir, 'labels.npy'), mode='w+',
-                         dtype='float32', shape=(len(items), 1))
-    teachers = open_memmap(os.path.join(split_dir, 'teachers.npy'), mode='w+',
-                           dtype='float32', shape=(len(items), 1))
-    loader = DataLoader(ImgLabelDataset(items), batch_size=batch_size,
+    feature_path = os.path.join(split_dir, 'features.npy')
+    label_path = os.path.join(split_dir, 'labels.npy')
+    teacher_path = os.path.join(split_dir, 'teachers.npy')
+    expected_f = (len(items), VECTOR_DIM)
+    expected_y = (len(items), 1)
+
+    can_resume = resume and all(os.path.isfile(x) for x in
+                                (feature_path, label_path, teacher_path))
+    if can_resume:
+        features = np.load(feature_path, mmap_mode='r+')
+        labels = np.load(label_path, mmap_mode='r+')
+        teachers = np.load(teacher_path, mmap_mode='r+')
+        if features.shape != expected_f or labels.shape != expected_y or teachers.shape != expected_y:
+            raise ValueError(f'{split_name}: existing cache shape does not match current CSV')
+        offset = _infer_resume_offset(features)
+        print(f'{split_name}: resume at {offset}/{len(items)}', flush=True)
+    else:
+        features = open_memmap(feature_path, mode='w+', dtype='float32', shape=expected_f)
+        labels = open_memmap(label_path, mode='w+', dtype='float32', shape=expected_y)
+        teachers = open_memmap(teacher_path, mode='w+', dtype='float32', shape=expected_y)
+        offset = 0
+
+    remaining = items[offset:]
+    loader = DataLoader(ImgLabelDataset(remaining), batch_size=batch_size,
                         shuffle=False, num_workers=workers,
                         pin_memory=(device.type == 'cuda'))
 
-    offset = 0
     started = time.time()
     with torch.inference_mode():
         for step, (x, y, t, _) in enumerate(loader, 1):
@@ -80,9 +112,9 @@ def extract_split(seg, split_name: str, csv_path: str, out_root: str,
             teachers[offset:offset+n] = t.numpy()
             offset += n
             if step % 100 == 0 or offset == len(items):
+                features.flush(); labels.flush(); teachers.flush()
                 elapsed = time.time() - started
-                print(f'{split_name}: {offset}/{len(items)} '
-                      f'({elapsed:.1f}s)', flush=True)
+                print(f'{split_name}: {offset}/{len(items)} ({elapsed:.1f}s)', flush=True)
 
     features.flush(); labels.flush(); teachers.flush()
     write_paths(os.path.join(split_dir, 'paths.csv'), items)
@@ -106,6 +138,8 @@ def main() -> None:
     ap.add_argument('--batch-size', type=int, default=4)
     ap.add_argument('--workers', type=int, default=4)
     ap.add_argument('--amp', action='store_true')
+    ap.add_argument('--resume', action='store_true',
+                    help='resume an interrupted feature cache when shapes match')
     ap.add_argument('--limit', type=int, default=None,
                     help='smoke-test only: limit each split to N samples')
     ap.add_argument('--device', default='cuda' if torch.cuda.is_available() else 'cpu')
@@ -123,7 +157,7 @@ def main() -> None:
     for name, csv_path in [('train', args.train_csv), ('val', args.val_csv)]:
         splits.append(extract_split(
             seg, name, csv_path, args.out_dir, device,
-            args.batch_size, args.workers, args.amp, args.limit))
+            args.batch_size, args.workers, args.amp, args.limit, args.resume))
 
     meta = {
         'format_version': 1,
