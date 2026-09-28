@@ -58,3 +58,20 @@ Feature cache เก็บเป็น NumPy memmap (`float32`) แยก `train
 
 `train_det.py` จะปฏิเสธ cache ทันทีถ้า checkpoint SHA-1 ไม่ตรงกับ checkpoint ที่ระบุ.
 โหมด online เดิมยังคงไว้เพื่อ regression comparison และ fallback.
+
+## 8. Det Head v2 (2026-09-28)
+
+`det1` ใช้ Linear(1024 -> 1) เป็น baseline. `det2` เพิ่ม nonlinear capacity โดยไม่แก้ SegFormer:
+- `LayerNorm(1024)`
+- `Linear(1024 -> 256) -> GELU -> Dropout`
+- `Linear(256 -> 64) -> GELU -> Dropout`
+- `Linear(64 -> 1)`
+- รวมประมาณ 280,961 parameters
+
+ก่อนเทรน v2 ทำ global Train/Val/Test leakage audit ทั้ง file SHA และ decoded-pixel SHA.
+กติกา clean split: same-label duplicate เก็บ `test > val > train`; conflicting-label duplicate quarantine ทุกฝั่ง.
+feature cache clean สร้างจาก cache เดิมโดยตัด row ที่ leak ออก ไม่ต้องรัน SegFormer ซ้ำ.
+
+`--source-balanced` ใช้ sqrt inverse frequency ต่อ `(label,dataset)` และ normalize ให้ label 0/1
+มี expected sampling mass 50/50 เพื่อลด source dominance โดยไม่ oversample dataset เล็กแบบสุดโต่ง.
+`--feature-in-ram` โหลด cache ~0.5 GB เข้า RAM เพื่อลด random I/O จาก USB.

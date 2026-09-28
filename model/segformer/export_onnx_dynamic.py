@@ -51,7 +51,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output", type=Path, help="Output .onnx path")
     parser.add_argument("--height", type=int, default=1024)
     parser.add_argument("--width", type=int, default=1024)
-    parser.add_argument("--opset", type=int, default=17)
+    parser.add_argument("--opset", type=int, default=18, help="ONNX opset (default 18; required by current PyTorch exporter for Resize)")
     parser.add_argument("--det-checkpoint", type=Path, default=None,
                         help="ไฟล์ det_head.pth (Track B) ถ้าระบุจะ export 2 outputs: logits + det_logit")
     return parser.parse_args()

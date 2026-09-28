@@ -30,9 +30,9 @@ import torch
 import torch.nn as nn
 import numpy as np
 from PIL import Image
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import DataLoader, Dataset, WeightedRandomSampler
 
-from det_head import DetHead, build_seg_model, freeze_seg
+from det_head import DetHead, build_det_head, build_seg_model, freeze_seg
 
 MEAN = [123.675, 116.28, 103.53]
 STD = [58.395, 57.12, 57.375]
@@ -70,11 +70,16 @@ class ImgLabelDataset(Dataset):
 class FeatureCacheDataset(Dataset):
     """Memory-mapped pooled SegFormer features created by precompute_det_features.py."""
 
-    def __init__(self, cache_root: str, split_name: str):
+    def __init__(self, cache_root: str, split_name: str, in_memory: bool = False):
         root = os.path.join(cache_root, split_name)
-        self.features = np.load(os.path.join(root, 'features.npy'), mmap_mode='r')
-        self.labels = np.load(os.path.join(root, 'labels.npy'), mmap_mode='r')
-        self.teachers = np.load(os.path.join(root, 'teachers.npy'), mmap_mode='r')
+        mmap = None if in_memory else 'r'
+        self.features = np.load(os.path.join(root, 'features.npy'), mmap_mode=mmap)
+        self.labels = np.load(os.path.join(root, 'labels.npy'), mmap_mode=mmap)
+        self.teachers = np.load(os.path.join(root, 'teachers.npy'), mmap_mode=mmap)
+        if in_memory:
+            self.features = np.asarray(self.features).copy()
+            self.labels = np.asarray(self.labels).copy()
+            self.teachers = np.asarray(self.teachers).copy()
         if not (len(self.features) == len(self.labels) == len(self.teachers)):
             raise ValueError(f'cache length mismatch: {root}')
         if self.features.ndim != 2 or self.features.shape[1] != 1024:
@@ -118,6 +123,36 @@ def load_csv(path: str):
             items.append((row['path'], int(row['label']),
                           float(row['teacher']) if row.get('teacher') else None))
     return items
+
+
+def build_source_balanced_sampler(csv_path: str, seed: int):
+    """Balance source datasets within each label using sqrt inverse group frequency.
+
+    Group = (label, dataset). Per-sample weight is 1/sqrt(group_count), then
+    renormalized so authentic and manipulated each contribute 50% expected mass.
+    This reduces source dominance without extreme oversampling of tiny groups.
+    """
+    rows = list(csv.DictReader(open(csv_path)))
+    counts = {}
+    for r in rows:
+        key = (int(r['label']), r.get('dataset', 'unknown'))
+        counts[key] = counts.get(key, 0) + 1
+    weights = []
+    for r in rows:
+        key = (int(r['label']), r.get('dataset', 'unknown'))
+        weights.append(1.0 / (counts[key] ** 0.5))
+    mass = {0: 0.0, 1: 0.0}
+    for r, w in zip(rows, weights):
+        mass[int(r['label'])] += w
+    for i, r in enumerate(rows):
+        y = int(r['label'])
+        weights[i] *= 0.5 / max(mass[y], 1e-12)
+    gen = torch.Generator()
+    gen.manual_seed(seed)
+    sampler = WeightedRandomSampler(
+        torch.as_tensor(weights, dtype=torch.double),
+        num_samples=len(rows), replacement=True, generator=gen)
+    return sampler, counts
 
 
 def split(items, val_ratio: float, seed: int):
@@ -189,6 +224,12 @@ def main():
                     help='cache root from precompute_det_features.py; bypass SegFormer per epoch')
     ap.add_argument('--feature-batch-size', type=int, default=2048,
                     help='batch size when training from cached 1024-d features')
+    ap.add_argument('--arch', choices=['linear', 'mlp'], default='linear')
+    ap.add_argument('--dropout', type=float, default=0.2)
+    ap.add_argument('--source-balanced', action='store_true',
+                    help='sqrt source balancing within each label for cached mode')
+    ap.add_argument('--feature-in-ram', action='store_true',
+                    help='load cached features into RAM before training (~0.5 GB here)')
     ap.add_argument('--alpha', type=float, default=0.0, help='น้ำหนัก distillation loss')
     ap.add_argument('--epochs', type=int, default=20)
     ap.add_argument('--lr', type=float, default=1e-4)
@@ -205,7 +246,7 @@ def main():
     device = torch.device(args.device)
     checkpoint_sha1 = sha1_of_file(args.checkpoint)
 
-    det = DetHead().to(device)
+    det = build_det_head(args.arch, args.dropout).to(device)
     opt = torch.optim.AdamW(det.parameters(), lr=args.lr)
     bce = nn.BCEWithLogitsLoss()
     best_acc, best_state, bad = -1.0, None, 0
@@ -221,16 +262,30 @@ def main():
                 'feature cache checkpoint mismatch: '
                 f'cache={cached_sha1} requested={checkpoint_sha1}')
 
-        train_ds = FeatureCacheDataset(args.feature_cache, 'train')
-        val_ds = FeatureCacheDataset(args.feature_cache, 'val')
-        train_loader = DataLoader(train_ds, batch_size=args.feature_batch_size,
-                                  shuffle=True, num_workers=0,
-                                  pin_memory=(device.type == 'cuda'))
+        train_ds = FeatureCacheDataset(args.feature_cache, 'train', args.feature_in_ram)
+        val_ds = FeatureCacheDataset(args.feature_cache, 'val', args.feature_in_ram)
+        sampler = None
+        source_counts = None
+        if args.source_balanced:
+            train_csv = next(
+                x['csv'] for x in cache_meta.get('splits', [])
+                if x.get('split') == 'train')
+            sampler, source_counts = build_source_balanced_sampler(train_csv, args.seed)
+            if len(sampler.weights) != len(train_ds):
+                raise ValueError('source-balanced sampler length != feature cache length')
+        train_loader = DataLoader(
+            train_ds, batch_size=args.feature_batch_size,
+            shuffle=(sampler is None), sampler=sampler, num_workers=0,
+            pin_memory=(device.type == 'cuda'))
         val_loader = DataLoader(val_ds, batch_size=args.feature_batch_size,
                                 shuffle=False, num_workers=0,
                                 pin_memory=(device.type == 'cuda'))
         print(f'cached mode: train={len(train_ds)} val={len(val_ds)} '
-              f'vector_dim={train_ds.features.shape[1]} device={device}')
+              f'vector_dim={train_ds.features.shape[1]} device={device} '
+              f'arch={args.arch} source_balanced={args.source_balanced} '
+              f'feature_in_ram={args.feature_in_ram}')
+        if source_counts is not None:
+            print('source groups:', source_counts)
 
         for epoch in range(args.epochs):
             det.train()
@@ -271,6 +326,10 @@ def main():
             'feature_cache': os.path.abspath(args.feature_cache),
             'feature_cache_meta': cache_meta,
             'feature_batch_size': args.feature_batch_size,
+            'source_balanced': bool(args.source_balanced),
+            'feature_in_ram': bool(args.feature_in_ram),
+            'source_groups': ({f'{k[0]}:{k[1]}': v for k, v in source_counts.items()}
+                              if source_counts is not None else None),
         }
     else:
         if args.derive_from_mask and args.img_dir:
@@ -353,6 +412,8 @@ def main():
         'alpha': args.alpha,
         'lr': args.lr,
         'seed': args.seed,
+        'det_arch': args.arch,
+        'dropout': args.dropout,
         'best_val_acc': best_acc,
         'time': time.strftime('%Y-%m-%d %H:%M:%S'),
         **mode_meta,

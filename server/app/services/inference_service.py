@@ -350,6 +350,9 @@ class InferenceService:
         """
         visual_risk_score = 50
         ai_gen_probability = 0.5
+        # Track B shadow signal: carried through cache/internal result only.
+        # It is deliberately NOT fused into total risk yet.
+        det_score = None
         heatmap_bytes = self.generate_mock_heatmap(image_bytes)
         
         # 1. Run ONNX in isolated subprocess via shared runner seam
@@ -364,6 +367,7 @@ class InferenceService:
                 return {
                     "visual_risk_score": visual_risk_score,
                     "ai_gen_probability": ai_gen_probability,
+                    "det_score": det_score,
                     "anomaly_region": "บริเวณที่น่าสงสัยในภาพ",
                     "heatmap_bytes": heatmap_bytes,
                     "ocr_text": self._run_ocr_with_timeout(image_bytes),
@@ -374,6 +378,7 @@ class InferenceService:
                 result = run["stdout_json"]
                 visual_risk_score = result.get("visual_risk_score", visual_risk_score)
                 ai_gen_probability = result.get("ai_gen_probability", ai_gen_probability)
+                det_score = result.get("det_score", det_score)
                 anomaly_region = result.get("anomaly_region", "บริเวณที่น่าสงสัยในภาพ")
                 if result.get("heatmap_b64"):
                     heatmap_bytes = base64.b64decode(result["heatmap_b64"])
@@ -388,6 +393,7 @@ class InferenceService:
         return {
             "visual_risk_score": visual_risk_score,
             "ai_gen_probability": ai_gen_probability,
+            "det_score": det_score,
             "anomaly_region": locals().get("anomaly_region", "บริเวณที่น่าสงสัยในภาพ"),
             "heatmap_bytes": heatmap_bytes,
             "ocr_text": ocr_text

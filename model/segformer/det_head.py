@@ -28,7 +28,9 @@ def pool_stage_features(feats) -> torch.Tensor:
 
 
 class DetHead(nn.Module):
-    """Image-level forgery head: GAP per stage + concat + linear."""
+    """v1 linear image-level head: GAP 4 stages -> Linear(1024,1)."""
+
+    arch = "linear"
 
     def __init__(self, in_channels: int = sum(STAGE_CHANNELS)) -> None:
         super().__init__()
@@ -41,6 +43,41 @@ class DetHead(nn.Module):
 
     def forward(self, feats) -> torch.Tensor:
         return self.forward_pooled(pool_stage_features(feats))
+
+
+class MLPDetHead(nn.Module):
+    """v2 MLP head for richer nonlinear image-level decision boundaries."""
+
+    arch = "mlp"
+
+    def __init__(self, in_channels: int = sum(STAGE_CHANNELS), dropout: float = 0.2) -> None:
+        super().__init__()
+        self.in_channels = in_channels
+        self.dropout = float(dropout)
+        self.net = nn.Sequential(
+            nn.LayerNorm(in_channels),
+            nn.Linear(in_channels, 256),
+            nn.GELU(),
+            nn.Dropout(self.dropout),
+            nn.Linear(256, 64),
+            nn.GELU(),
+            nn.Dropout(self.dropout),
+            nn.Linear(64, 1),
+        )
+
+    def forward_pooled(self, pooled: torch.Tensor) -> torch.Tensor:
+        return self.net(pooled)
+
+    def forward(self, feats) -> torch.Tensor:
+        return self.forward_pooled(pool_stage_features(feats))
+
+
+def build_det_head(arch: str = "linear", dropout: float = 0.2) -> nn.Module:
+    if arch == "linear":
+        return DetHead()
+    if arch == "mlp":
+        return MLPDetHead(dropout=dropout)
+    raise ValueError(f"unknown Det Head arch: {arch}")
 
 
 def freeze_seg(model: torch.nn.Module) -> torch.nn.Module:
@@ -80,8 +117,11 @@ def save_det(det_head: DetHead, path: str, meta: dict | None = None) -> None:
     torch.save(payload, path)
 
 
-def load_det(path: str, device: str = "cpu") -> DetHead:
-    head = DetHead()
+def load_det(path: str, device: str = "cpu") -> nn.Module:
     payload = torch.load(path, map_location=device, weights_only=False)
+    meta = payload.get("meta", {})
+    arch = meta.get("det_arch", "linear")
+    dropout = float(meta.get("dropout", 0.2))
+    head = build_det_head(arch=arch, dropout=dropout)
     head.load_state_dict(payload["state_dict"])
-    return head
+    return head.to(device)
