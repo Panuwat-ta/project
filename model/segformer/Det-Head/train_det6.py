@@ -14,7 +14,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, Dataset
 
-from det5_local import build_det5_head, save_det5
+from det6_local import build_det6_head, save_det6
 from train_det import build_source_balanced_sampler, sha1_of_file
 
 
@@ -134,7 +134,7 @@ def main() -> None:
         val_ds, batch_size=args.batch_size, shuffle=False,
         num_workers=0, pin_memory=(device.type == "cuda"))
 
-    head = build_det5_head(args.arch, dropout=args.dropout, topk=args.topk).to(device)
+    head = build_det6_head(args.arch, dropout=args.dropout, topk=args.topk).to(device)
     opt = torch.optim.AdamW(head.parameters(), lr=args.lr)
     bce = nn.BCEWithLogitsLoss()
     bce_none = nn.BCEWithLogitsLoss(reduction="none")
@@ -143,7 +143,7 @@ def main() -> None:
     best_epoch = 0
     bad = 0
     history = []
-    print(f"Det5 cached mode train={len(train_ds)} val={len(val_ds)} "
+    print(f"Det6 cached mode train={len(train_ds)} val={len(val_ds)} "
           f"shape={train_ds.features.shape[1:]} arch={args.arch} "
           f"source_balanced={args.source_balanced} device={device} "
           f"weighted_rows={weighted_rows}")
@@ -210,7 +210,7 @@ def main() -> None:
         "val_average_precision": val_ap,
         "created_at": time.strftime("%Y-%m-%d %H:%M:%S"),
     }
-    save_det5(head, os.path.join(args.work_dir, "det5_head.pth"), meta)
+    save_det6(head, os.path.join(args.work_dir, "det6_head.pth"), meta)
     np.save(os.path.join(args.work_dir, "val_scores.npy"), val_scores)
     np.save(os.path.join(args.work_dir, "val_labels.npy"), val_labels)
     with open(os.path.join(args.work_dir, "train_log.json"), "w") as f:
@@ -220,7 +220,7 @@ def main() -> None:
     print(json.dumps({"best_val_acc": best_acc, "best_epoch": best_epoch,
                       "val_f1": val_f1, "val_roc_auc": val_auc,
                       "val_average_precision": val_ap}, indent=2))
-    print(f"saved {args.work_dir}/det5_head.pth")
+    print(f"saved {args.work_dir}/det6_head.pth")
 
 
 if __name__ == "__main__":

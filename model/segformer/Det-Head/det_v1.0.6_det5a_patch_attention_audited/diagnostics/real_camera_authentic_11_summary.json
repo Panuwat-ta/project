@@ -1,0 +1,13 @@
+{
+  "n": 11,
+  "tp": 0,
+  "tn": 1,
+  "fp": 10,
+  "fn": 0,
+  "accuracy": 0.09090909090909091,
+  "precision": 0.0,
+  "recall": null,
+  "specificity": 0.09090909090909091,
+  "f1": null,
+  "mean_score": 0.7853449041193182
+}

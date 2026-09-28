@@ -74,9 +74,6 @@ def main() -> None:
     ap.add_argument("--source-balanced", action="store_true")
     ap.add_argument("--sample-weight-csv", default=None,
                     help="Optional CSV path,sample_weight; unspecified Train rows default to 1.0")
-    ap.add_argument("--hard-mining-csv", default=None,
-                    help="Optional Train-only CSV containing path rows to boost in source-balanced sampler")
-    ap.add_argument("--hard-boost", type=float, default=1.0)
     ap.add_argument("--epochs", type=int, default=30)
     ap.add_argument("--lr", type=float, default=1e-4)
     ap.add_argument("--batch-size", type=int, default=256)
@@ -115,15 +112,14 @@ def main() -> None:
             raise ValueError("Train paths.csv/cache length mismatch")
         for i, r in enumerate(cache_paths):
             w = weight_map.get(r["path"], 1.0)
-            if not (0.0 <= w <= 5.0):
-                raise ValueError(f"sample weight out of range [0,5] for {r['path']}: {w}")
+            if not (0.0 <= w <= 1.0):
+                raise ValueError(f"sample weight out of range for {r['path']}: {w}")
             sample_weights[i] = w
             if w != 1.0:
                 weighted_rows += 1
     if args.source_balanced:
         train_csv = next(x["csv"] for x in cache_meta["splits"] if x["split"] == "train")
-        sampler, source_counts, hard_matched = build_source_balanced_sampler(
-            train_csv, args.seed, hard_csv=args.hard_mining_csv, hard_boost=args.hard_boost)
+        sampler, source_counts, _ = build_source_balanced_sampler(train_csv, args.seed)
         if len(sampler.weights) != len(train_ds):
             raise ValueError("source-balanced sampler length mismatch")
 
@@ -201,8 +197,6 @@ def main() -> None:
         "source_balanced": bool(args.source_balanced),
         "sample_weight_csv": os.path.abspath(args.sample_weight_csv) if args.sample_weight_csv else None,
         "weighted_rows": int(weighted_rows),
-        "hard_mining_csv": os.path.abspath(args.hard_mining_csv) if args.hard_mining_csv else None,
-        "hard_boost": float(args.hard_boost),
         "best_epoch": int(best_epoch),
         "best_val_acc": float(best_acc),
         "val_f1": val_f1,

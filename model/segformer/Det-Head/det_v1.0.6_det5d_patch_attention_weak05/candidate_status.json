@@ -1,0 +1,10 @@
+{
+  "status": "rejected-before-locked-test",
+  "selection_basis": "selected from Val among weak-label weights 0.25 and 0.50",
+  "best_val_acc": 0.8653524891413298,
+  "fresh_camera_specificity": 0.2727272727272727,
+  "pilot_accuracy": 0.45454545454545453,
+  "locked_test_opened": false,
+  "production_changed": false,
+  "next_experiment": "audited Train + boost only verified hard-negative label0 rows (GT zero-mask), select boost on Val only"
+}

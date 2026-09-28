@@ -1902,3 +1902,32 @@ The remaining 135 rows are PSBattles source-original negatives: reference-origin
 They remain pending semantics review; the audited-manifest guard correctly refuses to build final Train data while these are pending.
 
 Decision: Det5-A is the preferred representation candidate, but it remains pre-audit and non-promotable. Production/shadow stays on det2-b.
+
+## 2026-09-29 — Det5 audited result and real-camera domain gap
+
+- Label Audit v6 resolved all 3,080 conflict rows without automatic relabel.
+- 2,945 rows retain dataset labels supported by GT mask/pair evidence.
+- 135 PSBattles source-original rows are marked uncertain and excluded from high-confidence Train because source-original does not prove camera-pristine provenance.
+- Audited Train: 95,635 rows (47,768 Authentic / 47,867 Manipulated).
+- Det5 patch_attention audited was trained from scratch with seeds 42, 7, 123.
+- Val accuracy was stable at ~86.33–86.38%, but all three seeds failed fresh-camera and web-photomontage diagnostics.
+- Locked Test 44,031 remains unopened for Det5 audited.
+- Production/shadow remains v1.0.6 + det2-b.
+
+### New priority: real-camera-authentic-v1
+- Current 11 fresh camera images remain protected diagnostic holdout; never train on them.
+- Main Authentic Train source sample median resolution ~0.274 MP versus fresh camera11 ~12.58 MP.
+- Build a separate verified direct-camera Authentic dataset with session/device-separated splits.
+- Validator: `model/segformer/Det-Head/validate_camera_authentic_incoming.py` rejects byte/pixel duplicates with the protected camera11 holdout.
+- Dataset spec: `model/segformer/Det-Head/dataset_specs/real-camera-authentic-v1.md`.
+- Do not resume Det5 promotion until real-camera domain coverage exists and passes Val + external diagnostics.
+## 2026-09-29 — Det5 audit/weighting follow-up + Det6
+
+- Label Audit closed 3,080/3,080 conflict rows: 2,945 keep by dataset/GT evidence; 135 PSBattles source-original rows remain semantics-uncertain and are excluded from the audited Train manifest. No relabel was performed.
+- Audited Train: 95,635 rows (47,768 label0 / 47,867 label1); Val remains 11,972.
+- Det5-A audited hard-exclusion reached 86.385% Val but regressed real-camera Authentic to 1/11 and Pilot11 to 3/11; rejected before locked Test.
+- Weak-label loss experiments on the 135 uncertain PSBattles rows: weight0.25 Val 86.510%; weight0.50 Val 86.535%. The Val-selected weight0.50 candidate regressed real-camera to 3/11 and Pilot11 to 5/11; rejected before locked Test.
+- Verified hard-negative sampler boost using 591 zero-GT-mask Train conflicts: boost1.5 Val 86.560%, boost2.0 Val 86.226%; specificity worsened, so no external diagnostic/locked Test was opened.
+- Verified hard-negative loss weight1.5 Val 86.377% and also reduced specificity; weight2.0 was not run because the direction was already adverse.
+- Conclusion: stop threshold/weight micro-tuning. Current evidence points back to representation/local-resolution limitations.
+- Det6 experiment started: frozen SegFormer v1.0.6, aligned 8x8 grid, 64 local tokens x 1024-D, patch-attention head. Train/Val only; Locked Test 44,031 remains unopened.

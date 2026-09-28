@@ -1,0 +1,186 @@
+{
+  "meta": {
+    "det_arch": "patch_attention",
+    "dropout": 0.2,
+    "topk": 4,
+    "segformer_checkpoint": "/home/panuwat/project/model/segformer/work_dirs/v1.0.6/best_mIoU_iter_195000.pth",
+    "segformer_checkpoint_sha1": "86d7d250c1f9d6dd4608531fcc5753c4109a4434",
+    "feature_cache": "/run/media/panuwat/USB/model/Det-Head/features/v1.0.6-det5-local4x4-audited",
+    "feature_cache_meta": {
+      "format_version": 5,
+      "feature_type": "SegFormer MiT-B2 aligned local patch tokens",
+      "pooling": "adaptive_avg_grid",
+      "grid_size": 4,
+      "num_tokens": 16,
+      "token_dim": 1024,
+      "config": "/home/panuwat/project/model/segformer/configs/segformer_mit-b2-v11.py",
+      "checkpoint": "/home/panuwat/project/model/segformer/work_dirs/v1.0.6/best_mIoU_iter_195000.pth",
+      "checkpoint_sha1": "86d7d250c1f9d6dd4608531fcc5753c4109a4434",
+      "input_size": [
+        512,
+        512
+      ],
+      "amp": true,
+      "limit": null,
+      "splits": [
+        {
+          "split": "train",
+          "csv": "/run/media/panuwat/USB/model/Det-Head/manifests/det-train-v3-audited.csv",
+          "csv_sha1": "5c90cf740ed5982d8db86c1f43eee61f0c1fd4f5",
+          "samples": 95635,
+          "features_shape": [
+            95635,
+            16,
+            1024
+          ],
+          "dtype": "float16"
+        },
+        {
+          "split": "val",
+          "csv": "/run/media/panuwat/USB/model/Det-Head/manifests/det-val-v2-clean.csv",
+          "csv_sha1": "c70bc31b910db2a920afb447411ca416e7721593",
+          "samples": 11972,
+          "features_shape": [
+            11972,
+            16,
+            1024
+          ],
+          "dtype": "float16"
+        }
+      ],
+      "created_at": "2026-09-29 04:24:16",
+      "derived_from_cache": "/run/media/panuwat/USB/model/Det-Head/features/v1.0.6-det5-local4x4",
+      "audit_policy": "PSBattles source-original rows without camera-pristine provenance excluded; no relabel"
+    },
+    "source_balanced": true,
+    "best_epoch": 16,
+    "best_val_acc": 0.863848980955563,
+    "val_f1": null,
+    "val_roc_auc": null,
+    "val_average_precision": null,
+    "created_at": "2026-09-29 04:27:27"
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "val_loss": 0.3493411563090405,
+      "val_acc": 0.8288506515202139
+    },
+    {
+      "epoch": 2,
+      "val_loss": 0.3374375803486344,
+      "val_acc": 0.8337788172402272
+    },
+    {
+      "epoch": 3,
+      "val_loss": 0.3186406797480188,
+      "val_acc": 0.8495656531907785
+    },
+    {
+      "epoch": 4,
+      "val_loss": 0.31733033275857164,
+      "val_acc": 0.850066822586034
+    },
+    {
+      "epoch": 5,
+      "val_loss": 0.31776748489864814,
+      "val_acc": 0.8505679919812896
+    },
+    {
+      "epoch": 6,
+      "val_loss": 0.31319290147568424,
+      "val_acc": 0.8547444036084196
+    },
+    {
+      "epoch": 7,
+      "val_loss": 0.3123634885090307,
+      "val_acc": 0.8543267624457066
+    },
+    {
+      "epoch": 8,
+      "val_loss": 0.31241019412245374,
+      "val_acc": 0.8546608753758771
+    },
+    {
+      "epoch": 9,
+      "val_loss": 0.3079477327728689,
+      "val_acc": 0.8570831941196124
+    },
+    {
+      "epoch": 10,
+      "val_loss": 0.31212601550651553,
+      "val_acc": 0.8561643835616438
+    },
+    {
+      "epoch": 11,
+      "val_loss": 0.31263723136611565,
+      "val_acc": 0.8585031740728366
+    },
+    {
+      "epoch": 12,
+      "val_loss": 0.30291490096138646,
+      "val_acc": 0.8615101904443702
+    },
+    {
+      "epoch": 13,
+      "val_loss": 0.30763576039598095,
+      "val_acc": 0.8604243234213164
+    },
+    {
+      "epoch": 14,
+      "val_loss": 0.31142653963495553,
+      "val_acc": 0.8583361176077514
+    },
+    {
+      "epoch": 15,
+      "val_loss": 0.30987783846093386,
+      "val_acc": 0.858837287003007
+    },
+    {
+      "epoch": 16,
+      "val_loss": 0.31377264792065757,
+      "val_acc": 0.863848980955563
+    },
+    {
+      "epoch": 17,
+      "val_loss": 0.3175997149652462,
+      "val_acc": 0.8601737387236886
+    },
+    {
+      "epoch": 18,
+      "val_loss": 0.31842868627342535,
+      "val_acc": 0.8611760775141998
+    },
+    {
+      "epoch": 19,
+      "val_loss": 0.3160322043855519,
+      "val_acc": 0.8601737387236886
+    },
+    {
+      "epoch": 20,
+      "val_loss": 0.31749319239338236,
+      "val_acc": 0.8597560975609756
+    },
+    {
+      "epoch": 21,
+      "val_loss": 0.3338570796935336,
+      "val_acc": 0.8565820247243568
+    }
+  ],
+  "source_groups": {
+    "0:authentic": 30327,
+    "0:casia": 5236,
+    "0:face": 150,
+    "0:realtext": 4286,
+    "1:casia": 3677,
+    "1:aiforge": 1962,
+    "1:copymove": 5789,
+    "1:face": 5788,
+    "1:imd2020": 5777,
+    "1:inpainting": 5788,
+    "1:splicing": 5788,
+    "1:realtext": 5420,
+    "0:psbattles": 7769,
+    "1:psbattles": 7878
+  }
+}

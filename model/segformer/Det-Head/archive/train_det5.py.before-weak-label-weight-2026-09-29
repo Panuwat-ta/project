@@ -72,11 +72,6 @@ def main() -> None:
     ap.add_argument("--dropout", type=float, default=0.2)
     ap.add_argument("--topk", type=int, default=4)
     ap.add_argument("--source-balanced", action="store_true")
-    ap.add_argument("--sample-weight-csv", default=None,
-                    help="Optional CSV path,sample_weight; unspecified Train rows default to 1.0")
-    ap.add_argument("--hard-mining-csv", default=None,
-                    help="Optional Train-only CSV containing path rows to boost in source-balanced sampler")
-    ap.add_argument("--hard-boost", type=float, default=1.0)
     ap.add_argument("--epochs", type=int, default=30)
     ap.add_argument("--lr", type=float, default=1e-4)
     ap.add_argument("--batch-size", type=int, default=256)
@@ -101,29 +96,9 @@ def main() -> None:
     val_ds = LocalTokenCacheDataset(args.feature_cache, "val")
     sampler = None
     source_counts = None
-    sample_weights = np.ones(len(train_ds), dtype=np.float32)
-    weighted_rows = 0
-    if args.sample_weight_csv:
-        weight_map = {}
-        with open(args.sample_weight_csv, newline="") as f:
-            for r in csv.DictReader(f):
-                weight_map[r["path"]] = float(r["sample_weight"])
-        paths_csv = os.path.join(args.feature_cache, "train", "paths.csv")
-        with open(paths_csv, newline="") as f:
-            cache_paths = list(csv.DictReader(f))
-        if len(cache_paths) != len(train_ds):
-            raise ValueError("Train paths.csv/cache length mismatch")
-        for i, r in enumerate(cache_paths):
-            w = weight_map.get(r["path"], 1.0)
-            if not (0.0 <= w <= 5.0):
-                raise ValueError(f"sample weight out of range [0,5] for {r['path']}: {w}")
-            sample_weights[i] = w
-            if w != 1.0:
-                weighted_rows += 1
     if args.source_balanced:
         train_csv = next(x["csv"] for x in cache_meta["splits"] if x["split"] == "train")
-        sampler, source_counts, hard_matched = build_source_balanced_sampler(
-            train_csv, args.seed, hard_csv=args.hard_mining_csv, hard_boost=args.hard_boost)
+        sampler, source_counts, _ = build_source_balanced_sampler(train_csv, args.seed)
         if len(sampler.weights) != len(train_ds):
             raise ValueError("source-balanced sampler length mismatch")
 
@@ -137,7 +112,6 @@ def main() -> None:
     head = build_det5_head(args.arch, dropout=args.dropout, topk=args.topk).to(device)
     opt = torch.optim.AdamW(head.parameters(), lr=args.lr)
     bce = nn.BCEWithLogitsLoss()
-    bce_none = nn.BCEWithLogitsLoss(reduction="none")
     best_acc = -1.0
     best_state = None
     best_epoch = 0
@@ -145,21 +119,15 @@ def main() -> None:
     history = []
     print(f"Det5 cached mode train={len(train_ds)} val={len(val_ds)} "
           f"shape={train_ds.features.shape[1:]} arch={args.arch} "
-          f"source_balanced={args.source_balanced} device={device} "
-          f"weighted_rows={weighted_rows}")
+          f"source_balanced={args.source_balanced} device={device}")
 
     for epoch in range(args.epochs):
         head.train()
-        for x, y, _, batch_idx in train_loader:
+        for x, y, _, _ in train_loader:
             x = x.to(device, non_blocking=True)
             y = y.to(device, non_blocking=True)
             logit = head.forward_tokens(x)
-            if args.sample_weight_csv:
-                w = torch.from_numpy(sample_weights[batch_idx.numpy()]).to(device=device, dtype=logit.dtype).reshape(-1)
-                lv = bce_none(logit, y).reshape(-1)
-                loss = (lv * w).sum() / w.sum().clamp_min(1e-8)
-            else:
-                loss = bce(logit, y)
+            loss = bce(logit, y)
             opt.zero_grad(set_to_none=True)
             loss.backward()
             opt.step()
@@ -199,10 +167,6 @@ def main() -> None:
         "feature_cache": os.path.abspath(args.feature_cache),
         "feature_cache_meta": cache_meta,
         "source_balanced": bool(args.source_balanced),
-        "sample_weight_csv": os.path.abspath(args.sample_weight_csv) if args.sample_weight_csv else None,
-        "weighted_rows": int(weighted_rows),
-        "hard_mining_csv": os.path.abspath(args.hard_mining_csv) if args.hard_mining_csv else None,
-        "hard_boost": float(args.hard_boost),
         "best_epoch": int(best_epoch),
         "best_val_acc": float(best_acc),
         "val_f1": val_f1,
