@@ -1,0 +1,76 @@
+{
+  "model": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det3c_hard1p5/segformer_v1_0_6_det3c_dynamic.onnx",
+  "providers": [
+    "CUDAExecutionProvider",
+    "CPUExecutionProvider"
+  ],
+  "metrics": {
+    "n": 11,
+    "tp": 0,
+    "tn": 5,
+    "fp": 4,
+    "fn": 2,
+    "accuracy": 0.45454545454545453,
+    "precision": 0.0,
+    "recall": 0.0,
+    "specificity": 0.5555555555555556,
+    "f1": 0.0
+  },
+  "scores": {
+    "Original1": {
+      "det2b": 0.5616184504193791,
+      "candidate": 0.5450582016684762,
+      "delta": -0.016560248750902895
+    },
+    "Original2": {
+      "det2b": 0.4843744645803825,
+      "candidate": 0.46174619818080925,
+      "delta": -0.02262826639957327
+    },
+    "Original3": {
+      "det2b": 0.9134063345525383,
+      "candidate": 0.7953767263785948,
+      "delta": -0.11802960817394348
+    },
+    "Original4": {
+      "det2b": 0.49408878361522973,
+      "candidate": 0.5194892290615495,
+      "delta": 0.025400445446319753
+    },
+    "Original5": {
+      "det2b": 0.4276919821076271,
+      "candidate": 0.3862372486572301,
+      "delta": -0.04145473345039702
+    },
+    "Original6": {
+      "det2b": 0.4048874255139381,
+      "candidate": 0.402995362276502,
+      "delta": -0.0018920632374360702
+    },
+    "Original7": {
+      "det2b": 0.8016901112445666,
+      "candidate": 0.6506249079334635,
+      "delta": -0.15106520331110307
+    },
+    "Original8": {
+      "det2b": 0.1891999439968041,
+      "candidate": 0.29685641312272226,
+      "delta": 0.10765646912591817
+    },
+    "Original9": {
+      "det2b": 0.1904813034398518,
+      "candidate": 0.24476796577979706,
+      "delta": 0.05428666233994525
+    },
+    "Manipulated1": {
+      "det2b": 0.291361435683895,
+      "candidate": 0.40500013595730455,
+      "delta": 0.11363870027340955
+    },
+    "Manipulated2": {
+      "det2b": 0.0026953391585644603,
+      "candidate": 0.0026005074875198753,
+      "delta": -9.4831671044585e-05
+    }
+  }
+}

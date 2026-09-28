@@ -1,0 +1,189 @@
+{
+  "meta": {
+    "seg_checkpoint": "best_mIoU_iter_195000.pth",
+    "seg_checkpoint_sha1": "86d7d250c1f9d6dd4608531fcc5753c4109a4434",
+    "config": "/home/panuwat/project/model/segformer/configs/segformer_mit-b2-v11.py",
+    "data_hash": "c3bc174e07de30d6c71a954843ac00c377dc3883",
+    "n_train": 95770,
+    "n_val": 11972,
+    "alpha": 0.0,
+    "lr": 0.0003,
+    "seed": 42,
+    "det_arch": "mlp_gapgmp",
+    "dropout": 0.2,
+    "best_val_acc": 0.8577514199799532,
+    "time": "2026-09-29 02:43:50",
+    "training_mode": "cached_features",
+    "feature_cache": "/run/media/panuwat/USB/model/Det-Head/features/v1.0.6-det4-gapgmp",
+    "feature_cache_meta": {
+      "format_version": 4,
+      "feature_type": "SegFormer MiT-B2 GAP+GMP pooled 4-stage features",
+      "pooling": "gap_gmp",
+      "vector_dim": 2048,
+      "config": "/home/panuwat/project/model/segformer/configs/segformer_mit-b2-v11.py",
+      "checkpoint": "/home/panuwat/project/model/segformer/work_dirs/v1.0.6/best_mIoU_iter_195000.pth",
+      "checkpoint_sha1": "86d7d250c1f9d6dd4608531fcc5753c4109a4434",
+      "input_size": [
+        512,
+        512
+      ],
+      "amp": true,
+      "limit": null,
+      "splits": [
+        {
+          "split": "train",
+          "csv": "/run/media/panuwat/USB/model/Det-Head/manifests/det-train-v2-clean.csv",
+          "csv_sha1": "31f4e6ef8aeb0048c897876f8e398ef9b4689c09",
+          "samples": 95770,
+          "features_shape": [
+            95770,
+            2048
+          ],
+          "dtype": "float32"
+        },
+        {
+          "split": "val",
+          "csv": "/run/media/panuwat/USB/model/Det-Head/manifests/det-val-v2-clean.csv",
+          "csv_sha1": "c70bc31b910db2a920afb447411ca416e7721593",
+          "samples": 11972,
+          "features_shape": [
+            11972,
+            2048
+          ],
+          "dtype": "float32"
+        }
+      ],
+      "created_at": "2026-09-29 02:05:16"
+    },
+    "feature_batch_size": 2048,
+    "source_balanced": false,
+    "hard_mining_csv": null,
+    "hard_boost": 1.0,
+    "hard_matched": 0,
+    "init_det_checkpoint": null,
+    "feature_in_ram": true,
+    "source_groups": null
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "val_loss": 0.4017120383871546,
+      "val_acc": 0.7843301035750083
+    },
+    {
+      "epoch": 2,
+      "val_loss": 0.37938012485913597,
+      "val_acc": 0.8078850651520214
+    },
+    {
+      "epoch": 3,
+      "val_loss": 0.37027433305490864,
+      "val_acc": 0.8166555295689943
+    },
+    {
+      "epoch": 4,
+      "val_loss": 0.3592256035069498,
+      "val_acc": 0.8165720013364517
+    },
+    {
+      "epoch": 5,
+      "val_loss": 0.3472066403351378,
+      "val_acc": 0.8299365185432677
+    },
+    {
+      "epoch": 6,
+      "val_loss": 0.3484289574953692,
+      "val_acc": 0.8252589375208821
+    },
+    {
+      "epoch": 7,
+      "val_loss": 0.34744047856713234,
+      "val_acc": 0.8305212161710658
+    },
+    {
+      "epoch": 8,
+      "val_loss": 0.33602560597082626,
+      "val_acc": 0.8384563982626128
+    },
+    {
+      "epoch": 9,
+      "val_loss": 0.34032758576512295,
+      "val_acc": 0.8349482124958236
+    },
+    {
+      "epoch": 10,
+      "val_loss": 0.3232454387113238,
+      "val_acc": 0.8474774473772135
+    },
+    {
+      "epoch": 11,
+      "val_loss": 0.3301144205145799,
+      "val_acc": 0.8453892415636485
+    },
+    {
+      "epoch": 12,
+      "val_loss": 0.3331855666844533,
+      "val_acc": 0.8424657534246576
+    },
+    {
+      "epoch": 13,
+      "val_loss": 0.33117520893810987,
+      "val_acc": 0.8437186769127966
+    },
+    {
+      "epoch": 14,
+      "val_loss": 0.3204768965804294,
+      "val_acc": 0.8509856331440027
+    },
+    {
+      "epoch": 15,
+      "val_loss": 0.32991508168199174,
+      "val_acc": 0.8449716004009356
+    },
+    {
+      "epoch": 16,
+      "val_loss": 0.3207571238249471,
+      "val_acc": 0.8519044437019713
+    },
+    {
+      "epoch": 17,
+      "val_loss": 0.3494119240892718,
+      "val_acc": 0.835282325425994
+    },
+    {
+      "epoch": 18,
+      "val_loss": 0.3075229513019851,
+      "val_acc": 0.8564149682592717
+    },
+    {
+      "epoch": 19,
+      "val_loss": 0.3128777751546618,
+      "val_acc": 0.8577514199799532
+    },
+    {
+      "epoch": 20,
+      "val_loss": 0.3172768869110863,
+      "val_acc": 0.8547444036084196
+    },
+    {
+      "epoch": 21,
+      "val_loss": 0.31849303948134433,
+      "val_acc": 0.8521550283995991
+    },
+    {
+      "epoch": 22,
+      "val_loss": 0.31624664035163674,
+      "val_acc": 0.8524056130972268
+    },
+    {
+      "epoch": 23,
+      "val_loss": 0.31628421199907236,
+      "val_acc": 0.8533244236551955
+    },
+    {
+      "epoch": 24,
+      "val_loss": 0.31667372002834226,
+      "val_acc": 0.8504844637487471
+    }
+  ]
+}

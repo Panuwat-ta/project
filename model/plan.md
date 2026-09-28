@@ -1775,3 +1775,130 @@ status (training / candidate / approved / production / rejected / archived)
 ```
 
 ข้อดี: rollback ได้เฉพาะ det โดย heatmap และ seg ไม่กระทบ และรู้เสมอว่า det แต่ละรุ่นเรียนจาก dataset/bootstrap หรือ feedback snapshot ชุดไหน
+---
+
+# 39. Track B1.1 — Domain/Label Semantics Correction (2026-09-29)
+
+ผลจาก det2-b → det3-c แสดงว่า MLP-only hard mining ช่วย benchmark บาง domain แต่ไม่แก้ real-world domain gap อย่างสม่ำเสมอ
+
+สถานะ:
+
+```text
+Production shadow: v1.0.6 + det2-b (คงเดิม)
+det3-c hard×1.5: research candidate — reject for shadow promotion
+Fusion into total risk: disabled
+```
+
+หลักฐานสำคัญ:
+- det3-c Val/Test ดีขึ้นเล็กน้อยและลด FN บน CopyMove/Inpainting
+- แต่ Authentic specificity ลดลง และ real pilot 11 รูปลดจาก 6/11 เป็น 5/11
+- `test1/test2` ไม่ได้พลาดเพราะ Mobile re-encode; score ต่ำตั้งแต่ไฟล์ต้นฉบับ
+- TruFor ยังเห็น forensic signal ใน `test1/test2` แต่ใช้เป็น diagnostic เท่านั้น
+- SegFormer GAP nearest-neighbor วาง Original3/Original7/test1 ผิดฝั่งตั้งแต่ feature representation
+
+ดังนั้นห้ามแก้รอบถัดไปด้วย threshold tuning หรือ MLP hard-boost อย่างเดียว
+## 39.1 Label semantics guardrail
+
+Stage B1 เดิมใช้ `mask=0 → authentic` ซึ่งหมายถึง “ไม่มี manipulation ที่ annotation ชุดนั้นระบุ” ไม่ได้พิสูจน์ว่า source image ไม่เคยถูกแก้ไขมาก่อน
+
+ตั้งแต่รอบถัดไปให้เก็บ provenance เพิ่ม:
+
+```text
+label_id
+label_source = mask | paired_edit | verified_human
+label_confidence
+source_dataset
+source_image_id / group_id
+known_operation (ถ้ามี)
+review_status = trusted | needs_review | exclude
+```
+
+ห้าม relabel จาก Det score หรือ TruFor score อัตโนมัติ
+คะแนน model ใช้จัดลำดับ review ได้ แต่ ground truth ต้องมาจาก provenance/annotation/verification ที่ตรวจสอบได้
+
+Queue audit ปัจจุบัน:
+- Train conflict candidates: 3,080 รูป
+- Stratified manual-review sample: 225 รูป
+- ที่เก็บ: `work_dirs/det_v1.0.6_det2b_mlp_source_balanced/domain_label_audit_v1/`
+
+11 รูป pilot ที่ดูผลแล้วให้เปลี่ยนสถานะเป็น development diagnostic set ไม่ใช่ final unbiased holdout สำหรับรุ่นใหม่
+รอบ final real-world gate ถัดไปต้องเก็บภาพใหม่ที่โมเดล/การออกแบบ candidate ยังไม่เคยเห็นผลมาก่อน
+## 39.2 Next model experiment
+
+ก่อนเพิ่ม backbone ใหม่ ให้ทดสอบว่าปัญหามาจาก `GAP` ที่ทิ้ง spatial/extreme feature มากเกินไปหรือไม่
+
+Candidate feature representation:
+
+```text
+SegFormer stage features (frozen)
+        ├─ Global Average Pool
+        └─ Global Max Pool
+             ↓
+concat 4 stages = 2048-D
+             ↓
+MLP Det Head
+```
+
+เปรียบเทียบกับ GAP 1024-D เดิมโดยเลือกจาก clean Val เท่านั้น
+ถ้า GAP+GMP ยังวาง real-world hard cases ผิดฝั่ง ให้หยุด Track-B head-only และไปทดสอบ independent image-level feature branch / Track A แทน
+
+Dataset work สำหรับรุ่นใหม่ต้องเพิ่ม independent, verified examples ของ:
+- authentic screenshots / screen photos / electronics / high-texture scenes
+- manipulated web photomontage/composite
+- resize / JPEG recompression / PNG re-encode / screenshot-like transforms จาก TRAIN เท่านั้น
+
+ห้ามนำ 44,031 held-out Test, Test-Cases 165 หรือ pilot 11 เข้า training/tuning
+TruFor ใช้เป็น diagnostic/optional soft teacher หลัง provenance check เท่านั้น ไม่ใช้เป็น ground truth อัตโนมัติ
+
+## 2026-09-29 — Det4 GAP+GMP ablation result
+
+Det4 tested a richer frozen-v1.0.6 representation: GAP + GMP from the four MiT-B2 stages (2048-D) instead of GAP-only 1024-D.
+
+Result:
+- det4-a Val accuracy 86.24%
+- det4-b (unbalanced) Val accuracy 85.78%
+- det4-c (dropout 0.3) Val accuracy 86.27%
+- det4-c improved Val macro metrics, but Authentic specificity at threshold 0.5 fell to ~87.06%
+- raising threshold to ~0.585 recovered det2-b-level Authentic specificity but removed much of the hard-dataset gain
+- Pilot11 remained 6/11; both web photomontage positives were still false negatives
+- GAP+GMP neighbor audit improved Original1/Original3 somewhat, but Original7 and test1 remained on the wrong side of the feature space
+
+Decision:
+- reject det4-c before locked Test
+- do not open the 44,031-image locked Test for det4-c
+- keep det2-b active in shadow mode
+- next priority: label-semantics audit + local/spatial forensic representation; do not continue threshold-only tuning
+
+## 2026-09-29 — Label Audit v2 + Det5 local feature
+
+- Label Audit conflict queue remains Train-only: 3,080 rows; no automatic relabel.
+- Provenance is resolved for all 3,080 rows in `audit_review_queue_v4.csv`.
+- 1,718 manipulated conflict rows have masks; 1,369 (79.69%) contain <1% forged pixels.
+- Sparse manipulation is therefore a major cause of low image-level Det score and must not be treated as label error by score alone.
+- `build_train_manifest_from_audit.py` refuses to build a new Train manifest while audit rows are pending.
+
+### Det5 representation
+- SegFormer v1.0.6 remains frozen.
+- Each of four backbone stages is adaptive-pooled to a 4x4 aligned grid.
+- Stage channels are concatenated per location: 16 local tokens x 1024-D per image.
+- Cache dtype: float16; labels remain float32.
+- Candidate heads: `patch_attention` and `patch_topk` (MIL-style).
+- Det5 smoke tests passed for precompute, train, save/load, and online forward.
+- Full Train/Val local-token cache may be precomputed before audit completion because features are label-independent; final candidate training must use the reviewed manifest.
+- Do not open locked Test 44,031 until a Det5 candidate passes clean Val plus real-camera/web-manipulation diagnostics.
+## 2026-09-29 — Det5 pre-audit result
+
+- Full local-token cache completed: Train 95,770 and Val 11,972, shape `(N,16,1024)`, float16, zero rows 0, finite true.
+- Det5-A `patch_attention`: best Val accuracy 86.368% at epoch 20.
+- Det5-B `patch_topk`: best Val accuracy 85.817% at epoch 25.
+- Det5-A Val: F1 85.73%, ROC-AUC 94.33%, AP 95.07%, specificity 90.83%, recall 81.90%.
+- Fresh real-camera authentic diagnostic: det2-b 3/11 -> Det5-A 6/11 correct.
+- Existing Pilot11: det2-b 6/11 -> Det5-A 6/11; Manipulated1 score improved 0.291 -> 0.485 but remained FN.
+- Test-Cases165: det2-b 86.06% -> Det5-A 86.67%; Det5-A specificity 93.33%, recall 84.17%.
+- Locked Test 44,031 remains unopened.
+
+Label Audit v5 verifies 2,945/3,080 conflict rows using GT masks or explicit PSBattles pairing.
+The remaining 135 rows are PSBattles source-original negatives: reference-original provenance is known, but camera-pristine/no-prior-edit provenance is not established.
+They remain pending semantics review; the audited-manifest guard correctly refuses to build final Train data while these are pending.
+
+Decision: Det5-A is the preferred representation candidate, but it remains pre-audit and non-promotable. Production/shadow stays on det2-b.

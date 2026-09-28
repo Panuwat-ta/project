@@ -1,0 +1,13 @@
+{
+  "candidate": "det5-a-patch-attention-pre-audit",
+  "status": "preferred-representation-candidate-pre-audit-not-promotable",
+  "segformer": "v1.0.6-frozen",
+  "feature": "4x4-local-patch-tokens-16x1024",
+  "best_val_accuracy": 0.8636819244904778,
+  "locked_test_44031_opened": false,
+  "production_changed": false,
+  "label_audit_total": 3080,
+  "label_audit_verified": 2945,
+  "label_audit_pending": 135,
+  "next_gate": "resolve remaining PSBattles source-original semantics, rebuild audited train manifest, retrain Det5-A from scratch"
+}

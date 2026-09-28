@@ -1,0 +1,47 @@
+{
+  "Original1": {
+    "ground_truth": 0,
+    "path": "/home/panuwat/project/server/uploads/59570fd99fbaed7efb0403cb67257e7c5cfc947f4fbc08581b181cbed2e6c3f8.png",
+    "top10_manipulated_fraction": 0.4,
+    "top20_manipulated_fraction": 0.35,
+    "top50_manipulated_fraction": 0.42,
+    "top1_similarity": 0.942667543888092,
+    "mean_top10_similarity": 0.9303946197032928
+  },
+  "Original3": {
+    "ground_truth": 0,
+    "path": "/home/panuwat/project/server/uploads/6cfc06e8cbda637726d282b0e8916f0920694514c02622857f131cbbe5623423.png",
+    "top10_manipulated_fraction": 1.0,
+    "top20_manipulated_fraction": 1.0,
+    "top50_manipulated_fraction": 1.0,
+    "top1_similarity": 0.9518299102783203,
+    "mean_top10_similarity": 0.9381951868534089
+  },
+  "Original7": {
+    "ground_truth": 0,
+    "path": "/home/panuwat/project/server/uploads/7d8eaad635015eaae4e5b344fea40ea51d31640a420672c2d6aa911e3067bae3.png",
+    "top10_manipulated_fraction": 0.9,
+    "top20_manipulated_fraction": 0.75,
+    "top50_manipulated_fraction": 0.84,
+    "top1_similarity": 0.8916809558868408,
+    "mean_top10_similarity": 0.882212781906128
+  },
+  "Manipulated1": {
+    "ground_truth": 1,
+    "path": "/home/panuwat/project/server/uploads/81fd035e6bc71afbda1c3749c53dadfb01c590cf331199d6a763c031e9cebaca.png",
+    "top10_manipulated_fraction": 0.6,
+    "top20_manipulated_fraction": 0.45,
+    "top50_manipulated_fraction": 0.28,
+    "top1_similarity": 0.8141167163848877,
+    "mean_top10_similarity": 0.7669036567211152
+  },
+  "Manipulated2": {
+    "ground_truth": 1,
+    "path": "/home/panuwat/project/server/uploads/6126995e80c32ff10c3a6d2bd9f7412751a93c0c117d9dfc28fe509dad77514f.png",
+    "top10_manipulated_fraction": 0.0,
+    "top20_manipulated_fraction": 0.0,
+    "top50_manipulated_fraction": 0.02,
+    "top1_similarity": 0.8166133761405945,
+    "mean_top10_similarity": 0.7937338411808014
+  }
+}

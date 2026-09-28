@@ -16,6 +16,10 @@ import argparse
 import ctypes
 import re
 from pathlib import Path
+import sys
+
+ROOT_DIR = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT_DIR / "Det-Head"))
 
 import onnx
 import torch
@@ -28,8 +32,6 @@ try:
     ctypes.CDLL("/lib64/libbz2.so.1", mode=ctypes.RTLD_GLOBAL)
 except Exception as e:
     print(f"[warn] could not preload libbz2: {e}")
-
-ROOT_DIR = Path(__file__).resolve().parent
 
 
 class ONNXWrapper(torch.nn.Module):

@@ -1,0 +1,18 @@
+{
+  "source": "/home/panuwat/Pictures/Test-Cases/image-Authentic",
+  "ground_truth": "authentic",
+  "provenance": "user-confirmed freshly captured mobile-camera images",
+  "samples": 11,
+  "model": "v1.0.6 + det2-b",
+  "threshold": 0.5,
+  "true_negative": 3,
+  "false_positive": 8,
+  "specificity": 0.2727272727,
+  "false_positive_rate": 0.7272727273,
+  "det_mean": 0.6100651986,
+  "det_min": 0.1367177881,
+  "det_max": 0.9726643271,
+  "seg_visual_max_range": [0.848445, 0.999788],
+  "training_use": false,
+  "role": "fresh real-world authentic diagnostic set"
+}

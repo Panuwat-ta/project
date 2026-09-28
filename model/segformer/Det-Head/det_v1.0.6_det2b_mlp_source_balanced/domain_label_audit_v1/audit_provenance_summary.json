@@ -1,0 +1,18 @@
+{
+  "rows": 3080,
+  "with_source_file": 3080,
+  "with_original_src": 2309,
+  "with_source_url": 771,
+  "psbattles_pair_rows": 771,
+  "dataset_counts": {
+    "authentic": 459,
+    "casia": 112,
+    "realtext": 328,
+    "copymove": 785,
+    "face": 5,
+    "imd2020": 78,
+    "inpainting": 429,
+    "splicing": 113,
+    "psbattles": 771
+  }
+}

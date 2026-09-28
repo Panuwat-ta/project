@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path as _Path
 sys.path.insert(0, str(_Path(__file__).resolve().parents[1]))
-import csv, json, time
+import csv, json, os, time
 from collections import defaultdict
 from pathlib import Path
 
@@ -15,7 +15,8 @@ from app.core.config import settings
 from app.services.tiling import tile_inference, det_score_image
 
 ROOT = Path('/home/panuwat/Pictures/Test-Cases')
-OUT = Path('/home/panuwat/project/model/segformer/work_dirs/det_v1.0.6_det2b_mlp_source_balanced/test_cases_shadow_2026-09-28')
+OUT = Path(os.environ.get('TEST_CASES_OUT', '/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det2b_mlp_source_balanced/test_cases_shadow_2026-09-28'))
+MODEL_PATH = Path(os.environ.get('TEST_CASES_ONNX_MODEL', settings.ONNX_MODEL_PATH))
 THRESH = 0.5
 
 
@@ -79,7 +80,7 @@ def main():
     OUT.mkdir(parents=True,exist_ok=True)
     items=build_items(); print('items',len(items),flush=True)
     so=ort.SessionOptions(); so.log_severity_level=3
-    sess=ort.InferenceSession(str(settings.ONNX_MODEL_PATH),sess_options=so,providers=[('CUDAExecutionProvider',{'gpu_mem_limit':512*1024*1024,'arena_extend_strategy':'kSameAsRequested'}),'CPUExecutionProvider'])
+    sess=ort.InferenceSession(str(MODEL_PATH),sess_options=so,providers=[('CUDAExecutionProvider',{'gpu_mem_limit':512*1024*1024,'arena_extend_strategy':'kSameAsRequested'}),'CPUExecutionProvider'])
     input_name=sess.get_inputs()[0].name; providers=sess.get_providers(); print('providers',providers,flush=True)
     rows=[]; px=defaultdict(lambda: {'tp':0,'tn':0,'fp':0,'fn':0}); lat=[]; start=time.time()
     for idx,it in enumerate(items,1):
@@ -106,9 +107,9 @@ def main():
     for k,v in by.items(): groups[k]=cls_metrics(v)
     overall=cls_metrics(rows); seg_image=cls_metrics(rows,'ai_gen_probability')
     disagreement={'count':sum(not r['seg_det_agree'] for r in rows),'seg_high_det_low':sum(r['seg_pred']==1 and r['det_pred']==0 for r in rows),'seg_low_det_high':sum(r['seg_pred']==0 and r['det_pred']==1 for r in rows)}
-    summary={'root':str(ROOT),'model':str(settings.ONNX_MODEL_PATH),'providers':providers,'threshold':THRESH,'samples':len(rows),'labels':{'authentic':sum(r['label']==0 for r in rows),'manipulated':sum(r['label']==1 for r in rows)},'det_head':overall,'seg_max_image_level':seg_image,'per_dataset_det':groups,'seg_localization':{k:pixel_metrics(v) for k,v in px.items()},'seg_det_disagreement':disagreement,'latency_ms':{'mean':float(np.mean(lat)),'p50':float(np.percentile(lat,50)),'p95':float(np.percentile(lat,95)),'max':float(np.max(lat))},'elapsed_sec':time.time()-start}
+    summary={'root':str(ROOT),'model':str(MODEL_PATH),'providers':providers,'threshold':THRESH,'samples':len(rows),'labels':{'authentic':sum(r['label']==0 for r in rows),'manipulated':sum(r['label']==1 for r in rows)},'det_head':overall,'seg_max_image_level':seg_image,'per_dataset_det':groups,'seg_localization':{k:pixel_metrics(v) for k,v in px.items()},'seg_det_disagreement':disagreement,'latency_ms':{'mean':float(np.mean(lat)),'p50':float(np.percentile(lat,50)),'p95':float(np.percentile(lat,95)),'max':float(np.max(lat))},'elapsed_sec':time.time()-start}
     (OUT/'summary.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2),encoding='utf-8')
-    lines=['# Test-Cases Shadow Evaluation','','- Input: `/home/panuwat/Pictures/Test-Cases`',f'- Samples: {len(rows)} ({summary["labels"]["authentic"]} authentic / {summary["labels"]["manipulated"]} manipulated)',f'- ONNX: `{settings.ONNX_MODEL_PATH}`',f'- Providers: {providers}',f'- Threshold: {THRESH}','','## Det Head image-level','',f'- Accuracy: {overall["accuracy"]:.4f}',f'- Precision: {overall["precision"]:.4f}',f'- Recall: {overall["recall"]:.4f}',f'- Specificity: {overall["specificity"]:.4f}',f'- F1: {overall["f1"]:.4f}',f'- ROC-AUC: {overall["roc_auc"]:.4f}',f'- AP: {overall["average_precision"]:.4f}',f'- TP/TN/FP/FN: {overall["tp"]}/{overall["tn"]}/{overall["fp"]}/{overall["fn"]}','','## Seg-vs-Det disagreement','',json.dumps(disagreement,ensure_ascii=False),'','## SegFormer localization (with_mask 105)','']
+    lines=['# Test-Cases Shadow Evaluation','','- Input: `/home/panuwat/Pictures/Test-Cases`',f'- Samples: {len(rows)} ({summary["labels"]["authentic"]} authentic / {summary["labels"]["manipulated"]} manipulated)',f'- ONNX: `{MODEL_PATH}`',f'- Providers: {providers}',f'- Threshold: {THRESH}','','## Det Head image-level','',f'- Accuracy: {overall["accuracy"]:.4f}',f'- Precision: {overall["precision"]:.4f}',f'- Recall: {overall["recall"]:.4f}',f'- Specificity: {overall["specificity"]:.4f}',f'- F1: {overall["f1"]:.4f}',f'- ROC-AUC: {overall["roc_auc"]:.4f}',f'- AP: {overall["average_precision"]:.4f}',f'- TP/TN/FP/FN: {overall["tp"]}/{overall["tn"]}/{overall["fp"]}/{overall["fn"]}','','## Seg-vs-Det disagreement','',json.dumps(disagreement,ensure_ascii=False),'','## SegFormer localization (with_mask 105)','']
     loc=summary['seg_localization']['overall']; lines += [f'- mIoU: {loc["mIoU"]:.4f}',f'- mDice: {loc["mDice"]:.4f}',f'- Forgery IoU: {loc["forgery_iou"]:.4f}',f'- Forgery Dice: {loc["forgery_dice"]:.4f}',f'- Pixel Accuracy: {loc["pixel_accuracy"]:.4f}','','## Per dataset Det accuracy','']
     for k in sorted(groups): lines.append(f'- {k}: {groups[k]["accuracy"]:.4f} (n={groups[k]["n"]})')
     lines += ['','## Runtime','',f'- Mean: {summary["latency_ms"]["mean"]:.1f} ms/image',f'- P50: {summary["latency_ms"]["p50"]:.1f} ms',f'- P95: {summary["latency_ms"]["p95"]:.1f} ms',f'- Total: {summary["elapsed_sec"]:.1f} s','', '> This is pre-production test data and is not appended to the real-user shadow telemetry log.']

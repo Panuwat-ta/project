@@ -1,0 +1,33 @@
+{
+  "rows": 3080,
+  "label_counts": {
+    "0": 726,
+    "1": 2354
+  },
+  "dataset_label_counts": {
+    "authentic:label0": 459,
+    "casia:label0": 59,
+    "realtext:label0": 73,
+    "casia:label1": 53,
+    "copymove:label1": 785,
+    "face:label1": 5,
+    "imd2020:label1": 78,
+    "inpainting:label1": 429,
+    "splicing:label1": 113,
+    "realtext:label1": 255,
+    "psbattles:label1": 636,
+    "psbattles:label0": 135
+  },
+  "semantics_risk_counts": {
+    "medium_dataset_authentic_not_provenance_verified": 591,
+    "medium_manipulated_label_verify_visible_edit_semantics": 2354,
+    "high_source_of_pair_not_guaranteed_pristine": 135
+  },
+  "policy": "No automatic relabel. Dataset label remains immutable; verified_label is reviewer-owned.",
+  "allowed_decisions": [
+    "keep",
+    "relabel",
+    "exclude",
+    "uncertain"
+  ]
+}

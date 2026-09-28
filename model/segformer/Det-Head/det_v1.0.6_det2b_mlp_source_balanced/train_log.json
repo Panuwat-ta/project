@@ -1,0 +1,232 @@
+{
+  "meta": {
+    "seg_checkpoint": "best_mIoU_iter_195000.pth",
+    "seg_checkpoint_sha1": "86d7d250c1f9d6dd4608531fcc5753c4109a4434",
+    "config": "/home/panuwat/project/model/segformer/configs/segformer_mit-b2-v11.py",
+    "data_hash": "d5a009ad0eef866f63647e4e76881b1fc0e7d201",
+    "n_train": 95770,
+    "n_val": 11972,
+    "alpha": 0.0,
+    "lr": 0.0003,
+    "seed": 42,
+    "det_arch": "mlp",
+    "dropout": 0.2,
+    "best_val_acc": 0.85925492816572,
+    "time": "2026-09-28 22:18:50",
+    "training_mode": "cached_features",
+    "feature_cache": "/run/media/panuwat/USB/model/Det-Head/features/v1.0.6-det2-clean",
+    "feature_cache_meta": {
+      "format_version": 2,
+      "feature_type": "SegFormer MiT-B2 pooled 4-stage features",
+      "vector_dim": 1024,
+      "config": "/home/panuwat/project/model/segformer/configs/segformer_mit-b2-v11.py",
+      "checkpoint": "/home/panuwat/project/model/segformer/work_dirs/v1.0.6/best_mIoU_iter_195000.pth",
+      "checkpoint_sha1": "86d7d250c1f9d6dd4608531fcc5753c4109a4434",
+      "input_size": [
+        512,
+        512
+      ],
+      "amp": true,
+      "limit": null,
+      "splits": [
+        {
+          "split": "train",
+          "csv": "/run/media/panuwat/USB/model/Det-Head/manifests/det-train-v2-clean.csv",
+          "csv_sha1": "31f4e6ef8aeb0048c897876f8e398ef9b4689c09",
+          "samples": 95770,
+          "features_shape": [
+            95770,
+            1024
+          ],
+          "dtype": "float32"
+        },
+        {
+          "split": "val",
+          "csv": "/run/media/panuwat/USB/model/Det-Head/manifests/det-val-v2-clean.csv",
+          "csv_sha1": "c70bc31b910db2a920afb447411ca416e7721593",
+          "samples": 11972,
+          "features_shape": [
+            11972,
+            1024
+          ],
+          "dtype": "float32"
+        }
+      ],
+      "created_at": "2026-09-28 22:16:29",
+      "derived_from": "/run/media/panuwat/USB/model/Det-Head/features/v1.0.6-det1",
+      "cleaning": "cross-split decoded-pixel dedup; test>val>train priority; conflicting labels quarantine all",
+      "exclusions_csv": "/run/media/panuwat/USB/model/Det-Head/manifests/det-v2-clean-exclusions.csv"
+    },
+    "feature_batch_size": 4096,
+    "source_balanced": true,
+    "feature_in_ram": true,
+    "source_groups": {
+      "0:authentic": 30327,
+      "0:casia": 5236,
+      "0:face": 150,
+      "0:realtext": 4286,
+      "1:casia": 3677,
+      "1:aiforge": 1962,
+      "1:copymove": 5789,
+      "1:face": 5788,
+      "1:imd2020": 5777,
+      "1:inpainting": 5788,
+      "1:splicing": 5788,
+      "1:realtext": 5420,
+      "0:psbattles": 7904,
+      "1:psbattles": 7878
+    }
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "val_loss": 0.4212735025650914,
+      "val_acc": 0.7899264951553625
+    },
+    {
+      "epoch": 2,
+      "val_loss": 0.3803195272884439,
+      "val_acc": 0.8138990978950885
+    },
+    {
+      "epoch": 3,
+      "val_loss": 0.3630094160573203,
+      "val_acc": 0.8205813564984965
+    },
+    {
+      "epoch": 4,
+      "val_loss": 0.3562184628180107,
+      "val_acc": 0.824841296358169
+    },
+    {
+      "epoch": 5,
+      "val_loss": 0.3485916211698273,
+      "val_acc": 0.830270631473438
+    },
+    {
+      "epoch": 6,
+      "val_loss": 0.34354974499244256,
+      "val_acc": 0.8296024056130973
+    },
+    {
+      "epoch": 7,
+      "val_loss": 0.33820413419963763,
+      "val_acc": 0.835282325425994
+    },
+    {
+      "epoch": 8,
+      "val_loss": 0.33707771503801853,
+      "val_acc": 0.8328600066822586
+    },
+    {
+      "epoch": 9,
+      "val_loss": 0.32906690267786864,
+      "val_acc": 0.8405446040761777
+    },
+    {
+      "epoch": 10,
+      "val_loss": 0.32954704888959097,
+      "val_acc": 0.8382058135649849
+    },
+    {
+      "epoch": 11,
+      "val_loss": 0.3260429424961554,
+      "val_acc": 0.8405446040761777
+    },
+    {
+      "epoch": 12,
+      "val_loss": 0.32473962632780523,
+      "val_acc": 0.8417975275643167
+    },
+    {
+      "epoch": 13,
+      "val_loss": 0.3214448563956195,
+      "val_acc": 0.8429669228199131
+    },
+    {
+      "epoch": 14,
+      "val_loss": 0.3258526326221564,
+      "val_acc": 0.8421316404944872
+    },
+    {
+      "epoch": 15,
+      "val_loss": 0.31644222799488186,
+      "val_acc": 0.8469762779819578
+    },
+    {
+      "epoch": 16,
+      "val_loss": 0.3187149722580921,
+      "val_acc": 0.8466421650517875
+    },
+    {
+      "epoch": 17,
+      "val_loss": 0.31477710442363,
+      "val_acc": 0.8492315402606081
+    },
+    {
+      "epoch": 18,
+      "val_loss": 0.3122928496132796,
+      "val_acc": 0.8509021049114601
+    },
+    {
+      "epoch": 19,
+      "val_loss": 0.31390169256911643,
+      "val_acc": 0.8506515202138323
+    },
+    {
+      "epoch": 20,
+      "val_loss": 0.3110631295183292,
+      "val_acc": 0.8516538590043434
+    },
+    {
+      "epoch": 21,
+      "val_loss": 0.3076856068612101,
+      "val_acc": 0.8544102906782493
+    },
+    {
+      "epoch": 22,
+      "val_loss": 0.30758153441316344,
+      "val_acc": 0.8552455730036752
+    },
+    {
+      "epoch": 23,
+      "val_loss": 0.30548864410865917,
+      "val_acc": 0.8565820247243568
+    },
+    {
+      "epoch": 24,
+      "val_loss": 0.311866833689298,
+      "val_acc": 0.8530738389575676
+    },
+    {
+      "epoch": 25,
+      "val_loss": 0.30990712759369715,
+      "val_acc": 0.8501503508185767
+    },
+    {
+      "epoch": 26,
+      "val_loss": 0.30764806221808394,
+      "val_acc": 0.8570831941196124
+    },
+    {
+      "epoch": 27,
+      "val_loss": 0.31032801031907026,
+      "val_acc": 0.8503174072836619
+    },
+    {
+      "epoch": 28,
+      "val_loss": 0.30865669753334013,
+      "val_acc": 0.8533244236551955
+    },
+    {
+      "epoch": 29,
+      "val_loss": 0.3047217381685584,
+      "val_acc": 0.8577514199799532
+    },
+    {
+      "epoch": 30,
+      "val_loss": 0.30557424070004274,
+      "val_acc": 0.85925492816572
+    }
+  ]
+}
