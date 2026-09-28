@@ -42,3 +42,19 @@
 ## 6. Versioning
 
 - seg checkpoint ไม่เปลี่ยน; det weights version แยก (`v1.0.6+det1`...) ผูก data hash ใน `train_log.json`
+
+## 7. Cached feature training (recommended for frozen v1.0.6)
+
+เมื่อ backbone ถูก freeze feature ของรูปเดิมจะไม่เปลี่ยนระหว่าง epoch ดังนั้นให้ใช้
+`precompute_det_features.py` คำนวณ pooled 4-stage feature ขนาด 1024 มิติครั้งเดียว
+แล้วใช้ `train_det.py --feature-cache ...` เทรนเฉพาะ `Linear(1024 -> 1)`.
+
+Feature cache เก็บเป็น NumPy memmap (`float32`) แยก `train/` และ `val/`:
+- `features.npy` shape `(N, 1024)`
+- `labels.npy` shape `(N, 1)`
+- `teachers.npy` shape `(N, 1)` สำหรับ optional distillation
+- `paths.csv` สำหรับ provenance
+- `metadata.json` ผูก cache กับ SHA-1 ของ SegFormer checkpoint
+
+`train_det.py` จะปฏิเสธ cache ทันทีถ้า checkpoint SHA-1 ไม่ตรงกับ checkpoint ที่ระบุ.
+โหมด online เดิมยังคงไว้เพื่อ regression comparison และ fallback.

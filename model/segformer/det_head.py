@@ -17,6 +17,16 @@ import torch.nn.functional as F
 STAGE_CHANNELS = (64, 128, 320, 512)
 
 
+def pool_stage_features(feats) -> torch.Tensor:
+    """GAP feature 4 stages แล้ว concat เป็น vector 1024 มิติต่อภาพ.
+
+    ฟังก์ชันนี้ใช้ร่วมกันทั้ง online training/inference และ feature cache เพื่อให้
+    vector ที่ cache มีความหมายตรงกับ DetHead เดิมทุกประการ.
+    """
+    pooled = [F.adaptive_avg_pool2d(f, 1).flatten(1) for f in feats]
+    return torch.cat(pooled, dim=1)
+
+
 class DetHead(nn.Module):
     """Image-level forgery head: GAP per stage + concat + linear."""
 
@@ -25,10 +35,12 @@ class DetHead(nn.Module):
         self.in_channels = in_channels
         self.fc = nn.Linear(in_channels, 1)
 
+    def forward_pooled(self, pooled: torch.Tensor) -> torch.Tensor:
+        """Forward จาก cached pooled feature shape ``(N, 1024)``."""
+        return self.fc(pooled)
+
     def forward(self, feats) -> torch.Tensor:
-        pooled = [F.adaptive_avg_pool2d(f, 1).flatten(1) for f in feats]
-        x = torch.cat(pooled, dim=1)
-        return self.fc(x)  # (N, 1) logit, ยังไม่ผ่าน sigmoid
+        return self.forward_pooled(pool_stage_features(feats))
 
 
 def freeze_seg(model: torch.nn.Module) -> torch.nn.Module:
