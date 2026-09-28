@@ -1,6 +1,6 @@
 {
   "candidate": "v1.0.6+det2b-mlp-source-balanced",
-  "status": "integration-ready-not-promoted",
+  "status": "shadow-deployed-not-fused",
   "segformer": {
     "version": "v1.0.6",
     "checkpoint_sha1": "86d7d250c1f9d6dd4608531fcc5753c4109a4434",
@@ -92,5 +92,75 @@
     "database_persists_det_score": false,
     "risk_fusion_enabled": false,
     "runtime_activation_requires_model_path_change_and_server_reload": true
+  },
+  "shadow_rollout": {
+    "started_at": "2026-09-28T23:11:00+07:00",
+    "server_env": "/home/panuwat/project/server/.env",
+    "rollback_env_backup": "/home/panuwat/project/server/.env.before-det2b-shadow-2026-09-28",
+    "active_onnx_model_path": "/home/panuwat/project/model/segformer/work_dirs/det_v1.0.6_det2b_mlp_source_balanced/segformer_v1_0_6_det2b_dynamic.onnx",
+    "cache_namespace": "afceb1067c88",
+    "public_risk_fusion_enabled": false,
+    "database_schema_changed": false,
+    "public_api_schema_changed": false,
+    "server_health": {
+      "http_status": 200,
+      "database": "ok",
+      "redis": "ok"
+    },
+    "server_vram_idle_mib": 1062,
+    "smoke": {
+      "authentic": {
+        "dataset": "casia",
+        "det_score": 0.14874733403422014,
+        "visual_risk_score": 18,
+        "worker_latency_ms": 3661
+      },
+      "manipulated": {
+        "dataset": "aiforge",
+        "det_score": 0.9787384924050779,
+        "visual_risk_score": 89,
+        "worker_latency_ms": 3801
+      },
+      "execution_providers": [
+        "CUDAExecutionProvider",
+        "CPUExecutionProvider"
+      ],
+      "cuda_provider_error": false
+    },
+    "regression_tests": "PASS 28/28",
+    "cache_versioning": "scan_result:<sha1(model_path)[:12]>:<image_hash>"
+  },
+  "shadow_telemetry": {
+    "log_path": "/home/panuwat/project/server/logs/shadow/det_head.jsonl",
+    "summary_path": "/home/panuwat/project/server/logs/shadow/det_head_summary.json",
+    "analyzer": "/home/panuwat/project/server/tools/analyze_det_shadow.py",
+    "real_events_at_enable": 0,
+    "fusion_enabled": false,
+    "public_api_changed": false,
+    "db_schema_changed": false,
+    "first_review_operational_target_fresh_scans": 100,
+    "requires_verified_labels_before_fusion": true
+  },
+  "preproduction_test_cases": {
+    "source": "/home/panuwat/Pictures/Test-Cases",
+    "samples": 165,
+    "authentic": 45,
+    "manipulated": 120,
+    "det_accuracy": 0.8606060606060606,
+    "det_precision": 0.944954128440367,
+    "det_recall": 0.8583333333333333,
+    "det_specificity": 0.8666666666666667,
+    "det_f1": 0.8995633187772926,
+    "det_roc_auc": 0.9424074074074074,
+    "det_average_precision": 0.979500870220861,
+    "seg_localization_miou": 0.8314251138263933,
+    "seg_localization_mdice": 0.901725068394817,
+    "seg_forgery_iou": 0.6934980934082784,
+    "seg_forgery_dice": 0.8190125469968106,
+    "seg_det_disagreement_count": 34,
+    "worker_timeouts": 0,
+    "cuda_events": 165,
+    "result_dir": "/home/panuwat/project/model/segformer/work_dirs/det_v1.0.6_det2b_mlp_source_balanced/test_cases_shadow_2026-09-28",
+    "is_real_user_telemetry": false
   }
 }

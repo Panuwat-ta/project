@@ -37,3 +37,6 @@ dist/
 
 
 uploads/
+# Runtime shadow telemetry (internal, may contain scan identifiers/scores)
+logs/shadow/*.jsonl
+logs/shadow/*_summary.json

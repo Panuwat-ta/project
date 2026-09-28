@@ -57,6 +57,7 @@ class FakeSessionContext:
 
 def _scan():
     return SimpleNamespace(
+        id="fake-scan-id",
         status="uploading",
         progress=0,
         raw_image_url="",
@@ -75,6 +76,7 @@ def _scan():
 
 
 def _wire_pipeline(monkeypatch, tmp_path, scan):
+    monkeypatch.setenv("SHADOW_TELEMETRY_PATH", str(tmp_path / "shadow.jsonl"))
     db = FakeDb(scan)
     monkeypatch.setattr(database_core, "async_session", lambda: FakeSessionContext(db))
     monkeypatch.setattr(scan_service, "load_image_verified", lambda _b: (object(), {"Camera": "test"}))

@@ -31,6 +31,16 @@ async def test_cache_miss_returns_none():
     assert await get_cached_scan(None, "abc") is None
 
 
+def test_cache_key_is_model_versioned(monkeypatch):
+    monkeypatch.setattr(settings, "ONNX_MODEL_PATH", "/models/a.onnx")
+    key_a = cache_key("abc")
+    monkeypatch.setattr(settings, "ONNX_MODEL_PATH", "/models/b.onnx")
+    key_b = cache_key("abc")
+    assert key_a != key_b
+    assert key_a.startswith("scan_result:") and key_a.endswith(":abc")
+    assert key_b.startswith("scan_result:") and key_b.endswith(":abc")
+
+
 @pytest.mark.asyncio
 async def test_cache_roundtrip_and_ttl():
     client = FakeCache()

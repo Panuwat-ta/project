@@ -1,0 +1,231 @@
+{
+  "events": 165,
+  "bad_lines": 0,
+  "unique_scans": 165,
+  "det_available": 165,
+  "cache_hits": 0,
+  "worker_timeouts": 0,
+  "fresh_cuda_events": 165,
+  "fresh_events": 165,
+  "latency_ms_p50": 211.33184432983398,
+  "latency_ms_p95": 1708.5307121276833,
+  "agreement": {
+    "both_low": 31,
+    "both_high": 100,
+    "seg_high_det_low": 25,
+    "seg_low_det_high": 9
+  },
+  "disagreement_count": 34,
+  "top_disagreements": [
+    {
+      "timestamp": "2026-09-28T23:30:00+07:00",
+      "scan_id": "test-cases:7",
+      "image_hash_prefix": "a2c48d0650d5",
+      "cache_hit": false,
+      "det_score": 0.002128214331317808,
+      "visual_score": 95,
+      "ai_gen_probability": 0.9509657025337219,
+      "text_score": 0,
+      "total_risk_score": 95,
+      "onnx_model_id": "segformer_v1_0_6_det2b_dynamic.onnx",
+      "onnx_latency_ms": 2020.6425189971924,
+      "onnx_worker_timed_out": false,
+      "onnx_execution_providers": [
+        "CUDAExecutionProvider",
+        "CPUExecutionProvider"
+      ],
+      "source": "Test-Cases",
+      "dataset": "pairs",
+      "label": 0
+    },
+    {
+      "timestamp": "2026-09-28T23:30:00+07:00",
+      "scan_id": "test-cases:28",
+      "image_hash_prefix": "7a258cea648d",
+      "cache_hit": false,
+      "det_score": 0.08868797562798822,
+      "visual_score": 100,
+      "ai_gen_probability": 0.9988594055175781,
+      "text_score": 0,
+      "total_risk_score": 100,
+      "onnx_model_id": "segformer_v1_0_6_det2b_dynamic.onnx",
+      "onnx_latency_ms": 679.1369915008545,
+      "onnx_worker_timed_out": false,
+      "onnx_execution_providers": [
+        "CUDAExecutionProvider",
+        "CPUExecutionProvider"
+      ],
+      "source": "Test-Cases",
+      "dataset": "pairs",
+      "label": 0
+    },
+    {
+      "timestamp": "2026-09-28T23:30:00+07:00",
+      "scan_id": "test-cases:16",
+      "image_hash_prefix": "bc8b960adb23",
+      "cache_hit": false,
+      "det_score": 0.09082740876339193,
+      "visual_score": 98,
+      "ai_gen_probability": 0.9750293493270874,
+      "text_score": 0,
+      "total_risk_score": 98,
+      "onnx_model_id": "segformer_v1_0_6_det2b_dynamic.onnx",
+      "onnx_latency_ms": 903.1243324279785,
+      "onnx_worker_timed_out": false,
+      "onnx_execution_providers": [
+        "CUDAExecutionProvider",
+        "CPUExecutionProvider"
+      ],
+      "source": "Test-Cases",
+      "dataset": "pairs",
+      "label": 0
+    },
+    {
+      "timestamp": "2026-09-28T23:30:00+07:00",
+      "scan_id": "test-cases:53",
+      "image_hash_prefix": "b02ec6e12036",
+      "cache_hit": false,
+      "det_score": 0.12596499400272781,
+      "visual_score": 95,
+      "ai_gen_probability": 0.9521876573562622,
+      "text_score": 0,
+      "total_risk_score": 95,
+      "onnx_model_id": "segformer_v1_0_6_det2b_dynamic.onnx",
+      "onnx_latency_ms": 549.2284297943115,
+      "onnx_worker_timed_out": false,
+      "onnx_execution_providers": [
+        "CUDAExecutionProvider",
+        "CPUExecutionProvider"
+      ],
+      "source": "Test-Cases",
+      "dataset": "pairs",
+      "label": 1
+    },
+    {
+      "timestamp": "2026-09-28T23:30:00+07:00",
+      "scan_id": "test-cases:23",
+      "image_hash_prefix": "842e942e93a5",
+      "cache_hit": false,
+      "det_score": 0.1441422644912029,
+      "visual_score": 97,
+      "ai_gen_probability": 0.9686521887779236,
+      "text_score": 0,
+      "total_risk_score": 97,
+      "onnx_model_id": "segformer_v1_0_6_det2b_dynamic.onnx",
+      "onnx_latency_ms": 1599.1778373718262,
+      "onnx_worker_timed_out": false,
+      "onnx_execution_providers": [
+        "CUDAExecutionProvider",
+        "CPUExecutionProvider"
+      ],
+      "source": "Test-Cases",
+      "dataset": "pairs",
+      "label": 0
+    },
+    {
+      "timestamp": "2026-09-28T23:30:00+07:00",
+      "scan_id": "test-cases:24",
+      "image_hash_prefix": "3493a464da20",
+      "cache_hit": false,
+      "det_score": 0.13081288471300725,
+      "visual_score": 92,
+      "ai_gen_probability": 0.9153876304626465,
+      "text_score": 0,
+      "total_risk_score": 92,
+      "onnx_model_id": "segformer_v1_0_6_det2b_dynamic.onnx",
+      "onnx_latency_ms": 129.14013862609863,
+      "onnx_worker_timed_out": false,
+      "onnx_execution_providers": [
+        "CUDAExecutionProvider",
+        "CPUExecutionProvider"
+      ],
+      "source": "Test-Cases",
+      "dataset": "pairs",
+      "label": 0
+    },
+    {
+      "timestamp": "2026-09-28T23:30:00+07:00",
+      "scan_id": "test-cases:6",
+      "image_hash_prefix": "9c5b4caa0582",
+      "cache_hit": false,
+      "det_score": 0.008023466189155067,
+      "visual_score": 75,
+      "ai_gen_probability": 0.750663697719574,
+      "text_score": 0,
+      "total_risk_score": 75,
+      "onnx_model_id": "segformer_v1_0_6_det2b_dynamic.onnx",
+      "onnx_latency_ms": 292.5989627838135,
+      "onnx_worker_timed_out": false,
+      "onnx_execution_providers": [
+        "CUDAExecutionProvider",
+        "CPUExecutionProvider"
+      ],
+      "source": "Test-Cases",
+      "dataset": "pairs",
+      "label": 0
+    },
+    {
+      "timestamp": "2026-09-28T23:30:00+07:00",
+      "scan_id": "test-cases:123",
+      "image_hash_prefix": "ddf2b0c417a2",
+      "cache_hit": false,
+      "det_score": 0.7915049926030321,
+      "visual_score": 7,
+      "ai_gen_probability": 0.07213244587182999,
+      "text_score": 0,
+      "total_risk_score": 7,
+      "onnx_model_id": "segformer_v1_0_6_det2b_dynamic.onnx",
+      "onnx_latency_ms": 92.25749969482422,
+      "onnx_worker_timed_out": false,
+      "onnx_execution_providers": [
+        "CUDAExecutionProvider",
+        "CPUExecutionProvider"
+      ],
+      "source": "Test-Cases",
+      "dataset": "imd2020",
+      "label": 1
+    },
+    {
+      "timestamp": "2026-09-28T23:30:00+07:00",
+      "scan_id": "test-cases:29",
+      "image_hash_prefix": "b4dd8ca3a35b",
+      "cache_hit": false,
+      "det_score": 0.2722451643100995,
+      "visual_score": 99,
+      "ai_gen_probability": 0.9867738485336304,
+      "text_score": 0,
+      "total_risk_score": 99,
+      "onnx_model_id": "segformer_v1_0_6_det2b_dynamic.onnx",
+      "onnx_latency_ms": 292.8781509399414,
+      "onnx_worker_timed_out": false,
+      "onnx_execution_providers": [
+        "CUDAExecutionProvider",
+        "CPUExecutionProvider"
+      ],
+      "source": "Test-Cases",
+      "dataset": "pairs",
+      "label": 0
+    },
+    {
+      "timestamp": "2026-09-28T23:30:00+07:00",
+      "scan_id": "test-cases:44",
+      "image_hash_prefix": "a6e1e1002d8e",
+      "cache_hit": false,
+      "det_score": 0.2935110983504708,
+      "visual_score": 100,
+      "ai_gen_probability": 0.9999108910560608,
+      "text_score": 0,
+      "total_risk_score": 100,
+      "onnx_model_id": "segformer_v1_0_6_det2b_dynamic.onnx",
+      "onnx_latency_ms": 2250.6940364837646,
+      "onnx_worker_timed_out": false,
+      "onnx_execution_providers": [
+        "CUDAExecutionProvider",
+        "CPUExecutionProvider"
+      ],
+      "source": "Test-Cases",
+      "dataset": "pairs",
+      "label": 1
+    }
+  ]
+}

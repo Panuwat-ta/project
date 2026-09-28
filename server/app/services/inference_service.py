@@ -353,6 +353,9 @@ class InferenceService:
         # Track B shadow signal: carried through cache/internal result only.
         # It is deliberately NOT fused into total risk yet.
         det_score = None
+        onnx_latency_ms = None
+        onnx_execution_providers = []
+        onnx_model_id = os.path.basename(str(settings.ONNX_MODEL_PATH))
         heatmap_bytes = self.generate_mock_heatmap(image_bytes)
         
         # 1. Run ONNX in isolated subprocess via shared runner seam
@@ -362,12 +365,17 @@ class InferenceService:
                 settings.ONNX_MODEL_PATH,
                 timeout=settings.ONNX_WORKER_TIMEOUT,
             )
+            onnx_latency_ms = run.get("latency_ms")
             if run["timed_out"]:
                 print(f"ONNX worker timeout after {settings.ONNX_WORKER_TIMEOUT}s, using defaults")
                 return {
                     "visual_risk_score": visual_risk_score,
                     "ai_gen_probability": ai_gen_probability,
                     "det_score": det_score,
+                    "onnx_model_id": onnx_model_id,
+                    "onnx_latency_ms": onnx_latency_ms,
+                    "onnx_execution_providers": onnx_execution_providers,
+                    "onnx_worker_timed_out": True,
                     "anomaly_region": "บริเวณที่น่าสงสัยในภาพ",
                     "heatmap_bytes": heatmap_bytes,
                     "ocr_text": self._run_ocr_with_timeout(image_bytes),
@@ -379,6 +387,7 @@ class InferenceService:
                 visual_risk_score = result.get("visual_risk_score", visual_risk_score)
                 ai_gen_probability = result.get("ai_gen_probability", ai_gen_probability)
                 det_score = result.get("det_score", det_score)
+                onnx_execution_providers = result.get("execution_providers", onnx_execution_providers)
                 anomaly_region = result.get("anomaly_region", "บริเวณที่น่าสงสัยในภาพ")
                 if result.get("heatmap_b64"):
                     heatmap_bytes = base64.b64decode(result["heatmap_b64"])
@@ -394,6 +403,10 @@ class InferenceService:
             "visual_risk_score": visual_risk_score,
             "ai_gen_probability": ai_gen_probability,
             "det_score": det_score,
+            "onnx_model_id": onnx_model_id,
+            "onnx_latency_ms": onnx_latency_ms,
+            "onnx_execution_providers": onnx_execution_providers,
+            "onnx_worker_timed_out": False,
             "anomaly_region": locals().get("anomaly_region", "บริเวณที่น่าสงสัยในภาพ"),
             "heatmap_bytes": heatmap_bytes,
             "ocr_text": ocr_text

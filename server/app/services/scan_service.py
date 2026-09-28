@@ -20,6 +20,7 @@ from app.utils.image_utils import (
 )
 from app.utils.risk_calculator import calculate_risk_score, build_text_analysis, build_source_score
 from app.utils.scan_cache import get_cached_scan, store_cached_scan
+from app.utils.shadow_telemetry import append_shadow_event
 from app.services.inference_service import inference_service
 import app.core.redis as redis_core
 
@@ -138,6 +139,7 @@ async def process_image_background(scan_id, file_bytes: bytes, image_hash: str,
 
             # 6. Check result cache via cache seam
             cached_data = await get_cached_scan(cache_client, image_hash)
+            cache_hit = bool(cached_data)
 
             heatmap_file = heatmap_path(image_hash)
 
@@ -178,6 +180,18 @@ async def process_image_background(scan_id, file_bytes: bytes, image_hash: str,
             anomaly_region = inference_result.get("anomaly_region", "บริเวณที่น่าสงสัยในภาพ")
 
             risk_result = calculate_risk_score(text_score, visual_score, source_score)
+
+            # Det Head shadow telemetry: metadata only, never changes risk scoring.
+            await run_in_threadpool(
+                append_shadow_event,
+                scan_id=scan.id,
+                image_hash=image_hash,
+                cache_hit=cache_hit,
+                inference_result=inference_result,
+                text_score=text_score,
+                visual_score=visual_score,
+                total_risk_score=risk_result["total_risk_score"],
+            )
 
             # Phase 1: ส่งผล visual/OCR/cscore ให้ client ก่อน XAI (Qwen รันบน CPU ช้ากว่า)
             scan.text_score = text_score

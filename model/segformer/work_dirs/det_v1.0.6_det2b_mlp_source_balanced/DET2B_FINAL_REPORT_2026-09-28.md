@@ -66,7 +66,7 @@ Confusion matrix for det2-b:
 - `det2-b` is the selected Det Head candidate based on clean Validation metrics before Final Test.
 - Final Test confirms improved generalization versus det1.
 - Do not tune threshold or architecture further using this Test set.
-- Not yet integrated into the production server. Next gate is export/integration plus regression testing that segmentation output remains unchanged.
+- Export/integration gate passed; det2-b is now active in server shadow mode and is not fused into the user-facing risk score.
 
 ## Export / Server integration gate
 
@@ -96,4 +96,42 @@ Deployment metadata is also stored in `deployment_manifest.json`.
 - `scan_service` still calls `calculate_risk_score(text_score, visual_score, source_score)` exactly as before; Det Head does not alter the user-facing risk score.
 - No DB migration or public API field was added.
 - Focused server regression suite: `19 passed`.
-- The running server has **not** been promoted/restarted and `ONNX_MODEL_PATH` has not been changed by this work.
+- Server was restarted into shadow rollout with `ONNX_MODEL_PATH` pointing to det2-b; risk-score fusion remains disabled.
+
+
+## Shadow rollout status
+
+- Status: **shadow-deployed-not-fused**.
+- Server `.env` now points `ONNX_MODEL_PATH` to det2-b; rollback backup is `.env.before-det2b-shadow-2026-09-28`.
+- Health after rollout: HTTP 200, database ok, Redis ok.
+- ONNX execution providers: CUDAExecutionProvider + CPUExecutionProvider.
+- Idle server VRAM observed: ~1062 MiB.
+- Authentic CASIA smoke: det_score 0.1487, visual risk 18, worker latency ~3.66 s.
+- Manipulated AIForge smoke: det_score 0.9787, visual risk 89, worker latency ~3.80 s.
+- Regression suite after rollout: 28/28 passed.
+- Redis scan cache is now model-versioned (`scan_result:<model-namespace>:<image_hash>`), so det2-b does not reuse old-model inference cache.
+- `det_score`, ONNX model id, worker latency, timeout flag, and execution providers are carried as internal shadow telemetry.
+- `det_score` is **not** used by `calculate_risk_score`; no DB migration or public API schema change was made.
+
+## Shadow telemetry collection
+
+- Persistent metadata-only log: `/home/panuwat/project/server/logs/shadow/det_head.jsonl`.
+- No image bytes, OCR text, title, or user id are written to this log.
+- Stored fields include scan id, 16-char image-hash prefix, cache-hit flag, model id, Det score, visual score, AI-gen probability, text score, total risk, ONNX latency, timeout flag, and execution providers.
+- Analyzer: `/home/panuwat/project/server/tools/analyze_det_shadow.py`; summary output: `logs/shadow/det_head_summary.json`.
+- Runtime telemetry files are excluded by `server/.gitignore`.
+- Baseline immediately after enabling persistent telemetry: 0 real shadow scans; smoke/test events are kept outside the production log.
+- First descriptive review should wait for a non-trivial real sample (operational target: at least 100 fresh scans). Fusion must not be chosen from score agreement alone; verified labels/feedback are required before changing user-facing risk.
+- Until that gate is met, `det_score` remains shadow-only and `calculate_risk_score()` is unchanged.
+
+## Pre-production Test-Cases gate
+
+- Source: `/home/panuwat/Pictures/Test-Cases`.
+- Evaluated 165 input images: 45 authentic / 120 manipulated.
+- Det Head v2-b: Accuracy 86.06%, Precision 94.50%, Recall 85.83%, Specificity 86.67%, F1 89.96%, ROC-AUC 94.24%, AP 97.95%.
+- SegFormer localization on the 105 with-mask images: mIoU 83.1425%, mDice 90.1725%, Forgery IoU 69.3498%, Forgery Dice 81.9013%, pixel accuracy 97.1340%.
+- Segmentation differs from the previous v1.0.6 local105 baseline by at most 0.0041 percentage point, confirming no practical regression.
+- Seg-vs-Det disagreements: 34/165; Det was correct in 26 of those 34 disagreements.
+- CUDA used for all 165 events; worker timeout count 0.
+- This dataset is stored as pre-production test telemetry only and is not mixed into the real-user shadow log.
+- Detailed output: `test_cases_shadow_2026-09-28/`.

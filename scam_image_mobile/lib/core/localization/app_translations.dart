@@ -244,7 +244,7 @@ class AppTranslations {
       'notif_hours_ago': '{count} ชั่วโมงที่แล้ว',
       'notif_time_suffix': ' น.',
       'scan_error_analysis_failed': 'การวิเคราะห์ล้มเหลว',
-      'scan_error_network': 'ไม่สามารถเชื่อมต่ออินเทอร์เน็ตได้',
+      'scan_error_network': 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาตรวจสอบเครือข่าย',
       'scan_error_upload': 'เกิดข้อผิดพลาดในการอัปโหลด กรุณาลองใหม่',
       'home_error_generic': 'เกิดข้อผิดพลาด กรุณาลองใหม่',
       // Crop
@@ -624,7 +624,7 @@ class AppTranslations {
       'notif_hours_ago': '{count} hr ago',
       'notif_time_suffix': '',
       'scan_error_analysis_failed': 'Analysis failed',
-      'scan_error_network': 'Could not connect to the internet',
+      'scan_error_network': 'Could not connect to the server. Check your network connection.',
       'scan_error_upload': 'Upload failed. Please try again.',
       'home_error_generic': 'Something went wrong. Please try again.',
       // Crop

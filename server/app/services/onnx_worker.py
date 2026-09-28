@@ -140,6 +140,7 @@ def main():
         "visual_risk_score": visual_risk_score,
         "ai_gen_probability": ai_gen_prob,
         "det_score": det_score,
+        "execution_providers": session.get_providers(),
         "anomaly_region": region,
         "heatmap_b64": base64.b64encode(heatmap_bytes).decode('utf-8') if heatmap_bytes else ""
     }
