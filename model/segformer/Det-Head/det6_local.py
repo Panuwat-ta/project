@@ -12,7 +12,25 @@ NUM_TOKENS = GRID_SIZE * GRID_SIZE
 
 
 def local_stage_tokens(feats, grid_size: int = GRID_SIZE) -> torch.Tensor:
-    """Align four stages to a grid and return B x (G*G) x 1024 local tokens."""
+    """Align four stages to a grid and return B x (G*G) x 1024 local tokens.
+
+    ONNX limitation, measured 2026-09-30: this fixed-grid extraction cannot be
+    exported with working dynamic height/width. The traced graph emits a grid
+    derived from the traced input size, so at 640/1024/1536 the ONNX model returns
+    100/256/576 tokens instead of 64 and the det logit is silently wrong
+    (|diff| 0.69 / 0.29 / 0.02). The seg branch of the same graph is correct at
+    every size, and the pooled det2b head is correct at every size, so this is
+    specific to the local-token family.
+
+    Consequences:
+    * PyTorch inference is exact at any size (verified max|d| = 0.0 against
+      F.interpolate(mode="area") on real backbone features).
+    * The ONNX det output is only valid when the input equals the size traced at
+      export. The server always resizes to ``ONNX_TILE_SIZE`` (512) in
+      ``tiling.det_score_image`` and ``tiling.iter_tiles``, so production complies,
+      but changing the tile size with a 2-output model must be treated as a
+      breaking change.
+    """
     tokens = []
     for feat in feats:
         pooled = F.adaptive_avg_pool2d(feat, (grid_size, grid_size))

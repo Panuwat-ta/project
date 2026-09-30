@@ -10,8 +10,8 @@ from det_head import build_seg_model, pool_stage_features
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 CONFIG=str(PROJECT_ROOT/'configs/segformer_mit-b2-v11.py')
 CKPT=str(PROJECT_ROOT/'work_dirs/v1.0.6/best_mIoU_iter_195000.pth')
-CACHE='/run/media/panuwat/USB/model/Det-Head/features/v1.0.6-det2-clean'
-CSV='/run/media/panuwat/USB/model/Det-Head/manifests/det-train-v2-clean.csv'
+CACHE='/home/panuwat/Pictures/Det-Head/features/v1.0.6-det2-clean'
+CSV='/home/panuwat/Pictures/Det-Head/manifests/det-train-v2-clean.csv'
 OUT=PROJECT_ROOT/'Det-Head/det_v1.0.6_det2b_mlp_source_balanced/real_pilot_11_2026-09-29/feature_neighbor_analysis'
 OUT.mkdir(parents=True,exist_ok=True)
 

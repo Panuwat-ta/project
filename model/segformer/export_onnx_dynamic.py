@@ -25,7 +25,8 @@ import onnx
 import torch
 from mmseg.apis import init_model
 
-from det_head import DetSegWrapper, load_det
+from det_head import DetSegWrapper
+from eval_det_diagnostics import load_any_det
 
 # torch.export triggers loading of libbz2 during tracing; preload to avoid ImportError
 try:
@@ -95,7 +96,10 @@ def main() -> None:
     if args.det_checkpoint is not None:
         if not args.det_checkpoint.is_file():
             raise FileNotFoundError(f"ไม่พบ det checkpoint: {args.det_checkpoint}")
-        wrapped_model = DetSegWrapper(model, load_det(str(args.det_checkpoint), "cpu")).eval()
+        # load_any_det dispatches on the arch recorded in the checkpoint meta, so
+        # this also handles the local-token family (det5/det6) and the token_stats
+        # variant. det_head.load_det only knows the pooled archs and would raise.
+        wrapped_model = DetSegWrapper(model, load_any_det(str(args.det_checkpoint), "cpu")).eval()
         output_names = ["logits", "det_logit"]
     else:
         wrapped_model = ONNXWrapper(model).eval()

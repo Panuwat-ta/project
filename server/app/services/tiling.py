@@ -5,12 +5,19 @@ Pure numpy/cv2/PIL only — importable from both the ONNX worker subprocess
 in evaluation_core.py). Train-time preprocessing and report rendering are
 deliberately NOT here (different concepts).
 """
+import sys
+
 import cv2
 import numpy as np
 from PIL import Image
 
 IMAGENET_MEAN = np.array([0.485, 0.456, 0.406], dtype=np.float32)
 IMAGENET_STD = np.array([0.229, 0.224, 0.225], dtype=np.float32)
+
+# The input size the 2-output ONNX model was traced at. Local-token det heads
+# (Det5/Det6/Det7, the token_stats family) bake their token grid at export time,
+# so the det output is only valid at this size. See det_score_image.
+DET_EXPORT_TILE_SIZE = 512
 
 
 def normalize_patch(patch: np.ndarray, tile_size: int,
@@ -93,9 +100,32 @@ def det_score_image(session, image: Image.Image, tile_size: int = 512) -> float 
     """Track B det-head score 0-1 from whole image downscaled to tile_size.
 
     Returns None for single-output models (backward compatible) or on error.
+
+    Local-token det heads (Det5/Det6/Det7, the ``token_stats`` family) reduce
+    backbone features to a *fixed* token grid, and that reduction cannot be
+    exported to ONNX with working dynamic axes: the traced graph bakes in the
+    grid derived from the export-time input size. Measured 2026-09-30, an ONNX
+    graph exported at 512 returns 100/256/576 tokens instead of 64 at 640/1024/
+    1536 and the det logit is silently wrong (|diff| 0.69 / 0.29 / 0.02) while the
+    seg branch of the same graph stays correct. Pooled heads (det1-det4) are
+    unaffected because they reduce to a single token.
+
+    So the det output is only meaningful when ``tile_size`` equals the size the
+    model was exported at. Feeding a different size would return a plausible
+    number that is wrong, which is worse than returning nothing, so refuse
+    instead of guessing.
     """
     try:
         if len(session.get_outputs()) < 2:
+            return None
+        if tile_size != DET_EXPORT_TILE_SIZE:
+            print(
+                f"det head: refusing tile_size={tile_size} for a 2-output model; "
+                f"the ONNX det branch is only valid at the exported size "
+                f"{DET_EXPORT_TILE_SIZE} because local-token heads bake the token "
+                f"grid at export time",
+                file=sys.stderr, flush=True,
+            )
             return None
         small = image.convert("RGB").resize((tile_size, tile_size), Image.BILINEAR)
         arr = np.asarray(small).astype(np.float32) / 255.0

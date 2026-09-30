@@ -1,0 +1,45 @@
+{
+  "experiment": "cross-device generalisation test for det7b",
+  "set": "cameraxdev104",
+  "n": 104,
+  "role": "held-out, never trained on",
+  "label": "all 0 (direct camera, unmanipulated)",
+  "capture_pipeline": "12.58 MP, 4096x3072 x60 / 3072x4096 x44, 44 sessions, EXIF Make/Model stripped to \"--\"",
+  "contrast_with_training_collection": "the 125 training rows are 15.93 MP from a single device (realme-gt-neo2-5g), so this set is a different capture pipeline",
+  "results": {
+    "det2b_production": {
+      "specificity": 0.2980769230769231,
+      "false_positive": 73,
+      "mean_score": 0.6561815534987715
+    },
+    "det7a": {
+      "specificity": 0.5865384615384616,
+      "false_positive": 43,
+      "mean_score": 0.4332863207550499
+    },
+    "det7b": {
+      "specificity": 0.8653846153846154,
+      "false_positive": 14,
+      "mean_score": 0.2294988579216706
+    }
+  },
+  "significance": {
+    "det7b_minus_det2b_points": 56.7,
+    "two_proportion_z": 8.29,
+    "det7b_wilson_95ci": [
+      0.7696,
+      0.9109
+    ],
+    "conclusion": "the 56.7 point gain over the deployed head is far outside noise, on a capture pipeline that was never trained on"
+  },
+  "interpretation": "det7b was trained only on 15.93 MP realme images and reaches 86.54% on 12.58 MP images from a different pipeline, so the camera9 gain is not device memorisation.",
+  "severity_for_production": "the currently deployed det2b flags 73 of 104 authentic photos (70.19%) as manipulated on this set. That false-positive rate was previously invisible because no cross-device real-camera set existed.",
+  "limitations": [
+    "EXIF Make/Model is stripped so the second device cannot be named from metadata",
+    "still a single collection from one unknown device; more devices would strengthen this further",
+    "this set is now a holdout and must never enter Train"
+  ],
+  "locked_test_opened": false,
+  "production_changed": false,
+  "created_at": "2026-09-30"
+}

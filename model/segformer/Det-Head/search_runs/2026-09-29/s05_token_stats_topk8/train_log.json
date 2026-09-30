@@ -1,0 +1,135 @@
+{
+  "meta": {
+    "det_arch": "token_stats_topk",
+    "screen_arch": "token_stats_topk",
+    "n_params": 535042,
+    "dropout": 0.2,
+    "topk": 8,
+    "num_tokens": 64,
+    "segformer_checkpoint": "/home/panuwat/project/model/segformer/work_dirs/v1.0.6/best_mIoU_iter_195000.pth",
+    "segformer_checkpoint_sha1": "86d7d250c1f9d6dd4608531fcc5753c4109a4434",
+    "feature_cache": "/run/media/panuwat/USB/model/Det-Head/features/v1.0.6-det6-local8x8-audited",
+    "feature_cache_meta": {
+      "format_version": 6,
+      "feature_type": "SegFormer MiT-B2 aligned local 8x8 patch tokens",
+      "pooling": "adaptive_avg_grid",
+      "grid_size": 8,
+      "num_tokens": 64,
+      "token_dim": 1024,
+      "config": "/home/panuwat/project/model/segformer/configs/segformer_mit-b2-v11.py",
+      "checkpoint": "/home/panuwat/project/model/segformer/work_dirs/v1.0.6/best_mIoU_iter_195000.pth",
+      "checkpoint_sha1": "86d7d250c1f9d6dd4608531fcc5753c4109a4434",
+      "input_size": [
+        512,
+        512
+      ],
+      "amp": true,
+      "limit": null,
+      "splits": [
+        {
+          "split": "train",
+          "csv": "/run/media/panuwat/USB/model/Det-Head/manifests/det-train-v3-audited.csv",
+          "csv_sha1": "5c90cf740ed5982d8db86c1f43eee61f0c1fd4f5",
+          "samples": 95635,
+          "features_shape": [
+            95635,
+            64,
+            1024
+          ],
+          "dtype": "float16"
+        },
+        {
+          "split": "val",
+          "csv": "/run/media/panuwat/USB/model/Det-Head/manifests/det-val-v2-clean.csv",
+          "csv_sha1": "c70bc31b910db2a920afb447411ca416e7721593",
+          "samples": 11972,
+          "features_shape": [
+            11972,
+            64,
+            1024
+          ],
+          "dtype": "float16"
+        }
+      ],
+      "created_at": "2026-09-29 05:49:52"
+    },
+    "screening": true,
+    "subsample": 25000,
+    "n_train": 24999,
+    "n_val": 11972,
+    "source_balanced": false,
+    "sample_weight_csv": null,
+    "weighted_rows": 0,
+    "lr": 0.0001,
+    "batch_size": 256,
+    "seed": 42,
+    "best_epoch": 9,
+    "best_val_acc": 0.8253424657534246,
+    "val_f1": null,
+    "val_roc_auc": null,
+    "val_average_precision": null,
+    "created_at": "2026-09-29 08:22:51"
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "val_loss": 0.40334759099484285,
+      "val_acc": 0.7947711326428333
+    },
+    {
+      "epoch": 2,
+      "val_loss": 0.3876401390911463,
+      "val_acc": 0.8001169395255596
+    },
+    {
+      "epoch": 3,
+      "val_loss": 0.3821283842742224,
+      "val_acc": 0.8031239558970932
+    },
+    {
+      "epoch": 4,
+      "val_loss": 0.3869365010518833,
+      "val_acc": 0.7986969595723354
+    },
+    {
+      "epoch": 5,
+      "val_loss": 0.36819430106346557,
+      "val_acc": 0.8154026060808554
+    },
+    {
+      "epoch": 6,
+      "val_loss": 0.3733403817232421,
+      "val_acc": 0.8122285332442366
+    },
+    {
+      "epoch": 7,
+      "val_loss": 0.37315175536182305,
+      "val_acc": 0.8133144002672903
+    },
+    {
+      "epoch": 8,
+      "val_loss": 0.35964215160252616,
+      "val_acc": 0.8209154694286669
+    },
+    {
+      "epoch": 9,
+      "val_loss": 0.36034711047812845,
+      "val_acc": 0.8253424657534246
+    },
+    {
+      "epoch": 10,
+      "val_loss": 0.3668310592854019,
+      "val_acc": 0.8152355496157702
+    },
+    {
+      "epoch": 11,
+      "val_loss": 0.3553061066186034,
+      "val_acc": 0.8251754092883394
+    },
+    {
+      "epoch": 12,
+      "val_loss": 0.3589166758592576,
+      "val_acc": 0.8233377881724022
+    }
+  ]
+}

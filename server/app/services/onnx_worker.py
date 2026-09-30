@@ -81,6 +81,19 @@ def run_det_image(session, input_name, image: Image.Image):
     return _det_score_image(session, image, TILE_SIZE)
 
 
+def visual_score_from_det(det_score, ai_gen_prob):
+    """S_visual per Document/model/configs.md §3.
+
+    Returns the 0-100 visual risk score. When the loaded model carries a det
+    head, the det score drives the result and the seg probability map is used
+    for localisation only. Without a det head (single-output model) it falls
+    back to max-prob.
+    """
+    if det_score is not None:
+        return min(100, max(0, int(round(det_score * 100))))
+    return int(round(ai_gen_prob * 100))
+
+
 def main():
     input_data = sys.stdin.read()
     if not input_data:
@@ -110,12 +123,39 @@ def main():
     prob_map_visual = (prob_map_true - pmin) / (pmax - pmin + 1e-5)
     heatmap_bytes = generate_heatmap(prob_map_visual, np.array(image))
 
-    # Real visual risk score based on maximum forgery probability in the image
-    ai_gen_prob = float(prob_map_true.max())
-    visual_risk_score = int(round(ai_gen_prob * 100))
-
-    # Track B det score (None ถ้าโมเดลไม่มี det head) — ขั้นนี้ยังไม่รวมเข้า total
+    # Track B det score (None ถ้าโมเดลไม่มี det head)
     det_score = run_det_image(session, input_name, image)
+
+    # S_visual per the corrected formula in Document/model/configs.md §3.
+    #
+    # History, because the previous behaviour looked like a harmless choice:
+    #   * max-prob only — on a 12 MP authentic photo the maximum of ~12M noisy
+    #     pixels is ~0.99, so the whole image scored 100.
+    #   * Confidence x Coverage (the old canonical formula) — implemented and
+    #     measured 2026-09-30; real forgeries in this dataset occupy only
+    #     0.1-1.6% of pixels, so Coverage is tiny and the score collapsed
+    #     (splicing 100 -> 1, inpainting -> 0). The seg probability map also does
+    #     not separate camera photos at pixel level: image-Authentic/to2 has
+    #     HIGHER coverage at 0.5 (0.0876) than the real splicing forgery (0.0140).
+    # The det head is the only signal measured to separate them (0.003 on a real
+    # camera photo vs 0.9999 on a manipulated one), so it drives S_visual and the
+    # seg probability map is kept for localisation only (heatmap + anomaly region).
+    ai_gen_prob = float(prob_map_true.max())
+    visual_risk_score = visual_score_from_det(det_score, ai_gen_prob)
+
+    # Reported `ai_gen_probability` now carries the det score when a det head is
+    # present, for the same reason as S_visual above. It previously reported
+    # prob_map.max(), which is ~0.99 on any 12 MP photo, and that value is
+    # rendered to the user as "AI Probability" (mobile, admin) and as
+    # "...โอกายสูง (99%) ที่เป็นภาพสังเคราะห์จาก AI" (XAI text), producing a
+    # self-contradicting sentence on a real photo: "พิกเซลสม่ำเสมอ ... แต่
+    # 100% เป็นภาพ AI".
+    #
+    # The field name is kept for API compatibility; it must not be read as an
+    # AI-generation probability. This model has 2 seg classes (authentic /
+    # forged) and a binary det head, so neither measures AI generation
+    # specifically. See Document/model/configs.md §3.
+    ai_gen_probability = ai_gen_prob if det_score is None else float(det_score)
 
     h, w = prob_map_true.shape[:2]
     threshold = max(0.35, float(prob_map_true.mean() + 0.10))
@@ -138,7 +178,7 @@ def main():
     
     result = {
         "visual_risk_score": visual_risk_score,
-        "ai_gen_probability": ai_gen_prob,
+        "ai_gen_probability": ai_gen_probability,
         "det_score": det_score,
         "execution_providers": session.get_providers(),
         "anomaly_region": region,

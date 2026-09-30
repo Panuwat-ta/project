@@ -24,7 +24,7 @@ def label_id(row: dict) -> int:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument('--root', default='/run/media/panuwat/USB/model/Det-Head')
+    ap.add_argument('--root', default='/home/panuwat/Pictures/Det-Head')
     args = ap.parse_args()
     root = os.path.abspath(args.root)
     main9 = os.path.join(root, 'manifests', 'main9-v1.csv')

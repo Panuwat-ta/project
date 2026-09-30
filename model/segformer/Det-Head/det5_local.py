@@ -12,7 +12,12 @@ NUM_TOKENS = GRID_SIZE * GRID_SIZE
 
 
 def local_stage_tokens(feats, grid_size: int = GRID_SIZE) -> torch.Tensor:
-    """Align four stages to a grid and return B x (G*G) x 1024 local tokens."""
+    """Align four stages to a grid and return B x (G*G) x 1024 local tokens.
+
+    See the ONNX dynamic-axes limitation documented in
+    ``det6_local.local_stage_tokens``: a fixed grid cannot be exported with a
+    working dynamic grid, so the ONNX det output is only valid at the traced size.
+    """
     tokens = []
     for feat in feats:
         pooled = F.adaptive_avg_pool2d(feat, (grid_size, grid_size))

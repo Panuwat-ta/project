@@ -1,0 +1,180 @@
+{
+  "checkpoint": "/home/panuwat/project/model/segformer/work_dirs/v1.0.6/best_mIoU_iter_195000.pth",
+  "threshold": 0.5,
+  "heads": {
+    "cand": "/home/panuwat/project/model/segformer/Det-Head/search_runs/webshot_r2_2026-09-29/x04_pyramid_webshot_lr3e4/head.pth"
+  },
+  "sets": {
+    "camera9": {
+      "cand": {
+        "n": 9,
+        "tp": 0,
+        "tn": 5,
+        "fp": 4,
+        "fn": 0,
+        "accuracy": 0.5555555555555556,
+        "precision": 0.0,
+        "recall": null,
+        "specificity": 0.5555555555555556,
+        "f1": null,
+        "mean_score": 0.3849923431266187
+      },
+      "elapsed_s": 1.88
+    },
+    "chatshot2": {
+      "cand": {
+        "n": 2,
+        "tp": 0,
+        "tn": 1,
+        "fp": 1,
+        "fn": 0,
+        "accuracy": 0.5,
+        "precision": 0.0,
+        "recall": null,
+        "specificity": 0.5,
+        "f1": null,
+        "mean_score": 0.28776759269523716
+      },
+      "elapsed_s": 0.65
+    },
+    "pilot11": {
+      "cand": {
+        "n": 11,
+        "tp": 0,
+        "tn": 8,
+        "fp": 1,
+        "fn": 2,
+        "accuracy": 0.7272727272727273,
+        "precision": 0.0,
+        "recall": 0.0,
+        "specificity": 0.8888888888888888,
+        "f1": null,
+        "mean_score": 0.1945268811095673
+      },
+      "elapsed_s": 1.33
+    },
+    "testcases": {
+      "cand": {
+        "n": 165,
+        "tp": 98,
+        "tn": 40,
+        "fp": 5,
+        "fn": 22,
+        "accuracy": 0.8363636363636363,
+        "precision": 0.9514563106796117,
+        "recall": 0.8166666666666667,
+        "specificity": 0.8888888888888888,
+        "f1": 0.8789237668161436,
+        "mean_score": 0.6425809071006499,
+        "by_dataset": {
+          "authentic": {
+            "n": 15,
+            "tp": 0,
+            "tn": 15,
+            "fp": 0,
+            "fn": 0,
+            "accuracy": 1.0,
+            "precision": null,
+            "recall": null,
+            "specificity": 1.0,
+            "f1": null,
+            "mean_score": 0.08902591997404903
+          },
+          "casia": {
+            "n": 15,
+            "tp": 14,
+            "tn": 0,
+            "fp": 0,
+            "fn": 1,
+            "accuracy": 0.9333333333333333,
+            "precision": 1.0,
+            "recall": 0.9333333333333333,
+            "specificity": null,
+            "f1": 0.9655172413793104,
+            "mean_score": 0.9219087725813947
+          },
+          "copymove": {
+            "n": 15,
+            "tp": 13,
+            "tn": 0,
+            "fp": 0,
+            "fn": 2,
+            "accuracy": 0.8666666666666667,
+            "precision": 1.0,
+            "recall": 0.8666666666666667,
+            "specificity": null,
+            "f1": 0.9285714285714286,
+            "mean_score": 0.7668930064695832
+          },
+          "face": {
+            "n": 15,
+            "tp": 15,
+            "tn": 0,
+            "fp": 0,
+            "fn": 0,
+            "accuracy": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "specificity": null,
+            "f1": 1.0,
+            "mean_score": 0.9999987064853697
+          },
+          "imd2020": {
+            "n": 15,
+            "tp": 11,
+            "tn": 0,
+            "fp": 0,
+            "fn": 4,
+            "accuracy": 0.7333333333333333,
+            "precision": 1.0,
+            "recall": 0.7333333333333333,
+            "specificity": null,
+            "f1": 0.846153846153846,
+            "mean_score": 0.750770204444486
+          },
+          "inpainting": {
+            "n": 15,
+            "tp": 9,
+            "tn": 0,
+            "fp": 0,
+            "fn": 6,
+            "accuracy": 0.6,
+            "precision": 1.0,
+            "recall": 0.6,
+            "specificity": null,
+            "f1": 0.7499999999999999,
+            "mean_score": 0.6500438737526468
+          },
+          "pairs": {
+            "n": 60,
+            "tp": 21,
+            "tn": 25,
+            "fp": 5,
+            "fn": 9,
+            "accuracy": 0.7666666666666667,
+            "precision": 0.8076923076923077,
+            "recall": 0.7,
+            "specificity": 0.8333333333333334,
+            "f1": 0.75,
+            "mean_score": 0.4817529188623053
+          },
+          "splicing": {
+            "n": 15,
+            "tp": 15,
+            "tn": 0,
+            "fp": 0,
+            "fn": 0,
+            "accuracy": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "specificity": null,
+            "f1": 1.0,
+            "mean_score": 0.9627378189503977
+          }
+        }
+      },
+      "elapsed_s": 8.6
+    }
+  },
+  "created_at": "2026-09-29 23:39:14"
+}

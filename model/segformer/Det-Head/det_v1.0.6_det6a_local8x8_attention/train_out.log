@@ -1,0 +1,32 @@
+Det6 cached mode train=95635 val=11972 shape=(64, 1024) arch=patch_attention source_balanced=True device=cuda weighted_rows=0
+epoch 1/30 val_loss=0.3505 val_acc=0.8299
+epoch 2/30 val_loss=0.3372 val_acc=0.8344
+epoch 3/30 val_loss=0.3233 val_acc=0.8466
+epoch 4/30 val_loss=0.3261 val_acc=0.8410
+epoch 5/30 val_loss=0.3188 val_acc=0.8491
+epoch 6/30 val_loss=0.3129 val_acc=0.8516
+epoch 7/30 val_loss=0.3131 val_acc=0.8527
+epoch 8/30 val_loss=0.3102 val_acc=0.8548
+epoch 9/30 val_loss=0.3081 val_acc=0.8546
+epoch 10/30 val_loss=0.3163 val_acc=0.8537
+epoch 11/30 val_loss=0.3158 val_acc=0.8539
+epoch 12/30 val_loss=0.3063 val_acc=0.8617
+epoch 13/30 val_loss=0.3101 val_acc=0.8576
+epoch 14/30 val_loss=0.3081 val_acc=0.8594
+epoch 15/30 val_loss=0.3115 val_acc=0.8601
+epoch 16/30 val_loss=0.3099 val_acc=0.8618
+epoch 17/30 val_loss=0.3223 val_acc=0.8574
+epoch 18/30 val_loss=0.3214 val_acc=0.8587
+epoch 19/30 val_loss=0.3188 val_acc=0.8573
+epoch 20/30 val_loss=0.3177 val_acc=0.8610
+epoch 21/30 val_loss=0.3356 val_acc=0.8576
+epoch 22/30 val_loss=0.3279 val_acc=0.8613
+early stop best=0.8618 epoch=16
+{
+  "best_val_acc": 0.861760775141998,
+  "best_epoch": 16,
+  "val_f1": null,
+  "val_roc_auc": null,
+  "val_average_precision": null
+}
+saved Det-Head/det_v1.0.6_det6a_local8x8_attention/det6_head.pth

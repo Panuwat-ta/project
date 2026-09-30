@@ -1,0 +1,77 @@
+{
+  "candidate": "det7b_webshot_camera",
+  "status": "passed-gate-awaiting-human-promotion-decision",
+  "training": {
+    "arch": "token_stats",
+    "n_params": 401665,
+    "n_train": 103154,
+    "n_train_base": 95635,
+    "n_train_webshot": 7394,
+    "n_train_camera": 125,
+    "screening": false,
+    "source_balanced": true,
+    "best_epoch": 28,
+    "epochs_run": 30,
+    "data_root": "/home/panuwat/Pictures/Det-Head (moved off USB: 4x faster, 43s/epoch vs 180s)"
+  },
+  "val": {
+    "accuracy": 0.8605913798864016,
+    "f1": 0.8565535023635583,
+    "roc_auc": 0.942697588805061,
+    "average_precision": 0.9499401371314237
+  },
+  "diagnostics": {
+    "camera9_specificity": 0.8888888888888888,
+    "camera9_mean_score": 0.24097493294127834,
+    "chatshot2_accuracy": 1.0,
+    "chatshot2_specificity": 1.0,
+    "chatshot2_mean_score": 0.26504810872168283,
+    "pilot11_accuracy": 0.7272727272727273,
+    "pilot11_specificity": 0.8888888888888888,
+    "testcases_accuracy": 0.8727272727272727,
+    "testcases_specificity": 0.9111111111111111,
+    "testcases_recall": 0.8583333333333333,
+    "cameraval16_specificity": 1.0,
+    "cameraval16_mean_score": 0.032943283191996575
+  },
+  "gate_passed": true,
+  "compared_to": {
+    "det7a_val": 0.8629301703975943,
+    "det7a_camera9": 0.5555555555555556,
+    "det7a_chatshot2": 0.5,
+    "det7a_pilot11": 0.7272727272727273,
+    "det7a_testcases": 0.8606060606060606,
+    "det7a_cameraval16": 0.8125,
+    "det2b_val": 0.85925492816572,
+    "det2b_camera9": 0.3333333333333333,
+    "det2b_chatshot2": 0.0,
+    "det2b_pilot11": 0.5454545454545454,
+    "det2b_testcases": 0.8606060606060606,
+    "det2b_cameraval16": 0.625
+  },
+  "improvements_over_det7a": {
+    "camera9": "0.5556 -> 0.8889 (+33.3 pts)",
+    "chatshot2": "1/2 -> 2/2",
+    "testcases": "0.8606 -> 0.8727 (+1.2 pts)",
+    "testcases_specificity": "0.8889 -> 0.9111",
+    "cameraval16": "0.8125 -> 1.0",
+    "pilot11": "unchanged 0.7273"
+  },
+  "limitations": [
+    "camera9 has 9 images; one image is 11.1 points, and the 88.89% figure is 8/9",
+    "cameraval16 is 16 images from ONE device (realme-gt-neo2-5g); 1.0 there may be device-specific and must not be read as general real-camera coverage",
+    "cameraval16 comes from the same collection the 125 training rows came from, so it is a within-collection holdout, not an independent domain",
+    "chatshot2 still only 2 images, report-only",
+    "pilot11 recall on the 2 manipulated images remains 0.0",
+    "the 125 camera rows are label 0 only; no manipulated-camera examples exist",
+    "Val accuracy fell slightly vs det7a (0.8629 -> 0.8606), which is expected and irrelevant per the r=-0.037 finding"
+  ],
+  "locked_test_opened": false,
+  "production_changed": false,
+  "next_steps": [
+    "seed 7 and 123 confirmation",
+    "add images from a second device to test whether camera9 gain generalises",
+    "ONNX export + parity if promoted"
+  ],
+  "created_at": "2026-09-30"
+}

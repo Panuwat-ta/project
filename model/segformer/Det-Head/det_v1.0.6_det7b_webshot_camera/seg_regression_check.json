@@ -1,0 +1,5 @@
+{
+  "images_tested": 11,
+  "worst_seg_abs_diff": 0.0,
+  "verdict": "seg logits identical; segmentation metrics unchanged"
+}

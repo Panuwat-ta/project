@@ -1,0 +1,81 @@
+{
+  "rationale": "Measured 2026-09-29: on the protected camera11 diagnostic, det2b (1 global GAP token) reached 27.27% specificity, det6a (64 local 8x8 tokens) 18.18%, det5a (16 local 4x4 tokens) 9.09%, while every one of them had a higher Val accuracy than det2b. More local tokens did not help, so the Authentic signal looks global. Every candidate here trains on the already-computed 64-token Det6 cache, so the loop needs no new precompute. The first block tests the aggregation hypothesis; the second block tunes the two settings that historically moved camera11 the most (hard-negative loss weight, seed variance).",
+  "cache_num_tokens": 64,
+  "protocol": {
+    "subsample": 25000,
+    "epochs": 12,
+    "patience": 4,
+    "note": "Screening numbers rank candidates against each other only. Screening Val accuracy is NOT comparable to full-data Val accuracy and is never used to accept a candidate; the external diagnostics are the gate."
+  },
+  "candidates": [
+    {
+      "name": "s00_control_patch_attention_8x8",
+      "arch": "patch_attention_8x8",
+      "note": "Screening control. Same architecture as det6a but on the 25k subsample, so every other row is comparable to it."
+    },
+    {
+      "name": "s01_token_stats",
+      "arch": "token_stats",
+      "note": "Primary test of the global-aggregation hypothesis: mean/max/std over the 64 local tokens."
+    },
+    {
+      "name": "s02_token_stats_coarse",
+      "arch": "token_stats_coarse",
+      "note": "Same reduction after 2x2 coarse pooling, suppresses single-token noise before the statistics."
+    },
+    {
+      "name": "s03_spatial_pyramid",
+      "arch": "spatial_pyramid",
+      "note": "Explicit interpolation between det2b (1 token) and det6a (64 tokens): pool 8x8 down to 4x4/2x2/1x1 and concatenate."
+    },
+    {
+      "name": "s04_token_stats_topk",
+      "arch": "token_stats_topk",
+      "topk": 4,
+      "note": "Statistics of the top-4 tokens by learned patch score: keeps the sparse-local-evidence idea but classifies globally."
+    },
+    {
+      "name": "s05_token_stats_topk8",
+      "arch": "token_stats_topk",
+      "topk": 8,
+      "note": "Same with a wider top-k to see whether the top-k width matters."
+    },
+    {
+      "name": "s06_token_stats_do03",
+      "arch": "token_stats",
+      "dropout": 0.3,
+      "note": "More regularisation; det4c showed dropout 0.3 slightly beat 0.2 on Val."
+    },
+    {
+      "name": "s07_token_stats_lr3e4",
+      "arch": "token_stats",
+      "lr": 0.0003,
+      "note": "Higher LR, the value used by the det2b/det4 runs that set the current best Val."
+    },
+    {
+      "name": "s08_token_stats_seed7",
+      "arch": "token_stats",
+      "seed": 7,
+      "note": "Seed variance check. Det5 multiseed showed all three seeds failed camera11, so a single lucky seed must not be mistaken for a fix."
+    },
+    {
+      "name": "s09_token_stats_hardneg15",
+      "arch": "token_stats",
+      "sample_weight_csv": "/home/panuwat/project/model/segformer/Det-Head/weak_label_weights/verified_hard_negative_loss_weight_1p5.csv",
+      "note": "Loss weight 1.5 on the 591 audit-verified zero-mask Authentic hard negatives. det5g got 86.38% Val from this but no external diagnostic was opened."
+    },
+    {
+      "name": "s10_patch_attention_hardneg15",
+      "arch": "patch_attention_8x8",
+      "sample_weight_csv": "/home/panuwat/project/model/segformer/Det-Head/weak_label_weights/verified_hard_negative_loss_weight_1p5.csv",
+      "note": "Same hard-negative weighting on the control architecture, so the weighting effect can be separated from the aggregation effect."
+    },
+    {
+      "name": "s11_spatial_pyramid_do03_lr3e4",
+      "arch": "spatial_pyramid",
+      "dropout": 0.3,
+      "lr": 0.0003,
+      "note": "Combination of the two best-known regularisation settings on the pyramid head."
+    }
+  ]
+}

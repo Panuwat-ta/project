@@ -1,0 +1,72 @@
+{
+  "experiment": "ONNX export + parity for det7b, and a dynamic-axes defect found",
+  "export": {
+    "script": "export_onnx_dynamic.py",
+    "change": "load_det -> load_any_det so local-token and variant families can be exported; det_head.load_det only knew pooled archs and raised ValueError on token_stats",
+    "outputs": [
+      "logits",
+      "det_logit"
+    ],
+    "opset": 18,
+    "traced_at": [
+      512,
+      512
+    ],
+    "model": "Det-Head/det_v1.0.6_det7b_webshot_camera/segformer_v1_0_6_det7b_dynamic.onnx"
+  },
+  "parity_512": {
+    "seg_max_abs_diff": 3.7e-05,
+    "det_logit_abs_diff": 1.4e-05,
+    "verdict": "PASS on real images from four domains"
+  },
+  "defect": {
+    "summary": "the fixed-grid local-token det head cannot be exported with working dynamic height/width",
+    "evidence": {
+      "onnx_token_counts": {
+        "512": 64,
+        "640": 100,
+        "1024": 256,
+        "1536": 576,
+        "expected": 64
+      },
+      "onnx_det_logit_abs_diff": {
+        "512": 9.06e-06,
+        "640": 0.6889,
+        "1024": 0.2854,
+        "1280": 0.6595,
+        "1536": 0.0171
+      },
+      "seg_branch_same_graph": {
+        "640": 7.03e-05,
+        "1024": 6.51e-05,
+        "1536": 5.05e-05,
+        "verdict": "correct at every size"
+      },
+      "pooled_det2b_same_export": {
+        "512": 2.15e-06,
+        "640": 4.35e-06,
+        "1024": 2.56e-06,
+        "1536": 2.98e-06,
+        "verdict": "correct at every size"
+      }
+    },
+    "why_silent": "TokenStatsHead.forward_tokens validates tokens.shape[1] == 64 with a Python assert-style check that only runs while tracing, so at runtime the graph feeds 100/256/576 tokens through a head sized for 64 and returns a plausible wrong number",
+    "attempts": "F.interpolate(size=(8,8), mode=\"area\") was tried because it is bit-identical in PyTorch (max|d| = 0.0 on real backbone features) and lowers to a dynamic Resize op; it produced the same 100/256/576 token counts, so the pooling op is not the cause and the change was reverted",
+    "scope": "det5/det6/det7 local-token family only. det1-det4 pooled heads and the seg branch are unaffected.",
+    "production_impact": "none today: tiling.det_score_image and tiling.iter_tiles both resize to ONNX_TILE_SIZE=512, which is the traced size"
+  },
+  "mitigation_added": {
+    "file": "server/app/services/tiling.py",
+    "change": "DET_EXPORT_TILE_SIZE=512 constant and det_score_image now returns None with a stderr message when a 2-output model is called with a tile_size other than the exported size",
+    "rationale": "a wrong det score is worse than no det score, so refuse rather than guess",
+    "tested": "tile_size 512 returns a score, 640 and 1024 return None, det2b unaffected",
+    "tests": "server pytest 139 passed / 4 skipped / 0 failed"
+  },
+  "not_done": [
+    "seg-metric regression on the exported graph was not run because the det branch defect made multi-resolution parity fail; it should be run at 512 only if promotion proceeds",
+    "no shadow rollout, no ONNX_MODEL_PATH change, no commit"
+  ],
+  "locked_test_opened": false,
+  "production_changed": false,
+  "created_at": "2026-09-30"
+}

@@ -146,11 +146,11 @@ class InferenceService:
 
         ai_pct = int(round(ai_gen_probability * 100))
         if ai_gen_probability >= 0.70:
-            ai_th = f"โอกาสสูง ({ai_pct}%) สอดคล้องกับภาพสังเคราะห์จาก AI"
+            ai_th = f"ความม่ันใจว่าภาพถูกตัดต่อหรือดัดแปลงสูง ({ai_pct}%)"
         elif ai_gen_probability >= 0.40:
-            ai_th = f"โอกาสปานกลาง ({ai_pct}%)"
+            ai_th = f"ความม่ันใจว่าภาพถูกตัดต่อหรือดัดแปลงปานกลาง ({ai_pct}%)"
         else:
-            ai_th = f"โอกาสต่ำ ({ai_pct}%) พิกเซลมีความเป็นธรรมชาติ"
+            ai_th = f"ความม่ันใจว่าภาพถูกตัดต่อหรือดัดแปลงต่ำ ({ai_pct}%)"
 
         if scam_keywords:
             keywords_th = f"ตรวจพบคำสำคัญน่าสงสัย ได้แก่ {', '.join(scam_keywords)}"
@@ -231,9 +231,9 @@ class InferenceService:
 
         ai_pct = int(round(ai_gen_prob * 100))
         if ai_gen_prob >= 0.70:
-            parts.append(f"โดยมีโอกาสสูง ({ai_pct}%) ที่เป็นภาพสังเคราะห์จากปัญญาประดิษฐ์")
+            parts.append(f"โดยมีความม่ันใจสูง ({ai_pct}%) ว่าภาพถูกตัดต่อหรือดัดแปลง")
         elif ai_gen_prob >= 0.40:
-            parts.append(f"โดยมีโอกาสปานกลาง ({ai_pct}%) ที่อาจมีองค์ประกอบจาก AI")
+            parts.append(f"โดยมีความม่ันใจปานกลาง ({ai_pct}%) ว่าภาพถูกตัดต่อหรือดัดแปลง")
 
         if scam_keywords:
             parts.append(f"ทั้งนี้ตรวจพบคำสำคัญน่าสงสัยในภาพ ได้แก่ {', '.join(scam_keywords)}")

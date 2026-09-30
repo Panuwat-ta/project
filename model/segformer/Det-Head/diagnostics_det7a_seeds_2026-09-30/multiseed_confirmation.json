@@ -1,0 +1,53 @@
+{
+  "experiment": "det7a_webshot_tokenstats multiseed confirmation",
+  "protocol": "full data 103,029 rows (95,635 base + 7,394 webshot), token_stats, source-balanced, 30 epochs, patience 6, lr 1e-4",
+  "seeds": {
+    "42": {
+      "val_accuracy": 0.8629301703975943,
+      "val_roc_auc": 0.9441665751288674,
+      "best_epoch": 25,
+      "camera9_specificity": 0.5555555555555556,
+      "chatshot2_accuracy": 0.5,
+      "chatshot2_mean_score": 0.37768688377363624,
+      "pilot11_accuracy": 0.7272727272727273,
+      "testcases_accuracy": 0.8606060606060606,
+      "gate_passed": true
+    },
+    "7": {
+      "val_accuracy": 0.8625881933464802,
+      "val_roc_auc": 0.9430201479161532,
+      "camera9_specificity": 0.7777777777777778,
+      "chatshot2_accuracy": 1.0,
+      "chatshot2_mean_score": 0.2977,
+      "pilot11_accuracy": 0.7272727272727273,
+      "testcases_accuracy": 0.8666666666666667,
+      "gate_passed": true
+    },
+    "123": {
+      "val_accuracy": 0.8600173533790934,
+      "val_roc_auc": 0.9420529729244586,
+      "chatshot2_accuracy": 1.0,
+      "chatshot2_mean_score": 0.2898,
+      "pilot11_accuracy": 0.7272727272727273,
+      "testcases_accuracy": 0.8727272727272727,
+      "camera9_specificity": 0.5555555555555556,
+      "gate_passed": true
+    }
+  },
+  "production_det2b": {
+    "val_accuracy": 0.85925492816572,
+    "camera9_specificity": 0.3333333333333333,
+    "chatshot2_accuracy": 0.0,
+    "pilot11_accuracy": 0.5454545454545454,
+    "testcases_accuracy": 0.8606060606060606
+  },
+  "conclusion": "all 3 seeds pass the external gate; the worst seed still beats production camera9 by 22.2 points. The result is not seed luck. camera9 spread 0.5556-0.7778 reflects that the set has only 9 images.",
+  "limitations": [
+    "camera9 n=9: one image is 11.1 points",
+    "chatshot2 n=2 report-only",
+    "added data is desktop web screenshots 1920x1080, not mobile LINE",
+    "pilot11 manipulated recall remains 0.0 for every seed"
+  ],
+  "locked_test_opened": false,
+  "production_changed": false
+}

@@ -1,0 +1,71 @@
+{
+  "candidate": "det7b_webshot_camera",
+  "seeds": {
+    "42": {
+      "val_accuracy": 0.8605913798864016,
+      "val_roc_auc": 0.942697588805061,
+      "best_epoch": 28,
+      "camera9_specificity": 0.8888888888888888,
+      "cameraxdev104_specificity": 0.8653846153846154,
+      "chatshot2_accuracy": 1.0,
+      "pilot11_accuracy": 0.7272727272727273,
+      "testcases_accuracy": 0.8727272727272727,
+      "testcases_specificity": 0.9111111111111111,
+      "gate_passed": true
+    },
+    "7": {
+      "val_accuracy": 0.8626795856999666,
+      "val_roc_auc": 0.9436773921059588,
+      "best_epoch": 28,
+      "camera9_specificity": 0.6666666666666666,
+      "cameraxdev104_specificity": 0.7788461538461539,
+      "chatshot2_accuracy": 0.5,
+      "pilot11_accuracy": 0.6363636363636364,
+      "testcases_accuracy": 0.8727272727272727,
+      "testcases_specificity": 0.8666666666666667,
+      "gate_passed": true
+    },
+    "123": {
+      "val_accuracy": 0.8646007350484464,
+      "val_roc_auc": 0.9443507530881727,
+      "best_epoch": 30,
+      "camera9_specificity": 0.6666666666666666,
+      "cameraxdev104_specificity": 0.7788461538461539,
+      "chatshot2_accuracy": 1.0,
+      "pilot11_accuracy": 0.7272727272727273,
+      "testcases_accuracy": 0.8787878787878788,
+      "testcases_specificity": 0.8888888888888888,
+      "gate_passed": true
+    }
+  },
+  "aggregate": {
+    "camera9_mean": 0.7407407407407407,
+    "camera9_min": 0.6666666666666666,
+    "cameraxdev104_mean": 0.8076923076923077,
+    "cameraxdev104_min": 0.7788461538461539,
+    "testcases_mean": 0.8747474747474747
+  },
+  "production_det2b": {
+    "val_accuracy": 0.85925492816572,
+    "camera9_specificity": 0.3333333333333333,
+    "cameraxdev104_specificity": 0.2980769230769231,
+    "chatshot2_accuracy": 0.0,
+    "pilot11_accuracy": 0.5454545454545454,
+    "testcases_accuracy": 0.8606060606060606
+  },
+  "gate": "3/3 seeds pass with cameraxdev104 added as a 4th gated metric",
+  "cross_device_significance": {
+    "worst_seed_margin_points": 48.1,
+    "interpretation": "trained on 15.93 MP realme rows only, yet the worst seed reaches 77.88% on 12.58 MP images from a different capture pipeline, so the gain generalises rather than memorising one device"
+  },
+  "limitations": [
+    "camera9 n=9 still fragile (1 image = 11.1 points) and varies 0.6667-0.8889 across seeds",
+    "cameraxdev104 is one collection from one unknown device (EXIF stripped); a third device would strengthen this further",
+    "cameraxdev104 is now a gate, so it must never enter Train",
+    "pilot11 recall on the 2 manipulated images is still 0.0 for all seeds",
+    "chatshot2 is 2 images, report-only"
+  ],
+  "locked_test_opened": false,
+  "production_changed": false,
+  "created_at": "2026-09-30"
+}

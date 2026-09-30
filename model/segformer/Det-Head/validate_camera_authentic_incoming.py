@@ -67,7 +67,7 @@ def main() -> None:
                         'exif_make': make, 'exif_model': model})
             if bh in holdout_bytes or ph in holdout_pixels:
                 row['status'] = 'exclude'
-                row['reason'] = 'matches_protected_camera11_holdout'
+                row['reason'] = 'matches_protected_image_authentic_holdout'
                 row['holdout_overlap'] = 1
             elif bh in seen_bytes or ph in seen_pixels:
                 row['status'] = 'exclude'

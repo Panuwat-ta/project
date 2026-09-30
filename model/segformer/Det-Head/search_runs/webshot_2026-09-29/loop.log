@@ -1,0 +1,17 @@
+candidate                                  val   cam11   pilot   tc165  gate
+--- training w00_control_no_webshot (arch=patch_attention_8x8)
+w00_control_no_webshot                 0.8331 0.2222 0.4545 0.8424  fail  (chatshot2 0.00 mean=0.796 report-only)
+                                         - camera9 specificity 0.2222222222222222 < production 0.3333
+                                         - pilot11 accuracy 0.45454545454545453 < production 0.5455
+                                         - testcases accuracy 0.8424242424242424 < production 0.8606
+--- training w01_patch_attention_webshot (arch=patch_attention_8x8, +extra cache)
+w01_patch_attention_webshot            0.8342 0.5556 0.7273 0.8182  fail  (chatshot2 0.50 mean=0.270 report-only)
+                                         - testcases accuracy 0.8181818181818182 < production 0.8606
+--- training w02_token_stats_webshot (arch=token_stats, +extra cache)
+w02_token_stats_webshot                0.8232 0.8889 0.7273 0.7939  fail  (chatshot2 1.00 mean=0.230 report-only)
+                                         - testcases accuracy 0.793939393939394 < production 0.8606
+--- training w03_spatial_pyramid_webshot (arch=spatial_pyramid, +extra cache)
+w03_spatial_pyramid_webshot            0.8257 0.8889 0.7273 0.8364  fail  (chatshot2 1.00 mean=0.226 report-only)
+                                         - testcases accuracy 0.8363636363636363 < production 0.8606
+
+leaderboard: Det-Head/search_runs/webshot_2026-09-29/leaderboard.csv

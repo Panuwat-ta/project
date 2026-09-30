@@ -74,7 +74,9 @@ class AnalysisResultModel extends AnalysisResult {
             score: json['visual_score'] as int,
             title: 'visual',
             details: json['ai_gen_probability'] != null
-                ? ['AI Probability: ${json['ai_gen_probability']}']
+                ? [
+                    'ความม่ันใจว่าถูกดัดแปลง: ${((json['ai_gen_probability'] as num) * 100).round()}%',
+                  ]
                 : [],
           ),
         );
