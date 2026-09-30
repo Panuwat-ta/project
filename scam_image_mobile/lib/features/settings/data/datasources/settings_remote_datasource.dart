@@ -1,20 +1,12 @@
 import 'package:dio/dio.dart';
-import '../../../../core/errors/exceptions.dart';
+
 import '../../../../core/network/api_endpoints.dart';
+import '../../../../core/network/dio_error_mapper.dart';
 
-/// Contract for the settings remote data source.
+/// Remote operations that are implemented by the current backend.
 abstract class SettingsRemoteDataSource {
-  /// GET /consents/me — returns the user's current consent map.
-  Future<Map<String, dynamic>> getConsents();
-
-  /// PUT /consents/me — persists updated consent data.
-  Future<void> updateConsents(Map<String, dynamic> data);
-
-  /// POST /privacy/export — triggers a privacy data export.
-  Future<void> exportPrivacyData();
-
-  /// DELETE /privacy/account — permanently deletes the user account.
-  Future<void> deleteAccount();
+  /// DELETE /users/me — soft-deletes the authenticated account after password confirmation.
+  Future<void> deleteAccount(String password);
 }
 
 class SettingsRemoteDataSourceImpl implements SettingsRemoteDataSource {
@@ -23,69 +15,14 @@ class SettingsRemoteDataSourceImpl implements SettingsRemoteDataSource {
   final Dio dio;
 
   @override
-  Future<Map<String, dynamic>> getConsents() async {
+  Future<void> deleteAccount(String password) async {
     try {
-      final response =
-          await dio.get<dynamic>(ApiEndpoints.consentsMe);
-      final body = response.data;
-      if (body is Map<String, dynamic>) return body;
-      return {};
+      await dio.delete<void>(
+        ApiEndpoints.usersMe,
+        data: {'password': password},
+      );
     } on DioException catch (e) {
-      throw _mapDioException(e);
-    }
-  }
-
-  @override
-  Future<void> updateConsents(Map<String, dynamic> data) async {
-    try {
-      await dio.put<void>(ApiEndpoints.consentsMe, data: data);
-    } on DioException catch (e) {
-      throw _mapDioException(e);
-    }
-  }
-
-  @override
-  Future<void> exportPrivacyData() async {
-    try {
-      await dio.post<void>(ApiEndpoints.privacyExport);
-    } on DioException catch (e) {
-      throw _mapDioException(e);
-    }
-  }
-
-  @override
-  Future<void> deleteAccount() async {
-    try {
-      await dio.delete<void>(ApiEndpoints.privacyDeleteAccount);
-    } on DioException catch (e) {
-      throw _mapDioException(e);
-    }
-  }
-
-  Exception _mapDioException(DioException e) {
-    switch (e.type) {
-      case DioExceptionType.connectionTimeout:
-      case DioExceptionType.receiveTimeout:
-      case DioExceptionType.sendTimeout:
-      case DioExceptionType.connectionError:
-        return NetworkException(e.message ?? 'Connection error');
-      case DioExceptionType.badResponse:
-        final statusCode = e.response?.statusCode;
-        final data = e.response?.data;
-        String message = 'Server error';
-        
-        if (data is Map<String, dynamic>) {
-          message = data['message'] as String? ?? data['detail'] as String? ?? message;
-        } else if (data is String) {
-          message = data;
-        }
-
-        if (statusCode == 401 || statusCode == 403) {
-          return AuthException(message == 'Server error' ? 'Unauthorised' : message);
-        }
-        return ServerException(message, statusCode: statusCode);
-      default:
-        return NetworkException(e.message ?? 'Network error');
+      throw mapDioException(e);
     }
   }
 }

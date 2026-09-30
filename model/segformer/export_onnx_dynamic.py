@@ -21,6 +21,8 @@ import onnx
 import torch
 from mmseg.apis import init_model
 
+from det_head import DetSegWrapper, load_det
+
 # torch.export triggers loading of libbz2 during tracing; preload to avoid ImportError
 try:
     ctypes.CDLL("/lib64/libbz2.so.1", mode=ctypes.RTLD_GLOBAL)
@@ -50,6 +52,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--height", type=int, default=1024)
     parser.add_argument("--width", type=int, default=1024)
     parser.add_argument("--opset", type=int, default=17)
+    parser.add_argument("--det-checkpoint", type=Path, default=None,
+                        help="ไฟล์ det_head.pth (Track B) ถ้าระบุจะ export 2 outputs: logits + det_logit")
     return parser.parse_args()
 
 
@@ -86,7 +90,14 @@ def main() -> None:
             raise FileNotFoundError(f"ไม่พบ {label}: {path}")
 
     model = init_model(str(args.config), str(args.checkpoint), device="cpu")
-    wrapped_model = ONNXWrapper(model).eval()
+    if args.det_checkpoint is not None:
+        if not args.det_checkpoint.is_file():
+            raise FileNotFoundError(f"ไม่พบ det checkpoint: {args.det_checkpoint}")
+        wrapped_model = DetSegWrapper(model, load_det(str(args.det_checkpoint), "cpu")).eval()
+        output_names = ["logits", "det_logit"]
+    else:
+        wrapped_model = ONNXWrapper(model).eval()
+        output_names = ["logits"]
     dummy_input = torch.randn(1, 3, args.height, args.width, dtype=torch.float32)
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
@@ -96,7 +107,7 @@ def main() -> None:
             dummy_input,
             str(args.output),
             input_names=["input"],
-            output_names=["logits"],
+            output_names=output_names,
             dynamic_axes={
                 "input": {2: "height", 3: "width"},
                 "logits": {2: "height_out", 3: "width_out"},

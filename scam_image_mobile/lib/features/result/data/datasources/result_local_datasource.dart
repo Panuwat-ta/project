@@ -19,32 +19,36 @@ class ResultLocalDataSourceImpl implements ResultLocalDataSource {
   @override
   Future<void> cacheResult(AnalysisResult result) async {
     final db = await databaseHelper.database;
-    final factorsJson = jsonEncode(result.factors.map((f) => {
-          'type': f.type,
-          'score': f.score,
-          'title': f.title,
-          'details': f.details,
-        }).toList());
-    await db.insert(
-      DatabaseHelper.tableDetails,
-      {
-        'scanId': result.scanId,
-        'taskId': result.taskId,
-        'status': result.status,
-        'riskScore': result.riskScore,
-        'riskLevel': result.riskLevel.name,
-        'summary': result.summary,
-        'imageUrl': result.imageUrl,
-        'heatmapUrl': result.heatmapUrl,
-        'xaiExplanation': result.xaiExplanation,
-        'aiGenProbability': result.aiGenProbability,
-        'ocrText': result.ocrText,
-        'scamKeywordsJson': result.scamKeywords != null ? jsonEncode(result.scamKeywords) : null,
-        'createdAt': result.createdAt.toIso8601String(),
-        'factorsJson': factorsJson,
-      },
-      conflictAlgorithm: ConflictAlgorithm.replace,
+    final factorsJson = jsonEncode(
+      result.factors
+          .map(
+            (f) => {
+              'type': f.type,
+              'score': f.score,
+              'title': f.title,
+              'details': f.details,
+            },
+          )
+          .toList(),
     );
+    await db.insert(DatabaseHelper.tableDetails, {
+      'scanId': result.scanId,
+      'taskId': result.taskId,
+      'status': result.status,
+      'riskScore': result.riskScore,
+      'riskLevel': result.riskLevel.name,
+      'summary': result.summary,
+      'imageUrl': result.imageUrl,
+      'heatmapUrl': result.heatmapUrl,
+      'xaiExplanation': result.xaiExplanation,
+      'aiGenProbability': result.aiGenProbability,
+      'ocrText': result.ocrText,
+      'scamKeywordsJson': result.scamKeywords != null
+          ? jsonEncode(result.scamKeywords)
+          : null,
+      'createdAt': result.createdAt.toIso8601String(),
+      'factorsJson': factorsJson,
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   @override
@@ -71,7 +75,7 @@ class ResultLocalDataSourceImpl implements ResultLocalDataSource {
     final h = histMaps.first;
     final riskLevel = RiskLevel.values.firstWhere(
       (e) => e.name == h['riskLevel'] as String,
-      orElse: () => RiskLevel.low,
+      orElse: () => RiskLevel.unknown,
     );
     return AnalysisResult(
       scanId: h['scanId'] as String,
@@ -84,7 +88,12 @@ class ResultLocalDataSourceImpl implements ResultLocalDataSource {
       heatmapUrl: null,
       createdAt: DateTime.parse(h['createdAt'] as String).toLocal(),
       factors: [
-        RiskFactor(type: 'visual', score: h['riskScore'] as int, title: '', details: []),
+        RiskFactor(
+          type: 'visual',
+          score: h['riskScore'] as int,
+          title: '',
+          details: [],
+        ),
       ],
     );
   }
@@ -92,7 +101,7 @@ class ResultLocalDataSourceImpl implements ResultLocalDataSource {
   AnalysisResult _mapToResult(Map<String, dynamic> m) {
     final riskLevel = RiskLevel.values.firstWhere(
       (e) => e.name == m['riskLevel'] as String,
-      orElse: () => RiskLevel.low,
+      orElse: () => RiskLevel.unknown,
     );
     List<RiskFactor> factors = [];
     try {
@@ -105,7 +114,9 @@ class ResultLocalDataSourceImpl implements ResultLocalDataSource {
             type: jm['type'] as String,
             score: jm['score'] as int,
             title: jm['title'] as String,
-            details: (jm['details'] as List<dynamic>).map((d) => d as String).toList(),
+            details: (jm['details'] as List<dynamic>)
+                .map((d) => d as String)
+                .toList(),
           );
         }).toList();
       }

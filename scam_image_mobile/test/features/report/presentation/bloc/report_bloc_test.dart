@@ -36,15 +36,11 @@ void main() {
     blocTest<ReportBloc, ReportState>(
       'emits [ReportSubmitting, ReportSuccess] on success',
       build: () {
-        when(() => mockRepo.submitReport(any()))
-            .thenAnswer((_) async {});
+        when(() => mockRepo.submitReport(any())).thenAnswer((_) async {});
         return ReportBloc(repository: mockRepo);
       },
       act: (bloc) => bloc.add(const ReportSubmitted(tReport)),
-      expect: () => const [
-        ReportSubmitting(),
-        ReportSuccess(),
-      ],
+      expect: () => const [ReportSubmitting(), ReportSuccess()],
       verify: (_) {
         verify(() => mockRepo.submitReport(tReport)).called(1);
       },
@@ -53,8 +49,9 @@ void main() {
     blocTest<ReportBloc, ReportState>(
       'emits [ReportSubmitting, ReportError] with network message on NetworkException',
       build: () {
-        when(() => mockRepo.submitReport(any()))
-            .thenThrow(const NetworkException('Connection error'));
+        when(
+          () => mockRepo.submitReport(any()),
+        ).thenThrow(const NetworkException('Connection error'));
         return ReportBloc(repository: mockRepo);
       },
       act: (bloc) => bloc.add(const ReportSubmitted(tReport)),
@@ -63,7 +60,7 @@ void main() {
         isA<ReportError>().having(
           (s) => s.message,
           'message',
-          contains('เชื่อมต่อ'),
+          equals('report_error_network'),
         ),
       ],
     );
@@ -71,8 +68,9 @@ void main() {
     blocTest<ReportBloc, ReportState>(
       'emits [ReportSubmitting, ReportError] with session message on AuthException',
       build: () {
-        when(() => mockRepo.submitReport(any()))
-            .thenThrow(const AuthException('401'));
+        when(
+          () => mockRepo.submitReport(any()),
+        ).thenThrow(const AuthException('401'));
         return ReportBloc(repository: mockRepo);
       },
       act: (bloc) => bloc.add(const ReportSubmitted(tReport)),
@@ -81,7 +79,7 @@ void main() {
         isA<ReportError>().having(
           (s) => s.message,
           'message',
-          contains('เซสชัน'),
+          equals('report_error_auth'),
         ),
       ],
     );
@@ -89,8 +87,9 @@ void main() {
     blocTest<ReportBloc, ReportState>(
       'emits [ReportSubmitting, ReportError] with generic message on unknown error',
       build: () {
-        when(() => mockRepo.submitReport(any()))
-            .thenThrow(Exception('unexpected'));
+        when(
+          () => mockRepo.submitReport(any()),
+        ).thenThrow(Exception('unexpected'));
         return ReportBloc(repository: mockRepo);
       },
       act: (bloc) => bloc.add(const ReportSubmitted(tReport)),
@@ -99,7 +98,7 @@ void main() {
         isA<ReportError>().having(
           (s) => s.message,
           'message',
-          contains('ลองใหม่'),
+          equals('report_error_generic'),
         ),
       ],
     );

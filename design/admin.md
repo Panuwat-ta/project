@@ -3,6 +3,8 @@
 
 เอกสารฉบับนี้อธิบายรายละเอียดการออกแบบส่วนติดต่อผู้ใช้ (UX/UI) ของ Admin Web Portal สำหรับผู้ดูแลระบบ Scam Image Detection โดยอ้างอิงจากเอกสารออกแบบ API/Backend ใน `Document/admin/admin.md` และใช้ระบบสี (Design System) ที่สอดคล้องกับ Mobile App เดิม
 
+> **Implementation authority (2026-09-20):** รายละเอียดที่ implement จริงให้ยึด `admin-portal/DESIGN.md` เป็นหลัก เอกสารฉบับนี้เก็บ product intent และ historical screen specification; ส่วนที่กล่าวถึงฟอนต์ Inter/Sarabun, 7 KPI cards, ไม่มี Global Search, model upload หรือ decorative glow ถือเป็นข้อมูลเดิมที่ถูก supersede หากขัดกับ `admin-portal/DESIGN.md`.
+
 ---
 
 ## 1. เป้าหมายการออกแบบ (Design Goals)
@@ -13,7 +15,7 @@ Admin Portal ถูกออกแบบให้เป็น Web Application �
 2. ตรวจสอบและตัดสินใจเรื่องรายงานสแกมได้อย่างรวดเร็ว
 3. จัดการผู้ใช้ โมเดล AI และ Dataset ได้ในที่เดียว
 4. แสดงข้อมูลในรูปแบบที่อ่านง่าย ไม่รกสายตา ใช้งานได้จริง
-5. รักษาภาพลักษณ์ที่สอดคล้องกับ Mobile App (Dark Theme, Neon Cyan Accent)
+5. รองรับ System / Light / Dark theme โดยใช้ Cyan เป็น accent สำหรับ action/selection เท่านั้น และรักษาความอ่านง่ายของข้อมูลเป็นหลัก
 
 ---
 
@@ -71,19 +73,18 @@ Admin Portal ใช้ Dark Theme เป็นหลัก สอดคล้อ
 
 ### 2.2 Typography
 
-| Style | Font | Size | Weight | Line Height | ใช้งาน |
-|:---|:---|---:|---:|---:|:---|
-| `display` | Inter | 32px | 700 | 1.2 | ตัวเลขหลัก Dashboard (KPI) |
-| `heading-1` | Inter | 24px | 700 | 1.3 | ชื่อหน้า |
-| `heading-2` | Inter | 20px | 600 | 1.3 | หัวข้อ Section |
-| `heading-3` | Inter | 16px | 600 | 1.4 | หัวข้อย่อย, Label สำคัญ |
-| `body` | Sarabun | 14px | 400 | 1.5 | เนื้อหาทั่วไป, Table Data |
-| `body-sm` | Sarabun | 13px | 400 | 1.5 | ข้อความรอง, Caption |
-| `caption` | Sarabun | 12px | 400 | 1.4 | Timestamp, Metadata |
-| `button` | Inter | 14px | 600 | 1.0 | ปุ่ม |
-| `code` | JetBrains Mono | 13px | 400 | 1.4 | UUID, Hash, Version Tag |
+Implementation ปัจจุบันใช้ family เดียวสำหรับ product UI เพื่อความสม่ำเสมอ: `Noto Sans Thai Variable` สำหรับภาษาไทย โดยมี `Geist Variable` เป็น Latin fallback และใช้ system monospace เฉพาะข้อมูลเชิงเทคนิค
 
-**หมายเหตุ:** ใช้ `Inter` สำหรับข้อความภาษาอังกฤษ ตัวเลข และ UI Label / `Sarabun` สำหรับข้อความภาษาไทย เพื่อความสอดคล้องกับ Mobile App
+| Style | Size | Weight | ใช้งาน |
+|:---|---:|---:|:---|
+| Page title | 20px | 700 | ชื่อหน้า |
+| Section title | 14–16px | 600 | หัวข้อ section/card |
+| Body / Control | 14px | 400–600 | เนื้อหาและ control หลัก |
+| Supporting | 13px | 400–600 | คำอธิบายและข้อมูลรอง |
+| Caption | 12px | 400 | timestamp/metadata ที่รองจริง |
+| Code/Data | 12–13px | 400–600 | ID, hash, version, measurement |
+
+ใช้ `tabular-nums` กับข้อมูลตัวเลขในตาราง และไม่ใช้ monospace เป็นภาพลักษณ์ “technical” กับข้อความทั่วไป
 
 ### 2.3 Spacing System
 
@@ -171,7 +172,7 @@ Admin Portal ใช้ Dark Theme เป็นหลัก สอดคล้อ
 - ซ้าย: โลโก้ ScamGuard + ข้อความ "Admin Portal"
 - ขวา: Avatar + ชื่อ Admin + Dropdown (Profile, Logout)
 
-**หมายเหตุ:** ไม่มีช่องค้นหารวมแบบ Global Search และไม่มีระฆังแจ้งเตือน เนื่องจากไม่มี Endpoint/Feature รองรับ — การค้นหากระทำภายในหน้า Reports / Users เท่านั้น
+**หมายเหตุ (อัปเดต 2026-09-20):** มี Command Palette / Global Search ผ่าน `Ctrl/Cmd + K` และ endpoint `/admin/search`; ไม่มี notification bell. Desktop Top Bar ไม่ทำชื่อหน้าซ้ำกับ Page Header และแสดง title เฉพาะ mobile context.
 
 ---
 
@@ -184,7 +185,11 @@ Admin Portal ใช้ Dark Theme เป็นหลัก สอดคล้อ
 
 หน้าแรกที่ Admin เห็นเมื่อเข้าสู่ระบบ แสดงภาพรวมสถิติทั้งหมดในหน้าเดียว
 
-#### Layout:
+**Current implementation (2026-09-20):** ใช้ health strip ที่ผูก `/admin/health`, KPI หลัก 4 ค่า (สแกนวันนี้, รายงานรอตรวจ, สัดส่วนความเสี่ยงสูง, ผู้ใช้งานวันนี้), scan trend, risk distribution และ category breakdown. Missing telemetry ต้องแสดง Unknown/Unavailable และไม่สร้างค่า fallback ใน client.
+
+> Wireframe/KPI 7 ใบด้านล่างเป็น historical concept และไม่ใช่ implementation authority ปัจจุบัน.
+
+#### Layout (historical):
 
 ```
 +----------------------------------------------------------+

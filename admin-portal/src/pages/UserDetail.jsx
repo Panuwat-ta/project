@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -13,46 +13,36 @@ import {
 import { getUser, updateUserStatus } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
-import { StatusBadge, Badge } from "@/components/ui/Badge";
+import { StatusBadge, Badge, RiskBadge } from "@/components/ui/Badge";
 import { Modal } from "@/components/ui/Modal";
 import { Textarea } from "@/components/ui/Input";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell, TableEmpty } from "@/components/ui/Table";
 import { useToast } from "@/components/ui/ToastContext";
 import { formatDate, formatNumber } from "@/lib/utils";
+import { formatOptionalMetric } from "@/lib/display-state";
+import { useAdminQuery } from "@/lib/use-admin-query";
 
 export function UserDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
 
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const {
+    data: user,
+    isLoading: loading,
+    error,
+    reload: fetchUserData,
+  } = useAdminQuery(() => getUser(id), {
+    deps: [id],
+    errorMessage: "เกิดข้อผิดพลาดในการโหลดข้อมูลผู้ใช้",
+    logPrefix: "Fetch user detail error:",
+  });
 
   // Status Modal State
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [reason, setReason] = useState("");
   const [reasonError, setReasonError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const fetchUserData = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await getUser(id);
-      setUser(data);
-    } catch (err) {
-      console.error("Fetch user detail error:", err);
-      setError(err.message || "ไม่สามารถโหลดข้อมูลผู้ใช้ได้");
-      toast.error("เกิดข้อผิดพลาดในการโหลดข้อมูลผู้ใช้");
-    } finally {
-      setLoading(false);
-    }
-  }, [id, toast]);
-
-  useEffect(() => {
-    fetchUserData();
-  }, [fetchUserData]);
 
   const handleToggleStatus = async () => {
     if (!reason.trim()) {
@@ -118,6 +108,7 @@ export function UserDetail() {
           <Link
             to="/admin/users"
             className="p-1.5 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            aria-label="กลับไปหน้ารายชื่อผู้ใช้"
           >
             <ArrowLeft className="size-4" />
           </Link>
@@ -132,7 +123,7 @@ export function UserDetail() {
               </Badge>
             </div>
             <p className="text-xs text-muted-foreground font-mono mt-0.5">
-              User ID: #{user.id} • {user.email}
+              รหัสผู้ใช้ #{user.id} • {user.email}
             </p>
           </div>
         </div>
@@ -155,50 +146,23 @@ export function UserDetail() {
         )}
       </div>
 
-      {/* Overview Metric Panels */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="p-4 flex items-center gap-3.5">
-            <div className="size-10 rounded-lg bg-primary-subtle border border-primary-border text-primary flex items-center justify-center">
-              <Activity className="size-5" />
-            </div>
-            <div>
-              <div className="text-xs font-medium text-muted-foreground">สแกนสะสมทั้งหมด</div>
-              <div className="text-xl font-bold font-mono text-foreground">
-                {formatNumber(user.total_scans ?? user.scans_count ?? 0)} ครั้ง
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4 flex items-center gap-3.5">
-            <div className="size-10 rounded-lg bg-danger-subtle border border-danger-border text-danger flex items-center justify-center">
-              <Flag className="size-5" />
-            </div>
-            <div>
-              <div className="text-xs font-medium text-muted-foreground">ส่งรายงาน Scam ทั้งหมด</div>
-              <div className="text-xl font-bold font-mono text-foreground">
-                {formatNumber(user.total_reports ?? 0)} รายการ
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4 flex items-center gap-3.5">
-            <div className="size-10 rounded-lg bg-success-subtle border border-success-border text-success flex items-center justify-center">
-              <Clock className="size-5" />
-            </div>
-            <div>
-              <div className="text-xs font-medium text-muted-foreground">ลงทะเบียนเมื่อ</div>
-              <div className="text-xs font-semibold font-mono text-foreground mt-1">
-                {formatDate(user.created_at)}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Account metrics share one surface so status and activity remain comparable. */}
+      <Card>
+        <CardContent className="p-0 grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-border-subtle">
+          <div className="p-4">
+            <div className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground"><Activity className="size-4 text-primary" />สแกนสะสมทั้งหมด</div>
+            <div className="mt-1 text-lg font-bold font-mono text-foreground">{formatNumber(user.total_scans ?? user.scans_count ?? 0)} ครั้ง</div>
+          </div>
+          <div className="p-4">
+            <div className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground"><Flag className="size-4 text-danger" />รายงานทั้งหมด</div>
+            <div className="mt-1 text-lg font-bold font-mono text-foreground">{formatNumber(user.total_reports ?? 0)} รายการ</div>
+          </div>
+          <div className="p-4">
+            <div className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground"><Clock className="size-4 text-muted-foreground" />ลงทะเบียนเมื่อ</div>
+            <div className="mt-1 text-[13px] font-semibold font-mono text-foreground">{formatDate(user.created_at)}</div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Details & Activity Table */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -210,7 +174,7 @@ export function UserDetail() {
               <span>ข้อมูลบัญชีผู้ใช้</span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3 font-mono text-xs">
+          <CardContent className="space-y-3 text-[13px]">
             <div className="flex items-center justify-between py-1.5 border-b border-border-subtle">
               <span className="text-muted-foreground font-medium">ชื่อ-นามสกุล:</span>
               <span className="text-foreground font-sans font-semibold">{user.full_name || "-"}</span>
@@ -218,26 +182,26 @@ export function UserDetail() {
 
             <div className="flex items-center justify-between py-1.5 border-b border-border-subtle">
               <span className="text-muted-foreground font-medium">อีเมล:</span>
-              <span className="text-foreground font-semibold">{user.email}</span>
+              <span className="text-foreground font-mono font-semibold">{user.email}</span>
             </div>
 
             <div className="flex items-center justify-between py-1.5 border-b border-border-subtle">
-              <span className="text-muted-foreground font-medium">ระดับสิทธิ์ (Role):</span>
+              <span className="text-muted-foreground font-medium">สิทธิ์:</span>
               <span className="text-foreground font-semibold uppercase">{user.role}</span>
             </div>
 
             <div className="flex items-center justify-between py-1.5 border-b border-border-subtle">
               <span className="text-muted-foreground font-medium">สถานะปัจจุบัน:</span>
               <span className={user.is_active ? "text-success font-bold" : "text-danger font-bold"}>
-                {user.is_active ? "ปกติ (Active)" : "ถูกระงับ (Banned)"}
+                {user.is_active ? "ใช้งาน" : "ถูกระงับ"}
               </span>
             </div>
 
-            {user.banned_reason && (
+            {user.ban_reason && (
               <div className="py-2 space-y-1">
                 <span className="text-danger font-semibold">เหตุผลการระงับล่าสุด:</span>
                 <p className="text-danger font-sans bg-danger-subtle p-2 rounded border border-danger-border">
-                  {user.banned_reason}
+                  {user.ban_reason}
                 </p>
               </div>
             )}
@@ -249,40 +213,39 @@ export function UserDetail() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Activity className="size-4 text-primary" />
-              <span>ประวัติการสแกนล่าสุด (Recent Scan Activity)</span>
+              <span>การสแกนล่าสุด</span>
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <Table>
               <TableHeader>
                 <TableRow isHoverable={false}>
-                  <TableHead>Scan ID</TableHead>
+                  <TableHead>รหัสการสแกน</TableHead>
                   <TableHead>คะแนนความเสี่ยง</TableHead>
                   <TableHead>ระดับผลการตรวจ</TableHead>
+                  <TableHead>สถานะ</TableHead>
                   <TableHead>วันที่สแกน</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {recentScans.length === 0 ? (
-                  <TableEmpty colSpan={4} message="ยังไม่มีประวัติการสแกนรูปภาพจากผู้ใช้นี้" />
+                  <TableEmpty colSpan={5} message="ยังไม่มีประวัติการสแกนรูปภาพจากผู้ใช้นี้" />
                 ) : (
                   recentScans.map((scan) => (
                     <TableRow key={scan.id}>
-                      <TableCell className="font-mono text-xs font-semibold text-foreground">
+                      <TableCell className="font-mono text-[13px] font-semibold text-foreground">
                         #{scan.id}
                       </TableCell>
-                      <TableCell className="font-mono text-xs font-bold text-foreground">
-                        {scan.risk_score}%
+                      <TableCell className="font-mono text-[13px] font-bold text-foreground">
+                        {formatOptionalMetric(scan.total_risk_score, { suffix: "%" })}
                       </TableCell>
                       <TableCell>
-                        <Badge
-                          variant={scan.risk_score >= 70 ? "danger" : scan.risk_score >= 40 ? "warning" : "success"}
-                          size="sm"
-                        >
-                          {scan.risk_level || (scan.risk_score >= 70 ? "HIGH" : scan.risk_score >= 40 ? "MEDIUM" : "LOW")}
-                        </Badge>
+                        <RiskBadge score={scan.total_risk_score} />
                       </TableCell>
-                      <TableCell className="font-mono text-xs text-muted-foreground">
+                      <TableCell>
+                        <StatusBadge status={scan.status} />
+                      </TableCell>
+                      <TableCell className="font-mono text-[13px] text-muted-foreground">
                         {formatDate(scan.created_at)}
                       </TableCell>
                     </TableRow>
@@ -299,7 +262,7 @@ export function UserDetail() {
         isOpen={showStatusModal}
         onClose={() => setShowStatusModal(false)}
         title={user.is_active ? `ระงับบัญชี: ${user.email}` : `ปลดการระงับ: ${user.email}`}
-        description="กรุณาระบุเหตุผลอย่างละเอียดเพื่อบันทึกประวัติลง Audit Trail"
+        description="กรุณาระบุเหตุผล เหตุผลนี้จะถูกบันทึกไว้ในประวัติระบบ"
         footer={
           <>
             <Button variant="ghost" size="sm" onClick={() => setShowStatusModal(false)} disabled={isSubmitting}>

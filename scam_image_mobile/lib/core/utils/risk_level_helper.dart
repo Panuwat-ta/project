@@ -3,15 +3,17 @@ import 'package:flutter/material.dart';
 import '../../features/result/domain/entities/analysis_result.dart';
 import '../theme/app_colors.dart';
 
-/// Converts a numeric risk score (0-100) to a [RiskLevel] (3 ระดับ: Low/Medium/High).
+/// Presentation mappers for a [RiskLevel] (3 ระดับ + unknown).
 ///
-/// 0-39  → low
-/// 40-69 → medium
-/// 70-100 → high
+/// The overall grade is owned by the server RiskScore module — mobile never
+/// recomputes it. [factorLevelForScore] is presentation-only for per-factor
+/// pills and must not be used as the overall grade.
 class RiskLevelHelper {
   RiskLevelHelper._();
 
-  static RiskLevel fromScore(int score) {
+  /// Presentation-only mapping of a single factor score to a level pill.
+  /// Not a grade authority: the overall grade always comes from the server.
+  static RiskLevel factorLevelForScore(int score) {
     if (score >= 70) return RiskLevel.high;
     if (score >= 40) return RiskLevel.medium;
     return RiskLevel.low;
@@ -25,6 +27,8 @@ class RiskLevelHelper {
         return 'Medium';
       case RiskLevel.high:
         return 'High';
+      case RiskLevel.unknown:
+        return 'Unknown';
     }
   }
 
@@ -32,11 +36,13 @@ class RiskLevelHelper {
   static Color toColor(RiskLevel level) {
     switch (level) {
       case RiskLevel.low:
-        return AppColors.tertiary;
+        return AppColors.success;
       case RiskLevel.medium:
-        return const Color(0xFFEA580C); // orange-600
+        return AppColors.warning;
       case RiskLevel.high:
         return AppColors.danger;
+      case RiskLevel.unknown:
+        return AppColors.outline;
     }
   }
 
@@ -44,11 +50,13 @@ class RiskLevelHelper {
   static Color toBgColor(RiskLevel level, {required bool isDark}) {
     switch (level) {
       case RiskLevel.low:
-        return isDark ? const Color(0xFF332B14) : const Color(0xFFFEF9C3);
+        return AppColors.success.withValues(alpha: isDark ? 0.22 : 0.12);
       case RiskLevel.medium:
-        return isDark ? const Color(0xFF33200E) : const Color(0xFFFFF7ED);
+        return AppColors.warning.withValues(alpha: isDark ? 0.22 : 0.12);
       case RiskLevel.high:
-        return isDark ? const Color(0xFF4A1818) : const Color(0xFFFFEBEB);
+        return AppColors.danger.withValues(alpha: isDark ? 0.22 : 0.10);
+      case RiskLevel.unknown:
+        return AppColors.outline.withValues(alpha: isDark ? 0.22 : 0.10);
     }
   }
 
@@ -56,11 +64,13 @@ class RiskLevelHelper {
   static Color toTextColor(RiskLevel level, {required bool isDark}) {
     switch (level) {
       case RiskLevel.low:
-        return isDark ? const Color(0xFFFDE68A) : AppColors.tertiary;
+        return isDark ? AppColors.successDark : AppColors.success;
       case RiskLevel.medium:
-        return isDark ? const Color(0xFFFDBA74) : const Color(0xFFEA580C);
+        return isDark ? AppColors.warningDark : AppColors.warning;
       case RiskLevel.high:
-        return isDark ? const Color(0xFFFFB4B4) : AppColors.danger;
+        return isDark ? AppColors.dangerDark : AppColors.danger;
+      case RiskLevel.unknown:
+        return isDark ? AppColors.outlineVariant : AppColors.outline;
     }
   }
 
@@ -73,6 +83,8 @@ class RiskLevelHelper {
         return 'result_medium_risk';
       case RiskLevel.high:
         return 'result_high_risk';
+      case RiskLevel.unknown:
+        return 'result_unknown_risk';
     }
   }
 
@@ -85,6 +97,8 @@ class RiskLevelHelper {
         return Icons.warning_rounded;
       case RiskLevel.high:
         return Icons.warning_amber_rounded;
+      case RiskLevel.unknown:
+        return Icons.help_outline_rounded;
     }
   }
 }

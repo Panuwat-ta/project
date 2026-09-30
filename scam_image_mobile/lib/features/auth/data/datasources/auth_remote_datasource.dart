@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 
 import '../../../../core/errors/exceptions.dart';
+import '../../../../core/network/dio_error_mapper.dart';
 import '../../../../core/network/api_endpoints.dart';
 import '../models/auth_token_model.dart';
 import '../models/user_model.dart';
@@ -25,6 +26,8 @@ abstract class AuthRemoteDataSource {
     required String email,
     required String password,
     required String displayName,
+    required bool systemConsent,
+    required bool researchConsent,
   });
 
   /// Invalidates the current session server-side.
@@ -59,16 +62,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       final response = await dio.post<Map<String, dynamic>>(
         ApiEndpoints.login,
-        data: FormData.fromMap({
-          'username': email,
-          'password': password,
-        }),
+        data: FormData.fromMap({'username': email, 'password': password}),
       );
       final body = _requireBody(response);
       final userJson = body['user'] as Map<String, dynamic>? ?? body;
       return (UserModel.fromJson(userJson), AuthTokenModel.fromJson(body));
     } on DioException catch (e) {
-      throw _mapDioException(e);
+      throw mapDioException(e);
     }
   }
 
@@ -77,6 +77,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String email,
     required String password,
     required String displayName,
+    required bool systemConsent,
+    required bool researchConsent,
   }) async {
     try {
       final response = await dio.post<Map<String, dynamic>>(
@@ -85,15 +87,16 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           'email': email,
           'password': password,
           'full_name': displayName,
-          'system_consent': true,
-          'research_consent': false,
+          'system_consent': systemConsent,
+          'research_consent': researchConsent,
         },
       );
-      final body = _requireBody(response);
-      final userJson = body['user'] as Map<String, dynamic>? ?? body;
-      return (UserModel.fromJson(userJson), AuthTokenModel.fromJson(body));
+      _requireBody(response);
+      // The current /auth/register response contains user data only. Log in
+      // explicitly to obtain the canonical access/refresh token pair.
+      return await login(email: email, password: password);
     } on DioException catch (e) {
-      throw _mapDioException(e);
+      throw mapDioException(e);
     }
   }
 
@@ -102,7 +105,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       await dio.post<void>(ApiEndpoints.logout);
     } on DioException catch (e) {
-      throw _mapDioException(e);
+      throw mapDioException(e);
     }
   }
 
@@ -118,19 +121,18 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final body = _requireBody(response);
       return AuthTokenModel.fromJson(body);
     } on DioException catch (e) {
-      throw _mapDioException(e);
+      throw mapDioException(e);
     }
   }
 
   @override
   Future<UserModel> getMe() async {
     try {
-      final response =
-          await dio.get<Map<String, dynamic>>(ApiEndpoints.me);
+      final response = await dio.get<Map<String, dynamic>>(ApiEndpoints.me);
       final body = _requireBody(response);
       return UserModel.fromJson(body);
     } on DioException catch (e) {
-      throw _mapDioException(e);
+      throw mapDioException(e);
     }
   }
 
@@ -142,34 +144,5 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       throw const ServerException('Empty response body');
     }
     return body;
-  }
-
-
-
-  Exception _mapDioException(DioException e) {
-    switch (e.type) {
-      case DioExceptionType.connectionTimeout:
-      case DioExceptionType.receiveTimeout:
-      case DioExceptionType.sendTimeout:
-      case DioExceptionType.connectionError:
-        return NetworkException(e.message ?? 'Connection error');
-      case DioExceptionType.badResponse:
-        final statusCode = e.response?.statusCode;
-        final data = e.response?.data;
-        String message = 'Server error';
-        
-        if (data is Map<String, dynamic>) {
-          message = data['message'] as String? ?? data['detail'] as String? ?? message;
-        } else if (data is String) {
-          message = data;
-        }
-
-        if (statusCode == 401 || statusCode == 403) {
-          return AuthException(message == 'Server error' ? 'Unauthorised' : message);
-        }
-        return ServerException(message, statusCode: statusCode);
-      default:
-        return NetworkException(e.message ?? 'Network error');
-    }
   }
 }

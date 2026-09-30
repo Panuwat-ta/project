@@ -15,7 +15,7 @@ class ApiEndpoints {
   // ── Scans ─────────────────────────────────────────────────────────────────
   static const String scans = '/scan/';
 
-  /// GET/DELETE /scan/{taskId}
+  /// GET /scan/{taskId}
   static String scanById(String taskId) => '/scan/$taskId';
 
   /// GET /scan/{taskId} (The server returns the result directly on the scan endpoint)
@@ -31,8 +31,6 @@ class ApiEndpoints {
   static const String reports = '/reports';
   static const String reportCategories = '/reports/categories';
 
-  // ── Consents / Privacy ────────────────────────────────────────────────────
-  static const String consentsMe = '/consents/me';
-  static const String privacyExport = '/privacy/export';
-  static const String privacyDeleteAccount = '/privacy/account';
+  // ── User account ──────────────────────────────────────────────────────────
+  static const String usersMe = '/users/me';
 }

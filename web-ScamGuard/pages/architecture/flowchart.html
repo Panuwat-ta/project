@@ -88,11 +88,11 @@
     
     %% Processing Tasks (ส่วนที่เป็นข้อความสีดำบนพื้นเทา)
     NodeCache -- Miss_ไม่เคย --&gt; Task1[Task 1 Metadata]
-    Task1 --&gt; Task2[Task 2 OCR]
-    Task2 --&gt; Task3[Task 3 Forgery]
+    Task1 --&gt; Task2[Task 2 Forgery]
+    Task2 --&gt; Task3[Task 3 OCR]
     
     %% Error Handling &amp; Logic Branching
-    Task3 --&gt; PartialFail[Partial Failure Timeout 5s]
+    Task3 --&gt; PartialFail[Partial Failure Timeout 120/180/300s]
     PartialFail --&gt; NodeKeyword{เจอ Keyword อันตราย}
     
     NodeKeyword -- ไม่เจอความเสี่ยงชัดเจน --&gt; Task4[Task 4 Source]
@@ -158,9 +158,9 @@
 <li><strong>Analysis Tasks</strong>:
 <ul>
 <li><strong>Task 1 Metadata</strong>: ดึงข้อมูล EXIF/GPS</li>
-<li><strong>Task 2 OCR</strong>: อ่านข้อความในภาพ</li>
-<li><strong>Task 3 Forgery</strong>: ตรวจสอบการตัดต่อ (Semantic Segmentation)</li>
-<li><strong>Partial Failure</strong>: ดักจับกรณี Timeout</li>
+<li><strong>Task 2 Forgery</strong>: ตรวจสอบการตัดต่อ (Semantic Segmentation)</li>
+<li><strong>Task 3 OCR</strong>: อ่านข้อความในภาพ</li>
+<li><strong>Partial Failure</strong>: ดักจับกรณี Timeout (ONNX 120s / OCR 180s / XAI 300s เกินแล้วใช้ค่า default ไปต่อ ไม่ล้มสแกน)</li>
 <li><strong>Keyword Check</strong>: ตรวจสอบคำเสี่ยงสูง</li>
 <li><strong>Task 4 Source</strong>: ค้นหาที่มาของภาพ
 <ul>

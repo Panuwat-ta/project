@@ -1,28 +1,80 @@
 import { useState } from "react";
 import { Sliders, Columns, Layers, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  pointerToPct,
+  sliderClipStyle,
+  dividerStyle,
+  opacityFraction,
+  zoomIn,
+  zoomOut,
+} from "@/lib/heatmap-math";
 
 export function HeatmapComparator({
   originalUrl,
   heatmapUrl,
-  title = "การตรวจจับความผิดปกติของภาพ (Visual Anomaly)",
+  title = "เปรียบเทียบผลการตรวจภาพ",
   className,
 }) {
   const [mode, setMode] = useState("slider"); // 'slider' | 'side-by-side' | 'overlay'
   const [sliderPosition, setSliderPosition] = useState(50); // percentage
   const [overlayOpacity, setOverlayOpacity] = useState(70); // percentage
   const [zoom, setZoom] = useState(1);
+  const [isDragging, setIsDragging] = useState(false);
 
-  const handleZoomIn = () => setZoom((prev) => Math.min(prev + 0.25, 2.5));
-  const handleZoomOut = () => setZoom((prev) => Math.max(prev - 0.25, 0.75));
+  const handleZoomIn = () => setZoom((prev) => zoomIn(prev));
+  const handleZoomOut = () => setZoom((prev) => zoomOut(prev));
   const handleZoomReset = () => setZoom(1);
+
+  const updateSliderFromPointer = (event) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    setSliderPosition(pointerToPct(event.clientX, rect.left, rect.width));
+  };
+
+  const handleSliderKeyDown = (event) => {
+    let next = sliderPosition;
+    if (event.key === "ArrowLeft" || event.key === "ArrowDown") next -= 1;
+    else if (event.key === "ArrowRight" || event.key === "ArrowUp") next += 1;
+    else if (event.key === "PageDown") next -= 10;
+    else if (event.key === "PageUp") next += 10;
+    else if (event.key === "Home") next = 0;
+    else if (event.key === "End") next = 100;
+    else return;
+    event.preventDefault();
+    setSliderPosition(Math.max(0, Math.min(100, next)));
+  };
+
+  if (!heatmapUrl) {
+    return (
+      <div className={cn("flex flex-col rounded-xl border border-border bg-card text-card-foreground overflow-hidden shadow-sm", className)}>
+        <div className="p-3.5 border-b border-border bg-muted/50">
+          <span className="text-sm font-semibold text-foreground">{title}</span>
+        </div>
+        <div className="min-h-[300px] bg-black/90 p-4 flex flex-col items-center justify-center gap-4">
+          {originalUrl && (
+            <img
+              src={originalUrl}
+              alt="ภาพต้นฉบับ"
+              className="max-h-[360px] max-w-full object-contain rounded-lg border border-border"
+            />
+          )}
+          <div className="max-w-lg rounded-lg border border-border bg-card px-4 py-3 text-center">
+            <p className="text-sm font-semibold text-foreground">ไม่มี Heatmap จากระบบ</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              ยังไม่สามารถเปรียบเทียบหรือซ้อนผลโมเดลได้ ภาพที่แสดงด้านบนเป็นภาพต้นฉบับเท่านั้น
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={cn("flex flex-col rounded-xl border border-border bg-card text-card-foreground overflow-hidden shadow-sm", className)}>
       {/* Control Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 border-b border-border bg-muted/50">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <span className="text-sm font-semibold text-foreground">
             {title}
           </span>
         </div>
@@ -33,46 +85,49 @@ export function HeatmapComparator({
             <button
               type="button"
               onClick={() => setMode("slider")}
+              aria-pressed={mode === "slider"}
               className={cn(
-                "px-2.5 py-1 text-xs font-medium rounded-md transition-all flex items-center gap-1.5",
+                "h-8 px-2.5 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5",
                 mode === "slider"
                   ? "bg-card text-primary shadow-sm font-semibold"
                   : "text-muted-foreground hover:text-foreground"
               )}
-              title="Split Slider View"
+              title="เลื่อนเปรียบเทียบ"
             >
               <Sliders className="size-3.5" />
-              <span>Slider</span>
+              <span>เลื่อนเปรียบเทียบ</span>
             </button>
 
             <button
               type="button"
               onClick={() => setMode("side-by-side")}
+              aria-pressed={mode === "side-by-side"}
               className={cn(
-                "px-2.5 py-1 text-xs font-medium rounded-md transition-all flex items-center gap-1.5",
+                "h-8 px-2.5 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5",
                 mode === "side-by-side"
                   ? "bg-card text-primary shadow-sm font-semibold"
                   : "text-muted-foreground hover:text-foreground"
               )}
-              title="Side by Side"
+              title="เทียบข้างกัน"
             >
               <Columns className="size-3.5" />
-              <span>Side-by-Side</span>
+              <span>เทียบข้างกัน</span>
             </button>
 
             <button
               type="button"
               onClick={() => setMode("overlay")}
+              aria-pressed={mode === "overlay"}
               className={cn(
-                "px-2.5 py-1 text-xs font-medium rounded-md transition-all flex items-center gap-1.5",
+                "h-8 px-2.5 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5",
                 mode === "overlay"
                   ? "bg-card text-primary shadow-sm font-semibold"
                   : "text-muted-foreground hover:text-foreground"
               )}
-              title="Adjustable Overlay"
+              title="ซ้อนภาพ"
             >
               <Layers className="size-3.5" />
-              <span>Overlay</span>
+              <span>ซ้อนภาพ</span>
             </button>
           </div>
 
@@ -81,8 +136,9 @@ export function HeatmapComparator({
             <button
               type="button"
               onClick={handleZoomOut}
-              className="p-1 rounded text-muted-foreground hover:bg-muted transition-colors"
-              title="Zoom Out"
+              className="size-8 inline-flex items-center justify-center rounded text-muted-foreground hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              title="ย่อภาพ"
+              aria-label="ย่อภาพ"
             >
               <ZoomOut className="size-3.5" />
             </button>
@@ -92,8 +148,9 @@ export function HeatmapComparator({
             <button
               type="button"
               onClick={handleZoomIn}
-              className="p-1 rounded text-muted-foreground hover:bg-muted transition-colors"
-              title="Zoom In"
+              className="size-8 inline-flex items-center justify-center rounded text-muted-foreground hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              title="ขยายภาพ"
+              aria-label="ขยายภาพ"
             >
               <ZoomIn className="size-3.5" />
             </button>
@@ -101,8 +158,9 @@ export function HeatmapComparator({
               <button
                 type="button"
                 onClick={handleZoomReset}
-                className="p-1 rounded text-muted-foreground hover:bg-muted transition-colors"
-                title="Reset Zoom"
+                className="size-8 inline-flex items-center justify-center rounded text-muted-foreground hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                title="คืนขนาดเดิม"
+                aria-label="คืนขนาดภาพเดิม"
               >
                 <RotateCcw className="size-3.5" />
               </button>
@@ -115,37 +173,53 @@ export function HeatmapComparator({
       <div className="relative min-h-[380px] bg-black/90 flex items-center justify-center overflow-hidden select-none p-4">
         {mode === "slider" && (
           <div
-            className="relative overflow-hidden rounded-lg border border-border max-h-[500px] flex items-center justify-center cursor-ew-resize"
-            style={{ transform: `scale(${zoom})`, transformOrigin: "center center", transition: "transform 0.15s ease" }}
-            onMouseMove={(e) => {
-              const rect = e.currentTarget.getBoundingClientRect();
-              const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
-              setSliderPosition((x / rect.width) * 100);
+            className="relative overflow-hidden rounded-lg border border-border max-h-[500px] flex items-center justify-center cursor-ew-resize focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            style={{ transform: `scale(${zoom})`, transformOrigin: "center center", transition: "transform 0.15s ease", touchAction: "none" }}
+            role="slider"
+            tabIndex={0}
+            aria-label="ตำแหน่งเปรียบเทียบภาพต้นฉบับกับ Heatmap"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={Math.round(sliderPosition)}
+            aria-valuetext={`${Math.round(sliderPosition)} เปอร์เซ็นต์`}
+            onKeyDown={handleSliderKeyDown}
+            onPointerDown={(event) => {
+              setIsDragging(true);
+              event.currentTarget.setPointerCapture?.(event.pointerId);
+              updateSliderFromPointer(event);
             }}
+            onPointerMove={(event) => {
+              if (isDragging) updateSliderFromPointer(event);
+            }}
+            onPointerUp={(event) => {
+              setIsDragging(false);
+              event.currentTarget.releasePointerCapture?.(event.pointerId);
+            }}
+            onPointerCancel={() => setIsDragging(false)}
           >
             {/* Heatmap Base (Right/Background) */}
             <img
-              src={heatmapUrl || originalUrl}
-              alt="Heatmap Analysis"
+              src={heatmapUrl}
+              alt="ผลการวิเคราะห์ฮีตแมป"
               className="max-h-[480px] w-auto object-contain block pointer-events-none"
             />
 
             {/* Original Overlay (Left/Foreground clipped) */}
             <div
               className="absolute inset-0 overflow-hidden pointer-events-none"
-              style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
+              style={sliderClipStyle(sliderPosition)}
             >
               <img
                 src={originalUrl}
-                alt="Original Image"
+                alt="ภาพต้นฉบับ"
                 className="max-h-[480px] w-auto object-contain block"
               />
             </div>
 
             {/* Divider Line */}
             <div
-              className="absolute inset-y-0 w-0.5 bg-primary shadow-[0_0_10px_rgba(0,229,255,0.7)] pointer-events-none"
-              style={{ left: `${sliderPosition}%` }}
+              className="absolute inset-y-0 w-0.5 bg-primary shadow-[0_0_10px_color-mix(in_srgb,var(--primary)_70%,transparent)] pointer-events-none"
+              style={dividerStyle(sliderPosition)}
             >
               <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 size-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg font-bold text-[9px]">
                 ↔
@@ -153,11 +227,11 @@ export function HeatmapComparator({
             </div>
 
             {/* Labels */}
-            <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/80 text-[10px] font-mono text-white pointer-events-none">
-              Original
+            <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/80 text-xs font-medium text-white pointer-events-none">
+              ภาพต้นฉบับ
             </div>
-            <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-black/80 text-[10px] font-mono text-primary pointer-events-none">
-              SegFormer Heatmap
+            <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-black/80 text-xs font-medium text-primary pointer-events-none">
+              ผลตรวจของโมเดล
             </div>
           </div>
         )}
@@ -168,22 +242,22 @@ export function HeatmapComparator({
             style={{ transform: `scale(${zoom})`, transformOrigin: "center center", transition: "transform 0.15s ease" }}
           >
             <div className="flex flex-col items-center gap-2">
-              <span className="text-xs font-mono text-muted-foreground">ภาพต้นฉบับ (Original)</span>
+              <span className="text-xs text-muted-foreground">ภาพต้นฉบับ</span>
               <div className="rounded-lg border border-border overflow-hidden bg-card/50 p-1">
                 <img
                   src={originalUrl}
-                  alt="Original"
+                  alt="ภาพต้นฉบับ"
                   className="max-h-[420px] w-full object-contain rounded"
                 />
               </div>
             </div>
 
             <div className="flex flex-col items-center gap-2">
-              <span className="text-xs font-mono text-primary">Heatmap วิเคราะห์จุดผิดปกติ</span>
+              <span className="text-xs text-primary">ผลตรวจของโมเดล</span>
               <div className="rounded-lg border border-primary-border overflow-hidden bg-card/50 p-1">
                 <img
-                  src={heatmapUrl || originalUrl}
-                  alt="Heatmap"
+                  src={heatmapUrl}
+                  alt="ผลตรวจฮีตแมป"
                   className="max-h-[420px] w-full object-contain rounded"
                 />
               </div>
@@ -199,16 +273,16 @@ export function HeatmapComparator({
             {/* Base Original Image */}
             <img
               src={originalUrl}
-              alt="Original Base"
+              alt="ภาพต้นฉบับ"
               className="max-h-[480px] w-auto object-contain block"
             />
 
             {/* Heatmap with Opacity */}
             <img
-              src={heatmapUrl || originalUrl}
-              alt="Heatmap Overlay"
+              src={heatmapUrl}
+              alt="ผลตรวจฮีตแมปแบบซ้อนภาพ"
               className="absolute inset-0 max-h-[480px] w-full h-full object-contain transition-opacity duration-150 mix-blend-screen pointer-events-none"
-              style={{ opacity: overlayOpacity / 100 }}
+              style={{ opacity: opacityFraction(overlayOpacity) }}
             />
           </div>
         )}
@@ -218,37 +292,37 @@ export function HeatmapComparator({
       <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 bg-muted/40 border-t border-border text-xs text-muted-foreground">
         {mode === "overlay" ? (
           <div className="flex items-center gap-3 w-full sm:w-72">
-            <span className="text-xs font-semibold text-foreground">ความโปร่งแสง Heatmap:</span>
+            <label htmlFor="heatmap-opacity" className="text-xs font-semibold text-foreground">ความโปร่งแสง:</label>
             <input
+              id="heatmap-opacity"
               type="range"
               min="0"
               max="100"
               value={overlayOpacity}
               onChange={(e) => setOverlayOpacity(Number(e.target.value))}
+              aria-valuetext={`${overlayOpacity} เปอร์เซ็นต์`}
               className="w-full accent-primary cursor-pointer"
             />
             <span className="font-mono text-xs w-9 text-right font-bold text-foreground">{overlayOpacity}%</span>
           </div>
         ) : (
           <div className="text-xs text-muted-foreground font-medium">
-            เลื่อนเมาส์ผ่านภาพเพื่อเปรียบเทียบจุดตรวจจับพิกเซลผิดปกติ
+            ลากตัวแบ่งหรือใช้ปุ่มลูกศรบนคีย์บอร์ดเพื่อเปรียบเทียบผล
           </div>
         )}
 
-        {/* Heatmap Legend */}
-        <div className="flex items-center gap-4 text-[11px]">
-          <span className="font-semibold text-muted-foreground">ระดับความเสี่ยงพิกเซล:</span>
-          <div className="flex items-center gap-1.5 text-foreground font-medium">
-            <span className="size-2 rounded-full bg-risk-low" />
-            <span>ธรรมชาติ (0-39)</span>
+        {/* Heatmap probability legend mirrors the backend Green → Blue → Yellow → Red colormap. */}
+        <div className="min-w-64 flex-1 sm:max-w-md" aria-label="สเกลความน่าจะเป็นของความผิดปกติ 0 ถึง 100 เปอร์เซ็นต์">
+          <div className="flex items-center justify-between gap-3 text-xs">
+            <span className="font-semibold text-muted-foreground">ความน่าจะเป็นของความผิดปกติ</span>
+            <span className="font-mono text-foreground">0–100%</span>
           </div>
-          <div className="flex items-center gap-1.5 text-foreground font-medium">
-            <span className="size-2 rounded-full bg-risk-medium" />
-            <span>สงสัยปานกลาง (40-69)</span>
-          </div>
-          <div className="flex items-center gap-1.5 text-foreground font-medium">
-            <span className="size-2 rounded-full bg-risk-high" />
-            <span>ผิดปกติสูง (70-100)</span>
+          <div
+            className="mt-1.5 h-2 w-full rounded-full border border-border"
+            style={{ backgroundImage: "linear-gradient(90deg, rgb(0 255 0) 0%, rgb(0 0 255) 33.3%, rgb(255 255 0) 66.7%, rgb(255 0 0) 100%)" }}
+          />
+          <div className="mt-1 flex justify-between text-[11px] text-muted-foreground font-mono">
+            <span>0%</span><span>33%</span><span>67%</span><span>100%</span>
           </div>
         </div>
       </div>

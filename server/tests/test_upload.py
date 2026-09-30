@@ -1,29 +1,51 @@
-import asyncio
-from app.core.database import async_session_maker
-from app.services.scan_service import analyze_image
-from fastapi import UploadFile
 import io
-import os
+import uuid
 
-async def main():
-    # Make sure uploads dir exists
-    os.makedirs("/home/panuwat/project/server/uploads/heatmaps", exist_ok=True)
+import pytest
+from fastapi import UploadFile
+from PIL import Image
 
-    async with async_session_maker() as db:
-        content = b"fake image content for testing duplicate"
-        file1 = UploadFile(filename="test.png", file=io.BytesIO(content))
-        try:
-            print("First upload...")
-            scan1 = await analyze_image(file1, 1, db, "Title 1")
-            print("Scan 1 ID:", scan1.id)
-            
-            # Need a new UploadFile object since the first one is consumed
-            file2 = UploadFile(filename="test.png", file=io.BytesIO(content))
-            print("Second upload...")
-            scan2 = await analyze_image(file2, 1, db, "Title 2")
-            print("Scan 2 ID:", scan2.id)
-        except Exception as e:
-            print(f"Exception caught: {type(e).__name__} - {e}")
+from app.services.scan_service import create_scan_task
+from app.utils.hashing import calculate_image_hash
 
-if __name__ == "__main__":
-    asyncio.run(main())
+
+class FakeDb:
+    def __init__(self):
+        self.added = []
+        self.commits = 0
+
+    def add(self, instance):
+        self.added.append(instance)
+
+    async def commit(self):
+        self.commits += 1
+
+    async def refresh(self, instance):
+        if instance.id is None:
+            instance.id = uuid.uuid4()
+
+
+def _image_bytes() -> bytes:
+    buffer = io.BytesIO()
+    Image.new("RGB", (32, 32), color="white").save(buffer, format="PNG")
+    return buffer.getvalue()
+
+
+@pytest.mark.asyncio
+async def test_create_scan_task_accepts_valid_image_and_initializes_record():
+    content = _image_bytes()
+    upload = UploadFile(filename="test.png", file=io.BytesIO(content))
+    db = FakeDb()
+
+    scan, file_bytes, image_hash = await create_scan_task(upload, 1, db, "Title 1")
+
+    assert file_bytes == content
+    assert image_hash == calculate_image_hash(content)
+    assert scan.id is not None
+    assert scan.user_id == 1
+    assert scan.title == "Title 1"
+    assert scan.status == "uploading"
+    assert scan.progress == 0
+    assert scan.risk_grade == "low"
+    assert db.added == [scan]
+    assert db.commits == 1

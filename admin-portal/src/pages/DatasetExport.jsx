@@ -15,7 +15,7 @@ import {
   createExportJob,
   fetchExportJobs,
   cancelExportJob,
-  getExportDownloadUrl,
+  downloadExportJob,
 } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
@@ -23,16 +23,18 @@ import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell, TableEmp
 import { StatusBadge } from "@/components/ui/Badge";
 import { TableSkeleton } from "@/components/ui/Skeleton";
 import { useToast } from "@/components/ui/ToastContext";
-import { formatDate, formatNumber } from "@/lib/utils";
+import { Input } from "@/components/ui/Input";
+import { formatDate, formatNumber, formatFileSize } from "@/lib/utils";
+import { useAdminQuery } from "@/lib/use-admin-query";
 
 const CATEGORIES = [
-  { key: "romance_scam", label: "หลอกลวงความรัก (Romance)" },
-  { key: "online_shopping", label: "ซื้อขายออนไลน์ (Shopping)" },
-  { key: "fake_slip", label: "สลิปโอนเงินปลอม (Slip)" },
-  { key: "investment", label: "ลงทุน / ผลตอบแทนสูง (Invest)" },
-  { key: "identity_theft", label: "ปลอมแปลงตัวตน (Identity)" },
+  { key: "romance_scam", label: "หลอกลวงความรัก" },
+  { key: "online_shopping", label: "ซื้อขายออนไลน์" },
+  { key: "fake_slip", label: "สลิปโอนเงินปลอม" },
+  { key: "investment", label: "ลงทุน / ผลตอบแทนสูง" },
+  { key: "identity_theft", label: "ปลอมแปลงตัวตน" },
   { key: "ai_deepfake", label: "ภาพ AI / Deepfake" },
-  { key: "other", label: "อื่น ๆ (Other)" },
+  { key: "other", label: "อื่น ๆ" },
 ];
 
 export function DatasetExport() {
@@ -43,13 +45,30 @@ export function DatasetExport() {
 
   const [totalApprovedCount, setTotalApprovedCount] = useState(0);
   const [isExporting, setIsExporting] = useState(false);
+  const [downloadingJobId, setDownloadingJobId] = useState(null);
 
   // Export Jobs History
-  const [jobs, setJobs] = useState([]);
-  const [jobsLoading, setJobsLoading] = useState(true);
-  const [isRefreshingJobs, setIsRefreshingJobs] = useState(false);
   const [page, setPage] = useState(1);
-  const [totalJobs, setTotalJobs] = useState(0);
+
+  const {
+    data: { jobs, totalJobs },
+    isLoading: jobsLoading,
+    isRefreshing: isRefreshingJobs,
+    reload: loadJobs,
+  } = useAdminQuery(
+    async () => {
+      const data = await fetchExportJobs({ page, limit: 10 });
+      return { jobs: data.items || [], totalJobs: data.total || 0 };
+    },
+    {
+      deps: [page],
+      initialData: { jobs: [], totalJobs: 0 },
+      resetOnError: false,
+      successMessage: "รีเฟรชประวัติงานส่งออกสำเร็จ",
+      errorMessage: "ไม่สามารถโหลดประวัติงานส่งออกได้",
+      logPrefix: "Load export jobs failed:",
+    }
+  );
 
   const pollingRef = useRef(null);
   const toast = useToast();
@@ -63,29 +82,9 @@ export function DatasetExport() {
     }
   }, []);
 
-  const loadJobs = useCallback(async (manual = false) => {
-    try {
-      if (manual) setIsRefreshingJobs(true);
-      else setJobsLoading(true);
-
-      const data = await fetchExportJobs({ page, limit: 10 });
-      setJobs(data.items || []);
-      setTotalJobs(data.total || 0);
-
-      if (manual) toast.success("รีเฟรชประวัติงานส่งออกสำเร็จ");
-    } catch (err) {
-      console.error("Load export jobs failed:", err);
-      toast.error("ไม่สามารถโหลดประวัติงานส่งออกได้");
-    } finally {
-      setJobsLoading(false);
-      setIsRefreshingJobs(false);
-    }
-  }, [page, toast]);
-
   useEffect(() => {
     loadApprovedOverview();
-    loadJobs();
-  }, [loadApprovedOverview, loadJobs]);
+  }, [loadApprovedOverview]);
 
   // Polling for active jobs
   useEffect(() => {
@@ -93,9 +92,9 @@ export function DatasetExport() {
     if (hasActive && !pollingRef.current) {
       pollingRef.current = setInterval(async () => {
         try {
-          const updated = await fetchExportJobs({ page, limit: 10 });
-          setJobs(updated.items || []);
-          const stillActive = updated.items?.some(
+          const updated = await loadJobs(false, true);
+          if (!updated) return;
+          const stillActive = updated.jobs?.some(
             (j) => j.status === "queued" || j.status === "running"
           );
           if (!stillActive && pollingRef.current) {
@@ -117,6 +116,8 @@ export function DatasetExport() {
         pollingRef.current = null;
       }
     };
+    // loadJobs is a stable reload; jobs/page drive the polling lifecycle.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jobs, page]);
 
   const toggleCategory = (key) => {
@@ -138,7 +139,7 @@ export function DatasetExport() {
 
     try {
       await createExportJob(payload);
-      toast.success("สร้างงานส่งออกชุดข้อมูลเรียบร้อยแล้ว ระบบกำลังประมวลผลในเบื้องหลัง");
+      toast.success("เริ่มสร้างไฟล์ส่งออกแล้ว");
       setSelectedCategories([]);
       setFromDate("");
       setToDate("");
@@ -160,6 +161,26 @@ export function DatasetExport() {
     }
   };
 
+  const handleDownloadJob = async (job) => {
+    setDownloadingJobId(job.id);
+    try {
+      const response = await downloadExportJob(job.id);
+      const blob = await response.blob();
+      const objectUrl = window.URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = objectUrl;
+      anchor.download = `scamguard-export-${job.id}.zip`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      window.URL.revokeObjectURL(objectUrl);
+    } catch (err) {
+      toast.error("ดาวน์โหลดไฟล์ส่งออกล้มเหลว: " + err.message);
+    } finally {
+      setDownloadingJobId(null);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -167,10 +188,10 @@ export function DatasetExport() {
         <div>
           <h2 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
             <Database className="size-5 text-primary" />
-            <span>ส่งออกชุดข้อมูลสำหรับงานวิจัย (Dataset Export Pipeline)</span>
+            <span>ส่งออกชุดข้อมูล</span>
           </h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            รวบรวมรูปภาพหลอกลวงที่ผ่านการยืนยัน (Approved) พร้อมความยินยอม PDPA เพื่อใช้ฝึกและประเมินโมเดล AI
+          <p className="text-[13px] text-muted-foreground mt-0.5">
+            สร้างชุดข้อมูลจากรายงานที่ยืนยันแล้วและได้รับอนุญาตให้นำไปใช้วิจัย
           </p>
         </div>
 
@@ -182,71 +203,44 @@ export function DatasetExport() {
             isLoading={isRefreshingJobs}
             onClick={() => loadJobs(true)}
           >
-            รีเฟรชประวัติงาน
+            รีเฟรช
           </Button>
         </div>
       </div>
 
-      {/* Overview Stat Bar */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="size-10 rounded-lg bg-success-subtle border border-success-border text-success flex items-center justify-center">
-              <CheckCircle2 className="size-5" />
-            </div>
-            <div>
-              <div className="text-xs text-muted-foreground font-medium">รายงานที่ผ่านการอนุมัติ (Approved)</div>
-              <div className="text-xl font-bold font-mono text-foreground">
-                {formatNumber(totalApprovedCount)} รูปภาพ
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="size-10 rounded-lg bg-primary-subtle border border-primary-border text-primary flex items-center justify-center">
-              <ShieldCheck className="size-5" />
-            </div>
-            <div>
-              <div className="text-xs text-muted-foreground font-medium">มาตรการคุ้มครองข้อมูล (PDPA Filter)</div>
-              <div className="text-xs font-bold text-success font-mono mt-0.5">
-                Enforced (allow_research_use=true)
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="size-10 rounded-lg bg-warning-subtle border border-warning-border text-warning flex items-center justify-center">
-              <FileArchive className="size-5" />
-            </div>
-            <div>
-              <div className="text-xs text-muted-foreground font-medium">รูปแบบไฟล์ผลลัพธ์ (Packaging)</div>
-              <div className="text-xs font-bold text-foreground font-mono mt-0.5">
-                ZIP Archive + Manifest.json
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Export constraints and availability */}
+      <Card>
+        <CardContent className="p-0 grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-border-subtle">
+          <div className="p-4">
+            <div className="flex items-center gap-2 text-[13px] text-muted-foreground font-medium"><CheckCircle2 className="size-4 text-success" />รายงานที่ยืนยันแล้ว</div>
+            <div className="mt-1 text-lg font-bold text-foreground"><span className="font-mono">{formatNumber(totalApprovedCount)}</span> รูปภาพ</div>
+          </div>
+          <div className="p-4">
+            <div className="flex items-center gap-2 text-[13px] text-muted-foreground font-medium"><ShieldCheck className="size-4 text-primary" />สิทธิ์ใช้ข้อมูลเพื่อการวิจัย</div>
+            <div className="mt-1 text-[13px] font-semibold text-foreground">ใช้เฉพาะรายการที่ได้รับอนุญาต</div>
+          </div>
+          <div className="p-4">
+            <div className="flex items-center gap-2 text-[13px] text-muted-foreground font-medium"><FileArchive className="size-4 text-muted-foreground" />รูปแบบไฟล์</div>
+            <div className="mt-1 text-[13px] font-semibold text-foreground font-mono">ZIP + Manifest.json</div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Export Configuration Form Card */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Layers className="size-4 text-primary" />
-            <span>สร้างงานส่งออกชุดข้อมูลใหม่ (New Export Job)</span>
+            <span>สร้างไฟล์ส่งออก</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleCreateExport} className="space-y-5">
             {/* Category Filter Pills */}
-            <div className="space-y-2">
-              <label className="block text-xs font-semibold text-foreground">
-                เลือกหมวดหมู่ที่ต้องการส่งออก (ค่าเริ่มต้นคือทุกหมวดหมู่)
-              </label>
+            <fieldset className="space-y-2">
+              <legend className="block text-[13px] font-semibold text-foreground">
+                เลือกหมวดหมู่ที่ต้องการส่งออก
+              </legend>
               <div className="flex flex-wrap gap-2">
                 {CATEGORIES.map((cat) => {
                   const isSelected = selectedCategories.includes(cat.key);
@@ -255,7 +249,8 @@ export function DatasetExport() {
                       key={cat.key}
                       type="button"
                       onClick={() => toggleCategory(cat.key)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+                      aria-pressed={isSelected}
+                      className={`h-8 px-3 rounded-lg text-xs font-medium border transition-colors ${
                         isSelected
                           ? "bg-primary-subtle border-primary-border text-primary font-semibold shadow-sm"
                           : "bg-muted/40 border-border text-muted-foreground hover:text-foreground hover:bg-muted"
@@ -266,43 +261,37 @@ export function DatasetExport() {
                   );
                 })}
               </div>
-            </div>
+            </fieldset>
 
             {/* Date Range & Metadata Options */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-              <div className="space-y-1.5">
-                <label className="block text-xs font-semibold text-foreground">
-                  ตั้งแต่วันที่ (From Date)
-                </label>
-                <input
-                  type="date"
-                  value={fromDate}
-                  onChange={(e) => setFromDate(e.target.value)}
-                  className="w-full px-3 py-1.5 rounded-lg bg-card border border-input text-xs text-foreground outline-none focus:border-ring font-mono"
-                />
-              </div>
+              <Input
+                type="date"
+                label="ตั้งแต่วันที่"
+                value={fromDate}
+                onChange={(e) => setFromDate(e.target.value)}
+                className="font-mono"
+              />
 
-              <div className="space-y-1.5">
-                <label className="block text-xs font-semibold text-foreground">
-                  ถึงวันที่ (To Date)
-                </label>
-                <input
-                  type="date"
-                  value={toDate}
-                  onChange={(e) => setToDate(e.target.value)}
-                  className="w-full px-3 py-1.5 rounded-lg bg-card border border-input text-xs text-foreground outline-none focus:border-ring font-mono"
-                />
-              </div>
+              <Input
+                type="date"
+                label="ถึงวันที่"
+                value={toDate}
+                onChange={(e) => setToDate(e.target.value)}
+                className="font-mono"
+              />
 
               <div className="flex items-end pb-1.5">
-                <label className="flex items-center gap-2 cursor-pointer select-none text-xs text-foreground font-medium">
+                <label htmlFor="include-metadata" className="flex items-center gap-2 cursor-pointer select-none text-[13px] text-foreground font-medium">
                   <input
+                    id="include-metadata"
+                    name="include_metadata"
                     type="checkbox"
                     checked={includeMetadata}
                     onChange={(e) => setIncludeMetadata(e.target.checked)}
                     className="size-4 rounded accent-primary"
                   />
-                  <span>รวม Metadata & Heatmap Mask ลงในไฟล์</span>
+                  <span>รวม Metadata และ Heatmap</span>
                 </label>
               </div>
             </div>
@@ -315,7 +304,7 @@ export function DatasetExport() {
                 icon={Download}
                 isLoading={isExporting}
               >
-                เริ่มสร้างไฟล์ส่งออก (Queue Export Job)
+                สร้างไฟล์ส่งออก
               </Button>
             </div>
           </form>
@@ -326,8 +315,8 @@ export function DatasetExport() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Clock className="size-4 text-cyan-600 dark:text-cyan-400" />
-            <span>ประวัติงานส่งออกชุดข้อมูล (Export Jobs History)</span>
+            <Clock className="size-4 text-primary" />
+            <span>ประวัติการส่งออก</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
@@ -338,11 +327,11 @@ export function DatasetExport() {
               <Table>
                 <TableHeader>
                   <TableRow isHoverable={false}>
-                    <TableHead>Job ID</TableHead>
-                    <TableHead>หมวดหมู่ที่เลือก</TableHead>
+                    <TableHead>รหัสงาน</TableHead>
+                    <TableHead>ความคืบหน้า</TableHead>
                     <TableHead>จำนวนภาพ / ขนาด</TableHead>
-                    <TableHead>สถานะงาน</TableHead>
-                    <TableHead>วันที่สร้างงาน</TableHead>
+                    <TableHead>สถานะ</TableHead>
+                    <TableHead>วันที่สร้าง</TableHead>
                     <TableHead className="text-right">การจัดการ</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -353,47 +342,44 @@ export function DatasetExport() {
                     jobs.map((job) => {
                       const isDone = job.status === "succeeded";
                       const isRunning = job.status === "running" || job.status === "queued";
-                      const downloadUrl = getExportDownloadUrl(job.id);
 
                       return (
                         <TableRow key={job.id}>
-                          <TableCell className="font-mono text-xs font-bold text-foreground">
+                          <TableCell className="font-mono text-[13px] font-bold text-foreground">
                             #{job.id}
                           </TableCell>
 
                           <TableCell>
-                            <span className="text-xs font-medium text-foreground">
-                              {job.categories && job.categories.length > 0
-                                ? job.categories.join(", ")
-                                : "ทุกหมวดหมู่"}
+                            <span className="text-[13px] font-medium text-foreground">
+                              {Math.round(Number(job.progress ?? 0))}%{job.total_rows != null ? ` · ${formatNumber(job.total_rows)} แถว` : ""}
                             </span>
                           </TableCell>
 
-                          <TableCell className="font-mono text-xs font-semibold text-foreground">
-                            {job.file_count ? `${formatNumber(job.file_count)} ไฟล์` : "-"}
-                            {job.file_size_mb ? ` (${job.file_size_mb} MB)` : ""}
+                          <TableCell className="font-mono text-[13px] font-semibold text-foreground">
+                            {job.file_size_bytes != null ? formatFileSize(job.file_size_bytes) : "-"}
                           </TableCell>
 
                           <TableCell>
                             <StatusBadge status={job.status} />
                           </TableCell>
 
-                          <TableCell className="font-mono text-xs text-muted-foreground whitespace-nowrap">
+                          <TableCell className="font-mono text-[13px] text-muted-foreground whitespace-nowrap">
                             {formatDate(job.created_at)}
                           </TableCell>
 
                           <TableCell className="text-right">
                             <div className="flex items-center justify-end gap-2">
                               {isDone && (
-                                <a
-                                  href={downloadUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary-subtle border border-primary-border text-primary hover:bg-primary/20 text-xs font-semibold transition-colors"
+                                <Button
+                                  variant="outline"
+                                  size="xs"
+                                  icon={Download}
+                                  isLoading={downloadingJobId === job.id}
+                                  onClick={() => handleDownloadJob(job)}
+                                  className="text-primary border-primary-border hover:bg-primary-subtle"
                                 >
-                                  <Download className="size-3.5" />
-                                  <span>ดาวน์โหลด ZIP</span>
-                                </a>
+                                  ดาวน์โหลด ZIP
+                                </Button>
                               )}
 
                               {isRunning && (

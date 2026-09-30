@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { Search, RefreshCw, Eye, Ban, CheckCircle2 } from "lucide-react";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { RefreshCw, Eye, Ban, CheckCircle2 } from "lucide-react";
 import { fetchUsers, updateUserStatus } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -8,21 +8,37 @@ import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell, TableEmp
 import { StatusBadge, Badge } from "@/components/ui/Badge";
 import { TableSkeleton } from "@/components/ui/Skeleton";
 import { Modal } from "@/components/ui/Modal";
-import { Textarea } from "@/components/ui/Input";
+import { SearchInput, Textarea } from "@/components/ui/Input";
 import { useToast } from "@/components/ui/ToastContext";
 import { formatDate, formatNumber } from "@/lib/utils";
+import { useAdminQuery } from "@/lib/use-admin-query";
+import { useDebouncedValue } from "@/lib/use-debounced-value";
 
 const LIMIT = 15;
 
 export function UsersList() {
-  const [users, setUsers] = useState([]);
-  const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const searchTimer = useRef(null);
+  const debouncedSearch = useDebouncedValue(search, 300, () => setPage(1));
+
+  const {
+    data: { users, total },
+    isLoading,
+    isRefreshing,
+    reload: loadUsers,
+  } = useAdminQuery(
+    async () => {
+      const data = await fetchUsers(page, LIMIT, debouncedSearch);
+      return { users: data.items || [], total: data.total || 0 };
+    },
+    {
+      deps: [page, debouncedSearch],
+      initialData: { users: [], total: 0 },
+      successMessage: "รีเฟรชรายชื่อผู้ใช้สำเร็จ",
+      errorMessage: "ไม่สามารถโหลดรายชื่อผู้ใช้ได้",
+      logPrefix: "Load users error:",
+    }
+  );
 
   // Status Change Modal State
   const [modalState, setModalState] = useState({
@@ -37,59 +53,26 @@ export function UsersList() {
   const navigate = useNavigate();
   const toast = useToast();
 
-  useEffect(() => {
-    clearTimeout(searchTimer.current);
-    searchTimer.current = setTimeout(() => {
-      setDebouncedSearch(search.trim());
-      setPage(1);
-    }, 300);
-    return () => clearTimeout(searchTimer.current);
-  }, [search]);
-
-  const loadUsers = useCallback(
-    async (manual = false) => {
-      try {
-        if (manual) setIsRefreshing(true);
-        else setIsLoading(true);
-
-        const data = await fetchUsers(page, LIMIT, debouncedSearch);
-        setUsers(data.items || []);
-        setTotal(data.total || 0);
-
-        if (manual) toast.success("รีเฟรชรายชื่อผู้ใช้สำเร็จ");
-      } catch (err) {
-        console.error("Load users error:", err);
-        toast.error("ไม่สามารถโหลดรายชื่อผู้ใช้ได้: " + err.message);
-        setUsers([]);
-        setTotal(0);
-      } finally {
-        setIsLoading(false);
-        setIsRefreshing(false);
-      }
-    },
-    [page, debouncedSearch, toast]
-  );
-
-  useEffect(() => {
-    loadUsers();
-  }, [loadUsers]);
-
   const openStatusModal = (user, targetActive) => {
     setModalState({ isOpen: true, user, targetActive });
     setReason("");
     setReasonError("");
   };
 
-  const closeStatusModal = () => {
-    if (isSubmitting) return;
+  const resetStatusModal = () => {
     setModalState({ isOpen: false, user: null, targetActive: false });
     setReason("");
     setReasonError("");
   };
 
+  const closeStatusModal = () => {
+    if (isSubmitting) return;
+    resetStatusModal();
+  };
+
   const handleUpdateStatus = async () => {
     if (!reason.trim()) {
-      setReasonError("กรุณาระบุเหตุผลในการดำเนินการเพื่อบันทึกลง Audit Log");
+      setReasonError("กรุณาระบุเหตุผล เหตุผลนี้จะถูกบันทึกไว้ในประวัติระบบ");
       return;
     }
 
@@ -101,7 +84,7 @@ export function UsersList() {
           ? `ปลดการระงับบัญชี ${modalState.user.email} สำเร็จ`
           : `ระงับการใช้งานบัญชี ${modalState.user.email} สำเร็จ`
       );
-      closeStatusModal();
+      resetStatusModal();
       loadUsers();
     } catch (err) {
       toast.error("ดำเนินการไม่สำเร็จ: " + err.message);
@@ -118,10 +101,10 @@ export function UsersList() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold tracking-tight text-foreground">
-            การจัดการผู้ใช้งาน (User Management)
+            ผู้ใช้งาน
           </h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            ตรวจสอบประวัติการใช้งาน บัญชีผู้ส่งรายงาน และมาตรการระงับบัญชี (Ban/Unban)
+          <p className="text-[13px] text-muted-foreground mt-0.5">
+            ดูข้อมูลผู้ใช้และจัดการสถานะบัญชี
           </p>
         </div>
 
@@ -133,7 +116,7 @@ export function UsersList() {
             isLoading={isRefreshing}
             onClick={() => loadUsers(true)}
           >
-            รีเฟรชรายชื่อ
+            รีเฟรช
           </Button>
         </div>
       </div>
@@ -141,18 +124,15 @@ export function UsersList() {
       {/* Filter and Table Card */}
       <Card>
         <div className="p-4 flex items-center justify-between gap-4 border-b border-border-subtle">
-          <div className="relative w-full sm:w-80">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
-            <input
-              type="search"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="ค้นหาชื่อ, อีเมล, หรือ User ID..."
-              className="w-full pl-8 pr-3 py-1.5 bg-card border border-input text-xs text-foreground placeholder:text-muted-foreground rounded-lg outline-none focus:border-ring focus:ring-1 focus:ring-ring transition-all font-mono"
-            />
-          </div>
+          <SearchInput
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="ค้นหาชื่อ อีเมล หรือรหัสผู้ใช้..."
+            containerClassName="sm:w-80"
+            aria-label="ค้นหาผู้ใช้งาน"
+          />
 
-          <div className="text-xs font-mono text-muted-foreground hidden sm:block">
+          <div className="text-xs text-muted-foreground hidden sm:block">
             ผู้ใช้ทั้งหมด: <span className="font-bold text-foreground">{formatNumber(total)}</span> บัญชี
           </div>
         </div>
@@ -161,12 +141,13 @@ export function UsersList() {
           <TableSkeleton rows={8} cols={6} />
         ) : (
           <div>
+            <div className="hidden md:block">
             <Table>
               <TableHeader>
                 <TableRow isHoverable={false}>
-                  <TableHead>User ID</TableHead>
+                  <TableHead>รหัสผู้ใช้</TableHead>
                   <TableHead>ข้อมูลผู้ใช้งาน</TableHead>
-                  <TableHead>สิทธิ์ (Role)</TableHead>
+                  <TableHead>สิทธิ์</TableHead>
                   <TableHead>สถานะ</TableHead>
                   <TableHead>สแกนสะสม</TableHead>
                   <TableHead>วันที่ลงทะเบียน</TableHead>
@@ -180,22 +161,23 @@ export function UsersList() {
                   users.map((user) => {
                     const isAdmin = user.role === "admin" || user.is_superadmin;
                     return (
-                      <TableRow
-                        key={user.id}
-                        className="cursor-pointer"
-                        onClick={() => navigate(`/admin/users/${user.id}`)}
-                      >
+                      <TableRow key={user.id}>
                         {/* ID */}
-                        <TableCell className="font-mono text-xs font-semibold text-foreground">
-                          #{user.id}
+                        <TableCell>
+                          <Link
+                            to={`/admin/users/${user.id}`}
+                            className="font-mono text-[13px] font-semibold text-foreground hover:text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
+                          >
+                            #{user.id}
+                          </Link>
                         </TableCell>
 
                         {/* Name / Email */}
                         <TableCell>
-                          <div className="text-xs font-medium text-foreground">
+                          <div className="text-[13px] font-medium text-foreground">
                             {user.full_name || "ไม่มีชื่อระบุ"}
                           </div>
-                          <div className="text-[10px] font-mono text-muted-foreground font-medium">{user.email}</div>
+                          <div className="text-xs font-mono text-muted-foreground font-medium">{user.email}</div>
                         </TableCell>
 
                         {/* Role */}
@@ -211,17 +193,17 @@ export function UsersList() {
                         </TableCell>
 
                         {/* Total Scans */}
-                        <TableCell className="font-mono text-xs text-foreground">
+                        <TableCell className="font-mono text-[13px] text-foreground">
                           {formatNumber(user.total_scans ?? user.scans_count ?? 0)} ครั้ง
                         </TableCell>
 
                         {/* Created At */}
-                        <TableCell className="text-xs text-muted-foreground font-mono whitespace-nowrap">
+                        <TableCell className="text-[13px] text-muted-foreground font-mono whitespace-nowrap">
                           {formatDate(user.created_at)}
                         </TableCell>
 
                         {/* Actions */}
-                        <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+                        <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-2">
                             <Button
                               variant="ghost"
@@ -248,9 +230,9 @@ export function UsersList() {
                                   size="xs"
                                   icon={CheckCircle2}
                                   onClick={() => openStatusModal(user, true)}
-                                  className="text-emerald-500 border-emerald-500/30 hover:bg-emerald-500/10"
+                                  className="text-success border-success-border hover:bg-success-subtle"
                                 >
-                                  ปลดแบน
+                                  ปลดระงับ
                                 </Button>
                               )
                             )}
@@ -262,6 +244,53 @@ export function UsersList() {
                 )}
               </TableBody>
             </Table>
+            </div>
+
+            <div className="md:hidden divide-y divide-border-subtle">
+              {users.length === 0 ? (
+                <div className="px-4 py-10 text-center text-sm text-muted-foreground">ไม่พบบัญชีผู้ใช้ที่ค้นหา</div>
+              ) : users.map((user) => {
+                const isAdmin = user.role === "admin" || user.is_superadmin;
+                return (
+                  <article key={user.id} className="p-4 space-y-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <Link
+                          to={`/admin/users/${user.id}`}
+                          className="text-sm font-semibold text-foreground hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
+                        >
+                          {user.full_name || "ไม่มีชื่อระบุ"}
+                        </Link>
+                        <div className="mt-0.5 text-xs font-mono text-muted-foreground truncate">{user.email}</div>
+                        <div className="mt-1 text-xs font-mono text-muted-foreground">#{user.id}</div>
+                      </div>
+                      <StatusBadge status={user.is_active ? "active" : "banned"} />
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2 text-[13px]">
+                      <Badge variant={isAdmin ? "primary" : "default"} size="sm">{user.role}</Badge>
+                      <span className="text-muted-foreground">สแกน <span className="font-mono font-semibold text-foreground">{formatNumber(user.total_scans ?? user.scans_count ?? 0)}</span> ครั้ง</span>
+                    </div>
+                    <div className="flex items-center justify-between gap-3 border-t border-border-subtle pt-3">
+                      <span className="text-xs font-mono text-muted-foreground">{formatDate(user.created_at)}</span>
+                      <div className="flex items-center gap-2">
+                        <Link
+                          to={`/admin/users/${user.id}`}
+                          className="inline-flex h-9 items-center justify-center gap-1.5 rounded-md border border-border px-3 text-[13px] font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        >
+                          <Eye className="size-4" />
+                          โปรไฟล์
+                        </Link>
+                        {!isAdmin && (user.is_active ? (
+                          <Button variant="dangerOutline" size="sm" icon={Ban} onClick={() => openStatusModal(user, false)}>ระงับ</Button>
+                        ) : (
+                          <Button variant="outline" size="sm" icon={CheckCircle2} onClick={() => openStatusModal(user, true)} className="text-success border-success-border hover:bg-success-subtle">ปลดระงับ</Button>
+                        ))}
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
 
             <Pagination
               page={page}
@@ -306,7 +335,7 @@ export function UsersList() {
       >
         <div className="space-y-4 pt-2">
           <Textarea
-            label="เหตุผลในการดำเนินการ (Audit Reason) *"
+            label="เหตุผลในการดำเนินการ *"
             required
             value={reason}
             onChange={(e) => {

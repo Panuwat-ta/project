@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { getEvidenceState, getOperationalStatus, getRiskState } from "@/lib/display-state";
 
 export function Badge({
   children,
@@ -36,7 +37,7 @@ export function Badge({
   };
 
   const sizes = {
-    sm: "text-[10px] px-1.5 py-0.5 gap-1",
+    sm: "text-xs px-1.5 py-0.5 gap-1",
     md: "text-xs px-2.5 py-0.5 gap-1.5",
     lg: "text-xs px-3 py-1 gap-2",
   };
@@ -65,23 +66,42 @@ export function Badge({
 }
 
 export function RiskBadge({ score, className }) {
-  const numericScore = typeof score === "number" ? score : Number(score) || 0;
+  const risk = getRiskState(score);
 
-  let variant = "success";
-  let label = "LOW";
-
-  if (numericScore >= 70) {
-    variant = "danger";
-    label = "HIGH";
-  } else if (numericScore >= 40) {
-    variant = "warning";
-    label = "MEDIUM";
+  if (!risk.available) {
+    return (
+      <Badge variant="default" className={cn("font-semibold", className)}>
+        ไม่ทราบ
+      </Badge>
+    );
   }
 
   return (
-    <Badge variant={variant} withDot className={cn("font-semibold font-mono", className)}>
-      <span>{label}</span>
-      <span className="opacity-80">({numericScore})</span>
+    <Badge variant={risk.variant} withDot className={cn("font-semibold", className)}>
+      <span>{risk.label}</span>
+      <span className="opacity-80 font-mono">({risk.score})</span>
+    </Badge>
+  );
+}
+
+export function OperationalStatusBadge({ status, className }) {
+  const item = getOperationalStatus(status);
+  return (
+    <Badge
+      variant={item.variant}
+      withDot={item.variant !== "default"}
+      className={cn("font-semibold", className)}
+    >
+      {item.label}
+    </Badge>
+  );
+}
+
+export function EvidenceState({ status, className }) {
+  const item = getEvidenceState(status);
+  return (
+    <Badge variant={item.variant} className={cn("font-semibold", className)}>
+      {item.label}
     </Badge>
   );
 }
@@ -90,19 +110,24 @@ export function StatusBadge({ status, className }) {
   const s = String(status || "").toLowerCase();
 
   const config = {
-    pending: { variant: "info", label: "Pending", withDot: true },
-    reviewing: { variant: "warning", label: "Reviewing", withDot: true },
-    approved: { variant: "success", label: "Approved", withDot: true },
-    rejected: { variant: "danger", label: "Rejected", withDot: true },
-    active: { variant: "success", label: "Active", withDot: true },
-    banned: { variant: "danger", label: "Banned", withDot: true },
-    deployed: { variant: "primary", label: "Active Model", withDot: true },
-    staged: { variant: "default", label: "Staged", withDot: false },
-    queued: { variant: "info", label: "Queued", withDot: true },
-    running: { variant: "warning", label: "Running", withDot: true },
-    succeeded: { variant: "success", label: "Succeeded", withDot: true },
-    failed: { variant: "danger", label: "Failed", withDot: true },
-    cancelled: { variant: "default", label: "Cancelled", withDot: false },
+    pending: { variant: "info", label: "รอตรวจ", withDot: true },
+    reviewing: { variant: "warning", label: "กำลังตรวจ", withDot: true },
+    approved: { variant: "success", label: "ยืนยันแล้ว", withDot: true },
+    rejected: { variant: "danger", label: "ปฏิเสธ", withDot: true },
+    active: { variant: "success", label: "ใช้งาน", withDot: true },
+    banned: { variant: "danger", label: "ระงับ", withDot: true },
+    deployed: { variant: "primary", label: "กำลังใช้งาน", withDot: true },
+    staged: { variant: "default", label: "รอใช้งาน", withDot: false },
+    queued: { variant: "info", label: "รอคิว", withDot: true },
+    running: { variant: "warning", label: "กำลังทำงาน", withDot: true },
+    processing_source: { variant: "warning", label: "กำลังตรวจแหล่งที่มา", withDot: true },
+    processing_visual: { variant: "warning", label: "กำลังวิเคราะห์ภาพ", withDot: true },
+    processing_text: { variant: "warning", label: "กำลังวิเคราะห์ข้อความ", withDot: true },
+    completed: { variant: "success", label: "เสร็จสิ้น", withDot: true },
+    succeeded: { variant: "success", label: "สำเร็จ", withDot: true },
+    failed: { variant: "danger", label: "ล้มเหลว", withDot: true },
+    canceled: { variant: "default", label: "ยกเลิก", withDot: false },
+    cancelled: { variant: "default", label: "ยกเลิก", withDot: false },
   };
 
   const item = config[s] || { variant: "default", label: status, withDot: false };

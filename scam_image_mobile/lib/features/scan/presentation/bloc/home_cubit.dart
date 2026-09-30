@@ -57,15 +57,18 @@ class HomeError extends HomeState {
 
 /// Manages the state for [HomeScreen] — specifically the image-picker flow.
 class HomeCubit extends Cubit<HomeState> {
-  HomeCubit() : super(const HomeInitial());
+  HomeCubit({ImagePicker? imagePicker})
+    : _imagePicker = imagePicker ?? ImagePicker(),
+      super(const HomeInitial());
+
+  final ImagePicker _imagePicker;
 
   /// Opens the system gallery picker and emits the appropriate state.
   Future<void> pickImage() async {
     emit(const HomeImagePickerLoading());
 
     try {
-      final picker = ImagePicker();
-      final XFile? file = await picker.pickImage(
+      final XFile? file = await _imagePicker.pickImage(
         source: ImageSource.gallery,
         imageQuality: 85, // compress to ~85% quality
         maxWidth: 2048,
@@ -81,11 +84,10 @@ class HomeCubit extends Cubit<HomeState> {
       final fileSize = await File(file.path).length();
       emit(HomeImageSelected(file.path, fileSize));
     } on PlatformException catch (e) {
-      if (e.code == 'photo_access_denied' ||
-          e.code == 'camera_access_denied') {
+      if (e.code == 'photo_access_denied' || e.code == 'camera_access_denied') {
         emit(const HomePermissionDenied());
       } else {
-        emit(HomeError(e.message ?? 'เกิดข้อผิดพลาด'));
+        emit(HomeError(e.message ?? 'home_error_generic'));
       }
     } catch (e) {
       emit(HomeError(e.toString()));

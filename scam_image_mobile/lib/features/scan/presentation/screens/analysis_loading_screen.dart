@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/localization/app_translations.dart';
@@ -14,22 +15,24 @@ import 'package:scam_image_mobile/features/scan/domain/entities/analysis_task.da
 /// Analysis loading screen that polls the backend until the scan completes.
 ///
 /// Receives [filePath] as a constructor argument (passed via route extra).
-/// Creates a [ScanBloc] backed by [MockScanRepository] and dispatches
-/// [CropConfirmed] on first frame.
+/// Uses the app-scoped production [ScanBloc] and dispatches [CropConfirmed]
+/// on first frame.
 ///
 /// BLoC listener:
 /// - [ScanCompleted] → navigate to `/result/:taskId`
-/// - [ScanError]     → show SnackBar, then pop after 1 second
-/// - [ScanTimeout]   → show SnackBar "หมดเวลา กรุณาลองใหม่", then pop
+/// - [ScanError]/[ScanTimeout] stay on this screen and expose recovery actions.
 class AnalysisLoadingScreen extends StatefulWidget {
-  const AnalysisLoadingScreen({super.key, required this.filePath, this.scanName});
+  const AnalysisLoadingScreen({
+    super.key,
+    required this.filePath,
+    this.scanName,
+  });
 
   final String filePath;
   final String? scanName;
 
   @override
-  State<AnalysisLoadingScreen> createState() =>
-      _AnalysisLoadingScreenState();
+  State<AnalysisLoadingScreen> createState() => _AnalysisLoadingScreenState();
 }
 
 class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
@@ -49,21 +52,39 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
     _scanLineCtrl = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 3),
-    )..repeat();
-    _scanLineAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _scanLineCtrl, curve: Curves.easeInOut),
     );
+    _scanLineAnim = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _scanLineCtrl, curve: Curves.easeInOut));
 
     // Dots animation: 1.5-second repeating
     _dotsCtrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
-    )..repeat();
+    );
 
     // Start the scan on first frame using the context-provided ScanBloc
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ScanBloc>().add(CropConfirmed(widget.filePath, scanName: widget.scanName));
+      context.read<ScanBloc>().add(
+        CropConfirmed(widget.filePath, scanName: widget.scanName),
+      );
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final disableAnimations = MediaQuery.of(context).disableAnimations;
+    if (disableAnimations) {
+      _scanLineCtrl.stop();
+      _dotsCtrl.stop();
+      _scanLineCtrl.value = 0.5;
+      _dotsCtrl.value = 0;
+    } else {
+      if (!_scanLineCtrl.isAnimating) _scanLineCtrl.repeat();
+      if (!_dotsCtrl.isAnimating) _dotsCtrl.repeat();
+    }
   }
 
   @override
@@ -85,19 +106,19 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
           step2: AnalysisStepStatus.pending,
           step3: AnalysisStepStatus.pending,
         );
-      case AnalysisTaskStatus.processingText:
+      case AnalysisTaskStatus.processingSource:
         return _StepStatuses(
           step1: AnalysisStepStatus.active,
           step2: AnalysisStepStatus.pending,
           step3: AnalysisStepStatus.pending,
         );
-      case AnalysisTaskStatus.processingSource:
+      case AnalysisTaskStatus.processingVisual:
         return _StepStatuses(
           step1: AnalysisStepStatus.done,
           step2: AnalysisStepStatus.active,
           step3: AnalysisStepStatus.pending,
         );
-      case AnalysisTaskStatus.processingVisual:
+      case AnalysisTaskStatus.processingText:
         return _StepStatuses(
           step1: AnalysisStepStatus.done,
           step2: AnalysisStepStatus.done,
@@ -140,14 +161,13 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
               children: [
                 // Image
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: AppRadius.lgBorder,
                   child: Container(
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: AppColors.primaryFixedDim
-                            .withValues(alpha: 0.2),
+                        color: AppColors.primaryFixedDim.withValues(alpha: 0.2),
                       ),
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: AppRadius.lgBorder,
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(11),
@@ -160,7 +180,9 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
                           color: AppColors.inverseSurface,
                           child: Icon(
                             Icons.image_outlined,
-                            color: isDark ? Colors.white38 : AppColors.outlineVariant,
+                            color: isDark
+                                ? Colors.white38
+                                : AppColors.outlineVariant,
                             size: 40,
                           ),
                         ),
@@ -181,12 +203,9 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              AppColors.primaryFixedDim
-                                  .withValues(alpha: 0.0),
-                              AppColors.primaryFixedDim
-                                  .withValues(alpha: 0.8),
-                              AppColors.primaryFixedDim
-                                  .withValues(alpha: 0.0),
+                              AppColors.primaryFixedDim.withValues(alpha: 0.0),
+                              AppColors.primaryFixedDim.withValues(alpha: 0.8),
+                              AppColors.primaryFixedDim.withValues(alpha: 0.0),
                             ],
                           ),
                         ),
@@ -202,14 +221,18 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
             bottom: 8,
             child: Container(
               padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
+                horizontal: AppSpacing.sm,
+                vertical: AppSpacing.xs,
+              ),
               decoration: BoxDecoration(
                 color: AppColors.primaryFixedDim,
-                borderRadius: BorderRadius.circular(99),
+                borderRadius: AppRadius.pillBorder,
               ),
               child: Text(
                 '$progress%',
-                style: AppTypography.caption(color: Theme.of(context).scaffoldBackgroundColor),
+                style: AppTypography.caption(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                ),
               ),
             ),
           ),
@@ -229,8 +252,9 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
             final double phase = (_dotsCtrl.value - i * 0.33).clamp(0.0, 1.0);
             final double opacity = (math.sin(phase * math.pi)).clamp(0.0, 1.0);
             return Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: AppSpacing.xs / 2),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.xs / 2,
+              ),
               child: Opacity(
                 opacity: 0.3 + opacity * 0.7,
                 child: Container(
@@ -253,7 +277,7 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.lgBorder,
         border: Border.all(
           color: AppColors.outlineVariant.withValues(alpha: 0.3),
         ),
@@ -267,8 +291,8 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
             subtitle: steps.step1 == AnalysisStepStatus.done
                 ? 'loading_step_done'.tr(context)
                 : steps.step1 == AnalysisStepStatus.active
-                    ? 'loading_step1_desc_active'.tr(context)
-                    : 'loading_step_wait'.tr(context),
+                ? 'loading_step1_desc_active'.tr(context)
+                : 'loading_step_wait'.tr(context),
           ),
           AnalysisStepTile(
             status: steps.step2,
@@ -276,8 +300,8 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
             subtitle: steps.step2 == AnalysisStepStatus.done
                 ? 'loading_step_done'.tr(context)
                 : steps.step2 == AnalysisStepStatus.active
-                    ? 'loading_step2_desc_active'.tr(context)
-                    : 'loading_step_wait'.tr(context),
+                ? 'loading_step2_desc_active'.tr(context)
+                : 'loading_step_wait'.tr(context),
           ),
           AnalysisStepTile(
             status: steps.step3,
@@ -285,8 +309,8 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
             subtitle: steps.step3 == AnalysisStepStatus.done
                 ? 'loading_step_done'.tr(context)
                 : steps.step3 == AnalysisStepStatus.active
-                    ? 'loading_step3_desc_active'.tr(context)
-                    : 'loading_step_wait'.tr(context),
+                ? 'loading_step3_desc_active'.tr(context)
+                : 'loading_step_wait'.tr(context),
           ),
         ],
       ),
@@ -295,10 +319,15 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
 
   Widget _buildPrivacyBadge(bool isDark) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.md),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.md,
+      ),
       decoration: BoxDecoration(
-        color: isDark ? AppColors.inverseSurface.withValues(alpha: 0.5) : AppColors.bgLight.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(16),
+        color: isDark
+            ? AppColors.inverseSurface.withValues(alpha: 0.5)
+            : AppColors.bgLight.withValues(alpha: 0.5),
+        borderRadius: AppRadius.lgBorder,
         border: Border.all(
           color: AppColors.outlineVariant.withValues(alpha: 0.2),
         ),
@@ -316,7 +345,9 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
           Flexible(
             child: Text(
               'loading_encryption'.tr(context),
-              style: AppTypography.caption(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: AppTypography.caption(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
               textAlign: TextAlign.center,
             ),
           ),
@@ -324,7 +355,6 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
       ),
     );
   }
-
 
   Future<void> _showCancelDialog(BuildContext context) async {
     final confirmed = await showDialog<bool>(
@@ -339,7 +369,10 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text('loading_cancel_yes'.tr(context), style: const TextStyle(color: Colors.red)),
+            child: Text(
+              'loading_cancel_yes'.tr(context),
+              style: const TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ),
@@ -373,32 +406,71 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
     }
   }
 
+  Widget _buildRecoveryState({required String message, required bool isDark}) {
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.cloud_off_outlined,
+              size: 56,
+              color: Theme.of(context).colorScheme.error,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              'loading_error_title'.tr(context),
+              style: AppTypography.headlineLgMobile(
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              message,
+              style: AppTypography.bodyBase(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            PrimaryButton(
+              label: 'loading_retry'.tr(context),
+              leadingIcon: const Icon(Icons.refresh),
+              onPressed: () => context.read<ScanBloc>().add(
+                CropConfirmed(widget.filePath, scanName: widget.scanName),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            SecondaryButton(
+              label: 'loading_edit_image'.tr(context),
+              leadingIcon: const Icon(Icons.edit_outlined),
+              onPressed: () =>
+                  context.go('/crop', extra: {'filePath': widget.filePath}),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            TextButton(
+              onPressed: () => context.go('/main/history'),
+              child: Text('loading_go_history'.tr(context)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return BlocListener<ScanBloc, ScanState>(
-      listener: (context, state) async {
+      listener: (context, state) {
         if (state is ScanCompleted) {
-          context.go('/result/${state.taskId}', extra: {'scanName': widget.scanName});
-        } else if (state is ScanError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: AppColors.error,
-            ),
+          context.go(
+            '/result/${state.taskId}',
+            extra: {'scanName': widget.scanName},
           );
-          await Future.delayed(const Duration(seconds: 1));
-          if (context.mounted) context.go('/main/home');
-        } else if (state is ScanTimeout) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('loading_timeout'.tr(context)),
-              backgroundColor: AppColors.error,
-            ),
-          );
-          await Future.delayed(const Duration(seconds: 1));
-          if (context.mounted) context.go('/main/home');
         }
       },
       child: Scaffold(
@@ -410,18 +482,33 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
               onPressed: () => context.push('/notifications'),
               icon: Icon(
                 Icons.notifications_outlined,
-                color: isDark ? AppColors.outlineVariant : AppColors.onSurfaceVariant,
+                color: isDark
+                    ? AppColors.outlineVariant
+                    : AppColors.onSurfaceVariant,
               ),
             ),
           ],
         ),
         body: BlocBuilder<ScanBloc, ScanState>(
           builder: (context, state) {
+            if (state is ScanError) {
+              return _buildRecoveryState(
+                message: state.message.tr(context),
+                isDark: isDark,
+              );
+            }
+            if (state is ScanTimeout) {
+              return _buildRecoveryState(
+                message: 'loading_timeout'.tr(context),
+                isDark: isDark,
+              );
+            }
+
             final int progress = state is ScanPolling
                 ? state.progress
                 : state is ScanUploading
-                    ? 0
-                    : 0;
+                ? 0
+                : 0;
             final AnalysisTaskStatus step = state is ScanPolling
                 ? state.step
                 : AnalysisTaskStatus.queued;
@@ -443,7 +530,8 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
                   Text(
                     'loading_title'.tr(context),
                     style: AppTypography.headlineLgMobile(
-                        color: isDark ? Colors.white : AppColors.onSurface),
+                      color: isDark ? Colors.white : AppColors.onSurface,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: AppSpacing.sm),
@@ -455,7 +543,8 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
                       Text(
                         'loading_subtitle'.tr(context),
                         style: AppTypography.bodyBase(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant),
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(width: AppSpacing.xs),
@@ -564,6 +653,5 @@ class _CircularProgressPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_CircularProgressPainter old) =>
-      old.progress != progress;
+  bool shouldRepaint(_CircularProgressPainter old) => old.progress != progress;
 }

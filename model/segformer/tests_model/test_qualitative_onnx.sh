@@ -26,9 +26,8 @@ if (( ${#VERSIONS[@]} == 0 )); then
 fi
 
 for version in "${VERSIONS[@]}"; do
-    test_script="${SCRIPT_DIR}/v/${version}/test_qualitative_onnx.py"
     echo "Running qualitative ONNX test: ${version}"
-    "${PYTHON}" "${test_script}"
+    "${PYTHON}" "${SCRIPT_DIR}/test_qualitative_onnx.py" "${version}"
 done
 
 echo "All qualitative ONNX tests completed successfully."

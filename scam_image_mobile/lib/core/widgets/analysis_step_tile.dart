@@ -38,20 +38,29 @@ class _AnalysisStepTileState extends State<AnalysisStepTile>
       vsync: this,
       duration: const Duration(milliseconds: 900),
     );
-    if (widget.status == AnalysisStepStatus.active) {
-      _ctrl.repeat();
+  }
+
+  void _syncMotionPreference() {
+    final disableAnimations =
+        MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+    if (widget.status == AnalysisStepStatus.active && !disableAnimations) {
+      if (!_ctrl.isAnimating) _ctrl.repeat();
+    } else {
+      _ctrl.stop();
+      _ctrl.value = 0;
     }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _syncMotionPreference();
   }
 
   @override
   void didUpdateWidget(AnalysisStepTile oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.status == AnalysisStepStatus.active) {
-      _ctrl.repeat();
-    } else {
-      _ctrl.stop();
-      _ctrl.reset();
-    }
+    _syncMotionPreference();
   }
 
   @override
@@ -62,8 +71,9 @@ class _AnalysisStepTileState extends State<AnalysisStepTile>
 
   Widget _buildStatusIndicator(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final Color primaryColor =
-        isDark ? AppColors.primaryFixedDim : AppColors.primary;
+    final Color primaryColor = isDark
+        ? AppColors.primaryFixedDim
+        : AppColors.primary;
 
     switch (widget.status) {
       case AnalysisStepStatus.done:
@@ -110,10 +120,7 @@ class _AnalysisStepTileState extends State<AnalysisStepTile>
             height: 32,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(
-                color: AppColors.textSecondary,
-                width: 2,
-              ),
+              border: Border.all(color: AppColors.textSecondary, width: 2),
             ),
             child: const Icon(
               Icons.more_horiz,
@@ -129,41 +136,48 @@ class _AnalysisStepTileState extends State<AnalysisStepTile>
   Widget build(BuildContext context) {
     final bool isPending = widget.status == AnalysisStepStatus.pending;
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final Color primaryColor =
-        isDark ? AppColors.primaryFixedDim : AppColors.primary;
+    final Color primaryColor = isDark
+        ? AppColors.primaryFixedDim
+        : AppColors.primary;
 
-    return Opacity(
-      opacity: isPending ? 0.4 : 1.0,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _buildStatusIndicator(context),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.title,
-                    style: AppTypography.bodyBase(),
-                  ),
-                  if (widget.subtitle != null)
-                    Text(
-                      widget.subtitle!,
-                      style: AppTypography.caption(
-                        color: widget.status == AnalysisStepStatus.done
-                            ? AppColors.success
-                            : widget.status == AnalysisStepStatus.active
+    return Semantics(
+      label: [
+        widget.title,
+        if (widget.subtitle != null) widget.subtitle!,
+      ].join(', '),
+      liveRegion: widget.status == AnalysisStepStatus.active,
+      child: ExcludeSemantics(
+        child: Opacity(
+          opacity: isPending ? 0.4 : 1.0,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                _buildStatusIndicator(context),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(widget.title, style: AppTypography.bodyBase()),
+                      if (widget.subtitle != null)
+                        Text(
+                          widget.subtitle!,
+                          style: AppTypography.caption(
+                            color: widget.status == AnalysisStepStatus.done
+                                ? AppColors.success
+                                : widget.status == AnalysisStepStatus.active
                                 ? primaryColor
                                 : AppColors.textSecondary,
-                      ),
-                    ),
-                ],
-              ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

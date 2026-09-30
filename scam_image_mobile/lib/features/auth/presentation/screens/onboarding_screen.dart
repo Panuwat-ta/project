@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/injection_container.dart';
+import '../../../settings/domain/entities/consent_setting.dart';
 import '../bloc/consent_cubit.dart';
 
 class OnboardingScreen extends StatelessWidget {
@@ -43,7 +44,9 @@ class _OnboardingView extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF1E2936) : const Color(0xFFE0F2FE),
+                    color: isDark
+                        ? const Color(0xFF1E2936)
+                        : const Color(0xFFE0F2FE),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Icon(Icons.shield, color: primaryColor, size: 24),
@@ -85,27 +88,47 @@ class _OnboardingView extends StatelessWidget {
                     ),
                     // Fallback visual if image fails
                     child: Center(
-                      child: Icon(Icons.security, size: 100, color: primaryColor.withValues(alpha: 0.5)),
+                      child: Icon(
+                        Icons.security,
+                        size: 100,
+                        color: primaryColor.withValues(alpha: 0.5),
+                      ),
                     ),
                   ),
                   Positioned(
                     bottom: -20,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 10,
+                      ),
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+                        color: isDark
+                            ? const Color(0xFF334155)
+                            : const Color(0xFFE2E8F0),
                         borderRadius: BorderRadius.circular(30),
-                        border: Border.all(color: isDark ? const Color(0xFF475569) : Colors.white, width: 2),
+                        border: Border.all(
+                          color: isDark
+                              ? const Color(0xFF475569)
+                              : Colors.white,
+                          width: 2,
+                        ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.check_circle, color: Color(0xFF10B981), size: 20),
+                          const Icon(
+                            Icons.check_circle,
+                            color: Color(0xFF10B981),
+                            size: 20,
+                          ),
                           const SizedBox(width: 8),
                           Text(
                             'ตรวจสอบความปลอดภัย',
                             style: TextStyle(
-                              color: isDark ? Colors.white : const Color(0xFF1E293B),
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFF1E293B),
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
                             ),
@@ -123,7 +146,9 @@ class _OnboardingView extends StatelessWidget {
             Container(
               decoration: BoxDecoration(
                 color: sheetColor,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(32),
+                ),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.05),
@@ -174,23 +199,38 @@ class _OnboardingView extends StatelessWidget {
                             value: state.researchConsent,
                             onChanged: (_) => cubit.toggleResearch(),
                             title: 'ยินยอมให้นำข้อมูลไปปรับปรุงระบบ',
-                            subtitle: 'ข้อมูลของคุณจะถูกเก็บเป็นความลับเพื่อใช้พัฒนาความแม่นยำของ AI',
+                            subtitle:
+                                'ข้อมูลของคุณจะถูกเก็บเป็นความลับเพื่อใช้พัฒนาความแม่นยำของ AI',
                             isDark: isDark,
                           ),
                           const SizedBox(height: 24),
-                          
+
                           SizedBox(
                             width: double.infinity,
                             height: 56,
                             child: ElevatedButton(
-                              onPressed: state.canProceed ? () async {
-                                await ServiceLocator.authRepository.markOnboardingSeen();
-                                if (context.mounted) {
-                                  context.go('/login');
-                                }
-                              } : null,
+                              onPressed: state.canProceed
+                                  ? () async {
+                                      await ServiceLocator.settingsRepository
+                                          .updateConsents(
+                                            ConsentSetting(
+                                              researchConsent:
+                                                  state.researchConsent,
+                                            ),
+                                          );
+                                      await ServiceLocator.authRepository
+                                          .markOnboardingSeen();
+                                      if (context.mounted) {
+                                        context.go('/login');
+                                      }
+                                    }
+                                  : null,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: state.canProceed ? const Color(0xFF8B9EAA) : (isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1)),
+                                backgroundColor: state.canProceed
+                                    ? const Color(0xFF8B9EAA)
+                                    : (isDark
+                                          ? const Color(0xFF334155)
+                                          : const Color(0xFFCBD5E1)),
                                 foregroundColor: Colors.white,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16),
@@ -202,7 +242,10 @@ class _OnboardingView extends StatelessWidget {
                                 children: [
                                   const Text(
                                     'เริ่มใช้งาน',
-                                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                   const SizedBox(width: 8),
                                   const Icon(Icons.arrow_forward),
@@ -281,7 +324,10 @@ class _ConsentTile extends StatelessWidget {
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         activeColor: const Color(0xFF007293),
         checkColor: Colors.white,
-        side: BorderSide(color: isDark ? const Color(0xFF475569) : const Color(0xFFCBD5E1), width: 1.5),
+        side: BorderSide(
+          color: isDark ? const Color(0xFF475569) : const Color(0xFFCBD5E1),
+          width: 1.5,
+        ),
       ),
     );
   }

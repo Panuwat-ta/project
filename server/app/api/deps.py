@@ -2,16 +2,18 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from datetime import datetime
 from jose import JWTError
 
 from app.core.database import get_db
 
 from app.core.security import decode_access_token
-from app.core.config import TH_TIMEZONE
 from app.models.user import User
 from app.models.admin import Admin
-from app.models.admin_session import AdminSession
+from app.services.admin_access_policy import (
+    AdminAccountDisabled,
+    InvalidAdminCredentials,
+    resolve_admin_access,
+)
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
@@ -43,35 +45,12 @@ async def get_current_admin(token: str = Depends(oauth2_scheme), db: AsyncSessio
         detail="Could not validate admin credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    payload = decode_access_token(token)
-    if payload is None:
-        raise credentials_exception
-    admin_id: str = payload.get("sub")
-    if admin_id is None or payload.get("role") != "admin":
-        raise credentials_exception
-
-    # Admin identity
-    result = await db.execute(select(Admin).where(Admin.id == int(admin_id)))
-    admin = result.scalars().first()
-    if admin is None:
-        raise credentials_exception
-    if not admin.is_active:
-        raise HTTPException(status_code=403, detail="Admin account is disabled")
-
-    # Session check: access token ต้องผูกกับ session ที่ยัง valid (ไม่ถูก revoke/logout)
-    session_id = payload.get("sid")
-    if not session_id:
-        raise credentials_exception
-    session_result = await db.execute(select(AdminSession).where(AdminSession.id == session_id))
-    session = session_result.scalars().first()
-    if session is None or session.admin_id != int(admin_id):
-        raise credentials_exception
-    if session.revoked_at is not None:
-        raise credentials_exception
-    if session.expires_at is not None and session.expires_at <= datetime.now(TH_TIMEZONE):
-        raise credentials_exception
-    session.last_used_at = datetime.now(TH_TIMEZONE)
-
+    try:
+        admin, _session = await resolve_admin_access(token, db)
+    except AdminAccountDisabled as exc:
+        raise HTTPException(status_code=403, detail="Admin account is disabled") from exc
+    except InvalidAdminCredentials as exc:
+        raise credentials_exception from exc
     return admin
 
 

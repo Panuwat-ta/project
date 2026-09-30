@@ -2,15 +2,12 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../constants/app_spacing.dart';
 import '../theme/app_typography.dart';
+import '../localization/app_translations.dart';
 import 'primary_button.dart';
 
 /// Centered error-state view: danger icon + message + optional retry button.
 class ErrorStateView extends StatelessWidget {
-  const ErrorStateView({
-    super.key,
-    required this.message,
-    this.onRetry,
-  });
+  const ErrorStateView({super.key, required this.message, this.onRetry});
 
   final String message;
 
@@ -42,7 +39,7 @@ class ErrorStateView extends StatelessWidget {
               SizedBox(
                 width: 200,
                 child: PrimaryButton(
-                  label: 'ลองอีกครั้ง',
+                  label: 'common_retry'.tr(context),
                   onPressed: onRetry,
                 ),
               ),

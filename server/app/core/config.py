@@ -29,6 +29,8 @@ class Settings(BaseSettings):
 
     # Redis Cache 
     REDIS_URL: str
+    # TTL ผลสแกนแคชตาม image_hash (30 วัน)
+    SCAN_CACHE_TTL_SECONDS: int = 2592000
 
     # Storage
     STORAGE_BACKEND: str = "local"  # "local" สำหรับ dev, "gcs" สำหรับ production
@@ -37,13 +39,18 @@ class Settings(BaseSettings):
     # Decompression-bomb guard: สูงสุดที่อนุญาต decode (พิกเซล)
     MAX_IMAGE_PIXELS: int = 100_000_000  # 100 MP
 
-    # Risk scoring (ค่าเริ่มต้นของ source score)
-    DEFAULT_SOURCE_SCORE: int = 20
-
     # AI Inference 
     ONNX_MODEL_PATH: str
     ONNX_TILE_SIZE: int = 512
     ONNX_TILE_OVERLAP: int = 64
+    # Partial-failure timeouts (วินาที; ไดอะแกรมระบุ 5s แต่บนเครื่อง 4GB
+    # OCR/XAI-บน-CPU ใช้เวลานานกว่านั้นมาก ใส่ 5s สแกนจริงตายหมด)
+    ONNX_WORKER_TIMEOUT: int = 120
+    OCR_TIMEOUT: int = 180
+    XAI_TIMEOUT: int = 300
+    # Surya recognition batch: default 512 บน CUDA (สำหรับใบใหญ่) ระเบิดบน 4GB
+    # เมื่อภาพมีหลายบรรทัด (เช่น 48 lines) 8 ผ่าน peak เท่าภาพปกติ ไม่เสียความแม่น
+    SURYA_REC_BATCH_SIZE: int = 8
 
     # Explainable AI (XAI) - Qwen2.5-1.5B (GGUF) 
     XAI_MODEL_PATH: str

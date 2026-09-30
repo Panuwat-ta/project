@@ -16,6 +16,7 @@ fi
 source venv/bin/activate
 export NVIDIA_LIBS=$(find "$VIRTUAL_ENV/lib/python3.10/site-packages/nvidia" -maxdepth 2 -name lib 2>/dev/null | tr '\n' ':')
 export LD_LIBRARY_PATH="$VIRTUAL_ENV/lib64/python3.10/site-packages/llama_cpp_python.libs:$NVIDIA_LIBS$VIRTUAL_ENV/lib:$LD_LIBRARY_PATH"
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 export HF_HOME="/home/panuwat/project/model/surya"
 export XAI_MODEL_PATH="/home/panuwat/project/model/Qwen2.5-1.5B/qwen2.5-1.5b-instruct-q4_k_m.gguf"
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload

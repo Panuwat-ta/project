@@ -15,38 +15,36 @@ class SettingsRepositoryImpl implements SettingsRepository {
   final SettingsLocalDataSource localDataSource;
 
   @override
-  Future<ConsentSetting> getConsents() async {
-    // Return from local storage since backend is mocked/unavailable
-    return localDataSource.getConsents();
+  Future<ConsentSetting> getConsents() => localDataSource.getConsents();
+
+  @override
+  Future<void> updateConsents(ConsentSetting setting) =>
+      localDataSource.saveConsents(setting);
+
+  @override
+  Future<void> exportPrivacyData() {
+    // The current server does not expose /privacy/export yet. Fail locally
+    // instead of issuing a known-404 request and pretending export started.
+    throw UnsupportedError('Privacy export is not available on this server');
   }
 
   @override
-  Future<void> updateConsents(ConsentSetting setting) async {
-    // Save locally
-    await localDataSource.saveConsents(setting);
-    // Optionally fire and forget remote
-    try {
-      await remoteDataSource.updateConsents({'dummy': 'data'});
-    } catch (_) {}
-  }
-
-  @override
-  Future<void> exportPrivacyData() => remoteDataSource.exportPrivacyData();
-
-  @override
-  Future<void> deleteAccount() => remoteDataSource.deleteAccount();
+  Future<void> deleteAccount(String password) =>
+      remoteDataSource.deleteAccount(password);
 
   @override
   Future<ThemeMode> getThemeMode() => localDataSource.getThemeMode();
 
   @override
-  Future<void> saveThemeMode(ThemeMode mode) => localDataSource.saveThemeMode(mode);
+  Future<void> saveThemeMode(ThemeMode mode) =>
+      localDataSource.saveThemeMode(mode);
 
   @override
   Future<String> getLanguage() => localDataSource.getLanguage();
 
   @override
-  Future<void> saveLanguage(String language) => localDataSource.saveLanguage(language);
+  Future<void> saveLanguage(String language) =>
+      localDataSource.saveLanguage(language);
 
   @override
   Future<int> getCacheSizeBytes() => localDataSource.getCacheSizeBytes();

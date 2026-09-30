@@ -3,8 +3,10 @@
 > ระบบคอนโซลส่วนกลางสำหรับผู้ดูแลระบบระดับสูง (Super Admin) ในการสืบสวน ตรวจสอบนิติวิทยาศาสตร์ดิจิทัล วิเคราะห์โมเดล AI และควบคุมความปลอดภัยของแพลตฟอร์ม ScamGuard
 
 **Path:** `/home/panuwat/project/admin-portal`  
-**สถานะ (2026-09-12):** พร้อมใช้ภายใน (internal hardening, Operate Mode Architecture) — ยังไม่ประกาศ Production SLA; เกณฑ์ก่อนประกาศ: `npm run lint` + `npm run build` ผ่าน, smoke E2E ผ่าน, เชื่อมต่อ Real Backend สำเร็จ  
+**สถานะ (2026-09-12):** พร้อมใช้ภายใน (internal hardening, Operate Mode Architecture) — ยังไม่ประกาศ Production SLA; เกณฑ์ก่อนประกาศ: `npm test` + `npm run lint` + `npm run build` ผ่าน, smoke E2E ผ่าน, เชื่อมต่อ Real Backend สำเร็จ
 **สเกลความเสี่ยง:** 3 ระดับ (Low: 0-39, Medium: 40-69, High: 70-100) — ปราศจากระดับ Safe ตามข้อกำหนดระบบ
+
+**Design authority:** ดู `DESIGN.md` สำหรับ implementation rules ปัจจุบัน โดยเฉพาะ missing/unavailable state, responsive priority, accessibility และ Heatmap probability semantics.
 
 ---
 
@@ -17,7 +19,7 @@ ScamGuard Admin Portal ออกแบบภายใต้แนวคิด **
 1. **ศูนย์บัญชาการสถิติ (Real-time Forensic Dashboard)**
    - ตัวชี้วัดสำคัญ (KPIs): ยอดสแกนทั้งหมด, คิวรอดำเนินการ, เคสความเสี่ยงสูง, ความแม่นยำของ AI
    - กราฟแนวโน้มการสแกน (Area Chart) และสัดส่วนหมวดหมู่ภัยคุกคาม (Severity Donut / Category Bar)
-   - แถบสถานะระบบ (System Health Bar): CPU, Memory, GPU VRAM, Latency
+   - แถบสถานะระบบ (System Health Bar): Database, Storage, Models, Queue จาก `/admin/health` พร้อมสถานะ Unknown เมื่อ telemetry ไม่มีข้อมูล
    - การสตรีมข้อมูลสด (Live Telemetry): อัปเดตคิวและสถิติผ่าน WebSocket อัตโนมัติ
 
 2. **คิวสืบสวนและตรวจสอบรายงาน (Investigation Queue)**
@@ -31,7 +33,7 @@ ScamGuard Admin Portal ออกแบบภายใต้แนวคิด **
      - โหมด **Split Slider**: รูดเปรียบเทียบภาพต้นฉบับกับภาพซ้อนทับ Heatmap
      - โหมด **Side-by-Side**: วางภาพเทียบกันสองฝั่ง
      - โหมด **Opacity Overlay**: ปรับความโปร่งใสของ Heatmap ได้อย่างละเอียด
-   - วิเคราะห์เจาะลึกหลายมิติ (Multi-Layer XAI): Visual Anomaly, Metadata/EXIF, Text/OCR Inconsistency, Reverse Image Context
+   - แสดง evidence ที่ backend ส่งจริง: Visual score, OCR/Text score, OCR text, metadata/EXIF; Source Verification แสดง unavailable จนกว่าจะมี backend authority
    - ระบบ **Optimistic Locking (`version`)**: ป้องกันผู้ดูแลระบบแก้ไขบันทึกซ้ำซ้อนกัน
 
 4. **การบริหารจัดการผู้ใช้งาน (User Administration)**
@@ -40,7 +42,7 @@ ScamGuard Admin Portal ออกแบบภายใต้แนวคิด **
 
 5. **ทะเบียนและการจัดการโมเดล AI (AI Model Registry & Ops)**
    - รายการโมเดลตรวจจับ SegFormer และเวอร์ชันที่รองรับ
-   - ตรวจสอบความถูกต้องของ Checksum และสถิติความแม่นยำ (mIoU, Precision, Recall)
+   - ตรวจสอบ Checksum และ metric ที่ backend ส่งจริง (mIoU, aAcc, mAcc, mDice)
    - โหมดทดสอบการอนุมานแห้ง (**Dry-Run Inference**) โดยไม่กระทบการทำงานจริง
    - การสลับรุ่นโมเดลและย้อนกลับ (**Deploy & Rollback**) พร้อมบันทึกประวัติการเปลี่ยนแปลง
 
@@ -65,6 +67,11 @@ ScamGuard Admin Portal ออกแบบภายใต้แนวคิด **
     - สลับธีมได้ทันทีผ่านปุ่มบน TopBar พร้อมบันทึกสถานะลงใน LocalStorage
     - ตัวอักษรและป้ายกำกับปรับแต่งความเข้มและความเปรียบต่างตามเกณฑ์มาตรฐาน WCAG AA เพื่อให้อ่านข้อมูล ตัวเลขสถิติ และ Hash ได้อย่างคมชัดในทุกสภาพแสง
 
+11. **WebMCP Site Tool**
+    - ลงทะเบียน `get_admin_page_context` เมื่อ browser รองรับ `document.modelContext.registerTool`
+    - Tool เป็น read-only และคืนเฉพาะ route, page title, heading, rendered theme และ online state
+    - ไม่อ่านหรือคืน access token, refresh cookie, credential หรือข้อมูลลับของ Admin session
+
 ---
 
 ## สถาปัตยกรรมเทคโนโลยี (Tech Stack)
@@ -73,11 +80,12 @@ ScamGuard Admin Portal ออกแบบภายใต้แนวคิด **
 - **Routing:** React Router DOM v7
 - **Styling:** Tailwind CSS v4 (`@tailwindcss/vite`) + Modern CSS Design Tokens
 - **Themes:** Dual-Theme Architecture (Dark Mode & Light Mode) พร้อมระบบจัดการคลาสระดับราก
-- **Typography:** Geist Sans Variable + Monospace Tabular Figures (`tabular-nums font-mono`)
+- **Typography:** Noto Sans Thai Variable + Geist Variable fallback; monospace/tabular figures เฉพาะข้อมูลเทคนิค
 - **Icons:** Lucide React
 - **Charts:** Recharts (ปรับแต่ง Zero-Delay Animation เพื่อการแสดงผลแบบเรียลไทม์ที่แม่นยำ)
-- **Design System:** Impeccable Design Archetype (Operate Mode, Electric Cyan `#00e5ff`, Triad Risk Colors)
+- **Design System:** Operate Mode, restrained Cyan accent, semantic status colors และ evidence-integrity rules ใน `DESIGN.md`
 - **Notifications & Dialogs:** In-App Toast Provider และ Accessible Modal Dialogs (ปราศจาก native browser `alert()` หรือ `confirm()`)
+- **Agent Integration:** WebMCP Site Tool แบบ progressive enhancement; browser ที่ไม่รองรับยังใช้งาน Admin Portal ตามปกติ
 
 ---
 
@@ -106,6 +114,7 @@ admin-portal/
 │   │   └── AdminLayout.jsx     # โครงร่างหน้าหลัก รองรับ Responsive & Mobile Drawer
 │   ├── lib/
 │   │   ├── api.js              # เลเยอร์เชื่อมต่อ API, จัดการ Token, และ WebSocket Helper
+│   │   ├── webmcp.js           # ลงทะเบียน read-only WebMCP Site Tool
 │   │   └── utils.js            # ยูทิลิตี้ cn, ตัวจัดรูปแบบตัวเลข, วันที่, และสีความเสี่ยง
 │   ├── pages/                  # หน้าจอระบบครบทั้ง 10 หน้า
 │   │   ├── AuditLogsList.jsx   # บันทึก Audit Log
@@ -147,7 +156,7 @@ admin-portal/
 | `VITE_SESSION_TIMEOUT_MINUTES` | `60` | ขีดจำกัดเวลาเซสชันก่อนแจ้งเตือนผู้ดูแลระบบ |
 | `VITE_ENABLE_AUDIT_LOGGING` | `true` | บังคับส่งบันทึกการกระทำทุกอย่างเข้าสู่ระบบ Immutable Audit Log |
 | `VITE_ENABLE_MOCK_FALLBACK` | `false` | ปิดการจำลองข้อมูลอย่างเด็ดขาด เพื่อบังคับเชื่อมต่อ Real Backend |
-| `VITE_DEFAULT_ADMIN_USERNAME` | `admin@gmail.local` | บัญชีผู้ดูแลระบบเริ่มต้นสำหรับเติมในแบบฟอร์มอัตโนมัติ (Dev Mode) |
+| `VITE_DEFAULT_ADMIN_USERNAME` | *(กำหนดใน `.env` ของเครื่อง)* | บัญชีผู้ดูแลระบบสำหรับเติมในแบบฟอร์มอัตโนมัติ เฉพาะ Dev Mode; ต้องตรงกับบัญชีที่สร้างใน Backend จริง |
 
 ---
 
@@ -159,13 +168,13 @@ admin-portal/
 - **npm**: เวอร์ชัน 10 ขึ้นไป
 - **FastAPI Backend**: รันอยู่ที่พอร์ต `8000` (ตรวจสอบผ่าน `curl http://127.0.0.1:8000/health` — public; ส่วน `GET /api/v1/admin/health` ต้องใช้ Token Super Admin)
 
-### บัญชีผู้ดูแลระบบสำหรับโหมดพัฒนา (Default Credentials)
+### บัญชีผู้ดูแลระบบสำหรับโหมดพัฒนา
 
 - **URL เข้าใช้งาน:** `http://localhost:5173/admin/dashboard`
-- **Username:** `admin@gmail.local`
-- **Password:** กำหนดค่าผ่านไฟล์ `.env` ส่วนตัว (หรือดูบัญชีเริ่มต้นใน `server/scripts/admin.sh`)
+- **Username / Password:** ใช้บัญชี Super Admin ที่สร้างไว้ใน Backend จริง; `server/scripts/admin.sh` รับค่าจาก argument หรือ environment และไม่ได้กำหนด credential ตายตัวในสคริปต์
+- หากตั้ง `VITE_DEFAULT_ADMIN_USERNAME` / `VITE_DEFAULT_ADMIN_PASSWORD` ใน `.env` ของ Admin Portal ระบบจะใช้เพื่อ pre-fill หน้า Login เฉพาะ Dev Mode
 
-*(ในโหมดพัฒนา หากมีการกำหนดค่าใน `.env` ระบบจะดึงมากรอกในหน้า Login ให้อัตโนมัติ)*
+ค่าที่ pre-fill ไม่ใช่หลักฐานว่าบัญชีนั้นมีอยู่หรือรหัสผ่านยังใช้ได้; Backend เป็น authority ของ authentication เสมอ.
 
 ### ขั้นตอนการรันระบบ
 
@@ -192,6 +201,9 @@ admin-portal/
 
 4. **การตรวจสอบและ Build สำหรับ Production:**
    ```bash
+   # รัน regression tests ของ Admin UI semantics
+   npm test
+
    # ตรวจสอบความถูกต้องของโค้ดด้วย ESLint
    npm run lint
 

@@ -62,7 +62,7 @@ updated: 2026-09-16
   * **mDice**: การหาความสมดุลระหว่างความแม่นยำและความครอบคลุม
   * **mIoU**: ค่าเฉลี่ย IoU ของทุกคลาส โดย IoU วัดสัดส่วนพื้นที่ซ้อนทับระหว่าง mask ที่ทำนายกับ ground truth ต่อพื้นที่รวม (intersection / union); ไม่ใช่สัดส่วนพิกเซลที่ทายถูกทั้งหมด (pixel accuracy)
 
-> **ผลการเทรน v1.0.5 (config `segformer_mit-b2-v10.py`):** fine-tune จาก checkpoint `v1.0.0` (`best_mIoU_iter_112000.pth`) ครบ 200,000 iters (จบ 2026-09-12) ได้ best validation mIoU **91.31** / mDice **95.29** @iter 197,500 และเป็นอันดับหนึ่งบน locked common test (`scamguard-locked-multisource-test-v1`) ด้วย mIoU **91.24** / Forgery IoU **83.51** — เป็น candidate ดีที่สุด แต่ Production ยังคงเป็น `v1.0.0` (ดู [[concepts/ai-model-segformer]])
+> **ผลการเทรน v1.0.6 (config `segformer_mit-b2-v11.py`, fresh training):** ครบ 200,000 iters (จบ 2026-09-17) ได้ best validation mIoU **94.84** / mDice **97.30** @iter 195,000 และเป็นอันดับหนึ่งบน locked common test (`scamguard-locked-multisource-test-v1`, รัน 2026-09-18) ด้วย mIoU **94.83** / Forgery IoU **90.26** — deploy เป็น Production แล้วเมื่อ 2026-09-18 (รุ่นก่อนหน้าคือ `v1.0.5`, ดู [[concepts/ai-model-segformer]])
 
 ### ผลรายเวอร์ชัน (Test Case ระดับโมเดล)
 

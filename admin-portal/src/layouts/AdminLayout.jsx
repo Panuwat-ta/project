@@ -7,7 +7,6 @@ import { CommandPalette } from "@/components/ui/CommandPalette";
 export function AdminLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCommandOpen, setIsCommandOpen] = useState(false);
-  const [isWsConnected, setIsWsConnected] = useState(true);
 
   // Global Ctrl+K / Cmd+K listener
   useEffect(() => {
@@ -39,11 +38,12 @@ export function AdminLayout() {
         <TopBar
           onMenuClick={() => setIsSidebarOpen(true)}
           onOpenCommandPalette={() => setIsCommandOpen(true)}
-          isWsConnected={isWsConnected}
         />
 
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-background">
-          <Outlet context={{ setIsWsConnected }} />
+          <div className="w-full max-w-[1600px] mx-auto">
+            <Outlet />
+          </div>
         </main>
       </div>
 

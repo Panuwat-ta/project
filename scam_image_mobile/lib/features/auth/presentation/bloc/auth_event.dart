@@ -22,14 +22,24 @@ class RegisterRequested extends AuthEvent {
     required this.email,
     required this.password,
     required this.displayName,
+    required this.systemConsent,
+    required this.researchConsent,
   });
 
   final String email;
   final String password;
   final String displayName;
+  final bool systemConsent;
+  final bool researchConsent;
 
   @override
-  List<Object?> get props => [email, password, displayName];
+  List<Object?> get props => [
+    email,
+    password,
+    displayName,
+    systemConsent,
+    researchConsent,
+  ];
 }
 
 /// Triggered when the user requests to log out.

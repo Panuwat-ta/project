@@ -1,70 +1,94 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// AppTypography — design system text styles.
-///
-/// Sarabun is used for all UI copy (supports Thai + English).
-/// Inter is used for numeric / code data display.
+/// ScamGuard typography authority. Sarabun is used for UI copy; Inter is
+/// reserved for numeric/technical data. Heights are tuned for Thai glyphs.
 class AppTypography {
   AppTypography._();
 
-  // ── Sarabun styles ───────────────────────────────────────────────────────
+  static const double displayHeroSize = 40;
+  static const double headlineSize = 24;
+  static const double titleSize = 20;
+  static const double sectionSize = 18;
+  static const double bodySize = 16;
+  static const double buttonSize = 16;
+  static const double captionSize = 13;
+  static const double codeSize = 14;
 
-  /// 40 / w700 — hero display (rarely used on mobile).
+  static const double displayHeroHeight = 1.2;
+  static const double headlineHeight = 1.35;
+  static const double titleHeight = 1.35;
+  static const double sectionHeight = 1.4;
+  static const double bodyHeight = 1.5;
+  static const double buttonHeight = 1.3;
+  static const double captionHeight = 1.4;
+  static const double codeHeight = 1.35;
+
   static TextStyle displayHero({Color? color}) => GoogleFonts.sarabun(
-        fontSize: 40,
-        fontWeight: FontWeight.w700,
-        color: color,
-      );
+    fontSize: 40,
+    height: 1.2,
+    fontWeight: FontWeight.w700,
+    color: color,
+  );
 
-  /// 22 / w700 — primary page titles.
   static TextStyle headlineLgMobile({Color? color}) => GoogleFonts.sarabun(
-        fontSize: 22,
-        fontWeight: FontWeight.w700,
-        color: color,
-      );
+    fontSize: 24,
+    height: 1.35,
+    fontWeight: FontWeight.w700,
+    color: color,
+  );
 
-  /// 18 / w700 — card / section titles.
   static TextStyle titleMd({Color? color}) => GoogleFonts.sarabun(
-        fontSize: 18,
-        fontWeight: FontWeight.w700,
-        color: color,
-      );
+    fontSize: 20,
+    height: 1.35,
+    fontWeight: FontWeight.w700,
+    color: color,
+  );
 
-  /// 16 / w600 — section headers.
   static TextStyle sectionHeader({Color? color}) => GoogleFonts.sarabun(
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-        color: color,
-      );
+    fontSize: 18,
+    height: 1.4,
+    fontWeight: FontWeight.w600,
+    color: color,
+  );
 
-  /// 14 / w400 — body / paragraph text.
   static TextStyle bodyBase({Color? color}) => GoogleFonts.sarabun(
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
-        color: color,
-      );
+    fontSize: 16,
+    height: 1.5,
+    fontWeight: FontWeight.w400,
+    color: color,
+  );
 
-  /// 15 / w600 — button labels.
   static TextStyle buttonLabel({Color? color}) => GoogleFonts.sarabun(
-        fontSize: 15,
-        fontWeight: FontWeight.w600,
-        color: color,
-      );
+    fontSize: 16,
+    height: 1.3,
+    fontWeight: FontWeight.w600,
+    color: color,
+  );
 
-  /// 12 / w400 — captions / helper text.
   static TextStyle caption({Color? color}) => GoogleFonts.sarabun(
-        fontSize: 12,
-        fontWeight: FontWeight.w400,
-        color: color,
-      );
+    fontSize: 13,
+    height: 1.4,
+    fontWeight: FontWeight.w400,
+    color: color,
+  );
 
-  // ── Inter styles (numbers / code) ────────────────────────────────────────
-
-  /// 12 / w500 Inter — numeric data, risk scores, code snippets.
   static TextStyle codeData({Color? color}) => GoogleFonts.inter(
-        fontSize: 12,
-        fontWeight: FontWeight.w500,
-        color: color,
-      );
+    fontSize: 14,
+    height: 1.35,
+    fontWeight: FontWeight.w500,
+    color: color,
+    fontFeatures: const [FontFeature.tabularFigures()],
+  );
+
+  static TextTheme textTheme(Color color) => TextTheme(
+    headlineMedium: headlineLgMobile(color: color),
+    titleLarge: titleMd(color: color),
+    titleMedium: sectionHeader(color: color),
+    bodyLarge: bodyBase(color: color),
+    bodyMedium: bodyBase(color: color),
+    bodySmall: caption(color: color),
+    labelLarge: buttonLabel(color: color),
+    labelMedium: caption(color: color),
+  );
 }

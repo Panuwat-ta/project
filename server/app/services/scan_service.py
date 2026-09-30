@@ -1,5 +1,7 @@
 import os
-import json
+import asyncio
+import functools
+import anyio
 from fastapi import UploadFile, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -9,12 +11,49 @@ from app.core.config import settings, TH_TIMEZONE
 from app.core.websocket import manager
 from app.models.scan import Scan
 from app.utils.hashing import calculate_image_hash
-from app.utils.image_utils import load_image_verified, encode_lossless_png
-from app.utils.risk_calculator import calculate_risk_score
+from app.utils.image_utils import (
+    load_image_verified,
+    encode_lossless_png,
+    save_evidence_png,
+    save_heatmap_file,
+    heatmap_path,
+)
+from app.utils.risk_calculator import calculate_risk_score, build_text_analysis, build_source_score
+from app.utils.scan_cache import get_cached_scan, store_cached_scan
 from app.services.inference_service import inference_service
 import app.core.redis as redis_core
 
 MAX_UPLOAD_BYTES = settings.MAX_UPLOAD_SIZE_MB * 1024 * 1024
+
+async def _generate_xai_with_timeout(region: str, visual_score: int, ai_gen_probability: float, found_keywords: list[str]) -> str:
+    """Generate XAI without letting a blocking worker defeat the async timeout.
+
+    AnyIO worker threads ignore host-task cancellation by default. Using
+    abandon_on_cancel=True lets asyncio.wait_for return on time; the worker may
+    finish in the background, but its late result is discarded.
+    """
+    call = functools.partial(
+        inference_service.generate_xai_explanation,
+        region=region,
+        visual_score=visual_score,
+        ai_gen_probability=ai_gen_probability,
+        scam_keywords=found_keywords,
+    )
+    try:
+        return await asyncio.wait_for(
+            anyio.to_thread.run_sync(call, abandon_on_cancel=True),
+            timeout=settings.XAI_TIMEOUT,
+        )
+    except (asyncio.TimeoutError, TimeoutError):
+        print(f"XAI timeout after {settings.XAI_TIMEOUT}s, using fallback")
+        return inference_service.fallback_xai_explanation(
+            region, visual_score, ai_gen_probability, found_keywords
+        )
+    except Exception as exc:
+        print(f"XAI phase failed, using fallback: {exc}")
+        return inference_service.fallback_xai_explanation(
+            region, visual_score, ai_gen_probability, found_keywords
+        )
 
 async def create_scan_task(file: UploadFile, user_id: int, db: AsyncSession, title: str | None = None) -> tuple[Scan, bytes, str]:
     file_bytes = await file.read()
@@ -54,8 +93,20 @@ async def create_scan_task(file: UploadFile, user_id: int, db: AsyncSession, tit
 
     return new_scan, file_bytes, image_hash
 
-async def process_image_background(scan_id, file_bytes: bytes, image_hash: str):
+async def process_image_background(scan_id, file_bytes: bytes, image_hash: str,
+                                 predict_fn=None, cache_client=None):
+    """Background scoring pipeline. Deps injectable for tests; defaults are prod.
+
+    predict_fn: (png_bytes) -> inference dict. Defaults to inference_service.predict.
+    cache_client: Redis-like client (get/setex). Defaults to global redis_client.
+    Flow + Phase 1/2 split unchanged.
+    """
     from app.core.database import async_session
+
+    if predict_fn is None:
+        predict_fn = inference_service.predict
+    if cache_client is None:
+        cache_client = redis_core.redis_client
     
     async with async_session() as db:
         result = await db.execute(select(Scan).where(Scan.id == scan_id))
@@ -77,35 +128,18 @@ async def process_image_background(scan_id, file_bytes: bytes, image_hash: str):
             # 3. Normalize to lossless PNG
             png_bytes = await run_in_threadpool(encode_lossless_png, image)
 
-            os.makedirs(settings.LOCAL_UPLOAD_DIR, exist_ok=True)
-            heatmap_dir = os.path.join(settings.LOCAL_UPLOAD_DIR, "heatmaps")
-            os.makedirs(heatmap_dir, exist_ok=True)
-
-            # 5. Save PNG evidence
-            filename = f"{image_hash}.png"
-            file_path = os.path.join(settings.LOCAL_UPLOAD_DIR, filename)
-            with open(file_path, "wb") as buffer:
-                buffer.write(png_bytes)
+            # 5. Save PNG evidence via image store seam
+            file_path = save_evidence_png(png_bytes, image_hash)
                 
             scan.raw_image_url = file_path
             scan.exif_data = exif_data
             scan.progress = 40
             await db.commit()
 
-            # 6. Check Redis cache
-            cache_key = f"scan_result:{image_hash}"
-            cached_data = None
-            
-            if redis_core.redis_client:
-                try:
-                    cached_str = await redis_core.redis_client.get(cache_key)
-                    if cached_str:
-                        cached_data = json.loads(cached_str)
-                except Exception as e:
-                    print(f"Redis cache read error: {e}")
+            # 6. Check result cache via cache seam
+            cached_data = await get_cached_scan(cache_client, image_hash)
 
-            heatmap_filename = f"{image_hash}_heatmap.jpg"
-            heatmap_path = os.path.join(heatmap_dir, heatmap_filename)
+            heatmap_file = heatmap_path(image_hash)
 
             scan.status = "processing_visual"
             scan.progress = 50
@@ -114,71 +148,66 @@ async def process_image_background(scan_id, file_bytes: bytes, image_hash: str):
             if cached_data:
                 inference_result = cached_data
             else:
-                inference_result = await run_in_threadpool(inference_service.predict, png_bytes)
+                inference_result = await run_in_threadpool(predict_fn, png_bytes)
                 
                 if inference_result.get("heatmap_bytes"):
-                    with open(heatmap_path, "wb") as f:
-                        f.write(inference_result["heatmap_bytes"])
+                    save_heatmap_file(inference_result["heatmap_bytes"], image_hash)
                     del inference_result["heatmap_bytes"]
                     inference_result["has_heatmap"] = True
 
-                if redis_core.redis_client:
-                    try:
-                        await redis_core.redis_client.setex(cache_key, 2592000, json.dumps(inference_result))
-                    except Exception as e:
-                        print(f"Redis cache write error: {e}")
+                await store_cached_scan(cache_client, image_hash, inference_result)
                         
-            if os.path.exists(heatmap_path):
-                scan.heatmap_image_url = heatmap_path
+            if os.path.exists(heatmap_file):
+                scan.heatmap_image_url = heatmap_file
                 
             scan.status = "processing_text"
             scan.progress = 80
             await db.commit()
 
-            # 7. Calculate Other Analysis Data (OCR)
+            # 7. Calculate Other Analysis Data (OCR) via risk module builders
             ocr_text = inference_result.get("ocr_text", "")
-            scam_keywords = ["ด่วน", "โบนัส", "กู้เงิน", "รับเงิน", "ลงทุน", "อนุมัติไว", "ได้เงินจริง", "คลิก", "เครดิตฟรี", "แจกฟรี", "หลุด"]
-            found_keywords = []
-
-            text_score = 0
             if ocr_text:
-                for kw in scam_keywords:
-                    if kw in ocr_text:
-                        found_keywords.append(kw)
-                        text_score += 25
-                text_score = min(text_score, 100)
+                text_score, found_keywords = build_text_analysis(ocr_text)
             else:
-                text_score = 0
+                text_score, found_keywords = 0, []
                 ocr_text = "No text detected."
 
-            source_score = settings.DEFAULT_SOURCE_SCORE
+            source_score = build_source_score()
             visual_score = inference_result.get("visual_risk_score", 0)
             ai_gen_probability = inference_result.get("ai_gen_probability", 0.0)
             anomaly_region = inference_result.get("anomaly_region", "บริเวณที่น่าสงสัยในภาพ")
 
             risk_result = calculate_risk_score(text_score, visual_score, source_score)
 
-            # Generate Explainable AI (XAI) explanation using Qwen2.5-1.5B
-            xai_explanation = await run_in_threadpool(
-                inference_service.generate_xai_explanation,
-                region=anomaly_region,
-                visual_score=visual_score,
-                ai_gen_probability=ai_gen_probability,
-                scam_keywords=found_keywords
-            )
-
+            # Phase 1: ส่งผล visual/OCR/cscore ให้ client ก่อน XAI (Qwen รันบน CPU ช้ากว่า)
             scan.text_score = text_score
             scan.visual_score = visual_score
-            scan.source_score = source_score
+            # DB column is non-null in the current schema. Keep 0 only as a
+            # storage compatibility placeholder; unavailable source evidence is
+            # exposed through source_status and source_score=null at the API.
+            scan.source_score = source_score if source_score is not None else 0
             scan.total_risk_score = risk_result["total_risk_score"]
             scan.ocr_text = ocr_text
             scan.scam_keywords_found = found_keywords
             scan.ai_gen_probability = ai_gen_probability
+            scan.xai_explanation = None
+            scan.status = "processing_text"
+            scan.progress = 90
+            await db.commit()
+
+            # Broadcast ให้ dashboard/client เห็นผลรอบแรกทันที
+            await manager.broadcast({"type": "refresh_dashboard"})
+
+            # Phase 2: XAI explanation ตามมาทีหลัง — พัง/หมดเวลาก็ไม่ล้มสแกน ใช้ fallback แทน
+            xai_explanation = await _generate_xai_with_timeout(
+                anomaly_region, visual_score, ai_gen_probability, found_keywords
+            )
+
             scan.xai_explanation = xai_explanation
             scan.status = "completed"
             scan.progress = 100
             scan.completed_at = datetime.now(TH_TIMEZONE)
-            
+
             await db.commit()
             
             # Broadcast to admin dashboard

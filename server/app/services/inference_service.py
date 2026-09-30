@@ -1,9 +1,17 @@
 import os
 import base64
-import json
 import subprocess
 import sys
+import threading
 from app.core.config import settings
+from app.utils.gpu_safety import parse_nvidia_smi_memory, should_defer_xai_gpu
+from app.utils.onnx_runner import run_onnx_worker
+
+# Llama instance ไม่ thread-safe: XAI ซ้อนกัน 2 Jobs -> ggml-cuda race -> SIGABRT
+# ตายทั้ง process (จับด้วย try ไม่ได้) ต้อง serialize ที่ต้นตอ
+_xai_lock = threading.Lock()
+# ย้ายโมเดล Surya ข้าม device ใน fallback ก็ต้องห้ามซ้อนกันเช่นกัน
+_ocr_device_lock = threading.Lock()
 
 class InferenceService:
     def __init__(self):
@@ -43,25 +51,29 @@ class InferenceService:
                                     pass
                 from llama_cpp import Llama
 
-                free_vram = 0
-                try:
-                    import subprocess
-                    out = subprocess.check_output(
-                        ["nvidia-smi", "--query-gpu=memory.free", "--format=csv,noheader,nounits"],
-                        timeout=2
-                    ).decode()
-                    free_vram = int(out.strip().split()[0])
-                except Exception:
-                    pass
-
                 target_gpu_layers = getattr(settings, "XAI_GPU_LAYERS", -1)
                 context_size = getattr(settings, "XAI_CONTEXT_SIZE", 1024)
+                gpu_memory = []
+                if target_gpu_layers != 0:
+                    try:
+                        import subprocess
+                        out = subprocess.check_output(
+                            [
+                                "nvidia-smi",
+                                "--query-gpu=memory.total,memory.free",
+                                "--format=csv,noheader,nounits",
+                            ],
+                            timeout=2,
+                        ).decode()
+                        gpu_memory = parse_nvidia_smi_memory(out)
+                    except Exception:
+                        print("Unable to verify GPU memory; deferring GPU XAI model for safety.")
 
-                # Qwen2.5-1.5B Q4_K_M requires ~1500 MiB VRAM for full GPU offload.
-                # If free VRAM is below 1500 MiB (e.g. concurrent server process or test suite), defer XAI model
-                # to prevent multi-process GPU memory contention and CUDA errors on 4GB VRAM.
-                if target_gpu_layers != 0 and free_vram > 0 and free_vram < 1500:
-                    print(f"Available VRAM ({free_vram} MiB) < 1500 MiB. Deferring duplicate XAI model to avoid GPU contention.")
+                if should_defer_xai_gpu(target_gpu_layers, gpu_memory):
+                    print(
+                        "Deferring GPU XAI model to deterministic fallback "
+                        f"(visible GPU memory={gpu_memory or 'unavailable'})."
+                    )
                     self.xai_model = None
                 else:
                     self.xai_model = Llama(
@@ -122,7 +134,7 @@ class InferenceService:
         """
         scam_keywords = scam_keywords or []
         if not self.xai_model:
-            return self._fallback_xai_explanation(region, visual_score, ai_gen_probability, scam_keywords)
+            return self.fallback_xai_explanation(region, visual_score, ai_gen_probability, scam_keywords)
 
         # 1. Semantic classification based on project 3-level scale
         if visual_score >= 70:
@@ -173,13 +185,14 @@ class InferenceService:
         )
 
         try:
-            output = self.xai_model(
-                prompt,
-                max_tokens=180,
-                temperature=0.2,
-                top_p=0.85,
-                stop=["<|im_end|>", "\n\n"]
-            )
+            with _xai_lock:
+                output = self.xai_model(
+                    prompt,
+                    max_tokens=180,
+                    temperature=0.2,
+                    top_p=0.85,
+                    stop=["<|im_end|>", "\n\n"]
+                )
             text = output["choices"][0]["text"].strip()
             # Clean up potential robotic artifacts
             text = text.replace("คำสำคัญที่พบในภาพไม่พบ", "ไม่พบคำสำคัญที่เกี่ยวข้องกับการหลอกลวง")
@@ -193,13 +206,13 @@ class InferenceService:
                 text += "การหลอกลวง"
 
             if len(text) < 15:
-                return self._fallback_xai_explanation(region, visual_score, ai_gen_probability, scam_keywords)
+                return self.fallback_xai_explanation(region, visual_score, ai_gen_probability, scam_keywords)
             return text
         except Exception as e:
             print(f"XAI Generation error: {e}")
-            return self._fallback_xai_explanation(region, visual_score, ai_gen_probability, scam_keywords)
+            return self.fallback_xai_explanation(region, visual_score, ai_gen_probability, scam_keywords)
 
-    def _fallback_xai_explanation(
+    def fallback_xai_explanation(
         self,
         region: str,
         visual_score: int,
@@ -229,6 +242,108 @@ class InferenceService:
 
         return " ".join(parts)
 
+    def _run_ocr_fallback(self, run_ocr, image, langs: list[str]) -> str:
+        """OCR แบบลดหลั่น: GPU เต็ม → ล้าง cache + ย่อภาพ retry → ย้าย rec ลง CPU.
+
+        ขั้น recognition กิน VRAM แปรตามขนาดภาพ บนการ์ด 4GB ภาพใหญ่ล้นได้
+        ย่อภาพช่วยแบบกำลังสอง (ครึ่งหนึ่งของแต่ละด้าน = เหลือ ~1/4)
+        """
+        import torch
+
+        def _extract(predictions) -> str:
+            if predictions and len(predictions) > 0:
+                return "\n".join(line.text for line in predictions[0].text_lines)
+            return ""
+
+        def _is_oom(e: Exception) -> bool:
+            return "out of memory" in str(e).lower()
+
+        def _attempt(img) -> str:
+            return _extract(run_ocr(
+                [img], [langs],
+                self.det_model, self.det_processor,
+                self.rec_model, self.rec_processor,
+                batch_size=settings.SURYA_REC_BATCH_SIZE,
+            ))
+
+        # รอบ 1: ภาพเต็มบน GPU
+        try:
+            return _attempt(image)
+        except Exception as e:
+            if not _is_oom(e):
+                raise
+            print(f"OCR OOM on full-size image ({image.size}), downscaling retry...")
+
+        # รอบ 2-3: ล้าง cache + ย่อภาพ (1536 → 1024) แล้วลอง GPU ใหม่
+        for max_dim in (1536, 1024):
+            try:
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+                img = image.copy()
+                img.thumbnail((max_dim, max_dim))
+                print(f"OCR retry at max-dim {max_dim} (actual {img.size})")
+                return _attempt(img)
+            except Exception as e:
+                if not _is_oom(e):
+                    raise
+                print(f"OCR still OOM at max-dim {max_dim}, trying smaller...")
+
+        # รอบสุดท้าย: ย้าย recognition ลง CPU (ช้าแต่ผ่านชัวร์) แล้วย้ายกลับ
+        # ล็อกกันสแกนซ้อนกันย้ายโมเดลสวนทางกัน
+        print("OCR falling back to CPU")
+        assert self.det_model is not None and self.rec_model is not None
+        with _ocr_device_lock:
+            det_dev = next(self.det_model.parameters()).device
+            rec_dev = next(self.rec_model.parameters()).device
+            try:
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+                small = image.copy()
+                small.thumbnail((1024, 1024))
+                self.det_model.to("cpu")
+                self.rec_model.to("cpu")
+                return _attempt(small)
+            finally:
+                try:
+                    self.det_model.to(det_dev)
+                    self.rec_model.to(rec_dev)
+                    if torch.cuda.is_available():
+                        torch.cuda.empty_cache()
+                except Exception as e:
+                    print(f"OCR failed to restore GPU models: {e}")
+
+    def _run_ocr_with_timeout(self, image_bytes: bytes) -> str:
+        """รัน OCR ทั้งก้อนพร้อม timeout (partial failure -> คืนสตริงว่างแล้วไปต่อ).
+
+        หมายเหตุ: thread ที่ค้างใน torch op ฆ่าจากข้างนอกไม่ได้ จะ leak ค้างไว้
+        แต่สแกนไม่ค้างตาม (ต่างจากเดิมที่รอไม่จำกัด)
+        """
+        import concurrent.futures
+        import io
+        from PIL import Image
+        from surya.ocr import run_ocr
+
+        if not self.det_model or not self.rec_model:
+            return ""
+
+        image = Image.open(io.BytesIO(image_bytes))
+
+        pool = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+        future = pool.submit(self._run_ocr_fallback, run_ocr, image, ["th", "en"])
+        try:
+            return future.result(timeout=settings.OCR_TIMEOUT)
+        except concurrent.futures.TimeoutError:
+            print(f"OCR timeout after {settings.OCR_TIMEOUT}s, continuing without OCR text")
+            future.cancel()
+            return ""
+        except Exception as e:
+            print(f"Surya OCR error: {e}")
+            return ""
+        finally:
+            # Do not wait for a running torch worker after timeout; it cannot be
+            # killed safely from Python, so abandon its late result instead.
+            pool.shutdown(wait=False, cancel_futures=True)
+
     def predict(self, image_bytes: bytes) -> dict:
         """
         Process image and run inference via isolated ONNX worker + LLaMA.
@@ -237,74 +352,38 @@ class InferenceService:
         ai_gen_probability = 0.5
         heatmap_bytes = self.generate_mock_heatmap(image_bytes)
         
-        # 1. Run ONNX in isolated subprocess
+        # 1. Run ONNX in isolated subprocess via shared runner seam
         try:
-            env = os.environ.copy()
-            # Force LD_LIBRARY_PATH for ONNX worker to find pip CUDA 12 libs
-            import glob
-            venv_lib_path = os.path.join(os.getcwd(), "venv/lib/python3.10/site-packages/nvidia")
-            nvidia_lib_dirs = glob.glob(f"{venv_lib_path}/*/lib")
-            env["LD_LIBRARY_PATH"] = ":".join(nvidia_lib_dirs)
-            env["ONNX_MODEL_PATH"] = settings.ONNX_MODEL_PATH
-            env["ONNX_TILE_SIZE"] = str(settings.ONNX_TILE_SIZE)
-            env["ONNX_TILE_OVERLAP"] = str(settings.ONNX_TILE_OVERLAP)
-            
-            # Re-enable CUDA for ONNX worker
-            if "CUDA_VISIBLE_DEVICES" in env and env["CUDA_VISIBLE_DEVICES"] == "":
-                del env["CUDA_VISIBLE_DEVICES"]
-            
-            worker_path = os.path.join(os.path.dirname(__file__), "onnx_worker.py")
-            process = subprocess.Popen(
-                [sys.executable, worker_path],
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                env=env
+            run = run_onnx_worker(
+                image_bytes,
+                settings.ONNX_MODEL_PATH,
+                timeout=settings.ONNX_WORKER_TIMEOUT,
             )
-            
-            b64_image = base64.b64encode(image_bytes).decode('utf-8')
-            stdout, stderr = process.communicate(input=b64_image.encode('utf-8'))
-            
-            if process.returncode == 0:
+            if run["timed_out"]:
+                print(f"ONNX worker timeout after {settings.ONNX_WORKER_TIMEOUT}s, using defaults")
+                return {
+                    "visual_risk_score": visual_risk_score,
+                    "ai_gen_probability": ai_gen_probability,
+                    "anomaly_region": "บริเวณที่น่าสงสัยในภาพ",
+                    "heatmap_bytes": heatmap_bytes,
+                    "ocr_text": self._run_ocr_with_timeout(image_bytes),
+                }
+
+            if run["returncode"] == 0 and run["stdout_json"] is not None:
                 # Parse only the last line as JSON to ignore any other print statements
-                lines = stdout.decode('utf-8').strip().split('\n')
-                result = json.loads(lines[-1])
+                result = run["stdout_json"]
                 visual_risk_score = result.get("visual_risk_score", visual_risk_score)
                 ai_gen_probability = result.get("ai_gen_probability", ai_gen_probability)
                 anomaly_region = result.get("anomaly_region", "บริเวณที่น่าสงสัยในภาพ")
                 if result.get("heatmap_b64"):
                     heatmap_bytes = base64.b64decode(result["heatmap_b64"])
             else:
-                print(f"ONNX worker failed: {stderr.decode('utf-8')}")
+                print(f"ONNX worker failed: {run['stderr_text']}")
         except Exception as e:
             print(f"Failed to run ONNX worker: {e}")
             
-        # 2. Run Surya OCR
-        ocr_text = ""
-        if self.det_model and self.rec_model:
-            try:
-                from surya.ocr import run_ocr
-                import io
-                from PIL import Image
-                
-                image = Image.open(io.BytesIO(image_bytes))
-                
-                # run_ocr expects list of images and list of language lists
-                predictions = run_ocr(
-                    [image], 
-                    [["th", "en"]], # Thai and English
-                    self.det_model, 
-                    self.det_processor, 
-                    self.rec_model, 
-                    self.rec_processor
-                )
-                
-                # Extract text from prediction results
-                if predictions and len(predictions) > 0:
-                    text_lines = [line.text for line in predictions[0].text_lines]
-                    ocr_text = "\n".join(text_lines)
-            except Exception as e:
-                print(f"Surya OCR error: {e}")
+        # 2. Run Surya OCR (GPU → ย่อภาพ retry → CPU ตามลำดับ, มี timeout)
+        ocr_text = self._run_ocr_with_timeout(image_bytes)
                 
         return {
             "visual_risk_score": visual_risk_score,

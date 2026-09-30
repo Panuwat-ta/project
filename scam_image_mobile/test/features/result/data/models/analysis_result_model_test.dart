@@ -6,7 +6,9 @@ import 'package:scam_image_mobile/features/result/domain/entities/analysis_resul
 void main() {
   setUpAll(() {
     // Initialize dotenv with test values so parseUrl works
-    dotenv.loadFromString(envString: 'API_BASE_URL=http://10.0.0.1:8000/api/v1');
+    dotenv.loadFromString(
+      envString: 'API_BASE_URL=http://10.0.0.1:8000/api/v1',
+    );
   });
 
   group('AnalysisResultModel.fromJson — server flat format', () {
@@ -75,7 +77,7 @@ void main() {
       expect(model.riskLevel, RiskLevel.low);
     });
 
-    test('falls back to RiskLevelHelper when no risk_grade', () {
+    test('missing risk_grade maps to unknown, never Low', () {
       final json = {
         'id': 'scan-1',
         'total_risk_score': 80,
@@ -83,55 +85,51 @@ void main() {
       };
 
       final model = AnalysisResultModel.fromJson(json);
-      expect(model.riskLevel, RiskLevel.high);
+      expect(model.riskLevel, RiskLevel.unknown);
     });
 
-    test('falls back to RiskLevelHelper for medium range', () {
+    test('unrecognized risk_grade maps to unknown, never Low', () {
       final json = {
         'id': 'scan-1',
         'total_risk_score': 50,
+        'risk_grade': 'critical',
         'created_at': '2026-01-01T00:00:00',
       };
 
       final model = AnalysisResultModel.fromJson(json);
-      expect(model.riskLevel, RiskLevel.medium);
+      expect(model.riskLevel, RiskLevel.unknown);
     });
 
-    test('falls back to RiskLevelHelper for low range', () {
+    test('legacy camelCase keys are ignored (canonical contract only)', () {
       final json = {
         'id': 'scan-1',
-        'total_risk_score': 30,
+        'riskScore': 80,
+        'riskLevel': 'high',
         'created_at': '2026-01-01T00:00:00',
       };
 
       final model = AnalysisResultModel.fromJson(json);
-      expect(model.riskLevel, RiskLevel.low);
-    });
-
-    test('falls back to RiskLevelHelper for low range (safe -> low)', () {
-      final json = {
-        'id': 'scan-1',
-        'total_risk_score': 10,
-        'created_at': '2026-01-01T00:00:00',
-      };
-
-      final model = AnalysisResultModel.fromJson(json);
-      expect(model.riskLevel, RiskLevel.low);
+      expect(model.riskScore, 0);
+      expect(model.riskLevel, RiskLevel.unknown);
     });
   });
 
   group('AnalysisResultModel.fromJson — client format with factors', () {
     test('parses factors array directly', () {
       final json = {
-        'scanId': 'scan-1',
-        'taskId': 'task-1',
+        'id': 'scan-1',
         'status': 'completed',
-        'riskScore': 60,
-        'riskLevel': 'medium',
+        'total_risk_score': 60,
+        'risk_grade': 'medium',
         'summary': 'Analysis complete',
-        'createdAt': '2026-06-01T12:00:00',
+        'created_at': '2026-06-01T12:00:00',
         'factors': [
-          {'type': 'textual', 'score': 30, 'title': 'Text', 'details': ['keyword1']},
+          {
+            'type': 'textual',
+            'score': 30,
+            'title': 'Text',
+            'details': ['keyword1'],
+          },
           {'type': 'visual', 'score': 30, 'title': 'Visual', 'details': []},
         ],
       };
@@ -139,8 +137,8 @@ void main() {
       final model = AnalysisResultModel.fromJson(json);
 
       expect(model.scanId, 'scan-1');
-      expect(model.taskId, 'task-1');
       expect(model.riskScore, 60);
+      expect(model.riskLevel, RiskLevel.medium);
       expect(model.factors.length, 2);
     });
   });
@@ -170,10 +168,7 @@ void main() {
     });
 
     test('null URLs remain null', () {
-      final json = {
-        'id': 'scan-1',
-        'created_at': '2026-01-01T00:00:00',
-      };
+      final json = {'id': 'scan-1', 'created_at': '2026-01-01T00:00:00'};
 
       final model = AnalysisResultModel.fromJson(json);
       expect(model.imageUrl, isNull);
@@ -195,20 +190,14 @@ void main() {
 
   group('AnalysisResultModel defaults', () {
     test('defaults riskScore to 0 when missing', () {
-      final json = {
-        'id': 'scan-1',
-        'created_at': '2026-01-01T00:00:00',
-      };
+      final json = {'id': 'scan-1', 'created_at': '2026-01-01T00:00:00'};
 
       final model = AnalysisResultModel.fromJson(json);
       expect(model.riskScore, 0);
     });
 
     test('defaults status to completed when missing', () {
-      final json = {
-        'id': 'scan-1',
-        'created_at': '2026-01-01T00:00:00',
-      };
+      final json = {'id': 'scan-1', 'created_at': '2026-01-01T00:00:00'};
 
       final model = AnalysisResultModel.fromJson(json);
       expect(model.status, 'completed');
@@ -226,7 +215,7 @@ void main() {
       );
     });
 
-    test('generates summary when missing', () {
+    test('leaves summary empty when server and XAI summary are missing', () {
       final json = {
         'id': 'scan-1',
         'risk_grade': 'high',
@@ -234,14 +223,11 @@ void main() {
       };
 
       final model = AnalysisResultModel.fromJson(json);
-      expect(model.summary, contains('high'));
+      expect(model.summary, isEmpty);
     });
 
     test('empty factors when no score fields', () {
-      final json = {
-        'id': 'scan-1',
-        'created_at': '2026-01-01T00:00:00',
-      };
+      final json = {'id': 'scan-1', 'created_at': '2026-01-01T00:00:00'};
 
       final model = AnalysisResultModel.fromJson(json);
       expect(model.factors, isEmpty);

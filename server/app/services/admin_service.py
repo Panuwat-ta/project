@@ -4,6 +4,7 @@ import uuid
 import tempfile
 import zipfile
 import asyncio
+import time
 from datetime import datetime, timedelta, date
 from typing import List, Tuple, Dict, Any, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -22,27 +23,46 @@ from app.models.admin import Admin
 from app.models.admin_session import AdminSession
 from app.schemas.admin import ReportDecisionRequest, UserUpdateRequest, ExportRequest
 from app.core.config import TH_TIMEZONE, settings
+from app.core.rate_limit import ADMIN_REFRESH_WINDOW_SECONDS
+from app.utils.onnx_runner import run_onnx_worker
+from app.utils.risk_calculator import grade_for, LOW_MAX, MEDIUM_MAX
 from app.core.security import (
     hash_token, create_access_token, create_refresh_token,
 )
 
 
-def _to_media_url(path: Optional[str]) -> Optional[str]:
-    """Convert a local storage path (e.g. ./uploads/abc.png) to a publicly served URL."""
+def _to_media_url(path: Optional[str], *, require_exists: bool = False) -> Optional[str]:
+    """Map a stored upload path to its public URL without flattening subdirectories."""
     if not path:
         return None
-    name = os.path.basename(str(path))
-    if not name:
+
+    raw = str(path)
+    upload_root = os.path.abspath(settings.LOCAL_UPLOAD_DIR)
+    public_prefix = "/uploads/"
+
+    if raw.replace("\\", "/").startswith(public_prefix):
+        relative = os.path.normpath(raw.replace("\\", "/")[len(public_prefix):]).replace("\\", "/")
+        if relative in ("", ".", "..") or relative.startswith("../") or relative.startswith("/"):
+            return None
+        local_path = os.path.join(upload_root, *relative.split("/"))
+    else:
+        absolute = os.path.abspath(raw)
+        try:
+            inside_upload_root = os.path.commonpath((upload_root, absolute)) == upload_root
+        except ValueError:
+            inside_upload_root = False
+        if inside_upload_root:
+            relative = os.path.relpath(absolute, upload_root).replace(os.sep, "/")
+            local_path = absolute
+        else:
+            relative = os.path.basename(raw)
+            local_path = absolute
+
+    if not relative or relative in (".", "..") or relative.startswith("../"):
         return None
-    return f"/uploads/{name}"
-
-
-def _risk_grade(score: int) -> str:
-    if score >= 70:
-        return "high"
-    if score >= 40:
-        return "medium"
-    return "low"
+    if require_exists and not os.path.isfile(local_path):
+        return None
+    return f"{public_prefix}{relative}"
 
 
 def _admin_claims(admin: Admin) -> dict:
@@ -107,6 +127,84 @@ async def revoke_admin_session(db: AsyncSession, admin_id: int, sid: str) -> Adm
         await db.commit()
     return session
 
+async def expire_admin_session(db: AsyncSession, admin_id: int, sid: str) -> AdminSession:
+    """Expire an admin session immediately so both access and refresh tokens become unusable."""
+    result = await db.execute(select(AdminSession).where(AdminSession.id == sid))
+    session = result.scalars().first()
+    if session is None or session.admin_id != admin_id:
+        raise HTTPException(status_code=404, detail="Session not found")
+    now = datetime.now(TH_TIMEZONE)
+    session.revoked_at = session.revoked_at or now
+    session.expires_at = now
+    await db.commit()
+    return session
+
+
+_ADMIN_REFRESH_COUNTER_SCRIPT = """
+local count = redis.call('INCR', KEYS[1])
+if count == 1 then
+  redis.call('EXPIRE', KEYS[1], ARGV[1])
+end
+return count
+"""
+_admin_refresh_fallback: dict[str, tuple[int, float]] = {}
+
+
+def _register_admin_refresh_attempt_fallback(key: str) -> int:
+    """Process-local fixed-window fallback used only when Redis is unavailable."""
+    now = time.monotonic()
+    count, started_at = _admin_refresh_fallback.get(key, (0, now))
+    if now - started_at >= ADMIN_REFRESH_WINDOW_SECONDS:
+        count, started_at = 0, now
+    count += 1
+    _admin_refresh_fallback[key] = (count, started_at)
+
+    # Keep the outage-only fallback bounded during long-lived processes.
+    if len(_admin_refresh_fallback) > 1024:
+        cutoff = now - ADMIN_REFRESH_WINDOW_SECONDS
+        stale = [k for k, (_, started) in _admin_refresh_fallback.items() if started <= cutoff]
+        for stale_key in stale:
+            _admin_refresh_fallback.pop(stale_key, None)
+    return count
+
+
+async def register_admin_refresh_attempt(session_family_id: str) -> int:
+    """Count refreshes for one logical login session in a 60-second fixed window."""
+    from app.core import redis as redis_core
+
+    family_hash = hash_token(session_family_id)
+    key = f"admin:refresh-attempts:{family_hash}"
+    if redis_core.redis_client is None:
+        return _register_admin_refresh_attempt_fallback(key)
+
+    try:
+        count = await redis_core.redis_client.eval(
+            _ADMIN_REFRESH_COUNTER_SCRIPT,
+            1,
+            key,
+            ADMIN_REFRESH_WINDOW_SECONDS,
+        )
+        return int(count)
+    except Exception:
+        # Redis clients are created lazily; a non-None client can still be unreachable.
+        # Keep admin authentication functional and preserve the 60/minute rule per process.
+        return _register_admin_refresh_attempt_fallback(key)
+
+async def get_admin_last_login_at(db: AsyncSession, admin_id: int) -> Optional[datetime]:
+    """Return the newest real login time, excluding refresh-rotation child sessions."""
+    rotated_session_ids = (
+        select(AdminSession.replaced_by)
+        .where(
+            AdminSession.admin_id == admin_id,
+            AdminSession.replaced_by.is_not(None),
+        )
+    )
+    stmt = select(func.max(AdminSession.created_at)).where(
+        AdminSession.admin_id == admin_id,
+        AdminSession.id.not_in(rotated_session_ids),
+    )
+    return await db.scalar(stmt)
+
 async def get_dashboard_stats(db: AsyncSession) -> Dict[str, Any]:
     now = datetime.now(TH_TIMEZONE)
     today = now.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -126,10 +224,10 @@ async def get_dashboard_stats(db: AsyncSession) -> Dict[str, Any]:
     scans_this_week = await db.scalar(select(func.count(Scan.id)).where(Scan.created_at >= week_ago))
     scans_this_month = await db.scalar(select(func.count(Scan.id)).where(Scan.created_at >= month_ago))
     
-    # Risk Distribution
-    low_risk = await db.scalar(select(func.count(Scan.id)).where(Scan.total_risk_score < 40))
-    medium_risk = await db.scalar(select(func.count(Scan.id)).where(and_(Scan.total_risk_score >= 40, Scan.total_risk_score < 70)))
-    high_risk = await db.scalar(select(func.count(Scan.id)).where(Scan.total_risk_score >= 70))
+    # Risk Distribution (bands owned by risk_calculator thresholds)
+    low_risk = await db.scalar(select(func.count(Scan.id)).where(Scan.total_risk_score <= LOW_MAX))
+    medium_risk = await db.scalar(select(func.count(Scan.id)).where(and_(Scan.total_risk_score > LOW_MAX, Scan.total_risk_score <= MEDIUM_MAX)))
+    high_risk = await db.scalar(select(func.count(Scan.id)).where(Scan.total_risk_score > MEDIUM_MAX))
     
     # Reports Stats
     total_reports = await db.scalar(select(func.count(ScamReport.id)))
@@ -242,9 +340,9 @@ async def get_reports(db: AsyncSession, page: int = 1, limit: int = 20, status: 
                 "id": s.id,
                 "thumbnail_url": _to_media_url(s.raw_image_url),
                 "total_risk_score": s.total_risk_score,
-                "risk_grade": _risk_grade(s.total_risk_score)
+                "risk_grade": grade_for(s.total_risk_score or 0, s.visual_score or 0)
             }
-    
+
     items = []
     for r in reports:
         items.append({
@@ -393,12 +491,13 @@ async def get_report_detail(db: AsyncSession, report_id: int) -> Dict[str, Any]:
                 "image_hash": scan.image_hash,
                 "thumbnail_url": _to_media_url(scan.raw_image_url),
                 "raw_image_url": _to_media_url(scan.raw_image_url),
-                "heatmap_image_url": _to_media_url(scan.heatmap_image_url),
+                "heatmap_image_url": _to_media_url(scan.heatmap_image_url, require_exists=True),
                 "total_risk_score": scan.total_risk_score,
-                "risk_grade": _risk_grade(scan.total_risk_score),
+                "risk_grade": grade_for(scan.total_risk_score or 0, scan.visual_score or 0),
                 "text_score": scan.text_score,
                 "visual_score": scan.visual_score,
-                "source_score": scan.source_score,
+                "source_score": None,
+                "source_status": "unavailable",
                 "exif_data": scan.exif_data,
                 "ocr_text": scan.ocr_text,
                 "scam_keywords_found": scan.scam_keywords_found,
@@ -441,18 +540,29 @@ def _resolve_export_file(path: Optional[str]) -> Optional[str]:
 async def get_health_status(db: AsyncSession) -> dict:
     from sqlalchemy import text
     from datetime import datetime
+    from app.core import redis as redis_core
+
     try:
         await db.execute(text("SELECT 1"))
         db_status = "ok"
     except Exception:
         db_status = "error"
-        
+
+    try:
+        if redis_core.redis_client is None:
+            queue_status = "error"
+        else:
+            await redis_core.redis_client.ping()
+            queue_status = "ok"
+    except Exception:
+        queue_status = "error"
+
     return {
         "database": db_status,
         "storage": "ok",
         "models": "ok",
-        "queue": "ok",
-        "last_check": datetime.utcnow()
+        "queue": queue_status,
+        "last_check": datetime.now(TH_TIMEZONE)
     }
 
 async def get_model_versions(db: AsyncSession) -> Tuple[List[Dict[str, Any]], int]:
@@ -534,6 +644,13 @@ async def get_user_detail(db: AsyncSession, user_id: int) -> Dict[str, Any]:
         raise HTTPException(status_code=404, detail="User not found")
         
     scan_count = await db.scalar(select(func.count()).select_from(Scan).where(Scan.user_id == user.id)) or 0
+    month_start = datetime.now(TH_TIMEZONE).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    scans_this_month = await db.scalar(
+        select(func.count()).select_from(Scan).where(
+            Scan.user_id == user.id,
+            Scan.created_at >= month_start,
+        )
+    ) or 0
     report_count = await db.scalar(select(func.count()).select_from(ScamReport).where(ScamReport.user_id == user.id)) or 0
     
     # Recent scans
@@ -544,12 +661,12 @@ async def get_user_detail(db: AsyncSession, user_id: int) -> Dict[str, Any]:
     scans_list = []
     for s in recent_scans:
         score = s.total_risk_score or 0
-        grade = "high" if score >= 70 else "medium" if score >= 40 else "low"
         scans_list.append({
             "id": str(s.id),
             "image_url": s.raw_image_url or "",
             "total_risk_score": score,
-            "risk_grade": grade,
+            "risk_grade": grade_for(score, s.visual_score or 0),
+            "status": s.status,
             "created_at": s.created_at.isoformat() if s.created_at else None,
         })
     
@@ -574,7 +691,7 @@ async def get_user_detail(db: AsyncSession, user_id: int) -> Dict[str, Any]:
 
     stats = {
         "total_scans": scan_count,
-        "scans_this_month": scan_count,
+        "scans_this_month": scans_this_month,
         "total_reports_submitted": report_count,
         "reports_approved": approved_count,
         "reports_rejected": rejected_count,
@@ -615,14 +732,16 @@ async def update_user(db: AsyncSession, user_id: int, admin_id: int, req, ip: st
         action="update_user",
         entity_type="user",
         entity_id=str(user_id),
+        reason=getattr(req, "reason", None),
         ip_address=ip,
         user_agent=user_agent,
         details=f"Updated user {user_id}: active={user.is_active}"
     )
     db.add(audit)
     await db.commit()
+    await db.refresh(user)
     await manager.broadcast({"type": "refresh_dashboard"})
-    
+
     return {
         "id": user.id,
         "email": user.email,
@@ -634,12 +753,7 @@ async def update_user(db: AsyncSession, user_id: int, admin_id: int, req, ip: st
     }
 
 async def dry_run_model(db: AsyncSession, model_id: int) -> Dict[str, Any]:
-    import time
-    import base64
-    import subprocess
-    import sys
     import os
-    import json
     from PIL import Image
     import io
     
@@ -662,39 +776,13 @@ async def dry_run_model(db: AsyncSession, model_id: int) -> Dict[str, Any]:
         img_byte_arr = io.BytesIO()
         img.save(img_byte_arr, format='JPEG')
         img_bytes = img_byte_arr.getvalue()
-        b64_image = base64.b64encode(img_bytes).decode('utf-8')
-        
-        env = os.environ.copy()
-        import glob
-        venv_lib_path = os.path.join(os.getcwd(), "venv/lib/python3.10/site-packages/nvidia")
-        nvidia_lib_dirs = glob.glob(f"{venv_lib_path}/*/lib")
-        if nvidia_lib_dirs:
-            env["LD_LIBRARY_PATH"] = ":".join(nvidia_lib_dirs)
-        
-        env["ONNX_MODEL_PATH"] = model.file_path
-        env["ONNX_TILE_SIZE"] = str(settings.ONNX_TILE_SIZE)
-        env["ONNX_TILE_OVERLAP"] = str(settings.ONNX_TILE_OVERLAP)
 
-        if "CUDA_VISIBLE_DEVICES" in env and env["CUDA_VISIBLE_DEVICES"] == "":
-            del env["CUDA_VISIBLE_DEVICES"]
+        # Spawn via shared runner seam (no timeout — dry-run behavior unchanged)
+        run = run_onnx_worker(img_bytes, model.file_path, timeout=None)
+        latency_ms = run["latency_ms"]
 
-        worker_path = os.path.join(os.path.dirname(__file__), "onnx_worker.py")
-        
-        start_time = time.time()
-        process = subprocess.Popen(
-            [sys.executable, worker_path],
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            env=env
-        )
-        
-        stdout, stderr = process.communicate(input=b64_image.encode('utf-8'))
-        latency_ms = int((time.time() - start_time) * 1000)
-        
-        if process.returncode == 0:
-            lines = stdout.decode('utf-8').strip().split('\n')
-            result_json = json.loads(lines[-1])
+        if run["returncode"] == 0 and run["stdout_json"] is not None:
+            result_json = run["stdout_json"]
             
             # Approximate memory usage based on file size + 200MB overhead
             file_size_mb = os.path.getsize(model.file_path) / (1024 * 1024)
@@ -717,7 +805,7 @@ async def dry_run_model(db: AsyncSession, model_id: int) -> Dict[str, Any]:
                 "message": "Model inference failed during dry run.",
                 "details": {
                     "model_version": model.version_tag,
-                    "error": stderr.decode('utf-8').strip()[:500],
+                    "error": run["stderr_text"].strip()[:500],
                     "latency_ms": latency_ms
                 }
             }
@@ -729,15 +817,21 @@ async def dry_run_model(db: AsyncSession, model_id: int) -> Dict[str, Any]:
         }
 
 async def deploy_model(db: AsyncSession, model_id: int, admin_id: int, reason: str) -> ModelVersion:
-    stmt = select(ModelVersion).where(ModelVersion.id == model_id)
+    import os
+    stmt = select(ModelVersion).where(ModelVersion.id == model_id).with_for_update()
     result = await db.execute(stmt)
     model = result.scalars().first()
     if not model:
         raise HTTPException(status_code=404, detail="Model version not found")
-        
-    stmt = select(ModelVersion).where(ModelVersion.is_active == True)
+
+    model_path = str(model.file_path or "")
+    if not model_path or not os.path.exists(model_path):
+        raise HTTPException(status_code=400, detail=f"Model file not found at {model_path or '-'}; cannot deploy")
+
+    stmt = select(ModelVersion).where(ModelVersion.is_active == True).with_for_update()
     result = await db.execute(stmt)
     active_models = result.scalars().all()
+    previous = next((m.version_tag for m in active_models if m.id != model.id), None)
     for m in active_models:
         m.is_active = False
         m.status = "inactive"
@@ -765,13 +859,52 @@ async def deploy_model(db: AsyncSession, model_id: int, admin_id: int, reason: s
         reason=reason,
         ip_address="127.0.0.1",
         user_agent="System",
-        details=f"Deployed model version {model.version_tag}. Reason: {reason}"
+        details=f"Deployed model version {model.version_tag} ({previous or '-'} -> {model.version_tag}). Serving file: {model_path}. Reason: {reason}"
     )
     db.add(audit)
-    
+
     await db.commit()
     await db.refresh(model)
+    _switch_serving_model(model_path)
     return model
+
+
+def _switch_serving_model(model_path: str) -> None:
+    """Point inference at a new .onnx file immediately and persistently.
+
+    The ONNX worker spawns per scan reading ONNX_MODEL_PATH from settings,
+    so updating the live settings object switches serving on the next scan
+    with no restart. server/.env is updated too so restarts keep serving it.
+    Best-effort: a .env write failure never blocks the deploy itself.
+    """
+    import os
+    from app.core.config import SERVER_DIR, settings
+    try:
+        settings.ONNX_MODEL_PATH = model_path
+    except Exception:
+        pass
+    os.environ["ONNX_MODEL_PATH"] = model_path
+    # Persist to both env files: config loads .env.local AFTER .env,
+    # so a stale value there would silently override the switch.
+    try:
+        from pathlib import Path
+        for name in (".env", ".env.local"):
+            env_path = Path(SERVER_DIR) / name
+            if not env_path.exists():
+                continue
+            lines = env_path.read_text(encoding="utf-8").splitlines()
+            key = "ONNX_MODEL_PATH="
+            updated = False
+            for i, line in enumerate(lines):
+                if line.strip().startswith(key):
+                    lines[i] = f"ONNX_MODEL_PATH={model_path}"
+                    updated = True
+                    break
+            if not updated:
+                lines.append(f"ONNX_MODEL_PATH={model_path}")
+            env_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    except OSError:
+        pass
 
 
 async def global_search(db: AsyncSession, q: str) -> Dict[str, Any]:
@@ -864,7 +997,7 @@ async def global_search(db: AsyncSession, q: str) -> Dict[str, Any]:
                 "id": f"scan_{s.id}",
                 "type": "scan",
                 "title": f"การสแกน #{str(s.id)[:8]}...",
-                "subtitle": f"Risk Score: {s.risk_score or 0}% • Grade: {s.risk_level or '-'}",
+                "subtitle": f"Risk Score: {s.total_risk_score or 0}% • Grade: {grade_for(s.total_risk_score or 0, s.visual_score or 0)}",
                 "url": "/admin/dashboard"
             })
     except Exception:
@@ -910,4 +1043,115 @@ async def get_audit_logs(
     items = result.scalars().all()
 
     return items, total
+
+
+def _iter_local_model_versions():
+    """Scan model/segformer/work_dirs/vX.Y.Z/ for deployable .onnx artifacts.
+
+    Yields (version_tag, onnx_path, version_dir). Skips non-version dirs
+    (e.g. test models) and versions without an .onnx file.
+    Pure filesystem read, no DB access.
+    """
+    import re
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[3] / "model" / "segformer" / "work_dirs"
+    if not root.is_dir():
+        return
+    for child in sorted(root.iterdir()):
+        if not child.is_dir() or not re.fullmatch(r"v\d+\.\d+\.\d+", child.name):
+            continue
+        onnx = sorted(child.glob("*.onnx"))
+        if not onnx:
+            continue
+        yield child.name, str(onnx[0]), child
+
+
+def _read_eval_metrics(version_dir):
+    """Read latest test_eval/<timestamp>/<timestamp>.json (percent 0-100).
+
+    Returns dict with fractional metrics or all-None when unavailable.
+    Never raises: missing/invalid eval data simply means no metrics.
+    """
+    import json
+    metrics: Dict[str, Optional[float]] = {"a_acc": None, "m_iou": None, "m_acc": None, "m_dice": None}
+    try:
+        eval_root = version_dir / "test_eval"
+        if not eval_root.is_dir():
+            return metrics
+        runs = sorted(
+            (d for d in eval_root.iterdir() if d.is_dir()),
+            key=lambda d: d.name,
+        )
+        for run in reversed(runs):
+            candidates = sorted(run.glob("*.json"))
+            for path in candidates:
+                try:
+                    data = json.loads(path.read_text(encoding="utf-8"))
+                except (OSError, ValueError):
+                    continue
+                if not isinstance(data, dict) or "mIoU" not in data:
+                    continue
+                for src, dst in (("aAcc", "a_acc"), ("mIoU", "m_iou"), ("mAcc", "m_acc"), ("mDice", "m_dice")):
+                    try:
+                        metrics[dst] = float(data[src]) / 100.0 if data.get(src) is not None else None
+                    except (TypeError, ValueError):
+                        metrics[dst] = None
+                return metrics
+        return metrics
+    except OSError:
+        return metrics
+
+
+async def sync_model_registry(db: AsyncSession) -> List[str]:
+    """Auto-register local model versions missing from the registry.
+
+    New rows are inactive with null metrics (shown as no-data in the portal);
+    activation stays an explicit admin Deploy action. Never modifies or
+    deactivates existing rows. Returns the version_tags that were added.
+    """
+    import hashlib
+    result = await db.execute(select(ModelVersion))
+    existing: Dict[str, ModelVersion] = {str(m.version_tag): m for m in result.scalars().all()}
+    known = set(existing)
+    added = []
+    for version_tag, onnx_path, version_dir in _iter_local_model_versions():
+        eval_metrics = _read_eval_metrics(version_dir)
+        model = existing.get(version_tag)
+        if model is not None:
+            # Backfill null metrics when eval data appears later.
+            updated = False
+            for field in ("a_acc", "m_iou", "m_acc", "m_dice"):
+                if getattr(model, field) is None and eval_metrics[field] is not None:
+                    setattr(model, field, eval_metrics[field])
+                    updated = True
+            if updated:
+                added.append(version_tag + " (metrics)")
+            continue
+        checksum = None
+        try:
+            h = hashlib.sha256()
+            with open(onnx_path, "rb") as f:
+                for chunk in iter(lambda: f.read(8 * 1024 * 1024), b""):
+                    h.update(chunk)
+            checksum = "sha256:" + h.hexdigest()
+        except OSError:
+            pass
+        eval_metrics = _read_eval_metrics(version_dir)
+        db.add(ModelVersion(
+            version_tag=version_tag,
+            file_path=onnx_path,
+            is_active=False,
+            artifact_checksum=checksum,
+            framework_compatibility="onnx",
+            a_acc=eval_metrics["a_acc"],
+            m_iou=eval_metrics["m_iou"],
+            m_acc=eval_metrics["m_acc"],
+            m_dice=eval_metrics["m_dice"],
+            status="inactive",
+        ))
+        known.add(version_tag)
+        added.append(version_tag)
+    if added:
+        await db.commit()
+    return added
 

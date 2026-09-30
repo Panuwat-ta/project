@@ -19,6 +19,7 @@ from evaluation_core import (
     MaskCase,
     OnnxSegmenter,
     binary_confusion,
+    det_score_image,
     discover_mask_cases,
     metrics_from_confusion,
 )
@@ -154,9 +155,14 @@ def evaluate_entry(
         lambda: {field: 0 for field in COUNT_FIELDS}
     )
     category_samples: dict[str, int] = defaultdict(int)
+    category_det_ok: dict[str, int] = defaultdict(int)
+    category_det_n: dict[str, int] = defaultdict(int)
     overall_counts = {field: 0 for field in COUNT_FIELDS}
+    overall_det_ok = 0
+    overall_det_n = 0
     per_image: list[dict[str, Any]] = []
     started = time.monotonic()
+    has_det = len(session.get_outputs()) >= 2
 
     for index, case in enumerate(cases, start=1):
         image, target = read_case(case)
@@ -167,6 +173,17 @@ def evaluate_entry(
         add_confusion(category_counts[case.category], counts)
         add_confusion(overall_counts, counts)
         category_samples[case.category] += 1
+        image_label = 1 if target.sum() > 0 else 0
+        det_score = det_score_image(session, image) if has_det else None
+        det_pred = None
+        det_correct = None
+        if det_score is not None:
+            det_pred = 1 if det_score >= 0.5 else 0
+            det_correct = 1 if det_pred == image_label else 0
+            category_det_ok[case.category] += det_correct
+            category_det_n[case.category] += 1
+            overall_det_ok += det_correct
+            overall_det_n += 1
         per_image.append(
             {
                 "version": version,
@@ -182,6 +199,9 @@ def evaluate_entry(
                     f"{field}_percent": percentage(metrics[field])
                     for field in METRIC_FIELDS
                 },
+                "det_score": det_score,
+                "det_pred_label": det_pred,
+                "det_correct": det_correct,
             }
         )
         if index == len(cases) or index % 10 == 0:
@@ -196,11 +216,19 @@ def evaluate_entry(
         )
         for category in sorted(category_counts)
     ]
+    for row in category_rows:
+        n = category_det_n[row["group"]]
+        row["det_accuracy_percent"] = (
+            round(category_det_ok[row["group"]] / n * 100.0, 6) if n else None
+        )
     overall = result_row(
         version=version,
         group="all",
         sample_count=len(cases),
         counts=overall_counts,
+    )
+    overall["det_accuracy_percent"] = (
+        round(overall_det_ok / overall_det_n * 100.0, 6) if overall_det_n else None
     )
     overall.update(
         {
@@ -252,6 +280,9 @@ def main() -> int:
             "threshold_percent",
             *count_columns,
             *metric_columns,
+            "det_score",
+            "det_pred_label",
+            "det_correct",
         ],
     )
     aggregate_columns = [
@@ -260,6 +291,7 @@ def main() -> int:
         "sample_count",
         *count_columns,
         *metric_columns,
+        "det_accuracy_percent",
     ]
     write_csv(args.output_dir / "per_category.csv", all_categories, aggregate_columns)
     write_csv(

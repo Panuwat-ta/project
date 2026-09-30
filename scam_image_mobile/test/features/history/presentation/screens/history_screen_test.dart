@@ -53,16 +53,14 @@ Widget buildHistoryScreen(HistoryBloc bloc) {
       ),
       GoRoute(
         path: '/main/history/:id',
-        builder: (_, state) =>
-            Scaffold(body: Center(child: Text('Detail ${state.pathParameters['id']}'))),
+        builder: (_, state) => Scaffold(
+          body: Center(child: Text('Detail ${state.pathParameters['id']}')),
+        ),
       ),
     ],
   );
 
-  return MaterialApp.router(
-    routerConfig: router,
-    theme: ThemeData.dark(),
-  );
+  return MaterialApp.router(routerConfig: router, theme: ThemeData.dark());
 }
 
 /// A fake [ScanHistoryItem] for testing.
@@ -94,19 +92,22 @@ void main() {
   setUp(() {
     mockRepo = _MockHistoryRepository();
     // Default stub: getScanHistory returns empty list
-    when(() => mockRepo.getScanHistory(
-          page: any(named: 'page'),
-          limit: any(named: 'limit'),
-          riskLevel: any(named: 'riskLevel'),
-          fromDate: any(named: 'fromDate'),
-          toDate: any(named: 'toDate'),
-          keyword: any(named: 'keyword'),
-        )).thenAnswer((_) async => []);
+    when(
+      () => mockRepo.getScanHistory(
+        page: any(named: 'page'),
+        limit: any(named: 'limit'),
+        riskLevel: any(named: 'riskLevel'),
+        fromDate: any(named: 'fromDate'),
+        toDate: any(named: 'toDate'),
+        keyword: any(named: 'keyword'),
+      ),
+    ).thenAnswer((_) async => []);
   });
 
   group('HistoryScreen — HistoryEmpty state', () {
-    testWidgets('shows EmptyStateView with "ยังไม่มีประวัติการตรวจสอบ"',
-        (tester) async {
+    testWidgets('shows EmptyStateView with "ยังไม่มีประวัติการตรวจสอบ"', (
+      tester,
+    ) async {
       final bloc = HistoryBloc(repository: mockRepo);
 
       await tester.pumpWidget(buildHistoryScreen(bloc));
@@ -120,7 +121,9 @@ void main() {
   });
 
   group('HistoryScreen — HistoryLoading state', () {
-    testWidgets('shows CircularProgressIndicator while loading', (tester) async {
+    testWidgets('shows CircularProgressIndicator while loading', (
+      tester,
+    ) async {
       // Use MockBloc to control the state directly — no timer/future needed
       final mockBloc = _MockHistoryBloc();
       when(() => mockBloc.state).thenReturn(const HistoryLoading());
@@ -137,14 +140,16 @@ void main() {
     testWidgets('shows item title when list has one item', (tester) async {
       final item = fakeItem(title: 'สลิปโอนเงิน');
 
-      when(() => mockRepo.getScanHistory(
-            page: any(named: 'page'),
-            limit: any(named: 'limit'),
-            riskLevel: any(named: 'riskLevel'),
-            fromDate: any(named: 'fromDate'),
-            toDate: any(named: 'toDate'),
-            keyword: any(named: 'keyword'),
-          )).thenAnswer((_) async => [item]);
+      when(
+        () => mockRepo.getScanHistory(
+          page: any(named: 'page'),
+          limit: any(named: 'limit'),
+          riskLevel: any(named: 'riskLevel'),
+          fromDate: any(named: 'fromDate'),
+          toDate: any(named: 'toDate'),
+          keyword: any(named: 'keyword'),
+        ),
+      ).thenAnswer((_) async => [item]);
 
       final bloc = HistoryBloc(repository: mockRepo);
 
@@ -156,21 +161,55 @@ void main() {
       bloc.close();
     });
 
-    testWidgets('shows multiple item titles when list has multiple items',
-        (tester) async {
+    testWidgets('does not derive forensic evidence tags from risk level', (
+      tester,
+    ) async {
+      final item = fakeItem(
+        title: 'รายการเสี่ยงสูง',
+        riskLevel: RiskLevel.high,
+      );
+
+      when(
+        () => mockRepo.getScanHistory(
+          page: any(named: 'page'),
+          limit: any(named: 'limit'),
+          riskLevel: any(named: 'riskLevel'),
+          fromDate: any(named: 'fromDate'),
+          toDate: any(named: 'toDate'),
+          keyword: any(named: 'keyword'),
+        ),
+      ).thenAnswer((_) async => [item]);
+
+      final bloc = HistoryBloc(repository: mockRepo);
+      await tester.pumpWidget(buildHistoryScreen(bloc));
+      await tester.pumpAndSettle();
+
+      expect(find.text('พบรอยต่อพิกเซล'), findsNothing);
+      expect(find.text('Metadata ขัดแย้ง'), findsNothing);
+      expect(find.text('ฟิลเตอร์แสง'), findsNothing);
+      expect(find.text('ไฟล์ต้นฉบับ'), findsNothing);
+
+      bloc.close();
+    });
+
+    testWidgets('shows multiple item titles when list has multiple items', (
+      tester,
+    ) async {
       final items = [
         fakeItem(scanId: 'a', title: 'รายการที่ 1'),
         fakeItem(scanId: 'b', title: 'รายการที่ 2'),
       ];
 
-      when(() => mockRepo.getScanHistory(
-            page: any(named: 'page'),
-            limit: any(named: 'limit'),
-            riskLevel: any(named: 'riskLevel'),
-            fromDate: any(named: 'fromDate'),
-            toDate: any(named: 'toDate'),
-            keyword: any(named: 'keyword'),
-          )).thenAnswer((_) async => items);
+      when(
+        () => mockRepo.getScanHistory(
+          page: any(named: 'page'),
+          limit: any(named: 'limit'),
+          riskLevel: any(named: 'riskLevel'),
+          fromDate: any(named: 'fromDate'),
+          toDate: any(named: 'toDate'),
+          keyword: any(named: 'keyword'),
+        ),
+      ).thenAnswer((_) async => items);
 
       final bloc = HistoryBloc(repository: mockRepo);
 
@@ -186,14 +225,16 @@ void main() {
 
   group('HistoryScreen — HistoryError state', () {
     testWidgets('shows error widget when repository throws', (tester) async {
-      when(() => mockRepo.getScanHistory(
-            page: any(named: 'page'),
-            limit: any(named: 'limit'),
-            riskLevel: any(named: 'riskLevel'),
-            fromDate: any(named: 'fromDate'),
-            toDate: any(named: 'toDate'),
-            keyword: any(named: 'keyword'),
-          )).thenThrow(Exception('network error'));
+      when(
+        () => mockRepo.getScanHistory(
+          page: any(named: 'page'),
+          limit: any(named: 'limit'),
+          riskLevel: any(named: 'riskLevel'),
+          fromDate: any(named: 'fromDate'),
+          toDate: any(named: 'toDate'),
+          keyword: any(named: 'keyword'),
+        ),
+      ).thenThrow(Exception('network error'));
 
       final bloc = HistoryBloc(repository: mockRepo);
 
@@ -206,16 +247,19 @@ void main() {
       bloc.close();
     });
 
-    testWidgets('shows error message text when repository throws',
-        (tester) async {
-      when(() => mockRepo.getScanHistory(
-            page: any(named: 'page'),
-            limit: any(named: 'limit'),
-            riskLevel: any(named: 'riskLevel'),
-            fromDate: any(named: 'fromDate'),
-            toDate: any(named: 'toDate'),
-            keyword: any(named: 'keyword'),
-          )).thenThrow(Exception('ไม่สามารถโหลดข้อมูลได้'));
+    testWidgets('shows error message text when repository throws', (
+      tester,
+    ) async {
+      when(
+        () => mockRepo.getScanHistory(
+          page: any(named: 'page'),
+          limit: any(named: 'limit'),
+          riskLevel: any(named: 'riskLevel'),
+          fromDate: any(named: 'fromDate'),
+          toDate: any(named: 'toDate'),
+          keyword: any(named: 'keyword'),
+        ),
+      ).thenThrow(Exception('ไม่สามารถโหลดข้อมูลได้'));
 
       final bloc = HistoryBloc(repository: mockRepo);
 
@@ -223,10 +267,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // The error message propagated from the exception
-      expect(
-        find.textContaining('ไม่สามารถโหลดข้อมูลได้'),
-        findsOneWidget,
-      );
+      expect(find.textContaining('ไม่สามารถโหลดข้อมูลได้'), findsOneWidget);
 
       bloc.close();
     });

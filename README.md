@@ -49,15 +49,15 @@ project/
 ├── admin-portal/           # Admin Web Portal (React, Vite, Tailwind CSS, Dark Mode)
 ├── database/               # Database Services (PostgreSQL, Redis, Docker/Podman Compose, init.sql)
 ├── tests_all/              # Automated & Manual Testing Suites (Pytest API/E2E, Performance, Manual Test Cases)
+│   └── tests_report/       # บันทึกผลการรันการทดสอบระบบอัตโนมัติ (Automated Test Execution Reports)
 ├── prototype/              # Web Prototype สำหรับทดสอบแนวคิดระบบ (React, Vite, TypeScript)
 ├── posman/                 # Postman API Collection สำหรับทดสอบ API Endpoints
 ├── Document/               # เอกสารวิศวกรรมซอฟต์แวร์ (SRS, Scope, Objectives, C1-C4 Diagrams)
 ├── design/                 # เอกสารการออกแบบสถาปัตยกรรมระบบ, UI/UX Specs, และรูปภาพจาก Figma
 ├── wiki/                   # ศูนย์รวมข้อมูลคลังความรู้โปรเจกต์ (Single Source of Truth)
 ├── web-ScamGuard/          # เอกสาร Wiki เวอร์ชัน Static HTML พร้อมเปิดดูผ่านเบราว์เซอร์
-├── tests_report/           # บันทึกผลการรันการทดสอบระบบอัตโนมัติ (Automated Test Execution Reports)
 ├── .agents/                # บันทึกการทำงานและแนวทางการปฏิบัติงานของ Agent (AGENTS.md, log.md)
-├── PRODUCT.md              # ข้อกำหนดทิศทางผลิตภัณฑ์และหลักการออกแบบ UX/UI
+│   └── PRODUCT.md          # ข้อกำหนดทิศทางผลิตภัณฑ์และหลักการออกแบบ UX/UI
 └── README.md               # เอกสารภาพรวมและคู่มือเริ่มต้นใช้งานโปรเจกต์
 ```
 
@@ -108,7 +108,7 @@ project/
 | ส่วนของระบบ | เทคโนโลยีที่เลือกใช้ | รายละเอียดการทำงาน |
 | :--- | :--- | :--- |
 | **Mobile Application** | Flutter (Dart) | สถาปัตยกรรม Clean Architecture ร่วมกับ BLoC State Management บน Android |
-| **Admin Portal** | React 18, Vite, Tailwind CSS | หน้าเว็บจัดการระบบสำหรับแอดมินและนักวิจัย รองรับ Dark Mode, Review และ Audit Log |
+| **Admin Portal** | React 19, Vite 8, Tailwind CSS 4 | หน้าเว็บจัดการระบบสำหรับแอดมินและนักวิจัย รองรับ Dark Mode, Review และ Audit Log |
 | **Backend API** | Python, FastAPI | Orchestrator รับคำขอ, ตรวจสอบสิทธิ์ (JWT), จัดการคิวงาน และติดต่อฐานข้อมูล |
 | **AI Vision Model** | SegFormer (PyTorch / ONNX) | ตรวจจับการตัดต่อระดับพิกเซลด้วย Overlapping Tiling Inference ขนาด 512x512 |
 | **OCR & Text NLP** | Surya OCR 0.5.0, NLP Pattern Matcher | สกัดข้อความภาษาไทยและอังกฤษแบบ Native PyTorch ตรวจจับคำหลอกลวง |
@@ -126,7 +126,7 @@ project/
 ### 1. ข้อกำหนดเบื้องต้นของระบบ (Prerequisites)
 - Linux / macOS / Windows (WSL2)
 - Python 3.10+
-- Node.js 18+ และ npm
+- Node.js 20.19+ หรือ 22.12+ และ npm (ตามข้อกำหนดของ Vite 8)
 - Flutter SDK 3.x และ Android SDK
 - Podman หรือ Docker พร้อม Docker Compose
 - การ์ดจอ NVIDIA พร้อมไดรเวอร์ CUDA — **จำเป็นฝั่งเซิร์ฟเวอร์**สำหรับ SegFormer/Surya OCR ให้ได้ตาม SLA (Full inference P50 ≤ 15s); กรณีไม่มี GPU รันบน CPU ได้แต่**ไม่รับรอง SLA** (ทางเลือกสำหรับ dev/test เท่านั้น)

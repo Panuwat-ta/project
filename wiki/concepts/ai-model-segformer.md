@@ -96,7 +96,7 @@ updated: 2026-09-15
 - ONNX Runtime เป็นเป้าหมายเพิ่มความเร็ว Inference ≥2 เท่าเทียบ Native PyTorch รุ่นเดียวกัน (วิธีวัด: GPU T4 เฉลี่ย 100 ภาพ; ตัวเลขจริงต้องบันทึกจาก benchmark ก่อนอ้างเป็นผล)
 - น้ำหนักโมเดลเก็บใน **Model Registry** (Version-controlled file store)
 - Admin สามารถ deploy โมเดลเวอร์ชันใหม่ผ่าน Admin Portal โดยไม่ต้อง Redeploy service
-- **v1.0.5 (ล่าสุด, config v10):** MiT-B2 fine-tune จาก `v1.0.0` ครบ 200,000 iters (จบ 2026-09-12) best validation mIoU **91.31** @iter 197,500 — อันดับหนึ่งบน locked common test (mIoU **91.24**, Forgery IoU **83.51**) — export ONNX `segformer_v1_0_5_dynamic.onnx` แล้ว แต่ยังเป็น candidate (Production ยังเป็น `v1.0.0`; รายละเอียดการเทรนดู [[concepts/model-training]])
+- **v1.0.6 (Production ตั้งแต่ 2026-09-18, config v11):** MiT-B2 fresh training (`load_from=None`) ครบ 200,000 iters best validation mIoU **94.84** / mDice **97.30** @iter 195,000 — อันดับหนึ่งบน locked common test (mIoU **94.83**, Forgery IoU **90.26**) และ local Test-Case (mDice **90.17** ผ่านเกณฑ์ 85%) — deploy ผ่าน Admin Portal (dry-run latency 4303ms / memory 202MB ผ่าน) รุ่นก่อนหน้าคือ `v1.0.5` (รายละเอียดการเทรนดู [[concepts/model-training]])
 
 ---
 

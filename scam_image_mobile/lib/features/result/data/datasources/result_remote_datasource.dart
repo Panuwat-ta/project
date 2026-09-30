@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import '../../../../core/errors/exceptions.dart';
+import '../../../../core/network/dio_error_mapper.dart';
 import '../../../../core/network/api_endpoints.dart';
 import '../models/analysis_result_model.dart';
 
@@ -21,34 +22,8 @@ class ResultRemoteDataSourceImpl implements ResultRemoteDataSource {
       if (body == null) throw const ServerException('Empty response body');
       return AnalysisResultModel.fromJson(body);
     } on DioException catch (e) {
-      throw _mapDioException(e);
+      throw mapDioException(e);
     }
   }
 
-  Exception _mapDioException(DioException e) {
-    switch (e.type) {
-      case DioExceptionType.connectionTimeout:
-      case DioExceptionType.receiveTimeout:
-      case DioExceptionType.sendTimeout:
-      case DioExceptionType.connectionError:
-        return NetworkException(e.message ?? 'Connection error');
-      case DioExceptionType.badResponse:
-        final statusCode = e.response?.statusCode;
-        final data = e.response?.data;
-        String message = 'Server error';
-        
-        if (data is Map<String, dynamic>) {
-          message = data['message'] as String? ?? data['detail'] as String? ?? message;
-        } else if (data is String) {
-          message = data;
-        }
-
-        if (statusCode == 401 || statusCode == 403) {
-          return AuthException(message == 'Server error' ? 'Unauthorised' : message);
-        }
-        return ServerException(message, statusCode: statusCode);
-      default:
-        return NetworkException(e.message ?? 'Network error');
-    }
-  }
 }

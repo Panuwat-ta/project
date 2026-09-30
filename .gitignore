@@ -42,3 +42,9 @@ logs/
 # Local SegFormer smoke-test artifacts
 /model/segformer/tests_model/output/
 /model/segformer/Test-Case/output/
+
+# OpenCode local-only config (per-machine, do not commit)
+AGENTS.md
+opencode.json
+opencode.jsonc
+.opencode/

@@ -20,6 +20,8 @@ export default defineConfig([
     rules: {
       // Async data fetching in useEffect is standard React pattern, not cascading renders
       'react-hooks/set-state-in-effect': 'off',
+      // Catch TDZ/self-reference regressions such as `const value = value?.x`
+      'no-use-before-define': ['error', { functions: false, classes: true, variables: true }],
       // Allow non-component exports (e.g. useTheme hook) alongside components
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
     },
