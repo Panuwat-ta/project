@@ -70,11 +70,26 @@ class InferenceService:
                         print("Unable to verify GPU memory; deferring GPU XAI model for safety.")
 
                 if should_defer_xai_gpu(target_gpu_layers, gpu_memory):
+                    # GPU ไม่พอ: โหลดบน CPU แทน ไม่ใช่ปิดโมเดลทิ้ง
+                    # Qwen 1.5B Q4 สร้างข้อความ 1-2 ประโยคบน CPU ได้ในหลักสิบวินาที
+                    # ช้ากว่า GPU แต่ดีกว่า template สำเร็จรูป เพราะผู้ใช้จะเห็น
+                    # สถานะ "กำลังสร้าง" แล้วได้ข้อความจริงตามมาทีหลัง (Phase 1/2)
                     print(
-                        "Deferring GPU XAI model to deterministic fallback "
-                        f"(visible GPU memory={gpu_memory or 'unavailable'})."
+                        "GPU memory insufficient for XAI model "
+                        f"(visible GPU memory={gpu_memory or 'unavailable'}). "
+                        "Loading Qwen2.5-1.5B on CPU instead."
                     )
-                    self.xai_model = None
+                    try:
+                        self.xai_model = Llama(
+                            model_path=xai_path,
+                            n_gpu_layers=0,
+                            n_ctx=context_size,
+                            verbose=False,
+                        )
+                        print("Loaded Qwen2.5-1.5B XAI model on CPU (GPU fallback)")
+                    except Exception as cpu_e:
+                        print(f"CPU fallback for XAI model failed: {cpu_e}")
+                        self.xai_model = None
                 else:
                     self.xai_model = Llama(
                         model_path=xai_path,

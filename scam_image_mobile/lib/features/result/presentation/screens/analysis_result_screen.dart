@@ -247,14 +247,42 @@ class _ResultBody extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xs),
-                Text(
-                  result.summary.isNotEmpty
-                      ? result.summary
-                      : 'result_summary_unavailable'.tr(context),
-                  style: AppTypography.bodyBase(
-                    color: isDark ? Colors.white70 : AppColors.textSecondary,
+                if (result.summary.isNotEmpty)
+                  Text(
+                    result.summary,
+                    style: AppTypography.bodyBase(
+                      color: isDark ? Colors.white70 : AppColors.textSecondary,
+                    ),
+                  )
+                else if (ResultBloc.isXaiPending(result))
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: Text(
+                          'result_summary_generating'.tr(context),
+                          style: AppTypography.bodyBase(
+                            color: isDark
+                                ? Colors.white70
+                                : AppColors.textSecondary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                else
+                  Text(
+                    'result_summary_unavailable'.tr(context),
+                    style: AppTypography.bodyBase(
+                      color: isDark ? Colors.white70 : AppColors.textSecondary,
+                    ),
                   ),
-                ),
               ],
             ),
           ),
