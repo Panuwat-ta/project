@@ -154,11 +154,9 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
               const SizedBox(height: AppSpacing.lg),
 
               // ── Consent List Container ─────────────────────────────────
-              Container(
-                decoration: BoxDecoration(
-                  color: isDark ? AppColors.settingsSurfaceDark : Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                ),
+              Material(
+                color: isDark ? AppColors.settingsSurfaceDark : Colors.white,
+                borderRadius: BorderRadius.circular(16),
                 child: Column(
                   children: [
                     _ConsentTile(

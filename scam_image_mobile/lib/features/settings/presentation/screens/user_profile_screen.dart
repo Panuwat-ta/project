@@ -278,11 +278,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             // ── Information List ──────────────────────────────────────────
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: isDark ? AppColors.settingsSurfaceDark : Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                ),
+              child: Material(
+                color: isDark ? AppColors.settingsSurfaceDark : Colors.white,
+                borderRadius: BorderRadius.circular(16),
                 child: Column(
                   children: [
                     _ProfileListItem(

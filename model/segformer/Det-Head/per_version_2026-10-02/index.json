@@ -1,0 +1,138 @@
+{
+  "sources": [
+    "/home/panuwat/project/model/segformer/Det-Head/diagnostics_det_versions_2026-10-02",
+    "/home/panuwat/project/model/segformer/Det-Head/diagnostics_det_seeds_2026-10-02"
+  ],
+  "versions": {
+    "det1": {
+      "dir": "det1",
+      "weight_path": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det1_bootstrap/det_head.pth",
+      "testcases_accuracy": 0.806060606060606
+    },
+    "det2a": {
+      "dir": "det2a",
+      "weight_path": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det2a_mlp/det_head.pth",
+      "testcases_accuracy": 0.8545454545454545
+    },
+    "det2b": {
+      "dir": "det2b",
+      "weight_path": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det2b_mlp_source_balanced/det_head.pth",
+      "testcases_accuracy": 0.8606060606060606
+    },
+    "det3a": {
+      "dir": "det3a",
+      "weight_path": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det3a_hard2/det_head.pth",
+      "testcases_accuracy": 0.8606060606060606
+    },
+    "det3b": {
+      "dir": "det3b",
+      "weight_path": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det3b_hard3/det_head.pth",
+      "testcases_accuracy": 0.8666666666666667
+    },
+    "det3c": {
+      "dir": "det3c",
+      "weight_path": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det3c_hard1p5/det_head.pth",
+      "testcases_accuracy": 0.8606060606060606
+    },
+    "det4a": {
+      "dir": "det4a",
+      "weight_path": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det4a_gapgmp_source_balanced/det_head.pth",
+      "testcases_accuracy": 0.8787878787878788
+    },
+    "det4b": {
+      "dir": "det4b",
+      "weight_path": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det4b_gapgmp_unbalanced/det_head.pth",
+      "testcases_accuracy": 0.8545454545454545
+    },
+    "det4c": {
+      "dir": "det4c",
+      "weight_path": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det4c_gapgmp_dropout03/det_head.pth",
+      "testcases_accuracy": 0.8848484848484849
+    },
+    "det5a_pre": {
+      "dir": "det5a_pre",
+      "weight_path": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det5a_patch_attention_pre_audit/det5_head.pth",
+      "testcases_accuracy": 0.8666666666666667
+    },
+    "det5a": {
+      "dir": "det5a",
+      "weight_path": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det5a_patch_attention_audited/det5_head.pth",
+      "testcases_accuracy": 0.8666666666666667
+    },
+    "det5b": {
+      "dir": "det5b",
+      "weight_path": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det5b_patch_topk_pre_audit/det5_head.pth",
+      "testcases_accuracy": 0.8666666666666667
+    },
+    "det5c": {
+      "dir": "det5c",
+      "weight_path": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det5c_patch_attention_weak025/det5_head.pth",
+      "testcases_accuracy": 0.8666666666666667
+    },
+    "det5d": {
+      "dir": "det5d",
+      "weight_path": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det5d_patch_attention_weak05/det5_head.pth",
+      "testcases_accuracy": 0.8484848484848485
+    },
+    "det5e": {
+      "dir": "det5e",
+      "weight_path": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det5e_patch_attention_verified_hardneg1p5/det5_head.pth",
+      "testcases_accuracy": 0.8424242424242424
+    },
+    "det5f": {
+      "dir": "det5f",
+      "weight_path": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det5f_patch_attention_verified_hardneg2p0/det5_head.pth",
+      "testcases_accuracy": 0.8606060606060606
+    },
+    "det5g": {
+      "dir": "det5g",
+      "weight_path": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det5g_patch_attention_hardneg_loss1p5/det5_head.pth",
+      "testcases_accuracy": 0.8666666666666667
+    },
+    "det6a": {
+      "dir": "det6a",
+      "weight_path": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det6a_local8x8_attention/det6_head.pth",
+      "testcases_accuracy": 0.8727272727272727
+    },
+    "det7a": {
+      "dir": "det7a",
+      "weight_path": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det7a_webshot_tokenstats/head.pth",
+      "testcases_accuracy": 0.8606060606060606
+    },
+    "det7b": {
+      "dir": "det7b",
+      "weight_path": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det7b_webshot_camera/head.pth",
+      "testcases_accuracy": 0.8727272727272727
+    },
+    "det5a_seed123": {
+      "dir": "det5a_seed123",
+      "weight_path": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det5a_patch_attention_audited_seed123/det5_head.pth",
+      "testcases_accuracy": 0.8545454545454545
+    },
+    "det5a_seed7": {
+      "dir": "det5a_seed7",
+      "weight_path": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det5a_patch_attention_audited_seed7/det5_head.pth",
+      "testcases_accuracy": 0.8484848484848485
+    },
+    "det7a_seed123": {
+      "dir": "det7a_seed123",
+      "weight_path": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det7a_webshot_tokenstats_seed123/head.pth",
+      "testcases_accuracy": 0.8727272727272727
+    },
+    "det7a_seed7": {
+      "dir": "det7a_seed7",
+      "weight_path": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det7a_webshot_tokenstats_seed7/head.pth",
+      "testcases_accuracy": 0.8666666666666667
+    },
+    "det7b_seed123": {
+      "dir": "det7b_seed123",
+      "weight_path": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det7b_webshot_camera_seed123/head.pth",
+      "testcases_accuracy": 0.8787878787878788
+    },
+    "det7b_seed7": {
+      "dir": "det7b_seed7",
+      "weight_path": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det7b_webshot_camera_seed7/head.pth",
+      "testcases_accuracy": 0.8727272727272727
+    }
+  }
+}

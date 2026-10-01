@@ -62,7 +62,12 @@ def load_any_det(path: str, device: str = "cpu"):
     if arch in VARIANT_ARCHS:
         return load_variant(path, device)
     if arch.startswith("patch_attention") or arch.startswith("patch_topk"):
-        num_tokens = payload["state_dict"]["pos_embed"].shape[1]
+        pos_embed = payload["state_dict"].get("pos_embed")
+        if pos_embed is None:
+            # PatchTopKHead has no pos_embed; build it from the recorded arch.
+            from det5_local import load_det5
+            return load_det5(path, device)
+        num_tokens = pos_embed.shape[1]
         from det5_local import GRID_SIZE as G5, load_det5
         from det6_local import GRID_SIZE as G6, load_det6
         table = {G5 * G5: load_det5, G6 * G6: load_det6}
