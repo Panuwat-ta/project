@@ -47,8 +47,10 @@ void main() {
 
       final visualFactor = model.factors.firstWhere((f) => f.type == 'visual');
       expect(visualFactor.score, 25);
-      expect(visualFactor.details.first, contains('85%'));
-      expect(visualFactor.details.first, contains('ความม่ันใจว่าถูกดัดแปลง'));
+      // Numeric confidence is retained separately, without fabricating a
+      // localized narrative detail in the data layer.
+      expect(visualFactor.details, isEmpty);
+      expect(model.manipulationConfidence, 0.85);
 
       final sourceFactor = model.factors.firstWhere((f) => f.type == 'source');
       expect(sourceFactor.score, 20);

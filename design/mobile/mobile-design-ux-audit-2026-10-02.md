@@ -9,7 +9,7 @@ Implementation reference: `mobile-redesign-delivery-2026-09-20.md`
 
 - ตรวจ source ปัจจุบันของ Result, Heatmap, History, Report, Auth, Onboarding, Profile, Privacy, Notifications และ Settings พร้อมเทียบ checklist และ baseline audit วันที่ 20 กันยายน
 - เพิ่ม regression tests สำหรับผลภาพสามสถานะ, ป้ายหลักฐาน, label ของประวัติ และ localization ของ Auth/Onboarding
-- รัน `flutter test --coverage --branch-coverage --reporter=failures-only`: ผ่าน 521/521; line coverage 5,207/5,716 (91.10%); branch coverage 1,287/1,550 (83.03%)
+- ผลล่าสุดหลังแก้ independent-review findings: `flutter test --coverage --branch-coverage --reporter=failures-only` ผ่าน 522/522; line coverage 5,209/5,718 (91.10%); branch coverage 1,286/1,549 (83.02%)
 - รัน `flutter analyze lib test`: ไม่พบ issue; `git -c core.whitespace=cr-at-eol diff --check` ผ่าน โดยคง CRLF เดิมของไฟล์ Splash
 - อุปกรณ์ RMX3370 ที่เชื่อมต่อไม่มี ScamGuard ติดตั้งอยู่ จึงไม่มีการอ้างผล visual/runtime บนอุปกรณ์จากรอบนี้ และไม่ได้เปลี่ยนการตั้งค่าระบบ
 
@@ -44,9 +44,25 @@ Implementation reference: `mobile-redesign-delivery-2026-09-20.md`
 
 ## Residual และเหตุผล
 
-- **`agy` independent review ยังไม่ได้ผลลัพธ์**: เรียก read-only audit 3 ครั้ง (180s, 45s, 60s) รวมทั้งระบุ `gemini-3.8-flash-low`; CLI คืน `print timeout ... turn in progress` โดยไม่มีเนื้อหา review. จึงไม่อ้างว่า independent review ผ่าน และ Issue #76 ยังคงเปิดจนกว่าจะได้ผล review ที่อ่านตรวจได้.
-- **ยังไม่ได้ runtime QA บนอุปกรณ์จริงหรือ staging backend**: เครื่องที่เชื่อมต่อไม่มี app ติดตั้ง; ผล widget tests ไม่ยืนยัน native rendering, TalkBack หรือ end-to-end กับ production API.
+- **ยังไม่ได้ runtime QA บนอุปกรณ์จริงหรือ staging backend**: เครื่องที่เชื่อมต่อไม่มี app ติดตั้ง; ผล widget tests ไม่ยืนยัน native rendering, TalkBack หรือ end-to-end กับ production API. งานเหล่านี้อยู่ใน Issues #77 และ #79 และไม่ใช้ audit นี้เป็น production sign-off.
+
+## Independent `agy` review และ disposition
+
+สามรอบแรกหยุดเพราะกำหนด timeout 180s/45s/60s. รอบถัดไปใช้ `--print-timeout 0s --output-format stream-json`, model `gemini-3.8-flash-low`, mode `plan`, sandbox และได้ `SUCCESS` ใน 205.404684316 วินาที. Reviewer ตรวจ commit `bd98db73`; conversation `d2969b67-a3a8-48b9-837d-51aa87ab86dc`. ผล review เก็บที่ [mobile-independent-agy-review-2026-10-02.md](mobile-independent-agy-review-2026-10-02.md). ตารางนี้เป็นคำตัดสินหลังตรวจข้อเสนอของ reviewer กับ source จริง:
+
+| Finding | ผลตรวจและการแก้ |
+|---|---|
+| คำสะกดผิด/ข้อความไทยใน flat result adapter | ยืนยัน; แก้คำว่า “ความมั่นใจ”, model เก็บ confidence เป็นตัวเลขแยกจาก narrative details และ UI แปล label ตามภาษา ไม่สร้างรายละเอียดภาษาไทยใน data layer |
+| สี confidence อิง visual score อีกค่า | ยืนยัน; metric ใช้สีข้อความ neutral และ visual-risk score ใช้ risk helper ของตัวเอง; regression test confidence 10% + visual 85% ผ่าน |
+| History Detail นิยาม risk colors ซ้ำ | ยืนยัน; `_getRiskColor` เรียก `RiskLevelHelper.toColor` รวมถึง Unknown |
+| คีย์ Safe/accuracy/source ที่ไม่ใช้ | ยืนยันว่าไม่มี call site ด้วย `rg`; ลบ `safe`, `result_safe`, `result_ocr_accuracy`, `result_source_found`, `result_source_reports` ทั้ง TH/EN; dictionary parity test ผ่าน |
+| Preview tap กับ Heatmap button ต่างกัน | ยอมรับเป็น interaction ปัจจุบัน: History มีปุ่มชัดเจนและ Viewer รองรับภาพต้นฉบับ/สถานะไม่มี Heatmap; ไม่มีการสร้าง overlay ปลอม จึงไม่จัดเป็น functional defect |
+| TaskId/ScanId อาจต่างกัน | ยังเป็นสมมติฐาน; canonical `ScanResponse.id` เป็น UUID เดียวและ adapter map ทั้งสอง field จาก `id`; staging/API contract QA อยู่ Issue #79 |
+
+ตรวจเพิ่มเองพบว่า Result visual card แสดง fallback `0%` เมื่อไม่มี visual factor; เปลี่ยนเป็น unavailable label และ neutral information icon. เมื่อมี confidence จะแสดง metric แบบ localized แยกจาก factor details. Regression tests ตรวจว่า absent factor ไม่แสดง `0%` และ confidence คงค่าจริง.
 
 ## ข้อสรุป
 
-ไม่มี confirmed fabricated evidence ใน flow ที่ตรวจ และแก้ UX/data-label defects ที่พิสูจน์ได้ใน source แล้ว. Test suite และ coverage gate ผ่าน. Issue #76 ยังไม่ปิดเพราะเกณฑ์ independent `agy` review ไม่มีผลลัพธ์ที่ตรวจสอบได้; ไม่ใช้ผล self-review แทน.
+Source audit, independent review และ automated regression checks เสร็จแล้ว. Confirmed findings ที่แก้ได้ปิดแล้ว; hypotheses และ native/staging verification มีหลักฐานกับงานติดตามกำกับ. Test suite และ coverage gate ผ่าน จึงครบ acceptance ของ Issue #76 ในขอบเขต audit นี้.
+
+GitHub Issue #76 ตรวจยืนยันเป็น CLOSED เมื่อ 2026-10-02 06:18 +07.

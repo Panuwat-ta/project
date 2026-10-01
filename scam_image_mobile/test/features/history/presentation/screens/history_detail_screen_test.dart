@@ -358,6 +358,23 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('visual risk does not color a different confidence metric', (
+    tester,
+  ) async {
+    await pumpDetail(
+      tester,
+      result: buildResult(
+        manipulationConfidence: 0.1,
+        factors: const [
+          RiskFactor(type: 'visual', score: 85, title: 'visual', details: []),
+        ],
+      ),
+    );
+    final confidence = tester.widget<Text>(find.text('10%'));
+    expect(confidence.style?.color, ThemeData.light().colorScheme.onSurface);
+    expect(find.text('ความมั่นใจว่าถูกดัดแปลง'), findsOneWidget);
+  });
+
   testWidgets('long source evidence fits within compact mobile width', (
     tester,
   ) async {

@@ -73,11 +73,9 @@ class AnalysisResultModel extends AnalysisResult {
             type: 'visual',
             score: json['visual_score'] as int,
             title: 'visual',
-            details: json['manipulation_confidence'] != null
-                ? [
-                    'ความม่ันใจว่าถูกดัดแปลง: ${((json['manipulation_confidence'] as num) * 100).round()}%',
-                  ]
-                : [],
+            // Confidence remains a typed metric on AnalysisResult. Only
+            // server-provided narrative evidence belongs in factor details.
+            details: [],
           ),
         );
       }

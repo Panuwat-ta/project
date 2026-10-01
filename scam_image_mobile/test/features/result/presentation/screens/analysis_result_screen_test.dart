@@ -161,6 +161,8 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('18/100'), findsWidgets);
+    expect(find.text('0%'), findsNothing);
+    expect(find.text('ไม่มีข้อมูลจากการวิเคราะห์ชั้นนี้'), findsWidgets);
   });
 
   testWidgets('preview label reflects heatmap and source image availability', (
@@ -232,6 +234,7 @@ void main() {
           riskScore: 84,
           riskLevel: RiskLevel.high,
           summary: 'ตรวจพบจุดที่ควรพิจารณา',
+          manipulationConfidence: 0.82,
           createdAt: DateTime(2026, 9, 20),
           factors: const [
             RiskFactor(
@@ -264,6 +267,7 @@ void main() {
 
     expect(find.text('ขอบภาพไม่สม่ำเสมอ'), findsWidgets);
     expect(find.text('พบการแก้ไขบริเวณข้อความ'), findsOneWidget);
+    expect(find.text('ความมั่นใจว่าถูกดัดแปลง: 82%'), findsOneWidget);
     expect(find.text('ไม่มีรายละเอียดภาพเพิ่มเติมจากระบบ'), findsNothing);
   });
 

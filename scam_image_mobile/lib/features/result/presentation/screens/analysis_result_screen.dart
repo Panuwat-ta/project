@@ -649,34 +649,48 @@ class _ResultBody extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: AppSpacing.sm),
-              Builder(
-                builder: (_) {
-                  final vLevel = RiskLevelHelper.factorLevelForScore(
-                    visualFactor.score,
-                  );
-                  final vBg = RiskLevelHelper.toBgColor(vLevel, isDark: isDark);
-                  final vFg = RiskLevelHelper.toTextColor(
-                    vLevel,
-                    isDark: isDark,
-                  );
-                  return Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
+              if (visuals.isNotEmpty)
+                Builder(
+                  builder: (_) {
+                    final vLevel = RiskLevelHelper.factorLevelForScore(
+                      visualFactor.score,
+                    );
+                    final vBg = RiskLevelHelper.toBgColor(
+                      vLevel,
+                      isDark: isDark,
+                    );
+                    final vFg = RiskLevelHelper.toTextColor(
+                      vLevel,
+                      isDark: isDark,
+                    );
+                    return Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: vBg,
+                        borderRadius: AppRadius.smBorder,
+                      ),
+                      child: Text(
+                        '${visualFactor.score}%',
+                        style: AppTypography.caption(
+                          color: vFg,
+                        ).copyWith(fontWeight: FontWeight.bold),
+                      ),
+                    );
+                  },
+                )
+              else
+                Flexible(
+                  child: Text(
+                    'result_evidence_unavailable'.tr(context),
+                    textAlign: TextAlign.end,
+                    style: AppTypography.caption(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
-                    decoration: BoxDecoration(
-                      color: vBg,
-                      borderRadius: AppRadius.smBorder,
-                    ),
-                    child: Text(
-                      '${visualFactor.score}%',
-                      style: AppTypography.caption(
-                        color: vFg,
-                      ).copyWith(fontWeight: FontWeight.bold),
-                    ),
-                  );
-                },
-              ),
+                  ),
+                ),
             ],
           ),
           const SizedBox(height: 16),
@@ -789,6 +803,17 @@ class _ResultBody extends StatelessWidget {
           ),
           const SizedBox(height: 20),
 
+          if (result.manipulationConfidence != null) ...[
+            Text(
+              '${'result_manipulation_confidence'.tr(context)}: '
+              '${(result.manipulationConfidence! * 100).round()}%',
+              style: AppTypography.bodyBase(
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+          ],
+
           // Alerts from visual factor details
           if (visualFactor.details.isNotEmpty)
             ...visualFactor.details.map(
@@ -809,8 +834,8 @@ class _ResultBody extends StatelessWidget {
           else
             _buildAlertItem(
               context: context,
-              icon: Icons.check_circle,
-              iconColor: AppColors.success,
+              icon: Icons.info_outline,
+              iconColor: Theme.of(context).colorScheme.onSurfaceVariant,
               title: 'result_no_visual_details'.tr(context),
               subtitle: '',
               isDark: isDark,

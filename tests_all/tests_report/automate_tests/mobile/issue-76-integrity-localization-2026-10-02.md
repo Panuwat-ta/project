@@ -29,3 +29,29 @@
 
 - `flutter analyze lib test`: ผ่าน, `No issues found!`
 - `git -c core.whitespace=cr-at-eol diff --check`: ผ่าน โดยคง line ending CRLF ที่ไฟล์ Splash ใช้อยู่เดิม
+
+## 2026-10-02 06:16 +07 - Regression หลังแก้ findings ของ Issue #76
+
+- Target: full `scam_image_mobile/test/`
+- Command: `flutter test --coverage --branch-coverage --reporter=failures-only`
+- Result: PASS
+- Summary: Total: 522 | Passed: 522 | Failed: 0 | Skipped: 0 | Duration: reporter ไม่แสดงเวลา
+- Coverage: Lines 5,209/5,718 (91.10%) | Branches 1,286/1,549 (83.02%)
+
+### 1. รายการที่ผ่าน (Passed Tests) และพฤติกรรมที่ผ่าน (How it Passed)
+
+- **Flat result model mapping**: confidence 0.85 ยังคงเป็น typed metric, visual score 25 คงเดิม และ visual details ว่างเมื่อไม่มี narrative จาก server; ไม่มีข้อความไทยที่ model สร้างแทรก
+- **Result unavailable visual factor**: ไม่แสดง `0%` เมื่อไม่มี visual factor; แสดง unavailable state แทน
+- **Result confidence presentation**: entity confidence 0.82 แสดง “ความมั่นใจว่าถูกดัดแปลง: 82%” ผ่าน dictionary โดยไม่ปะปนกับ evidence alert
+- **History confidence vs visual risk**: confidence 10% กับ visual risk 85% แสดงตัวเลข confidence ด้วย neutral text color แทนสีแดงจากอีก metric
+- **Localization และชุด regression ทั้งหมด**: dictionaries TH/EN ตรงกันหลังเปลี่ยน key confidence/ลบ unused Safe keys; tests เดิมทั้งหมดผ่าน
+- Focused run ก่อน full suite: model, Result, History Detail และ localization ผ่าน 52 tests
+
+### 2. รายการที่ไม่ผ่าน (Failed Tests) และสาเหตุที่ไม่ผ่าน (How & Why it Failed)
+
+ไม่มีข้อผิดพลาด (0 Failed)
+
+### Verification เพิ่มเติม
+
+- `flutter analyze lib test`: `No issues found!`
+- `git -c core.whitespace=cr-at-eol diff --check`: ผ่าน

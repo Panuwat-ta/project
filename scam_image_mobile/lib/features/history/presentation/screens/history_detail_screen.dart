@@ -655,7 +655,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'result_ai_generated_probability'.tr(context),
+                      'result_manipulation_confidence'.tr(context),
                       style: AppTypography.caption(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
@@ -665,16 +665,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                           ? '${(result.manipulationConfidence! * 100).toStringAsFixed(0)}%'
                           : 'result_evidence_unavailable'.tr(context),
                       style: AppTypography.titleMd(
-                        color:
-                            (result.manipulationConfidence != null &&
-                                    result.manipulationConfidence! >= 0.7) ||
-                                visualFactor.score >= 70
-                            ? AppColors.danger
-                            : (result.manipulationConfidence != null &&
-                                      result.manipulationConfidence! >= 0.4) ||
-                                  visualFactor.score >= 40
-                            ? AppColors.warning
-                            : (isDark ? Colors.white : AppColors.onSurface),
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.sm),
@@ -731,18 +722,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
     );
   }
 
-  Color _getRiskColor(RiskLevel level) {
-    switch (level) {
-      case RiskLevel.high:
-        return AppColors.danger;
-      case RiskLevel.medium:
-        return AppColors.warning;
-      case RiskLevel.low:
-        return AppColors.success;
-      case RiskLevel.unknown:
-        return Colors.grey;
-    }
-  }
+  Color _getRiskColor(RiskLevel level) => RiskLevelHelper.toColor(level);
 
   /// Score pill colored by server grade ([RiskLevel]), never by raw-score bands.
   /// Factor pills pass [RiskLevelHelper.factorLevelForScore] (presentation-only).

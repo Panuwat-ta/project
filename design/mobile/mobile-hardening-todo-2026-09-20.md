@@ -6,7 +6,7 @@
 
 ## GitHub Issues cross-check — 2026-10-02
 
-ณ cross-check ล่าสุด 2026-10-02 Issues #71–#75 ปิดแล้ว; #76–#88 ยังเปิด. ข้อความสถานะเวลา 01:53 ด้านล่างเป็นประวัติเดิมก่อนปิด Issues #71–#75. #88 เป็น roadmap หลักและอ้างอิง hardening gates ในรายการด้านล่าง:
+ณ cross-check ล่าสุด 2026-10-02 Issues #71–#76 ปิดแล้ว; #77–#88 ยังเปิด. ข้อความสถานะเวลา 01:53 ด้านล่างเป็นประวัติเดิมก่อนปิด Issues #71–#76. #88 เป็น roadmap หลักและอ้างอิง hardening gates ในรายการด้านล่าง:
 
 | Issue | Checklist section |
 |---|---|
@@ -29,7 +29,7 @@
 | [#87](https://github.com/Panuwat-ta/project/issues/87) | §16 Release Candidate QA |
 | [#88](https://github.com/Panuwat-ta/project/issues/88) | Master roadmap; references #71–#87 |
 
-ตัวเลข coverage ใน §0.4 เป็นผลย้อนหลัง ณ 20 กันยายน 2026 ไม่ใช่ผลปัจจุบัน. ผลล่าสุด 2026-10-02: full suite ผ่าน 518 tests; LCOV line 5,167/5,679 (90.98%) และ branch 1,283/1,548 (82.88%); Issues #74 และ #75 ปิดตาม acceptance. รายละเอียดและ residual branches อยู่ใน `tests_all/tests_report/automate_tests/mobile/issue-74-75-2026-10-02.md`.
+ตัวเลข coverage ใน §0.4 เป็นผลย้อนหลัง ณ 20 กันยายน 2026 ไม่ใช่ผลปัจจุบัน. ผลล่าสุด 2026-10-02 หลังปิด Issue #76: full suite ผ่าน 522 tests; LCOV line 5,209/5,718 (91.10%) และ branch 1,286/1,549 (83.02%). รายงานล่าสุดคือ `tests_all/tests_report/automate_tests/mobile/issue-76-integrity-localization-2026-10-02.md`; residual branches ของ Issues #74/#75 อยู่ในรายงานเดิม `issue-74-75-2026-10-02.md`.
 
 ## สัญลักษณ์สถานะ
 
@@ -159,7 +159,7 @@
 - [x] branch coverage รวมเกิน NFR-09 gate 80%; Issue #75 ปิดตาม acceptance
 ## 3. P1 — Final UX/UI และ AI-slop audit
 
-สถานะ 2026-10-02: source/widget audit และ findings ที่แก้ได้บันทึกใน `mobile-design-ux-audit-2026-10-02.md`; Issue #76 ยัง OPEN เพราะ `agy` CLI timeout 3 ครั้งโดยไม่มี review output ที่ตรวจสอบได้ และยังไม่มี native runtime QA บนอุปกรณ์รอบนี้
+สถานะ 2026-10-02 06:18 +07: Issue #76 CLOSED; source/widget audit และ independent review เสร็จแล้ว; confirmed findings แก้และ verify แล้ว ตาม `mobile-design-ux-audit-2026-10-02.md`. Native runtime/staging QA ยังติดตามใน Issues #77/#79.
 
 ### 3.1 Product integrity
 - [x] ตรวจ source ของ Mobile ว่าไม่มี fake evidence ใน flow ที่ตรวจ; unavailable/empty แสดง state แทนการสร้างหลักฐาน
@@ -169,7 +169,7 @@
 
 ### 3.2 Visual quality / AI-slop
 - [x] ทำ Impeccable native source audit; ผลและเกณฑ์ตรวจอยู่ใน audit report
-- [!] เรียก independent `agy` review 3 ครั้ง (180s, 45s, 60s); ทุกครั้ง timeout โดยไม่มีผลลัพธ์ จึงยังไม่ผ่านเกณฑ์ independent review
+- [x] independent `agy` review สำเร็จเมื่อใช้ `--print-timeout 0s`; รัน 205.404684316 วินาที มี report และ finding disposition; timeout 3 ครั้งก่อนหน้าเป็นประวัติการรัน
 - [x] เทียบ before/after กับ baseline audit 2026-09-20 โดยแยกผลเดิมกับ defect ที่ยืนยันเพิ่มในรอบนี้
 - [x] ตรวจ Profile / Privacy / Notifications / Auth และ design-token consistency จาก source/checklist; ไม่พบ fabricated evidence เพิ่มใน scope ที่ตรวจ
 - [x] ตรวจ theme-aware surfaces, semantic risk colors, responsive navigation, spacing/radius และ interactive affordance จาก source
