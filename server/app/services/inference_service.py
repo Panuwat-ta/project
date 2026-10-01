@@ -70,11 +70,26 @@ class InferenceService:
                         print("Unable to verify GPU memory; deferring GPU XAI model for safety.")
 
                 if should_defer_xai_gpu(target_gpu_layers, gpu_memory):
+                    # GPU ไม่พอ: โหลดบน CPU แทน ไม่ใช่ปิดโมเดลทิ้ง
+                    # Qwen 1.5B Q4 สร้างข้อความ 1-2 ประโยคบน CPU ได้ในหลักสิบวินาที
+                    # ช้ากว่า GPU แต่ดีกว่า template สำเร็จรูป เพราะผู้ใช้จะเห็น
+                    # สถานะ "กำลังสร้าง" แล้วได้ข้อความจริงตามมาทีหลัง (Phase 1/2)
                     print(
-                        "Deferring GPU XAI model to deterministic fallback "
-                        f"(visible GPU memory={gpu_memory or 'unavailable'})."
+                        "GPU memory insufficient for XAI model "
+                        f"(visible GPU memory={gpu_memory or 'unavailable'}). "
+                        "Loading Qwen2.5-1.5B on CPU instead."
                     )
-                    self.xai_model = None
+                    try:
+                        self.xai_model = Llama(
+                            model_path=xai_path,
+                            n_gpu_layers=0,
+                            n_ctx=context_size,
+                            verbose=False,
+                        )
+                        print("Loaded Qwen2.5-1.5B XAI model on CPU (GPU fallback)")
+                    except Exception as cpu_e:
+                        print(f"CPU fallback for XAI model failed: {cpu_e}")
+                        self.xai_model = None
                 else:
                     self.xai_model = Llama(
                         model_path=xai_path,
@@ -165,7 +180,7 @@ class InferenceService:
         user_content = (
             f"ตำแหน่ง: {region}\n"
             f"ความผิดปกติ: {visual_th}\n"
-            f"โอกาส AI: {ai_th}\n"
+            f"ความม่ันใจว่าถูกดัดแปลง: {ai_th}\n"
             f"ข้อความ OCR: {keywords_th}\n"
             "เขียนบทวิเคราะห์:"
         )
@@ -175,11 +190,11 @@ class InferenceService:
             f"<|im_start|>user\n"
             f"ตำแหน่ง: กลางภาพ\n"
             f"ความผิดปกติ: ระดับสูง (80/100) พบร่องรอยการตัดต่อตัวเลขอย่างเด่นชัด\n"
-            f"โอกาส AI: โอกาสต่ำ (15%) พิกเซลมีความเป็นธรรมชาติ\n"
+            f"ความม่ันใจว่าถูกดัดแปลง: ความม่ันใจว่าภาพถูกตัดต่อหรือดัดแปลงต่ำ (15%)\n"
             f"ข้อความ OCR: ตรวจพบคำสำคัญน่าสงสัย ได้แก่ โอนเงินสำเร็จ\n"
             f"เขียนบทวิเคราะห์:<|im_end|>\n"
             f"<|im_start|>assistant\n"
-            f"ตรวจพบความผิดปกติระดับสูงบริเวณกลางภาพ ซึ่งมีร่องรอยการตัดต่อตัวเลขอย่างชัดเจนและพบคำสำคัญน่าสงสัยในภาพ แม้โอกาสสังเคราะห์ด้วย AI จะอยู่ในเกณฑ์ต่ำก็ตาม<|im_end|>\n"
+            f"ตรวจพบความผิดปกติระดับสูงบริเวณกลางภาพ ซึ่งมีร่องรอยการตัดต่อตัวเลขอย่างชัดเจนและพบคำสำคัญน่าสงสัยในภาพ แม้ความม่ันใจว่าถูกดัดแปลงจะอยู่ในเกณฑ์ต่ำก็ตาม<|im_end|>\n"
             f"<|im_start|>user\n{user_content}<|im_end|>\n"
             f"<|im_start|>assistant\n"
         )

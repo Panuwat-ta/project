@@ -42,7 +42,7 @@ void main() {
           'createdAt',
           'factorsJson',
           'xaiExplanation',
-          'aiGenProbability',
+          'manipulationConfidence',
           'ocrText',
           'scamKeywordsJson',
         ]),
@@ -52,7 +52,7 @@ void main() {
   );
 
   test(
-    'v3 to v4 partial migration adds remaining columns independently',
+    'v3 to v5 migration adds remaining columns and renames confidence',
     () async {
       final db = await openMemoryDb();
       await db.execute('''
@@ -74,16 +74,18 @@ void main() {
       final helper = DatabaseHelper.forTesting(db);
 
       await helper.upgradeSchemaForTesting(db, 3, 4);
+      await helper.upgradeSchemaForTesting(db, 4, 5);
 
       final names = await columns(db, DatabaseHelper.tableDetails);
-      expect(names, contains('aiGenProbability'));
+      expect(names, contains('manipulationConfidence'));
+      expect(names, isNot(contains('aiGenProbability')));
       expect(names, contains('ocrText'));
       expect(names, contains('scamKeywordsJson'));
       await db.close();
     },
   );
 
-  test('v2 to v4 migration adds xai and all v4 analysis columns', () async {
+  test('v2 to v5 migration adds xai and renames the confidence column', () async {
     final db = await openMemoryDb();
     await db.execute('''
       CREATE TABLE ${DatabaseHelper.tableDetails} (
@@ -102,15 +104,20 @@ void main() {
     final helper = DatabaseHelper.forTesting(db);
 
     await helper.upgradeSchemaForTesting(db, 2, 4);
+    await helper.upgradeSchemaForTesting(db, 4, 5);
 
     expect(
       await columns(db, DatabaseHelper.tableDetails),
       containsAll([
         'xaiExplanation',
-        'aiGenProbability',
+        'manipulationConfidence',
         'ocrText',
         'scamKeywordsJson',
       ]),
+    );
+    expect(
+      await columns(db, DatabaseHelper.tableDetails),
+      isNot(contains('aiGenProbability')),
     );
     await db.close();
   });

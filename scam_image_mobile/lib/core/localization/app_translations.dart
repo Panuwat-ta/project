@@ -292,6 +292,8 @@ class AppTranslations {
       'result_summary_title': 'สรุปผลการวิเคราะห์',
       'result_summary_unavailable':
           'ยังไม่มีคำอธิบายสรุปจากระบบสำหรับรายการนี้',
+      'result_summary_generating':
+          'กำลังสร้างคำอธิบายจาก AI กรุณารอสักครู่ ระบบจะแสดงข้อความเมื่อสร้างเสร็จ',
       'result_image_load_failed': 'โหลดรูปไม่สำเร็จ',
       'result_no_visual_details': 'ไม่มีรายละเอียดภาพเพิ่มเติมจากระบบ',
       'result_summary_desc':
@@ -675,6 +677,8 @@ class AppTranslations {
       'result_summary_title': 'Analysis Summary',
       'result_summary_unavailable':
           'No summary explanation is available for this scan.',
+      'result_summary_generating':
+          'Generating the AI explanation, please wait. It will appear here when ready.',
       'result_image_load_failed': 'Could not load image',
       'result_no_visual_details': 'No additional visual details were provided.',
       'result_summary_desc':

@@ -35,15 +35,13 @@ void main() {
     blocTest<ResultBloc, ResultState>(
       'emits [ResultLoading, ResultLoaded] on success',
       build: () {
-        when(() => mockRepo.getAnalysisResult('task-1'))
-            .thenAnswer((_) async => tResult);
+        when(
+          () => mockRepo.getAnalysisResult('task-1'),
+        ).thenAnswer((_) async => tResult);
         return ResultBloc(repository: mockRepo);
       },
       act: (bloc) => bloc.add(const ResultLoadRequested('task-1')),
-      expect: () => [
-        const ResultLoading(),
-        ResultLoaded(tResult),
-      ],
+      expect: () => [const ResultLoading(), ResultLoaded(tResult)],
       verify: (_) {
         verify(() => mockRepo.getAnalysisResult('task-1')).called(1);
       },
@@ -52,8 +50,9 @@ void main() {
     blocTest<ResultBloc, ResultState>(
       'emits [ResultLoading, ResultError] on failure',
       build: () {
-        when(() => mockRepo.getAnalysisResult('task-1'))
-            .thenThrow(Exception('Server error'));
+        when(
+          () => mockRepo.getAnalysisResult('task-1'),
+        ).thenThrow(Exception('Server error'));
         return ResultBloc(repository: mockRepo);
       },
       act: (bloc) => bloc.add(const ResultLoadRequested('task-1')),
@@ -70,8 +69,9 @@ void main() {
     blocTest<ResultBloc, ResultState>(
       'emits [ResultLoading, ResultError] on network failure',
       build: () {
-        when(() => mockRepo.getAnalysisResult('task-1'))
-            .thenThrow(Exception('NetworkException: Connection error'));
+        when(
+          () => mockRepo.getAnalysisResult('task-1'),
+        ).thenThrow(Exception('NetworkException: Connection error'));
         return ResultBloc(repository: mockRepo);
       },
       act: (bloc) => bloc.add(const ResultLoadRequested('task-1')),
@@ -83,6 +83,56 @@ void main() {
           contains('NetworkException'),
         ),
       ],
+    );
+  });
+
+  group('XAI polling (ResultPollRequested)', () {
+    AnalysisResult pendingResult() => AnalysisResult(
+      scanId: 'scan-1',
+      taskId: 'task-1',
+      status: 'processing_text',
+      riskScore: 50,
+      riskLevel: RiskLevel.medium,
+      summary: '',
+      createdAt: DateTime(2026, 1, 1),
+      factors: const [],
+    );
+
+    AnalysisResult withStatus(String status, String summary) => AnalysisResult(
+      scanId: 'scan-1',
+      taskId: 'task-1',
+      status: status,
+      riskScore: 50,
+      riskLevel: RiskLevel.medium,
+      summary: summary,
+      createdAt: DateTime(2026, 1, 1),
+      factors: const [],
+    );
+
+    bool isXaiPendingFor(String status, String summary) =>
+        ResultBloc.isXaiPending(withStatus(status, summary));
+
+    test('isXaiPending true เฉพาะตอนสแกนยังไม่เสร็จและไม่มีคำอธิบาย', () {
+      expect(ResultBloc.isXaiPending(pendingResult()), isTrue);
+      // เสร็จแล้วแต่ไม่มีคำอธิบาย = ไม่ต้องโพล (แสดง unavailable)
+      expect(isXaiPendingFor('completed', ''), isFalse);
+      // ล้มเหลว = ไม่ต้องโพล
+      expect(isXaiPendingFor('failed', ''), isFalse);
+      // มีคำอธิบายแล้ว = ไม่ต้องโพล
+      expect(isXaiPendingFor('completed', 'เสร็จแล้ว'), isFalse);
+      expect(isXaiPendingFor('processing_text', 'เสร็จแล้ว'), isFalse);
+    });
+
+    blocTest<ResultBloc, ResultState>(
+      'poll ไม่ออก loading ซ้ำ เพื่อไม่ให้จอกระพริบ',
+      build: () {
+        when(
+          () => mockRepo.getAnalysisResult('task-1'),
+        ).thenAnswer((_) async => tResult);
+        return ResultBloc(repository: mockRepo);
+      },
+      act: (bloc) => bloc.add(const ResultPollRequested('task-1')),
+      expect: () => [ResultLoaded(tResult)],
     );
   });
 
@@ -100,10 +150,7 @@ void main() {
     });
 
     test('ResultError instances with same message are equal', () {
-      expect(
-        const ResultError('error'),
-        equals(const ResultError('error')),
-      );
+      expect(const ResultError('error'), equals(const ResultError('error')));
     });
   });
 }

@@ -311,7 +311,7 @@ Acceptance Criteria:
 - **Input:** รูปภาพที่มีการสอดแทรก (Splicing)
 - **Processing:** 
   - รัน SegFormer (ONNX) เพื่อตรวจจับ
-  - คำนวณ Forgery Confidence ด้วย Normalize(Confidence×Coverage)
+  - คำนวณ Forgery Confidence ด้วย `round(det_score × 100)` จาก Det Head (สูตรเดิม Normalize(Confidence×Coverage) ถูกยกเลิกเมื่อ 2026-09-30)
 - **Expected Output:** `forgery_confidence: 85` (ช่วง 0-100), ความแม่นยำ ≥ 85% (Accuracy และ mDice)
 
 **AC-2: ตรวจจับภาพ AI-Generated สำเร็จ**
@@ -323,8 +323,8 @@ Acceptance Criteria:
 
 **AC-3: คำนวณ Visual Risk Score**
 - **Input:** forgery_confidence = 85, ai_gen_confidence = 90
-- **Processing:** คำนวณ Normalize(Confidence×Coverage) จาก SegFormer แล้วรวมด้วย Hybrid max+bonus (S_base คือค่าสูงสุดของ 3 มิติ +5 ต่อมิติรองที่มีคะแนน ≥40, cap 100)
-- **Expected Output:** `visual_score` จาก Normalize(Confidence×Coverage) (ช่วง 0-100; ตัวอย่างเดิม 87 ใช้เพื่ออ้างอิงเท่านั้น)
+- **Processing:** คำนวณ `visual_score = round(det_score × 100)` จาก Det Head (det7b) แล้วรวมด้วย Hybrid max+bonus (S_base คือค่าสูงสุดของ 3 มิติ +5 ต่อมิติรองที่มีคะแนน ≥40, cap 100) — สูตรเดิม Normalize(Confidence×Coverage) ถูกยกเลิกเมื่อ 2026-09-30 เพราะรอยปลอมจริงในชุดข้อมูลกินพื้นที่เพียง 0.0–1.6% ของภาพ (ตรงกับ Label Audit ที่พบ forged area < 0.1% ใน 228 แถว) ทำให้ Mask Coverage เล็กโดยธรรมชาติและคะแนนเกือบ 0 เสมอ (วัดจริงบน 165 ภาพ Test-Cases: ภาพ splicing ที่ถูกดัดแปลงได้คะแนน 1, ภาพ inpainting ได้ 0, ขณะที่ภาพกล้องจริงมี coverage สูงกว่าภาพปลอม) Det Head เป็นสัญญาณเดียวที่วัดแล้วแยกได้จริง (ภาพกล้องจริง 0.003, ภาพถูกดัดแปลง 0.9999, ข้ามอุปกรณ์ 104 ภาพ specificity 86.54% เทียบ det2b เดิม 29.81%) ส่วน SegFormer เหลือหน้าที่สร้าง Heatmap และระบุบริเวณเท่านั้น
+- **Expected Output:** `visual_score` จาก Det Head (ช่วง 0-100; ตัวอย่างเดิม 87 ใช้เพื่ออ้างอิงเท่านั้น)
 
 **AC-4: ภาพจริงไม่ถูกตัดต่อ**
 - **Input:** รูปภาพจริงที่ไม่ถูกแก้ไข

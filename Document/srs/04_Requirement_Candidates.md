@@ -246,7 +246,7 @@ Requirement Candidates ถูกสกัดจาก:
   - Copy-Move (การคัดลอกและวาง)
   - Inpainting (การลบวัตถุ)
 - เป้าหมายความแม่นยำ: Accuracy และ mDice ≥ 85%
-- คำนวณ Forgery Confidence Score (0-100) ด้วย Normalize(Confidence×Coverage)
+- คำนวณ Forgery Confidence Score (0-100) ด้วย `round(det_score × 100)` จาก Det Head โดย det_score คือค่าความน่าจะเป็นระดับทั้งภาพ (0–1) จากหัว classifier ที่ต่ออยู่กับ SegFormer v1.0.6 (backbone แช่แข็ง) สูตรเดิม Normalize(Confidence×Coverage) ถูกยกเลิกเมื่อ 2026-09-30 เพราะรอยปลอมจริงในชุดข้อมูลกินพื้นที่เพียง 0.0–1.6% ของภาพ ทำให้ Mask Coverage เล็กโดยธรรมชาติและคะแนนเกือบ 0 เสมอ (วัดจริง: ภาพ splicing ที่ถูกดัดแปลงได้คะแนน 1, ภาพ inpainting ได้ 0) ส่วน SegFormer เหลือหน้าที่สร้าง Heatmap และระบุบริเวณเท่านั้น
 
 ---
 
@@ -277,7 +277,7 @@ Requirement Candidates ถูกสกัดจาก:
 **Priority:** Must
 
 **Details:**
-- Visual score จะใช้วิธี Normalize(Confidence×Coverage) จาก SegFormer ONNX แล้วรวมคะแนนรวมด้วยสูตร Hybrid max+bonus (S_base คือค่าสูงสุดของ 3 มิติ +5 ต่อมิติรองที่มีคะแนน ≥40, cap 100 — ดู RC-ANALYSIS-07)
+- Visual score จะใช้วิธี `round(det_score × 100)` จาก Det Head (det7b) แล้วรวมคะแนนรวมด้วยสูตร Hybrid max+bonus (S_base คือค่าสูงสุดของ 3 มิติ +5 ต่อมิติรองที่มีคะแนน ≥40, cap 100 — ดู RC-ANALYSIS-07; สูตรเดิม Normalize(Confidence×Coverage) ถูกยกเลิกเมื่อ 2026-09-30)
 - ผลลัพธ์อยู่ในช่วง 0-100
 
 ---
