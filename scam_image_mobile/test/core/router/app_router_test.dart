@@ -53,4 +53,28 @@ void main() {
     when(() => repo.hasSeenOnboarding()).thenThrow(Exception('storage failed'));
     expect(await AppRouter.guardPath(repo, '/main/home'), '/login');
   });
+
+  test('storage failure does not block login or registration routes', () async {
+    when(() => repo.hasSeenOnboarding()).thenThrow(Exception('storage failed'));
+
+    expect(await AppRouter.guardPath(repo, '/login'), isNull);
+    expect(await AppRouter.guardPath(repo, '/register'), isNull);
+  });
+
+  test('token storage failure fails closed for deep links', () async {
+    when(() => repo.hasSeenOnboarding()).thenAnswer((_) async => true);
+    when(() => repo.hasValidToken()).thenThrow(Exception('token unavailable'));
+
+    expect(await AppRouter.guardPath(repo, '/result/scan-1'), '/login');
+  });
+
+  test(
+    'unknown protected paths still require an authenticated session',
+    () async {
+      when(() => repo.hasSeenOnboarding()).thenAnswer((_) async => true);
+      when(() => repo.hasValidToken()).thenAnswer((_) async => false);
+
+      expect(await AppRouter.guardPath(repo, '/unknown/deep-link'), '/login');
+    },
+  );
 }

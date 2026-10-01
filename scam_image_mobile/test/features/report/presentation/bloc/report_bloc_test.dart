@@ -65,6 +65,23 @@ void main() {
       ],
     );
 
+    for (final message in ['Connection error', 'SocketException: closed']) {
+      blocTest<ReportBloc, ReportState>(
+        'maps $message to the network error state',
+        build: () {
+          when(
+            () => mockRepo.submitReport(any()),
+          ).thenThrow(Exception(message));
+          return ReportBloc(repository: mockRepo);
+        },
+        act: (bloc) => bloc.add(const ReportSubmitted(tReport)),
+        expect: () => const [
+          ReportSubmitting(),
+          ReportError('report_error_network'),
+        ],
+      );
+    }
+
     blocTest<ReportBloc, ReportState>(
       'emits [ReportSubmitting, ReportError] with session message on AuthException',
       build: () {
@@ -83,6 +100,23 @@ void main() {
         ),
       ],
     );
+
+    for (final message in ['403 forbidden']) {
+      blocTest<ReportBloc, ReportState>(
+        'maps $message to the auth error state',
+        build: () {
+          when(
+            () => mockRepo.submitReport(any()),
+          ).thenThrow(Exception(message));
+          return ReportBloc(repository: mockRepo);
+        },
+        act: (bloc) => bloc.add(const ReportSubmitted(tReport)),
+        expect: () => const [
+          ReportSubmitting(),
+          ReportError('report_error_auth'),
+        ],
+      );
+    }
 
     blocTest<ReportBloc, ReportState>(
       'emits [ReportSubmitting, ReportError] with generic message on unknown error',
@@ -106,28 +140,25 @@ void main() {
 
   group('ReportState equality', () {
     test('ReportInitial instances are equal', () {
-      expect(const ReportInitial(), equals(const ReportInitial()));
+      expect(ReportInitial(), equals(ReportInitial()));
     });
 
     test('ReportSubmitting instances are equal', () {
-      expect(const ReportSubmitting(), equals(const ReportSubmitting()));
+      expect(ReportSubmitting(), equals(ReportSubmitting()));
     });
 
     test('ReportSuccess instances are equal', () {
-      expect(const ReportSuccess(), equals(const ReportSuccess()));
+      expect(ReportSuccess(), equals(ReportSuccess()));
     });
 
     test('ReportError instances with same message are equal', () {
-      expect(const ReportError('msg'), equals(const ReportError('msg')));
+      expect(ReportError('msg'), equals(ReportError('msg')));
     });
   });
 
   group('ReportEvent equality', () {
     test('ReportSubmitted with same report are equal', () {
-      expect(
-        const ReportSubmitted(tReport),
-        equals(const ReportSubmitted(tReport)),
-      );
+      expect(ReportSubmitted(tReport), equals(ReportSubmitted(tReport)));
     });
   });
 }

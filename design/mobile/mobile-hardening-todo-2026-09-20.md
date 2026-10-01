@@ -6,7 +6,7 @@
 
 ## GitHub Issues cross-check — 2026-10-02
 
-ณ cross-check เวลา 01:53 วันที่ 2026-10-02 Issues #71–#88 ยังเปิดทั้งหมด; หลังแก้งาน Issue #71 ปิดเวลา 02:33 และ Issue #72 ปิดเมื่อผ่าน acceptance ของ harness/widget tests. #88 เป็น roadmap หลักและอ้างอิง hardening gates ในรายการด้านล่าง:
+ณ cross-check ล่าสุด 2026-10-02 Issues #71–#75 ปิดแล้ว; #76–#88 ยังเปิด. ข้อความสถานะเวลา 01:53 ด้านล่างเป็นประวัติเดิมก่อนปิด Issues #71–#75. #88 เป็น roadmap หลักและอ้างอิง hardening gates ในรายการด้านล่าง:
 
 | Issue | Checklist section |
 |---|---|
@@ -29,7 +29,7 @@
 | [#87](https://github.com/Panuwat-ta/project/issues/87) | §16 Release Candidate QA |
 | [#88](https://github.com/Panuwat-ta/project/issues/88) | Master roadmap; references #71–#87 |
 
-ตัวเลข coverage ใน §0.4 เป็นผลย้อนหลัง ณ 20 กันยายน 2026 ไม่ใช่ผลปัจจุบัน. รอบ 2026-10-02 02:55 ผ่าน 432 tests; line coverage 4,243/5,681 (74.69%) และ branch coverage 1,013/1,547 (65.48%) จาก LCOV; branch coverage ยังต่ำกว่า NFR-09 ที่ 80% จึงคง Issue #75 เปิด
+ตัวเลข coverage ใน §0.4 เป็นผลย้อนหลัง ณ 20 กันยายน 2026 ไม่ใช่ผลปัจจุบัน. ผลล่าสุด 2026-10-02: full suite ผ่าน 518 tests; LCOV line 5,167/5,679 (90.98%) และ branch 1,283/1,548 (82.88%); Issues #74 และ #75 ปิดตาม acceptance. รายละเอียดและ residual branches อยู่ใน `tests_all/tests_report/automate_tests/mobile/issue-74-75-2026-10-02.md`.
 
 ## สัญลักษณ์สถานะ
 
@@ -144,19 +144,19 @@
 ผล LCOV ล่าสุดของ Issue #73: suite branch 1,244/1,548 (80.36%), line 5,007/5,679 (88.17%); full suite 496 tests ผ่าน, analyzer ผ่าน. Issue #73 ปิดแล้วหลังแนบรายการ residual branches และเหตุผลไว้ใน issue comment.
 
 ### 2.2 Core/logic coverage ที่ยังควรเก็บ
-- [ ] `app_router.dart` cover auth/onboarding/deep-link/error branches เพิ่ม
-- [ ] `scan_bloc.dart` ปิด polling/race/error branches ที่เหลือ
-- [ ] `history_bloc.dart` ปิด pagination/delete/error branches ที่เหลือ
-- [ ] `report_bloc.dart` ปิด failure/state branches ที่เหลือ
-- [ ] `database_helper.dart` เพิ่ม migration/error branches ที่มี behavioral value
-- [ ] `risk_progress_bar.dart` เพิ่ม widget branches หรือยุบถ้าไม่ถูกใช้งานจริง
-- [ ] `loading_overlay.dart` เพิ่ม minimal visibility branch tests
+- [x] `app_router.dart` ทดสอบ onboarding/auth guards และ deep-link redirect ผ่าน `GoRouter` จริง; branch 15/30 โดย route builder บางหน้ากับ extra mapping ยังเป็น residual ตามรายงาน
+- [x] `scan_bloc.dart` ทดสอบ timer polling, duplicate/stale poll, upload/status errors, cancellation, timeout และ race; branch 36/36
+- [x] `history_bloc.dart` ทดสอบ pagination, repeated page, delete, refresh/search retention และ failure ระหว่างโหลดหน้าถัดไป; branch 47/47
+- [x] `report_bloc.dart` ทดสอบ success และ network/auth/generic failure mapping; branch 19/19
+- [x] `database_helper.dart` ทดสอบ migration v1–v5, partial upgrade, column rename, nulling ค่าเดิม และ schema ที่ถูก rename แล้ว; branch 20/24 โดยเหลือ plugin init/defensive catch ตามรายงาน
+- [x] `risk_progress_bar.dart` ทดสอบช่วงสี Low/Medium/High และ label; branch 10/11 โดย Unknown case เป็น defensive branch ที่ score mapping ปัจจุบันเข้าไม่ถึง
+- [x] `loading_overlay.dart` ทดสอบ fullscreen/contained, optional message และ light/dark spinner; branch 4/4
 
 ### 2.3 Coverage gate
-- [ ] รัน `flutter test --branch-coverage`
-- [ ] คำนวณ branch hit จาก `BRDA` จริง
-- [ ] ห้ามใช้ line coverage แทน branch coverage
-- [ ] branch coverage รวมต้อง `>= 80%` ก่อน Production sign-off
+- [x] รัน full `flutter test --coverage --branch-coverage --reporter=failures-only`
+- [x] คำนวณ branch hit จาก LCOV `BRDA` จริง: 1,283/1,548 (82.88%)
+- [x] ตรวจ LCOV มี critical source files และไม่มี custom exclusion เพื่อยก coverage; line coverage รายงานแยก ไม่ใช้แทน branch coverage
+- [x] branch coverage รวมเกิน NFR-09 gate 80%; Issue #75 ปิดตาม acceptance
 ## 3. P1 — Final UX/UI และ AI-slop audit
 
 ### 3.1 Product integrity

@@ -164,6 +164,42 @@ void main() {
       expect(completer.isCompleted, isTrue);
       await bloc.close();
     });
+
+    test(
+      'completes refresh and retains the active search after a failure',
+      () async {
+        var calls = 0;
+        when(
+          () => mockRepo.getScanHistory(
+            page: any(named: 'page'),
+            limit: any(named: 'limit'),
+            riskLevel: any(named: 'riskLevel'),
+            fromDate: any(named: 'fromDate'),
+            toDate: any(named: 'toDate'),
+            keyword: any(named: 'keyword'),
+          ),
+        ).thenAnswer((invocation) async {
+          expect(invocation.namedArguments[#keyword], 'HIGH');
+          calls += 1;
+          if (calls > 1) throw Exception('refresh failed');
+          return [tItems.first];
+        });
+
+        final bloc = HistoryBloc(repository: mockRepo);
+        bloc.add(const HistorySearched('HIGH'));
+        await bloc.stream.firstWhere((state) => state is HistoryDataLoaded);
+
+        final completer = Completer<void>();
+        final failed = bloc.stream.firstWhere((state) => state is HistoryError);
+        bloc.add(HistoryRefreshed(completer));
+        await failed.timeout(const Duration(seconds: 1));
+        await completer.future.timeout(const Duration(seconds: 1));
+
+        expect(calls, 2);
+        expect(completer.isCompleted, isTrue);
+        await bloc.close();
+      },
+    );
   });
 
   group('HistorySearched', () {
@@ -281,42 +317,39 @@ void main() {
 
   group('HistoryState equality', () {
     test('HistoryInitial instances are equal', () {
-      expect(const HistoryInitial(), equals(const HistoryInitial()));
+      expect(HistoryInitial(), equals(HistoryInitial()));
     });
 
     test('HistoryLoading instances are equal', () {
-      expect(const HistoryLoading(), equals(const HistoryLoading()));
+      expect(HistoryLoading(), equals(HistoryLoading()));
     });
 
     test('HistoryEmpty instances are equal', () {
-      expect(const HistoryEmpty(), equals(const HistoryEmpty()));
+      expect(HistoryEmpty(), equals(HistoryEmpty()));
     });
 
     test('HistoryError instances with same message are equal', () {
-      expect(const HistoryError('err'), equals(const HistoryError('err')));
+      expect(HistoryError('err'), equals(HistoryError('err')));
     });
   });
 
   group('HistoryEvent equality', () {
     test('HistoryLoaded instances are equal', () {
-      expect(const HistoryLoaded(), equals(const HistoryLoaded()));
+      expect(HistoryLoaded(), equals(HistoryLoaded()));
     });
 
     test('HistoryRefreshed instances are equal', () {
-      expect(const HistoryRefreshed(), equals(const HistoryRefreshed()));
+      expect(HistoryRefreshed(), equals(HistoryRefreshed()));
     });
 
     test('HistorySearched with same keyword are equal', () {
-      expect(
-        const HistorySearched('test'),
-        equals(const HistorySearched('test')),
-      );
+      expect(HistorySearched('test'), equals(HistorySearched('test')));
     });
 
     test('HistoryItemDeleted with same id are equal', () {
       expect(
-        const HistoryItemDeleted('scan-1'),
-        equals(const HistoryItemDeleted('scan-1')),
+        HistoryItemDeleted('scan-1'),
+        equals(HistoryItemDeleted('scan-1')),
       );
     });
   });
@@ -438,6 +471,61 @@ void main() {
             keyword: any(named: 'keyword'),
           ),
         ).called(2);
+      },
+    );
+
+    blocTest<HistoryBloc, HistoryState>(
+      'emits an error when a later page fails instead of partial data',
+      build: () {
+        when(
+          () => mockRepo.getScanHistory(
+            page: any(named: 'page'),
+            limit: any(named: 'limit'),
+            riskLevel: any(named: 'riskLevel'),
+            fromDate: any(named: 'fromDate'),
+            toDate: any(named: 'toDate'),
+            keyword: any(named: 'keyword'),
+          ),
+        ).thenAnswer((invocation) async {
+          if (invocation.namedArguments[#page] == 1) {
+            return List.generate(
+              100,
+              (i) => ScanHistoryItem(
+                scanId: 'page-1-$i',
+                riskScore: 10,
+                riskLevel: RiskLevel.low,
+                status: 'completed',
+                createdAt: DateTime(2026, 1, 1),
+              ),
+            );
+          }
+          throw Exception('second page unavailable');
+        });
+        return HistoryBloc(repository: mockRepo);
+      },
+      act: (bloc) => bloc.add(const HistoryLoaded()),
+      expect: () => [const HistoryLoading(), isA<HistoryError>()],
+      verify: (_) {
+        verify(
+          () => mockRepo.getScanHistory(
+            page: 1,
+            limit: 100,
+            riskLevel: any(named: 'riskLevel'),
+            fromDate: any(named: 'fromDate'),
+            toDate: any(named: 'toDate'),
+            keyword: any(named: 'keyword'),
+          ),
+        ).called(1);
+        verify(
+          () => mockRepo.getScanHistory(
+            page: 2,
+            limit: 100,
+            riskLevel: any(named: 'riskLevel'),
+            fromDate: any(named: 'fromDate'),
+            toDate: any(named: 'toDate'),
+            keyword: any(named: 'keyword'),
+          ),
+        ).called(1);
       },
     );
   });
