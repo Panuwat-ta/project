@@ -438,9 +438,17 @@ class _AnalysisLoadingScreenState extends State<AnalysisLoadingScreen>
             PrimaryButton(
               label: 'loading_retry'.tr(context),
               leadingIcon: const Icon(Icons.refresh),
-              onPressed: () => context.read<ScanBloc>().add(
-                CropConfirmed(widget.filePath, scanName: widget.scanName),
-              ),
+              onPressed: () {
+                final bloc = context.read<ScanBloc>();
+                final state = bloc.state;
+                if (state is ScanTimeout && state.taskId != null) {
+                  bloc.add(AnalysisResumed(state.taskId!));
+                } else {
+                  bloc.add(
+                    CropConfirmed(widget.filePath, scanName: widget.scanName),
+                  );
+                }
+              },
             ),
             const SizedBox(height: AppSpacing.md),
             SecondaryButton(

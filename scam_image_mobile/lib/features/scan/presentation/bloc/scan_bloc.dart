@@ -23,6 +23,21 @@ class AnalysisPollTick extends ScanEvent {
   List<Object?> get props => [taskId];
 }
 
+class AnalysisResumed extends ScanEvent {
+  AnalysisResumed(this.taskId);
+  final String taskId;
+  @override
+  List<Object?> get props => [taskId];
+}
+
+class _AnalysisDeadlineReached extends ScanEvent {
+  _AnalysisDeadlineReached(this.taskId, this.generation);
+  final String taskId;
+  final int generation;
+  @override
+  List<Object?> get props => [taskId, generation];
+}
+
 class AnalysisCancelled extends ScanEvent {
   @override
   List<Object?> get props => [];
@@ -72,8 +87,11 @@ class ScanError extends ScanState {
 }
 
 class ScanTimeout extends ScanState {
+  ScanTimeout({this.taskId, this.filePath});
+  final String? taskId;
+  final String? filePath;
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [taskId, filePath];
 }
 
 // ── Bloc ──────────────────────────────────────────────────────────────────────
@@ -87,6 +105,13 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
     on<CropConfirmed>(_onCropConfirmed);
     on<AnalysisPollTick>(_onPollTick);
     on<AnalysisCancelled>(_onCancelled);
+    on<AnalysisResumed>(_onResumed);
+    on<_AnalysisDeadlineReached>((event, emit) {
+      if (_activeTaskId == event.taskId &&
+          _scanGeneration == event.generation) {
+        _timeout(emit);
+      }
+    });
   }
 
   final ScanRepository repository;
@@ -94,7 +119,9 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
   final Duration pollInterval;
 
   Timer? _pollingTimer;
+  Timer? _deadlineTimer;
   String? _activeTaskId;
+  String? _activeFilePath;
   final Set<String> _pollsInFlight = <String>{};
   int _scanGeneration = 0;
   int _elapsedSeconds = 0;
@@ -103,8 +130,14 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
     CropConfirmed event,
     Emitter<ScanState> emit,
   ) async {
+    if (_activeFilePath == event.filePath &&
+        (state is ScanUploading || state is ScanPolling)) {
+      return;
+    }
+    _activeFilePath = event.filePath;
     final generation = ++_scanGeneration;
     _pollingTimer?.cancel();
+    _deadlineTimer?.cancel();
     _activeTaskId = null;
     _elapsedSeconds = 0;
     emit(ScanUploading());
@@ -119,11 +152,7 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
       if (generation != _scanGeneration || isClosed) return;
 
       _activeTaskId = taskId;
-      _pollingTimer = Timer.periodic(pollInterval, (_) {
-        if (!isClosed && _activeTaskId == taskId) {
-          add(AnalysisPollTick(taskId));
-        }
-      });
+      _startPollingTimer(taskId);
 
       emit(
         ScanPolling(
@@ -134,9 +163,44 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
       );
     } catch (e) {
       if (generation == _scanGeneration && !isClosed) {
+        _activeFilePath = null;
         emit(ScanError(_friendlyError(e)));
       }
     }
+  }
+
+  void _startPollingTimer(String taskId) {
+    _pollingTimer?.cancel();
+    _deadlineTimer?.cancel();
+    final generation = _scanGeneration;
+    _deadlineTimer = Timer(Duration(seconds: timeoutSeconds), () {
+      if (!isClosed) add(_AnalysisDeadlineReached(taskId, generation));
+    });
+    _pollingTimer = Timer.periodic(pollInterval, (_) {
+      if (!isClosed && _activeTaskId == taskId) add(AnalysisPollTick(taskId));
+    });
+  }
+
+  void _timeout(Emitter<ScanState> emit) {
+    final taskId = _activeTaskId;
+    if (taskId == null) return;
+    final filePath = _activeFilePath;
+    _pollingTimer?.cancel();
+    _deadlineTimer?.cancel();
+    _activeTaskId = null;
+    _activeFilePath = null;
+    emit(ScanTimeout(taskId: taskId, filePath: filePath));
+  }
+
+  void _onResumed(AnalysisResumed event, Emitter<ScanState> emit) {
+    final previous = state;
+    if (previous is! ScanTimeout || previous.taskId != event.taskId) return;
+    _scanGeneration++;
+    _activeTaskId = event.taskId;
+    _activeFilePath = previous.filePath;
+    _elapsedSeconds = 0;
+    _startPollingTimer(event.taskId);
+    emit(ScanPolling(taskId: event.taskId));
   }
 
   Future<void> _onPollTick(
@@ -147,26 +211,33 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
       return;
     }
 
+    final generation = _scanGeneration;
     try {
       _elapsedSeconds += pollInterval.inSeconds;
       if (_elapsedSeconds >= timeoutSeconds) {
-        _pollingTimer?.cancel();
-        _activeTaskId = null;
-        emit(ScanTimeout());
+        _timeout(emit);
         return;
       }
 
       final task = await repository.getAnalysisStatus(event.taskId);
       // Ignore a response that belongs to a task which is no longer active.
-      if (_activeTaskId != event.taskId || isClosed) return;
+      if (_activeTaskId != event.taskId ||
+          generation != _scanGeneration ||
+          isClosed) {
+        return;
+      }
 
       if (task.isCompleted) {
         _pollingTimer?.cancel();
+        _deadlineTimer?.cancel();
         _activeTaskId = null;
+        _activeFilePath = null;
         emit(ScanCompleted(event.taskId));
       } else if (task.isFailed) {
         _pollingTimer?.cancel();
+        _deadlineTimer?.cancel();
         _activeTaskId = null;
+        _activeFilePath = null;
         emit(ScanError(task.errorMessage ?? 'scan_error_analysis_failed'));
       } else {
         emit(
@@ -189,7 +260,9 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
     Emitter<ScanState> emit,
   ) async {
     _scanGeneration += 1;
+    _activeFilePath = null;
     _pollingTimer?.cancel();
+    _deadlineTimer?.cancel();
     _activeTaskId = null;
     _elapsedSeconds = 0;
     emit(ScanInitial());
@@ -206,6 +279,7 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
   @override
   Future<void> close() {
     _pollingTimer?.cancel();
+    _deadlineTimer?.cancel();
     return super.close();
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:scam_image_mobile/features/scan/domain/entities/analysis_task.dart';
@@ -42,6 +43,110 @@ void main() {
   setUp(() {
     repo = MockScanRepo();
   });
+
+  test(
+    'duplicate upload and active polling do not submit the same image twice',
+    () async {
+      final pending = Completer<String>();
+      when(
+        () => repo.submitImage(
+          filePath: any(named: 'filePath'),
+          scanName: any(named: 'scanName'),
+        ),
+      ).thenAnswer((_) => pending.future);
+      final bloc = ScanBloc(repository: repo);
+      bloc.add(CropConfirmed('/image.jpg'));
+      await bloc.stream.firstWhere((state) => state is ScanUploading);
+      bloc.add(CropConfirmed('/image.jpg'));
+      await Future<void>.delayed(Duration.zero);
+      verify(
+        () => repo.submitImage(filePath: '/image.jpg', scanName: null),
+      ).called(1);
+      pending.complete('task-duplicate');
+      await bloc.stream.firstWhere((state) => state is ScanPolling);
+      bloc.add(CropConfirmed('/image.jpg'));
+      await Future<void>.delayed(Duration.zero);
+      verifyNever(
+        () => repo.submitImage(filePath: '/image.jpg', scanName: null),
+      );
+      bloc.add(AnalysisCancelled());
+      await bloc.stream.firstWhere((state) => state is ScanInitial);
+      final ready = bloc.stream.firstWhere((state) => state is ScanPolling);
+      bloc.add(CropConfirmed('/image.jpg'));
+      await ready;
+      verify(
+        () => repo.submitImage(filePath: '/image.jpg', scanName: null),
+      ).called(1);
+      await bloc.close();
+    },
+  );
+
+  test(
+    'timeout retry resumes canonical task without uploading again',
+    () async {
+      _stubSubmit(repo, 'existing-task');
+      final bloc = ScanBloc(repository: repo, timeoutSeconds: 3);
+      await _startScan(bloc);
+      bloc.add(AnalysisPollTick('existing-task'));
+      await bloc.stream.firstWhere((state) => state is ScanTimeout);
+      expect((bloc.state as ScanTimeout).taskId, 'existing-task');
+      final resumed = bloc.stream.firstWhere((state) => state is ScanPolling);
+      bloc.add(AnalysisResumed('existing-task'));
+      await resumed;
+      expect((bloc.state as ScanPolling).taskId, 'existing-task');
+      verify(
+        () => repo.submitImage(filePath: '/image.jpg', scanName: null),
+      ).called(1);
+      await bloc.close();
+    },
+  );
+
+  test('wall clock deadline ends scan even without any polling tick', () async {
+    _stubSubmit(repo, 'deadline-task');
+    final bloc = ScanBloc(
+      repository: repo,
+      timeoutSeconds: 0,
+      pollInterval: const Duration(hours: 1),
+    );
+    final timedOut = bloc.stream.firstWhere((state) => state is ScanTimeout);
+    bloc.add(CropConfirmed('/image.jpg'));
+    await timedOut.timeout(const Duration(seconds: 1));
+    expect((bloc.state as ScanTimeout).taskId, 'deadline-task');
+    verifyNever(() => repo.getAnalysisStatus(any()));
+    await bloc.close();
+  });
+
+  testWidgets(
+    'polling survives background and resume without submitting again',
+    (tester) async {
+      await tester.runAsync(() async {
+        _stubSubmit(repo, 'lifecycle-task');
+        when(() => repo.getAnalysisStatus('lifecycle-task')).thenAnswer(
+          (_) async => _task(
+            'lifecycle-task',
+            AnalysisTaskStatus.completed,
+            progress: 100,
+          ),
+        );
+        final bloc = ScanBloc(repository: repo);
+        await _startScan(bloc);
+        tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+        tester.binding.handleAppLifecycleStateChanged(
+          AppLifecycleState.resumed,
+        );
+        final completed = bloc.stream.firstWhere(
+          (state) => state is ScanCompleted,
+        );
+        bloc.add(AnalysisPollTick('lifecycle-task'));
+        await completed;
+        expect((bloc.state as ScanCompleted).taskId, 'lifecycle-task');
+        verify(
+          () => repo.submitImage(filePath: '/image.jpg', scanName: null),
+        ).called(1);
+        await bloc.close();
+      });
+    },
+  );
 
   group('CropConfirmed', () {
     blocTest<ScanBloc, ScanState>(

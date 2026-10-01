@@ -1,3 +1,5 @@
+import '../../../../core/errors/exceptions.dart';
+
 import '../../domain/entities/scan_history_item.dart';
 import '../../domain/repositories/history_repository.dart';
 import '../datasources/history_remote_datasource.dart';
@@ -38,10 +40,14 @@ class HistoryRepositoryImpl implements HistoryRepository {
         keyword: keyword,
       );
       if (!hasFilters) {
-        await localDataSource.cacheHistory(remoteData);
+        try {
+          await localDataSource.cacheHistory(remoteData);
+        } catch (_) {
+          // Cache failure must not discard a successful authoritative response.
+        }
       }
       return remoteData;
-    } catch (_) {
+    } on NetworkException {
       if (!hasFilters) {
         final localData = await localDataSource.getHistory();
         if (localData.isNotEmpty) return localData;

@@ -65,6 +65,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
     ReportSubmitted event,
     Emitter<ReportState> emit,
   ) async {
+    if (state is ReportSubmitting) return;
     emit(const ReportSubmitting());
     try {
       await repository.submitReport(event.report);

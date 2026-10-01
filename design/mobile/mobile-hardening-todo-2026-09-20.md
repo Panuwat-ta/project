@@ -6,7 +6,7 @@
 
 ## GitHub Issues cross-check — 2026-10-02
 
-ณ cross-check ล่าสุด 2026-10-02 Issues #71–#76 ปิดแล้ว; #77–#88 ยังเปิด. ข้อความสถานะเวลา 01:53 ด้านล่างเป็นประวัติเดิมก่อนปิด Issues #71–#76. #88 เป็น roadmap หลักและอ้างอิง hardening gates ในรายการด้านล่าง:
+ณ cross-check ล่าสุด 2026-10-02 Issues #71–#76 และ #82 ปิดแล้ว; #77–#81 และ #83–#88 ยังเปิด. ข้อความสถานะเวลา 01:53 ด้านล่างเป็นประวัติเดิมก่อนปิด Issues #71–#76. #88 เป็น roadmap หลักและอ้างอิง hardening gates ในรายการด้านล่าง:
 
 | Issue | Checklist section |
 |---|---|
@@ -286,18 +286,20 @@
 
 ## 8. P1 — Reliability / Offline / Error recovery
 
-- [ ] airplane/offline ตอนเปิดแอปมี fallback ที่เข้าใจได้
-- [ ] network หายระหว่าง upload/scan polling recover ได้
-- [ ] scan timeout ไม่ auto-redirect ทำ context หาย
-- [ ] Retry ไม่สร้าง duplicate task โดยไม่ตั้งใจ
-- [ ] stale async response ไม่เขียนทับ scan ใหม่
-- [ ] concurrent polling ถูกจำกัดและไม่ leak timer
-- [ ] History remote fail -> cache fallback ตาม contract
-- [ ] authoritative server error ไม่ถูกแทนด้วย stale cache แบบทำให้เข้าใจผิด
-- [ ] malformed JSON/partial response ไม่ crash
-- [ ] empty/missing evidence มี explicit state
-- [ ] delete/report/account action failure ไม่แสดง success ก่อน server confirm
-- [ ] app resume/background ระหว่าง scan ไม่ทำ state เพี้ยน
+- [ ] airplane/offline จริงบนเครื่องต้อง native QA (#77); automated network/cache recovery ผ่านแล้ว
+- [x] network หายระหว่าง upload/scan polling recover ได้
+- [x] scan timeout ไม่ auto-redirect ทำ context หาย
+- [x] Retry ไม่สร้าง duplicate task โดยไม่ตั้งใจ
+- [x] stale async response ไม่เขียนทับ scan ใหม่
+- [x] concurrent polling ถูกจำกัดและไม่ leak timer
+- [x] History remote fail -> cache fallback ตาม contract
+- [x] authoritative server error ไม่ถูกแทนด้วย stale cache แบบทำให้เข้าใจผิด
+- [x] malformed JSON/partial response ไม่ crash
+- [x] empty/missing evidence มี explicit state
+- [x] delete/report/account action failure ไม่แสดง success ก่อน server confirm
+- [x] Flutter binding paused/resumed ระหว่าง scan ไม่เปลี่ยน task; physical recreation/soak อยู่ #81
+
+หลักฐาน: [Async recovery](mobile-async-recovery-2026-10-02.md); full suite 684/684, branch 83.13%, focused Scan รวม lifecycle 20/20
 
 ## 9. P1 — Performance / Resource usage
 

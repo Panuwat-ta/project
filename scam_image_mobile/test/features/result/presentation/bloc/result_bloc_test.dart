@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -135,6 +136,86 @@ void main() {
       expect: () => [ResultLoaded(tResult)],
     );
   });
+
+  for (final oldFails in [false, true]) {
+    test(
+      'new result is not overwritten by stale load failure=$oldFails',
+      () async {
+        final old = Completer<AnalysisResult>();
+        when(
+          () => mockRepo.getAnalysisResult('old'),
+        ).thenAnswer((_) => old.future);
+        when(
+          () => mockRepo.getAnalysisResult('new'),
+        ).thenAnswer((_) async => tResult);
+        final bloc = ResultBloc(repository: mockRepo);
+        bloc.add(const ResultLoadRequested('old'));
+        await bloc.stream.firstWhere((state) => state is ResultLoading);
+        bloc.add(const ResultLoadRequested('new'));
+        await bloc.stream.firstWhere((state) => state is ResultLoaded);
+        if (oldFails) {
+          old.completeError(Exception('old failure'));
+        } else {
+          old.complete(
+            AnalysisResult(
+              scanId: 'old',
+              taskId: 'old',
+              status: 'completed',
+              riskScore: 1,
+              riskLevel: RiskLevel.low,
+              summary: 'old result',
+              createdAt: DateTime(2026),
+              factors: const [],
+            ),
+          );
+        }
+        await Future<void>.delayed(Duration.zero);
+        expect((bloc.state as ResultLoaded).result, tResult);
+        await bloc.close();
+      },
+    );
+  }
+
+  test(
+    'concurrent result poll events request once and stale task is ignored',
+    () async {
+      final pending = Completer<AnalysisResult>();
+      when(
+        () => mockRepo.getAnalysisResult('task-1'),
+      ).thenAnswer((_) => pending.future);
+      final bloc = ResultBloc(repository: mockRepo);
+      bloc.add(const ResultPollRequested('task-1'));
+      bloc.add(const ResultPollRequested('task-1'));
+      bloc.add(const ResultPollRequested('other-task'));
+      await Future<void>.delayed(Duration.zero);
+      verify(() => mockRepo.getAnalysisResult('task-1')).called(1);
+      verifyNever(() => mockRepo.getAnalysisResult('other-task'));
+      pending.complete(tResult);
+      await bloc.stream.firstWhere((state) => state is ResultLoaded);
+      await bloc.close();
+    },
+  );
+
+  test(
+    'leaving result screen invalidates request and ignores queued polls',
+    () async {
+      final pending = Completer<AnalysisResult>();
+      when(
+        () => mockRepo.getAnalysisResult('task-1'),
+      ).thenAnswer((_) => pending.future);
+      final bloc = ResultBloc(repository: mockRepo);
+      bloc.add(const ResultLoadRequested('task-1'));
+      await bloc.stream.firstWhere((state) => state is ResultLoading);
+      bloc.add(const ResultPollingStopped('task-1'));
+      await Future<void>.delayed(Duration.zero);
+      bloc.add(const ResultPollRequested('task-1'));
+      pending.complete(tResult);
+      await Future<void>.delayed(Duration.zero);
+      expect(bloc.state, isA<ResultLoading>());
+      verify(() => mockRepo.getAnalysisResult('task-1')).called(1);
+      await bloc.close();
+    },
+  );
 
   group('ResultState equality', () {
     test('ResultInitial instances are equal', () {

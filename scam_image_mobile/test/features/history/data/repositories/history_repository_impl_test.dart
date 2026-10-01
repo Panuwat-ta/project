@@ -97,4 +97,26 @@ void main() {
     );
     verifyNever(() => local.getHistory());
   });
+  for (final error in [
+    const AuthException('expired'),
+    const ServerException('not found', statusCode: 404),
+    const ServerException('unavailable', statusCode: 503),
+    const ValidationException('malformed response'),
+  ]) {
+    test('authoritative $error is not replaced with cached history', () async {
+      stubRemote(remote, answer: (_) => Future.error(error));
+      await expectLater(repository.getScanHistory(), throwsA(same(error)));
+      verifyNever(() => local.getHistory());
+    });
+  }
+
+  test('cache write failure preserves successful fresh history', () async {
+    final fresh = [item('fresh')];
+    stubRemote(remote, answer: (_) async => fresh);
+    when(
+      () => local.cacheHistory(fresh),
+    ).thenThrow(const CacheException('disk full'));
+    expect((await repository.getScanHistory()).single.scanId, 'fresh');
+    verifyNever(() => local.getHistory());
+  });
 }

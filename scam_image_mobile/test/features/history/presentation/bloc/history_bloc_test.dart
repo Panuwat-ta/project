@@ -39,6 +39,30 @@ void main() {
     mockRepo = MockHistoryRepository();
   });
 
+  test('late history search cannot overwrite latest query', () async {
+    final old = Completer<List<ScanHistoryItem>>();
+    when(
+      () => mockRepo.getScanHistory(
+        page: any(named: 'page'),
+        limit: any(named: 'limit'),
+        keyword: any(named: 'keyword'),
+      ),
+    ).thenAnswer(
+      (call) => call.namedArguments[#keyword] == 'old'
+          ? old.future
+          : Future.value([tItems.last]),
+    );
+    final bloc = HistoryBloc(repository: mockRepo);
+    bloc.add(const HistorySearched('old'));
+    await Future<void>.delayed(Duration.zero);
+    bloc.add(const HistorySearched('LOW'));
+    await bloc.stream.firstWhere((state) => state is HistoryDataLoaded);
+    old.complete([tItems.first]);
+    await Future<void>.delayed(Duration.zero);
+    expect((bloc.state as HistoryDataLoaded).items.single.scanId, 'scan-2');
+    await bloc.close();
+  });
+
   group('HistoryLoaded', () {
     blocTest<HistoryBloc, HistoryState>(
       'emits [HistoryLoading, HistoryDataLoaded] when items are available',

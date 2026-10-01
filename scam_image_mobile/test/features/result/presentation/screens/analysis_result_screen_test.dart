@@ -21,7 +21,10 @@ class _MockResultRepository extends Mock implements ResultRepository {}
 class _MockHistoryRepository extends Mock implements HistoryRepository {}
 
 class _MockResultBloc extends MockBloc<ResultEvent, ResultState>
-    implements ResultBloc {}
+    implements ResultBloc {
+  @override
+  bool get isClosed => false;
+}
 
 const _shareChannel = MethodChannel('dev.fluttercommunity.plus/share');
 

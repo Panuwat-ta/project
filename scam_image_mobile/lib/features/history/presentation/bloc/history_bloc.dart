@@ -88,6 +88,7 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
 
   final HistoryRepository repository;
   String _currentKeyword = '';
+  int _fetchGeneration = 0;
 
   Future<void> _onLoaded(
     HistoryLoaded event,
@@ -124,6 +125,7 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
   ) async {
     try {
       await repository.deleteScanHistoryItem(event.scanId);
+      _fetchGeneration++;
       // Remove from current list only after the server confirms deletion.
       if (state is HistoryDataLoaded) {
         final current = (state as HistoryDataLoaded).items;
@@ -149,6 +151,7 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     Emitter<HistoryState> emit, {
     String? keyword,
   }) async {
+    final generation = ++_fetchGeneration;
     try {
       const pageSize = 100;
       final items = <ScanHistoryItem>[];
@@ -161,6 +164,7 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
           limit: pageSize,
           keyword: keyword,
         );
+        if (generation != _fetchGeneration || isClosed) return;
         final before = items.length;
         for (final item in batch) {
           if (seenScanIds.add(item.scanId)) items.add(item);
@@ -182,6 +186,7 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
         emit(HistoryDataLoaded(filtered));
       }
     } catch (e) {
+      if (generation != _fetchGeneration || isClosed) return;
       emit(HistoryError(e.toString()));
     }
   }

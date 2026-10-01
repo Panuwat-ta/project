@@ -31,10 +31,21 @@ class AnalysisResultScreen extends StatefulWidget {
 }
 
 class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
+  late final ResultBloc _resultBloc;
+
+  @override
+  void dispose() {
+    if (!_resultBloc.isClosed) {
+      _resultBloc.add(ResultPollingStopped(widget.taskId));
+    }
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
-    context.read<ResultBloc>().add(ResultLoadRequested(widget.taskId));
+    _resultBloc = context.read<ResultBloc>();
+    _resultBloc.add(ResultLoadRequested(widget.taskId));
   }
 
   @override

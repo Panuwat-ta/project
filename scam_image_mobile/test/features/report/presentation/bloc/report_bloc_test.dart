@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -137,6 +138,30 @@ void main() {
       ],
     );
   });
+
+  test(
+    'duplicate report while pending submits once and failure can retry',
+    () async {
+      final pending = Completer<void>();
+      var calls = 0;
+      when(() => mockRepo.submitReport(any())).thenAnswer((_) {
+        calls++;
+        return calls == 1 ? pending.future : Future<void>.value();
+      });
+      final bloc = ReportBloc(repository: mockRepo);
+      bloc.add(const ReportSubmitted(tReport));
+      await bloc.stream.firstWhere((state) => state is ReportSubmitting);
+      bloc.add(const ReportSubmitted(tReport));
+      await Future<void>.delayed(Duration.zero);
+      expect(calls, 1);
+      pending.completeError(const NetworkException('offline'));
+      await bloc.stream.firstWhere((state) => state is ReportError);
+      bloc.add(const ReportSubmitted(tReport));
+      await bloc.stream.firstWhere((state) => state is ReportSuccess);
+      expect(calls, 2);
+      await bloc.close();
+    },
+  );
 
   group('ReportState equality', () {
     test('ReportInitial instances are equal', () {
