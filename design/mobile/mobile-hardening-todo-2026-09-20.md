@@ -128,18 +128,20 @@
 
 ## 2. P1 — Branch Coverage NFR-09 >= 80%
 ### 2.1 Presentation screens ที่ยังมี missed branches สูง
-- [ ] `settings_screen.dart` ลด missed branches ที่เหลือ
-- [ ] `image_crop_screen.dart` เพิ่ม branch tests โดยระวัง native plugin lifecycle
-- [ ] `history_detail_screen.dart` เพิ่ม behavior coverage หลังปิด overflow
+- [x] `settings_screen.dart` branch 62/68 (91.18%); ครอบคลุม logout cancel/confirm, language/theme/cache, current-user restore loading/success/null/error, system theme และ profile/privacy/notifications navigation; ยังมี defensive/repository branches
+- [ ] `image_crop_screen.dart` branch 38/55 (69.09%); ครอบคลุม crop success/cancel/error, เปลี่ยนภาพ, notification, zoom/reset, discard cancel/confirm; rotate utility มี test แยกแต่ widget/file IO, mounted/transforming และ image-load error ยังไม่ครอบคลุม; native UI ยังไม่ทดสอบบนอุปกรณ์จริง
+- [x] `history_detail_screen.dart` branch 44/53 (83.02%); ครอบคลุม unavailable evidence, report/heatmap/share navigation และ delete cancel/confirm/success/failure; external share chooser ยังไม่ได้ทดสอบแบบ native
 - [x] `notifications_screen.dart` หลังเปลี่ยน harness: branch 45/51 (88.24%); line 193/204 (94.61%)
-- [ ] `analysis_loading_screen.dart` เพิ่ม retry/timeout/status/render branches
-- [ ] `report_scam_screen.dart` เพิ่ม selector/form/error/success branches
-- [ ] `home_screen.dart` เพิ่ม permission/history/loading/error branches
-- [ ] `user_profile_screen.dart` เพิ่ม loading/fallback/update/error branches
-- [ ] `privacy_consent_screen.dart` เพิ่ม consent warning/update/error branches
-- [ ] `history_screen.dart` เพิ่ม filter/search/delete/empty/error branches
-- [ ] `analysis_result_screen.dart` เพิ่ม partial evidence/action/navigation branches
-- [ ] `heatmap_viewer_screen.dart` เพิ่ม unavailable/toggle/slider/error branches
+- [ ] `analysis_loading_screen.dart` branch 48/53 (90.57%); ครอบคลุม retry/timeout, polling progress และ backend status ทุกขั้น, cancel/resume/background, ScanCompleted ไปผลตรวจ, notification, แก้รูปและไป History; ยังเหลือ fallback/error-image/reduced-motion branches
+- [x] `report_scam_screen.dart` branch 57/69 (82.61%); ครอบคลุม required fields, custom category/platform validation และ trimmed submission, research consent, canonical category, network error/success และ scan selector error/retry
+- [x] `home_screen.dart` branch 31/36 (86.11%); ครอบคลุม permission denied/retry/error, history empty/recent และ result/history navigation
+- [x] `user_profile_screen.dart` branch 32/36 (88.89%); ครอบคลุม authenticated/restored/fallback identity, unsupported action และ delete failure; แก้ controller lifecycle
+- [x] `privacy_consent_screen.dart` branch 18/24 (75.00%); ครอบคลุม consent confirm/cancel, export success/unavailable และ delete confirm/unavailable
+- [ ] `history_screen.dart` branch 42/50 (84.00%); ครอบคลุม empty/error/retry, notification/result navigation, risk filter ทั้งผลตรงและไม่มีรายการ, search debounce/clear, visible count และ confirm delete cancel/success; gesture ปัดจริงกับ refresh callback ยังไม่เสถียรใน widget harness
+- [x] `analysis_result_screen.dart` branch 52/55 (94.55%); ครอบคลุม pending/unavailable XAI, missing/score-only/partial visual evidence, ResultError, report/detail/share/heatmap/notification navigation, previous/home navigation และ delete cancel/success/failure; network image error กับ disposed-context branch ยังไม่ครอบคลุม
+- [x] `heatmap_viewer_screen.dart` branch 21/23 (91.30%); ครอบคลุม unavailable/toggle/intensity/zoom/reset; native image error ยังไม่จำลองใน widget test
+
+ผล LCOV ล่าสุดของ Issue #73: suite branch 1,244/1,548 (80.36%), line 5,007/5,679 (88.17%); full suite 496 tests ผ่าน, analyzer ผ่าน. ปิด Issue ได้โดยแนบไฟล์/branch ที่ยังไม่ cover และเหตุผลจากผลตรวจไว้ใน issue comment.
 
 ### 2.2 Core/logic coverage ที่ยังควรเก็บ
 - [ ] `app_router.dart` cover auth/onboarding/deep-link/error branches เพิ่ม

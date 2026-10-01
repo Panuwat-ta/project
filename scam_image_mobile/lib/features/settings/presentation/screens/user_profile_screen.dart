@@ -66,7 +66,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
   Future<void> _deleteAccount() async {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final passwordController = TextEditingController();
+    var passwordValue = '';
     final password = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -86,7 +86,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             ),
             const SizedBox(height: 16),
             TextField(
-              controller: passwordController,
+              onChanged: (value) => passwordValue = value,
               obscureText: true,
               decoration: InputDecoration(
                 labelText: 'auth_password'.tr(ctx),
@@ -104,9 +104,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.danger),
             onPressed: () {
-              if (passwordController.text.isNotEmpty) {
-                Navigator.pop(ctx, passwordController.text);
-              }
+              if (passwordValue.isNotEmpty) Navigator.pop(ctx, passwordValue);
             },
             child: Text(
               'delete'.tr(ctx),
@@ -116,7 +114,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         ],
       ),
     );
-    passwordController.dispose();
     if (password == null || !mounted) return;
 
     final settings = context.read<SettingsCubit>();

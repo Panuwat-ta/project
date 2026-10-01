@@ -25,6 +25,8 @@ class _MockHistoryBloc extends MockBloc<HistoryEvent, HistoryState>
 class _MockSettingsCubit extends MockCubit<SettingsState>
     implements SettingsCubit {}
 
+class _FakeHistoryEvent extends Fake implements HistoryEvent {}
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 /// Build the HistoryScreen inside a GoRouter so go_router navigation calls
@@ -57,6 +59,12 @@ Widget buildHistoryScreen(HistoryBloc bloc) {
           body: Center(child: Text('Detail ${state.pathParameters['id']}')),
         ),
       ),
+      GoRoute(
+        path: '/result/:id',
+        builder: (_, state) => Scaffold(
+          body: Center(child: Text('Result ${state.pathParameters['id']}')),
+        ),
+      ),
     ],
   );
 
@@ -85,6 +93,7 @@ ScanHistoryItem fakeItem({
 void main() {
   setUpAll(() {
     GoogleFonts.config.allowRuntimeFetching = false;
+    registerFallbackValue(_FakeHistoryEvent());
   });
 
   late _MockHistoryRepository mockRepo;
@@ -134,9 +143,154 @@ void main() {
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
+
+    testWidgets('notification action opens notifications', (tester) async {
+      final bloc = _MockHistoryBloc();
+      when(() => bloc.state).thenReturn(const HistoryLoading());
+      when(() => bloc.stream).thenAnswer((_) => const Stream.empty());
+
+      await tester.pumpWidget(buildHistoryScreen(bloc));
+      await tester.pump();
+      await tester.tap(find.byIcon(Icons.notifications_none));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Notifications'), findsOneWidget);
+    });
   });
 
   group('HistoryScreen — HistoryDataLoaded state', () {
+    testWidgets('tapping a history card opens its analysis result', (
+      tester,
+    ) async {
+      final bloc = _MockHistoryBloc();
+      when(() => bloc.state).thenReturn(
+        HistoryDataLoaded([
+          fakeItem(scanId: 'scan-open-result', title: 'เปิดผลตรวจรายการนี้'),
+        ]),
+      );
+      when(() => bloc.stream).thenAnswer((_) => const Stream.empty());
+
+      await tester.pumpWidget(buildHistoryScreen(bloc));
+      await tester.pump();
+      await tester.tap(find.text('เปิดผลตรวจรายการนี้'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Result scan-open-result'), findsOneWidget);
+    });
+
+    testWidgets('risk filter updates visible rows and count', (tester) async {
+      final bloc = _MockHistoryBloc();
+      when(() => bloc.state).thenReturn(
+        HistoryDataLoaded([
+          fakeItem(scanId: 'high', title: 'รายการเสี่ยงสูง'),
+          fakeItem(
+            scanId: 'low',
+            title: 'รายการความเสี่ยงต่ำ',
+            riskLevel: RiskLevel.low,
+            riskScore: 10,
+          ),
+        ]),
+      );
+      when(() => bloc.stream).thenAnswer((_) => const Stream.empty());
+
+      await tester.pumpWidget(buildHistoryScreen(bloc));
+      await tester.pump();
+      expect(find.text('รายการเสี่ยงสูง'), findsOneWidget);
+      expect(find.text('รายการความเสี่ยงต่ำ'), findsOneWidget);
+
+      await tester.tap(find.byTooltip('กรองผลลัพธ์'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('ความเสี่ยงสูง').last);
+      await tester.pumpAndSettle();
+
+      expect(find.text('รายการเสี่ยงสูง'), findsOneWidget);
+      expect(find.text('รายการความเสี่ยงต่ำ'), findsNothing);
+      expect(find.text('1 รายการ'), findsOneWidget);
+    });
+
+    testWidgets('risk filter shows an empty state when no scans match', (
+      tester,
+    ) async {
+      final bloc = _MockHistoryBloc();
+      when(() => bloc.state).thenReturn(
+        HistoryDataLoaded([
+          fakeItem(
+            scanId: 'only-medium',
+            title: 'ผลตรวจความเสี่ยงปานกลาง',
+            riskLevel: RiskLevel.medium,
+            riskScore: 55,
+          ),
+        ]),
+      );
+      when(() => bloc.stream).thenAnswer((_) => const Stream.empty());
+
+      await tester.pumpWidget(buildHistoryScreen(bloc));
+      await tester.pump();
+      await tester.tap(find.byTooltip('กรองผลลัพธ์'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('ความเสี่ยงสูง').last);
+      await tester.pumpAndSettle();
+
+      expect(find.text('ไม่พบผลลัพธ์'), findsOneWidget);
+      expect(find.text('ไม่พบประวัติระดับ ความเสี่ยงสูง'), findsOneWidget);
+
+      await tester.tap(find.byTooltip('กรองผลลัพธ์'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('ความเสี่ยงต่ำ').last);
+      await tester.pumpAndSettle();
+
+      expect(find.text('ไม่พบประวัติระดับ ความเสี่ยงต่ำ'), findsOneWidget);
+      expect(find.text('ผลตรวจความเสี่ยงปานกลาง'), findsNothing);
+    });
+
+    testWidgets('search debounce dispatches the entered keyword', (
+      tester,
+    ) async {
+      final bloc = _MockHistoryBloc();
+      when(
+        () => bloc.state,
+      ).thenReturn(HistoryDataLoaded([fakeItem(title: 'รายการเดิม')]));
+      when(() => bloc.stream).thenAnswer((_) => const Stream.empty());
+
+      await tester.pumpWidget(buildHistoryScreen(bloc));
+      await tester.pump();
+      await tester.enterText(find.byType(TextFormField), 'คำค้นทดสอบ');
+      await tester.pump(const Duration(milliseconds: 400));
+
+      verify(
+        () => bloc.add(
+          any(
+            that: isA<HistorySearched>().having(
+              (event) => event.keyword,
+              'keyword',
+              'คำค้นทดสอบ',
+            ),
+          ),
+        ),
+      ).called(1);
+
+      await tester.tap(find.byIcon(Icons.clear));
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(
+        tester
+            .widget<TextFormField>(find.byType(TextFormField))
+            .controller!
+            .text,
+        '',
+      );
+      verify(
+        () => bloc.add(
+          any(
+            that: isA<HistorySearched>().having(
+              (event) => event.keyword,
+              'keyword',
+              '',
+            ),
+          ),
+        ),
+      ).called(1);
+    });
+
     testWidgets('shows item title when list has one item', (tester) async {
       final item = fakeItem(title: 'สลิปโอนเงิน');
 
@@ -221,9 +375,74 @@ void main() {
 
       bloc.close();
     });
+
+    testWidgets('delete confirmation can cancel or delete a history item', (
+      tester,
+    ) async {
+      const scanId = 'delete-confirmation-scan';
+      final item = fakeItem(scanId: scanId, title: 'รายการสำหรับลบ');
+      when(
+        () => mockRepo.getScanHistory(
+          page: any(named: 'page'),
+          limit: any(named: 'limit'),
+          riskLevel: any(named: 'riskLevel'),
+          fromDate: any(named: 'fromDate'),
+          toDate: any(named: 'toDate'),
+          keyword: any(named: 'keyword'),
+        ),
+      ).thenAnswer((_) async => [item]);
+      when(
+        () => mockRepo.deleteScanHistoryItem(scanId),
+      ).thenAnswer((_) async {});
+      final bloc = HistoryBloc(repository: mockRepo);
+      await tester.pumpWidget(buildHistoryScreen(bloc));
+      await tester.pumpAndSettle();
+
+      Finder dismissibleForItem() => find.ancestor(
+        of: find.textContaining('รายการสำหรับลบ'),
+        matching: find.byType(Dismissible),
+      );
+
+      var dismissible = tester.widget<Dismissible>(dismissibleForItem());
+      final cancelFuture = dismissible.confirmDismiss!(
+        DismissDirection.endToStart,
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('ยกเลิก'));
+      await tester.pumpAndSettle();
+      expect(await cancelFuture, isFalse);
+      verifyNever(() => mockRepo.deleteScanHistoryItem(scanId));
+
+      dismissible = tester.widget<Dismissible>(dismissibleForItem());
+      final deleteFuture = dismissible.confirmDismiss!(
+        DismissDirection.endToStart,
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('ลบ').last);
+      await tester.pumpAndSettle();
+      expect(await deleteFuture, isTrue);
+      verify(() => mockRepo.deleteScanHistoryItem(scanId)).called(1);
+      expect(find.text('ยังไม่มีประวัติการตรวจสอบ'), findsOneWidget);
+
+      bloc.close();
+    });
   });
 
   group('HistoryScreen — HistoryError state', () {
+    testWidgets('retry from error requests history again', (tester) async {
+      final bloc = _MockHistoryBloc();
+      when(
+        () => bloc.state,
+      ).thenReturn(const HistoryError('โหลดประวัติไม่ได้'));
+      when(() => bloc.stream).thenAnswer((_) => const Stream.empty());
+
+      await tester.pumpWidget(buildHistoryScreen(bloc));
+      await tester.pump();
+      await tester.tap(find.text('ลองอีกครั้ง'));
+
+      verify(() => bloc.add(any(that: isA<HistoryLoaded>()))).called(2);
+    });
+
     testWidgets('shows error widget when repository throws', (tester) async {
       when(
         () => mockRepo.getScanHistory(
