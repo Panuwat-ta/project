@@ -523,6 +523,13 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
   }
 
   Widget _buildImageAnomalyCard(bool isDark, AnalysisResult result) {
+    final heatmapUrl = result.heatmapUrl?.trim();
+    final imageUrl = result.imageUrl?.trim();
+    final previewUrl = heatmapUrl?.isNotEmpty == true
+        ? heatmapUrl
+        : imageUrl?.isNotEmpty == true
+        ? imageUrl
+        : null;
     final visuals = result.factors.where((f) => f.type == 'visual');
     final hasVisualFactor = visuals.isNotEmpty;
     final visualFactor = hasVisualFactor
@@ -591,11 +598,11 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                 ),
                 child: Stack(
                   children: [
-                    if (result.heatmapUrl != null || result.imageUrl != null)
+                    if (previewUrl != null)
                       ClipRRect(
                         borderRadius: AppRadius.smBorder,
                         child: CachedNetworkImage(
-                          imageUrl: (result.heatmapUrl ?? result.imageUrl)!,
+                          imageUrl: previewUrl,
                           fit: BoxFit.cover,
                           width: 120,
                           height: 120,
@@ -617,24 +624,28 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                             ),
                           ),
                         ),
-                      )
-                    else
-                      const Center(
-                        child: Icon(
-                          Icons.image,
-                          color: Colors.white54,
-                          size: 40,
+                      ),
+                    if (previewUrl == null)
+                      Center(
+                        child: Text(
+                          'result_image_unavailable'.tr(context),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: Colors.white54),
                         ),
                       ),
-                    Positioned(
-                      top: 8,
-                      left: 8,
-                      child: _buildPill(
-                        'HEATMAP',
-                        AppColors.successDarkForeground,
-                        AppColors.successDarkText,
+                    if (previewUrl != null)
+                      Positioned(
+                        top: 8,
+                        left: 8,
+                        child: _buildPill(
+                          (heatmapUrl?.isNotEmpty == true
+                                  ? 'result_heatmap_label'
+                                  : 'result_source_image_label')
+                              .tr(context),
+                          AppColors.slate900,
+                          Colors.white,
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),

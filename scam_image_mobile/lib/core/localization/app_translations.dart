@@ -111,6 +111,9 @@ class AppTranslations {
       'result_evidence_score_only':
           'มีคะแนนจากระบบ แต่ไม่มีรายละเอียดเพิ่มเติม',
       'result_score_out_of_100': 'คะแนนจาก 100',
+      'result_heatmap_label': 'HEATMAP',
+      'result_source_image_label': 'ภาพต้นฉบับ',
+      'result_image_unavailable': 'ไม่มีภาพตัวอย่าง',
       // Report Screen
       'report_title': 'แจ้งรายงานการหลอกลวง',
       'report_select_scan_title': 'เลือกผลตรวจที่ต้องการรายงาน',
@@ -194,6 +197,25 @@ class AppTranslations {
       'auth_terms_suffix': ' ของระบบ ScamGuard',
       'auth_terms_error': 'กรุณายอมรับเงื่อนไขการใช้งาน',
       'auth_has_account': 'มีบัญชีอยู่แล้ว? ',
+      'auth_error_credentials': 'อีเมลหรือรหัสผ่านไม่ถูกต้อง',
+      'auth_error_network':
+          'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาตรวจสอบเครือข่าย',
+      'auth_error_email_registered': 'อีเมลนี้ถูกใช้งานแล้ว',
+      'auth_error_generic': 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
+      'onboarding_badge': 'ตรวจสอบความปลอดภัย',
+      'onboarding_title': 'ตรวจสอบรูปภาพเพื่อความปลอดภัย',
+      'onboarding_disclaimer':
+          'แอปพลิเคชันนี้ช่วยประเมินความเสี่ยงเบื้องต้นของรูปภาพ ผลลัพธ์เป็นการวิเคราะห์ทางเทคนิคเท่านั้น ไม่ใช่คำตัดสินทางกฎหมาย โปรดใช้วิจารณญาณในการใช้งาน',
+      'onboarding_terms_title': 'ยอมรับเงื่อนไขการใช้งาน',
+      'onboarding_terms_subtitle': 'อ่านข้อกำหนดและนโยบายความเป็นส่วนตัว',
+      'onboarding_research_title': 'ยินยอมให้นำข้อมูลไปปรับปรุงระบบ',
+      'onboarding_research_subtitle':
+          'ข้อมูลของคุณจะถูกเก็บเป็นความลับเพื่อใช้พัฒนาความแม่นยำของ AI',
+      'onboarding_start': 'เริ่มใช้งาน',
+      'onboarding_version_note': 'ความปลอดภัยของคุณคือสิ่งสำคัญ',
+      'splash_tagline': 'ตรวจจับรูปภาพหลอกลวง',
+      'splash_loading': 'ตรวจสอบความปลอดภัย...',
+      'app_version': 'ScamGuard v1.0.0',
       // Loading
       'loading_title': 'กำลังวิเคราะห์ความปลอดภัย',
       'loading_subtitle': 'กรุณารอครู่หนึ่ง ระบบกำลังประมวลผลด้วย AI',
@@ -314,10 +336,10 @@ class AppTranslations {
       'result_suspicious_word_3': 'คลิกที่ลิงก์',
       'result_ocr_analysis_desc':
           'พบรูปแบบประโยคเร่งเร้าและสร้างความตื่นตระหนก ซึ่งเป็นลักษณะเฉพาะของการหลอกลวงแบบ Phishing',
-      'result_accuracy': 'ความแม่นยำ',
-      'result_first_detected': 'ตรวจพบครั้งแรก',
+      'result_accuracy': 'คะแนนความเสี่ยงข้อความ',
+      'result_first_detected': 'วันที่วิเคราะห์',
       'result_sample_date': '12 ม.ค. 2567',
-      'result_recurring': 'จำนวนที่พบซ้ำ',
+      'result_recurring': 'รายละเอียดการตรวจสอบแหล่งที่มา',
       'result_sample_count': '42 ครั้ง',
       'result_related_links': 'ลิงก์ที่เกี่ยวข้องและรายงาน:',
       'result_visual_analysis': 'ตรวจจับความผิดปกติ',
@@ -494,6 +516,9 @@ class AppTranslations {
       'result_evidence_score_only':
           'A score is available, but no additional detail was provided',
       'result_score_out_of_100': 'out of 100',
+      'result_heatmap_label': 'HEATMAP',
+      'result_source_image_label': 'Source image',
+      'result_image_unavailable': 'No preview image available',
       // Report Screen
       'report_title': 'Report Scam',
       'report_select_scan_title': 'Select a scan to report',
@@ -579,6 +604,25 @@ class AppTranslations {
       'auth_terms_suffix': ' of ScamGuard',
       'auth_terms_error': 'Please accept terms of service',
       'auth_has_account': 'Already have an account? ',
+      'auth_error_credentials': 'Email or password is incorrect',
+      'auth_error_network':
+          'Could not connect to the server. Check your network and try again.',
+      'auth_error_email_registered': 'This email is already registered',
+      'auth_error_generic': 'Something went wrong. Please try again.',
+      'onboarding_badge': 'Security check',
+      'onboarding_title': 'Check images for safety',
+      'onboarding_disclaimer':
+          'This app helps assess image risk. Results are a technical analysis, not a legal judgment. Please use your own judgment.',
+      'onboarding_terms_title': 'Accept the Terms of Service',
+      'onboarding_terms_subtitle': 'Read the terms and privacy policy',
+      'onboarding_research_title': 'Allow data use to improve the system',
+      'onboarding_research_subtitle':
+          'Your data will be kept confidential and used to improve AI accuracy',
+      'onboarding_start': 'Get started',
+      'onboarding_version_note': 'Your security is important to us',
+      'splash_tagline': 'Scam image detection',
+      'splash_loading': 'Checking security...',
+      'app_version': 'ScamGuard v1.0.0',
       // Loading
       'loading_title': 'Analyzing Security',
       'loading_subtitle': 'Please wait, AI is processing',
@@ -699,10 +743,10 @@ class AppTranslations {
       'result_suspicious_word_3': 'Click link',
       'result_ocr_analysis_desc':
           'Found urgent and alarming phrasing typical of phishing scams.',
-      'result_accuracy': 'Accuracy',
-      'result_first_detected': 'First Detected',
+      'result_accuracy': 'Text risk score',
+      'result_first_detected': 'Analysis date',
       'result_sample_date': 'Jan 12, 2024',
-      'result_recurring': 'Recurring Reports',
+      'result_recurring': 'Source verification details',
       'result_sample_count': '42 Times',
       'result_related_links': 'Related Links & Reports:',
       'result_visual_analysis': 'Visual Anomaly Analysis',

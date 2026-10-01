@@ -27,6 +27,8 @@ AnalysisResult buildResult({
   String? ocrText = 'ข้อความ OCR',
   String? xaiExplanation = 'คำอธิบาย XAI',
   double? manipulationConfidence = 0.82,
+  String? imageUrl,
+  String? heatmapUrl,
   List<RiskFactor> factors = const [
     RiskFactor(
       type: 'textual',
@@ -58,6 +60,8 @@ AnalysisResult buildResult({
   manipulationConfidence: manipulationConfidence,
   ocrText: ocrText,
   createdAt: DateTime.utc(2026, 9, 20),
+  imageUrl: imageUrl,
+  heatmapUrl: heatmapUrl,
   factors: factors,
 );
 
@@ -150,7 +154,35 @@ void main() {
     expect(find.text('source-a'), findsOneWidget);
     expect(find.text('82%'), findsOneWidget);
     expect(find.text('คำอธิบาย XAI'), findsOneWidget);
+    expect(find.text('คะแนนความเสี่ยงข้อความ'), findsOneWidget);
+    expect(find.text('วันที่วิเคราะห์'), findsOneWidget);
+    expect(find.text('รายละเอียดการตรวจสอบแหล่งที่มา'), findsOneWidget);
+    expect(find.text('20 Sep 2026'), findsOneWidget);
+    expect(find.text('HEATMAP'), findsNothing);
+    expect(find.text('ไม่มีภาพตัวอย่าง'), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('history preview distinguishes source image from heatmap', (
+    tester,
+  ) async {
+    await pumpDetail(
+      tester,
+      result: buildResult(imageUrl: 'https://example.com/source.png'),
+    );
+    expect(find.text('ภาพต้นฉบับ'), findsOneWidget);
+    expect(find.text('HEATMAP'), findsNothing);
+    expect(find.text('ไม่มีภาพตัวอย่าง'), findsNothing);
+
+    await pumpDetail(
+      tester,
+      result: buildResult(
+        imageUrl: 'https://example.com/source.png',
+        heatmapUrl: 'https://example.com/heatmap.png',
+      ),
+    );
+    expect(find.text('HEATMAP'), findsOneWidget);
+    expect(find.text('ภาพต้นฉบับ'), findsNothing);
   });
 
   testWidgets('report action passes the current scan id to report route', (
@@ -182,7 +214,7 @@ void main() {
         .setMockMethodCallHandler(_shareChannel, (call) async {
           shareCall = call;
           return 'success';
-    });
+        });
     await pumpDetail(tester);
 
     await tester.ensureVisible(find.byIcon(Icons.share_outlined).first);

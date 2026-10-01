@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/splash_cubit.dart';
 
@@ -111,7 +112,7 @@ class _SplashScreenState extends State<SplashScreen>
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'ตรวจจับรูปภาพหลอกลวง',
+                          'splash_tagline'.tr(context),
                           style: TextStyle(
                             color: Colors.white.withValues(alpha: 0.9),
                             fontSize: 18,
@@ -156,7 +157,7 @@ class _SplashScreenState extends State<SplashScreen>
                         ),
                         const SizedBox(height: 24),
                         Text(
-                          'ตรวจสอบความปลอดภัย...',
+                          'splash_loading'.tr(context),
                           style: TextStyle(
                             color: Colors.white.withValues(alpha: 0.8),
                             fontSize: 14,
@@ -165,7 +166,7 @@ class _SplashScreenState extends State<SplashScreen>
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'ScamGuard v1.0.0',
+                          'app_version'.tr(context),
                           style: TextStyle(
                             color: Colors.white.withValues(alpha: 0.5),
                             fontSize: 12,

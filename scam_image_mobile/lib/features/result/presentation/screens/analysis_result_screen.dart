@@ -595,6 +595,13 @@ class _ResultBody extends StatelessWidget {
   }
 
   Widget _buildVisualAnomalyCard(BuildContext context) {
+    final heatmapUrl = result.heatmapUrl?.trim();
+    final imageUrl = result.imageUrl?.trim();
+    final previewUrl = heatmapUrl?.isNotEmpty == true
+        ? heatmapUrl
+        : imageUrl?.isNotEmpty == true
+        ? imageUrl
+        : null;
     final visuals = result.factors.where((f) => f.type == 'visual');
     final visualFactor = visuals.isNotEmpty
         ? visuals.first
@@ -676,9 +683,7 @@ class _ResultBody extends StatelessWidget {
 
           // Evidence image preview
           GestureDetector(
-            onTap:
-                (result.imageUrl?.trim().isNotEmpty == true ||
-                    result.heatmapUrl?.trim().isNotEmpty == true)
+            onTap: previewUrl != null
                 ? () {
                     context.push(
                       '/heatmap/${result.taskId}',
@@ -700,10 +705,9 @@ class _ResultBody extends StatelessWidget {
                     height: 200,
                     width: double.infinity,
                     color: AppColors.slate900,
-                    child:
-                        (result.heatmapUrl != null || result.imageUrl != null)
+                    child: previewUrl != null
                         ? CachedNetworkImage(
-                            imageUrl: (result.heatmapUrl ?? result.imageUrl)!,
+                            imageUrl: previewUrl,
                             fit: BoxFit.cover,
                             width: double.infinity,
                             height: 200,
@@ -738,14 +742,47 @@ class _ResultBody extends StatelessWidget {
                               ),
                             ),
                           )
-                        : const Center(
-                            child: Icon(
-                              Icons.image,
-                              color: Colors.white24,
-                              size: 48,
+                        : Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.image,
+                                  color: Colors.white24,
+                                  size: 48,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'result_image_unavailable'.tr(context),
+                                  style: const TextStyle(color: Colors.white54),
+                                ),
+                              ],
                             ),
                           ),
                   ),
+                  if (previewUrl != null)
+                    Positioned(
+                      top: 12,
+                      left: 12,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.72),
+                          borderRadius: AppRadius.pillBorder,
+                        ),
+                        child: Text(
+                          heatmapUrl?.isNotEmpty == true
+                              ? 'result_heatmap_label'.tr(context)
+                              : 'result_source_image_label'.tr(context),
+                          style: AppTypography.caption(
+                            color: Colors.white,
+                          ).copyWith(fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),

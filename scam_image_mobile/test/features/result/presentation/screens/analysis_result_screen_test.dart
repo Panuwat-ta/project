@@ -163,6 +163,64 @@ void main() {
     expect(find.text('18/100'), findsWidgets);
   });
 
+  testWidgets('preview label reflects heatmap and source image availability', (
+    tester,
+  ) async {
+    Future<void> pumpResult(AnalysisResult result) async {
+      final bloc = _MockResultBloc();
+      when(() => bloc.state).thenReturn(ResultLoaded(result));
+      when(() => bloc.stream).thenAnswer((_) => const Stream.empty());
+      final router = GoRouter(
+        initialLocation: '/result/${result.taskId}',
+        routes: [
+          GoRoute(
+            path: '/result/:id',
+            builder: (_, state) => BlocProvider<ResultBloc>.value(
+              value: bloc,
+              child: AnalysisResultScreen(taskId: state.pathParameters['id']!),
+            ),
+          ),
+        ],
+      );
+      await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+      await tester.pump();
+      router.dispose();
+    }
+
+    AnalysisResult buildPreviewResult({String? imageUrl, String? heatmapUrl}) =>
+        AnalysisResult(
+          scanId: 'scan-preview',
+          taskId: 'task-preview',
+          status: 'completed',
+          riskScore: 20,
+          riskLevel: RiskLevel.low,
+          summary: '',
+          createdAt: DateTime(2026, 9, 20),
+          imageUrl: imageUrl,
+          heatmapUrl: heatmapUrl,
+          factors: const [],
+        );
+
+    await pumpResult(
+      buildPreviewResult(heatmapUrl: 'https://example.com/heatmap.png'),
+    );
+    expect(find.text('HEATMAP'), findsOneWidget);
+    expect(find.text('ภาพต้นฉบับ'), findsNothing);
+    expect(find.text('ไม่มีภาพตัวอย่าง'), findsNothing);
+
+    await pumpResult(
+      buildPreviewResult(imageUrl: 'https://example.com/source.png'),
+    );
+    expect(find.text('HEATMAP'), findsNothing);
+    expect(find.text('ภาพต้นฉบับ'), findsOneWidget);
+    expect(find.text('ไม่มีภาพตัวอย่าง'), findsNothing);
+
+    await pumpResult(buildPreviewResult());
+    expect(find.text('HEATMAP'), findsNothing);
+    expect(find.text('ภาพต้นฉบับ'), findsNothing);
+    expect(find.text('ไม่มีภาพตัวอย่าง'), findsOneWidget);
+  });
+
   testWidgets('visual details render as evidence alerts', (tester) async {
     final bloc = _MockResultBloc();
     when(() => bloc.state).thenReturn(
@@ -427,67 +485,67 @@ void main() {
     );
   });
 
-  testWidgets('tapping result evidence opens heatmap with available image URLs', (
-    tester,
-  ) async {
-    const imageUrl = 'https://example.com/scan.png';
-    const heatmapUrl = 'https://example.com/heatmap.png';
-    final result = AnalysisResult(
-      scanId: 'scan-heatmap',
-      taskId: 'task-heatmap',
-      status: 'completed',
-      riskScore: 72,
-      riskLevel: RiskLevel.high,
-      summary: 'พบความเสี่ยง',
-      createdAt: DateTime(2026, 9, 20),
-      imageUrl: imageUrl,
-      heatmapUrl: heatmapUrl,
-      factors: const [],
-    );
-    final bloc = _MockResultBloc();
-    when(() => bloc.state).thenReturn(ResultLoaded(result));
-    when(() => bloc.stream).thenAnswer((_) => const Stream.empty());
-    final router = GoRouter(
-      initialLocation: '/result/task-heatmap',
-      routes: [
-        GoRoute(
-          path: '/result/:id',
-          builder: (_, state) => BlocProvider<ResultBloc>.value(
-            value: bloc,
-            child: AnalysisResultScreen(taskId: state.pathParameters['id']!),
-          ),
-        ),
-        GoRoute(
-          path: '/heatmap/:id',
-          builder: (_, state) => Scaffold(
-            body: Text(
-              'Heatmap ${state.pathParameters['id']} '
-              '${(state.extra! as Map<String, dynamic>)['imageUrl']} '
-              '${(state.extra! as Map<String, dynamic>)['heatmapUrl']}',
+  testWidgets(
+    'tapping result evidence opens heatmap with available image URLs',
+    (tester) async {
+      const imageUrl = 'https://example.com/scan.png';
+      const heatmapUrl = 'https://example.com/heatmap.png';
+      final result = AnalysisResult(
+        scanId: 'scan-heatmap',
+        taskId: 'task-heatmap',
+        status: 'completed',
+        riskScore: 72,
+        riskLevel: RiskLevel.high,
+        summary: 'พบความเสี่ยง',
+        createdAt: DateTime(2026, 9, 20),
+        imageUrl: imageUrl,
+        heatmapUrl: heatmapUrl,
+        factors: const [],
+      );
+      final bloc = _MockResultBloc();
+      when(() => bloc.state).thenReturn(ResultLoaded(result));
+      when(() => bloc.stream).thenAnswer((_) => const Stream.empty());
+      final router = GoRouter(
+        initialLocation: '/result/task-heatmap',
+        routes: [
+          GoRoute(
+            path: '/result/:id',
+            builder: (_, state) => BlocProvider<ResultBloc>.value(
+              value: bloc,
+              child: AnalysisResultScreen(taskId: state.pathParameters['id']!),
             ),
           ),
-        ),
-      ],
-    );
-    addTearDown(router.dispose);
+          GoRoute(
+            path: '/heatmap/:id',
+            builder: (_, state) => Scaffold(
+              body: Text(
+                'Heatmap ${state.pathParameters['id']} '
+                '${(state.extra! as Map<String, dynamic>)['imageUrl']} '
+                '${(state.extra! as Map<String, dynamic>)['heatmapUrl']}',
+              ),
+            ),
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
 
-    await tester.pumpWidget(MaterialApp.router(routerConfig: router));
-    await tester.pump();
-    final evidenceImage = find.byType(CachedNetworkImage);
-    await tester.ensureVisible(evidenceImage);
-    await tester.tap(
-      find.ancestor(
-        of: evidenceImage,
-        matching: find.byType(GestureDetector),
-      ).first,
-    );
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+      await tester.pump();
+      final evidenceImage = find.byType(CachedNetworkImage);
+      await tester.ensureVisible(evidenceImage);
+      await tester.tap(
+        find
+            .ancestor(of: evidenceImage, matching: find.byType(GestureDetector))
+            .first,
+      );
+      await tester.pumpAndSettle();
 
-    expect(
-      find.text('Heatmap task-heatmap $imageUrl $heatmapUrl'),
-      findsOneWidget,
-    );
-  });
+      expect(
+        find.text('Heatmap task-heatmap $imageUrl $heatmapUrl'),
+        findsOneWidget,
+      );
+    },
+  );
 
   testWidgets('named result can return to the previous route', (tester) async {
     final result = AnalysisResult(

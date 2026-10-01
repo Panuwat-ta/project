@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../settings/domain/entities/consent_setting.dart';
 import '../bloc/consent_cubit.dart';
 
@@ -124,7 +125,7 @@ class _OnboardingView extends StatelessWidget {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            'ตรวจสอบความปลอดภัย',
+                            'onboarding_badge'.tr(context),
                             style: TextStyle(
                               color: isDark
                                   ? Colors.white
@@ -162,7 +163,7 @@ class _OnboardingView extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'ตรวจสอบรูปภาพเพื่อความปลอดภัย',
+                    'onboarding_title'.tr(context),
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -172,7 +173,7 @@ class _OnboardingView extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'แอปพลิเคชันนี้ถูกออกแบบมาเพื่อช่วยประเมินความเสี่ยงเบื้องต้นของรูปภาพ ผลลัพธ์ที่ได้เป็นการวิเคราะห์ทางเทคนิคเท่านั้น ไม่ใช่คำตัดสินทางกฎหมาย โปรดใช้วิจารณญาณในการใช้งาน',
+                    'onboarding_disclaimer'.tr(context),
                     style: TextStyle(
                       fontSize: 14,
                       color: subtitleColor,
@@ -190,17 +191,18 @@ class _OnboardingView extends StatelessWidget {
                           _ConsentTile(
                             value: state.termsAccepted,
                             onChanged: (_) => cubit.toggleTerms(),
-                            title: 'ยอมรับเงื่อนไขการใช้งาน',
-                            subtitle: 'อ่านข้อกำหนดและนโยบายความเป็นส่วนตัว',
+                            title: 'onboarding_terms_title'.tr(context),
+                            subtitle: 'onboarding_terms_subtitle'.tr(context),
                             isDark: isDark,
                           ),
                           const SizedBox(height: 12),
                           _ConsentTile(
                             value: state.researchConsent,
                             onChanged: (_) => cubit.toggleResearch(),
-                            title: 'ยินยอมให้นำข้อมูลไปปรับปรุงระบบ',
-                            subtitle:
-                                'ข้อมูลของคุณจะถูกเก็บเป็นความลับเพื่อใช้พัฒนาความแม่นยำของ AI',
+                            title: 'onboarding_research_title'.tr(context),
+                            subtitle: 'onboarding_research_subtitle'.tr(
+                              context,
+                            ),
                             isDark: isDark,
                           ),
                           const SizedBox(height: 24),
@@ -240,8 +242,8 @@ class _OnboardingView extends StatelessWidget {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Text(
-                                    'เริ่มใช้งาน',
+                                  Text(
+                                    'onboarding_start'.tr(context),
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
@@ -259,7 +261,7 @@ class _OnboardingView extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'เวอร์ชัน 1.0.0 • ความปลอดภัยของคุณคือสิ่งสำคัญ',
+                    'onboarding_version_note'.tr(context),
                     style: TextStyle(
                       fontSize: 12,
                       color: subtitleColor.withValues(alpha: 0.5),

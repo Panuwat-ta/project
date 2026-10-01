@@ -159,35 +159,31 @@
 - [x] branch coverage รวมเกิน NFR-09 gate 80%; Issue #75 ปิดตาม acceptance
 ## 3. P1 — Final UX/UI และ AI-slop audit
 
+สถานะ 2026-10-02: source/widget audit และ findings ที่แก้ได้บันทึกใน `mobile-design-ux-audit-2026-10-02.md`; Issue #76 ยัง OPEN เพราะ `agy` CLI timeout 3 ครั้งโดยไม่มี review output ที่ตรวจสอบได้ และยังไม่มี native runtime QA บนอุปกรณ์รอบนี้
+
 ### 3.1 Product integrity
-- [ ] ตรวจทั้ง Mobile อีกรอบว่าไม่มี fake evidence / demo evidence / placeholder ที่ดูเหมือนผลจริง
-- [ ] ตรวจข้อความ Low/Medium/High/Unknown ไม่สื่อความแน่นอนเกิน backend
-- [ ] ตรวจ “ไม่มีข้อมูล”, “ไม่พบ”, “ตรวจไม่ได้” ใช้ต่างความหมายถูกต้อง
-- [ ] ตรวจ score/grade ทุกหน้ามาจาก authority เดียวกัน
-- [ ] ตรวจ Heatmap ไม่มี fallback จำลอง anomaly
+- [x] ตรวจ source ของ Mobile ว่าไม่มี fake evidence ใน flow ที่ตรวจ; unavailable/empty แสดง state แทนการสร้างหลักฐาน
+- [x] ตรวจข้อความ Low/Medium/High/Unknown และ score/grade ใช้ backend authority กับ RiskLevelHelper
+- [x] ตรวจ semantics ของ score, วันที่วิเคราะห์, source detail และ Heatmap/source image labels; แก้ label ที่อ้างข้อมูลเกินจริง
+- [x] ตรวจ Heatmap ไม่มี fallback จำลอง anomaly; preview แยก Heatmap, ภาพต้นฉบับ และไม่มีภาพตาม URL
 
 ### 3.2 Visual quality / AI-slop
-- [ ] รัน Impeccable native audit รอบ final
-- [ ] รัน independent `agy` review รอบ final
-- [ ] เทียบกับ baseline audit เดิมแบบ before/after
-- [ ] ลด generic security decoration ที่ยังเหลือโดยไม่ลด usability
-- [ ] ตรวจ Profile / Privacy / Notifications / Auth visual consistency
-- [ ] ตรวจ card stacking, gradients, shadow, icon-in-square ที่ไม่จำเป็น
-- [ ] ตรวจ typography, spacing, radius และ semantic color authority
-- [ ] ตรวจ dark mode ทุกหน้าหลัก
-- [ ] ตรวจ English mode ไม่รั่ว Thai copy และ Thai modeไม่รั่ว English placeholder
+- [x] ทำ Impeccable native source audit; ผลและเกณฑ์ตรวจอยู่ใน audit report
+- [!] เรียก independent `agy` review 3 ครั้ง (180s, 45s, 60s); ทุกครั้ง timeout โดยไม่มีผลลัพธ์ จึงยังไม่ผ่านเกณฑ์ independent review
+- [x] เทียบ before/after กับ baseline audit 2026-09-20 โดยแยกผลเดิมกับ defect ที่ยืนยันเพิ่มในรอบนี้
+- [x] ตรวจ Profile / Privacy / Notifications / Auth และ design-token consistency จาก source/checklist; ไม่พบ fabricated evidence เพิ่มใน scope ที่ตรวจ
+- [x] ตรวจ theme-aware surfaces, semantic risk colors, responsive navigation, spacing/radius และ interactive affordance จาก source
+- [x] ตรวจ TH/EN dictionary parity และ English copy; เพิ่ม tests สำหรับ Auth, Onboarding, Splash และ evidence labels
+- [!] dark-mode/native visual QA ครบทุกหน้าจอยังต้องทดสอบบนอุปกรณ์ตาม §4; widget/source audit ไม่ทดแทน device certification
 
 ### 3.3 User flows
-- [ ] onboarding -> login/register -> home
-- [ ] image pick -> crop -> optional name -> submit
-- [ ] scan progress -> success -> result
-- [ ] network failure -> retry โดย context ไม่หาย
-- [ ] Result -> Heatmap -> Back
-- [ ] Result/History -> Report พร้อม scanId/image ที่ถูกต้อง
-- [ ] Report tab -> เลือก History scan -> form -> submit
-- [ ] History search/filter/delete/refresh/pagination
-- [ ] Settings theme/language/cache/privacy/profile/logout
-- [ ] notification open/dismiss/read/clear-all เมื่อ harness ใหม่พร้อม
+- [x] source/widget tests ครอบคลุม image pick/crop/optional name/submit และ scan progress/error recovery
+- [x] Result/History tests ครอบคลุม preview state, Heatmap navigation, report payload, history actions และ notification actions
+- [x] Report tab เลือก scan ก่อนเข้า form; tests ตรวจ scanId/image payload และ submit behavior
+- [x] Settings theme/language/cache/privacy/profile/logout และ notification actions มี widget coverage
+- [!] onboarding-to-auth และ end-to-end flows ยังไม่ได้ยืนยันกับ staging backend/installed app ในรอบนี้
+
+ผล test suite รอบสุดท้ายและ coverage: `tests_all/tests_report/automate_tests/mobile/issue-76-integrity-localization-2026-10-02.md`.
 
 ## 4. P1 — Accessibility / Native behavior
 

@@ -19,7 +19,10 @@ class LoginScreen extends StatelessWidget {
           context.go('/main/home');
         } else if (state is AuthError) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+            SnackBar(
+              content: Text(state.message.tr(context)),
+              backgroundColor: Colors.red,
+            ),
           );
         }
       },

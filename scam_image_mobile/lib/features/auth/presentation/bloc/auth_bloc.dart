@@ -65,23 +65,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  /// Converts raw exception messages into user-friendly Thai strings.
+  /// Converts raw exception messages into localization keys.
   String _friendlyMessage(Object e) {
     final msg = e.toString().toLowerCase();
     if (msg.contains('incorrect email') ||
         msg.contains('invalid') ||
         msg.contains('credentials')) {
-      return 'อีเมลหรือรหัสผ่านไม่ถูกต้อง';
+      return 'auth_error_credentials';
     }
     if (msg.contains('network') ||
         msg.contains('socket') ||
         msg.contains('connection') ||
         msg.contains('timeout')) {
-      return 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาตรวจสอบเครือข่าย';
+      return 'auth_error_network';
     }
     if (msg.contains('email already') || msg.contains('already registered')) {
-      return 'อีเมลนี้ถูกใช้งานแล้ว';
+      return 'auth_error_email_registered';
     }
-    return 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง';
+    return 'auth_error_generic';
   }
 }

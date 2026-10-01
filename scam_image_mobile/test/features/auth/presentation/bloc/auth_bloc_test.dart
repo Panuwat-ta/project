@@ -75,7 +75,7 @@ void main() {
         isA<AuthError>().having(
           (s) => s.message,
           'message',
-          'อีเมลหรือรหัสผ่านไม่ถูกต้อง',
+          'auth_error_credentials',
         ),
       ],
     );
@@ -102,7 +102,7 @@ void main() {
         isA<AuthError>().having(
           (s) => s.message,
           'message',
-          'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาตรวจสอบเครือข่าย',
+          'auth_error_network',
         ),
       ],
     );
@@ -165,7 +165,7 @@ void main() {
         isA<AuthError>().having(
           (s) => s.message,
           'message',
-          'อีเมลนี้ถูกใช้งานแล้ว',
+          'auth_error_email_registered',
         ),
       ],
     );
