@@ -18,7 +18,7 @@ AnalysisResult buildResult({
   String summary = 'สรุปผล',
   String? ocrText = 'ข้อความ OCR',
   String? xaiExplanation = 'คำอธิบาย XAI',
-  double? aiGenProbability = 0.82,
+  double? manipulationConfidence = 0.82,
   List<RiskFactor> factors = const [
     RiskFactor(
       type: 'textual',
@@ -47,7 +47,7 @@ AnalysisResult buildResult({
   riskLevel: level,
   summary: summary,
   xaiExplanation: xaiExplanation,
-  aiGenProbability: aiGenProbability,
+  manipulationConfidence: manipulationConfidence,
   ocrText: ocrText,
   createdAt: DateTime.utc(2026, 9, 20),
   factors: factors,
@@ -132,7 +132,7 @@ void main() {
         summary: '',
         ocrText: null,
         xaiExplanation: null,
-        aiGenProbability: null,
+        manipulationConfidence: null,
         factors: const [],
       ),
     );
@@ -151,7 +151,7 @@ void main() {
           level: RiskLevel.medium,
           score: 55,
           ocrText: null,
-          aiGenProbability: 0.5,
+          manipulationConfidence: 0.5,
           factors: const [
             RiskFactor(
               type: 'textual',
@@ -180,7 +180,7 @@ void main() {
       result: buildResult(
         level: RiskLevel.low,
         score: 20,
-        aiGenProbability: 0.1,
+        manipulationConfidence: 0.1,
         factors: const [
           RiskFactor(type: 'textual', score: 0, title: 'textual', details: []),
           RiskFactor(type: 'source', score: 0, title: 'source', details: []),

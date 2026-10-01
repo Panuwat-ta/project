@@ -51,7 +51,7 @@ void main() {
     imageUrl: 'http://host/image.jpg',
     heatmapUrl: 'http://host/heatmap.jpg',
     xaiExplanation: 'explanation',
-    aiGenProbability: 0.72,
+    manipulationConfidence: 0.72,
     ocrText: 'ข้อความ',
     scamKeywords: const ['keyword-a', 'keyword-b'],
     createdAt: DateTime.utc(2026, 9, 20, 1, 2, 3),
@@ -98,7 +98,7 @@ void main() {
     expect(cached.riskScore, 88);
     expect(cached.riskLevel, RiskLevel.high);
     expect(cached.xaiExplanation, 'explanation');
-    expect(cached.aiGenProbability, 0.72);
+    expect(cached.manipulationConfidence, 0.72);
     expect(cached.ocrText, 'ข้อความ');
     expect(cached.scamKeywords, ['keyword-a', 'keyword-b']);
     expect(cached.factors.single.details, ['detail']);

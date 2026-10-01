@@ -60,8 +60,9 @@ class DatabaseHelper {
       } catch (_) {}
     }
     if (oldVersion < 4) {
+      // ใช้ชื่อเดิมตามที่ v4 เคยสร้างจริง เพราะก้าวถัดไป (v5) จะ rename ให้เอง
       for (final sql in [
-        'ALTER TABLE $tableDetails ADD COLUMN manipulationConfidence REAL',
+        'ALTER TABLE $tableDetails ADD COLUMN aiGenProbability REAL',
         'ALTER TABLE $tableDetails ADD COLUMN ocrText TEXT',
         'ALTER TABLE $tableDetails ADD COLUMN scamKeywordsJson TEXT',
       ]) {

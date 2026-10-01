@@ -22,7 +22,7 @@ void main() {
         'visual_score': 25,
         'source_score': 20,
         'scam_keywords_found': ['transfer', 'urgent'],
-        'ai_gen_probability': 0.85,
+        'manipulation_confidence': 0.85,
         'raw_image_url': 'uploads/image.jpg',
         'heatmap_image_url': 'uploads/heatmap.jpg',
         'xai_explanation': 'AI ตรวจพบความผิดปกติบริเวณตราประทับ',
@@ -36,7 +36,7 @@ void main() {
       expect(model.riskScore, 75);
       expect(model.riskLevel, RiskLevel.high);
       expect(model.xaiExplanation, 'AI ตรวจพบความผิดปกติบริเวณตราประทับ');
-      expect(model.aiGenProbability, 0.85);
+      expect(model.manipulationConfidence, 0.85);
       expect(model.ocrText, 'โอนเงินสำเร็จ 5,000 บาท');
       expect(model.scamKeywords, contains('transfer'));
       expect(model.factors.length, 3);
@@ -47,7 +47,8 @@ void main() {
 
       final visualFactor = model.factors.firstWhere((f) => f.type == 'visual');
       expect(visualFactor.score, 25);
-      expect(visualFactor.details.first, contains('0.85'));
+      expect(visualFactor.details.first, contains('85%'));
+      expect(visualFactor.details.first, contains('ความม่ันใจว่าถูกดัดแปลง'));
 
       final sourceFactor = model.factors.firstWhere((f) => f.type == 'source');
       expect(sourceFactor.score, 20);
