@@ -321,8 +321,8 @@ Acceptance Criteria:
 
 **AC-3: คำนวณ Visual Risk Score**
 - **Input:** forgery_confidence = 85, ai_gen_confidence = 90
-- **Processing:** คำนวณ Normalize(Confidence×Coverage) จาก SegFormer แล้วรวมด้วย Hybrid max+bonus (S_base คือค่าสูงสุดของ 3 มิติ +5 ต่อมิติรองที่มีคะแนน ≥40, cap 100)
-- **Expected Output:** `visual_score` จาก Normalize(Confidence×Coverage) (ช่วง 0-100; ตัวอย่างเดิม 87 ใช้เพื่ออ้างอิงเท่านั้น)
+- **Processing:** คำนวณ `visual_score = round(det_score × 100)` จาก Det Head (det7b) แล้วรวมด้วย Hybrid max+bonus (S_base คือค่าสูงสุดของ 3 มิติ +5 ต่อมิติรองที่มีคะแนน ≥40, cap 100) — สูตรเดิม Normalize(Confidence×Coverage) ถูกยกเลิกเมื่อ 2026-09-30 เพราะรอยปลอมจริงกินพื้นที่เพียง 0.0–1.6% ของภาพ ทำให้คะแนนเกือบ 0 เสมอ (ดู `Document/model/configs.md` §3)
+- **Expected Output:** `visual_score` จาก Det Head (ช่วง 0-100; ตัวอย่างเดิม 87 ใช้เพื่ออ้างอิงเท่านั้น)
 
 **AC-4: ภาพจริงไม่ถูกตัดต่อ**
 - **Input:** รูปภาพจริงที่ไม่ถูกแก้ไข
