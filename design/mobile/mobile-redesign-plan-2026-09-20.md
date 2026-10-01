@@ -2,7 +2,7 @@
 
 วันที่: 20 กันยายน 2026
 ฐานข้อมูล: `mobile-design-ux-audit-2026-09-20.md`
-สถานะ: Plan only — ยังไม่เริ่มแก้ implementation
+สถานะ: ทำ core redesign implementation แล้ว — ดู `mobile-redesign-delivery-2026-09-20.md`; งาน release hardening ที่ยังค้างติดตามใน `mobile-hardening-todo-2026-09-20.md` และ GitHub Issues #71–#88 (ตรวจสถานะ 2026-10-02: ยังเปิดทั้งหมด)
 
 ## 1. Redesign objective
 

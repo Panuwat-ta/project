@@ -105,6 +105,8 @@ Coverage ของส่วน redesign สำคัญ:
 
 ## 8. Known release gaps / deferred items
 
+รายการด้านล่างเป็นสถานะ ณ วันที่ 20 กันยายน 2026; checklist ที่อัปเดตภายหลังอยู่ใน `mobile-hardening-todo-2026-09-20.md` และสถานะ issue ปัจจุบันตรวจจาก GitHub #71–#88
+
 1. **Security — debug Authorization header logging**
    - `core/network/dio_client.dart` ใช้ `LogInterceptor(request: false, responseBody: false)` แต่ runtime debug log ยังพิมพ์ request headers รวม Authorization
    - ไม่บันทึก token ค่าใดลงเอกสารนี้

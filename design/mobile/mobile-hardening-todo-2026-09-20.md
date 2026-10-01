@@ -4,6 +4,33 @@
 โปรเจกต์: `/home/panuwat/project/scam_image_mobile`
 เป้าหมาย: ทำ Mobile ให้พร้อม Production Deploy แบบตรวจสอบย้อนกลับได้
 
+## GitHub Issues cross-check — 2026-10-02
+
+Issues #71–#88 ยังเปิดทั้งหมด ณ วันที่ตรวจ โดย #88 เป็น roadmap หลักและอ้างอิง hardening gates ในรายการด้านล่าง:
+
+| Issue | Checklist section |
+|---|---|
+| [#71](https://github.com/Panuwat-ta/project/issues/71) | §1.1 History Detail overflow |
+| [#72](https://github.com/Panuwat-ta/project/issues/72) | §1.2 Notifications test harness |
+| [#73](https://github.com/Panuwat-ta/project/issues/73) | §2.1 Presentation branch tests |
+| [#74](https://github.com/Panuwat-ta/project/issues/74) | §2.2 Router/BLoC/data/shared branch tests |
+| [#75](https://github.com/Panuwat-ta/project/issues/75) | §2.3 NFR-09 branch coverage gate |
+| [#76](https://github.com/Panuwat-ta/project/issues/76) | §3 Final product integrity, UX, localization audit |
+| [#77](https://github.com/Panuwat-ta/project/issues/77) | §4 Accessibility and Android native QA |
+| [#78](https://github.com/Panuwat-ta/project/issues/78) | §5 Security, session, input and privacy |
+| [#79](https://github.com/Panuwat-ta/project/issues/79) | §6 Production API contract and staging E2E |
+| [#80](https://github.com/Panuwat-ta/project/issues/80) | §8 Offline, retry and async recovery |
+| [#81](https://github.com/Panuwat-ta/project/issues/81) | §9 Performance and stability soak |
+| [#82](https://github.com/Panuwat-ta/project/issues/82) | §10 Auth UI, accessibility and localization |
+| [#83](https://github.com/Panuwat-ta/project/issues/83) | §11 Production configuration and release artifact |
+| [#84](https://github.com/Panuwat-ta/project/issues/84) | §14 CI/CD and quality gates |
+| [#85](https://github.com/Panuwat-ta/project/issues/85) | §15 Store/distribution readiness |
+| [#86](https://github.com/Panuwat-ta/project/issues/86) | §18 Backend/Model production coordination |
+| [#87](https://github.com/Panuwat-ta/project/issues/87) | §16 Release Candidate QA |
+| [#88](https://github.com/Panuwat-ta/project/issues/88) | Master roadmap; references #71–#87 |
+
+ตัวเลข coverage ใน §0.4 เป็นผลย้อนหลัง ณ 20 กันยายน 2026 ไม่ใช่ผลปัจจุบัน. รอบ 2026-10-02 02:31 ผ่าน 425 tests; line coverage 4,090/5,681 (71.99%) และ branch coverage 978/1,547 (63.22%) จาก LCOV; branch coverage ยังต่ำกว่า NFR-09 ที่ 80% จึงคง Issue #75 เปิด
+
 ## สัญลักษณ์สถานะ
 
 - `[x]` ทำเสร็จและมีผลตรวจยืนยันแล้ว
@@ -74,13 +101,14 @@
 - [x] SettingsScreen branch ประมาณ `2/68 -> 39/68 = 57.35%`
 
 ## 1. P0 — ปิด defect ที่รู้แล้วก่อนเพิ่ม feature/test
-### 1.1 History Detail overflow
-- [ ] แก้ `RenderFlex overflow` ใน `history_detail_screen.dart` บริเวณ Source/Evidence row
-- [ ] รองรับข้อความ/หลักฐานยาวโดยไม่ล้นแนวนอน
-- [ ] ตรวจ mobile width + landscape + dark mode
-- [ ] ปรับ test assertion ที่ score เดียวกันแสดงหลายตำแหน่งโดยตั้งใจ
-- [ ] รัน `history_detail_screen_test.dart` ให้ผ่านทั้งหมด
-- [ ] วัด branch coverage ของ History Detail หลังแก้
+### 1.1 History Detail overflow — แก้แล้ว 2026-10-02
+- [x] แก้ `RenderFlex overflow` ที่เกิดจาก OCR summary row และป้าย evidence unavailable ใน `history_detail_screen.dart`
+- [x] รองรับข้อความ/หลักฐานยาวโดยไม่ล้นแนวนอน
+- [x] ตรวจที่ 320x800 (dark mode) และ 800x360 (landscape + dark mode)
+- [x] ตรวจ assertion คะแนนที่แสดงซ้ำ; ใช้ `findsWidgets` สำหรับคะแนน 88%, 20% และ 10% ที่อาจพบหลายตำแหน่ง
+- [x] รัน `history_detail_screen_test.dart` ผ่านทั้งหมด และ Flutter suite ผ่าน 425 tests
+- [x] วัด coverage จาก LCOV: History Detail line 339/385 (88.05%), branch 34/53 (64.15%); coverage ทั้งชุด branch 978/1,547 (63.22%)
+- รายงานผล: `tests_all/tests_report/automate_tests/mobile/history-detail-overflow-2026-10-02.md`
 
 ### 1.2 Notifications Screen testability
 - [!] harness เดิม BLOCKED หลังครบ 3 attempts ตาม loop limit

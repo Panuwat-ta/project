@@ -194,9 +194,114 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('long source evidence fits within compact mobile width', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(320, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await pumpDetail(
+      tester,
+      themeMode: ThemeMode.dark,
+      result: buildResult(
+        factors: [
+          const RiskFactor(
+            type: 'textual',
+            score: 70,
+            title: 'textual',
+            details: ['โอนด่วน', 'รับรางวัล'],
+          ),
+          RiskFactor(
+            type: 'source',
+            score: 55,
+            title: 'source',
+            details: [List.filled(64, 'Long source evidence record').join(' ')],
+          ),
+          const RiskFactor(
+            type: 'visual',
+            score: 85,
+            title: 'visual',
+            details: ['visual-detail'],
+          ),
+        ],
+      ),
+    );
+
+    final layoutErrors = <Object>[];
+    Object? layoutError;
+    while ((layoutError = tester.takeException()) != null) {
+      layoutErrors.add(layoutError!);
+    }
+    expect(
+      layoutErrors,
+      isEmpty,
+      reason: layoutErrors.map(_describeError).join('\n'),
+    );
+  });
+
+  testWidgets('missing evidence labels fit within compact mobile width', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(320, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await pumpDetail(tester, result: buildResult(factors: const []));
+
+    final layoutErrors = <Object>[];
+    Object? layoutError;
+    while ((layoutError = tester.takeException()) != null) {
+      layoutErrors.add(layoutError!);
+    }
+    expect(
+      layoutErrors,
+      isEmpty,
+      reason: layoutErrors.map(_describeError).join('\n'),
+    );
+  });
+
+  testWidgets('History Detail fits in landscape dark mode', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(800, 360));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await pumpDetail(
+      tester,
+      themeMode: ThemeMode.dark,
+      result: buildResult(
+        factors: [
+          const RiskFactor(
+            type: 'textual',
+            score: 70,
+            title: 'textual',
+            details: ['โอนด่วน'],
+          ),
+          RiskFactor(
+            type: 'source',
+            score: 55,
+            title: 'source',
+            details: [
+              'source.example.org/evidence/${List.filled(80, 'long-record').join('/')}?reference=case-12345',
+            ],
+          ),
+          const RiskFactor(
+            type: 'visual',
+            score: 85,
+            title: 'visual',
+            details: ['visual-detail'],
+          ),
+        ],
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('repository error renders ResultError message', (tester) async {
     await pumpDetail(tester, error: StateError('detail failed'));
 
     expect(find.textContaining('detail failed'), findsOneWidget);
   });
 }
+
+String _describeError(Object error) => error is FlutterError
+    ? error.diagnostics.map((diagnostic) => diagnostic.toString()).join('\n')
+    : error.toString();

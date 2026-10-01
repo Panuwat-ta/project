@@ -275,10 +275,13 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                   isDark,
                 )
               else
-                Text(
-                  'result_evidence_unavailable'.tr(context),
-                  style: AppTypography.caption(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                Flexible(
+                  child: Text(
+                    'result_evidence_unavailable'.tr(context),
+                    textAlign: TextAlign.end,
+                    style: AppTypography.caption(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ),
             ],
@@ -310,8 +313,11 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
             ),
           ),
           const SizedBox(height: AppSpacing.md),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            spacing: AppSpacing.md,
+            runSpacing: AppSpacing.xs,
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.start,
             children: [
               Text(
                 'result_suspicious_words'.tr(context),
@@ -439,10 +445,13 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                   isDark,
                 )
               else
-                Text(
-                  'result_evidence_unavailable'.tr(context),
-                  style: AppTypography.caption(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                Flexible(
+                  child: Text(
+                    'result_evidence_unavailable'.tr(context),
+                    textAlign: TextAlign.end,
+                    style: AppTypography.caption(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ),
             ],
@@ -559,10 +568,13 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                   isDark,
                 )
               else
-                Text(
-                  'result_evidence_unavailable'.tr(context),
-                  style: AppTypography.caption(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                Flexible(
+                  child: Text(
+                    'result_evidence_unavailable'.tr(context),
+                    textAlign: TextAlign.end,
+                    style: AppTypography.caption(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ),
             ],
