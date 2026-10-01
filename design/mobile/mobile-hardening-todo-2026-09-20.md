@@ -141,7 +141,7 @@
 - [x] `analysis_result_screen.dart` branch 52/55 (94.55%); ครอบคลุม pending/unavailable XAI, missing/score-only/partial visual evidence, ResultError, report/detail/share/heatmap/notification navigation, previous/home navigation และ delete cancel/success/failure; network image error กับ disposed-context branch ยังไม่ครอบคลุม
 - [x] `heatmap_viewer_screen.dart` branch 21/23 (91.30%); ครอบคลุม unavailable/toggle/intensity/zoom/reset; native image error ยังไม่จำลองใน widget test
 
-ผล LCOV ล่าสุดของ Issue #73: suite branch 1,244/1,548 (80.36%), line 5,007/5,679 (88.17%); full suite 496 tests ผ่าน, analyzer ผ่าน. ปิด Issue ได้โดยแนบไฟล์/branch ที่ยังไม่ cover และเหตุผลจากผลตรวจไว้ใน issue comment.
+ผล LCOV ล่าสุดของ Issue #73: suite branch 1,244/1,548 (80.36%), line 5,007/5,679 (88.17%); full suite 496 tests ผ่าน, analyzer ผ่าน. Issue #73 ปิดแล้วหลังแนบรายการ residual branches และเหตุผลไว้ใน issue comment.
 
 ### 2.2 Core/logic coverage ที่ยังควรเก็บ
 - [ ] `app_router.dart` cover auth/onboarding/deep-link/error branches เพิ่ม
