@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../bloc/auth_bloc.dart';
 import '../../../../core/localization/app_translations.dart';
+import '../../../../core/theme/app_radius.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -21,7 +22,7 @@ class LoginScreen extends StatelessWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message.tr(context)),
-              backgroundColor: Colors.red,
+              backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
         }
@@ -52,6 +53,7 @@ class _LoginViewState extends State<_LoginView> {
   }
 
   void _submit() {
+    if (context.read<AuthBloc>().state is AuthLoading) return;
     if (_formKey.currentState?.validate() ?? false) {
       context.read<AuthBloc>().add(
         LoginRequested(
@@ -71,7 +73,7 @@ class _LoginViewState extends State<_LoginView> {
   void _showOtherLogins(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark ? const Color(0xFF1E2936) : Colors.white;
-    final textColor = isDark ? Colors.white : const Color(0xFF111827);
+    final textColor = Theme.of(context).colorScheme.onSurface;
 
     showModalBottomSheet(
       context: context,
@@ -169,15 +171,14 @@ class _LoginViewState extends State<_LoginView> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? const Color(0xFF141F2B) : const Color(0xFFF5F7F9);
-    final cardColor = isDark ? const Color(0xFF1E2936) : Colors.white;
-    final textColor = isDark ? Colors.white : const Color(0xFF111827);
-    final subtitleColor = isDark ? Colors.white70 : const Color(0xFF6B7280);
-    final primaryColor = const Color(0xFF007293);
-    final inputFillColor = isDark ? const Color(0xFF141F2B) : Colors.white;
-    final inputBorderColor = isDark
-        ? const Color(0xFF334155)
-        : const Color(0xFFE2E8F0);
+    final colors = Theme.of(context).colorScheme;
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
+    final cardColor = colors.surface;
+    final textColor = Theme.of(context).colorScheme.onSurface;
+    final subtitleColor = colors.onSurfaceVariant;
+    final primaryColor = colors.primary;
+    final inputFillColor = colors.surface;
+    final inputBorderColor = colors.outline;
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -198,7 +199,7 @@ class _LoginViewState extends State<_LoginView> {
                         height: 72,
                         decoration: BoxDecoration(
                           color: primaryColor,
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: AppRadius.lgBorder,
                         ),
                         child: const Center(
                           child: Icon(
@@ -230,7 +231,7 @@ class _LoginViewState extends State<_LoginView> {
                   Container(
                     decoration: BoxDecoration(
                       color: cardColor,
-                      borderRadius: BorderRadius.circular(24),
+                      borderRadius: AppRadius.lgBorder,
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withValues(alpha: 0.05),
@@ -273,6 +274,7 @@ class _LoginViewState extends State<_LoginView> {
                             keyboardType: TextInputType.emailAddress,
                             style: TextStyle(color: textColor),
                             decoration: InputDecoration(
+                              labelText: 'auth_email'.tr(context),
                               hintText: 'example@email.com',
                               hintStyle: TextStyle(
                                 color: subtitleColor.withValues(alpha: 0.5),
@@ -288,15 +290,15 @@ class _LoginViewState extends State<_LoginView> {
                                 vertical: 16,
                               ),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: AppRadius.lgBorder,
                                 borderSide: BorderSide(color: inputBorderColor),
                               ),
                               enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: AppRadius.lgBorder,
                                 borderSide: BorderSide(color: inputBorderColor),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: AppRadius.lgBorder,
                                 borderSide: BorderSide(color: primaryColor),
                               ),
                             ),
@@ -315,8 +317,9 @@ class _LoginViewState extends State<_LoginView> {
                           const SizedBox(height: 16),
 
                           // Password field
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          Wrap(
+                            alignment: WrapAlignment.spaceBetween,
+                            crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
                               Text(
                                 'auth_password'.tr(context),
@@ -329,9 +332,11 @@ class _LoginViewState extends State<_LoginView> {
                               TextButton(
                                 onPressed: () => _showComingSoon(context),
                                 style: TextButton.styleFrom(
-                                  padding: EdgeInsets.zero,
-                                  tapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
+                                  minimumSize: const Size(48, 48),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                  ),
+                                  tapTargetSize: MaterialTapTargetSize.padded,
                                 ),
                                 child: Text(
                                   'auth_password_forgot'.tr(context),
@@ -350,6 +355,7 @@ class _LoginViewState extends State<_LoginView> {
                             obscureText: _obscurePassword,
                             style: TextStyle(color: textColor),
                             decoration: InputDecoration(
+                              labelText: 'auth_password'.tr(context),
                               hintText: '••••••••',
                               hintStyle: TextStyle(
                                 color: subtitleColor.withValues(alpha: 0.5),
@@ -359,6 +365,11 @@ class _LoginViewState extends State<_LoginView> {
                                 color: subtitleColor,
                               ),
                               suffixIcon: IconButton(
+                                tooltip:
+                                    (_obscurePassword
+                                            ? 'auth_show_password'
+                                            : 'auth_hide_password')
+                                        .tr(context),
                                 icon: Icon(
                                   _obscurePassword
                                       ? Icons.visibility_outlined
@@ -376,15 +387,15 @@ class _LoginViewState extends State<_LoginView> {
                                 vertical: 16,
                               ),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: AppRadius.lgBorder,
                                 borderSide: BorderSide(color: inputBorderColor),
                               ),
                               enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: AppRadius.lgBorder,
                                 borderSide: BorderSide(color: inputBorderColor),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: AppRadius.lgBorder,
                                 borderSide: BorderSide(color: primaryColor),
                               ),
                             ),
@@ -558,8 +569,9 @@ class _LoginViewState extends State<_LoginView> {
                       TextButton(
                         onPressed: () => context.go('/register'),
                         style: TextButton.styleFrom(
-                          padding: EdgeInsets.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          minimumSize: const Size(48, 48),
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          tapTargetSize: MaterialTapTargetSize.padded,
                         ),
                         child: Text(
                           'auth_register_link'.tr(context),

@@ -322,16 +322,18 @@
 - [ ] ทดสอบ low-memory/process recreation เท่าที่ Android tooling รองรับ
 
 ## 10. P1 — Auth/UI scope ที่เคยถูก loop deny
-- [H] ขออนุมัติแก้ `features/auth/**` ถ้ายังใช้ loop deny path เดิม
-- [ ] ตรวจ Login/Register/Onboarding/Splash visual consistency กับ redesign
-- [ ] ตรวจ touch target/semantics ของ auth forms
-- [ ] reduced-motion สำหรับ Splash/Onboarding animation
-- [ ] localization auth copy ไทย/อังกฤษให้ครบ
-- [ ] validation email/password/display name ชัดเจนและสม่ำเสมอ
-- [ ] loading state ป้องกัน double submit
-- [ ] auth error ไม่เผย raw server/internal detail ที่ไม่ควรให้ผู้ใช้เห็น
-- [ ] legacy `main_shell.dart`/navigation code ที่ไม่ใช้แล้วต้องลบหรือยืนยันว่า dead code
-- [ ] ลด raw colors/radius ใน auth scope ให้ใช้ design authority เดียวกับแอป
+- [x] ผู้ใช้อนุมัติทำ Issues ต่อทั้งหมด; ทำ Auth scope ตาม #82 แล้ว
+- [x] ตรวจ Login/Register/Onboarding/Splash visual consistency กับ redesign
+- [x] ตรวจ touch target/semantics ของ auth forms
+- [x] reduced-motion สำหรับ Splash/Onboarding animation
+- [x] localization auth copy ไทย/อังกฤษให้ครบ
+- [x] validation email/password/display name ชัดเจนและสม่ำเสมอ
+- [x] loading state ป้องกัน double submit
+- [x] auth error ไม่เผย raw server/internal detail ที่ไม่ควรให้ผู้ใช้เห็น
+- [x] legacy `main_shell.dart`/navigation code ที่ไม่ใช้แล้วต้องลบหรือยืนยันว่า dead code
+- [x] ลด raw colors/radius ใน auth scope ให้ใช้ design authority เดียวกับแอป
+
+หลักฐาน: [Auth hardening](mobile-auth-hardening-2026-10-02.md), full suite 670/670 และ branch 83.49%; native QA ยังคงอยู่ #77
 
 ## 11. P1 — Release configuration
 

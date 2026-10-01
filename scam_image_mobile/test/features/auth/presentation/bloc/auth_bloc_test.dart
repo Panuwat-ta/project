@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -170,6 +171,92 @@ void main() {
       ],
     );
   });
+
+  test(
+    'ignores duplicate login and cross-operation register while login waits',
+    () async {
+      final pending = Completer<User>();
+      when(
+        () => mockRepo.login(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenAnswer((_) => pending.future);
+      final bloc = AuthBloc(mockRepo);
+      const request = LoginRequested(
+        email: 'test@example.com',
+        password: 'password123',
+      );
+      bloc.add(request);
+      await bloc.stream.firstWhere((s) => s is AuthLoading);
+      bloc.add(request);
+      bloc.add(
+        const RegisterRequested(
+          email: 'test@example.com',
+          password: 'password123',
+          displayName: 'Test',
+          systemConsent: true,
+          researchConsent: false,
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      verify(
+        () =>
+            mockRepo.login(email: 'test@example.com', password: 'password123'),
+      ).called(1);
+      verifyNever(
+        () => mockRepo.register(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+          displayName: any(named: 'displayName'),
+          systemConsent: any(named: 'systemConsent'),
+          researchConsent: any(named: 'researchConsent'),
+        ),
+      );
+      pending.complete(tUser);
+      await bloc.stream.firstWhere((s) => s is AuthAuthenticated);
+      await bloc.close();
+    },
+  );
+
+  test(
+    'duplicate register is ignored and a failed operation can retry',
+    () async {
+      final pending = Completer<User>();
+      var calls = 0;
+      when(
+        () => mockRepo.register(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+          displayName: any(named: 'displayName'),
+          systemConsent: any(named: 'systemConsent'),
+          researchConsent: any(named: 'researchConsent'),
+        ),
+      ).thenAnswer((_) {
+        calls++;
+        return calls == 1 ? pending.future : Future.value(tUser);
+      });
+      final bloc = AuthBloc(mockRepo);
+      const request = RegisterRequested(
+        email: 'test@example.com',
+        password: 'password123',
+        displayName: 'Test',
+        systemConsent: true,
+        researchConsent: false,
+      );
+      bloc.add(request);
+      await bloc.stream.firstWhere((s) => s is AuthLoading);
+      bloc.add(request);
+      await Future<void>.delayed(Duration.zero);
+      expect(calls, 1);
+      pending.completeError(Exception('network unavailable'));
+      await bloc.stream.firstWhere((s) => s is AuthError);
+      bloc.add(request);
+      await bloc.stream.firstWhere((s) => s is AuthAuthenticated);
+      expect(calls, 2);
+      await bloc.close();
+    },
+  );
 
   // ── Logout ────────────────────────────────────────────────────────────────
 

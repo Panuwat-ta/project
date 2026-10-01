@@ -5,6 +5,8 @@ import '../../features/settings/presentation/bloc/settings_bloc.dart';
 class AppTranslations {
   static final Map<String, Map<String, String>> localizedValues = {
     'th': {
+      'auth_show_password': 'แสดงรหัสผ่าน',
+      'auth_hide_password': 'ซ่อนรหัสผ่าน',
       'settings': 'ตั้งค่า',
       'account': 'บัญชี',
       'notifications': 'การแจ้งเตือน',
@@ -410,6 +412,8 @@ class AppTranslations {
       'anomaly_pixel_desc': 'มีการบีบอัดภาพซ้อนทับกันหลายชั้น',
     },
     'en': {
+      'auth_show_password': 'Show password',
+      'auth_hide_password': 'Hide password',
       'settings': 'Settings',
       'account': 'Account',
       'notifications': 'Notifications',

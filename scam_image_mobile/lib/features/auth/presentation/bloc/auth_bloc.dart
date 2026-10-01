@@ -24,6 +24,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository _repository;
 
   Future<void> _onLogin(LoginRequested event, Emitter<AuthState> emit) async {
+    if (state is AuthLoading) return;
     emit(const AuthLoading());
     try {
       final user = await _repository.login(
@@ -40,6 +41,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     RegisterRequested event,
     Emitter<AuthState> emit,
   ) async {
+    if (state is AuthLoading) return;
     emit(const AuthLoading());
     try {
       final user = await _repository.register(
