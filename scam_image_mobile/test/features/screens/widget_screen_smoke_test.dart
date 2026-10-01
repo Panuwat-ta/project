@@ -9,7 +9,6 @@ import 'package:scam_image_mobile/features/auth/presentation/bloc/auth_bloc.dart
 import 'package:scam_image_mobile/features/history/domain/repositories/history_repository.dart';
 import 'package:scam_image_mobile/features/history/presentation/bloc/history_bloc.dart';
 import 'package:scam_image_mobile/features/notifications/presentation/cubit/notifications_cubit.dart';
-import 'package:scam_image_mobile/features/notifications/presentation/screens/notifications_screen.dart';
 import 'package:scam_image_mobile/features/scan/presentation/screens/home_screen.dart';
 import 'package:scam_image_mobile/features/scan/presentation/screens/image_crop_screen.dart';
 import 'package:scam_image_mobile/features/settings/domain/entities/consent_setting.dart';
@@ -175,19 +174,6 @@ void main() {
           .getMaxScaleOnAxis(),
       1.0,
     );
-  });
-
-  testWidgets('Notifications shows empty state after empty history loads', (
-    tester,
-  ) async {
-    await pumpScreen(
-      tester,
-      initialLocation: '/notifications',
-      screen: const NotificationsScreen(),
-    );
-
-    expect(find.text('ไม่มีการแจ้งเตือน'), findsOneWidget);
-    expect(tester.takeException(), isNull);
   });
 
   testWidgets('Profile renders authenticated identity and unsupported action', (

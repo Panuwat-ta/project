@@ -6,7 +6,7 @@
 
 ## GitHub Issues cross-check — 2026-10-02
 
-Issues #71–#88 ยังเปิดทั้งหมด ณ วันที่ตรวจ โดย #88 เป็น roadmap หลักและอ้างอิง hardening gates ในรายการด้านล่าง:
+ณ cross-check เวลา 01:53 วันที่ 2026-10-02 Issues #71–#88 ยังเปิดทั้งหมด; หลังแก้งาน Issue #71 ปิดเวลา 02:33 และ Issue #72 ปิดเมื่อผ่าน acceptance ของ harness/widget tests. #88 เป็น roadmap หลักและอ้างอิง hardening gates ในรายการด้านล่าง:
 
 | Issue | Checklist section |
 |---|---|
@@ -29,7 +29,7 @@ Issues #71–#88 ยังเปิดทั้งหมด ณ วันที�
 | [#87](https://github.com/Panuwat-ta/project/issues/87) | §16 Release Candidate QA |
 | [#88](https://github.com/Panuwat-ta/project/issues/88) | Master roadmap; references #71–#87 |
 
-ตัวเลข coverage ใน §0.4 เป็นผลย้อนหลัง ณ 20 กันยายน 2026 ไม่ใช่ผลปัจจุบัน. รอบ 2026-10-02 02:31 ผ่าน 425 tests; line coverage 4,090/5,681 (71.99%) และ branch coverage 978/1,547 (63.22%) จาก LCOV; branch coverage ยังต่ำกว่า NFR-09 ที่ 80% จึงคง Issue #75 เปิด
+ตัวเลข coverage ใน §0.4 เป็นผลย้อนหลัง ณ 20 กันยายน 2026 ไม่ใช่ผลปัจจุบัน. รอบ 2026-10-02 02:55 ผ่าน 432 tests; line coverage 4,243/5,681 (74.69%) และ branch coverage 1,013/1,547 (65.48%) จาก LCOV; branch coverage ยังต่ำกว่า NFR-09 ที่ 80% จึงคง Issue #75 เปิด
 
 ## สัญลักษณ์สถานะ
 
@@ -111,14 +111,14 @@ Issues #71–#88 ยังเปิดทั้งหมด ณ วันที�
 - รายงานผล: `tests_all/tests_report/automate_tests/mobile/history-detail-overflow-2026-10-02.md`
 
 ### 1.2 Notifications Screen testability
-- [!] harness เดิม BLOCKED หลังครบ 3 attempts ตาม loop limit
-- [ ] ออกแบบ harness ใหม่ที่ไม่รอ HistoryBloc race เดิม
-- [ ] cover HistoryEmpty / HistoryDataLoaded / HistoryError
-- [ ] cover completed / high-risk / failed notification
-- [ ] cover today / yesterday / earlier grouping
-- [ ] cover mark-as-read / dismiss / clear-all
-- [ ] cover navigation เมื่อมี scanId และกรณีไม่มี scanId
-- [ ] ห้าม retry approach เดิมครั้งที่ 4
+- [x] แทน harness เดิมที่เคย BLOCKED ด้วย `MockBloc` + controlled stream; ไม่ใช้ repository async หรือ `pumpAndSettle()` รอ HistoryBloc
+- [x] cover HistoryEmpty / HistoryDataLoaded / HistoryError
+- [x] cover completed / high-risk / failed notification และไม่แสดง processing scan
+- [x] cover today / yesterday / earlier grouping
+- [x] cover mark-as-read / dismiss / clear-all
+- [x] cover navigation เมื่อมี scanId และยืนยันว่าไม่มีการ navigate เมื่อไม่มี scanId
+- [x] ไม่ retry approach เดิม; เพิ่ม test file แยก `notifications_screen_test.dart`
+- ผลทดสอบ: 8 widget tests ผ่านซ้ำ 5 รอบ; full suite 432/432 และ analyzer ผ่าน. รายงาน: `tests_all/tests_report/automate_tests/mobile/notifications-screen-harness-2026-10-02.md`
 
 ### 1.3 Known runtime/performance warnings
 - [ ] วิเคราะห์ skipped frames ตอน cold start ว่าเป็น debug-only หรือมี main-thread work จริง
@@ -131,7 +131,7 @@ Issues #71–#88 ยังเปิดทั้งหมด ณ วันที�
 - [ ] `settings_screen.dart` ลด missed branches ที่เหลือ
 - [ ] `image_crop_screen.dart` เพิ่ม branch tests โดยระวัง native plugin lifecycle
 - [ ] `history_detail_screen.dart` เพิ่ม behavior coverage หลังปิด overflow
-- [ ] `notifications_screen.dart` หลังเปลี่ยน harness
+- [x] `notifications_screen.dart` หลังเปลี่ยน harness: branch 45/51 (88.24%); line 193/204 (94.61%)
 - [ ] `analysis_loading_screen.dart` เพิ่ม retry/timeout/status/render branches
 - [ ] `report_scam_screen.dart` เพิ่ม selector/form/error/success branches
 - [ ] `home_screen.dart` เพิ่ม permission/history/loading/error branches
