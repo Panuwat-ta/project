@@ -144,3 +144,40 @@ Locked common test `scamguard-locked-multisource-test-v1` ครบ 2,504/2,504 
 Local masked set มี 105 ภาพ 7 หมวด; ผลเชิงปริมาณรวมใน `output/quantitative/` ขณะนี้มี 315 per-image rows, 21 per-category rows และ 3 overall rows สำหรับ `v1.0.6`–`v1.0.8` ภาพ qualitative แบบไม่มี mask ครบ 30 คู่ต่อรุ่น รวม 90 rows ใน `output/qualitative/` และมี `v1.0.8/pair001.png`–`pair030.png` สำหรับตรวจด้วยตา ผล qualitative ไม่ใช่ accuracy
 
 Promotion gate ของ v13: locked mDice ≥97.29 **ผ่าน**; local mDice ≥90.17 **ไม่ผ่าน**; IMD2020 Forgery Dice >50 **ไม่ผ่าน**; overall FPR ≤1 **ไม่ผ่าน** แม้ local release gate แบบ legacy ที่กำหนด mDice ≥85 ผ่าน จึงยังคง `v1.0.6` เป็น production baseline และไม่เปลี่ยน deployment
+
+
+---
+
+# Chart Report — 2026-10-01 (เปรียบเทียบทุกเวอร์ชัน)
+
+คำสั่งที่ใช้ (ไม่รัน inference ใหม่ อ่านเฉพาะไฟล์ผลที่มีอยู่แล้ว):
+
+```bash
+cd /home/panuwat/project/model/segformer
+./venv/bin/python Test-Case/plot_version_results.py
+```
+
+ผลลัพธ์อยู่ใน `Test-Case/output/charts/` ได้แก่ กราฟ PNG 8 ภาพ, `report.html` ที่ฝังภาพไว้ในไฟล์เดียว และ `charts_data.json` ที่มีตัวเลขชุดเดียวกับที่พล็อต
+
+## แหล่งข้อมูลของแต่ละกราฟ
+
+| กราฟ | ชุดข้อมูล | ไฟล์ต้นทาง | จำนวนเวอร์ชัน |
+|---|---|---|---|
+| 01 locked common test | `scamguard-locked-multisource-test-v1` (2,504 batches) | `../tests_model/evaluation_manifest.json` ฟิลด์ `expected_common_test` | 9 |
+| 02 local overall | local masked Test-Case 105 ภาพ 7 หมวด | `output/quantitative/overall.csv` + `spreadsheets/quantitative/overall.csv` | 9 |
+| 03 Forgery Dice รายหมวด | เหมือนข้างบน | `output/quantitative/per_category.csv` + `spreadsheets/quantitative/per_category.csv` | 9 |
+| 04 mIoU รายหมวด | เหมือนข้างบน | เหมือนข้างบน | 9 |
+| 05 FPR รายหมวด | เหมือนข้างบน | เหมือนข้างบน | 9 |
+| 06 mDice รายหมวด | เหมือนข้างบน | เหมือนข้างบน | 9 |
+| 07 qualitative pairs | 30 คู่ original/manipulated ต่อรุ่น ไม่มี ground-truth mask | `output/qualitative/<version>/qualitative_pair_scores_<version>.csv` | 9 |
+| 08 เวลา inference | เวลารวมของการรันแต่ละ snapshot หารด้วย 105 ภาพ | `elapsed_seconds` ใน `overall.csv` ทั้งสอง snapshot | 9 |
+
+`output/quantitative/` เก็บผล `v1.0.6`–`v1.0.8` ส่วน `spreadsheets/quantitative/` เก็บผล `v1.0.0`–`v1.0.7` สคริปต์เติมเวอร์ชันที่ขาดจาก snapshot ที่สอง และตรวจสอบก่อนว่าเวอร์ชันที่ซ้ำกัน (`v1.0.6`, `v1.0.7`) มีค่าตรงกันทุกเมตริก ผลการตรวจถูกบันทึกไว้ในหัวข้อ "ที่มาของข้อมูล" ของ `report.html`; ถ้าค่าไม่ตรงกันสคริปต์จะหยุดพร้อมข้อความระบุฟิลด์ที่ขัดกัน
+
+## สิ่งที่กราฟแสดง
+
+- Locked common test ขึ้นชัดที่ `v1.0.4` (mIoU 48.7 -> 81.21) และเกือบนิ่งตั้งแต่ `v1.0.6` เป็นต้นมา (mIoU 94.83 -> 94.99, mDice 97.29 -> 97.38)
+- Local masked Test-Case สูงสุดที่ `v1.0.6` (mIoU 83.14, mDice 90.17, Forgery Dice 81.90) แล้วถอยลงที่ `v1.0.7` และ `v1.0.8` โดย FPR กลับขึ้นจาก 0.83 เป็น 1.08 และ 1.86
+- หมวดที่ยังอ่อนที่สุดคือ `imd2020` (Forgery Dice 47.73 ที่ `v1.0.8`) และ `copymove` ที่ถอยจาก 74.62 ที่ `v1.0.7` เหลือ 60.91 ที่ `v1.0.8`
+- FPR สูงสุดอยู่ที่หมวด `casia` ใน `v1.0.6`–`v1.0.8` (5.85, 5.37, 7.48) และหมวด `authentic` เพิ่มจาก 0.01 ที่ `v1.0.6` เป็น 0.19 ที่ `v1.0.7` และ 0.64 ที่ `v1.0.8`
+- Qualitative pairs: ค่า peak เฉลี่ยของภาพดัดแปลงเพิ่มจาก 70.45 ที่ `v1.0.0` เป็น 91.75 ที่ `v1.0.8` แต่ค่าเฉลี่ยของภาพต้นฉบับก็เพิ่มจาก 51.08 เป็น 95.07 และจำนวนคู่ต้นฉบับที่มีพิกเซลเกิน threshold 40% เพิ่มจาก 19 เป็น 29 คู่ จึงยังใช้ชี้ความสามารถแยกแยะจากภาพดัดแปลงไม่ได้

@@ -41,6 +41,20 @@ cd /home/panuwat/project/model/segformer
 /home/panuwat/project/server/venv/bin/python Test-Case/render_qualitative_pairs.py
 ```
 
+สร้างกราฟเปรียบเทียบทุกเวอร์ชันจากผลที่มีอยู่แล้ว (ไม่รัน inference ใหม่):
+
+```bash
+/home/panuwat/project/server/venv/bin/python Test-Case/plot_version_results.py
+```
+
+สคริปต์นี้อ่าน `../tests_model/evaluation_manifest.json` (locked common test ทุกเวอร์ชัน),
+`output/quantitative/` และ `output/qualitative/<version>/` แล้วเติมเวอร์ชันที่หายไปจาก
+`spreadsheets/quantitative/` โดยตรวจสอบก่อนว่าค่าที่ทับกันตรงกันทุกเมตริก ถ้าไม่ตรงจะหยุดพร้อมข้อความ
+บอกฟิลด์ที่ขัดกัน เพื่อไม่ให้ผสมตัวเลขจากคนละ snapshot
+
+ผลลัพธ์อยู่ใน `Test-Case/output/charts/`: กราฟ PNG 8 ภาพ, `report.html` ที่ฝังภาพไว้ในไฟล์เดียว
+(เปิดออฟไลน์ได้โดยไม่ต้องมี server) และ `charts_data.json` ที่มีตัวเลขชุดเดียวกับที่พล็อต
+
 ค่า release gate เริ่มต้นใช้เฉพาะ v1.0.5: local Test-Case mDice ต้องไม่น้อยกว่า 85% หากรันเวอร์ชันเก่าโดยไม่รวม v1.0.5 runner จะเก็บผลเพื่อ regression comparison โดยไม่บังคับ gate
 
 ## ผลลัพธ์
@@ -54,18 +68,38 @@ output/
 │   ├── per_category.csv
 │   ├── overall.csv
 │   └── summary.json
-└── qualitative/
-    ├── qualitative_pair_scores.csv
-    ├── summary.json
-    ├── v1.0.6/pair001.png ... pair030.png
-    ├── v1.0.7/pair001.png ... pair030.png
-    └── v1.0.8/pair001.png ... pair030.png
+├── qualitative/
+│   ├── qualitative_pair_scores.csv
+│   ├── summary.json
+│   ├── v1.0.6/pair001.png ... pair030.png
+│   ├── v1.0.7/pair001.png ... pair030.png
+│   └── v1.0.8/pair001.png ... pair030.png
+└── charts/
+    ├── 01_locked_common_test.png
+    ├── 02_local_overall.png
+    ├── 03_local_category_forgery_dice.png
+    ├── 04_local_category_miou_heatmap.png
+    ├── 05_local_category_fpr.png
+    ├── 06_local_category_mdice_lines.png
+    ├── 07_qualitative_peaks.png
+    ├── 08_local_runtime.png
+    ├── report.html
+    └── charts_data.json
 ```
 
 ไฟล์สรุปปัจจุบันมีผลที่เก็บไว้ของ `v1.0.6`–`v1.0.8` (105 ภาพและ 30 คู่ต่อรุ่น) การรันแบบเลือกรุ่นจะเขียนทับ CSV/summary รวม จึงควรสำรองผลก่อนรันหรือส่งทั้งสามรุ่นเพื่อสร้างผลรวมใหม่
+
+กราฟใน `output/charts/` ครอบคลุมได้ถึง `v1.0.0`–`v1.0.8` เพราะเติมเวอร์ชันที่หายจาก `output/quantitative/`
+ด้วยผลชุดเดิมใน `spreadsheets/quantitative/` (ชุดละเอียดรายหมวดของ `v1.0.0`–`v1.0.5`) ทั้งสองชุดตรงกันทุกเมตริกในเวอร์ชันที่ซ้ำกัน (`v1.0.6`, `v1.0.7`) ตามที่บันทึกไว้ในรายงาน
+
+หมวด `authentic` ไม่มีพิกเซล forged ใน ground truth ค่า Forgery Dice ของหมวดนี้จึงเป็น 0 โดยโครงสร้าง
+กราฟ Forgery Dice และ mIoU รายหมวดจึงไม่รวม `authentic` แต่กราฟ False Positive Rate รวมหมวดนี้ไว้
+เพราะเป็นค่าที่วัดได้จริง
 
 รายละเอียดขั้นตอนตรวจด้วยคนและ Expected Results อยู่ใน `manual_test_cases.md`
 
 ## เมื่อเพิ่มโมเดลเวอร์ชันใหม่
 
 ใช้ `../tests_model/add.sh` เพิ่มโมเดลเข้า manifest ก่อน จากนั้น `run_test_cases.sh` จะค้นพบเวอร์ชันใหม่อัตโนมัติ ไม่ต้องแก้ Python ในโฟลเดอร์นี้ หากต้องการเปลี่ยน release gate ให้ส่ง `--release-version` ตอนเรียก `evaluate_with_masks.py` และทบทวนเกณฑ์ในเอกสารนี้ก่อน
+
+เมื่อเพิ่มเวอร์ชันใหม่แล้วรัน `evaluate_with_masks.py` / `render_qualitative_pairs.py` เสร็จ ให้รัน `plot_version_results.py` ต่อเพื่อให้กราฟครอบคลุมเวอร์ชันใหม่โดยไม่ต้องแก้โค้ดสคริปต์

@@ -20,7 +20,7 @@ fi
 echo "[1/4] Core unit tests and local data inventory tests"
 (
   cd -- "${SCRIPT_DIR}" || exit 2
-  "${PYTHON}" -m unittest -v test_evaluation_core.py test_source_inventory.py
+  "${PYTHON}" -m unittest -v test_evaluation_core.py test_source_inventory.py test_plot_version_results.py
 )
 unit_status=$?
 if (( unit_status != 0 )); then
