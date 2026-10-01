@@ -60,3 +60,24 @@
 - APK เป็น build ชนิด debug เหมาะสำหรับทดสอบ ไม่ใช่ release
 - ไม่มีอุปกรณ์ Android เชื่อมต่อ (`flutter devices` พบแค่ Linux และ Chrome) จึงทดสอบแบบ unit/widget เท่านั้น ไม่ได้รันบนอุปกรณ์จริงหรือ emulator
 - server ต้องรันด้วย det7b (ตาม `server/.env` ปัจจุบัน) mobile จึงจะได้ค่า `manipulation_confidence` กลับมา
+
+### 6. ผลทดสอบบนอุปกรณ์จริง (RMX3370, Android 13, arm64)
+
+- อุปกรณ์: RMX3370 (Realme) ผ่าน USB (`f9a12239`)
+- ติดตั้ง: `adb install -r build/app/outputs/flutter-apk/app-debug.apk` สำเร็จ
+- เปิดแอป: `MainActivity` เป็น topResumedActivity, `FATAL EXCEPTION` = 0 (error ใน log มีแค่ system noise ของ Oppo)
+- เครือข่าย: มือถือ ping `10.202.12.70` ได้ (0% loss) และ `curl http://10.202.12.70:8000/health` ตอบ `{"status":"ok",...}` — ตรงกับ `API_BASE_URL` ใน mobile `.env`
+- Integration test (`integration_test/app_test.dart`) บนเครื่องจริง: **ผ่าน** (`All tests passed!`) ครอบคลุม onboarding → login → home → history → settings → logout โดยยิง API จริง (`/api/v1/history` ปรากฏใน log)
+
+#### ปัญหาที่พบระหว่างทดสอบบนเครื่องและวิธีแก้
+
+1. **`flutter install` ถอนแอปเก่าแล้วล้ม**: คำสั่งพยายามติดตั้ง `app-release.apk` ที่ไม่มีอยู่ (build ไว้แค่ debug) หลังจากถอนเวอร์ชันเก่าออกไปแล้ว ทำให้แพ็กเกจหายจากเครื่องชั่วคราว
+   - วิธีแก้: ติดตั้งด้วย `adb install -r app-debug.apk` โดยตรงแล้วยืนยันด้วย `pm list packages`
+2. **integration test ล้มครั้งแรกเพราะ DB ว่าง**: test login ด้วย `test@example.com` แต่ตาราง users ถูกล้างเหลือ 0 แถว (ตามคำสั่งลบข้อมูลทดสอบ) แอปจึงค้างที่หน้าจอ login และหาไอคอน upload บนหน้า Home ไม่เจอ
+   - วิธีแก้: สร้าง `test@example.com` ชั่วคราวผ่าน `/api/v1/auth/register` แล้วรันใหม่จึงผ่าน หลังเสร็จลบ user 104 ออก (0 scans เพราะ test แค่ navigate) คืนสถานะ DB ว่าง
+3. **พบ user 103 (`test1@scamguard.com`) เกินมา 1 คน**: ไม่มี scans ผูกอยู่ ลบออกแล้ว users เหลือ 0 ตามเดิม
+
+#### ข้อจำกัดของการทดสอบบนเครื่อง
+
+- ไม่ได้ทดสอบ flow สแกนภาพจริงบนเครื่อง (integration test ปัจจุบันครอบคลุมแค่ auth + navigation) การสแกนภาพจริงตรวจสอบผ่าน API โดยตรงแล้ว (กล้องจริง 16 low / splicing 100 high)
+- ต้องสร้าง user ทดสอบชั่วคราวเพื่อรัน integration test ทุกครั้งที่ DB ว่าง
