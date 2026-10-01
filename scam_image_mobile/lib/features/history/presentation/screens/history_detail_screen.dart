@@ -638,17 +638,17 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                       ),
                     ),
                     Text(
-                      result.aiGenProbability != null
-                          ? '${(result.aiGenProbability! * 100).toStringAsFixed(0)}%'
+                      result.manipulationConfidence != null
+                          ? '${(result.manipulationConfidence! * 100).toStringAsFixed(0)}%'
                           : 'result_evidence_unavailable'.tr(context),
                       style: AppTypography.titleMd(
                         color:
-                            (result.aiGenProbability != null &&
-                                    result.aiGenProbability! >= 0.7) ||
+                            (result.manipulationConfidence != null &&
+                                    result.manipulationConfidence! >= 0.7) ||
                                 visualFactor.score >= 70
                             ? AppColors.danger
-                            : (result.aiGenProbability != null &&
-                                      result.aiGenProbability! >= 0.4) ||
+                            : (result.manipulationConfidence != null &&
+                                      result.manipulationConfidence! >= 0.4) ||
                                   visualFactor.score >= 40
                             ? AppColors.warning
                             : (isDark ? Colors.white : AppColors.onSurface),

@@ -1,0 +1,13 @@
+{
+  "threshold": 0.631,
+  "n": 11,
+  "tp": 0,
+  "tn": 3,
+  "fp": 8,
+  "fn": 0,
+  "accuracy": 0.2727272727272727,
+  "precision": 0.0,
+  "recall": null,
+  "specificity": 0.2727272727272727,
+  "f1": null
+}

@@ -1,0 +1,40 @@
+{
+  "checkpoint": "/home/panuwat/project/model/segformer/work_dirs/v1.0.6/best_mIoU_iter_195000.pth",
+  "threshold": 0.5,
+  "heads": {
+    "det7b": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det7b_webshot_camera/head.pth",
+    "det7a": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det7a_webshot_tokenstats/head.pth"
+  },
+  "sets": {
+    "cameraval16": {
+      "det7b": {
+        "n": 16,
+        "tp": 0,
+        "tn": 16,
+        "fp": 0,
+        "fn": 0,
+        "accuracy": 1.0,
+        "precision": null,
+        "recall": null,
+        "specificity": 1.0,
+        "f1": null,
+        "mean_score": 0.032943283191996575
+      },
+      "det7a": {
+        "n": 16,
+        "tp": 0,
+        "tn": 13,
+        "fp": 3,
+        "fn": 0,
+        "accuracy": 0.8125,
+        "precision": 0.0,
+        "recall": null,
+        "specificity": 0.8125,
+        "f1": null,
+        "mean_score": 0.26628573070870354
+      },
+      "elapsed_s": 3.08
+    }
+  },
+  "created_at": "2026-09-30 07:50:14"
+}

@@ -1,0 +1,21 @@
+{
+  "source": "Det-Head/det_v1.0.6_det2b_mlp_source_balanced/hard_mining_train/hard_examples.csv",
+  "policy": "review only; no automatic relabel",
+  "auth_threshold": 0.8,
+  "manip_threshold": 0.2,
+  "n": 3080,
+  "counts": {
+    "0:authentic": 459,
+    "0:casia": 59,
+    "0:realtext": 73,
+    "1:casia": 53,
+    "1:copymove": 785,
+    "1:face": 5,
+    "1:imd2020": 78,
+    "1:inpainting": 429,
+    "1:splicing": 113,
+    "1:realtext": 255,
+    "1:psbattles": 636,
+    "0:psbattles": 135
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "candidate": "v1.0.6+det3c-hard1p5",
+  "status": "research-candidate-rejected-for-shadow-promotion",
+  "active_production_shadow": "v1.0.6+det2b-mlp-source-balanced",
+  "promotion": false,
+  "selection_basis": "selected on clean validation before held-out evaluations",
+  "post_selection_result": "benchmark gains but real-pilot regression",
+  "reason": {
+    "val_accuracy": 0.861761,
+    "heldout_test_accuracy": 0.899321,
+    "heldout_test_recall": 0.905252,
+    "heldout_test_specificity": 0.886854,
+    "test_cases_accuracy": 0.860606,
+    "real_pilot_accuracy": 0.454545,
+    "real_pilot_tp": 0,
+    "real_pilot_tn": 5,
+    "real_pilot_fp": 4,
+    "real_pilot_fn": 2
+  },
+  "guardrail": "Do not change server ONNX_MODEL_PATH to this candidate."
+}

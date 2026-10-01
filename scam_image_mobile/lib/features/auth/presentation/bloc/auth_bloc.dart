@@ -77,7 +77,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         msg.contains('socket') ||
         msg.contains('connection') ||
         msg.contains('timeout')) {
-      return 'ไม่สามารถเชื่อมต่ออินเทอร์เน็ตได้';
+      return 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาตรวจสอบเครือข่าย';
     }
     if (msg.contains('email already') || msg.contains('already registered')) {
       return 'อีเมลนี้ถูกใช้งานแล้ว';

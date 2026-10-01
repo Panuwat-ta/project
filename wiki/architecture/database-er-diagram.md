@@ -52,7 +52,7 @@ erDiagram
         text ocr_text "nullable"
         jsonb scam_keywords_found "nullable"
         jsonb reverse_search_results "nullable"
-        float ai_gen_probability "default 0.0"
+        float manipulation_confidence "nullable; เดิมชื่อ ai_gen_probability"
         text xai_explanation "nullable"
         string status "NOT NULL, default pending; CHECK 8 ค่า (ดูหัวข้อ constraints)"
         int progress "NOT NULL, default 0; CHECK 0-100"

@@ -1,0 +1,13 @@
+candidate                                  val    cam9   pilot   tc165  gate
+--- training x01_pyramid_webshot_sourcebalanced (arch=spatial_pyramid, +extra cache)
+x01_pyramid_webshot_sourcebalanced     0.8375 0.5556 0.7273 0.8667  PASS  (chatshot2 0.50 mean=0.386 report-only)
+--- training x02_pyramid_webshot_tokenstats_sourcebalanced (arch=token_stats, +extra cache)
+x02_pyramid_webshot_tokenstats_sourcebalanced 0.8340 0.6667 0.8182 0.8667  PASS  (chatshot2 1.00 mean=0.280 report-only)
+--- training x03_pyramid_webshot_6epochs (arch=spatial_pyramid, +extra cache)
+x03_pyramid_webshot_6epochs            0.8257 0.8889 0.7273 0.8364  fail  (chatshot2 1.00 mean=0.226 report-only)
+                                         - testcases accuracy 0.8363636363636363 < production 0.8606
+--- training x04_pyramid_webshot_lr3e4 (arch=spatial_pyramid, +extra cache)
+x04_pyramid_webshot_lr3e4              0.8345 0.5556 0.7273 0.8364  fail  (chatshot2 0.50 mean=0.288 report-only)
+                                         - testcases accuracy 0.8363636363636363 < production 0.8606
+
+leaderboard: Det-Head/search_runs/webshot_r2_2026-09-29/leaderboard.csv

@@ -1,0 +1,26 @@
+{
+  "selection": "validation-only; maximize F1 subject to overall specificity >= preaudit Det5-A and dedicated Authentic specificity >= det2-b",
+  "threshold": 0.631,
+  "overall": {
+    "acc": 0.861760775141998,
+    "precision": 0.9075503671624929,
+    "recall": 0.80548128342246,
+    "specificity": 0.9180026720106881,
+    "f1": 0.8534749889331562,
+    "tp": 4820,
+    "tn": 5497,
+    "fp": 491,
+    "fn": 1164
+  },
+  "authentic": {
+    "acc": 0.9169590643274854,
+    "precision": 0.0,
+    "recall": 0,
+    "specificity": 0.9169590643274854,
+    "f1": 0,
+    "tp": 0,
+    "tn": 2352,
+    "fp": 213,
+    "fn": 0
+  }
+}

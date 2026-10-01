@@ -1,0 +1,26 @@
+{
+  "512": {
+    "seg_max_abs_diff": 3.135204315185547e-05,
+    "det_logit_abs_diff": 9.059906005859375e-06
+  },
+  "640": {
+    "seg_max_abs_diff": 7.033348083496094e-05,
+    "det_logit_abs_diff": 0.6888997554779053
+  },
+  "896x640": {
+    "seg_max_abs_diff": 6.67572021484375e-05,
+    "det_logit_abs_diff": 0.35490918159484863
+  },
+  "1024": {
+    "seg_max_abs_diff": 6.508827209472656e-05,
+    "det_logit_abs_diff": 0.28535890579223633
+  },
+  "1280": {
+    "seg_max_abs_diff": 6.67572021484375e-05,
+    "det_logit_abs_diff": 0.6595344543457031
+  },
+  "1536": {
+    "seg_max_abs_diff": 5.054473876953125e-05,
+    "det_logit_abs_diff": 0.01709127426147461
+  }
+}

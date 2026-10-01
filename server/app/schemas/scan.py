@@ -30,7 +30,9 @@ class ScanResponse(BaseModel):
     ocr_text: Optional[str] = None
     scam_keywords_found: Optional[List[str]] = None
     reverse_search_results: Optional[Dict[str, Any]] = None
-    ai_gen_probability: float
+    # ความม่ันใจระดับภาพว่าภาพถูกตัดต่อหรือดัดแปลง (จาก Det Head)
+    # Optional เพราะแถวเดิมก่อน migration ไม่มีค่าที่เป็นความหมายนี้
+    manipulation_confidence: Optional[float] = None
     xai_explanation: Optional[str] = None
     
     status: str

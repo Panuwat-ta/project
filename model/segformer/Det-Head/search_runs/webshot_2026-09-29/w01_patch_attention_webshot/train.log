@@ -1,0 +1,21 @@
+extra cache: +7394 rows from /run/media/panuwat/USB/model/Det-Head/manifests/det-train-v4-webshot.csv
+arch=patch_attention_8x8 params=150146 tokens=64 train=25000 (subsample) val=11972 screening=True device=cuda
+epoch 1/12 val_loss=0.4332 val_acc=0.7820 (41s)
+epoch 2/12 val_loss=0.4061 val_acc=0.7894 (82s)
+epoch 3/12 val_loss=0.3909 val_acc=0.8101 (123s)
+epoch 4/12 val_loss=0.3776 val_acc=0.8107 (164s)
+epoch 5/12 val_loss=0.3715 val_acc=0.8157 (204s)
+epoch 6/12 val_loss=0.3768 val_acc=0.8180 (246s)
+epoch 7/12 val_loss=0.3826 val_acc=0.8126 (287s)
+epoch 8/12 val_loss=0.3608 val_acc=0.8246 (327s)
+epoch 9/12 val_loss=0.3570 val_acc=0.8302 (367s)
+epoch 10/12 val_loss=0.3634 val_acc=0.8247 (406s)
+epoch 11/12 val_loss=0.3548 val_acc=0.8268 (446s)
+epoch 12/12 val_loss=0.3470 val_acc=0.8342 (486s)
+{
+  "best_val_acc": 0.8341964584029402,
+  "best_epoch": 12,
+  "val_f1": 0.8295112943399467,
+  "val_roc_auc": 0.9225300813302184,
+  "val_average_precision": 0.932890709465005
+}

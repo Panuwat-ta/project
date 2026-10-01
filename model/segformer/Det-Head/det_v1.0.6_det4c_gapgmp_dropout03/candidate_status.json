@@ -1,0 +1,23 @@
+{
+  "candidate": "v1.0.6+det4c-gapgmp-dropout03",
+  "status": "research-rejected-before-locked-test",
+  "segformer": "v1.0.6 frozen",
+  "feature": "GAP+GMP over 4 MiT-B2 stages (2048-D)",
+  "val": {
+    "accuracy": 0.8626795856999666,
+    "f1": 0.8584223217361351,
+    "roc_auc": 0.942152213294682,
+    "average_precision": 0.9498001459190387,
+    "macro_dataset_accuracy": 0.86832097638666
+  },
+  "pilot11_dev": {
+    "accuracy": 0.5454545454545454,
+    "tp": 0,
+    "tn": 6,
+    "fp": 3,
+    "fn": 2
+  },
+  "locked_test_44031_opened": false,
+  "production_promoted": false,
+  "reason": "Val improved, but GAP+GMP did not fix the two web photomontage false negatives or Original3/Original7 feature-domain errors. Pilot11 remained 6/11 and Manipulated1/2 scores decreased."
+}

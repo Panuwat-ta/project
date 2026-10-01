@@ -1,0 +1,37 @@
+{
+  "rationale": "Screen-shot domain experiment. Measured 2026-09-29 with the deployed det2b head on 264 authentic, unmodified desktop web screenshots: 45.5% (91/200) and 48.4% (31/64) were flagged as manipulated at threshold 0.5, mean score ~0.48. The same model scored 0/2 on the two authentic LINE/screen captures (chatshot2, mean 0.71). The head has no usable representation of the screenshot/UI domain, and the training manifest contains no screenshot source at all. This block adds Det-Head/det-train-v4-webshot.csv (7,394 rows, all Det label 0) to the Train set and measures whether the screenshot false positives move. Block 2 is the control: the same architectures and seeds without the new data, so any difference is attributable to the added rows and not to run-to-run variance. The screenshot rows are all label 0 on purpose: a screenshot of a phishing site is still an unmodified image, and mapping the source phishing label to Det label 1 would train the head to flag untouched screenshots.",
+  "cache_num_tokens": 64,
+  "extra_cache": "/run/media/panuwat/USB/model/Det-Head/features/v1.0.6-det6-webshot",
+  "protocol": {
+    "subsample": 25000,
+    "epochs": 12,
+    "patience": 4,
+    "note": "Screening only. The webshot rows are always included in the subsample so the comparison is against the previous run, which used the identical 25,000-row budget drawn from the base manifest alone. Screening Val accuracy is not comparable to full-data Val accuracy and never accepts a candidate; the external diagnostics are the gate."
+  },
+  "candidates": [
+    {
+      "name": "w00_control_no_webshot",
+      "arch": "patch_attention_8x8",
+      "extra_cache": null,
+      "note": "Control. Reproduces s00_control_patch_attention_8x8, which scored camera9 18.18%, chatshot2 0/2, pilot11 45.45%, testcases 84.24% under the old camera11 split. Under the camera9/chatshot2 split its numbers will differ slightly, so this run is the reference rather than the archived s00 row."
+    },
+    {
+      "name": "w01_patch_attention_webshot",
+      "arch": "patch_attention_8x8",
+      "extra_cache": "auto",
+      "note": "Primary test: does adding 7,394 authentic screenshot rows change the screenshot false positives?"
+    },
+    {
+      "name": "w02_token_stats_webshot",
+      "arch": "token_stats",
+      "extra_cache": "auto",
+      "note": "The best-scoring variant from the first search (s01 had the joint-highest camera9 among variants). Tests whether the aggregation head plus screenshot data behaves differently."
+    },
+    {
+      "name": "w03_spatial_pyramid_webshot",
+      "arch": "spatial_pyramid",
+      "extra_cache": "auto",
+      "note": "Pyramid aggregation plus screenshot data."
+    }
+  ]
+}

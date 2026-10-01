@@ -79,6 +79,6 @@ def test_live_scan_and_xai_pipeline():
         f"Last status={final_data.get('status')}, progress={final_data.get('progress')}"
     )
     assert final_data.get("visual_score") is not None
-    assert final_data.get("ai_gen_probability") is not None
+    assert final_data.get("manipulation_confidence") is not None
     assert final_data.get("xai_explanation") is not None
     assert len(final_data.get("xai_explanation")) > 10

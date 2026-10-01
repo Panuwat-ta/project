@@ -16,7 +16,7 @@ updated: 2026-09-16
 
 | มิติการวิเคราะห์ | ตัวแปร | ช่วงคะแนน | บทบาทและการวัดผล |
 | :--- | :--- | :--- | :--- |
-| **Visual Anomaly** | `S_visual` | 0–100% | วัดระดับการตัดต่อ/สังเคราะห์ภาพโดยตรง (Splicing, Copy-Move, AI Diffusion) ด้วย SegFormer และ Heatmap (สูตร canonical ดู `Document/model/configs.md` §3) |
+| **Visual Anomaly** | `S_visual` | 0–100% | วัดระดับการตัดต่อ/สังเคราะห์ภาพโดยตรง (Splicing, Copy-Move, AI Diffusion) ด้วย **Det Head** ที่ต่อกับ SegFormer v1.0.6 (สูตร canonical ดู `Document/model/configs.md` §3) ส่วน SegFormer ใช้สร้าง Heatmap และระบุบริเวณที่น่าสงสัยเพื่อ Explainable AI เท่านั้น |
 | **Textual Analysis** | `S_textual` | 0–100% | วัดความอันตรายของข้อความ/คีย์เวิร์ดหลอกลวง (Blacklist, คำเร่งโอนเงิน, สัญญาผลตอบแทนสูง) ด้วย Surya-OCR |
 | **Source Verification** | `S_source` | 0–100% | วัดประวัติการถูกนำไปใช้ซ้ำบนอินเทอร์เน็ต (Reverse Image Search) ผ่าน Google Vision API (ที่มา: นโยบาย heuristic v1 — พบ ≥3 แหล่ง = สูง, =2 = ปานกลาง/ไม่แน่ชัด, ≤1 = ต่ำ) |
 
@@ -37,6 +37,10 @@ S_total = min(100, S_base + Σ_i ∈ secondary [S_i ≥ 40] × 5)
 - **`S_base`**: คะแนนความเสี่ยงของมิติที่รุนแรงที่สุด
 - **Multi-Factor Compounding**: หากตรวจพบความเสี่ยงระดับปานกลางขึ้นไปในมิติอื่น (`≥ 40`) จะบวกคะแนนเพิ่ม `+5` ต่อมิติ (สูงสุดไม่เกิน 100)
 - **Visual Override Rule**: หากตรวจพบร่องรอยการดัดแปลงภาพในระดับวิกฤต (`S_visual ≥ 80`) ระบบจะบังคับระดับผลลัพธ์เป็น **High Risk** ทันที
+
+> **หมายเหตุ 2026-09-30**: ก่อนหน้านี้ `S_visual` คำนวณจาก SegFormer probability map ซึ่งวัดแล้วไม่สามารถทำงานกับชุดข้อมูลนี้ได้ ทั้งสูตร max-prob (ภาพถ่ายจริง 12 MP ได้คะแนน 100 เพราะค่าสูงสุดของพิกเซลราว 12 ล้านจุดเกือบ 1.0 เสมอ) และสูตร Confidence × Coverage (รอยปลอมกินพื้นที่เพียง 0.0–1.6% ทำให้คะแนนเกือบ 0 เสมอ) จึงย้ายมาใช้ Det Head ดูหลักฐานใน `Document/model/configs.md` §3
+>
+> การเลือก Det Head ไม่ได้ใช้ Val accuracy เป็นเกณฑ์ เพราะวัด `pearson r(Val ROC-AUC, real-camera specificity) = -0.037` บน candidate 12 ตัว แสดงว่า Val ไม่มีความสัมพันธ์กับผลบนภาพจริง เกณฑ์จึงเป็น diagnostic ภายนอก (ภาพกล้องจริงข้ามอุปกรณ์, real user uploads, Test-Cases) โดย Det Head ผ่านครบ 3/3 seed
 
 ---
 

@@ -1,0 +1,26 @@
+{
+  "camera9  to2": {
+    "seg_max_abs_diff": 3.743171691894531e-05,
+    "det_logit_abs_diff": 4.291534423828125e-06,
+    "det_score_pt": 0.016563504132584356,
+    "det_score_onnx": 0.016563574038196503
+  },
+  "xdev104 to169": {
+    "seg_max_abs_diff": 3.135204315185547e-05,
+    "det_logit_abs_diff": 9.059906005859375e-06,
+    "det_score_pt": 0.0029357653675255425,
+    "det_score_onnx": 0.002935738847971462
+  },
+  "chatshot to1": {
+    "seg_max_abs_diff": 2.5987625122070312e-05,
+    "det_logit_abs_diff": 6.899237632751465e-06,
+    "det_score_pt": 0.4662707324866999,
+    "det_score_onnx": 0.466269015526702
+  },
+  "testcases splicing": {
+    "seg_max_abs_diff": 1.049041748046875e-05,
+    "det_logit_abs_diff": 1.430511474609375e-05,
+    "det_score_pt": 0.9998636212984002,
+    "det_score_onnx": 0.9998636232490331
+  }
+}

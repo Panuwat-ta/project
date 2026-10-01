@@ -1,0 +1,11 @@
+{
+  "dataset_root": "/run/media/panuwat/USB/model/Test-Cases/pairs",
+  "pair_count": 30,
+  "versions": [
+    "v1.0.8"
+  ],
+  "artifacts_per_version": 30,
+  "analysis_max_side": 1024,
+  "threshold_percent": 40.0,
+  "interpretation": "Manual qualitative comparison only. Original/manipulated pairs have no ground-truth masks, so these scores are not IoU, Dice, or accuracy."
+}

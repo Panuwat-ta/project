@@ -16,20 +16,23 @@ import argparse
 import ctypes
 import re
 from pathlib import Path
+import sys
+
+ROOT_DIR = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT_DIR / "Det-Head"))
 
 import onnx
 import torch
 from mmseg.apis import init_model
 
-from det_head import DetSegWrapper, load_det
+from det_head import DetSegWrapper
+from eval_det_diagnostics import load_any_det
 
 # torch.export triggers loading of libbz2 during tracing; preload to avoid ImportError
 try:
     ctypes.CDLL("/lib64/libbz2.so.1", mode=ctypes.RTLD_GLOBAL)
 except Exception as e:
     print(f"[warn] could not preload libbz2: {e}")
-
-ROOT_DIR = Path(__file__).resolve().parent
 
 
 class ONNXWrapper(torch.nn.Module):
@@ -51,7 +54,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output", type=Path, help="Output .onnx path")
     parser.add_argument("--height", type=int, default=1024)
     parser.add_argument("--width", type=int, default=1024)
-    parser.add_argument("--opset", type=int, default=17)
+    parser.add_argument("--opset", type=int, default=18, help="ONNX opset (default 18; required by current PyTorch exporter for Resize)")
     parser.add_argument("--det-checkpoint", type=Path, default=None,
                         help="ไฟล์ det_head.pth (Track B) ถ้าระบุจะ export 2 outputs: logits + det_logit")
     return parser.parse_args()
@@ -93,7 +96,10 @@ def main() -> None:
     if args.det_checkpoint is not None:
         if not args.det_checkpoint.is_file():
             raise FileNotFoundError(f"ไม่พบ det checkpoint: {args.det_checkpoint}")
-        wrapped_model = DetSegWrapper(model, load_det(str(args.det_checkpoint), "cpu")).eval()
+        # load_any_det dispatches on the arch recorded in the checkpoint meta, so
+        # this also handles the local-token family (det5/det6) and the token_stats
+        # variant. det_head.load_det only knows the pooled archs and would raise.
+        wrapped_model = DetSegWrapper(model, load_any_det(str(args.det_checkpoint), "cpu")).eval()
         output_names = ["logits", "det_logit"]
     else:
         wrapped_model = ONNXWrapper(model).eval()

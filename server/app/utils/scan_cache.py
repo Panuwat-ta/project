@@ -1,8 +1,9 @@
-"""Result-cache seam for scan inference (keyed by image_hash).
+"""Result-cache seam for scan inference (keyed by model namespace + image_hash).
 
 Plain functions taking the client as an argument so tests can pass a fake
 without Redis. Behavior identical to the inline code in scan_service.
 """
+import hashlib
 import json
 from typing import Any, Optional
 
@@ -11,8 +12,19 @@ from app.core.config import settings
 CACHE_KEY_PREFIX = "scan_result"
 
 
+def model_cache_namespace() -> str:
+    """Stable namespace for the configured ONNX model path.
+
+    Model artifacts use versioned paths. Hashing the configured path keeps old
+    Redis entries available for rollback while preventing a new deployment
+    from reusing inference produced by the previous model.
+    """
+    model_path = str(settings.ONNX_MODEL_PATH)
+    return hashlib.sha1(model_path.encode("utf-8")).hexdigest()[:12]
+
+
 def cache_key(image_hash: str) -> str:
-    return f"{CACHE_KEY_PREFIX}:{image_hash}"
+    return f"{CACHE_KEY_PREFIX}:{model_cache_namespace()}:{image_hash}"
 
 
 async def get_cached_scan(client: Any, image_hash: str) -> Optional[dict]:

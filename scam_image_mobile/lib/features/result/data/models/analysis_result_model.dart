@@ -15,7 +15,7 @@ class AnalysisResultModel extends AnalysisResult {
     super.imageUrl,
     super.heatmapUrl,
     super.xaiExplanation,
-    super.aiGenProbability,
+    super.manipulationConfidence,
     super.ocrText,
     super.scamKeywords,
     required super.createdAt,
@@ -73,8 +73,10 @@ class AnalysisResultModel extends AnalysisResult {
             type: 'visual',
             score: json['visual_score'] as int,
             title: 'visual',
-            details: json['ai_gen_probability'] != null
-                ? ['AI Probability: ${json['ai_gen_probability']}']
+            details: json['manipulation_confidence'] != null
+                ? [
+                    'ความม่ันใจว่าถูกดัดแปลง: ${((json['manipulation_confidence'] as num) * 100).round()}%',
+                  ]
                 : [],
           ),
         );
@@ -97,8 +99,8 @@ class AnalysisResultModel extends AnalysisResult {
     final xaiExplanation =
         json['xai_explanation'] as String? ?? json['xaiExplanation'] as String?;
     final aiGenProb =
-        (json['ai_gen_probability'] as num?)?.toDouble() ??
-        (json['aiGenProbability'] as num?)?.toDouble();
+        (json['manipulation_confidence'] as num?)?.toDouble() ??
+        (json['manipulationConfidence'] as num?)?.toDouble();
     final ocrText = json['ocr_text'] as String? ?? json['ocrText'] as String?;
     final scamKeywords = json['scam_keywords_found'] != null
         ? List<String>.from(json['scam_keywords_found'] as List)
@@ -124,7 +126,7 @@ class AnalysisResultModel extends AnalysisResult {
         json['heatmapUrl'] as String? ?? json['heatmap_image_url'] as String?,
       ),
       xaiExplanation: xaiExplanation,
-      aiGenProbability: aiGenProb,
+      manipulationConfidence: aiGenProb,
       ocrText: ocrText,
       scamKeywords: scamKeywords,
       createdAt: json['createdAt'] != null

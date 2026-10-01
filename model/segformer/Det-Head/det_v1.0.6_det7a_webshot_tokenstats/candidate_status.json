@@ -1,0 +1,57 @@
+{
+  "candidate": "det7a_webshot_tokenstats",
+  "status": "passed-gate-awaiting-human-promotion-decision",
+  "training": {
+    "arch": "token_stats",
+    "n_params": 401665,
+    "n_train": 103029,
+    "n_train_base": 95635,
+    "n_train_webshot": 7394,
+    "screening": false,
+    "source_balanced": true,
+    "best_epoch": 25,
+    "epochs_run": 30
+  },
+  "val": {
+    "accuracy": 0.8629301703975943,
+    "f1": 0.8571925855016969,
+    "roc_auc": 0.9441665751288674,
+    "average_precision": 0.9510472809085673
+  },
+  "diagnostics": {
+    "camera9_specificity": 0.5555555555555556,
+    "camera9_mean_score": 0.3790830883346106,
+    "chatshot2_accuracy": 0.5,
+    "chatshot2_specificity": 0.5,
+    "chatshot2_mean_score": 0.37768688377363624,
+    "pilot11_accuracy": 0.7272727272727273,
+    "pilot11_specificity": 0.8888888888888888,
+    "testcases_accuracy": 0.8606060606060606,
+    "testcases_specificity": 0.8888888888888888,
+    "testcases_recall": 0.85
+  },
+  "gate_passed": true,
+  "gate_failures": [],
+  "compared_to_production": {
+    "det2b_val_accuracy": 0.85925492816572,
+    "det2b_camera9_specificity": 0.3333333333333333,
+    "det2b_pilot11_accuracy": 0.5454545454545454,
+    "det2b_testcases_accuracy": 0.8606060606060606,
+    "det2b_chatshot2_accuracy": 0.0
+  },
+  "limitations": [
+    "camera9 has 9 images, so one image moves the metric 11.1 points; the 55.56% figure is coarse",
+    "chatshot2 has 2 images and is report-only by design; det7a gets 1/2",
+    "the added data is desktop web screenshots at a uniform 1920x1080 and does not cover mobile LINE captures",
+    "pilot11 recall on the 2 manipulated images is 0.0, unchanged from production",
+    "screening is over: this row is the full 103,029-row protocol"
+  ],
+  "locked_test_opened": false,
+  "production_changed": false,
+  "next_steps": [
+    "run 2-3 more seeds at full data to confirm the gate result is not seed luck",
+    "collect mobile LINE/screen captures per dataset_specs/chat-screenshot-v1.md",
+    "ONNX export + parity + shadow rollout only after a human decides to promote"
+  ],
+  "created_at": "2026-09-30"
+}

@@ -1,0 +1,17 @@
+arch=spatial_pyramid params=2797825 tokens=64 train=24999 (subsample) val=11972 screening=True device=cuda
+epoch 1/12 val_loss=0.3830 val_acc=0.7870 (39s)
+epoch 2/12 val_loss=0.3740 val_acc=0.7973 (66s)
+epoch 3/12 val_loss=0.3565 val_acc=0.8156 (89s)
+epoch 4/12 val_loss=0.3457 val_acc=0.8296 (105s)
+epoch 5/12 val_loss=0.3468 val_acc=0.8292 (139s)
+epoch 6/12 val_loss=0.3426 val_acc=0.8291 (160s)
+epoch 7/12 val_loss=0.3565 val_acc=0.8212 (177s)
+epoch 8/12 val_loss=0.3538 val_acc=0.8209 (188s)
+early stop best=0.8296 epoch=4
+{
+  "best_val_acc": 0.8296024056130973,
+  "best_epoch": 4,
+  "val_f1": null,
+  "val_roc_auc": null,
+  "val_average_precision": null
+}

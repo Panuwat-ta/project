@@ -1,0 +1,14 @@
+[v1.0.8-macro] loading segformer_v1_0_8_macro_dynamic.onnx
+[v1.0.8-macro] 10/105 cases
+[v1.0.8-macro] 20/105 cases
+[v1.0.8-macro] 30/105 cases
+[v1.0.8-macro] 40/105 cases
+[v1.0.8-macro] 50/105 cases
+[v1.0.8-macro] 60/105 cases
+[v1.0.8-macro] 70/105 cases
+[v1.0.8-macro] 80/105 cases
+[v1.0.8-macro] 90/105 cases
+[v1.0.8-macro] 100/105 cases
+[v1.0.8-macro] 105/105 cases
+Wrote quantitative results to work_dirs/v1.0.8/test_eval/local105_macro250000
+Release gate passed: v1.0.8-macro mDice 87.19% >= 85.00%

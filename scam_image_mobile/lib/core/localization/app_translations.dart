@@ -244,7 +244,8 @@ class AppTranslations {
       'notif_hours_ago': '{count} ชั่วโมงที่แล้ว',
       'notif_time_suffix': ' น.',
       'scan_error_analysis_failed': 'การวิเคราะห์ล้มเหลว',
-      'scan_error_network': 'ไม่สามารถเชื่อมต่ออินเทอร์เน็ตได้',
+      'scan_error_network':
+          'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาตรวจสอบเครือข่าย',
       'scan_error_upload': 'เกิดข้อผิดพลาดในการอัปโหลด กรุณาลองใหม่',
       'home_error_generic': 'เกิดข้อผิดพลาด กรุณาลองใหม่',
       // Crop
@@ -321,7 +322,9 @@ class AppTranslations {
       'result_xai': 'คำอธิบายจาก AI (XAI)',
       'result_xai_unavailable':
           'ไม่มีคำอธิบายเพิ่มเติมจากระบบ AI สำหรับรายการนี้',
-      'result_ai_generated_probability': 'ความน่าจะเป็นของภาพที่สร้างโดย AI',
+      // เดิมคือ 'ความน่าจะเป็นของภาพที่สร้างโดย AI' ซึ่งไม่ตรงกับค่าจริง เพราะ
+      // โมเดลวัดการถูกตัดต่อหรือดัดแปลง ไม่ได้แยกการสังเคราะห์ด้วย AI
+      'result_ai_generated_probability': 'ความม่ันใจว่าถูกดัดแปลง',
       'result_anomaly_score': 'คะแนนความผิดปกติ',
       'history_ocr_unavailable': 'ไม่มีข้อมูลข้อความจากการวิเคราะห์',
       'history_no_suspicious_keywords': 'ไม่พบคำสำคัญที่ระบบระบุว่าน่าสงสัย',
@@ -624,7 +627,8 @@ class AppTranslations {
       'notif_hours_ago': '{count} hr ago',
       'notif_time_suffix': '',
       'scan_error_analysis_failed': 'Analysis failed',
-      'scan_error_network': 'Could not connect to the internet',
+      'scan_error_network':
+          'Could not connect to the server. Check your network connection.',
       'scan_error_upload': 'Upload failed. Please try again.',
       'home_error_generic': 'Something went wrong. Please try again.',
       // Crop
@@ -701,7 +705,7 @@ class AppTranslations {
       'result_xai': 'AI Explanation (XAI)',
       'result_xai_unavailable':
           'No additional AI explanation is available for this scan.',
-      'result_ai_generated_probability': 'AI-generated probability',
+      'result_ai_generated_probability': 'Manipulation confidence',
       'result_anomaly_score': 'Anomaly score',
       'history_ocr_unavailable': 'No text-analysis data is available',
       'history_no_suspicious_keywords':

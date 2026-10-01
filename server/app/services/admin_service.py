@@ -501,7 +501,7 @@ async def get_report_detail(db: AsyncSession, report_id: int) -> Dict[str, Any]:
                 "exif_data": scan.exif_data,
                 "ocr_text": scan.ocr_text,
                 "scam_keywords_found": scan.scam_keywords_found,
-                "ai_gen_probability": scan.ai_gen_probability,
+                "manipulation_confidence": scan.manipulation_confidence,
                 "created_at": scan.created_at,
                 "status": scan.status,
             }

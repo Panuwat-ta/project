@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "dataset": {
+    "id": "scamguard-locked-multisource-test-v1",
+    "sample_count": null,
+    "test_batches": 2504
+  },
+  "versions": [
+    {
+      "version": "v1.0.8-macro",
+      "checkpoint": "work_dirs/v1.0.8/best_core_macro_forgery_dice_iter_250000.pth",
+      "onnx_model": "work_dirs/v1.0.8/segformer_v1_0_8_macro_dynamic.onnx",
+      "training_log": "work_dirs/v1.0.8/20260923_184557/vis_data/scalars.json",
+      "training_run_id": "20260923_184557"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "rationale": "Follow-up to the webshot experiment. Adding the 7,394 authentic screenshot rows moved camera9 from 22.22% to 88.89% and chatshot2 from 0/2 to 2/2, but cost sparse-manipulation recall on testcases (fn 19 -> 20 overall, inpainting recall 0.60 -> 0.47, pairs recall 0.83 -> 0.77) while testcases specificity stayed identical at 0.8444 with fp=7 in both runs. So the loss is missed detections, not new false positives, and the cause is 7,394 extra label0 rows tilting the decision boundary toward authentic. This block tests the two direct counters: source-balanced sampling so the new dataset does not dominate, and a smaller webshot share so the tilt is partial. w03 is the reference, not a control: it is the same arch, seed and subsample budget as w03, differing only in the sampling or the proportion.",
+  "cache_num_tokens": 64,
+  "protocol": {
+    "subsample": 25000,
+    "epochs": 12,
+    "patience": 4,
+    "note": "Screening only, same 25,000-row budget and same seed as the w-block so the rows are directly comparable to w03 (camera9 88.89%, chatshot2 2/2, pilot11 72.73%, testcases 83.64%)."
+  },
+  "candidates": [
+    {
+      "name": "x01_pyramid_webshot_sourcebalanced",
+      "arch": "spatial_pyramid",
+      "extra_cache": "auto",
+      "source_balanced": true,
+      "note": "Direct counter to the tilt: source-balanced sampling gives every (label,dataset) group equal expected sampling mass, so webshot-v1 stops outweighing the manipulation datasets."
+    },
+    {
+      "name": "x02_pyramid_webshot_tokenstats_sourcebalanced",
+      "arch": "token_stats",
+      "extra_cache": "auto",
+      "source_balanced": true,
+      "note": "Same counter on token_stats, which tied spatial_pyramid on camera9 and chatshot2 but was worse on testcases (79.39%)."
+    },
+    {
+      "name": "x03_pyramid_webshot_6epochs",
+      "arch": "spatial_pyramid",
+      "extra_cache": "auto",
+      "epochs": 6,
+      "note": "Fewer epochs. If the tilt is an overfitting effect, stopping earlier should keep the screenshot gains and return some sparse-edit recall."
+    },
+    {
+      "name": "x04_pyramid_webshot_lr3e4",
+      "arch": "spatial_pyramid",
+      "extra_cache": "auto",
+      "lr": 0.0003,
+      "note": "Higher LR, the value the det2b/det4 runs used."
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "status": "rejected-before-locked-test",
+  "reason": "audited hard exclusion of 135 PSBattles source-original rows caused strong real-camera and pilot false-positive regression; threshold calibration on Val did not explain/fix the external regression",
+  "best_val_acc": 0.863848980955563,
+  "best_epoch": 16,
+  "locked_test_opened": false,
+  "production_changed": false,
+  "next_experiment": "weak-label hard-negative weighting for the 135 provenance-uncertain PSBattles source-original rows; select weight on Val only"
+}

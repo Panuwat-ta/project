@@ -1,0 +1,20 @@
+arch=patch_attention_8x8 params=150146 tokens=64 train=24999 (subsample) val=11972 screening=True device=cuda
+epoch 1/12 val_loss=0.4247 val_acc=0.7766 (42s)
+epoch 2/12 val_loss=0.3941 val_acc=0.7977 (85s)
+epoch 3/12 val_loss=0.3810 val_acc=0.8022 (120s)
+epoch 4/12 val_loss=0.3667 val_acc=0.8110 (160s)
+epoch 5/12 val_loss=0.3629 val_acc=0.8128 (204s)
+epoch 6/12 val_loss=0.3493 val_acc=0.8289 (245s)
+epoch 7/12 val_loss=0.3528 val_acc=0.8241 (289s)
+epoch 8/12 val_loss=0.3509 val_acc=0.8278 (332s)
+epoch 9/12 val_loss=0.3543 val_acc=0.8249 (375s)
+epoch 10/12 val_loss=0.3386 val_acc=0.8318 (418s)
+epoch 11/12 val_loss=0.3447 val_acc=0.8308 (460s)
+epoch 12/12 val_loss=0.3427 val_acc=0.8319 (503s)
+{
+  "best_val_acc": 0.83194119612429,
+  "best_epoch": 12,
+  "val_f1": null,
+  "val_roc_auc": null,
+  "val_average_precision": null
+}

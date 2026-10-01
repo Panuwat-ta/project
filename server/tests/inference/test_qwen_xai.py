@@ -14,13 +14,13 @@ def test_qwen_xai_explanation_generation():
     """Test generating explanation using Qwen2.5-1.5B model or intelligent fallback."""
     region = "บริเวณข้อความยอดเงินและตราประทับ"
     visual_score = 85
-    ai_gen_probability = 0.90
+    manipulation_confidence = 0.90
     scam_keywords = ["ยอดเงิน", "โอนเงินสำเร็จ"]
 
     explanation = inference_service.generate_xai_explanation(
         region=region,
         visual_score=visual_score,
-        ai_gen_probability=ai_gen_probability,
+        manipulation_confidence=manipulation_confidence,
         scam_keywords=scam_keywords
     )
 

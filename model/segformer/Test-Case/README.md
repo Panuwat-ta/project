@@ -10,8 +10,8 @@
 
 ## ข้อมูลทดสอบ
 
-- Masked cases: `/home/panuwat/Pictures/Test-Cases/with_mask`
-- Qualitative pairs: `/home/panuwat/Pictures/Test-Cases/pairs`
+- Masked cases: `/run/media/panuwat/USB/model/Test-Cases/with_mask`
+- Qualitative pairs: `/run/media/panuwat/USB/model/Test-Cases/pairs`
 - โมเดลและ checkpoint metadata: `../tests_model/evaluation_manifest.json`
 
 ตัว evaluator แบบมี mask ใช้ inference แบบเดียวกับ production: tile 512×512, overlap 64, ImageNet normalization, softmax class 1 และประกอบ probability map กลับเป็นขนาดภาพจริง
@@ -30,8 +30,8 @@ cd /home/panuwat/project/model/segformer
 รันเฉพาะบางเวอร์ชัน:
 
 ```bash
-./Test-Case/run_test_cases.sh v1.0.5
-./Test-Case/run_test_cases.sh v1.0.4 v1.0.5
+./Test-Case/run_test_cases.sh v1.0.8
+./Test-Case/run_test_cases.sh v1.0.6 v1.0.7 v1.0.8
 ```
 
 รันเฉพาะ quantitative หรือ qualitative:
@@ -57,10 +57,12 @@ output/
 └── qualitative/
     ├── qualitative_pair_scores.csv
     ├── summary.json
-    ├── v1.0.0/pair001.png ... pair030.png
-    ├── ...
-    └── v1.0.5/pair001.png ... pair030.png
+    ├── v1.0.6/pair001.png ... pair030.png
+    ├── v1.0.7/pair001.png ... pair030.png
+    └── v1.0.8/pair001.png ... pair030.png
 ```
+
+ไฟล์สรุปปัจจุบันมีผลที่เก็บไว้ของ `v1.0.6`–`v1.0.8` (105 ภาพและ 30 คู่ต่อรุ่น) การรันแบบเลือกรุ่นจะเขียนทับ CSV/summary รวม จึงควรสำรองผลก่อนรันหรือส่งทั้งสามรุ่นเพื่อสร้างผลรวมใหม่
 
 รายละเอียดขั้นตอนตรวจด้วยคนและ Expected Results อยู่ใน `manual_test_cases.md`
 

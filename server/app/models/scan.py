@@ -37,7 +37,11 @@ class Scan(Base):
     ocr_text = Column(Text)
     scam_keywords_found = Column(JSONB)
     reverse_search_results = Column(JSONB)
-    ai_gen_probability = Column(Float, default=0.0)
+    # ความม่ันใจระดับภาพว่าภาพถูกตัดต่อหรือดัดแปลง (จาก Det Head)
+    # ชื่อเดิม ai_gen_probability ถูก rename เมื่อ 2026-09-30 เพราะค่าเดิมมาจาก
+    # prob_map.max() ระดับพิกเซล ซึ่งไม่ได้วัดการสังเคราะห์ด้วย AI
+    # ดู migrations/versions/f1a2b3c4d5e6_*.py
+    manipulation_confidence = Column(Float, nullable=True, default=None)
     xai_explanation = Column(Text, nullable=True)
 
     status = Column(String(20), nullable=False, default="pending")

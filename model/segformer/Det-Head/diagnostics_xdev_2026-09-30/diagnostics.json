@@ -1,0 +1,54 @@
+{
+  "checkpoint": "/home/panuwat/project/model/segformer/work_dirs/v1.0.6/best_mIoU_iter_195000.pth",
+  "threshold": 0.5,
+  "heads": {
+    "det2b": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det2b_mlp_source_balanced/det_head.pth",
+    "det7a": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det7a_webshot_tokenstats/head.pth",
+    "det7b": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det7b_webshot_camera/head.pth"
+  },
+  "sets": {
+    "cameraxdev104": {
+      "det2b": {
+        "n": 104,
+        "tp": 0,
+        "tn": 31,
+        "fp": 73,
+        "fn": 0,
+        "accuracy": 0.2980769230769231,
+        "precision": 0.0,
+        "recall": null,
+        "specificity": 0.2980769230769231,
+        "f1": null,
+        "mean_score": 0.6561815534987715
+      },
+      "det7a": {
+        "n": 104,
+        "tp": 0,
+        "tn": 61,
+        "fp": 43,
+        "fn": 0,
+        "accuracy": 0.5865384615384616,
+        "precision": 0.0,
+        "recall": null,
+        "specificity": 0.5865384615384616,
+        "f1": null,
+        "mean_score": 0.4332863207550499
+      },
+      "det7b": {
+        "n": 104,
+        "tp": 0,
+        "tn": 90,
+        "fp": 14,
+        "fn": 0,
+        "accuracy": 0.8653846153846154,
+        "precision": 0.0,
+        "recall": null,
+        "specificity": 0.8653846153846154,
+        "f1": null,
+        "mean_score": 0.2294988579216706
+      },
+      "elapsed_s": 15.48
+    }
+  },
+  "created_at": "2026-09-30 09:46:51"
+}

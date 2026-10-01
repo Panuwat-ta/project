@@ -5,7 +5,7 @@
 ## นิยามผลประเมิน
 
 - **Validation** — metrics ระหว่างการเทรน ใช้เลือก checkpoint และวิเคราะห์ convergence ภายใน run เท่านั้น ชุดข้อมูล/protocol ต่างกันระหว่างเวอร์ชันจึงห้ามใช้จัดอันดับข้ามรุ่น
-- **Common Test** — locked test set เดียวกันสำหรับ `v1.0.0`–`v1.0.5` เป็นแหล่งเดียวที่ใช้เปรียบเทียบและจัดอันดับในรายงาน โดยรับเฉพาะ log ที่จบครบ 2,504 batches
+- **Common Test** — locked test set เดียวกันสำหรับ `v1.0.0`–`v1.0.8` เป็นแหล่งเดียวที่ใช้เปรียบเทียบและจัดอันดับในรายงาน โดยรับเฉพาะ log ที่จบครบ 2,504 batches
 - **Qualitative Demo** — ภาพเลือกมาดู heatmap/prediction ไม่มี sampling protocol และไม่ใช่ benchmark หรือ accuracy
 - **Qualitative ONNX Example** — ภาพสาธิต ONNX ที่ไม่มี ground-truth mask จึงไม่รายงาน IoU, Dice หรือ accuracy
 
@@ -55,7 +55,6 @@ MPLCONFIGDIR=/tmp/matplotlib-scamguard venv/bin/python -m unittest tests_model/r
 
 แต่ละ `v/<version>/` มี:
 
-- `test_qualitative_onnx.py` — entry point สำหรับทดสอบ ONNX เฉพาะเวอร์ชันนั้น
 - `<version>_loss.{png,svg}`
 - `<version>_metrics.{png,svg}`
 - `<version>_qualitative_onnx_example.{png,svg}`
@@ -63,10 +62,10 @@ MPLCONFIGDIR=/tmp/matplotlib-scamguard venv/bin/python -m unittest tests_model/r
 รันทดสอบ ONNX แยกเวอร์ชันได้จาก `model/segformer/` เช่น:
 
 ```bash
-MPLCONFIGDIR=/tmp/matplotlib-scamguard venv/bin/python tests_model/v/v1.0.5/test_qualitative_onnx.py
+MPLCONFIGDIR=/tmp/matplotlib-scamguard venv/bin/python tests_model/test_qualitative_onnx.py v1.0.8
 ```
 
-สคริปต์ของแต่ละรุ่นเรียก plotting/preprocessing core เดียวกัน เพื่อให้ผลต่างเกิดจาก ONNX model ไม่ใช่ implementation ที่ต่างกัน
+สคริปต์กลางเรียก plotting/preprocessing core เดียวกัน เพื่อให้ผลต่างเกิดจาก ONNX model ไม่ใช่ implementation ที่ต่างกัน
 
 ## ขั้นตอนเพิ่มโมเดลรุ่นใหม่
 
@@ -74,7 +73,7 @@ MPLCONFIGDIR=/tmp/matplotlib-scamguard venv/bin/python tests_model/v/v1.0.5/test
 2. เลือก checkpoint จาก validation ภายใน run; อย่าใช้ validation ต่างชุดจัดอันดับข้ามรุ่น
 3. รัน `./tests_model/add.sh` แล้วกรอก checkpoint, ONNX, training log/run ID และ test log/run ID ทีละช่อง
 4. สคริปต์จะตรวจ path, log completeness, checkpoint iteration และ path ซ้ำ ก่อนเพิ่ม manifest และ regression metrics
-5. สคริปต์จะสร้าง `v/<version>/test_qualitative_onnx.py`, รัน parser/model unit tests และสร้างรายงานทั้งหมด
+5. สคริปต์จะสร้าง `v/<version>/`, รัน parser/model unit tests และสร้างรายงานทั้งหมด
 6. ตรวจผลใน `report/figs/` และ `v/<version>/` แล้วอัปเดต `report/reportmodel.md` จาก `common_test_summary.csv`
 
 วิธีแนะนำแบบ interactive:
@@ -87,13 +86,13 @@ MPLCONFIGDIR=/tmp/matplotlib-scamguard venv/bin/python tests_model/v/v1.0.5/test
 
 ```bash
 ./tests_model/add-v-mode.sh \
-  --version v1.0.6 \
-  --checkpoint work_dirs/v1.0.6/best_mIoU_iter_200000.pth \
-  --onnx-model work_dirs/v1.0.6/segformer_v1_0_6_dynamic.onnx \
-  --training-log work_dirs/v1.0.6/TRAIN_RUN/vis_data/scalars.json \
-  --training-run-id TRAIN_RUN \
-  --test-log work_dirs/v1.0.6/test_eval/TEST_RUN/TEST_RUN.log \
-  --test-run-id TEST_RUN
+  --version v1.0.8 \
+  --checkpoint work_dirs/v1.0.8/best_mIoU_iter_207500.pth \
+  --onnx-model work_dirs/v1.0.8/segformer_v1_0_8_dynamic.onnx \
+  --training-log work_dirs/v1.0.8/20260923_184557/vis_data/scalars.json \
+  --training-run-id 20260923_184557 \
+  --test-log work_dirs/v1.0.8/test_eval/locked_miou_207500/20260925_232201/20260925_232201.log \
+  --test-run-id 20260925_232201
 ```
 
 รายการสีและรายการ ONNX tests อ่านจาก manifest อัตโนมัติ จึงไม่ต้องแก้ `plot_training.py`, `test_plot_training.py` หรือ `test_qualitative_onnx.sh` เมื่อเพิ่มรุ่นตามขั้นตอนนี้

@@ -1,0 +1,20 @@
+arch=token_stats_topk params=535042 tokens=64 train=24999 (subsample) val=11972 screening=True device=cuda
+epoch 1/12 val_loss=0.4033 val_acc=0.7948 (40s)
+epoch 2/12 val_loss=0.3876 val_acc=0.8001 (70s)
+epoch 3/12 val_loss=0.3821 val_acc=0.8031 (91s)
+epoch 4/12 val_loss=0.3869 val_acc=0.7987 (113s)
+epoch 5/12 val_loss=0.3682 val_acc=0.8154 (148s)
+epoch 6/12 val_loss=0.3733 val_acc=0.8122 (183s)
+epoch 7/12 val_loss=0.3732 val_acc=0.8133 (228s)
+epoch 8/12 val_loss=0.3596 val_acc=0.8209 (272s)
+epoch 9/12 val_loss=0.3603 val_acc=0.8253 (316s)
+epoch 10/12 val_loss=0.3668 val_acc=0.8152 (357s)
+epoch 11/12 val_loss=0.3553 val_acc=0.8252 (388s)
+epoch 12/12 val_loss=0.3589 val_acc=0.8233 (429s)
+{
+  "best_val_acc": 0.8253424657534246,
+  "best_epoch": 9,
+  "val_f1": null,
+  "val_roc_auc": null,
+  "val_average_precision": null
+}

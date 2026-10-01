@@ -1,0 +1,172 @@
+{
+  "meta": {
+    "seg_checkpoint": "best_mIoU_iter_195000.pth",
+    "seg_checkpoint_sha1": "86d7d250c1f9d6dd4608531fcc5753c4109a4434",
+    "config": "/home/panuwat/project/model/segformer/configs/segformer_mit-b2-v11.py",
+    "data_hash": "9805cb31cfde89e47fb79fb8ac8aef1996dc6cfd",
+    "n_train": 95770,
+    "n_val": 11972,
+    "alpha": 0.0,
+    "lr": 0.0001,
+    "seed": 42,
+    "det_arch": "mlp",
+    "dropout": 0.2,
+    "best_val_acc": 0.861760775141998,
+    "time": "2026-09-29 01:08:48",
+    "training_mode": "cached_features",
+    "feature_cache": "/run/media/panuwat/USB/model/Det-Head/features/v1.0.6-det2-clean",
+    "feature_cache_meta": {
+      "format_version": 2,
+      "feature_type": "SegFormer MiT-B2 pooled 4-stage features",
+      "vector_dim": 1024,
+      "config": "/home/panuwat/project/model/segformer/configs/segformer_mit-b2-v11.py",
+      "checkpoint": "/home/panuwat/project/model/segformer/work_dirs/v1.0.6/best_mIoU_iter_195000.pth",
+      "checkpoint_sha1": "86d7d250c1f9d6dd4608531fcc5753c4109a4434",
+      "input_size": [
+        512,
+        512
+      ],
+      "amp": true,
+      "limit": null,
+      "splits": [
+        {
+          "split": "train",
+          "csv": "/run/media/panuwat/USB/model/Det-Head/manifests/det-train-v2-clean.csv",
+          "csv_sha1": "31f4e6ef8aeb0048c897876f8e398ef9b4689c09",
+          "samples": 95770,
+          "features_shape": [
+            95770,
+            1024
+          ],
+          "dtype": "float32"
+        },
+        {
+          "split": "val",
+          "csv": "/run/media/panuwat/USB/model/Det-Head/manifests/det-val-v2-clean.csv",
+          "csv_sha1": "c70bc31b910db2a920afb447411ca416e7721593",
+          "samples": 11972,
+          "features_shape": [
+            11972,
+            1024
+          ],
+          "dtype": "float32"
+        },
+        {
+          "split": "test",
+          "csv": "/run/media/panuwat/USB/model/Det-Head/manifests/det-test-v2-clean.csv",
+          "csv_sha1": "cff6b205fa3b6e46120dd3fcee2de00ff8281afd",
+          "samples": 44031,
+          "features_shape": [
+            44031,
+            1024
+          ],
+          "dtype": "float32"
+        }
+      ],
+      "created_at": "2026-09-28 22:16:29",
+      "derived_from": "/run/media/panuwat/USB/model/Det-Head/features/v1.0.6-det1",
+      "cleaning": "cross-split decoded-pixel dedup; test>val>train priority; conflicting labels quarantine all",
+      "exclusions_csv": "/run/media/panuwat/USB/model/Det-Head/manifests/det-v2-clean-exclusions.csv"
+    },
+    "feature_batch_size": 4096,
+    "source_balanced": true,
+    "hard_mining_csv": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det2b_mlp_source_balanced/hard_mining_train/hard_examples.csv",
+    "hard_boost": 1.5,
+    "hard_matched": 18977,
+    "init_det_checkpoint": "/home/panuwat/project/model/segformer/Det-Head/det_v1.0.6_det2b_mlp_source_balanced/det_head.pth",
+    "feature_in_ram": true,
+    "source_groups": {
+      "0:authentic": 30327,
+      "0:casia": 5236,
+      "0:face": 150,
+      "0:realtext": 4286,
+      "1:casia": 3677,
+      "1:aiforge": 1962,
+      "1:copymove": 5789,
+      "1:face": 5788,
+      "1:imd2020": 5777,
+      "1:inpainting": 5788,
+      "1:splicing": 5788,
+      "1:realtext": 5420,
+      "0:psbattles": 7904,
+      "1:psbattles": 7878
+    }
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "val_loss": 0.3002645105491942,
+      "val_acc": 0.8605913798864016
+    },
+    {
+      "epoch": 2,
+      "val_loss": 0.301944810233704,
+      "val_acc": 0.8611760775141998
+    },
+    {
+      "epoch": 3,
+      "val_loss": 0.3013310493970451,
+      "val_acc": 0.8600066822586034
+    },
+    {
+      "epoch": 4,
+      "val_loss": 0.30108548123781553,
+      "val_acc": 0.8577514199799532
+    },
+    {
+      "epoch": 5,
+      "val_loss": 0.30053771718106775,
+      "val_acc": 0.8595055128633479
+    },
+    {
+      "epoch": 6,
+      "val_loss": 0.30392875263733166,
+      "val_acc": 0.8575008352823255
+    },
+    {
+      "epoch": 7,
+      "val_loss": 0.2997192411848107,
+      "val_acc": 0.8612596057467424
+    },
+    {
+      "epoch": 8,
+      "val_loss": 0.30043387293536805,
+      "val_acc": 0.8599231540260608
+    },
+    {
+      "epoch": 9,
+      "val_loss": 0.30230225863123755,
+      "val_acc": 0.8570831941196124
+    },
+    {
+      "epoch": 10,
+      "val_loss": 0.29911907007771515,
+      "val_acc": 0.860925492816572
+    },
+    {
+      "epoch": 11,
+      "val_loss": 0.29870834461709866,
+      "val_acc": 0.861760775141998
+    },
+    {
+      "epoch": 12,
+      "val_loss": 0.3002846805578564,
+      "val_acc": 0.8595890410958904
+    },
+    {
+      "epoch": 13,
+      "val_loss": 0.30011634040229346,
+      "val_acc": 0.8605913798864016
+    },
+    {
+      "epoch": 14,
+      "val_loss": 0.2993310069782934,
+      "val_acc": 0.8597560975609756
+    },
+    {
+      "epoch": 15,
+      "val_loss": 0.2997378206476096,
+      "val_acc": 0.8580855329101236
+    }
+  ]
+}

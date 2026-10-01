@@ -1,0 +1,83 @@
+candidate                                  val   cam11   pilot   tc165  gate
+--- training s00_control_patch_attention_8x8 (arch=patch_attention_8x8)
+s00_control_patch_attention_8x8        DIAGNOSTICS FAILED
+Traceback (most recent call last):
+  File "/home/panuwat/project/model/segformer/Det-Head/eval_det_diagnostics.py", line 260, in <module>
+    main()
+  File "/home/panuwat/project/model/segformer/Det-Head/eval_det_diagnostics.py", line 209, in main
+    heads[name] = load_any_det(path, "cpu")
+  File "/home/panuwat/project/model/segformer/Det-Head/eval_det_diagnostics.py", line 62, in load_any_det
+    return table[num_tokens](path, device)
+  File "/home/panuwat/project/model/segformer/Det-Head/det6_local.py", line 107, in load_det6
+    head = build_det6_head(
+  File "/home/panuwat/project/model/segformer/Det-Head/det6_local.py", line 96, in build_det6_head
+    raise ValueError(f"unknown Det6 arch: {arch}")
+ValueError: unknown Det6 arch: patch_attention_8x8
+
+--- training s01_token_stats (arch=token_stats)
+s01_token_stats                        0.8291 0.1818 0.2727 0.8424  fail
+                                         - camera11 specificity 0.18181818181818182 < production 0.2727
+                                         - pilot11 accuracy 0.2727272727272727 < production 0.5455
+                                         - testcases accuracy 0.8424242424242424 < production 0.8606
+--- training s02_token_stats_coarse (arch=token_stats_coarse)
+s02_token_stats_coarse                 0.8309 0.0909 0.3636 0.8303  fail
+                                         - camera11 specificity 0.09090909090909091 < production 0.2727
+                                         - pilot11 accuracy 0.36363636363636365 < production 0.5455
+                                         - testcases accuracy 0.8303030303030303 < production 0.8606
+--- training s03_spatial_pyramid (arch=spatial_pyramid)
+s03_spatial_pyramid                    0.8391 0.0909 0.2727 0.8424  fail
+                                         - camera11 specificity 0.09090909090909091 < production 0.2727
+                                         - pilot11 accuracy 0.2727272727272727 < production 0.5455
+                                         - testcases accuracy 0.8424242424242424 < production 0.8606
+--- training s04_token_stats_topk (arch=token_stats_topk)
+s04_token_stats_topk                   0.8233 0.0909 0.2727 0.8303  fail
+                                         - camera11 specificity 0.09090909090909091 < production 0.2727
+                                         - pilot11 accuracy 0.2727272727272727 < production 0.5455
+                                         - testcases accuracy 0.8303030303030303 < production 0.8606
+--- training s05_token_stats_topk8 (arch=token_stats_topk)
+s05_token_stats_topk8                  0.8253 0.0909 0.1818 0.8000  fail
+                                         - camera11 specificity 0.09090909090909091 < production 0.2727
+                                         - pilot11 accuracy 0.18181818181818182 < production 0.5455
+                                         - testcases accuracy 0.8 < production 0.8606
+--- training s06_token_stats_do03 (arch=token_stats)
+s06_token_stats_do03                   0.8304 0.1818 0.3636 0.8303  fail
+                                         - camera11 specificity 0.18181818181818182 < production 0.2727
+                                         - pilot11 accuracy 0.36363636363636365 < production 0.5455
+                                         - testcases accuracy 0.8303030303030303 < production 0.8606
+--- training s07_token_stats_lr3e4 (arch=token_stats)
+s07_token_stats_lr3e4                  0.8402 0.0909 0.0909 0.8364  fail
+                                         - camera11 specificity 0.09090909090909091 < production 0.2727
+                                         - pilot11 accuracy 0.09090909090909091 < production 0.5455
+                                         - testcases accuracy 0.8363636363636363 < production 0.8606
+--- training s08_token_stats_seed7 (arch=token_stats)
+s08_token_stats_seed7                  0.8345 0.0909 0.2727 0.8424  fail
+                                         - camera11 specificity 0.09090909090909091 < production 0.2727
+                                         - pilot11 accuracy 0.2727272727272727 < production 0.5455
+                                         - testcases accuracy 0.8424242424242424 < production 0.8606
+--- training s09_token_stats_hardneg15 (arch=token_stats)
+s09_token_stats_hardneg15              TRAIN FAILED
+arch=token_stats params=401665 tokens=64 train=24999 (subsample) val=11972 screening=True device=cuda
+Traceback (most recent call last):
+  File "/home/panuwat/project/model/segformer/Det-Head/train_det_screen.py", line 290, in <module>
+    main()
+  File "/home/panuwat/project/model/segformer/Det-Head/train_det_screen.py", line 215, in main
+    rows = np.asarray(subset_idx)[rows]
+IndexError: index 79397 is out of bounds for axis 0 with size 24999
+
+--- training s10_patch_attention_hardneg15 (arch=patch_attention_8x8)
+s10_patch_attention_hardneg15          TRAIN FAILED
+arch=patch_attention_8x8 params=150146 tokens=64 train=24999 (subsample) val=11972 screening=True device=cuda
+Traceback (most recent call last):
+  File "/home/panuwat/project/model/segformer/Det-Head/train_det_screen.py", line 290, in <module>
+    main()
+  File "/home/panuwat/project/model/segformer/Det-Head/train_det_screen.py", line 215, in main
+    rows = np.asarray(subset_idx)[rows]
+IndexError: index 85770 is out of bounds for axis 0 with size 24999
+
+--- training s11_spatial_pyramid_do03_lr3e4 (arch=spatial_pyramid)
+s11_spatial_pyramid_do03_lr3e4         0.8296 0.0909 0.3636 0.8303  fail
+                                         - camera11 specificity 0.09090909090909091 < production 0.2727
+                                         - pilot11 accuracy 0.36363636363636365 < production 0.5455
+                                         - testcases accuracy 0.8303030303030303 < production 0.8606
+
+leaderboard: Det-Head/search_runs/2026-09-29/leaderboard.csv

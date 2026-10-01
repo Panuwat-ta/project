@@ -57,6 +57,7 @@ class FakeSessionContext:
 
 def _scan():
     return SimpleNamespace(
+        id="fake-scan-id",
         status="uploading",
         progress=0,
         raw_image_url="",
@@ -68,13 +69,14 @@ def _scan():
         total_risk_score=0,
         ocr_text=None,
         scam_keywords_found=None,
-        ai_gen_probability=0.0,
+        manipulation_confidence=0.0,
         xai_explanation=None,
         completed_at=None,
     )
 
 
 def _wire_pipeline(monkeypatch, tmp_path, scan):
+    monkeypatch.setenv("SHADOW_TELEMETRY_PATH", str(tmp_path / "shadow.jsonl"))
     db = FakeDb(scan)
     monkeypatch.setattr(database_core, "async_session", lambda: FakeSessionContext(db))
     monkeypatch.setattr(scan_service, "load_image_verified", lambda _b: (object(), {"Camera": "test"}))
@@ -114,7 +116,7 @@ async def test_process_image_background_cache_miss_runs_model_and_caches(monkeyp
         calls["predict"] += 1
         return {
             "visual_risk_score": 65,
-            "ai_gen_probability": 0.65,
+            "manipulation_confidence": 0.65,
             "anomaly_region": "บริเวณกลางภาพ",
             "ocr_text": "ด่วน",
             "heatmap_bytes": b"HEATMAP",
@@ -149,7 +151,7 @@ async def test_process_image_background_cache_hit_skips_model(monkeypatch, tmp_p
         "hash-2",
         {
             "visual_risk_score": 42,
-            "ai_gen_probability": 0.42,
+            "manipulation_confidence": 0.42,
             "anomaly_region": "บริเวณด้านซ้ายของภาพ",
             "ocr_text": "",
             "has_heatmap": True,

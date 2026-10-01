@@ -1,0 +1,8 @@
+{
+  "total": 3080,
+  "verified_manipulated_mask": 1718,
+  "verified_manipulated_psb_pair": 636,
+  "verified_zero_mask_dataset_label": 591,
+  "pending_psb_source_original_semantics": 135,
+  "verified_total": 2945
+}

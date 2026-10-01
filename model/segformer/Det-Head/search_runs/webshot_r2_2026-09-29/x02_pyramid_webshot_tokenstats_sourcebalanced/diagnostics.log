@@ -1,0 +1,10 @@
+/home/panuwat/project/model/segformer/venv/lib64/python3.10/site-packages/mmcv/cnn/bricks/transformer.py:33: UserWarning: Fail to import ``MultiScaleDeformableAttention`` from ``mmcv.ops.multi_scale_deform_attn``, You should install ``mmcv`` rather than ``mmcv-lite`` if you need this module. 
+  warnings.warn('Fail to import ``MultiScaleDeformableAttention`` from '
+/home/panuwat/project/model/segformer/library/mmsegmentation/mmseg/models/decode_heads/decode_head.py:120: UserWarning: For binary segmentation, we suggest using`out_channels = 1` to define the outputchannels of segmentor, and use `threshold`to convert `seg_logits` into a predictionapplying a threshold
+  warnings.warn('For binary segmentation, we suggest using'
+Loads checkpoint by local backend from path: /home/panuwat/project/model/segformer/work_dirs/v1.0.6/best_mIoU_iter_195000.pth
+[camera9] cand: n=9 acc=0.6666666666666666 spec=0.6666666666666666 rec=None mean=0.3319
+[chatshot2] cand: n=2 acc=1.0 spec=1.0 rec=None mean=0.2798
+[pilot11] cand: n=11 acc=0.8181818181818182 spec=0.8888888888888888 rec=0.5 mean=0.2775
+[testcases] cand: n=165 acc=0.8666666666666667 spec=0.8222222222222222 rec=0.8833333333333333 mean=0.6833
+saved Det-Head/search_runs/webshot_r2_2026-09-29/x02_pyramid_webshot_tokenstats_sourcebalanced/diagnostics/diagnostics.json

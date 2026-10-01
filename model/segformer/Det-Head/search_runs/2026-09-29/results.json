@@ -1,0 +1,360 @@
+[
+  {
+    "candidate": "BASELINE_det2b_production",
+    "arch": "mlp",
+    "is_baseline": true,
+    "screening": false,
+    "n_train": 95770,
+    "best_epoch": null,
+    "val_accuracy": 0.85925492816572,
+    "val_roc_auc": 0.9404922255384209,
+    "diagnostics": {
+      "camera11_specificity": 0.2727272727272727,
+      "camera11_mean_score": 0.6101542492615981,
+      "pilot11_accuracy": 0.5454545454545454,
+      "pilot11_specificity": 0.6666666666666666,
+      "testcases_accuracy": 0.8606060606060606,
+      "testcases_specificity": 0.8666666666666667,
+      "testcases_recall": 0.8583333333333333
+    },
+    "gate_passed": true,
+    "gate_failures": [],
+    "note": "production/shadow head, full-data training, measured with eval_det_diagnostics.py"
+  },
+  {
+    "candidate": "s01_token_stats",
+    "arch": "token_stats",
+    "screening": true,
+    "n_train": 24999,
+    "best_epoch": 12,
+    "val_accuracy": 0.8291012362178416,
+    "val_roc_auc": 0.9217565171564163,
+    "diagnostics": {
+      "camera11_specificity": 0.18181818181818182,
+      "camera11_mean_score": 0.6494941081405051,
+      "pilot11_accuracy": 0.2727272727272727,
+      "pilot11_specificity": 0.3333333333333333,
+      "testcases_accuracy": 0.8424242424242424,
+      "testcases_specificity": 0.8666666666666667,
+      "testcases_recall": 0.8333333333333334
+    },
+    "gate_passed": false,
+    "gate_failures": [
+      "camera11 specificity 0.18181818181818182 < production 0.2727",
+      "pilot11 accuracy 0.2727272727272727 < production 0.5455",
+      "testcases accuracy 0.8424242424242424 < production 0.8606"
+    ],
+    "elapsed_s": 424.5,
+    "val_f1": 0.8155759870200108,
+    "val_average_precision": 0.9320332984505881,
+    "leaderboard_metrics_source": "recomputed with train_det_screen.binary_ranking_metrics"
+  },
+  {
+    "candidate": "s02_token_stats_coarse",
+    "arch": "token_stats_coarse",
+    "screening": true,
+    "n_train": 24999,
+    "best_epoch": 12,
+    "val_accuracy": 0.8308553291012363,
+    "val_roc_auc": 0.9217896437929335,
+    "diagnostics": {
+      "camera11_specificity": 0.09090909090909091,
+      "camera11_mean_score": 0.6788237481569767,
+      "pilot11_accuracy": 0.36363636363636365,
+      "pilot11_specificity": 0.4444444444444444,
+      "testcases_accuracy": 0.8303030303030303,
+      "testcases_specificity": 0.8222222222222222,
+      "testcases_recall": 0.8333333333333334
+    },
+    "gate_passed": false,
+    "gate_failures": [
+      "camera11 specificity 0.09090909090909091 < production 0.2727",
+      "pilot11 accuracy 0.36363636363636365 < production 0.5455",
+      "testcases accuracy 0.8303030303030303 < production 0.8606"
+    ],
+    "elapsed_s": 504.9,
+    "val_f1": 0.820207759921868,
+    "val_average_precision": 0.9321355192771346,
+    "leaderboard_metrics_source": "recomputed with train_det_screen.binary_ranking_metrics"
+  },
+  {
+    "candidate": "s03_spatial_pyramid",
+    "arch": "spatial_pyramid",
+    "screening": true,
+    "n_train": 24999,
+    "best_epoch": 10,
+    "val_accuracy": 0.8391246241229535,
+    "val_roc_auc": 0.9273486255041277,
+    "diagnostics": {
+      "camera11_specificity": 0.09090909090909091,
+      "camera11_mean_score": 0.7198799857358469,
+      "pilot11_accuracy": 0.2727272727272727,
+      "pilot11_specificity": 0.3333333333333333,
+      "testcases_accuracy": 0.8424242424242424,
+      "testcases_specificity": 0.8666666666666667,
+      "testcases_recall": 0.8333333333333334
+    },
+    "gate_passed": false,
+    "gate_failures": [
+      "camera11 specificity 0.09090909090909091 < production 0.2727",
+      "pilot11 accuracy 0.2727272727272727 < production 0.5455",
+      "testcases accuracy 0.8424242424242424 < production 0.8606"
+    ],
+    "elapsed_s": 485.4,
+    "val_f1": 0.8306068601583113,
+    "val_average_precision": 0.937262816278875,
+    "leaderboard_metrics_source": "recomputed with train_det_screen.binary_ranking_metrics"
+  },
+  {
+    "candidate": "s04_token_stats_topk",
+    "arch": "token_stats_topk",
+    "screening": true,
+    "n_train": 24999,
+    "best_epoch": 11,
+    "val_accuracy": 0.8232542599398597,
+    "val_roc_auc": 0.9163822436539746,
+    "diagnostics": {
+      "camera11_specificity": 0.09090909090909091,
+      "camera11_mean_score": 0.6863219628427882,
+      "pilot11_accuracy": 0.2727272727272727,
+      "pilot11_specificity": 0.3333333333333333,
+      "testcases_accuracy": 0.8303030303030303,
+      "testcases_specificity": 0.8,
+      "testcases_recall": 0.8416666666666667
+    },
+    "gate_passed": false,
+    "gate_failures": [
+      "camera11 specificity 0.09090909090909091 < production 0.2727",
+      "pilot11 accuracy 0.2727272727272727 < production 0.5455",
+      "testcases accuracy 0.8303030303030303 < production 0.8606"
+    ],
+    "elapsed_s": 516.5,
+    "val_f1": 0.820677966101695,
+    "val_average_precision": 0.9272547062941824,
+    "leaderboard_metrics_source": "recomputed with train_det_screen.binary_ranking_metrics"
+  },
+  {
+    "candidate": "s05_token_stats_topk8",
+    "arch": "token_stats_topk",
+    "screening": true,
+    "n_train": 24999,
+    "best_epoch": 9,
+    "val_accuracy": 0.8253424657534246,
+    "val_roc_auc": 0.9154382182368301,
+    "diagnostics": {
+      "camera11_specificity": 0.09090909090909091,
+      "camera11_mean_score": 0.6903365817608077,
+      "pilot11_accuracy": 0.18181818181818182,
+      "pilot11_specificity": 0.2222222222222222,
+      "testcases_accuracy": 0.8,
+      "testcases_specificity": 0.8,
+      "testcases_recall": 0.8
+    },
+    "gate_passed": false,
+    "gate_failures": [
+      "camera11 specificity 0.09090909090909091 < production 0.2727",
+      "pilot11 accuracy 0.18181818181818182 < production 0.5455",
+      "testcases accuracy 0.8 < production 0.8606"
+    ],
+    "elapsed_s": 450.3,
+    "val_f1": 0.8195702821641212,
+    "val_average_precision": 0.9263350284876664,
+    "leaderboard_metrics_source": "recomputed with train_det_screen.binary_ranking_metrics"
+  },
+  {
+    "candidate": "s06_token_stats_do03",
+    "arch": "token_stats",
+    "screening": true,
+    "n_train": 24999,
+    "best_epoch": 12,
+    "val_accuracy": 0.8303541597059806,
+    "val_roc_auc": 0.9211013381486681,
+    "diagnostics": {
+      "camera11_specificity": 0.18181818181818182,
+      "camera11_mean_score": 0.6530492764597737,
+      "pilot11_accuracy": 0.36363636363636365,
+      "pilot11_specificity": 0.4444444444444444,
+      "testcases_accuracy": 0.8303030303030303,
+      "testcases_specificity": 0.8222222222222222,
+      "testcases_recall": 0.8333333333333334
+    },
+    "gate_passed": false,
+    "gate_failures": [
+      "camera11 specificity 0.18181818181818182 < production 0.2727",
+      "pilot11 accuracy 0.36363636363636365 < production 0.5455",
+      "testcases accuracy 0.8303030303030303 < production 0.8606"
+    ],
+    "elapsed_s": 513.6,
+    "val_f1": 0.8181248320945643,
+    "val_average_precision": 0.9314889161328477,
+    "leaderboard_metrics_source": "recomputed with train_det_screen.binary_ranking_metrics"
+  },
+  {
+    "candidate": "s07_token_stats_lr3e4",
+    "arch": "token_stats",
+    "screening": true,
+    "n_train": 24999,
+    "best_epoch": 12,
+    "val_accuracy": 0.8402104911460073,
+    "val_roc_auc": 0.9296132650773918,
+    "diagnostics": {
+      "camera11_specificity": 0.09090909090909091,
+      "camera11_mean_score": 0.7730103843366973,
+      "pilot11_accuracy": 0.09090909090909091,
+      "pilot11_specificity": 0.1111111111111111,
+      "testcases_accuracy": 0.8363636363636363,
+      "testcases_specificity": 0.7333333333333333,
+      "testcases_recall": 0.875
+    },
+    "gate_passed": false,
+    "gate_failures": [
+      "camera11 specificity 0.09090909090909091 < production 0.2727",
+      "pilot11 accuracy 0.09090909090909091 < production 0.5455",
+      "testcases accuracy 0.8363636363636363 < production 0.8606"
+    ],
+    "elapsed_s": 462.4,
+    "val_f1": 0.8400100359621978,
+    "val_average_precision": 0.9383619735270747,
+    "leaderboard_metrics_source": "recomputed with train_det_screen.binary_ranking_metrics"
+  },
+  {
+    "candidate": "s08_token_stats_seed7",
+    "arch": "token_stats",
+    "screening": true,
+    "n_train": 24999,
+    "best_epoch": 12,
+    "val_accuracy": 0.8345305713331106,
+    "val_roc_auc": 0.9219451045584931,
+    "diagnostics": {
+      "camera11_specificity": 0.09090909090909091,
+      "camera11_mean_score": 0.6542599596272629,
+      "pilot11_accuracy": 0.2727272727272727,
+      "pilot11_specificity": 0.3333333333333333,
+      "testcases_accuracy": 0.8424242424242424,
+      "testcases_specificity": 0.8,
+      "testcases_recall": 0.8583333333333333
+    },
+    "gate_passed": false,
+    "gate_failures": [
+      "camera11 specificity 0.09090909090909091 < production 0.2727",
+      "pilot11 accuracy 0.2727272727272727 < production 0.5455",
+      "testcases accuracy 0.8424242424242424 < production 0.8606"
+    ],
+    "elapsed_s": 519.9,
+    "val_f1": 0.8286183925945152,
+    "val_average_precision": 0.9324916870145105,
+    "leaderboard_metrics_source": "recomputed with train_det_screen.binary_ranking_metrics"
+  },
+  {
+    "candidate": "s11_spatial_pyramid_do03_lr3e4",
+    "arch": "spatial_pyramid",
+    "screening": true,
+    "n_train": 24999,
+    "best_epoch": 4,
+    "val_accuracy": 0.8296024056130973,
+    "val_roc_auc": 0.9198797410998467,
+    "diagnostics": {
+      "camera11_specificity": 0.09090909090909091,
+      "camera11_mean_score": 0.7116260082180289,
+      "pilot11_accuracy": 0.36363636363636365,
+      "pilot11_specificity": 0.4444444444444444,
+      "testcases_accuracy": 0.8303030303030303,
+      "testcases_specificity": 0.7555555555555555,
+      "testcases_recall": 0.8583333333333333
+    },
+    "gate_passed": false,
+    "gate_failures": [
+      "camera11 specificity 0.09090909090909091 < production 0.2727",
+      "pilot11 accuracy 0.36363636363636365 < production 0.5455",
+      "testcases accuracy 0.8303030303030303 < production 0.8606"
+    ],
+    "elapsed_s": 209.6,
+    "val_f1": 0.8254321410234469,
+    "val_average_precision": 0.9308189510654751,
+    "leaderboard_metrics_source": "recomputed with train_det_screen.binary_ranking_metrics"
+  },
+  {
+    "candidate": "s00_control_patch_attention_8x8",
+    "arch": "patch_attention_8x8",
+    "screening": true,
+    "n_train": 24999,
+    "best_epoch": 10,
+    "val_accuracy": 0.8331105913798864,
+    "val_roc_auc": 0.9243673119411729,
+    "diagnostics": {
+      "camera11_specificity": 0.18181818181818182,
+      "camera11_mean_score": 0.7053175068936304,
+      "pilot11_accuracy": 0.45454545454545453,
+      "pilot11_specificity": 0.5555555555555556,
+      "testcases_accuracy": 0.8424242424242424,
+      "testcases_specificity": 0.8444444444444444,
+      "testcases_recall": 0.8416666666666667
+    },
+    "gate_passed": false,
+    "gate_failures": [
+      "camera11 specificity 0.18181818181818182 < production 0.2727",
+      "pilot11 accuracy 0.45454545454545453 < production 0.5455",
+      "testcases accuracy 0.8424242424242424 < production 0.8606"
+    ],
+    "elapsed_s": 276.4,
+    "val_f1": 0.8253191117328204,
+    "val_average_precision": 0.934285439153487,
+    "leaderboard_metrics_source": "recomputed with train_det_screen.binary_ranking_metrics"
+  },
+  {
+    "candidate": "s09_token_stats_hardneg15",
+    "arch": "token_stats",
+    "screening": true,
+    "n_train": 24999,
+    "best_epoch": 10,
+    "val_accuracy": 0.8276812562646174,
+    "val_roc_auc": 0.9196330495215029,
+    "diagnostics": {
+      "camera11_specificity": 0.18181818181818182,
+      "camera11_mean_score": 0.637674805830783,
+      "pilot11_accuracy": 0.36363636363636365,
+      "pilot11_specificity": 0.4444444444444444,
+      "testcases_accuracy": 0.8484848484848485,
+      "testcases_specificity": 0.8666666666666667,
+      "testcases_recall": 0.8416666666666667
+    },
+    "gate_passed": false,
+    "gate_failures": [
+      "camera11 specificity 0.18181818181818182 < production 0.2727",
+      "pilot11 accuracy 0.36363636363636365 < production 0.5455",
+      "testcases accuracy 0.8484848484848485 < production 0.8606"
+    ],
+    "elapsed_s": 345.6,
+    "val_f1": 0.8222930484968559,
+    "val_average_precision": 0.9303056962084857,
+    "leaderboard_metrics_source": "recomputed with train_det_screen.binary_ranking_metrics"
+  },
+  {
+    "candidate": "s10_patch_attention_hardneg15",
+    "arch": "patch_attention_8x8",
+    "screening": true,
+    "n_train": 24999,
+    "best_epoch": 12,
+    "val_accuracy": 0.83194119612429,
+    "val_roc_auc": 0.9237439897620553,
+    "diagnostics": {
+      "camera11_specificity": 0.09090909090909091,
+      "camera11_mean_score": 0.7471869639121937,
+      "pilot11_accuracy": 0.36363636363636365,
+      "pilot11_specificity": 0.4444444444444444,
+      "testcases_accuracy": 0.8424242424242424,
+      "testcases_specificity": 0.8444444444444444,
+      "testcases_recall": 0.8416666666666667
+    },
+    "gate_passed": false,
+    "gate_failures": [
+      "camera11 specificity 0.09090909090909091 < production 0.2727",
+      "pilot11 accuracy 0.36363636363636365 < production 0.5455",
+      "testcases accuracy 0.8424242424242424 < production 0.8606"
+    ],
+    "elapsed_s": 524.9,
+    "val_f1": 0.8268502581755595,
+    "val_average_precision": 0.9336514296306794,
+    "leaderboard_metrics_source": "recomputed with train_det_screen.binary_ranking_metrics"
+  }
+]

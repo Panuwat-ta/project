@@ -427,7 +427,9 @@ class Scan(Base):
     ocr_text = Column(Text)
     scam_keywords_found = Column(JSONB)
     reverse_search_results = Column(JSONB)
-    ai_gen_probability = Column(Float, default=0.0)
+    # ความม่ันใจระดับภาพว่าถูกตัดต่อ/ดัดแปลง (จาก Det Head)
+    # ชื่อเดิม ai_gen_probability เปลี่ยนเมื่อ 2026-09-30
+    manipulation_confidence = Column(Float, nullable=True, default=None)
 
     status = Column(String(20), nullable=False, default="pending")
     created_at = Column(DateTime(timezone=True), server_default=func.now())

@@ -1,0 +1,40 @@
+extra cache: +7394 rows from /home/panuwat/Pictures/Det-Head/manifests/det-train-v4-webshot.csv
+extra cache: +125 rows from /home/panuwat/Pictures/Det-Head/manifests/det-train-v5-camera.csv
+arch=token_stats params=401665 tokens=64 train=103154 (full) val=11972 screening=False device=cuda
+epoch 1/30 val_loss=0.3661 val_acc=0.8224 (64s)
+epoch 2/30 val_loss=0.3547 val_acc=0.8283 (106s)
+epoch 3/30 val_loss=0.3380 val_acc=0.8380 (146s)
+epoch 4/30 val_loss=0.3393 val_acc=0.8354 (189s)
+epoch 5/30 val_loss=0.3347 val_acc=0.8395 (235s)
+epoch 6/30 val_loss=0.3291 val_acc=0.8458 (274s)
+epoch 7/30 val_loss=0.3221 val_acc=0.8465 (315s)
+epoch 8/30 val_loss=0.3182 val_acc=0.8504 (354s)
+epoch 9/30 val_loss=0.3165 val_acc=0.8498 (389s)
+epoch 10/30 val_loss=0.3166 val_acc=0.8481 (429s)
+epoch 11/30 val_loss=0.3123 val_acc=0.8536 (469s)
+epoch 12/30 val_loss=0.3297 val_acc=0.8410 (513s)
+epoch 13/30 val_loss=0.3304 val_acc=0.8404 (556s)
+epoch 14/30 val_loss=0.3140 val_acc=0.8502 (595s)
+epoch 15/30 val_loss=0.3065 val_acc=0.8537 (639s)
+epoch 16/30 val_loss=0.3098 val_acc=0.8522 (679s)
+epoch 17/30 val_loss=0.3062 val_acc=0.8555 (727s)
+epoch 18/30 val_loss=0.3069 val_acc=0.8545 (769s)
+epoch 19/30 val_loss=0.3085 val_acc=0.8537 (816s)
+epoch 20/30 val_loss=0.3042 val_acc=0.8553 (860s)
+epoch 21/30 val_loss=0.3046 val_acc=0.8550 (900s)
+epoch 22/30 val_loss=0.3034 val_acc=0.8572 (957s)
+epoch 23/30 val_loss=0.3015 val_acc=0.8582 (997s)
+epoch 24/30 val_loss=0.3053 val_acc=0.8585 (1048s)
+epoch 25/30 val_loss=0.3055 val_acc=0.8550 (1087s)
+epoch 26/30 val_loss=0.3066 val_acc=0.8578 (1122s)
+epoch 27/30 val_loss=0.3020 val_acc=0.8589 (1164s)
+epoch 28/30 val_loss=0.3018 val_acc=0.8606 (1205s)
+epoch 29/30 val_loss=0.3053 val_acc=0.8588 (1248s)
+epoch 30/30 val_loss=0.3054 val_acc=0.8598 (1286s)
+{
+  "best_val_acc": 0.8605913798864016,
+  "best_epoch": 28,
+  "val_f1": 0.8565535023635583,
+  "val_roc_auc": 0.942697588805061,
+  "val_average_precision": 0.9499401371314237
+}

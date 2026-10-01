@@ -50,7 +50,7 @@ def apply_scan_overrides(monkeypatch):
     def fake_predict(image_bytes):
         return {
             "visual_risk_score": 50,
-            "ai_gen_probability": 0.5,
+            "manipulation_confidence": 0.5,
             "heatmap_bytes": b"",
             "ocr_text": "",
         }
