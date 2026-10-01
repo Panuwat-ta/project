@@ -28,3 +28,27 @@ def test_qwen_xai_explanation_generation():
     assert len(explanation) > 10
     # Ensure it did not fall back to the generic static fallback string
     assert "ไม่พบร่องรอยการตัดต่อที่ส่งผลต่อความเสี่ยงอย่างมีนัยสำคัญ" not in explanation
+
+# คำต้องห้ามใน prompt และข้อความขาออก: โมเดลไม่มีความสามารถวัดการสังเคราะห์
+# ด้วย AI (seg มีแค่ 2 คลาส, det head เป็น binary) ดังนั้นทั้ง few-shot example
+# และข้อความที่ generate ต้องไม่มีคำกล่าวอ้างเรื่อง AI-generation หรือระดับพิกเซล
+# (พบรั่วเมื่อ 2026-10-01: few-shot เก่าสอนว่า "โอกาสสังเคราะห์ด้วย AI"
+# ทำให้ output จริงมีประโยค "ภาพถูกส่งเสริมโดย AI อยู่ในเกณฑ์ต่ำ")
+FORBIDDEN_XAI_PHRASES = [
+    "สังเคราะห์",
+    "AI-Generated",
+    "AI-generated",
+    "พิกเซลมีความเป็นธรรมชาติ",
+    "โครงสร้างพิกเซล",
+    "โอกาส AI:",
+]
+
+
+def test_qwen_prompt_has_no_ai_generation_claims():
+    """ตรวจ source ของ prompt ว่าไม่มีคำกล่าวอ้าง AI-generation หลงเหลือ"""
+    import inspect
+    from app.services import inference_service as mod
+
+    src = inspect.getsource(mod.InferenceService.generate_xai_explanation)
+    for phrase in FORBIDDEN_XAI_PHRASES:
+        assert phrase not in src, f"prompt ยังมีคำต้องห้าม '{phrase}'"
