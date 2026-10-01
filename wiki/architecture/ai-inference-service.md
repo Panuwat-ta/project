@@ -59,9 +59,14 @@ scan_service เรียก inference_service
     - prob map เต็ม resolution ต้นฉบับ
         |
   Post-processing:
-    - คำนวณ visual_risk_score และ ai_gen_probability จากค่า max ของ prob map
+    - คำนวณ visual_risk_score และ manipulation_confidence จาก Det Head
+      (ถ้าโมเดลไม่มี det head จะ fallback เป็นค่า max ของ prob map)
+    - SegFormer prob map ใช้สร้างแผนที่ความร้อนและระบุบริเวณเท่านั้น
+      ไม่ได้ใช้ตัดสินคะแนน เพราะค่า max ระดับพิกเซลสูงเกือบ 1.0
+      บนภาพถ่ายจริงทุกภาพ (วัดได้ ~0.99 เมื่อ 2026-09-30)
     - แผนที่ความร้อนแบบ mask-to-heatmap overlay
-    - ใช้ SegFormer ตัวเดียวใน pipeline
+    - ใช้ SegFormer ตัวเดียวใน pipeline (det head เป็นหัว classifier
+      ต่ออยู่กับ SegFormer v1.0.6 ไม่ใช่โมเดลแยก)
         |
   OCR และ Text Extraction (Surya OCR v0.5.0):
     - รองรับภาษาไทยและอังกฤษ

@@ -79,7 +79,7 @@ $$ S_{visual} = \text{Normalize}(\text{Confidence} \times \text{Mask Coverage}) 
 > * ตัวอย่างของสูตรเดิมให้ Confidence 0.9 x Coverage 0.2 = 18 (Low) ต้อง Coverage สูงถึง ~0.89 จึงจะได้ 80 ทำให้ Visual Override ($S_{visual} \ge 80$) ใช้ไม่ได้จริง
 > * probability map ระดับพิกเซลของ SegFormer แยกภาพกล้องออกจากภาพปลอมไม่ได้: ที่ threshold 0.5 ภาพกล้องจริงมี coverage 0.0876 ซึ่ง **สูงกว่า** ภาพ splicing ที่ถูกดัดแปลงจริง 0.0140
 > * Det Head เป็นสัญญาณเดียวที่วัดแล้วแยกได้จริง: ภาพกล้องจริง 0.003, ภาพถูกดัดแปลง 0.9999 (ข้ามอุปกรณ์ 104 ภาพ specificity 86.54% เทียบ det2b เดิม 29.81%) และผ่านเกณฑ์ภายนอกครบ 3/3 seed
-> * `ai_gen_probability` ที่รายงานยังคงมาจาก `prob_map.max()` จึงยังได้ค่าสูง (~0.99) บนภาพถ่ายจริง **ต้องแก้ต่อภายหลัง** และไม่ควรตีความเป็นความน่าจะเป็นระดับภาพ
+> * ~~`ai_gen_probability` ที่รายงานยังคงมาจาก `prob_map.max()`~~ **แก้แล้วเมื่อ 2026-09-30** — ค่านี้ถูกเปลี่ยนเป็น det score และเปลี่ยนชื่อเป็น `manipulation_confidence` ทั้งใน API, ฐานข้อมูล (migration `f1a2b3c4d5e6`) และ mobile ส่วนข้อความ XAI ถูกตัดคำกล่าวอ้างเรื่องภาพสังเคราะห์ด้วย AI ออก เพราะโมเดลไม่มีความสามารถวัดสิ่งนั้น ดู `server/migrations/versions/f1a2b3c4d5e6_rename_ai_gen_probability_to_manipulation_confidence.py`
 
 ---
 

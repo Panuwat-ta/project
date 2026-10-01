@@ -43,6 +43,26 @@ def test_manipulated_text_states_high_confidence():
     assert "ความม่ันใจสูง (100%) ว่าภาพถูกตัดต่อหรือดัดแปลง" in text
 
 
+# S_visual มาจาก Det Head ซึ่งประเมินภาพรวม ไม่ได้มาจากค่ารายพิกเซล
+# ข้อความจึงต้องไม่อ้างว่าตรวจพบ "ที่ระดับพิกเซล" ซึ่งเป็นการอ้างเกินหลักฐาน
+PIXEL_LEVEL_CLAIMS = ["โครงสร้างพิกเซล", "พิกเซลมีความเป็นธรรมชาติ", "พิกเซลสม่ำเสมอ"]
+
+
+@pytest.mark.parametrize("name,visual,det", REAL_CAMERA + MANIPULATED + [("borderline", 47, 0.4662)])
+def test_text_does_not_claim_pixel_level_analysis(name, visual, det):
+    """คะแนนมาจาก Det Head (ภาพรวม) ไม่ใช่รายพิกเซล ข้อความจึงห้ามอ้างระดับพิกเซล"""
+    text = _svc().fallback_xai_explanation(REGION, visual, det, [])
+    for claim in PIXEL_LEVEL_CLAIMS:
+        assert claim not in text, f"{name}: ยังอ้างระดับพิกเซล '{claim}' -> {text}"
+
+
+def test_text_reports_level_alongside_score():
+    """ข้อความต้องบอกระดับความเสี่ยงและคะแนนคู่กัน เพื่อให้ผู้ใช้ตรวจสอบได้"""
+    assert "ระดับสูง (100/100)" in _svc().fallback_xai_explanation(REGION, 100, 0.9999, [])
+    assert "ระดับปานกลาง (47/100)" in _svc().fallback_xai_explanation(REGION, 47, 0.4662, [])
+    assert "ระดับต่ำ (0/100)" in _svc().fallback_xai_explanation(REGION, 0, 0.0006, [])
+
+
 def test_borderline_uses_medium_confidence():
     text = _svc().fallback_xai_explanation(REGION, 47, 0.4662, [])
     assert "ความม่ันใจปานกลาง (47%) ว่าภาพถูกตัดต่อหรือดัดแปลง" in text
@@ -56,7 +76,7 @@ def test_low_confidence_phrase_is_omitted_not_zero_claimed():
 
 
 def test_reported_probability_follows_det_not_pixel_max():
-    """ai_gen_probability ต้องเท่ากับ det ไม่ใช่ค่าสูงสุดของพิกเซล
+    """manipulation_confidence ต้องเท่ากับ det ไม่ใช่ค่าสูงสุดของพิกเซล
 
     ค่าเดิมมาจาก prob_map.max() ซึ่งเป็น ~0.99 บนภาพ 12 MP ทุกภาพ
     """

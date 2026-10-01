@@ -77,7 +77,7 @@ def test_scan_response_hides_legacy_storage_placeholder_when_source_unavailable(
         source_score=20,
         source_status="unavailable",
         total_risk_score=20,
-        ai_gen_probability=0.0,
+        manipulation_confidence=0.0,
         status="completed",
         created_at=datetime.now(timezone.utc),
     )

@@ -81,7 +81,7 @@ def run_det_image(session, input_name, image: Image.Image):
     return _det_score_image(session, image, TILE_SIZE)
 
 
-def visual_score_from_det(det_score, ai_gen_prob):
+def visual_score_from_det(det_score, pixel_max_prob):
     """S_visual per Document/model/configs.md §3.
 
     Returns the 0-100 visual risk score. When the loaded model carries a det
@@ -91,7 +91,7 @@ def visual_score_from_det(det_score, ai_gen_prob):
     """
     if det_score is not None:
         return min(100, max(0, int(round(det_score * 100))))
-    return int(round(ai_gen_prob * 100))
+    return int(round(pixel_max_prob * 100))
 
 
 def main():
@@ -140,10 +140,10 @@ def main():
     # The det head is the only signal measured to separate them (0.003 on a real
     # camera photo vs 0.9999 on a manipulated one), so it drives S_visual and the
     # seg probability map is kept for localisation only (heatmap + anomaly region).
-    ai_gen_prob = float(prob_map_true.max())
-    visual_risk_score = visual_score_from_det(det_score, ai_gen_prob)
+    pixel_max_prob = float(prob_map_true.max())
+    visual_risk_score = visual_score_from_det(det_score, pixel_max_prob)
 
-    # Reported `ai_gen_probability` now carries the det score when a det head is
+    # Reported `manipulation_confidence` now carries the det score when a det head is
     # present, for the same reason as S_visual above. It previously reported
     # prob_map.max(), which is ~0.99 on any 12 MP photo, and that value is
     # rendered to the user as "AI Probability" (mobile, admin) and as
@@ -155,12 +155,12 @@ def main():
     # AI-generation probability. This model has 2 seg classes (authentic /
     # forged) and a binary det head, so neither measures AI generation
     # specifically. See Document/model/configs.md §3.
-    ai_gen_probability = ai_gen_prob if det_score is None else float(det_score)
+    manipulation_confidence = pixel_max_prob if det_score is None else float(det_score)
 
     h, w = prob_map_true.shape[:2]
     threshold = max(0.35, float(prob_map_true.mean() + 0.10))
     tampered_pixels = np.argwhere(prob_map_true >= threshold)
-    if len(tampered_pixels) > 0 and ai_gen_prob >= 0.35:
+    if len(tampered_pixels) > 0 and pixel_max_prob >= 0.35:
         mean_y, mean_x = tampered_pixels.mean(axis=0)
         v = "บน" if mean_y < h * 0.38 else ("ล่าง" if mean_y > h * 0.62 else "กลาง")
         h_pos = "ซ้าย" if mean_x < w * 0.38 else ("ขวา" if mean_x > w * 0.62 else "กลาง")
@@ -178,7 +178,7 @@ def main():
     
     result = {
         "visual_risk_score": visual_risk_score,
-        "ai_gen_probability": ai_gen_probability,
+        "manipulation_confidence": manipulation_confidence,
         "det_score": det_score,
         "execution_providers": session.get_providers(),
         "anomaly_region": region,

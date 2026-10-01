@@ -5,7 +5,7 @@ import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
   static const _databaseName = "scamguard.db";
-  static const _databaseVersion = 4;
+  static const _databaseVersion = 5;
   static const tableHistory = 'scan_history';
   static const tableDetails = 'scan_details';
 
@@ -61,7 +61,7 @@ class DatabaseHelper {
     }
     if (oldVersion < 4) {
       for (final sql in [
-        'ALTER TABLE $tableDetails ADD COLUMN aiGenProbability REAL',
+        'ALTER TABLE $tableDetails ADD COLUMN manipulationConfidence REAL',
         'ALTER TABLE $tableDetails ADD COLUMN ocrText TEXT',
         'ALTER TABLE $tableDetails ADD COLUMN scamKeywordsJson TEXT',
       ]) {
@@ -71,6 +71,23 @@ class DatabaseHelper {
           // A partially-upgraded database may already contain this column.
         }
       }
+    }
+    if (oldVersion < 5) {
+      // เปลี่ยนชื่อคอลัมน์ให้ตรงความหมาย: ค่าเดิมเป็น max-prob ระดับพิกเซลของ
+      // SegFormer ไม่ใช่ความน่าจะเป็นการสังเคราะห์ด้วย AI จึงตั้งค่าเป็น NULL
+      // แทนที่จะย้ายค่าเก่ามาใช้ภายใต้ชื่อใหม่
+      try {
+        await db.execute(
+          'ALTER TABLE $tableDetails RENAME COLUMN aiGenProbability TO manipulationConfidence',
+        );
+      } catch (_) {
+        // ฐานข้อมูลที่ติดตั้งใหม่ไม่มีคอลัมน์เดิมอยู่แล้ว
+      }
+      try {
+        await db.execute(
+          'UPDATE $tableDetails SET manipulationConfidence = NULL',
+        );
+      } catch (_) {}
     }
   }
 
@@ -88,7 +105,7 @@ class DatabaseHelper {
         createdAt TEXT NOT NULL,
         factorsJson TEXT,
         xaiExplanation TEXT,
-        aiGenProbability REAL,
+        manipulationConfidence REAL,
         ocrText TEXT,
         scamKeywordsJson TEXT
       )

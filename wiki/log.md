@@ -132,3 +132,4 @@ grep "^## \[" wiki/log.md | tail -5
 ## [2026-09-15] update | ตารางผลรายเวอร์ชัน v1.0.0–v1.0.5 (val + locked common test + local set แยก 3 ชุด) — concepts/model-training
 ## [2026-09-16] fix | สูตร LaTeX $/$$ → Unicode อ่านได้ 65 จุด (mmsegmentation, risk-scoring, surya-ocr, ai-model-segformer, configs) + ลบ NOTE คั่นตาราง traceability-matrix (ตาราง render ปกติแล้ว)
 ## [2026-09-16] fix | sync wiki/Document กับ code: canonical FR catalog, 3-factor risk, badge colors, consent/register, polling, 16 mobile routes, mIoU, scan_id, weighted loss, admin auth split, modular monolith, React 19 stack, Android-only, local /uploads; retire NFR-10/11 และลบ Jira to-do เก่า
+## [2026-09-30] update | S_visual และ manipulation_confidence ใช้ Det Head, ยกเลิกสูตร Confidence x Coverage พร้อมหลักฐานจากการวัด (risk-scoring, ai-inference-service, database-schema, database-er-diagram, backend-documentation)

@@ -41,7 +41,7 @@ class ResultLocalDataSourceImpl implements ResultLocalDataSource {
       'imageUrl': result.imageUrl,
       'heatmapUrl': result.heatmapUrl,
       'xaiExplanation': result.xaiExplanation,
-      'aiGenProbability': result.aiGenProbability,
+      'manipulationConfidence': result.manipulationConfidence,
       'ocrText': result.ocrText,
       'scamKeywordsJson': result.scamKeywords != null
           ? jsonEncode(result.scamKeywords)
@@ -139,7 +139,7 @@ class ResultLocalDataSourceImpl implements ResultLocalDataSource {
       imageUrl: m['imageUrl'] as String?,
       heatmapUrl: m['heatmapUrl'] as String?,
       xaiExplanation: m['xaiExplanation'] as String?,
-      aiGenProbability: (m['aiGenProbability'] as num?)?.toDouble(),
+      manipulationConfidence: (m['manipulationConfidence'] as num?)?.toDouble(),
       ocrText: m['ocrText'] as String?,
       scamKeywords: scamKeywords,
       createdAt: DateTime.parse(m['createdAt'] as String).toLocal(),

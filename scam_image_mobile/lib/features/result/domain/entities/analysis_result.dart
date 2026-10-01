@@ -17,7 +17,7 @@ class AnalysisResult extends Equatable {
   final String? imageUrl;
   final String? heatmapUrl;
   final String? xaiExplanation;
-  final double? aiGenProbability;
+  final double? manipulationConfidence;
   final String? ocrText;
   final List<String>? scamKeywords;
   final DateTime createdAt;
@@ -33,7 +33,7 @@ class AnalysisResult extends Equatable {
     this.imageUrl,
     this.heatmapUrl,
     this.xaiExplanation,
-    this.aiGenProbability,
+    this.manipulationConfidence,
     this.ocrText,
     this.scamKeywords,
     required this.createdAt,
@@ -51,7 +51,7 @@ class AnalysisResult extends Equatable {
     imageUrl,
     heatmapUrl,
     xaiExplanation,
-    aiGenProbability,
+    manipulationConfidence,
     ocrText,
     scamKeywords,
     createdAt,

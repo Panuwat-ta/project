@@ -37,7 +37,7 @@ def _make_scan():
         text_score=75,
         visual_score=90,
         source_score=20,
-        ai_gen_probability=0.12,
+        manipulation_confidence=0.12,
         ocr_text="ยินดีด้วยคุณได้รับรางวัล",
         scam_keywords_found=["โบนัส"],
         exif_data={"Software": "Adobe Photoshop"},

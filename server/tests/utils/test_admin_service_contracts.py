@@ -630,7 +630,7 @@ async def test_report_detail_hides_missing_optional_heatmap(tmp_path):
         id=report.scan_id, image_hash="abc", raw_image_url=str(raw),
         heatmap_image_url=str(missing_heatmap), total_risk_score=80,
         visual_score=75, text_score=70, exif_data={}, ocr_text="",
-        scam_keywords_found=[], ai_gen_probability=None,
+        scam_keywords_found=[], manipulation_confidence=None,
         created_at=created, status="completed",
     )
     db = MagicMock()

@@ -26,7 +26,7 @@ import app.core.redis as redis_core
 
 MAX_UPLOAD_BYTES = settings.MAX_UPLOAD_SIZE_MB * 1024 * 1024
 
-async def _generate_xai_with_timeout(region: str, visual_score: int, ai_gen_probability: float, found_keywords: list[str]) -> str:
+async def _generate_xai_with_timeout(region: str, visual_score: int, manipulation_confidence: float, found_keywords: list[str]) -> str:
     """Generate XAI without letting a blocking worker defeat the async timeout.
 
     AnyIO worker threads ignore host-task cancellation by default. Using
@@ -37,7 +37,7 @@ async def _generate_xai_with_timeout(region: str, visual_score: int, ai_gen_prob
         inference_service.generate_xai_explanation,
         region=region,
         visual_score=visual_score,
-        ai_gen_probability=ai_gen_probability,
+        manipulation_confidence=manipulation_confidence,
         scam_keywords=found_keywords,
     )
     try:
@@ -48,12 +48,12 @@ async def _generate_xai_with_timeout(region: str, visual_score: int, ai_gen_prob
     except (asyncio.TimeoutError, TimeoutError):
         print(f"XAI timeout after {settings.XAI_TIMEOUT}s, using fallback")
         return inference_service.fallback_xai_explanation(
-            region, visual_score, ai_gen_probability, found_keywords
+            region, visual_score, manipulation_confidence, found_keywords
         )
     except Exception as exc:
         print(f"XAI phase failed, using fallback: {exc}")
         return inference_service.fallback_xai_explanation(
-            region, visual_score, ai_gen_probability, found_keywords
+            region, visual_score, manipulation_confidence, found_keywords
         )
 
 async def create_scan_task(file: UploadFile, user_id: int, db: AsyncSession, title: str | None = None) -> tuple[Scan, bytes, str]:
@@ -81,7 +81,7 @@ async def create_scan_task(file: UploadFile, user_id: int, db: AsyncSession, tit
         visual_score=0,
         source_score=0,
         total_risk_score=0,
-        ai_gen_probability=0.0,
+        manipulation_confidence=0.0,
         status="uploading",
         progress=0
     )
@@ -176,7 +176,7 @@ async def process_image_background(scan_id, file_bytes: bytes, image_hash: str,
 
             source_score = build_source_score()
             visual_score = inference_result.get("visual_risk_score", 0)
-            ai_gen_probability = inference_result.get("ai_gen_probability", 0.0)
+            manipulation_confidence = inference_result.get("manipulation_confidence", 0.0)
             anomaly_region = inference_result.get("anomaly_region", "บริเวณที่น่าสงสัยในภาพ")
 
             risk_result = calculate_risk_score(text_score, visual_score, source_score)
@@ -203,7 +203,7 @@ async def process_image_background(scan_id, file_bytes: bytes, image_hash: str,
             scan.total_risk_score = risk_result["total_risk_score"]
             scan.ocr_text = ocr_text
             scan.scam_keywords_found = found_keywords
-            scan.ai_gen_probability = ai_gen_probability
+            scan.manipulation_confidence = manipulation_confidence
             scan.xai_explanation = None
             scan.status = "processing_text"
             scan.progress = 90
@@ -214,7 +214,7 @@ async def process_image_background(scan_id, file_bytes: bytes, image_hash: str,
 
             # Phase 2: XAI explanation ตามมาทีหลัง — พัง/หมดเวลาก็ไม่ล้มสแกน ใช้ fallback แทน
             xai_explanation = await _generate_xai_with_timeout(
-                anomaly_region, visual_score, ai_gen_probability, found_keywords
+                anomaly_region, visual_score, manipulation_confidence, found_keywords
             )
 
             scan.xai_explanation = xai_explanation

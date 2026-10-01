@@ -9,7 +9,7 @@ def test_shadow_event_contains_only_expected_metadata(tmp_path, monkeypatch):
     inference = {
         "onnx_model_id": "det2b.onnx",
         "det_score": 0.91,
-        "ai_gen_probability": 0.72,
+        "manipulation_confidence": 0.72,
         "onnx_latency_ms": 1234,
         "onnx_worker_timed_out": False,
         "onnx_execution_providers": ["CUDAExecutionProvider"],

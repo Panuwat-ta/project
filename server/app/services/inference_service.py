@@ -126,7 +126,7 @@ class InferenceService:
         self,
         region: str,
         visual_score: int,
-        ai_gen_probability: float,
+        manipulation_confidence: float,
         scam_keywords: list[str] | None = None
     ) -> str:
         """
@@ -134,7 +134,7 @@ class InferenceService:
         """
         scam_keywords = scam_keywords or []
         if not self.xai_model:
-            return self.fallback_xai_explanation(region, visual_score, ai_gen_probability, scam_keywords)
+            return self.fallback_xai_explanation(region, visual_score, manipulation_confidence, scam_keywords)
 
         # 1. Semantic classification based on project 3-level scale
         if visual_score >= 70:
@@ -142,12 +142,12 @@ class InferenceService:
         elif visual_score >= 40:
             visual_th = f"ระดับปานกลาง ({visual_score}/100) พบร่องรอยความผิดปกติหรือการบีบอัดภาพบางจุด"
         else:
-            visual_th = f"ระดับต่ำ ({visual_score}/100) โครงสร้างภาพค่อนข้างเป็นธรรมชาติ"
+            visual_th = f"ระดับต่ำ ({visual_score}/100) ไม่พบร่องรอยการดัดแปลงที่ชัดเจน"
 
-        ai_pct = int(round(ai_gen_probability * 100))
-        if ai_gen_probability >= 0.70:
+        ai_pct = int(round(manipulation_confidence * 100))
+        if manipulation_confidence >= 0.70:
             ai_th = f"ความม่ันใจว่าภาพถูกตัดต่อหรือดัดแปลงสูง ({ai_pct}%)"
-        elif ai_gen_probability >= 0.40:
+        elif manipulation_confidence >= 0.40:
             ai_th = f"ความม่ันใจว่าภาพถูกตัดต่อหรือดัดแปลงปานกลาง ({ai_pct}%)"
         else:
             ai_th = f"ความม่ันใจว่าภาพถูกตัดต่อหรือดัดแปลงต่ำ ({ai_pct}%)"
@@ -206,34 +206,34 @@ class InferenceService:
                 text += "การหลอกลวง"
 
             if len(text) < 15:
-                return self.fallback_xai_explanation(region, visual_score, ai_gen_probability, scam_keywords)
+                return self.fallback_xai_explanation(region, visual_score, manipulation_confidence, scam_keywords)
             return text
         except Exception as e:
             print(f"XAI Generation error: {e}")
-            return self.fallback_xai_explanation(region, visual_score, ai_gen_probability, scam_keywords)
+            return self.fallback_xai_explanation(region, visual_score, manipulation_confidence, scam_keywords)
 
     def fallback_xai_explanation(
         self,
         region: str,
         visual_score: int,
-        ai_gen_prob: float,
+        manipulation_confidence: float,
         scam_keywords: list[str] | None = None
     ) -> str:
         scam_keywords = scam_keywords or []
         parts = []
 
         if visual_score >= 70:
-            parts.append(f"AI ตรวจพบความผิดปกติระดับสูง{region} ซึ่งมีร่องรอยการตัดต่อหรือดัดแปลงภาพอย่างชัดเจน")
+            parts.append(f"ผลการวิเคราะห์ภาพอยู่ในระดับสูง ({visual_score}/100) พบร่องรอยการตัดต่อหรือดัดแปลงภาพอย่างเด่นชัด{region}")
         elif visual_score >= 40:
-            parts.append(f"AI ตรวจพบความผิดปกติระดับปานกลาง{region} ซึ่งอาจเกิดจากการตกแต่งภาพหรือการบีบอัดซ้ำซ้อน")
+            parts.append(f"ผลการวิเคราะห์ภาพอยู่ในระดับปานกลาง ({visual_score}/100) อาจเกิดจากการตกแต่งภาพหรือการบีบอัดซ้ำซ้อน{region}")
         else:
-            parts.append(f"โครงสร้างพิกเซลของภาพมีความสม่ำเสมอ ตรวจพบความผิดปกติเพียงเล็กน้อย{region}")
+            parts.append(f"ผลการวิเคราะห์ภาพอยู่ในระดับต่ำ ({visual_score}/100) ไม่พบร่องรอยการดัดแปลงที่ชัดเจน{region}")
 
-        ai_pct = int(round(ai_gen_prob * 100))
-        if ai_gen_prob >= 0.70:
-            parts.append(f"โดยมีความม่ันใจสูง ({ai_pct}%) ว่าภาพถูกตัดต่อหรือดัดแปลง")
-        elif ai_gen_prob >= 0.40:
-            parts.append(f"โดยมีความม่ันใจปานกลาง ({ai_pct}%) ว่าภาพถูกตัดต่อหรือดัดแปลง")
+        confidence_pct = int(round(manipulation_confidence * 100))
+        if manipulation_confidence >= 0.70:
+            parts.append(f"โดยมีความม่ันใจสูง ({confidence_pct}%) ว่าภาพถูกตัดต่อหรือดัดแปลง")
+        elif manipulation_confidence >= 0.40:
+            parts.append(f"โดยมีความม่ันใจปานกลาง ({confidence_pct}%) ว่าภาพถูกตัดต่อหรือดัดแปลง")
 
         if scam_keywords:
             parts.append(f"ทั้งนี้ตรวจพบคำสำคัญน่าสงสัยในภาพ ได้แก่ {', '.join(scam_keywords)}")
@@ -349,7 +349,7 @@ class InferenceService:
         Process image and run inference via isolated ONNX worker + LLaMA.
         """
         visual_risk_score = 50
-        ai_gen_probability = 0.5
+        manipulation_confidence = 0.5
         # Track B shadow signal: carried through cache/internal result only.
         # It is deliberately NOT fused into total risk yet.
         det_score = None
@@ -370,7 +370,7 @@ class InferenceService:
                 print(f"ONNX worker timeout after {settings.ONNX_WORKER_TIMEOUT}s, using defaults")
                 return {
                     "visual_risk_score": visual_risk_score,
-                    "ai_gen_probability": ai_gen_probability,
+                    "manipulation_confidence": manipulation_confidence,
                     "det_score": det_score,
                     "onnx_model_id": onnx_model_id,
                     "onnx_latency_ms": onnx_latency_ms,
@@ -385,7 +385,7 @@ class InferenceService:
                 # Parse only the last line as JSON to ignore any other print statements
                 result = run["stdout_json"]
                 visual_risk_score = result.get("visual_risk_score", visual_risk_score)
-                ai_gen_probability = result.get("ai_gen_probability", ai_gen_probability)
+                manipulation_confidence = result.get("manipulation_confidence", manipulation_confidence)
                 det_score = result.get("det_score", det_score)
                 onnx_execution_providers = result.get("execution_providers", onnx_execution_providers)
                 anomaly_region = result.get("anomaly_region", "บริเวณที่น่าสงสัยในภาพ")
@@ -401,7 +401,7 @@ class InferenceService:
                 
         return {
             "visual_risk_score": visual_risk_score,
-            "ai_gen_probability": ai_gen_probability,
+            "manipulation_confidence": manipulation_confidence,
             "det_score": det_score,
             "onnx_model_id": onnx_model_id,
             "onnx_latency_ms": onnx_latency_ms,
