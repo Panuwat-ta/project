@@ -43,3 +43,12 @@ Profileintegrationstartupprobeผ่านจริง1กรณี; DI→signed
 ข้อค้นพบจากtool lifecycle: flutterdriveเริ่มต้นstop+uninstallเมื่อtestจบ (SDKdrive_service.dart280–287). หลังคืนregularAPKพบOnboarding ไม่ใช่Login; localstateไม่ได้ยืนยันpreserved แม้ไม่มีaccess tokenก่อนprobe และ testcodeไม่ได้deleteAll. ไม่กล่าวอ้างcleanupgradepreservesdata. แก้คู่มือ/probeให้explicitdedicatedinstallและใช้applicationIdสำหรับtestใหม่ `com.example.scam_image_mobile.hardening_probe` พร้อม--keep-app-running; เป็นtestidentifierที่เลือกเฉพาะงานนี้ ไม่ใช่confirmedproductionidentity. ไม่เปลี่ยนconsent/onboardingโดยพลการในแอปปกติเพื่อกลบผลที่พบ.
 
 DedicatedprobeapplicationIdcom.example.scam_image_mobile.hardening_probeรันใหม่ผ่าน1/1ด้วยprofile/no-dds/keep-app-running/explicitfixtureflag; DI→signedoutroute382ms,Flutter3framesbuildmiss1/rastermiss1. ไม่เทียบเป็นbefore/afterกับรอบแรก; retainrawJSON2รอบเพื่อไม่เลือกผลที่ดีกว่าอย่างเดียว. หลังรันstopเฉพาะprobeและกลับแอปปกติที่Onboarding; ไม่รับterms/researchconsentเอง. #77/#79/#81/#83/#85/#86/#87/#88ยังOPEN.
+
+
+## ทดสอบ API development บนอุปกรณ์ — 2026-10-02
+
+- ใช้ `develop` commit `c74167b3` ซึ่ง mobile source รวม hardening commit `7d30cc17`; อ่านเฉพาะ `API_BASE_URL` จาก `.env` ที่ผู้ใช้มีอยู่ โดยไม่คัดลอกหรือเก็บค่าในหลักฐาน
+- สร้าง Profile APK ขนาด 92,155,887 bytes ด้วย `APP_ENV=development` และ URL ดังกล่าวเป็น Dart define; ติดตั้งทับด้วย `adb install -r` และเปิด `MainActivity` สำเร็จ
+- ตรวจ APK ก่อนติดตั้ง: ไม่มี `.env`/`.env.example` assets และพบค่า API URL ที่กำหนดอยู่ใน Flutter native library
+- จาก RMX3370 / Android 13 ส่ง `GET /health` ผ่าน Wi-Fi หลังยืนยัน `adb reverse --list` ว่าง; ได้ HTTP 200 และ JSON `status=ok`, `database=ok`, `redis=ok` (`version=0.1.0`). หลักฐานที่ `evidence/native-2026-10-02/mobile-development-api-health.json`
+- ยืนยันเฉพาะ device-to-development-API transport และ build configuration; ไม่ได้ส่ง credential, ทดสอบ login snackbar, scan หรือ staging flow จึงยังไม่ปิด #79 และไม่ใช่ production network proof

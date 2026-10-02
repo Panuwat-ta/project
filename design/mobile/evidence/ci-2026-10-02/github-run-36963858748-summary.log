@@ -1,0 +1,10 @@
+GitHub Actions Mobile quality gates — run 36963858748
+Source: 7d30cc175793b0c2f38116bf0705515755ae25f1 (refactor-mobile)
+Result: success
+Flutter tests: 749 passed; 0 failed. Analyzer: 0 issues.
+Coverage: line 5471/6018 (90.91%); branch 1409/1711 (82.35%).
+Dependency audit: 230 resolved packages; 0 advisories.
+Unsigned APK: 63447112 bytes; SHA-256 addbba05d1155f9dcc0d9d72042b8a915686ee72230656e15709d30714ce3ff2; checksum match.
+Environment assets: 0; duplicate launcher PNG assets: 0; annotations: 0.
+Action metadata pins: 4 official Node 24 actions.
+This run is a quality/compile gate, not a signed release or production deployment.

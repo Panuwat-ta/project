@@ -6,10 +6,9 @@
 
 ## Automated test audit
 
-- flutter test --coverage --branch-coverage --reporter=failures-only ล่าสุด: 422 passed, 0 failed, 0 skipped
-- line coverage ล่าสุดจาก coverage/lcov.info: 4,087/5,678 = 71.98%; การรันล่าสุดไม่มี BRDA records จึงยังสรุป branch coverage ปัจจุบันไม่ได้
-- ผล branch coverage ก่อนเพิ่ม screen widgets (417 tests): 920/1,546 = 59.51% ตามรายงานรอบ 01:16
-- flutter analyze: No issues found
+- GitHub Actions run 36963858748: Flutter 749 passed, 0 failed; `flutter analyze --fatal-infos` พบ 0 issues
+- Coverage artifact ของ run เดียวกัน: line 5,471/6,018 = 90.91%; branch 1,409/1,711 = 82.35% (เกณฑ์ NFR-09 >=80%)
+- Python quality tools local run หลังเพิ่ม development runner: 18 passed, 0 failed; รายงาน `tests_all/tests_report/automate_tests/mobile/issue-79-dev-api-runner-2026-10-02.md`
 - Automated tests ครอบคลุม Auth, HomeScreen, ImageCropScreen, History, NotificationsCubit/Screen, Report, Result, ScanBloc, SettingsCubit, UserProfileScreen, PrivacyConsentScreen, network, router และ storage
 - เพิ่ม screen-level widget tests สำหรับ HomeScreen, ImageCropScreen, NotificationsScreen, UserProfileScreen และ PrivacyConsentScreen
 - ชุดนี้ครอบคลุม user-visible functions ไม่ได้อ้างว่าทุก private Dart method มี unit test ครบ
@@ -142,3 +141,4 @@
 | TC-MOB-85 | ภาษาและ theme บนหน้าหลัก | NFR-06, NFR-08 | Settings ใช้งานได้ | N/A | ตรวจ Home/History/Result/Report/Settings | วน Thai/English และ Light/Dark/System | copy เปลี่ยนตามภาษา; risk colors/labels มีความหมายเดิมข้าม theme | To Do | Medium |
 | TC-MOB-86 | Text scale และ TalkBack ใน key flows | NFR-06, NFR-08 | Android device; TalkBack เปิดโดยผู้ทดสอบ | text scale 1.0, 1.3, 1.5; viewport 390x844 | ตรวจ semantics/focus/overflow | ไล่ Home, History, Result, Heatmap, Report, Settings ด้วย TalkBack | controls มี label/state; critical content ไม่ถูกตัดที่ 1.3; actions เข้าถึงได้ที่ 1.5 | To Do | High |
 | TC-MOB-87 | Reduced Motion และ touch targets | NFR-06, NFR-08 | Android device หรือ widget environment | MediaQuery.disableAnimations=true; controls ที่หน้าจอแสดง | ตรวจ motion/touch | ปิด animation แล้วลอง controls สำคัญ | animation ซ้ำลดตาม code; critical targets อย่างน้อย 48dp | To Do | Medium |
+| TC-MOB-88 | อุปกรณ์ Android เข้าถึง Development API ได้โดยตรง | NFR-08 | RMX3370 ต่อ Wi-Fi ที่เข้าถึง backend ได้; ติดตั้ง Profile build ที่กำหนด API_BASE_URL; ไม่มี ADB reverse mapping | `API_BASE_URL` จาก `.env` local (ไม่เก็บค่า); unauthenticated `GET /health` | ตรวจ URL config และ network path จากอุปกรณ์จริง โดยไม่ส่ง credential | ติดตั้ง/เปิด Profile APK; ตรวจ `adb reverse --list` ว่าง; ส่ง `GET /health` จาก Android ด้วย `toybox nc`; ตรวจ HTTP status และ health fields | HTTP 200; `status`, `database`, `redis` เป็น `ok`; app เปิดได้โดยไม่พึ่ง USB reverse | Pass — HTTP 200, health fields เป็น `ok`, app เปิดได้; ทดสอบ transport เท่านั้น ไม่ได้ทดสอบ login/error banner | High |
