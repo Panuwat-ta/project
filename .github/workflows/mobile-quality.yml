@@ -54,6 +54,8 @@ jobs:
         run: flutter test --coverage --branch-coverage --reporter expanded
       - name: Enforce coverage >= 80 percent
         run: python3 tool/check_coverage.py coverage/lcov.info --output build/quality/coverage.json
+      - name: Compile unsigned release APK
+        run: flutter build apk --release --dart-define=APP_ENV=staging --dart-define=API_BASE_URL=https://example.invalid/api/v1
       - name: Resolve Android dependency graph
         run: |
           mkdir -p build/quality
@@ -61,8 +63,6 @@ jobs:
           ./gradlew :app:dependencies --configuration releaseRuntimeClasspath --console=plain > ../build/quality/android-dependencies.txt
       - name: Audit resolved Pub and Maven dependencies
         run: python3 tool/audit_dependencies.py --gradle-report build/quality/android-dependencies.txt --output build/quality/dependency-audit.json
-      - name: Compile unsigned release APK
-        run: flutter build apk --release --dart-define=APP_ENV=staging --dart-define=API_BASE_URL=https://example.invalid/api/v1
       - name: Reject bundled environment files
         run: |
           python3 - <<'PY'

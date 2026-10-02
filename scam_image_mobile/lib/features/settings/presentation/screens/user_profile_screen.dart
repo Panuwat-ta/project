@@ -79,7 +79,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'privacy_delete_desc'.tr(ctx),
+              'profile_delete_account_desc'.tr(ctx),
               style: AppTypography.bodyBase(
                 color: isDark ? Colors.white70 : AppColors.textSecondary,
               ),

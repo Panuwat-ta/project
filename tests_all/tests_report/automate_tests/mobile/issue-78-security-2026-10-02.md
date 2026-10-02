@@ -57,3 +57,18 @@ Gradle resolve ผ่าน; API ส่งครบตาม batch/pagination �
 ### 2. รายการที่ไม่ผ่าน (Failed Tests) และสาเหตุที่ไม่ผ่าน (How & Why it Failed)
 
 ไม่มีข้อผิดพลาด (0 Failed) ในรอบนี้. รอบก่อน graph ไม่มี packages เพราะ signing guard จับ configuration name `releaseRuntimeClasspath` เป็น packaging task; แก้ให้ตรวจ task graph จริงแล้ว resolve/audit ผ่าน. ไม่อ้างว่าผลนี้รับรอง SDK/production security ทั้งระบบ.
+
+## 2026-10-02 07:33 +07 - Account soft-delete disclosure regression
+
+- Target: `test/features/screens/widget_screen_smoke_test.dart`
+- Command: `flutter test test/features/screens/widget_screen_smoke_test.dart --reporter failures-only`
+- Result: PASS
+- Summary: Total: 12 | Passed: 12 | Failed: 0 | Skipped: 0 | Duration: ไม่บันทึก
+
+### 1. รายการที่ผ่าน (Passed Tests) และพฤติกรรมที่ผ่าน (How it Passed)
+
+Profile deletion confirmation แสดงว่าปิดบัญชีและไม่ได้ลบ server images/results/reports ทันทีตาม `server/app/services/user_service.py`; assert ข้อความ “ลบข้อมูลการใช้งานทั้งหมด” ไม่ปรากฏใน dialog นี้; password confirmation, cancel และ server failure recovery ผ่าน. Home/Crop/Notifications/Privacy tests ในไฟล์เดียวกันผ่านทั้งหมด.
+
+### 2. รายการที่ไม่ผ่าน (Failed Tests) และสาเหตุที่ไม่ผ่าน (How & Why it Failed)
+
+ไม่มีข้อผิดพลาด (0 Failed).

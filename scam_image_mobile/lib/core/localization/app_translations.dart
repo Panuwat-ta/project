@@ -409,6 +409,8 @@ class AppTranslations {
       'password_changed': 'เปลี่ยนรหัสผ่านสำเร็จ',
       'profile_change_password': 'เปลี่ยนรหัสผ่าน',
       'profile_delete_account': 'ลบบัญชีผู้ใช้งาน',
+      'profile_delete_account_desc':
+          'บัญชีจะถูกปิดใช้งานและไม่สามารถเข้าสู่ระบบได้ ข้อมูลภาพ ผลวิเคราะห์ และรายงานบนเซิร์ฟเวอร์ไม่ได้ถูกลบทันที ยืนยันรหัสผ่านเพื่อดำเนินการ',
       'profile_delete_failed':
           'ไม่สามารถลบบัญชีได้ กรุณาตรวจสอบรหัสผ่านแล้วลองใหม่',
       'visual_anomaly_title': 'ตรวจจับความผิดปกติ',
@@ -822,6 +824,8 @@ class AppTranslations {
       'password_changed': 'Password changed successfully',
       'profile_change_password': 'Change Password',
       'profile_delete_account': 'Delete Account',
+      'profile_delete_account_desc':
+          'Your account will be deactivated and you will no longer be able to sign in. Server images, analysis results and reports are not deleted immediately. Confirm your password to continue.',
       'profile_delete_failed':
           'Unable to delete account. Check your password and try again.',
       'visual_anomaly_title': 'Visual Anomaly',

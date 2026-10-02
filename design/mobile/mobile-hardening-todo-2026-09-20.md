@@ -6,7 +6,7 @@
 
 ## GitHub Issues cross-check — 2026-10-02
 
-ณ cross-check ล่าสุด 2026-10-02 Issues #71–#76, #80 และ #82 ปิดแล้ว; #77–#79, #81 และ #83–#88 ยังเปิด. #78 มี implementation/test evidence ใหม่ด้านล่าง รอตรวจสถานะหลัง commit. ข้อความสถานะเวลา 01:53 ด้านล่างเป็นประวัติเดิมก่อนปิด Issues #71–#76. #88 เป็น roadmap หลักและอ้างอิง hardening gates ในรายการด้านล่าง:
+ณ cross-check ล่าสุด 2026-10-02 Issues #71–#76, #78, #80 และ #82 ปิดแล้ว; #77, #79, #81 และ #83–#88 ยังเปิด. #78 CLOSED เวลา 07:29 +07 พร้อม automated evidence และข้อจำกัด backend/product. ข้อความสถานะเวลา 01:53 ด้านล่างเป็นประวัติเดิมก่อนปิด Issues #71–#76. #88 เป็น roadmap หลักและอ้างอิง hardening gates ในรายการด้านล่าง:
 
 | Issue | Checklist section |
 |---|---|

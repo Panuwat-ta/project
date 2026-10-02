@@ -17,6 +17,7 @@
 - History/Result/Report/Notifications state ถูก reset เมื่อ session สิ้นสุด; completions เก่าไม่เปลี่ยน state ใหม่
 - ตรวจ absolute regular file, ไม่รับ URI/symlink/directory, limit 20 MB และ 100 MP ตาม backend defaults; decode JPEG/PNG/WebP จาก content ใน isolate ไม่เชื่อ extension; corrupt/non-image/error recover ได้
 - Report validation ยังคง form tests เดิม; ไม่อ้างว่าฝั่ง client ป้องกัน server injection ได้เอง
+- Account deletion ใช้ข้อความเฉพาะ soft-delete ตาม user_service: ปิดบัญชี ไม่อ้างว่าลบ server image/result/report ทันที; focused widget tests12/12
 - Privacy แจ้งว่า preferences อยู่บนอุปกรณ์และไม่เปลี่ยน server consent; ลบคำรับรอง PDPA/security/third-party sharing ที่ไม่มีหลักฐาน; unsupported export/delete usage ไม่แสดง success
 - OSV query ของ resolved Pub/Maven 230 packages: 0 advisories ณเวลาที่บันทึกใน JSON; SDK packages แยก excluded ไม่อ้างว่าปลอดภัยทุก dependency/SDK หรือ future advisories
 
@@ -46,3 +47,7 @@ Gradle อ่าน identity/key จาก environment; release packaging ไม
 4. Cache cleanup ของ image/temp manager อาจข้ามไฟล์ที่ลบไม่ได้; ไม่ได้พิสูจน์ forensic erasure หรือ encryption ของ SQLite/cache. Production retention/storage policy ยังต้อง sign-off
 5. OSV เป็น advisory snapshot ไม่ใช่ penetration test; actual TLS/production network และ staging E2E ยังไม่ผ่าน #79
 6. ไม่มี actual signed AAB, clean/upgrade install, store metadata, GitHub CI run หรือ production monitoring sign-off
+
+## Clean source verification รอบแรก
+
+Export commit `849e52d` ด้วย git archive ไป directory ใหม่ (ไม่มี `.env`/build/.dart_tool): locked pub get, format, analyzer, tool tests8/8, full Flutter727/727 ผ่าน (45.183s), coverage gateผ่าน. แต่ Android graph เริ่มไม่ได้เพราะ `gradlew` ไม่ tracked ใน repo และต้องให้ Flutter build bootstrap ก่อน. จึงย้าย unsigned release compile ไปก่อน dependency graph ใน workflow; ยังไม่ถือว่ารอบนี้ผ่านทุก gate.

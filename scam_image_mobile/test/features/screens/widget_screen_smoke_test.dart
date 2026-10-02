@@ -362,11 +362,37 @@ void main() {
 
     await tester.tap(find.text('ลบบัญชีผู้ใช้งาน'));
     await tester.pumpAndSettle();
+    expect(
+      find.text(
+        'บัญชีจะถูกปิดใช้งานและไม่สามารถเข้าสู่ระบบได้ ข้อมูลภาพ ผลวิเคราะห์ และรายงานบนเซิร์ฟเวอร์ไม่ได้ถูกลบทันที ยืนยันรหัสผ่านเพื่อดำเนินการ',
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.text(
+        'คุณต้องการลบข้อมูลการใช้งานทั้งหมดใช่หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้',
+      ),
+      findsNothing,
+    );
+    await tester.pumpAndSettle();
     await tester.tap(find.text('ยกเลิก'));
     await tester.pumpAndSettle();
     verifyNever(() => settingsRepository.deleteAccount(any()));
 
     await tester.tap(find.text('ลบบัญชีผู้ใช้งาน'));
+    await tester.pumpAndSettle();
+    expect(
+      find.text(
+        'บัญชีจะถูกปิดใช้งานและไม่สามารถเข้าสู่ระบบได้ ข้อมูลภาพ ผลวิเคราะห์ และรายงานบนเซิร์ฟเวอร์ไม่ได้ถูกลบทันที ยืนยันรหัสผ่านเพื่อดำเนินการ',
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.text(
+        'คุณต้องการลบข้อมูลการใช้งานทั้งหมดใช่หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้',
+      ),
+      findsNothing,
+    );
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), 'correct-horse-battery');
     await tester.tap(find.text('ลบ'));
