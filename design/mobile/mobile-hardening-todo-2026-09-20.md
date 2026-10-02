@@ -627,7 +627,7 @@ workflow #84 และ tooling tests ผ่าน; follow-up PR #90 run 36969781
 - [x] Auth scopeได้รับอนุมัติและ #82CLOSED; ไม่ติดloopdenyเดิม
 - [!] #77 actualTalkBack/textscale/rotation/tablet/insets/Backทุกหน้ายังไม่ครบ; LoginportraitTH/light/font1.0/keyboardscroll/Back baselineมีหลักฐานแล้ว แต่ไม่แทนทั้งmatrix
 - [!] #79 ยังไม่มี confirmed HTTPS staging URL/account fixtures และ staging E2E; dev LAN health smoke ผ่านแล้ว แต่ไม่ได้ทดสอบ authenticated UI/API flow
-- [!] #81 profileprobeมี3framesและoverbudget; Home/History/Result/Heatmap/image-memory/fullsoak/processrecreationยังไม่ครบ
+- [!] #81 dedicated profile probe ซ้ำบน RMX3370/Android 13 ได้ 3 frames, DI→signed-out route 401ms แต่ build misses 2/3 และ raster misses 1/3; Home/History/Result/Heatmap/image-memory/fullsoak/processrecreationยังไม่ครบ
 - [!] #83 productionidentity/version/key/signedartifact/cleanupgradeยังไม่ยืนยัน; test-onlyprobeIDไม่ใช่productionidentity
 - [!] #85 distributionchannel/privacyTerms/supportURLs/approvedpolicy/screenshotsยังไม่ยืนยัน
 - [!] #86 backend/model/migrationfreeze/monitoringowners/thresholds/rollbackrehearsalยังไม่ครบ

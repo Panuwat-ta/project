@@ -52,3 +52,7 @@ DedicatedprobeapplicationIdcom.example.scam_image_mobile.hardening_probeรั�
 - ตรวจ APK ก่อนติดตั้ง: ไม่มี `.env`/`.env.example` assets และพบค่า API URL ที่กำหนดอยู่ใน Flutter native library
 - จาก RMX3370 / Android 13 ส่ง `GET /health` ผ่าน Wi-Fi หลังยืนยัน `adb reverse --list` ว่าง; ได้ HTTP 200 และ JSON `status=ok`, `database=ok`, `redis=ok` (`version=0.1.0`). หลักฐานที่ `evidence/native-2026-10-02/mobile-development-api-health.json`
 - ยืนยันเฉพาะ device-to-development-API transport และ build configuration; ไม่ได้ส่ง credential, ทดสอบ login snackbar, scan หรือ staging flow จึงยังไม่ปิด #79 และไม่ใช่ production network proof
+
+## Dedicated profile probe ซ้ำ — 2026-10-02 12:59 +07
+
+RMX3370/Android 13 กลับมา awake/unlocked จึงรัน `startup_profile_test.dart` บน dedicated applicationId `com.example.scam_image_mobile.hardening_probe` ด้วย profile, `--no-dds`, `--keep-app-running` และ API_BASE_URL จาก `.env` โดยไม่แสดง URL. Probe ผ่าน 1/1 และเจอ signed-out route ใน 401 ms; Flutter รายงาน 3 frames, build budget misses 2/3 (average 23.719 ms, worst 38.024 ms) และ raster budget misses 1/3 (average 17.888 ms, worst 33.928 ms). นี่เป็น sample startup เพิ่ม ไม่ใช่ performance pass หรือ soak; Home/History/Result/Heatmap/image-memory/process-recreation ยังต้องทดสอบ. Metrics sanitized อยู่ใน `evidence/native-2026-10-02/mobile-startup-profile-rerun.json` และรายงาน test ที่ `tests_all/tests_report/automate_tests/mobile/issue-81-native-startup-probe-2026-10-02.md`.
