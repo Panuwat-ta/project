@@ -113,6 +113,14 @@ class DatabaseHelper {
       ''');
   }
 
+  Future<void> clearAnalysisCache() async {
+    final db = await database;
+    await db.transaction((transaction) async {
+      await transaction.delete(tableHistory);
+      await transaction.delete(tableDetails);
+    });
+  }
+
   /// Test seam that executes the exact production create migration.
   Future<void> createSchemaForTesting(Database db, int version) =>
       _onCreate(db, version);

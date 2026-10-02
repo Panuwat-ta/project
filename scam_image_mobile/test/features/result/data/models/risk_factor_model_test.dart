@@ -93,18 +93,8 @@ void main() {
     });
 
     test('different models are not equal', () {
-      const a = RiskFactorModel(
-        type: 'a',
-        score: 10,
-        title: 't',
-        details: [],
-      );
-      const b = RiskFactorModel(
-        type: 'b',
-        score: 20,
-        title: 'u',
-        details: [],
-      );
+      const a = RiskFactorModel(type: 'a', score: 10, title: 't', details: []);
+      const b = RiskFactorModel(type: 'b', score: 20, title: 'u', details: []);
       expect(a, isNot(equals(b)));
     });
   });

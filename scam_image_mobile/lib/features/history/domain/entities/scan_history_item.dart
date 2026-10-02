@@ -22,12 +22,12 @@ class ScanHistoryItem extends Equatable {
 
   @override
   List<Object?> get props => [
-        scanId,
-        thumbnailUrl,
-        riskScore,
-        riskLevel,
-        status,
-        createdAt,
-        title,
-      ];
+    scanId,
+    thumbnailUrl,
+    riskScore,
+    riskLevel,
+    status,
+    createdAt,
+    title,
+  ];
 }

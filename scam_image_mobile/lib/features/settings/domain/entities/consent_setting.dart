@@ -21,13 +21,16 @@ class ConsentSetting extends Equatable {
     bool? processingConsent,
     bool? historyConsent,
     bool? researchConsent,
-  }) =>
-      ConsentSetting(
-        processingConsent: processingConsent ?? this.processingConsent,
-        historyConsent: historyConsent ?? this.historyConsent,
-        researchConsent: researchConsent ?? this.researchConsent,
-      );
+  }) => ConsentSetting(
+    processingConsent: processingConsent ?? this.processingConsent,
+    historyConsent: historyConsent ?? this.historyConsent,
+    researchConsent: researchConsent ?? this.researchConsent,
+  );
 
   @override
-  List<Object?> get props => [processingConsent, historyConsent, researchConsent];
+  List<Object?> get props => [
+    processingConsent,
+    historyConsent,
+    researchConsent,
+  ];
 }

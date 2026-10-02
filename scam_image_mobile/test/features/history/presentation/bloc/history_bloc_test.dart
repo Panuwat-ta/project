@@ -63,6 +63,60 @@ void main() {
     await bloc.close();
   });
 
+  for (final succeeds in [false, true]) {
+    test(
+      'session clear ignores late delete ${succeeds ? 'success' : 'error'}',
+      () async {
+        final pending = Completer<void>();
+        when(
+          () => mockRepo.deleteScanHistoryItem('scan-1'),
+        ).thenAnswer((_) => pending.future);
+        final bloc = HistoryBloc(repository: mockRepo);
+        bloc.emit(HistoryDataLoaded(tItems));
+        final done = Completer<bool>();
+        bloc.add(HistoryItemDeleted('scan-1', done));
+        await Future<void>.delayed(Duration.zero);
+        final cleared = bloc.stream.firstWhere((s) => s is HistoryInitial);
+        bloc.add(const HistorySessionCleared());
+        await cleared;
+        if (succeeds) {
+          pending.complete();
+        } else {
+          pending.completeError(Exception('old delete'));
+        }
+        expect(await done.future.timeout(const Duration(seconds: 2)), false);
+        expect(bloc.state, const HistoryInitial());
+        await bloc.close();
+      },
+    );
+  }
+  test('session clear resets previous search and ignores late fetch', () async {
+    final pending = Completer<List<ScanHistoryItem>>();
+    when(
+      () => mockRepo.getScanHistory(
+        page: any(named: 'page'),
+        limit: any(named: 'limit'),
+        keyword: any(named: 'keyword'),
+      ),
+    ).thenAnswer(
+      (call) => call.namedArguments[#keyword] == 'old'
+          ? pending.future
+          : Future.value(tItems),
+    );
+    final bloc = HistoryBloc(repository: mockRepo);
+    bloc.add(const HistorySearched('old'));
+    await Future<void>.delayed(Duration.zero);
+    bloc.add(const HistorySessionCleared());
+    await Future<void>.delayed(Duration.zero);
+    pending.complete([tItems.first]);
+    await Future<void>.delayed(Duration.zero);
+    expect(bloc.state, const HistoryInitial());
+    final loaded = bloc.stream.firstWhere((s) => s is HistoryDataLoaded);
+    bloc.add(const HistoryLoaded());
+    await loaded;
+    expect((bloc.state as HistoryDataLoaded).items.length, 2);
+    await bloc.close();
+  });
   group('HistoryLoaded', () {
     blocTest<HistoryBloc, HistoryState>(
       'emits [HistoryLoading, HistoryDataLoaded] when items are available',

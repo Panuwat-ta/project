@@ -11,10 +11,7 @@ void main() {
     final dio = MockDio();
     final dataSource = SettingsRemoteDataSourceImpl(dio: dio);
     when(
-      () => dio.delete<void>(
-        ApiEndpoints.usersMe,
-        data: any(named: 'data'),
-      ),
+      () => dio.delete<void>(ApiEndpoints.usersMe, data: any(named: 'data')),
     ).thenAnswer(
       (_) async => Response<void>(
         statusCode: 200,
@@ -24,12 +21,14 @@ void main() {
 
     await dataSource.deleteAccount('secret123');
 
-    final captured = verify(
-      () => dio.delete<void>(
-        ApiEndpoints.usersMe,
-        data: captureAny(named: 'data'),
-      ),
-    ).captured.single as Map<String, dynamic>;
+    final captured =
+        verify(
+              () => dio.delete<void>(
+                ApiEndpoints.usersMe,
+                data: captureAny(named: 'data'),
+              ),
+            ).captured.single
+            as Map<String, dynamic>;
     expect(captured, {'password': 'secret123'});
   });
 }

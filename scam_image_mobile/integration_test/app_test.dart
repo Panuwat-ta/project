@@ -15,7 +15,7 @@ void main() {
 
       // 1. Start the app
       app.main();
-      
+
       // Wait for the app to settle (animations, network calls to load initial state)
       await tester.pumpAndSettle(const Duration(seconds: 3));
 
@@ -25,12 +25,12 @@ void main() {
         // Need to check the two consent checkboxes
         final checkboxes = find.byType(CheckboxListTile);
         expect(checkboxes, findsNWidgets(2));
-        
+
         await tester.tap(checkboxes.first);
         await tester.pumpAndSettle();
         await tester.tap(checkboxes.last);
         await tester.pumpAndSettle();
-        
+
         await tester.tap(getStartedBtn);
         await tester.pumpAndSettle(const Duration(seconds: 2));
       }
@@ -40,7 +40,7 @@ void main() {
       final emailField = find.byType(TextFormField).first;
       expect(emailField, findsOneWidget);
       await tester.enterText(emailField, 'test@example.com');
-      
+
       // Find the password field (the last TextFormField)
       final passwordField = find.byType(TextFormField).last;
       expect(passwordField, findsOneWidget);
@@ -50,12 +50,12 @@ void main() {
       // Find and tap the Login button
       FocusManager.instance.primaryFocus?.unfocus();
       await tester.pumpAndSettle();
-      
+
       final loginButton = find.byType(ElevatedButton);
       expect(loginButton, findsOneWidget);
       await tester.ensureVisible(loginButton);
       await tester.tap(loginButton);
-      
+
       // Wait for navigation and animations to complete without settling since there is a repeating pulse animation
       await tester.pump(const Duration(seconds: 3));
       await tester.pump(const Duration(seconds: 1));
@@ -90,7 +90,7 @@ void main() {
         await tester.ensureVisible(logoutButton.first);
         await tester.tap(logoutButton.first);
         await tester.pump(const Duration(seconds: 1));
-        
+
         // Confirm logout if there's a dialog
         final confirmButton = find.text('ออกจากระบบ');
         if (confirmButton.evaluate().isNotEmpty) {

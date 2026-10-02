@@ -43,7 +43,6 @@ dependencies:
   # Share
   share_plus: ^13.2.0
   flutter_svg: ^2.3.0
-  flutter_dotenv: ^6.0.1
   sqflite: ^2.4.3
   path_provider: ^2.1.6
   path: ^1.9.1
@@ -62,6 +61,5 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - .env
     - assets/icons/
     - assets/images/

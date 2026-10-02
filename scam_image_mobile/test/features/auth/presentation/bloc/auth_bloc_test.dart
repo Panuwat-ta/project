@@ -1,3 +1,4 @@
+import 'package:scam_image_mobile/core/storage/secure_storage.dart';
 import 'dart:async';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -255,6 +256,47 @@ void main() {
       await bloc.stream.firstWhere((s) => s is AuthAuthenticated);
       expect(calls, 2);
       await bloc.close();
+    },
+  );
+
+  test('late login success cannot authenticate again after logout', () async {
+    final pending = Completer<User>();
+    when(
+      () => mockRepo.login(
+        email: any(named: 'email'),
+        password: any(named: 'password'),
+      ),
+    ).thenAnswer((_) => pending.future);
+    when(() => mockRepo.logout()).thenAnswer((_) async {});
+    final bloc = AuthBloc(mockRepo);
+    bloc.add(
+      const LoginRequested(email: 'user@example.com', password: 'password'),
+    );
+    await bloc.stream.firstWhere((state) => state is AuthLoading);
+    bloc.add(const LogoutRequested());
+    await bloc.stream.firstWhere((state) => state is AuthUnauthenticated);
+    pending.complete(tUser);
+    await Future<void>.delayed(Duration.zero);
+    expect(bloc.state, isA<AuthUnauthenticated>());
+    await bloc.close();
+  });
+
+  test(
+    'invalidated secure-storage session logs out an authenticated user',
+    () async {
+      final storage = SecureStorage();
+      when(() => mockRepo.logout()).thenAnswer((_) async {});
+      final bloc = AuthBloc(mockRepo, sessionStorage: storage);
+      bloc.add(const AuthSessionRestored(tUser));
+      await bloc.stream.firstWhere((state) => state is AuthAuthenticated);
+      final ended = bloc.stream.firstWhere(
+        (state) => state is AuthUnauthenticated,
+      );
+      storage.invalidateAuthSession();
+      await ended;
+      verify(() => mockRepo.logout()).called(1);
+      await bloc.close();
+      storage.dispose();
     },
   );
 

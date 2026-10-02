@@ -1,6 +1,6 @@
 # ScamGuard Mobile App
 
-ScamGuard เป็นแอปพลิเคชัน Flutter สำหรับ Android ที่ช่วยให้ผู้ใช้ทั่วไปสามารถตรวจสอบความน่าเชื่อถือของรูปภาพก่อนนำไปใช้ตัดสินใจ เช่น รูปสลิปโอนเงิน หลักฐานการชำระเงิน คิวอาร์โค้ด หรือเอกสารที่ส่งมาทางโซเชียลมีเดีย แอปส่งรูปภาพไปยัง Backend API เพื่อวิเคราะห์และแสดงผลระดับความเสี่ยงในรูปแบบที่เข้าใจง่าย
+ScamGuard เป็นแอปพลิเคชัน Flutter สำหรับ Android ที่ช่วยให้ผู้ใช้ทั่วไปสามารถตรวจสอบความน่าเชื่อถือของรูปภาพก่อนนำไปใช้ตัดสินใจ เช่น ภาพที่ใช้ในการหลอกลวงทุกประเภท เช่น romance scam ภาพตัดต่อ เอกสารปลอม ภาพ AI-generated และสกรีนช็อต/สลิปปลอม แอปส่งรูปภาพไปยัง Backend API เพื่อวิเคราะห์และแสดงผลระดับความเสี่ยงในรูปแบบที่เข้าใจง่าย
 
 ## ฟีเจอร์หลัก (Key Features)
 
@@ -8,7 +8,7 @@ ScamGuard เป็นแอปพลิเคชัน Flutter สำหรั�
 * **ผลลัพธ์ที่เข้าใจง่าย**: แสดงผลในรูปแบบคะแนนความเสี่ยง (Risk Score) พร้อม Heatmap ชี้จุดที่น่าสงสัย
 * **ประวัติการตรวจสอบ**: บันทึกและเรียกดูประวัติการตรวจสอบย้อนหลังได้ตลอดเวลา
 * **การรายงาน (Report)**: ผู้ใช้สามารถช่วยรายงานภาพต้องสงสัยหรือรูปแบบกลโกงใหม่ๆ
-* **ระบบความปลอดภัยและความเป็นส่วนตัว**: การจัดการ Consent และข้อมูลผู้ใช้อย่างรัดกุมตามหลัก Privacy-by-design
+* **ระบบความปลอดภัยและความเป็นส่วนตัว**: Token ใช้ secure storage; Privacy preferences ปัจจุบันเก็บบนอุปกรณ์และยังไม่เปลี่ยน server consent; export/delete usage ยังไม่รองรับ
 * **รองรับ 2 ภาษา (Localization)**: รองรับการใช้งานภาษาไทยและภาษาอังกฤษ
 
 ## สถาปัตยกรรม (Architecture)
@@ -51,7 +51,7 @@ lib/
 ## การติดตั้งและการใช้งาน (Getting Started)
 
 ### ความต้องการของระบบ (Prerequisites)
-- Flutter SDK `^3.12.2` (ขั้นต่ำ 3.12.2; ตรวจด้วย `flutter --version`; เวอร์ชันใหม่กว่าถือว่าใช้ได้เมื่อ `flutter pub get` และ `flutter test` ผ่าน)
+- Flutter SDK `3.47.2` / Dart `3.13.2` (เวอร์ชันที่ตรวจในรอบ hardening นี้; ดู Dart constraint ใน pubspec.yaml)
 - Dart SDK
 - Android Studio สำหรับ Android Emulator (v1 รองรับ **Android เท่านั้น** ไม่ต้องใช้ Xcode/Simulator)
 
@@ -71,20 +71,29 @@ lib/
 3. **รันแอปพลิเคชัน (Development)**
    รันแอปพลิเคชันโดยสามารถกำหนด URL ของ API Backend ผ่าน Environment Variable ได้:
    ```bash
-   flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000
+   flutter run --dart-define=APP_ENV=development --dart-define=API_BASE_URL=http://10.0.2.2:8000/api/v1
    ```
-   *(หมายเหตุ: `localhost` ใช้ได้เฉพาะรันบนเบราว์เซอร์/desktop เท่านั้น; บน **Android Emulator** ต้องใช้ `http://10.0.2.2:8000`, บนอุปกรณ์จริงต้องใช้ IP LAN ของเครื่อง Backend; ค่าเริ่มต้นหากไม่ได้กำหนด `API_BASE_URL` คือ `http://10.0.2.2:8000`)*
+   Android Emulator ใช้ `10.0.2.2`; เครื่องจริงใช้ LAN IP ของ backend และต้องระบุ `/api/v1` ตาม API contract ปัจจุบัน ไม่มี URL เริ่มต้น และไม่อ่าน/บรรจุ `.env` ในแอปอีกแล้ว
+
+   สำหรับ profile บนเครื่องจริง ใช้ `flutter run --profile` พร้อม dart defines เดียวกัน Development HTTP อนุญาตเฉพาะ debug/profile; staging/production ต้อง HTTPS ทุก build mode
+
 
 ### การ Build สำหรับ Production
 
+ต้องกำหนด `SCAMGUARD_PRODUCTION_API_URL` เป็น HTTPS URL จริงก่อน build; คำสั่งตัวอย่างไม่ใช่ production configuration ที่ยืนยันแล้ว ห้ามใส่ token/password ใน dart defines เพราะค่าที่ compile เข้าแอปอ่านจาก artifact ได้
+
+Production build ต้องตั้ง environment: `SCAMGUARD_APPLICATION_ID`, `SCAMGUARD_KEYSTORE_PATH`, `SCAMGUARD_KEY_ALIAS`, `SCAMGUARD_STORE_PASSWORD`, `SCAMGUARD_KEY_PASSWORD` จาก secure local environment/CI secrets โดยไม่ commit key/password
+
+เมื่อขาด identity/signing build จะหยุด ไม่ใช้ debug key แทน; `SCAMGUARD_ALLOW_UNSIGNED_QUALITY_BUILD=true` ใช้เฉพาะ compile gate ที่สร้าง unsigned artifact และไม่ใช่ Release Candidate
+
 **Android (APK):**
 ```bash
-flutter build apk --dart-define=API_BASE_URL=https://api.yourdomain.com
+flutter build apk --release --dart-define=APP_ENV=production --dart-define=API_BASE_URL="$SCAMGUARD_PRODUCTION_API_URL"
 ```
 
 **Android (App Bundle):**
 ```bash
-flutter build appbundle --dart-define=API_BASE_URL=https://api.yourdomain.com
+flutter build appbundle --release --dart-define=APP_ENV=production --dart-define=API_BASE_URL="$SCAMGUARD_PRODUCTION_API_URL"
 ```
 
 

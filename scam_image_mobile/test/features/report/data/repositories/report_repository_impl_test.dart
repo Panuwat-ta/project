@@ -7,6 +7,7 @@ import 'package:scam_image_mobile/features/report/data/repositories/report_repos
 import 'package:scam_image_mobile/features/report/domain/entities/scam_report.dart';
 
 class MockReportRemote extends Mock implements ReportRemoteDataSource {}
+
 class FakeReportModel extends Fake implements ScamReportModel {}
 
 void main() {

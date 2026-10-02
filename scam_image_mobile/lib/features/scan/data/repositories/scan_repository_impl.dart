@@ -1,20 +1,10 @@
-import 'dart:io';
+import '../../../../core/utils/scan_image_validator.dart';
 
 import '../../domain/entities/analysis_task.dart';
 import '../../domain/repositories/scan_repository.dart';
 import '../datasources/scan_remote_datasource.dart';
 
-/// Threshold in bytes above which the caller is expected to compress the
-/// image before it reaches the data source (10 MB).
-const int _maxFileSizeBytes = 10 * 1024 * 1024;
-
-/// Concrete implementation of [ScanRepository].
-///
-/// Image compression for files > 10 MB is expected to be handled at the
-/// presentation layer (via `image_picker` quality settings) before the file
-/// path reaches this repository.  The repository documents this contract and
-/// falls through to the data source regardless, so the app never silently
-/// drops an oversized file.
+/// Validates the selected local image before making an upload request.
 class ScanRepositoryImpl implements ScanRepository {
   ScanRepositoryImpl({required this.remoteDataSource});
 
@@ -25,20 +15,7 @@ class ScanRepositoryImpl implements ScanRepository {
     required String filePath,
     String? scanName,
   }) async {
-    // Log a debug warning when the file exceeds the recommended size.
-    // Real compression is applied by the ImagePicker quality setting in the
-    // presentation layer before this method is called.
-    assert(() {
-      final file = File(filePath);
-      if (file.existsSync() && file.lengthSync() > _maxFileSizeBytes) {
-        // ignore: avoid_print
-        print(
-          'ScanRepositoryImpl: file exceeds 10 MB — '
-          'ensure image_picker quality compression was applied.',
-        );
-      }
-      return true;
-    }());
+    await validateScanImage(filePath);
 
     return remoteDataSource.submitScan(filePath: filePath, scanName: scanName);
   }

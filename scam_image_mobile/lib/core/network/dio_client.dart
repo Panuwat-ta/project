@@ -19,16 +19,10 @@ class DioClient {
       ),
     );
 
-    dio.interceptors.addAll([
+    // No network logger in any build: URL/query/error output can contain PII.
+    dio.interceptors.add(
       AuthInterceptor(secureStorage: secureStorage, dio: dio),
-      LogInterceptor(
-        request: false,
-        requestHeader: false,
-        requestBody: false,
-        responseHeader: false,
-        responseBody: false,
-      ),
-    ]);
+    );
 
     return dio;
   }
@@ -47,6 +41,8 @@ class AuthInterceptor extends Interceptor {
 
   Future<({String accessToken, String refreshToken})?>? _refreshFuture;
 
+  int? _refreshRevision;
+
   bool _isPublicAuthPath(String path) {
     return path.contains(ApiEndpoints.login) ||
         path.contains(ApiEndpoints.register) ||
@@ -58,8 +54,31 @@ class AuthInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
+    options.extra['_sessionRevision'] ??= secureStorage.authRevision;
     if (!_isPublicAuthPath(options.path)) {
+      if (options.extra['_sessionRevision'] != secureStorage.authRevision ||
+          !secureStorage.authSessionActive) {
+        handler.reject(
+          DioException(
+            requestOptions: options,
+            type: DioExceptionType.cancel,
+            message: 'Session ended',
+          ),
+        );
+        return;
+      }
       final accessToken = await secureStorage.getToken(kAccessToken);
+      if (options.extra['_sessionRevision'] != secureStorage.authRevision ||
+          !secureStorage.authSessionActive) {
+        handler.reject(
+          DioException(
+            requestOptions: options,
+            type: DioExceptionType.cancel,
+            message: 'Session ended',
+          ),
+        );
+        return;
+      }
       if (accessToken != null && accessToken.isNotEmpty) {
         options.headers['Authorization'] = 'Bearer $accessToken';
       }
@@ -73,6 +92,18 @@ class AuthInterceptor extends Interceptor {
     ErrorInterceptorHandler handler,
   ) async {
     if (err.response?.statusCode != 401) {
+      handler.next(err);
+      return;
+    }
+
+    if (err.requestOptions.extra['_sessionRevision'] !=
+        secureStorage.authRevision) {
+      handler.next(err);
+      return;
+    }
+
+    if (err.requestOptions.extra['_authRetry'] == true) {
+      await secureStorage.clearAuthTokens();
       handler.next(err);
       return;
     }
@@ -92,28 +123,53 @@ class AuthInterceptor extends Interceptor {
       return;
     }
 
+    if (!secureStorage.authSessionActive) {
+      handler.next(err);
+      return;
+    }
+
+    final revision = secureStorage.authRevision;
+    Future<({String accessToken, String refreshToken})?>? refresh;
     try {
       final refreshToken = await secureStorage.getToken(kRefreshToken);
+      if (revision != secureStorage.authRevision) {
+        handler.next(err);
+        return;
+      }
       if (refreshToken == null || refreshToken.isEmpty) {
         await secureStorage.clearAuthTokens();
         handler.next(err);
         return;
       }
 
-      final refresh = _refreshFuture ??= _performRefresh(refreshToken);
+      if (_refreshRevision != revision) {
+        _refreshFuture = null;
+        _refreshRevision = revision;
+      }
+      refresh = _refreshFuture ??= _performRefresh(refreshToken);
       final tokens = await refresh;
       if (identical(_refreshFuture, refresh)) _refreshFuture = null;
 
       if (tokens == null) {
-        await secureStorage.clearAuthTokens();
+        if (revision == secureStorage.authRevision) {
+          await secureStorage.clearAuthTokens();
+        }
         handler.next(err);
         return;
       }
 
-      await secureStorage.saveToken(kAccessToken, tokens.accessToken);
-      await secureStorage.saveToken(kRefreshToken, tokens.refreshToken);
+      final saved = await secureStorage.saveAuthTokens(
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+        expectedRevision: revision,
+      );
+      if (!saved) {
+        handler.next(err);
+        return;
+      }
 
       final retryOptions = err.requestOptions;
+      retryOptions.extra['_authRetry'] = true;
       retryOptions.headers['Authorization'] = 'Bearer ${tokens.accessToken}';
       if (retryOptions.data is FormData) {
         retryOptions.data = (retryOptions.data as FormData).clone();
@@ -122,12 +178,16 @@ class AuthInterceptor extends Interceptor {
       final retryResponse = await dio.fetch<dynamic>(retryOptions);
       handler.resolve(retryResponse);
     } on DioException {
-      _refreshFuture = null;
-      await secureStorage.clearAuthTokens();
+      if (identical(_refreshFuture, refresh)) _refreshFuture = null;
+      if (revision == secureStorage.authRevision) {
+        await secureStorage.clearAuthTokens();
+      }
       handler.next(err);
     } catch (_) {
-      _refreshFuture = null;
-      await secureStorage.clearAuthTokens();
+      if (identical(_refreshFuture, refresh)) _refreshFuture = null;
+      if (revision == secureStorage.authRevision) {
+        await secureStorage.clearAuthTokens();
+      }
       handler.next(err);
     }
   }
@@ -138,26 +198,33 @@ class AuthInterceptor extends Interceptor {
     final refreshDio = Dio(
       BaseOptions(
         baseUrl: dio.options.baseUrl,
+        connectTimeout: dio.options.connectTimeout,
+        receiveTimeout: dio.options.receiveTimeout,
+        sendTimeout: dio.options.sendTimeout,
         headers: {'Content-Type': 'application/json'},
       ),
     );
-    final response = await refreshDio.post<Map<String, dynamic>>(
-      ApiEndpoints.refresh,
-      data: {'refresh_token': refreshToken},
-    );
-    final data = response.data;
-    if (data == null) return null;
+    try {
+      final response = await refreshDio.post<Map<String, dynamic>>(
+        ApiEndpoints.refresh,
+        data: {'refresh_token': refreshToken},
+      );
+      final data = response.data;
+      if (data == null) return null;
 
-    final accessToken =
-        data['accessToken'] as String? ?? data['access_token'] as String?;
-    final nextRefreshToken =
-        data['refreshToken'] as String? ?? data['refresh_token'] as String?;
-    if (accessToken == null ||
-        accessToken.isEmpty ||
-        nextRefreshToken == null ||
-        nextRefreshToken.isEmpty) {
-      return null;
+      final accessToken =
+          data['accessToken'] as String? ?? data['access_token'] as String?;
+      final nextRefreshToken =
+          data['refreshToken'] as String? ?? data['refresh_token'] as String?;
+      if (accessToken == null ||
+          accessToken.isEmpty ||
+          nextRefreshToken == null ||
+          nextRefreshToken.isEmpty) {
+        return null;
+      }
+      return (accessToken: accessToken, refreshToken: nextRefreshToken);
+    } finally {
+      refreshDio.close(force: true);
     }
-    return (accessToken: accessToken, refreshToken: nextRefreshToken);
   }
 }

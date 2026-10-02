@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../constants/app_spacing.dart';
 
-
 /// Full-width primary ElevatedButton with optional loading state.
 ///
 /// Uses [AppColors.primaryFixedDim] on dark backgrounds and [AppColors.primary]
@@ -60,12 +59,7 @@ class PrimaryButton extends StatelessWidget {
                     leadingIcon!,
                     const SizedBox(width: AppSpacing.sm),
                   ],
-                  Flexible(
-                    child: Text(
-                      label,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
+                  Flexible(child: Text(label, overflow: TextOverflow.ellipsis)),
                 ],
               ),
       ),

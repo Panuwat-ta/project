@@ -32,6 +32,27 @@ void main() {
     mockRepo = MockResultRepository();
   });
 
+  for (final succeeds in [false, true]) {
+    test('session clear ignores old result success/error', () async {
+      final pending = Completer<AnalysisResult>();
+      when(
+        () => mockRepo.getAnalysisResult('task-1'),
+      ).thenAnswer((_) => pending.future);
+      final bloc = ResultBloc(repository: mockRepo);
+      bloc.add(ResultLoadRequested('task-1'));
+      await Future<void>.delayed(Duration.zero);
+      bloc.add(const ResultSessionCleared());
+      await Future<void>.delayed(Duration.zero);
+      if (succeeds) {
+        pending.complete(tResult);
+      } else {
+        pending.completeError(Exception('old session'));
+      }
+      await Future<void>.delayed(Duration.zero);
+      expect(bloc.state, const ResultInitial());
+      await bloc.close();
+    });
+  }
   group('ResultLoadRequested', () {
     blocTest<ResultBloc, ResultState>(
       'emits [ResultLoading, ResultLoaded] on success',

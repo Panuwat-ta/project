@@ -10,6 +10,12 @@ abstract class ReportEvent extends Equatable {
   const ReportEvent();
 }
 
+class ReportSessionCleared extends ReportEvent {
+  const ReportSessionCleared();
+  @override
+  List<Object?> get props => [];
+}
+
 class ReportSubmitted extends ReportEvent {
   const ReportSubmitted(this.report);
 
@@ -56,21 +62,29 @@ class ReportError extends ReportState {
 
 class ReportBloc extends Bloc<ReportEvent, ReportState> {
   ReportBloc({required this.repository}) : super(const ReportInitial()) {
+    on<ReportSessionCleared>((event, emit) {
+      _sessionGeneration++;
+      emit(const ReportInitial());
+    });
     on<ReportSubmitted>(_onSubmitted);
   }
 
   final ReportRepository repository;
+  int _sessionGeneration = 0;
 
   Future<void> _onSubmitted(
     ReportSubmitted event,
     Emitter<ReportState> emit,
   ) async {
     if (state is ReportSubmitting) return;
+    final generation = _sessionGeneration;
     emit(const ReportSubmitting());
     try {
       await repository.submitReport(event.report);
+      if (generation != _sessionGeneration || isClosed) return;
       emit(const ReportSuccess());
     } catch (e) {
+      if (generation != _sessionGeneration || isClosed) return;
       emit(ReportError(_friendlyMessage(e)));
     }
   }

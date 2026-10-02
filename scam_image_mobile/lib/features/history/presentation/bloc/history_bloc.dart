@@ -10,6 +10,12 @@ abstract class HistoryEvent extends Equatable {
   const HistoryEvent();
 }
 
+class HistorySessionCleared extends HistoryEvent {
+  const HistorySessionCleared();
+  @override
+  List<Object?> get props => [];
+}
+
 class HistoryLoaded extends HistoryEvent {
   const HistoryLoaded();
   @override
@@ -80,6 +86,12 @@ class HistoryError extends HistoryState {
 
 class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
   HistoryBloc({required this.repository}) : super(const HistoryInitial()) {
+    on<HistorySessionCleared>((event, emit) {
+      _fetchGeneration++;
+      _sessionGeneration++;
+      _currentKeyword = '';
+      emit(const HistoryInitial());
+    });
     on<HistoryLoaded>(_onLoaded);
     on<HistoryRefreshed>(_onRefreshed);
     on<HistorySearched>(_onSearched);
@@ -89,6 +101,7 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
   final HistoryRepository repository;
   String _currentKeyword = '';
   int _fetchGeneration = 0;
+  int _sessionGeneration = 0;
 
   Future<void> _onLoaded(
     HistoryLoaded event,
@@ -123,8 +136,15 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     HistoryItemDeleted event,
     Emitter<HistoryState> emit,
   ) async {
+    final session = _sessionGeneration;
     try {
       await repository.deleteScanHistoryItem(event.scanId);
+      if (session != _sessionGeneration || isClosed) {
+        if (event.completer?.isCompleted == false) {
+          event.completer?.complete(false);
+        }
+        return;
+      }
       _fetchGeneration++;
       // Remove from current list only after the server confirms deletion.
       if (state is HistoryDataLoaded) {
@@ -140,7 +160,9 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
         event.completer?.complete(true);
       }
     } catch (e) {
-      emit(HistoryError(e.toString()));
+      if (session == _sessionGeneration && !isClosed) {
+        emit(HistoryError(e.toString()));
+      }
       if (event.completer?.isCompleted == false) {
         event.completer?.complete(false);
       }

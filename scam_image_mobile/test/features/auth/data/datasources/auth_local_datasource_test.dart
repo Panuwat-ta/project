@@ -21,6 +21,16 @@ void main() {
 
   setUp(() {
     storage = MockSecureStorage();
+    when(() => storage.authRevision).thenReturn(0);
+    when(() => storage.authSessionActive).thenReturn(true);
+    when(
+      () => storage.saveAuthTokens(
+        accessToken: any(named: 'accessToken'),
+        refreshToken: any(named: 'refreshToken'),
+        expectedRevision: any(named: 'expectedRevision'),
+        expiresAt: any(named: 'expiresAt'),
+      ),
+    ).thenAnswer((_) async => true);
     dataSource = AuthLocalDataSource(secureStorage: storage);
   });
 
@@ -46,9 +56,14 @@ void main() {
         const AuthTokenModel(accessToken: 'access', refreshToken: 'refresh'),
       );
 
-      verify(() => storage.saveToken(kAccessToken, 'access')).called(1);
-      verify(() => storage.saveToken(kRefreshToken, 'refresh')).called(1);
-      verify(() => storage.deleteToken(kTokenExpiresAt)).called(1);
+      verify(
+        () => storage.saveAuthTokens(
+          accessToken: 'access',
+          refreshToken: 'refresh',
+          expectedRevision: 0,
+          expiresAt: null,
+        ),
+      ).called(1);
     },
   );
 
@@ -65,7 +80,12 @@ void main() {
     );
 
     verify(
-      () => storage.saveToken(kTokenExpiresAt, expiry.toIso8601String()),
+      () => storage.saveAuthTokens(
+        accessToken: 'access',
+        refreshToken: 'refresh',
+        expectedRevision: 0,
+        expiresAt: expiry.toIso8601String(),
+      ),
     ).called(1);
     verifyNever(() => storage.deleteToken(kTokenExpiresAt));
   });

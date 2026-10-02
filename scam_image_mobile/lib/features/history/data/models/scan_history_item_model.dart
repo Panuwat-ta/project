@@ -1,6 +1,5 @@
 import '../../domain/entities/scan_history_item.dart';
 import '../../../result/domain/entities/analysis_result.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../../../core/network/url_resolver.dart';
 
 class ScanHistoryItemModel extends ScanHistoryItem {
@@ -16,7 +15,10 @@ class ScanHistoryItemModel extends ScanHistoryItem {
 
   /// Parses the canonical history-endpoint contract:
   /// `risk_score` + `risk_level`. Missing/unrecognized grade -> unknown.
-  factory ScanHistoryItemModel.fromJson(Map<String, dynamic> json) {
+  factory ScanHistoryItemModel.fromJson(
+    Map<String, dynamic> json, {
+    String? baseUrl,
+  }) {
     final riskScore = json['risk_score'] as int? ?? 0;
     final riskLevelStr = json['risk_level'] as String?;
     RiskLevel riskLevel;
@@ -38,8 +40,7 @@ class ScanHistoryItemModel extends ScanHistoryItem {
       riskLevel = RiskLevel.unknown;
     }
 
-    String? parseUrl(String? url) =>
-        resolveUploadUrl(dotenv.env['API_BASE_URL'], url);
+    String? parseUrl(String? url) => resolveUploadUrl(baseUrl, url);
 
     return ScanHistoryItemModel(
       scanId: json['scanId'] as String? ?? json['scan_id'] as String? ?? '',

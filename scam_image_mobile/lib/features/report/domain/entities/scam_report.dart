@@ -31,11 +31,11 @@ class ScamReport extends Equatable {
 
   @override
   List<Object?> get props => [
-        scanId,
-        category,
-        description,
-        platform,
-        referenceUrl,
-        allowResearchUse,
-      ];
+    scanId,
+    category,
+    description,
+    platform,
+    referenceUrl,
+    allowResearchUse,
+  ];
 }

@@ -6,7 +6,7 @@
 
 ## GitHub Issues cross-check — 2026-10-02
 
-ณ cross-check ล่าสุด 2026-10-02 Issues #71–#76 และ #82 ปิดแล้ว; #77–#81 และ #83–#88 ยังเปิด. ข้อความสถานะเวลา 01:53 ด้านล่างเป็นประวัติเดิมก่อนปิด Issues #71–#76. #88 เป็น roadmap หลักและอ้างอิง hardening gates ในรายการด้านล่าง:
+ณ cross-check ล่าสุด 2026-10-02 Issues #71–#76, #80 และ #82 ปิดแล้ว; #77–#79, #81 และ #83–#88 ยังเปิด. #78 มี implementation/test evidence ใหม่ด้านล่าง รอตรวจสถานะหลัง commit. ข้อความสถานะเวลา 01:53 ด้านล่างเป็นประวัติเดิมก่อนปิด Issues #71–#76. #88 เป็น roadmap หลักและอ้างอิง hardening gates ในรายการด้านล่าง:
 
 | Issue | Checklist section |
 |---|---|
@@ -29,7 +29,7 @@
 | [#87](https://github.com/Panuwat-ta/project/issues/87) | §16 Release Candidate QA |
 | [#88](https://github.com/Panuwat-ta/project/issues/88) | Master roadmap; references #71–#87 |
 
-ตัวเลข coverage ใน §0.4 เป็นผลย้อนหลัง ณ 20 กันยายน 2026 ไม่ใช่ผลปัจจุบัน. ผลล่าสุด 2026-10-02 หลังปิด Issue #76: full suite ผ่าน 522 tests; LCOV line 5,209/5,718 (91.10%) และ branch 1,286/1,549 (83.02%). รายงานล่าสุดคือ `tests_all/tests_report/automate_tests/mobile/issue-76-integrity-localization-2026-10-02.md`; residual branches ของ Issues #74/#75 อยู่ในรายงานเดิม `issue-74-75-2026-10-02.md`.
+ตัวเลข coverage ใน §0.4 เป็นผลย้อนหลัง ณ 20 กันยายน 2026 ไม่ใช่ผลปัจจุบัน. ผลล่าสุด 2026-10-02 หลัง security/config hardening: full suite ผ่าน 727 tests; LCOV line 5,462/6,010 (90.88%) และ branch 1,399/1,703 (82.15%). รายงานล่าสุดคือ `tests_all/tests_report/automate_tests/mobile/issue-78-security-2026-10-02.md`; residual branches ของ Issues #74/#75 อยู่ในรายงานเดิม `issue-74-75-2026-10-02.md`.
 
 ## สัญลักษณ์สถานะ
 
@@ -215,29 +215,31 @@
 
 ### 5.1 Secrets / logging / transport
 - [x] Authorization header ไม่ถูก print ใน debug log แล้ว
-- [ ] grep source/logs ว่าไม่มี access token / refresh token / password logging อื่น
-- [ ] release build ต้องปิด verbose network logger โดย design
-- [ ] production API ต้องใช้ HTTPS เท่านั้น
-- [ ] ตรวจ cleartext traffic policy ของ Android manifest/network config
-- [ ] ตรวจ certificate/TLS failure handling ไม่ bypass validation
-- [ ] ตรวจ `.env`/build config ไม่มี secret ฝังใน repository หรือ APK โดยไม่จำเป็น
+- [x] grep source/logs ว่าไม่มี access token / refresh token / password logging อื่น
+- [x] release build ต้องปิด verbose network logger โดย design
+- [x] production API ต้องใช้ HTTPS เท่านั้น
+- [x] ตรวจ cleartext traffic policy ของ Android manifest/network config
+- [x] ตรวจ certificate/TLS failure handling ไม่ bypass validation
+- [x] ตรวจ `.env`/build config ไม่มี secret ฝังใน repository หรือ APK โดยไม่จำเป็น
 - [ ] ตรวจ API key ที่เป็น public client key แยกจาก server secret ให้ชัด
 
 ### 5.2 Authentication/session
-- [ ] access token expiry / refresh success / refresh failure / concurrent 401 ผ่าน tests
-- [ ] logout ล้าง local credential จริง
-- [ ] refresh failure fail closed และกลับ login อย่างปลอดภัย
-- [ ] session restoration ไม่เปิด protected screen เมื่อ token/storage ใช้ไม่ได้
-- [ ] deep link protected routes ผ่าน auth guard
+- [x] access token expiry / refresh success / refresh failure / concurrent 401 ผ่าน tests
+- [x] logout ล้าง local credential จริง
+- [x] refresh failure fail closed และกลับ login อย่างปลอดภัย
+- [x] session restoration ไม่เปิด protected screen เมื่อ token/storage ใช้ไม่ได้
+- [x] deep link protected routes ผ่าน auth guard
 - [ ] ตรวจ secure storage บนอุปกรณ์จริงหลัง logout/reinstall ตาม requirement
 
 ### 5.3 Input/file security
-- [ ] validate image type/size ก่อน upload ตาม backend contract
-- [ ] corrupt/non-image file ให้ error ที่ recover ได้
-- [ ] ไม่เชื่อ filename/MIME จาก client เพียงอย่างเดียว
+- [x] validate image type/size ก่อน upload ตาม backend contract
+- [x] corrupt/non-image file ให้ error ที่ recover ได้
+- [x] ไม่เชื่อ filename/MIME จาก client เพียงอย่างเดียว
 - [ ] ตรวจ file URI/path handling ไม่เปิด arbitrary file access
 - [ ] ตรวจ report form/user text validation ไม่เกิด injection ฝั่ง client/server
-- [ ] dependency vulnerability audit สำหรับ Flutter/Android dependencies ก่อน release
+- [x] dependency vulnerability audit สำหรับ Flutter/Android dependencies ก่อน release
+
+หลักฐาน #78/#83/#84: [Security/config/CI](mobile-security-config-ci-2026-10-02.md). Tests เป็น automated evidence; physical secure storage และ production configuration ยังไม่ได้ผ่าน.
 
 ## 6. P1 — Backend/API contract และ End-to-End
 
@@ -266,20 +268,20 @@
 
 ## 7. P1 — Data integrity / Privacy / PDPA
 ### 7.1 Consent / user data
-- [ ] consent processing/history/research ต้องสะท้อน behavior จริง
-- [ ] consent default และ persisted value ผ่าน tests
-- [ ] ถ้าปิด consent ที่จำเป็น ต้องบอกผลกระทบก่อนดำเนินการ
-- [ ] Privacy screen ไม่มีปุ่มที่ทำเหมือนสำเร็จทั้งที่ backend ไม่รองรับ
-- [ ] Account deletion flow มี confirmation และ error recovery
-- [ ] Export data ระบุ unsupported จน backend มี endpoint จริง
+- [!] UI ระบุ local-only preference แล้ว; server consent update/retention policy ยังต้องยืนยัน #79/#85/#86
+- [x] consent default และ persisted value ผ่าน tests
+- [x] แจ้งว่าการเปลี่ยน local preference ไม่หยุด server processing และควรงด upload หากไม่ยินยอม
+- [x] Privacy screen ไม่มีปุ่มที่ทำเหมือนสำเร็จทั้งที่ backend ไม่รองรับ
+- [x] Account deletion flow มี confirmation และ error recovery
+- [x] Export data ระบุ unsupported จน backend มี endpoint จริง
 - [ ] ระบุ retention policy ของ scan image/result/history ในเอกสารผู้ใช้
 - [ ] ระบุว่า image/metadata ใดถูก upload และเก็บนานเท่าไร
 - [ ] ตรวจ permission ที่ขอจาก Android ว่าจำเป็นทุก permission
 - [ ] ไม่ขอ broad storage permission ถ้า Android picker/API ใหม่ทำได้
 
 ### 7.2 Local data
-- [ ] SQLite/cache schema migration ผ่านจาก supported versions
-- [ ] malformed cache ไม่ crash และ fallback ถูกต้อง
+- [x] SQLite/cache schema migration ผ่านจาก supported versions
+- [x] malformed cache ไม่ crash และ fallback ถูกต้อง
 - [ ] clear cache ลบเฉพาะ cache ไม่ลบ history/account ผิด scope
 - [ ] logout/account deletion เคลียร์ local data ตาม policy
 - [ ] sensitive local data อยู่ใน secure storage เมื่อเหมาะสม
@@ -340,9 +342,9 @@
 ## 11. P1 — Release configuration
 
 ### 11.1 Environment / build mode
-- [ ] แยก dev / staging / production configuration อย่างชัดเจน
+- [x] แยก dev / staging / production configuration อย่างชัดเจน
 - [ ] Production `API_BASE_URL` เป็น HTTPS public endpoint ไม่ใช่ LAN IP
-- [ ] ไม่มี `.env` development value ติด release artifact
+- [x] ไม่มี `.env` development value ติด release artifact
 - [ ] ตรวจ feature flags/debug flags ทุกตัวก่อน release
 - [ ] ปิด debug banner/debug-only UI/loggers ใน release
 - [ ] ตรวจ app display name / package name / applicationId สำหรับ production
@@ -362,8 +364,8 @@
 ## 12. P1 — Release signing / artifact integrity
 
 - [H] เตรียม production keystore/upload key ผ่านช่องทางปลอดภัย
-- [ ] ห้าม commit keystore/password/signing secret ลง Git
-- [ ] ตั้ง release signing config จาก environment/secure secret source
+- [x] ห้าม commit keystore/password/signing secret ลง Git
+- [x] ตั้ง release signing config จาก environment/secure secret source
 - [ ] build `flutter build appbundle --release` ผ่าน
 - [ ] build release APK ถ้าช่องทาง deploy ต้องใช้
 - [ ] ตรวจ artifact ใช้ production applicationId/version
@@ -398,6 +400,8 @@
 - [ ] เก็บ test/coverage/build artifacts ของแต่ละ release
 - [ ] ห้าม auto-deploy production เมื่อ final gate fail
 - [ ] production deploy ต้องมี human approval
+
+workflow #84 เพิ่มแล้วและ tooling tests 8/8 ผ่าน; actual GitHub clean-checkout run ยังไม่เกิด. Compile artifact เป็น unsigned quality fixture ไม่ใช่ production/RC.
 
 ## 15. P1 — Store/Distribution readiness
 

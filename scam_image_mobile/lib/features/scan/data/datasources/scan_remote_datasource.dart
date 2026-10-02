@@ -33,8 +33,7 @@ class ScanRemoteDataSourceImpl implements ScanRemoteDataSource {
   }) async {
     try {
       // Build multipart form data.
-      // Compression for files > 10 MB is handled by the repository / calling
-      // code before reaching this method, so we upload as-is here.
+      // The repository validates actual content and backend size limits first.
       final fileName = filePath.split(RegExp(r'[\\/]')).last;
 
       final Map<String, dynamic> formMap = {

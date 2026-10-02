@@ -61,6 +61,20 @@ void main() {
       title: 'sample',
     );
 
+    test(
+      'session reset clears items and previous read/dismiss preferences',
+      () {
+        final history = [item(), item(scanId: 'scan-second')];
+        cubit.syncFromHistory(history);
+        cubit.markAsRead('notif_${history.first.scanId}');
+        cubit.dismissNotification('notif_${history.last.scanId}');
+        cubit.resetSession();
+        expect(cubit.state.items, isEmpty);
+        cubit.syncFromHistory(history);
+        expect(cubit.state.items.length, 2);
+        expect(cubit.state.unreadCount, 2);
+      },
+    );
     test('ignores non-terminal queued/processing scans', () {
       cubit.syncFromHistory([
         item(status: 'queued'),

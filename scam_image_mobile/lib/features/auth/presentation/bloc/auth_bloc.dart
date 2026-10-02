@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../../../core/storage/secure_storage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../domain/entities/user.dart';
@@ -12,7 +13,9 @@ part 'auth_state.dart';
 /// Constructed with the app-scoped [AuthRepository] provided by dependency
 /// injection in `main.dart`.
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  AuthBloc(this._repository) : super(const AuthInitial()) {
+  AuthBloc(this._repository, {this.sessionStorage})
+    : super(const AuthInitial()) {
+    sessionStorage?.addListener(_onSessionChanged);
     on<LoginRequested>(_onLogin);
     on<RegisterRequested>(_onRegister);
     on<LogoutRequested>(_onLogout);
@@ -22,17 +25,37 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   final AuthRepository _repository;
+  int _sessionGeneration = 0;
+  final SecureStorage? sessionStorage;
+
+  void _onSessionChanged() {
+    if (!isClosed &&
+        sessionStorage?.authSessionActive == false &&
+        state is AuthAuthenticated) {
+      add(const LogoutRequested());
+    }
+  }
+
+  @override
+  Future<void> close() {
+    sessionStorage?.removeListener(_onSessionChanged);
+    _sessionGeneration++;
+    return super.close();
+  }
 
   Future<void> _onLogin(LoginRequested event, Emitter<AuthState> emit) async {
     if (state is AuthLoading) return;
+    final generation = _sessionGeneration;
     emit(const AuthLoading());
     try {
       final user = await _repository.login(
         email: event.email,
         password: event.password,
       );
+      if (generation != _sessionGeneration || isClosed) return;
       emit(AuthAuthenticated(user));
     } catch (e) {
+      if (generation != _sessionGeneration || isClosed) return;
       emit(AuthError(_friendlyMessage(e)));
     }
   }
@@ -42,6 +65,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     if (state is AuthLoading) return;
+    final generation = _sessionGeneration;
     emit(const AuthLoading());
     try {
       final user = await _repository.register(
@@ -51,13 +75,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         systemConsent: event.systemConsent,
         researchConsent: event.researchConsent,
       );
+      if (generation != _sessionGeneration || isClosed) return;
       emit(AuthAuthenticated(user));
     } catch (e) {
+      if (generation != _sessionGeneration || isClosed) return;
       emit(AuthError(_friendlyMessage(e)));
     }
   }
 
   Future<void> _onLogout(LogoutRequested event, Emitter<AuthState> emit) async {
+    _sessionGeneration++;
     emit(const AuthLoading());
     try {
       await _repository.logout();

@@ -6,7 +6,7 @@ String? resolveUploadUrl(String? baseUrl, String? url) {
   if (url.startsWith('http')) return url;
 
   if (baseUrl == null || baseUrl.trim().isEmpty) {
-    throw StateError('API_BASE_URL is required and must be configured in .env');
+    throw StateError('API_BASE_URL is required to resolve relative image URLs');
   }
   final uri = Uri.parse(baseUrl.trim());
   final hostUrl = '${uri.scheme}://${uri.host}:${uri.port}';

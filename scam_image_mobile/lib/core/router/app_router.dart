@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:flutter/foundation.dart';
 
 import '../di/injection_container.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
@@ -48,12 +49,18 @@ class AppRouter {
 
   static GoRouter? _router;
 
-  static GoRouter get router =>
-      _router ??= createRouter(authRepository: ServiceLocator.authRepository);
+  static GoRouter get router => _router ??= createRouter(
+    authRepository: ServiceLocator.authRepository,
+    sessionChanges: ServiceLocator.secureStorage,
+  );
 
-  static GoRouter createRouter({required AuthRepository authRepository}) {
+  static GoRouter createRouter({
+    required AuthRepository authRepository,
+    Listenable? sessionChanges,
+  }) {
     return GoRouter(
       initialLocation: '/splash',
+      refreshListenable: sessionChanges,
       debugLogDiagnostics: false,
       redirect: (context, state) {
         final path = state.uri.path;

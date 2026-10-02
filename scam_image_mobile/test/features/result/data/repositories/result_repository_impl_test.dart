@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:scam_image_mobile/core/storage/secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:scam_image_mobile/core/errors/exceptions.dart';
@@ -147,4 +149,25 @@ void main() {
       );
     },
   );
+  test('late result from old session is rejected before caching', () async {
+    final remote = MockResultRemote();
+    final local = MockResultLocal();
+    final storage = SecureStorage();
+    final pending = Completer<AnalysisResultModel>();
+    when(
+      () => remote.getAnalysisResult('scan-1'),
+    ).thenAnswer((_) => pending.future);
+    final repository = ResultRepositoryImpl(
+      remoteDataSource: remote,
+      localDataSource: local,
+      sessionStorage: storage,
+    );
+    final result = repository.getAnalysisResult('scan-1');
+    final rejected = expectLater(result, throwsA(isA<AuthException>()));
+    storage.invalidateAuthSession();
+    pending.complete(freshResult());
+    await rejected;
+    verifyNever(() => local.getResult(any()));
+    storage.dispose();
+  });
 }

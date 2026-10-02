@@ -13,6 +13,12 @@ abstract class ResultEvent extends Equatable {
   const ResultEvent();
 }
 
+class ResultSessionCleared extends ResultEvent {
+  const ResultSessionCleared();
+  @override
+  List<Object?> get props => [];
+}
+
 class ResultLoadRequested extends ResultEvent {
   const ResultLoadRequested(this.taskId);
 
@@ -81,6 +87,13 @@ class ResultError extends ResultState {
 
 class ResultBloc extends Bloc<ResultEvent, ResultState> {
   ResultBloc({required this.repository}) : super(const ResultInitial()) {
+    on<ResultSessionCleared>((event, emit) {
+      _generation++;
+      _activeTaskId = null;
+      _stopped = true;
+      _pollTimer?.cancel();
+      emit(const ResultInitial());
+    });
     on<ResultLoadRequested>(_onLoadRequested);
     on<ResultPollRequested>(_onPollRequested);
     on<ResultPollingStopped>((event, emit) {

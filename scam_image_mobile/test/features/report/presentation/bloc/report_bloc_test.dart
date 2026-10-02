@@ -33,6 +33,27 @@ void main() {
     registerFallbackValue(tReport);
   });
 
+  for (final succeeds in [false, true]) {
+    test('session clear ignores old report success/error', () async {
+      final pending = Completer<void>();
+      when(
+        () => mockRepo.submitReport(tReport),
+      ).thenAnswer((_) => pending.future);
+      final bloc = ReportBloc(repository: mockRepo);
+      bloc.add(ReportSubmitted(tReport));
+      await Future<void>.delayed(Duration.zero);
+      bloc.add(const ReportSessionCleared());
+      await Future<void>.delayed(Duration.zero);
+      if (succeeds) {
+        pending.complete();
+      } else {
+        pending.completeError(Exception('old session'));
+      }
+      await Future<void>.delayed(Duration.zero);
+      expect(bloc.state, const ReportInitial());
+      await bloc.close();
+    });
+  }
   group('ReportSubmitted', () {
     blocTest<ReportBloc, ReportState>(
       'emits [ReportSubmitting, ReportSuccess] on success',

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:equatable/equatable.dart';
+import '../../../../core/errors/exceptions.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scam_image_mobile/features/scan/domain/entities/analysis_task.dart';
 import 'package:scam_image_mobile/features/scan/domain/repositories/scan_repository.dart';
@@ -269,6 +270,9 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
   }
 
   String _friendlyError(Object e) {
+    if (e is ValidationException && e.message.startsWith('scan_error_')) {
+      return e.message;
+    }
     final msg = e.toString().toLowerCase();
     if (msg.contains('network') || msg.contains('socket')) {
       return 'scan_error_network';

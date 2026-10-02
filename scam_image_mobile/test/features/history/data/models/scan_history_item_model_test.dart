@@ -1,15 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:scam_image_mobile/features/history/data/models/scan_history_item_model.dart';
 import 'package:scam_image_mobile/features/result/domain/entities/analysis_result.dart';
 
-void main() {
-  setUpAll(() {
-    dotenv.loadFromString(
-      envString: 'API_BASE_URL=http://10.0.0.1:8000/api/v1',
-    );
-  });
+ScanHistoryItemModel _parse(Map<String, dynamic> json) =>
+    ScanHistoryItemModel.fromJson(json, baseUrl: 'http://10.0.0.1:8000/api/v1');
 
+void main() {
   group('ScanHistoryItemModel.fromJson', () {
     test('parses server format with snake_case keys', () {
       final json = {
@@ -22,7 +18,7 @@ void main() {
         'title': 'Scan Result: HIGH',
       };
 
-      final model = ScanHistoryItemModel.fromJson(json);
+      final model = _parse(json);
 
       expect(model.scanId, 'abc-123');
       expect(model.riskScore, 80);
@@ -42,7 +38,7 @@ void main() {
         'createdAt': '2026-06-01T12:00:00',
       };
 
-      final model = ScanHistoryItemModel.fromJson(json);
+      final model = _parse(json);
 
       expect(model.scanId, 'scan-camel');
       expect(model.riskScore, 0);
@@ -58,7 +54,7 @@ void main() {
         'created_at': '2026-01-01T00:00:00',
       };
 
-      final model = ScanHistoryItemModel.fromJson(json);
+      final model = _parse(json);
       expect(model.riskLevel, RiskLevel.low);
     });
 
@@ -70,7 +66,7 @@ void main() {
         'created_at': '2026-01-01T00:00:00',
       };
 
-      final model = ScanHistoryItemModel.fromJson(json);
+      final model = _parse(json);
       expect(model.riskLevel, RiskLevel.unknown);
     });
 
@@ -81,21 +77,21 @@ void main() {
         'created_at': '2026-01-01T00:00:00',
       };
 
-      final model = ScanHistoryItemModel.fromJson(json);
+      final model = _parse(json);
       expect(model.riskScore, 0);
     });
 
     test('defaults status to completed when missing', () {
       final json = {'scan_id': 'scan-1', 'created_at': '2026-01-01T00:00:00'};
 
-      final model = ScanHistoryItemModel.fromJson(json);
+      final model = _parse(json);
       expect(model.status, 'completed');
     });
 
     test('defaults scanId to empty string when missing', () {
       final json = {'status': 'completed', 'created_at': '2026-01-01T00:00:00'};
 
-      final model = ScanHistoryItemModel.fromJson(json);
+      final model = _parse(json);
       expect(model.scanId, '');
     });
 
@@ -106,7 +102,7 @@ void main() {
         'created_at': '2026-01-01T00:00:00',
       };
 
-      final model = ScanHistoryItemModel.fromJson(json);
+      final model = _parse(json);
       expect(model.thumbnailUrl, isNull);
     });
 
@@ -117,14 +113,14 @@ void main() {
         'created_at': '2026-01-01T00:00:00',
       };
 
-      final model = ScanHistoryItemModel.fromJson(json);
+      final model = _parse(json);
       expect(model.title, isNull);
     });
 
     test('defaults createdAt to now when missing', () {
       final json = {'scan_id': 'scan-1'};
 
-      final model = ScanHistoryItemModel.fromJson(json);
+      final model = _parse(json);
       expect(model.createdAt, isNotNull);
       expect(
         model.createdAt.difference(DateTime.now()).inSeconds.abs(),
@@ -140,7 +136,7 @@ void main() {
         'created_at': '2026-01-01T00:00:00',
       };
 
-      final model = ScanHistoryItemModel.fromJson(json);
+      final model = _parse(json);
       expect(model.thumbnailUrl, contains('uploads'));
     });
 
@@ -152,7 +148,7 @@ void main() {
         'created_at': '2026-01-01T00:00:00',
       };
 
-      final model = ScanHistoryItemModel.fromJson(json);
+      final model = _parse(json);
       expect(model.thumbnailUrl, 'http://cdn.example.com/image.jpg');
     });
   });

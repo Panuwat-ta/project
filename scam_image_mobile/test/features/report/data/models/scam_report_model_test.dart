@@ -128,14 +128,8 @@ void main() {
     });
 
     test('different models are not equal', () {
-      const a = ScamReportModel(
-        category: 'cat1',
-        description: 'desc1',
-      );
-      const b = ScamReportModel(
-        category: 'cat2',
-        description: 'desc2',
-      );
+      const a = ScamReportModel(category: 'cat1', description: 'desc1');
+      const b = ScamReportModel(category: 'cat2', description: 'desc2');
       expect(a, isNot(equals(b)));
     });
   });

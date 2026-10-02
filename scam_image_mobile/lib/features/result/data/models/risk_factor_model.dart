@@ -13,7 +13,8 @@ class RiskFactorModel extends RiskFactor {
       type: json['type'] as String? ?? '',
       score: json['score'] as int? ?? 0,
       title: json['title'] as String? ?? '',
-      details: (json['details'] as List<dynamic>?)
+      details:
+          (json['details'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           [],
@@ -21,9 +22,9 @@ class RiskFactorModel extends RiskFactor {
   }
 
   Map<String, dynamic> toJson() => {
-        'type': type,
-        'score': score,
-        'title': title,
-        'details': details,
-      };
+    'type': type,
+    'score': score,
+    'title': title,
+    'details': details,
+  };
 }

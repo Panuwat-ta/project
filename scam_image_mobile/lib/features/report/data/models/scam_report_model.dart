@@ -13,20 +13,20 @@ class ScamReportModel extends ScamReport {
 
   /// Creates a [ScamReportModel] from a domain [ScamReport].
   factory ScamReportModel.fromDomain(ScamReport report) => ScamReportModel(
-        scanId: report.scanId,
-        category: report.category,
-        description: report.description,
-        platform: report.platform,
-        referenceUrl: report.referenceUrl,
-        allowResearchUse: report.allowResearchUse,
-      );
+    scanId: report.scanId,
+    category: report.category,
+    description: report.description,
+    platform: report.platform,
+    referenceUrl: report.referenceUrl,
+    allowResearchUse: report.allowResearchUse,
+  );
 
   Map<String, dynamic> toJson() => {
-        if (scanId != null) 'scan_id': scanId,
-        'category': category,
-        'description': description,
-        if (platform != null) 'platform': platform,
-        if (referenceUrl != null) 'reference_url': referenceUrl,
-        'allow_research_use': allowResearchUse,
-      };
+    if (scanId != null) 'scan_id': scanId,
+    'category': category,
+    'description': description,
+    if (platform != null) 'platform': platform,
+    if (referenceUrl != null) 'reference_url': referenceUrl,
+    'allow_research_use': allowResearchUse,
+  };
 }

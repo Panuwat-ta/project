@@ -26,6 +26,7 @@ class MemorySecureStorage extends SecureStorage {
 
   @override
   Future<void> clearAuthTokens() async {
+    invalidateAuthSession();
     clearCount += 1;
     values.remove(kAccessToken);
     values.remove(kRefreshToken);
@@ -48,6 +49,92 @@ String _baseUrl(HttpServer server) =>
     'http://${server.address.host}:${server.port}';
 
 void main() {
+  for (final succeeds in [false, true]) {
+    test(
+      'old refresh ${succeeds ? 'success' : 'failure'} cannot replace or clear new login',
+      () async {
+        final storage = MemorySecureStorage()
+          ..values[kAccessToken] = 'old-access'
+          ..values[kRefreshToken] = 'old-refresh';
+        final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+        final started = Completer<void>();
+        final release = Completer<void>();
+        var requests = 0;
+        server.listen((request) async {
+          requests++;
+          await request.drain<void>();
+          if (request.uri.path == '/auth/refresh') {
+            started.complete();
+            await release.future;
+            await _writeJson(
+              request,
+              succeeds ? 200 : 401,
+              succeeds
+                  ? {
+                      'access_token': 'obsolete-access',
+                      'refresh_token': 'obsolete-refresh',
+                    }
+                  : {'detail': 'expired'},
+            );
+          } else {
+            await _writeJson(request, 401, {'detail': 'expired'});
+          }
+        });
+        final dio = DioClient.createDio(
+          secureStorage: storage,
+          baseUrl: _baseUrl(server),
+        );
+        final rejected = expectLater(
+          dio.get<void>('/protected'),
+          throwsA(isA<DioException>()),
+        );
+        await started.future.timeout(const Duration(seconds: 3));
+        await storage.clearAuthTokens();
+        await storage.saveAuthTokens(
+          accessToken: 'new-access',
+          refreshToken: 'new-refresh',
+          expectedRevision: storage.authRevision,
+        );
+        release.complete();
+        await rejected;
+        expect(storage.values[kAccessToken], 'new-access');
+        expect(storage.values[kRefreshToken], 'new-refresh');
+        expect(storage.clearCount, 1);
+        expect(requests, 2);
+        dio.close(force: true);
+        await server.close(force: true);
+      },
+    );
+  }
+  test('stale retry is cancelled before a request leaves the client', () async {
+    final storage = MemorySecureStorage();
+    await storage.clearAuthTokens();
+    await storage.saveAuthTokens(
+      accessToken: 'new-access',
+      refreshToken: 'new-refresh',
+      expectedRevision: storage.authRevision,
+    );
+    final dio = DioClient.createDio(
+      secureStorage: storage,
+      baseUrl: 'http://127.0.0.1:1',
+    );
+    await expectLater(
+      dio.get<void>(
+        '/protected',
+        options: Options(extra: {'_sessionRevision': 0}),
+      ),
+      throwsA(
+        isA<DioException>().having(
+          (e) => e.type,
+          'type',
+          DioExceptionType.cancel,
+        ),
+      ),
+    );
+    expect(storage.values[kAccessToken], 'new-access');
+    dio.close(force: true);
+  });
+
   test('network logging never exposes Authorization tokens', () async {
     final storage = MemorySecureStorage()
       ..values[kAccessToken] = 'sensitive-access-token';
@@ -75,8 +162,91 @@ void main() {
     final output = logs.join('\n');
     expect(output, isNot(contains('sensitive-access-token')));
     expect(output, isNot(contains('Authorization: Bearer')));
+    expect(logs, isEmpty);
     await server.close(force: true);
   });
+
+  test(
+    'rejected refreshed token retries once then clears the session',
+    () async {
+      final storage = MemorySecureStorage()
+        ..values[kAccessToken] = 'old-access'
+        ..values[kRefreshToken] = 'old-refresh';
+      final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+      var refreshCount = 0;
+      var protectedCount = 0;
+      server.listen((request) async {
+        await request.drain<void>();
+        if (request.uri.path == '/auth/refresh') {
+          refreshCount++;
+          await _writeJson(request, HttpStatus.ok, {
+            'access_token': 'still-rejected',
+            'refresh_token': 'new-refresh',
+          });
+        } else {
+          protectedCount++;
+          await _writeJson(request, HttpStatus.unauthorized, {
+            'detail': 'rejected',
+          });
+        }
+      });
+      final dio = DioClient.createDio(
+        secureStorage: storage,
+        baseUrl: _baseUrl(server),
+      );
+      await expectLater(
+        dio.get<void>('/protected').timeout(const Duration(seconds: 3)),
+        throwsA(isA<DioException>()),
+      );
+      expect(refreshCount, 1);
+      expect(protectedCount, 2);
+      expect(storage.values[kAccessToken], isNull);
+      expect(storage.values[kRefreshToken], isNull);
+      dio.close(force: true);
+      await server.close(force: true);
+    },
+  );
+
+  test(
+    '401 from an old session never retries with the new user credentials',
+    () async {
+      final storage = MemorySecureStorage()
+        ..values[kAccessToken] = 'old-access'
+        ..values[kRefreshToken] = 'old-refresh';
+      final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+      final arrived = Completer<void>();
+      final respond = Completer<void>();
+      var requests = 0;
+      server.listen((request) async {
+        requests++;
+        await request.drain<void>();
+        if (!arrived.isCompleted) arrived.complete();
+        await respond.future;
+        await _writeJson(request, HttpStatus.unauthorized, {
+          'detail': 'old rejected',
+        });
+      });
+      final dio = DioClient.createDio(
+        secureStorage: storage,
+        baseUrl: _baseUrl(server),
+      );
+      final result = dio.get<void>('/protected');
+      final rejected = expectLater(result, throwsA(isA<DioException>()));
+      await arrived.future;
+      await storage.clearAuthTokens();
+      await storage.saveAuthTokens(
+        accessToken: 'new-access',
+        refreshToken: 'new-refresh',
+        expectedRevision: storage.authRevision,
+      );
+      respond.complete();
+      await rejected;
+      expect(requests, 1);
+      expect(storage.values[kAccessToken], 'new-access');
+      dio.close(force: true);
+      await server.close(force: true);
+    },
+  );
 
   test('FormData request is sent as multipart/form-data, not JSON', () async {
     final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);

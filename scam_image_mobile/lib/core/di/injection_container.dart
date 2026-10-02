@@ -21,7 +21,6 @@ import '../../features/result/data/datasources/result_remote_datasource.dart';
 import '../../features/result/data/repositories/result_repository_impl.dart';
 import '../../features/result/domain/repositories/result_repository.dart';
 
-
 // ── History ───────────────────────────────────────────────────────────────────
 // ── History ───────────────────────────────────────────────────────────────────
 import '../../features/history/data/datasources/history_remote_datasource.dart';
@@ -40,7 +39,7 @@ import '../../features/settings/data/datasources/settings_remote_datasource.dart
 import '../../features/settings/data/repositories/settings_repository_impl.dart';
 import '../../features/settings/domain/repositories/settings_repository.dart';
 
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../config/app_config.dart';
 
 /// Simple service locator that wires all real dependencies together.
 ///
@@ -68,13 +67,10 @@ class ServiceLocator {
     secureStorage = SecureStorage();
 
     // ── Network ──────────────────────────────────────────────────────────────
-    final apiBaseUrl = dotenv.env['API_BASE_URL'];
-    if (apiBaseUrl == null || apiBaseUrl.trim().isEmpty) {
-      throw StateError('API_BASE_URL is required and must be configured in .env');
-    }
+    final config = AppConfig.fromEnvironment();
     dio = DioClient.createDio(
       secureStorage: secureStorage,
-      baseUrl: apiBaseUrl.trim(),
+      baseUrl: config.apiBaseUrl,
     );
 
     // ── Auth ──────────────────────────────────────────────────────────────────
@@ -83,6 +79,10 @@ class ServiceLocator {
     authRepository = AuthRepositoryImpl(
       remoteDataSource: authRemote,
       localDataSource: authLocal,
+      clearUserCache: () async {
+        await DatabaseHelper.instance.clearAnalysisCache();
+        await settingsRepository.clearCache();
+      },
     );
 
     // ── Scan ──────────────────────────────────────────────────────────────────
@@ -91,15 +91,24 @@ class ServiceLocator {
 
     // ── Result ────────────────────────────────────────────────────────────────
     final resultRemote = ResultRemoteDataSourceImpl(dio: dio);
-    final resultLocal = ResultLocalDataSourceImpl(databaseHelper: DatabaseHelper.instance);
-    resultRepository = ResultRepositoryImpl(remoteDataSource: resultRemote, localDataSource: resultLocal);
+    final resultLocal = ResultLocalDataSourceImpl(
+      databaseHelper: DatabaseHelper.instance,
+    );
+    resultRepository = ResultRepositoryImpl(
+      remoteDataSource: resultRemote,
+      localDataSource: resultLocal,
+      sessionStorage: secureStorage,
+    );
 
     // ── History ───────────────────────────────────────────────────────────────
     final historyRemote = HistoryRemoteDataSourceImpl(dio: dio);
-    final historyLocal = HistoryLocalDataSourceImpl(databaseHelper: DatabaseHelper.instance);
+    final historyLocal = HistoryLocalDataSourceImpl(
+      databaseHelper: DatabaseHelper.instance,
+    );
     historyRepository = HistoryRepositoryImpl(
       remoteDataSource: historyRemote,
       localDataSource: historyLocal,
+      sessionStorage: secureStorage,
     );
 
     // ── Report ────────────────────────────────────────────────────────────────
@@ -107,7 +116,9 @@ class ServiceLocator {
     reportRepository = ReportRepositoryImpl(remoteDataSource: reportRemote);
 
     // ── Settings ──────────────────────────────────────────────────────────────
-    final settingsLocal = SettingsLocalDataSourceImpl(secureStorage: secureStorage);
+    final settingsLocal = SettingsLocalDataSourceImpl(
+      secureStorage: secureStorage,
+    );
     final settingsRemote = SettingsRemoteDataSourceImpl(dio: dio);
     settingsRepository = SettingsRepositoryImpl(
       remoteDataSource: settingsRemote,

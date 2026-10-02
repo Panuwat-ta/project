@@ -5,6 +5,12 @@ import '../../features/settings/presentation/bloc/settings_bloc.dart';
 class AppTranslations {
   static final Map<String, Map<String, String>> localizedValues = {
     'th': {
+      'scan_error_invalid_image':
+          'ไฟล์ภาพเสียหายหรืออ่านไม่ได้ กรุณาเลือกภาพใหม่',
+      'scan_error_image_format':
+          'รองรับภาพ JPEG, PNG และ WebP กรุณาเลือกภาพใหม่',
+      'scan_error_image_size':
+          'ภาพมีขนาดเกินขีดจำกัด กรุณาลดขนาดหรือเลือกภาพใหม่',
       'auth_show_password': 'แสดงรหัสผ่าน',
       'auth_hide_password': 'ซ่อนรหัสผ่าน',
       'settings': 'ตั้งค่า',
@@ -366,7 +372,7 @@ class AppTranslations {
       'privacy_title': 'ความเป็นส่วนตัว',
       'privacy_manage_consent': 'จัดการความยินยอม',
       'privacy_manage_desc':
-          'เลือกการตั้งค่าที่คุณต้องการให้ ScamGuard ดูแลข้อมูลของคุณ',
+          'ตัวเลือกหน้านี้บันทึกเฉพาะบนอุปกรณ์ ยังไม่เปลี่ยนความยินยอมบนเซิร์ฟเวอร์',
       'privacy_consent_process_title': 'ยินยอมให้ประมวลผลรูปภาพ',
       'privacy_consent_process_desc':
           'ใช้เพื่อวิเคราะห์ความเสี่ยงในรูปภาพที่คุณอัปโหลด',
@@ -379,9 +385,9 @@ class AppTranslations {
       'privacy_export_data': 'ขอสำเนาข้อมูลส่วนตัว',
       'privacy_delete_all_data': 'ลบข้อมูลการใช้งานทั้งหมด',
       'privacy_info_desc':
-          'ScamGuard ให้ความสำคัญกับความเป็นส่วนตัวของคุณ ข้อมูลของคุณจะถูกประมวลผลตามพระราชบัญญัติคุ้มครองข้อมูลส่วนตัว (PDPA) เราจะเก็บรักษาข้อมูลอย่างปลอดภัยและไม่ส่งต่อให้บุคคลที่สามโดยไม่ได้รับความยินยอม',
+          'ภาพที่อัปโหลดถูกส่งไปยังเซิร์ฟเวอร์เพื่อวิเคราะห์ การล้างแคชบนอุปกรณ์ไม่ได้ลบภาพหรือประวัติบนเซิร์ฟเวอร์ หน้านี้ยังไม่รองรับการส่งออกและลบข้อมูลการใช้งานทั้งหมด',
       'privacy_disable_process_warning':
-          'หากปิดการยินยอมนี้ แอปจะไม่สามารถวิเคราะห์รูปภาพได้ คุณต้องการปิดจริงหรือ?',
+          'ตัวเลือกนี้ยังไม่หยุดการประมวลผลบนเซิร์ฟเวอร์ หากไม่ต้องการส่งภาพไปวิเคราะห์ อย่าอัปโหลดภาพ ต้องการเปลี่ยนตัวเลือกบนอุปกรณ์หรือไม่?',
       'confirm': 'ยืนยัน',
       'privacy_exporting': 'กำลังดำเนินการส่งสำเนาข้อมูลของคุณ',
       'privacy_export_unavailable':
@@ -412,6 +418,11 @@ class AppTranslations {
       'anomaly_pixel_desc': 'มีการบีบอัดภาพซ้อนทับกันหลายชั้น',
     },
     'en': {
+      'scan_error_invalid_image':
+          'The image is corrupted or unreadable. Choose another image.',
+      'scan_error_image_format': 'Choose a JPEG, PNG or WebP image.',
+      'scan_error_image_size':
+          'The image exceeds the size limit. Reduce its size or choose another image.',
       'auth_show_password': 'Show password',
       'auth_hide_password': 'Hide password',
       'settings': 'Settings',
@@ -775,7 +786,7 @@ class AppTranslations {
       'privacy_title': 'Privacy',
       'privacy_manage_consent': 'Manage Consents',
       'privacy_manage_desc':
-          'Choose how you want ScamGuard to handle your data',
+          'These preferences are saved on this device only. They do not change your server consent.',
       'privacy_consent_process_title': 'Allow Image Processing',
       'privacy_consent_process_desc':
           'Used to analyze risk in your uploaded images',
@@ -787,9 +798,9 @@ class AppTranslations {
       'privacy_export_data': 'Request Personal Data Copy',
       'privacy_delete_all_data': 'Delete All Usage Data',
       'privacy_info_desc':
-          'ScamGuard values your privacy. Your data is processed in accordance with PDPA. We will keep your data secure and not share it with third parties without consent.',
+          'Uploaded images are sent to the server for analysis. Clearing the device cache does not delete server images or history. This page does not yet support exporting or deleting all usage data.',
       'privacy_disable_process_warning':
-          'If you disable this, the app cannot analyze images. Are you sure?',
+          'This preference does not stop server processing. Do not upload images if you do not want them analyzed. Change the device preference?',
       'confirm': 'Confirm',
       'privacy_exporting': 'Processing your data export request',
       'privacy_export_unavailable':

@@ -53,7 +53,8 @@ class HistoryRemoteDataSourceImpl implements HistoryRemoteDataSource {
       if (body is List) {
         items = body;
       } else if (body is Map<String, dynamic>) {
-        items = body['data'] as List<dynamic>? ??
+        items =
+            body['data'] as List<dynamic>? ??
             body['items'] as List<dynamic>? ??
             [];
       } else {
@@ -61,8 +62,12 @@ class HistoryRemoteDataSourceImpl implements HistoryRemoteDataSource {
       }
 
       return items
-          .map((e) =>
-              ScanHistoryItemModel.fromJson(e as Map<String, dynamic>))
+          .map(
+            (e) => ScanHistoryItemModel.fromJson(
+              e as Map<String, dynamic>,
+              baseUrl: dio.options.baseUrl,
+            ),
+          )
           .toList();
     } on DioException catch (e) {
       throw mapDioException(e);
@@ -86,5 +91,4 @@ class HistoryRemoteDataSourceImpl implements HistoryRemoteDataSource {
       throw mapDioException(e);
     }
   }
-
 }

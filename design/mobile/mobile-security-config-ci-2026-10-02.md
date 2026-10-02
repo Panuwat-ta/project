@@ -1,0 +1,48 @@
+# Mobile security, configuration และ CI — 2026-10-02
+
+## ขอบเขตและสถานะ
+
+งาน #78: แก้ security/session/input/privacy ฝั่ง Mobile พร้อม regression tests และบันทึกข้อจำกัด backend/product ด้านล่าง งานนี้ไม่ใช่การรับรอง production readiness.
+งาน #83: เตรียม config/signing แบบ fail closed แต่ยังไม่มี production identity/key/endpoint และ signed RC.
+งาน #84: เพิ่ม workflow และ quality gates; ยังไม่ได้รัน workflow บน GitHub จาก clean checkout.
+
+## สิ่งที่แก้และหลักฐาน
+
+- ยกเลิก Dio network logger ทุก build; ค้น `print`, `debugPrint`, `LogInterceptor`, `badCertificateCallback` ใน `lib/` ไม่พบการใช้งาน
+- `AppConfig` ไม่มี URL fallback; release ห้าม development, staging/production บังคับ HTTPS; URL ห้าม userinfo/query/fragment; URL เป็น public config ห้ามใส่ secrets
+- ไม่ load/bundle `.env`; ถอน `flutter_dotenv`; models รับ base URL จาก Dio ที่กำหนดจริง
+- Main manifest ปิด cleartext และ backup; debug/profile อนุญาต HTTP development; ไม่มี TLS bypass; badCertificate เป็น authoritative error ไม่เปิด offline cache
+- Refresh แชร์คำขอเฉพาะ session เดียว, retry ได้ครั้งเดียว, เก่าไม่ restore/ล้าง credentials ของ session ใหม่; batch secure-storage writes เรียงกับ logout
+- SecureStorage แจ้ง session invalidation ให้ AuthBloc/router; protected routes fail closed; clear account cache ใน login/register/logout; responses/cache writes/deletions ของ session เก่าถูกตัดทิ้ง
+- History/Result/Report/Notifications state ถูก reset เมื่อ session สิ้นสุด; completions เก่าไม่เปลี่ยน state ใหม่
+- ตรวจ absolute regular file, ไม่รับ URI/symlink/directory, limit 20 MB และ 100 MP ตาม backend defaults; decode JPEG/PNG/WebP จาก content ใน isolate ไม่เชื่อ extension; corrupt/non-image/error recover ได้
+- Report validation ยังคง form tests เดิม; ไม่อ้างว่าฝั่ง client ป้องกัน server injection ได้เอง
+- Privacy แจ้งว่า preferences อยู่บนอุปกรณ์และไม่เปลี่ยน server consent; ลบคำรับรอง PDPA/security/third-party sharing ที่ไม่มีหลักฐาน; unsupported export/delete usage ไม่แสดง success
+- OSV query ของ resolved Pub/Maven 230 packages: 0 advisories ณเวลาที่บันทึกใน JSON; SDK packages แยก excluded ไม่อ้างว่าปลอดภัยทุก dependency/SDK หรือ future advisories
+
+หลักฐาน automated: `tests_all/tests_report/automate_tests/mobile/issue-78-security-2026-10-02.md` และ `evidence/security-2026-10-02/`.
+
+## Signing และ compile artifact
+
+Gradle อ่าน identity/key จาก environment; release packaging ไม่มี identity/key ต้องหยุด ไม่ fallback debug key. ตรวจ task graph เพื่อครอบคลุม aggregate build. `SCAMGUARD_ALLOW_UNSIGNED_QUALITY_BUILD=true` เป็น compile-only override และ signingConfig=null แม้มี key environment.
+
+รอบ compile ก่อนแก้ race เพิ่มเติม: `flutter build apk --release` ใช้ staging HTTPS `https://example.invalid/api/v1` ที่เป็น test fixture ไม่ใช่ staging server, explicit unsigned override; build ผ่าน 68.0s, 64,457,035 bytes, SHA-256 `d167c77bbe4f7ceb2c00f56057809cf222f65518da7ea0c065304dad98ea3b5e`.
+
+ตรวจ APK: ไม่มี `.env`; allowBackup=false, usesCleartextTraffic=false, ไม่มี debuggable=true; minSdk24/targetSdk36/compileSdk36; label ScamGuard, identity `com.example.scam_image_mobile`, version1.0.0+1. apksigner verify fail `Missing META-INF/MANIFEST.MF` ตรงกับ unsigned artifact. Artifact นี้ห้ามแจกจ่ายและไม่ใช่ final source/RC. ต้อง build final snapshot ใหม่.
+
+ตรวจ negative build หลังปรับ task-graph guard: ไม่มี production applicationId → exit1 `Release requires a confirmed SCAMGUARD_APPLICATION_ID`; เป็น expected rejection.
+
+## CI ที่เพิ่ม
+
+`.github/workflows/mobile-quality.yml` pin Flutter3.47.2/Dart3.13.2 และ action commit SHAs; pub lockfile/format/analyze/full branch tests/line+branch>=80/OSV audit/unsigned release compile/check .env/checksum/artifacts. Normalize Dart legacy format ใน mobile เพื่อให้ gate ใช้ scope `lib test integration_test` ได้. ไม่มี production secrets หรือ deploy/publish step. Production signing/distribution ต้องเป็นขั้นตอนแยกที่คนอนุมัติ.
+
+`tool/check_coverage.py` fail เมื่อ coverage หาย/ผิดรูป/ต่ำกว่า80. `tool/audit_dependencies.py` fail เมื่อ resolution/API response ผิดหรือมี advisory และรองรับ pagination. API อ้างอิง: https://google.github.io/osv.dev/post-v1-querybatch/.
+
+## ข้อจำกัดที่ยังต้องทำ
+
+1. Secure-storage/backup/uninstall behavior บนอุปกรณ์จริงยังไม่ได้ทดสอบรอบนี้; RMX3370 ล็อก/Dozing — เก็บใน native/RC QA #77/#83/#87
+2. Consent settings ปัจจุบันเป็น local preferences; ไม่มี server update contract. Registration ส่ง system/research consent จริง; retention, research use และ policy ต้องยืนยันจาก backend/product ก่อน production (#79/#85/#86)
+3. Backend ไม่มี privacy export/delete-all usage endpoints; account deletion เป็นคนละ operation. ห้ามอ้างว่าการ logout/cache purge ลบข้อมูลบนเซิร์ฟเวอร์
+4. Cache cleanup ของ image/temp manager อาจข้ามไฟล์ที่ลบไม่ได้; ไม่ได้พิสูจน์ forensic erasure หรือ encryption ของ SQLite/cache. Production retention/storage policy ยังต้อง sign-off
+5. OSV เป็น advisory snapshot ไม่ใช่ penetration test; actual TLS/production network และ staging E2E ยังไม่ผ่าน #79
+6. ไม่มี actual signed AAB, clean/upgrade install, store metadata, GitHub CI run หรือ production monitoring sign-off

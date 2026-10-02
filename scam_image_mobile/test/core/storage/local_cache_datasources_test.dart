@@ -174,4 +174,40 @@ void main() {
     expect(fallback, isNotNull);
     expect(fallback!.summary, 'Title scan-1');
   });
+  test(
+    'session-invalidated writes do not persist history or result details',
+    () async {
+      await history.cacheHistory([
+        historyItem('old'),
+      ], isCurrentSession: () => false);
+      await results.cacheResult(
+        fullResult('old'),
+        isCurrentSession: () => false,
+      );
+      expect(await history.getHistory(), isEmpty);
+      expect(await results.getResult('old'), isNull);
+    },
+  );
+
+  test(
+    'account cache purge removes history and result details atomically',
+    () async {
+      await history.cacheHistory([historyItem('private')]);
+      await results.cacheResult(fullResult('private'));
+      await helper.clearAnalysisCache();
+      expect(await history.getHistory(), isEmpty);
+      expect(await results.getResult('private'), isNull);
+    },
+  );
+  test(
+    'invalidated deletion and clear cannot erase current session cache',
+    () async {
+      await history.cacheHistory([historyItem('current')]);
+      await results.cacheResult(fullResult('current'));
+      await history.deleteHistoryItem('current', isCurrentSession: () => false);
+      await history.clearHistory(isCurrentSession: () => false);
+      expect(await history.getHistory(), hasLength(1));
+      expect(await results.getResult('current'), isNotNull);
+    },
+  );
 }

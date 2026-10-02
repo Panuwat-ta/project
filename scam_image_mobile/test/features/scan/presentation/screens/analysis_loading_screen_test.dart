@@ -182,11 +182,7 @@ void main() {
         'กำลังตรวจสอบข้อมูลภาพและแหล่งที่มา...',
         0,
       ),
-      (
-        AnalysisTaskStatus.processingVisual,
-        'กำลังวิเคราะห์ภาพด้วย AI...',
-        1,
-      ),
+      (AnalysisTaskStatus.processingVisual, 'กำลังวิเคราะห์ภาพด้วย AI...', 1),
       (AnalysisTaskStatus.completed, null, 3),
     ];
 
@@ -230,9 +226,8 @@ void main() {
         ),
         GoRoute(
           path: '/result/:id',
-          builder: (_, state) => Text(
-            'Result ${state.pathParameters['id']} ${state.extra}',
-          ),
+          builder: (_, state) =>
+              Text('Result ${state.pathParameters['id']} ${state.extra}'),
         ),
       ],
     );
@@ -255,7 +250,9 @@ void main() {
     tester,
   ) async {
     final bloc = _MockScanBloc();
-    when(() => bloc.state).thenReturn(ScanPolling(taskId: 'task-notifications'));
+    when(
+      () => bloc.state,
+    ).thenReturn(ScanPolling(taskId: 'task-notifications'));
     when(() => bloc.stream).thenAnswer((_) => const Stream.empty());
     final router = _buildLoadingRouter(bloc);
     addTearDown(router.dispose);

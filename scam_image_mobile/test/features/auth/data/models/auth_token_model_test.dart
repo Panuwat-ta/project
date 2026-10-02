@@ -18,10 +18,7 @@ void main() {
     });
 
     test('parses snake_case keys', () {
-      final json = {
-        'access_token': 'abc123',
-        'refresh_token': 'xyz789',
-      };
+      final json = {'access_token': 'abc123', 'refresh_token': 'xyz789'};
 
       final model = AuthTokenModel.fromJson(json);
 
@@ -45,10 +42,7 @@ void main() {
     });
 
     test('handles null expiresAt', () {
-      final json = {
-        'access_token': 'abc',
-        'refresh_token': 'xyz',
-      };
+      final json = {'access_token': 'abc', 'refresh_token': 'xyz'};
 
       final model = AuthTokenModel.fromJson(json);
 
@@ -59,10 +53,7 @@ void main() {
 
   group('AuthTokenModel.toJson', () {
     test('round-trips correctly', () {
-      const model = AuthTokenModel(
-        accessToken: 'abc',
-        refreshToken: 'xyz',
-      );
+      const model = AuthTokenModel(accessToken: 'abc', refreshToken: 'xyz');
 
       final json = model.toJson();
 
