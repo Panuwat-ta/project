@@ -6,7 +6,7 @@
 
 ## GitHub Issues cross-check — 2026-10-02
 
-ณ cross-check ล่าสุด 2026-10-02 Issues #71–#76, #78, #80 และ #82 ปิดแล้ว; #77, #79, #81 และ #83–#88 ยังเปิด. #78 CLOSED เวลา 07:29 +07 พร้อม automated evidence และข้อจำกัด backend/product. ข้อความสถานะเวลา 01:53 ด้านล่างเป็นประวัติเดิมก่อนปิด Issues #71–#76. #88 เป็น roadmap หลักและอ้างอิง hardening gates ในรายการด้านล่าง:
+ณ cross-check ล่าสุด 2026-10-02 Issues #71–#76, #78, #80, #82 และ #84 ปิดแล้ว; #77, #79, #81, #83, #85–#88 ยังเปิด. #78 CLOSED เวลา 07:29 +07 พร้อม automated evidence และข้อจำกัด backend/product. ข้อความสถานะเวลา 01:53 ด้านล่างเป็นประวัติเดิมก่อนปิด Issues #71–#76. #88 เป็น roadmap หลักและอ้างอิง hardening gates ในรายการด้านล่าง:
 
 | Issue | Checklist section |
 |---|---|
@@ -29,7 +29,7 @@
 | [#87](https://github.com/Panuwat-ta/project/issues/87) | §16 Release Candidate QA |
 | [#88](https://github.com/Panuwat-ta/project/issues/88) | Master roadmap; references #71–#87 |
 
-ตัวเลข coverage ใน §0.4 เป็นผลย้อนหลัง ณ 20 กันยายน 2026 ไม่ใช่ผลปัจจุบัน. ผลล่าสุด 2026-10-02 หลัง security/config hardening: full suite ผ่าน 728 tests; LCOV line 5,456/6,010 (90.78%) และ branch 1,394/1,703 (81.86%). รายงานล่าสุดคือ `tests_all/tests_report/automate_tests/mobile/issue-78-security-2026-10-02.md`; residual branches ของ Issues #74/#75 อยู่ในรายงานเดิม `issue-74-75-2026-10-02.md`.
+ตัวเลข coverage ใน §0.4 เป็นผลย้อนหลัง ณ 20 กันยายน 2026 ไม่ใช่ผลปัจจุบัน. ผลล่าสุด 2026-10-02 หลัง security/config hardening: full suite ผ่าน 737 tests; LCOV line 5,470/6,018 (90.89%) และ branch 1,408/1,711 (82.29%). รายงานล่าสุดคือ `tests_all/tests_report/automate_tests/mobile/issue-78-security-2026-10-02.md`; residual branches ของ Issues #74/#75 อยู่ในรายงานเดิม `issue-74-75-2026-10-02.md`.
 
 ## สัญลักษณ์สถานะ
 
@@ -121,6 +121,7 @@
 - ผลทดสอบ: 8 widget tests ผ่านซ้ำ 5 รอบ; full suite 432/432 และ analyzer ผ่าน. รายงาน: `tests_all/tests_report/automate_tests/mobile/notifications-screen-harness-2026-10-02.md`
 
 ### 1.3 Known runtime/performance warnings
+- [x] ตัดdefaultSplashdelay3วินาทีและguardduplicate/lateasyncหลังclose; tests737ผ่าน โดยยังต้องhardwareprofiling #81
 - [ ] วิเคราะห์ skipped frames ตอน cold start ว่าเป็น debug-only หรือมี main-thread work จริง
 - [ ] profile startup ใน profile/release mode ก่อนถือว่า performance ผ่าน
 - [ ] ตรวจ memory growth ระหว่าง History/Result/Heatmap navigation หลายรอบ

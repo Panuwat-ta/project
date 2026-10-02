@@ -11,36 +11,45 @@ class SplashCubit extends Cubit<SplashState> {
   final AuthRepository _authRepository;
   final Duration splashDelay;
 
-  SplashCubit(
-    this._authRepository, {
-    this.splashDelay = const Duration(seconds: 3),
-  }) : super(const SplashInitial());
+  SplashCubit(this._authRepository, {this.splashDelay = Duration.zero})
+    : super(const SplashInitial());
 
-  /// Verifies token validity and resolves the current user.
+  bool _checkingSession = false;
+
+  /// Resolves the stored session without delaying startup for branding.
   Future<void> checkSession() async {
+    if (_checkingSession || isClosed) return;
+    _checkingSession = true;
     emit(const CheckingSession());
-    // หน่วงเวลา 3 วินาทีเพื่อให้แสดงหน้า Splash Screen ก่อนเข้าแอป
-    await Future.delayed(splashDelay);
     try {
+      if (splashDelay > Duration.zero) {
+        await Future<void>.delayed(splashDelay);
+      }
+      if (isClosed) return;
       final hasSeenOnboarding = await _authRepository.hasSeenOnboarding();
+      if (isClosed) return;
       if (!hasSeenOnboarding) {
         emit(const SplashConsentRequired());
         return;
       }
 
       final hasToken = await _authRepository.hasValidToken();
+      if (isClosed) return;
       if (!hasToken) {
         emit(const SplashUnauthenticated());
         return;
       }
       final user = await _authRepository.getCurrentUser();
+      if (isClosed) return;
       if (user != null) {
         emit(SplashAuthenticated(user: user));
       } else {
         emit(const SplashUnauthenticated());
       }
     } catch (e) {
-      emit(SplashFailure(message: e.toString()));
+      if (!isClosed) emit(SplashFailure(message: e.toString()));
+    } finally {
+      _checkingSession = false;
     }
   }
 }
