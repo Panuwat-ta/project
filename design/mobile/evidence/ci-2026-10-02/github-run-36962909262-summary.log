@@ -1,0 +1,7 @@
+quality	Set up job	﻿2026-10-02T04:04:10.6349623Z Current runner version: '2.337.0'
+quality	Analyze	2026-10-02T04:04:52.1320629Z No issues found! (ran in 16.5s)
+quality	Test quality gate tools	2026-10-02T04:04:52.4488483Z Ran 8 tests in 0.109s
+quality	Test with branch coverage	2026-10-02T04:06:47.3759719Z 01:35 +749: All tests passed!
+quality	Enforce coverage >= 80 percent	2026-10-02T04:06:47.5577401Z   "line_percent": 90.9106015287471,
+quality	Enforce coverage >= 80 percent	2026-10-02T04:06:47.5578184Z   "branch_percent": 82.34950321449445,
+quality	Audit resolved Pub and Maven dependencies	2026-10-02T04:11:41.2784686Z {"status": "passed", "packages": 230, "findings": 0, "report": "build/quality/dependency-audit.json"}

@@ -307,7 +307,7 @@
 ## 9. P1 — Performance / Resource usage
 
 ### 9.1 Startup/rendering
-- [ ] วัด startup ใน `--profile` หรือ release build ไม่ใช้ debug skipped-frame เป็น final metric
+- [x] วัด signed-out startup ใน `--profile` บน RMX3370: Android AM และ Flutter FrameTiming มีหลักฐานแล้ว; sample3framesไม่เพียงพอสรุปทั้งแอป/performanceพร้อมproduction ดู `mobile-native-status-2026-10-02.md`
 - [ ] ตรวจ frame jank Home / History scroll / Result / Heatmap
 - [ ] ตรวจ animation ไม่ทำงานเมื่อ offscreen หรือ reduced-motion
 - [ ] ลด rebuild ที่ไม่จำเป็นใน BLoC/widget tree ถ้าพบจาก profiler
@@ -619,16 +619,22 @@ workflow #84 และ tooling tests8/8ผ่าน; actual GitHub clean-checkou
 
 ## 27. Current blockers / ยังห้ามประกาศ Production-ready
 
-- [!] History Detail มี RenderFlex overflow ที่ regression test ใหม่ตรวจพบ
-- [!] branch coverage ล่าสุด 54.62% ยังต่ำกว่า NFR-09 80%
-- [!] NotificationsScreen widget harness ต้องเปลี่ยน approach หลังครบ 3 attempts
-- [!] Manual TalkBack ยังไม่ได้ทดสอบบนเครื่องจริง
-- [!] Manual rotation ยังไม่ได้ทดสอบบนเครื่องจริง
-- [!] Auth visual/accessibility cleanup ยังติด loop deny scope เดิมจนกว่าจะอนุมัติ
-- [!] Production environment/API endpoint ยังต้อง final verify
-- [!] Production signing/AAB/internal distribution ยังไม่ทำ
-- [!] Final release-mode performance/security QA ยังไม่ทำ
-- [!] Production rollout/monitoring/rollback rehearsal ยังไม่ทำ
+สถานะอิง Issues และ source ล่าสุด 2026-10-02: ปิด10/18; เปิด #77/#79/#81/#83/#85/#86/#87/#88. Branch refactor-mobileทำงานที่ `/home/panuwat/project-mobile-hardening`; workspaceหลักdevelopคงเดิม.
+
+- [x] RenderFlex overflow ที่พบใน regressionเดิมแก้และทดสอบแล้ว; ไม่ถือเป็น current blocker
+- [x] Full suite749/749, analyzer0; CI36961640199success/branch82.35% สูงกว่าNFR-09เกณฑ์80; ไม่ใช่54.62%ของbaselineเดิม
+- [x] Notifications widget harness เปลี่ยน approachและผ่านแล้ว; ไม่เป็น current blocker
+- [x] Auth scopeได้รับอนุมัติและ #82CLOSED; ไม่ติดloopdenyเดิม
+- [!] #77 actualTalkBack/textscale/rotation/tablet/insets/Backทุกหน้ายังไม่ครบ; LoginportraitTH/light/font1.0/keyboardscroll/Back baselineมีหลักฐานแล้ว แต่ไม่แทนทั้งmatrix
+- [!] #79 ยังไม่มีconfirmedHTTPSstaging/accountfixturesและstagingE2E; localhost8000downในenvironmentล่าสุด
+- [!] #81 profileprobeมี3framesและoverbudget; Home/History/Result/Heatmap/image-memory/fullsoak/processrecreationยังไม่ครบ
+- [!] #83 productionidentity/version/key/signedartifact/cleanupgradeยังไม่ยืนยัน; test-onlyprobeIDไม่ใช่productionidentity
+- [!] #85 distributionchannel/privacyTerms/supportURLs/approvedpolicy/screenshotsยังไม่ยืนยัน
+- [!] #86 backend/model/migrationfreeze/monitoringowners/thresholds/rollbackrehearsalยังไม่ครบ
+- [!] #87 signedsame-sourceRC/native/staging/install/soak/signoffยังไม่ครบ
+- [!] #88 roadmapยังปิดไม่ได้จนdependentgatesผ่านจริง
+
+Toollifecyclefinding: flutterdrivedefaultstop/uninstallหลังtestทำให้regularappที่reinstallแสดงOnboarding; localstateไม่ได้พิสูจน์preserved. Probeรอบใหม่ใช้dedicatedapplicationIdและ--keep-app-runningแล้ว ไม่ถือรอบเดิมเป็นupgradepreservesdataผ่าน. ดูรายงาน `tests_all/tests_report/automate_tests/mobile/issue-81-native-startup-probe-2026-10-02.md`.
 
 ## 28. Production Sign-off Gate
 
@@ -637,7 +643,7 @@ workflow #84 และ tooling tests8/8ผ่าน; actual GitHub clean-checkou
 - [ ] ไม่มี P0/P1 blocker ที่ยังเปิดอยู่
 - [ ] product evidence ทุกจุด trace กลับ backend/real analysis ได้
 - [ ] AI-slop final audit ไม่มี deceptive/fabricated UI
-- [ ] branch coverage >=80% ตาม NFR-09
+- [x] branch coverage >=80% ตาม NFR-09: local82.12%, CI36961640199ได้82.35%; ต้องตรวจซ้ำกับsourceของfinalsignedRC
 - [ ] security/privacy release gates ผ่าน
 - [ ] automated + manual QA ผ่านตาม matrix
 - [ ] release AAB signed/build/install ผ่าน

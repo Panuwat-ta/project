@@ -65,3 +65,18 @@ Run36946512530 ของ718c8d4 completed/success ทุกstep; remotebranchcov
 ## Asset optimization #83
 
 PNGต้นฉบับlauncherไม่ได้มีcallerในFlutterlib จึงเปลี่ยนpubspecจากiconsfolderเป็น3SVGที่ใช้จริง. PNGต้นฉบับและAndroidmipmapsยังอยู่. AssetManifesttestใหม่+fullsuite728ผ่าน; analyzer0; unsignedbuild49.0s ขนาด63,447,112bytes ลด1,009,923bytes; SHA256`7c9c0004c43e9b0a491270b61bf6a38cdcf5c3e7f2b7a951c05968e9db657360`. No.env/noPNGduplicate/SVG3ครบ. ยังไม่ได้signedAABหรือactualclean-upgradeinstall.
+
+## CI action runtime maintenance
+
+Run36962909262 (af9f9a0) completed/success:749/749,tools8/8,analyzer0,line90.91%/branch82.35%,OSV230packages0findings. แต่มีannotationNode20และsetup-javav4deprecated. ตรวจofficialrepos/tagcommit/action.yml/READMEแล้วปรับpins:
+
+| Action | Version | Verified commit |
+|---|---|---|
+| actions/checkout | v7.0.1 | 3d3c42e5aac5ba805825da76410c181273ba90b1 |
+| actions/setup-java | v6.0.1 | de7274f081f381c8f8158605e0321c36c376e2e6 |
+| actions/setup-python | v7.0.0 | 5fda3b95a4ea91299a34e894583c3862153e4b97 |
+| actions/upload-artifact | v7.0.1 | 043fb46d1a93c77aae656e7c1c64a875d1fc6a0a |
+
+ทั้ง4action.ymlใช้node24;officialtagชี้commitSHAตรงกับpin. Runnerรอบก่อน2.337.0สูงกว่าminimum2.327.1ที่READMEกำหนด. Evidence/sourceURLsใน `evidence/ci-2026-10-02/node24-action-pins.json`. รันCIยืนยันใหม่หลังpinupdate; การตรวจmetadataยังไม่ใช่หลักฐานว่าworkflowใหม่รันผ่าน.
+
+ตรวจrepo-levelGitHubvariables/secretsได้รายการว่าง;environmentsมีcopilotและgithub-pages ไม่พบstaging/productionenvironmentในrepositoryนี้. ไม่ได้อ่านsecretvaluesและไม่ถือว่ามีproductionconfigพร้อมจากunsignedcompilefixture.
