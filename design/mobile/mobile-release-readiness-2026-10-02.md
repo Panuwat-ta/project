@@ -6,11 +6,11 @@
 
 | Issue | สิ่งที่เตรียมได้แล้ว | สิ่งที่ยังขาด |
 |---|---|---|
-| #77 Native accessibility | widget/semantics/adaptive tests และ manual cases เดิม | RMX3370 ต้องปลดล็อก; ผู้ใช้จัดการ TalkBack/rotation/font settings; บันทึก actual focus/insets/keyboard/split-screen/Back |
+| #77 Native accessibility | widget/semantics/adaptive tests และ manual cases เดิม | RMX3370ปลดล็อกแล้ว; Login/keyboard scroll/Back baselineตรวจแล้ว; TalkBack/rotation/font settings และทุกหน้าที่เหลือยังต้องตรวจ |
 | #79 Production/staging | endpoint constants, response/error/retry tests, explicit URL config | HTTPS URLs จริงและ staging account/fixtures; E2E เทียบ raw API กับ Result/History/Report |
-| #81 Performance/soak | profile APK build/install เคยผ่าน; polling/dispose guards มี tests | actual unlocked device/profile frames, cold/warm timing, memory/soak/process recreation; gfxinfo0framesเดิมใช้อ้าง performance ไม่ได้ |
+| #81 Performance/soak | correct-source profileAPKติดตั้งแล้ว; Android cold launch5รอบ515–576ms; polling/dispose guardsมีtests | actual unlocked device/profile frames, cold/warm timing, memory/soak/process recreation; gfxinfo0framesเดิมใช้อ้าง performance ไม่ได้ |
 | #83 Signed production | config/environment signing guard; unsigned compile gate | production applicationId/version, secure key source, signed AAB/APK/fingerprint, actual clean/upgrade install |
-| #84 CI — CLOSED | GitHub runs36946512530และ36948413327 completed/success, artifacts/checksumตรวจแล้ว | signedproduction/native/stagingอยู่gatesอื่น |
+| #84 CI — CLOSED | GitHub runs36946512530/36948413327/36951286426/36961640199 completed/success, quality artifactsมีหลักฐาน | signedproduction/native/stagingอยู่gatesอื่น |
 | #85 Distribution | metadata draft และ disclosure inventory ด้านล่าง | ช่องทางจำหน่าย, Privacy Policy/Terms/support URLs ที่ใช้ได้, approved policy, screenshotsของ signed/staging build |
 | #86 Operations | rehearsal/rollback evidence checklist ด้านล่าง | endpoint/model/migration freeze, owner/monitoring thresholds, previous stable artifact และ rehearsal จริง |
 | #87 RC QA | evidence checklist และ manual87casesเดิม | signed same-commit RC, native/staging/install/soak/CI evidence ครบ, owner sign-off |

@@ -20,7 +20,7 @@
 
 ```bash
 SCAMGUARD_APPLICATION_ID='<confirmed-staging-test-id>' flutter test \
-  integration_test/app_test.dart \
+  integration_test/app_test.dart --no-uninstall \
   -d '<confirmed-device-serial>' \
   --dart-define-from-file=config/staging-e2e.local.json
 ```
@@ -42,3 +42,21 @@ flutter analyze --fatal-infos --fatal-warnings
 ```
 
 Host regression นี้ตรวจ configuration guard ไม่ใช่ native/staging E2E. เก็บผล execution จริงตาม template ที่ tests_all/tests_report/automate_tests/mobile/ และอย่าเปลี่ยน manual cases เป็น Pass ก่อนรันจริง
+
+## Signed-out native startup probe (#81)
+
+สำหรับprofile/developmentบนเครื่องที่signedoutเท่านั้น ไม่ล้างstorageหรือทำconsent/login. ใช้FlutterFrameTimingของSDK; ไม่ใช่signedRCหรือauthenticatedsoak
+
+```bash
+SCAMGUARD_APPLICATION_ID='<dedicated-probe-id>' flutter drive --profile --no-dds --keep-app-running \
+  --driver=test_driver/startup_profile_test.dart \
+  --target=integration_test/startup_profile_test.dart \
+  -d '<confirmed-device-serial>' \
+  --dart-define=E2E_DEDICATED_INSTALL=true \
+  --dart-define=APP_ENV=development \
+  --dart-define=API_BASE_URL='<confirmed-development-api-url>'
+```
+
+`--no-dds` จำเป็นในรอบRMX3370ที่ทดสอบเพื่อให้watchPerformanceเชื่อมVMtimelineบนdeviceได้. ผลJSONอยู่build/integration_response_data.json; จำนวนframesต้องมากกว่า0จึงผ่าน การผ่านprobeไม่ยืนยันว่าframebudgetผ่าน. หลังทดสอบติดตั้งแอปปกติคืนแทนtestAPK
+
+Flutter drive ค่าเริ่มต้น stop และ uninstall app หลังจบทดสอบ (ตรวจจากSDKdrive_service.dart) จึงต้องใช้ dedicated applicationId แยกจากแอปปกติ และ --keep-app-running. E2E_DEDICATED_INSTALL เป็น explicit fixture flag; ไม่ได้ตรวจ package identity อัตโนมัติ ห้ามใส่ true เพื่อรันบน app ที่มีข้อมูลผู้ใช้.

@@ -26,3 +26,20 @@ ProfileAPKcompileผ่าน33.8s(117.5MB) แต่ยังไม่ได้
 ## Remote CI ของ source ac5e833
 
 [Run36951286426](https://github.com/Panuwat-ta/project/actions/runs/36951286426) completed/success เวลา01:36:57UTC (08:36:57+07). Flutter737/737, Python tools8/8, analyzer0, line90.89%/branch82.29%, OSV230packages0findings. ดาวน์โหลด unsigned quality APK63,447,112bytes และตรวจ SHA256ตรง `addbba05d1155f9dcc0d9d72042b8a915686ee72230656e15709d30714ce3ff2`; ไม่พบ.env/launcherPNGซ้ำในAPK. Metadataอยู่evidence/startup-2026-10-02/github-*. ผลCIไม่ใช่nativeQAหรือsignedRC; #81/#83ยังOPEN.
+
+## Native execution เพิ่มเติม — worktreeถาวร
+
+หลังสลับenvironment /tmpworktreeเดิมหาย เหลือgitworktreemetadata; สร้าง `/home/panuwat/project-mobile-hardening` บนrefactor-mobileจาก7ab28fbโดยไม่เปลี่ยนdevelop. กู้stagingharnessและรัน749/749/analyzer0; commitf393c86และCI36961640199completed/success.
+
+RMX3370กลับมาเชื่อม/unlocked; ติดตั้งcorrect-sourceprofileAPK (appsourceac5e833,checkout7ab28fb,tests-onlychanges) สำเร็จ. InitialAMcoldTotalTime1168ms; อีก5รอบ576/515/531/523/535ms,WaitTime580/521/537/532/540ms. AMไม่ใช่Flutterreadytime; snapshotหลังรอบสุดท้ายPSS215874kB/RSS317616kB ไม่ใช่soak. Exactartifacthash/metadataในevidence/native-2026-10-02/profile-startup.json.
+
+ตรวจLoginTH/light/font1.0portraitจริง: fields/forgotpassword/passwordtoggle/loginbuttonปรากฏ; focusemailเปิดkeyboard, scrollทำให้loginbuttonขึ้นเหนือkeyboard [144,882][936,1044]; Backปิดkeyboard(mInputShown=false). Loginbuttonheight162px/density3=54dp, passwordtoggleและforgotpassword144px=48dp. ภาพและsanitizednodeboundsในevidence/native-2026-10-02/. ไม่เปลี่ยนTalkBack/textscale/rotation; ไม่ถือsemanticsdumpแทนactualspokenlabels/focusorder. ยังไม่ตรวจทุกหน้าหรือทุกconfiguration จึง #77OPEN.
+
+Profileintegrationstartupprobeผ่านจริง1กรณี; DI→signedoutroute406ms,Flutter3frames,buildbudgetmiss2/rastermiss1. Sample3framesจำกัดมาก; ไม่สรุปp90/p99หรือperformanceพร้อมproduction. รอบแรกDDSVMconnectionrefused แล้วrerun--no-ddsผ่าน. รายงานtests_all/tests_report/automate_tests/mobile/issue-81-native-startup-probe-2026-10-02.md. Authenticatedflows/staging/fullsoakยังไม่มีเพราะconfirmedstaging/accountไม่ครบและlocalhost8000down; #79/#81OPEN. คืนregularprofileappหลังprobe.
+
+หลังคืนregularprofileAPKinstallSuccessและOnboardingปรากฏ: AMcoldTotalTime1826ms/WaitTime1831ms. ค่านี้สูงกว่ารอบrepeatedlaunch515–576ms จึงห้ามเลือกเฉพาะค่าต่ำเพื่อสรุปstartupผ่าน; disk/OS/appcacheและpostinstallต่างกัน. Exactrestoredartifactmetadataเพิ่มในprofile-startup.json.
+
+
+ข้อค้นพบจากtool lifecycle: flutterdriveเริ่มต้นstop+uninstallเมื่อtestจบ (SDKdrive_service.dart280–287). หลังคืนregularAPKพบOnboarding ไม่ใช่Login; localstateไม่ได้ยืนยันpreserved แม้ไม่มีaccess tokenก่อนprobe และ testcodeไม่ได้deleteAll. ไม่กล่าวอ้างcleanupgradepreservesdata. แก้คู่มือ/probeให้explicitdedicatedinstallและใช้applicationIdสำหรับtestใหม่ `com.example.scam_image_mobile.hardening_probe` พร้อม--keep-app-running; เป็นtestidentifierที่เลือกเฉพาะงานนี้ ไม่ใช่confirmedproductionidentity. ไม่เปลี่ยนconsent/onboardingโดยพลการในแอปปกติเพื่อกลบผลที่พบ.
+
+DedicatedprobeapplicationIdcom.example.scam_image_mobile.hardening_probeรันใหม่ผ่าน1/1ด้วยprofile/no-dds/keep-app-running/explicitfixtureflag; DI→signedoutroute382ms,Flutter3framesbuildmiss1/rastermiss1. ไม่เทียบเป็นbefore/afterกับรอบแรก; retainrawJSON2รอบเพื่อไม่เลือกผลที่ดีกว่าอย่างเดียว. หลังรันstopเฉพาะprobeและกลับแอปปกติที่Onboarding; ไม่รับterms/researchconsentเอง. #77/#79/#81/#83/#85/#86/#87/#88ยังOPEN.

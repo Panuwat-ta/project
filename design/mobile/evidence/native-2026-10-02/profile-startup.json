@@ -1,0 +1,64 @@
+{
+  "source_app_commit": "ac5e8334097739539d143be0e2d91b004656bbd8",
+  "checkout_head_at_build": "7ab28fb3",
+  "test_harness_commit": "f393c86d",
+  "device_model": "RMX3370",
+  "android_release": "13",
+  "size": "Physical size: 1080x2400",
+  "density": "Physical density: 480",
+  "font_scale": "1.0",
+  "accessibility_services": "null",
+  "mode": "profile",
+  "app_env": "development",
+  "api_base_url": "http://127.0.0.1:18080/api/v1",
+  "local_backend_available": false,
+  "apk_bytes": 92155887,
+  "apk_sha256": "1c05d88a8910cfe824548616d359506d60692cadf5340697691664b5c94f1ac7",
+  "cold_trials": [
+    {
+      "TotalTime": 576,
+      "WaitTime": 580
+    },
+    {
+      "TotalTime": 515,
+      "WaitTime": 521
+    },
+    {
+      "TotalTime": 531,
+      "WaitTime": 537
+    },
+    {
+      "TotalTime": 523,
+      "WaitTime": 532
+    },
+    {
+      "TotalTime": 535,
+      "WaitTime": 540
+    }
+  ],
+  "memory_snapshot_after_last_launch": [
+    "TOTAL PSS:   215874            TOTAL RSS:   317616       TOTAL SWAP PSS:      192",
+    "Views:        7         ViewRootImpl:        1",
+    "AppContexts:        7           Activities:        1",
+    "Local Binders:       19        Proxy Binders:       55"
+  ],
+  "limitations": [
+    "AM TotalTime is Android activity launch timing, not Flutter login readiness or frame performance.",
+    "No authenticated flow/soak/staging/signed RC measured.",
+    "These five trials are not proof of no memory leak or OOM.",
+    "No native TalkBack/text scale/rotation settings changed."
+  ],
+  "initial_post_install_cold": {
+    "TotalTime": 1168,
+    "WaitTime": 1174
+  },
+  "regular_app_restored_after_probe": {
+    "install": "Success",
+    "android_launch_status": "ok",
+    "TotalTime": 1826,
+    "WaitTime": 1831,
+    "bytes": 93875872,
+    "sha256": "e9cb3e047c92bd5aaa2eeeb7478a2ba05db957dd48c7d7c033d191428821ccd2",
+    "login_screen_observed": false
+  }
+}

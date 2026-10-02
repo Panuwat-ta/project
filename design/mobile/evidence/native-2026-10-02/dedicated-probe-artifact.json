@@ -1,0 +1,11 @@
+{
+  "test_application_id": "com.example.scam_image_mobile.hardening_probe",
+  "mode": "profile",
+  "app_env": "development",
+  "dedicated_install": true,
+  "keep_app_running": true,
+  "apk_bytes": 38373125,
+  "apk_sha256": "67b16fd7c3728a8b61f1fa2c33b69b7060c02cb765d2e6b4469b316585bcba18",
+  "local_backend_available": false,
+  "purpose": "signed-out startup probe only; not signed RC or authenticated/staging evidence"
+}

@@ -18,3 +18,7 @@
 ไม่มีข้อผิดพลาด (0 Failed) ในรอบสุดท้าย. ก่อนแก้productionguard testได้returned StagingTestConfigแทนthrowsStateError (0Passed/1Failed); เพิ่มguardแล้ว1/1ผ่าน. ก่อนเพิ่มURL/credentialsvalidationได้2Passed/10Failedเนื่องจากconstructorยอมรับURLไม่ปลอดภัยและบัญชีว่าง; เพิ่มvalidationแล้ว12/12ผ่าน. Analyzerรอบกลางพบundefined getAccessToken จึงแก้เป็นSecureStorage.getToken(kAccessToken)ตามAPIจริงและตรวจซ้ำผ่าน.
 
 Native staging E2E **ยังไม่ได้รัน**; ไม่มีconfirmed HTTPS staging/account fixture และอุปกรณ์ในsandboxรอบแรกไม่พบ. เมื่อเปลี่ยนenvironmentพบRMX3370อีกครั้งแต่localhost8000ไม่ทำงาน. ไม่ถือconfiguration/host testsเป็น #79 acceptance ผ่าน. Worktree /tmpเดิมหายหลังenvironmentเปลี่ยน จึงสร้างworktreeถาวร `/home/panuwat/project-mobile-hardening` จาก7ab28fbและกู้ไฟล์testจากงานในturnนี้ แล้วรันsuiteใหม่749ผ่านจริง.
+
+## Remote CI ของ f393c86
+
+[Run36961640199](https://github.com/Panuwat-ta/project/actions/runs/36961640199) completed/success. Flutter749/749 runner89s, Python tools8/8(0.083s), analyzer0(13.5s), line90.91%/branch82.35%, OSV230packages0findings; ทุกworkflowstepรวมunsignedcompile/artifactผ่าน. ไม่มีข้อผิดพลาด (0 Failed). ผลCIตรวจconfiguration guardและregressions ไม่ใช่ staging E2E บนdevice; #79ยังOPEN.
