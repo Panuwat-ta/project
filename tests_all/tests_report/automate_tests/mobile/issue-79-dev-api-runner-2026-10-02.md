@@ -19,3 +19,15 @@
 ### 2. รายการที่ไม่ผ่าน (Failed Tests) และสาเหตุที่ไม่ผ่าน (How & Why it Failed)
 
 ไม่มีข้อผิดพลาด (0 Failed) ใน final run 18/18. รอบแรกพบ 1 error จาก parser ที่ยังไม่รองรับ comment หลัง quoted URL; แก้ parser แล้วรันซ้ำผ่านครบ 18/18.
+
+## 2026-10-02 — GitHub PR quality gates
+
+- Source: commit `6c1f8a3e`, PR [#90](https://github.com/Panuwat-ta/project/pull/90); run [36969781386](https://github.com/Panuwat-ta/project/actions/runs/36969781386) completed/success
+- รายการที่ผ่าน: Dart format, `flutter analyze` (0 issues), Python quality tools 18/18, Flutter tests 749/749, coverage gate, unsigned APK build, Android dependency audit และ archive check ว่าไม่มีไฟล์ `.env`
+- Coverage: line 5,471/6,018 (90.91%); branch 1,409/1,711 (82.35%); ทั้งคู่ผ่านเกณฑ์ 80%
+- Dependency audit: 230 packages, 0 advisories ตามข้อมูลที่ audit ได้ใน run นี้
+- Artifact: unsigned APK 63,447,112 bytes, SHA-256 `addbba05d1155f9dcc0d9d72042b8a915686ee72230656e15709d30714ce3ff2`; ไม่พบ `.env` หรือ APK signature files
+
+### ผลที่ไม่ผ่านและข้อจำกัด
+
+ไม่พบ test/build/quality gate failures (0 Failed). APK เป็น compile artifact แบบ unsigned; CI และ development `/health` smoke ไม่ยืนยัน authenticated staging flow, ภาพ error banner หลัง login, production signing หรือ deploy. รายละเอียด checksum/coverage/dependency audit สรุปไว้ที่ `design/mobile/evidence/ci-2026-10-02/github-run-36969781386-summary.json`.

@@ -402,7 +402,7 @@
 - [x] ห้าม auto-deploy production เมื่อ final gate fail
 - [H] production signing/distribution/deploy เป็นขั้นแยกที่ต้องให้คนอนุมัติ; workflowนี้ไม่มีdeploy/publishstep
 
-workflow #84 และ tooling tests ผ่าน; GitHub run 36963858748 completed/success หลัง pin Node 24: Flutter 749/749, analyzer 0, branch coverage 82.35%, OSV 230 packages/0 advisories. Artifact เป็น unsigned quality fixture ไม่ใช่ production/RC; หลักฐานอยู่ใน `issue-84-ci-2026-10-02.md` และ `evidence/ci-2026-10-02/github-node24-artifact-verification.json`.
+workflow #84 และ tooling tests ผ่าน; follow-up PR #90 run 36969781386 completed/success: Flutter 749/749, Python quality tools 18/18, analyzer 0, line coverage 90.91%, branch coverage 82.35%, OSV 230 packages/0 advisories. APK เป็น unsigned quality fixture ไม่ใช่ production/RC; หลักฐานอยู่ใน `issue-84-ci-2026-10-02.md` และ `evidence/ci-2026-10-02/github-run-36969781386-summary.json`.
 
 ## 15. P1 — Store/Distribution readiness
 
@@ -619,10 +619,10 @@ workflow #84 และ tooling tests ผ่าน; GitHub run 36963858748 comple
 
 ## 27. Current blockers / ยังห้ามประกาศ Production-ready
 
-สถานะอิง GitHub Issues และ source ล่าสุด 2026-10-02: ปิด 10/18; เปิด #77/#79/#81/#83/#85/#86/#87/#88. Hardening source รวมเข้า `develop` ผ่าน PR #89; follow-up นี้ทำใน linked worktree `/home/panuwat/project-mobile-hardening-final`. Profile build จาก source ล่าสุดเรียก local development `/health` ผ่าน Wi-Fi ได้ HTTP 200 โดยไม่มี ADB reverse แต่ยังไม่ใช่ staging E2E.
+สถานะอิง GitHub Issues และ source ล่าสุด 2026-10-02: ปิด 10/18; เปิด #77/#79/#81/#83/#85/#86/#87/#88. Hardening source รวมเข้า `develop` ผ่าน PR #89; follow-up อยู่ใน PR #90, linked worktree `/home/panuwat/project-mobile-hardening-final`. Profile build จาก source ล่าสุดเรียก local development `/health` ผ่าน Wi-Fi ได้ HTTP 200 โดยไม่มี ADB reverse แต่ยังไม่ใช่ staging E2E.
 
 - [x] RenderFlex overflow ที่พบใน regressionเดิมแก้และทดสอบแล้ว; ไม่ถือเป็น current blocker
-- [x] Full suite 749/749, analyzer 0; latest CI36963858748 success/branch82.35% สูงกว่า NFR-09 เกณฑ์ 80%; ไม่ใช่ 54.62% ของ baseline เดิม
+- [x] Full suite 749/749, Python quality tools 18/18, analyzer 0; latest CI36969781386 success/branch82.35% สูงกว่า NFR-09 เกณฑ์ 80%; ไม่ใช่ 54.62% ของ baseline เดิม
 - [x] Notifications widget harness เปลี่ยน approachและผ่านแล้ว; ไม่เป็น current blocker
 - [x] Auth scopeได้รับอนุมัติและ #82CLOSED; ไม่ติดloopdenyเดิม
 - [!] #77 actualTalkBack/textscale/rotation/tablet/insets/Backทุกหน้ายังไม่ครบ; LoginportraitTH/light/font1.0/keyboardscroll/Back baselineมีหลักฐานแล้ว แต่ไม่แทนทั้งmatrix
@@ -643,7 +643,7 @@ Toollifecyclefinding: flutterdrivedefaultstop/uninstallหลังtestทำใ
 - [ ] ไม่มี P0/P1 blocker ที่ยังเปิดอยู่
 - [ ] product evidence ทุกจุด trace กลับ backend/real analysis ได้
 - [ ] AI-slop final audit ไม่มี deceptive/fabricated UI
-- [x] branch coverage >=80% ตาม NFR-09: CI36963858748ได้82.35%; ต้องตรวจซ้ำกับsourceของfinalsignedRC
+- [x] branch coverage >=80% ตาม NFR-09: CI36969781386ได้82.35%; ต้องตรวจซ้ำกับsourceของfinalsignedRC
 - [ ] security/privacy release gates ผ่าน
 - [ ] automated + manual QA ผ่านตาม matrix
 - [ ] release AAB signed/build/install ผ่าน
