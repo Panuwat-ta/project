@@ -57,10 +57,7 @@ void main() {
     });
 
     test('defaults to empty string when no name field present', () {
-      final json = {
-        'id': 1,
-        'email': 'user@test.com',
-      };
+      final json = {'id': 1, 'email': 'user@test.com'};
 
       final model = UserModel.fromJson(json);
 
@@ -68,10 +65,7 @@ void main() {
     });
 
     test('converts int id to string', () {
-      final json = {
-        'id': 123,
-        'email': 'user@test.com',
-      };
+      final json = {'id': 123, 'email': 'user@test.com'};
 
       final model = UserModel.fromJson(json);
 
@@ -79,10 +73,7 @@ void main() {
     });
 
     test('handles string id', () {
-      final json = {
-        'id': 'user-abc',
-        'email': 'user@test.com',
-      };
+      final json = {'id': 'user-abc', 'email': 'user@test.com'};
 
       final model = UserModel.fromJson(json);
 

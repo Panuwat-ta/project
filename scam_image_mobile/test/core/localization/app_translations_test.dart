@@ -37,4 +37,38 @@ void main() {
       expect(en[key], isNotEmpty, reason: 'missing English $key');
     }
   });
+
+  test('auth, onboarding, and splash copy is localized in both languages', () {
+    final th = AppTranslations.localizedValues['th']!;
+    final en = AppTranslations.localizedValues['en']!;
+    for (final key in <String>[
+      'auth_error_credentials',
+      'auth_error_network',
+      'auth_error_email_registered',
+      'auth_error_generic',
+      'onboarding_badge',
+      'onboarding_title',
+      'onboarding_disclaimer',
+      'onboarding_terms_title',
+      'onboarding_terms_subtitle',
+      'onboarding_research_title',
+      'onboarding_research_subtitle',
+      'onboarding_start',
+      'onboarding_version_note',
+      'splash_tagline',
+      'splash_loading',
+      'app_version',
+      'result_heatmap_label',
+      'result_source_image_label',
+      'result_image_unavailable',
+    ]) {
+      expect(th[key], isNotEmpty, reason: 'missing Thai $key');
+      expect(en[key], isNotEmpty, reason: 'missing English $key');
+    }
+    expect(en['onboarding_title'], isNot(equals(th['onboarding_title'])));
+    expect(
+      en['auth_error_credentials'],
+      isNot(equals(th['auth_error_credentials'])),
+    );
+  });
 }

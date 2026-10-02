@@ -5,6 +5,14 @@ import '../../features/settings/presentation/bloc/settings_bloc.dart';
 class AppTranslations {
   static final Map<String, Map<String, String>> localizedValues = {
     'th': {
+      'scan_error_invalid_image':
+          'ไฟล์ภาพเสียหายหรืออ่านไม่ได้ กรุณาเลือกภาพใหม่',
+      'scan_error_image_format':
+          'รองรับภาพ JPEG, PNG และ WebP กรุณาเลือกภาพใหม่',
+      'scan_error_image_size':
+          'ภาพมีขนาดเกินขีดจำกัด กรุณาลดขนาดหรือเลือกภาพใหม่',
+      'auth_show_password': 'แสดงรหัสผ่าน',
+      'auth_hide_password': 'ซ่อนรหัสผ่าน',
       'settings': 'ตั้งค่า',
       'account': 'บัญชี',
       'notifications': 'การแจ้งเตือน',
@@ -43,7 +51,6 @@ class AppTranslations {
       'filter': 'กรองผลลัพธ์',
       'high_risk': 'เสี่ยงสูง',
       'suspicious': 'น่าสงสัย',
-      'safe': 'ปลอดภัย',
       'delete_confirm': 'ยืนยันการลบ',
       'delete_desc': 'คุณต้องการลบประวัตินี้ใช่หรือไม่?',
       'delete': 'ลบ',
@@ -93,10 +100,7 @@ class AppTranslations {
       'result_ocr': 'การวิเคราะห์ข้อความ',
       'result_ocr_detected': 'ข้อความที่ตรวจพบ:',
       'result_ocr_suspicious': 'คำที่น่าสงสัย',
-      'result_ocr_accuracy': 'ความแม่นยำ',
       'result_source_check': 'ตรวจสอบแหล่งที่มา',
-      'result_source_found': 'ตรวจพบครั้งแรก',
-      'result_source_reports': 'จำนวนที่พบซ้ำ',
       'result_source_links': 'ลิงก์ที่เกี่ยวข้องและรายงาน:',
       'result_anomaly': 'ตรวจจับความผิดปกติ',
       'result_view_heatmap': 'ดู Heatmap',
@@ -111,6 +115,9 @@ class AppTranslations {
       'result_evidence_score_only':
           'มีคะแนนจากระบบ แต่ไม่มีรายละเอียดเพิ่มเติม',
       'result_score_out_of_100': 'คะแนนจาก 100',
+      'result_heatmap_label': 'HEATMAP',
+      'result_source_image_label': 'ภาพต้นฉบับ',
+      'result_image_unavailable': 'ไม่มีภาพตัวอย่าง',
       // Report Screen
       'report_title': 'แจ้งรายงานการหลอกลวง',
       'report_select_scan_title': 'เลือกผลตรวจที่ต้องการรายงาน',
@@ -194,6 +201,25 @@ class AppTranslations {
       'auth_terms_suffix': ' ของระบบ ScamGuard',
       'auth_terms_error': 'กรุณายอมรับเงื่อนไขการใช้งาน',
       'auth_has_account': 'มีบัญชีอยู่แล้ว? ',
+      'auth_error_credentials': 'อีเมลหรือรหัสผ่านไม่ถูกต้อง',
+      'auth_error_network':
+          'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาตรวจสอบเครือข่าย',
+      'auth_error_email_registered': 'อีเมลนี้ถูกใช้งานแล้ว',
+      'auth_error_generic': 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
+      'onboarding_badge': 'ตรวจสอบความปลอดภัย',
+      'onboarding_title': 'ตรวจสอบรูปภาพเพื่อความปลอดภัย',
+      'onboarding_disclaimer':
+          'แอปพลิเคชันนี้ช่วยประเมินความเสี่ยงเบื้องต้นของรูปภาพ ผลลัพธ์เป็นการวิเคราะห์ทางเทคนิคเท่านั้น ไม่ใช่คำตัดสินทางกฎหมาย โปรดใช้วิจารณญาณในการใช้งาน',
+      'onboarding_terms_title': 'ยอมรับเงื่อนไขการใช้งาน',
+      'onboarding_terms_subtitle': 'อ่านข้อกำหนดและนโยบายความเป็นส่วนตัว',
+      'onboarding_research_title': 'ยินยอมให้นำข้อมูลไปปรับปรุงระบบ',
+      'onboarding_research_subtitle':
+          'ข้อมูลของคุณจะถูกเก็บเป็นความลับเพื่อใช้พัฒนาความแม่นยำของ AI',
+      'onboarding_start': 'เริ่มใช้งาน',
+      'onboarding_version_note': 'ความปลอดภัยของคุณคือสิ่งสำคัญ',
+      'splash_tagline': 'ตรวจจับรูปภาพหลอกลวง',
+      'splash_loading': 'ตรวจสอบความปลอดภัย...',
+      'app_version': 'ScamGuard v1.0.0',
       // Loading
       'loading_title': 'กำลังวิเคราะห์ความปลอดภัย',
       'loading_subtitle': 'กรุณารอครู่หนึ่ง ระบบกำลังประมวลผลด้วย AI',
@@ -314,10 +340,10 @@ class AppTranslations {
       'result_suspicious_word_3': 'คลิกที่ลิงก์',
       'result_ocr_analysis_desc':
           'พบรูปแบบประโยคเร่งเร้าและสร้างความตื่นตระหนก ซึ่งเป็นลักษณะเฉพาะของการหลอกลวงแบบ Phishing',
-      'result_accuracy': 'ความแม่นยำ',
-      'result_first_detected': 'ตรวจพบครั้งแรก',
+      'result_accuracy': 'คะแนนความเสี่ยงข้อความ',
+      'result_first_detected': 'วันที่วิเคราะห์',
       'result_sample_date': '12 ม.ค. 2567',
-      'result_recurring': 'จำนวนที่พบซ้ำ',
+      'result_recurring': 'รายละเอียดการตรวจสอบแหล่งที่มา',
       'result_sample_count': '42 ครั้ง',
       'result_related_links': 'ลิงก์ที่เกี่ยวข้องและรายงาน:',
       'result_visual_analysis': 'ตรวจจับความผิดปกติ',
@@ -326,7 +352,7 @@ class AppTranslations {
           'ไม่มีคำอธิบายเพิ่มเติมจากระบบ AI สำหรับรายการนี้',
       // เดิมคือ 'ความน่าจะเป็นของภาพที่สร้างโดย AI' ซึ่งไม่ตรงกับค่าจริง เพราะ
       // โมเดลวัดการถูกตัดต่อหรือดัดแปลง ไม่ได้แยกการสังเคราะห์ด้วย AI
-      'result_ai_generated_probability': 'ความม่ันใจว่าถูกดัดแปลง',
+      'result_manipulation_confidence': 'ความมั่นใจว่าถูกดัดแปลง',
       'result_anomaly_score': 'คะแนนความผิดปกติ',
       'history_ocr_unavailable': 'ไม่มีข้อมูลข้อความจากการวิเคราะห์',
       'history_no_suspicious_keywords': 'ไม่พบคำสำคัญที่ระบบระบุว่าน่าสงสัย',
@@ -342,12 +368,11 @@ class AppTranslations {
       'result_low_risk': 'Low',
       'result_medium': 'Medium',
       'result_low': 'Low',
-      'result_safe': 'Safe',
       // Privacy Settings
       'privacy_title': 'ความเป็นส่วนตัว',
       'privacy_manage_consent': 'จัดการความยินยอม',
       'privacy_manage_desc':
-          'เลือกการตั้งค่าที่คุณต้องการให้ ScamGuard ดูแลข้อมูลของคุณ',
+          'ตัวเลือกหน้านี้บันทึกเฉพาะบนอุปกรณ์ ยังไม่เปลี่ยนความยินยอมบนเซิร์ฟเวอร์',
       'privacy_consent_process_title': 'ยินยอมให้ประมวลผลรูปภาพ',
       'privacy_consent_process_desc':
           'ใช้เพื่อวิเคราะห์ความเสี่ยงในรูปภาพที่คุณอัปโหลด',
@@ -360,9 +385,9 @@ class AppTranslations {
       'privacy_export_data': 'ขอสำเนาข้อมูลส่วนตัว',
       'privacy_delete_all_data': 'ลบข้อมูลการใช้งานทั้งหมด',
       'privacy_info_desc':
-          'ScamGuard ให้ความสำคัญกับความเป็นส่วนตัวของคุณ ข้อมูลของคุณจะถูกประมวลผลตามพระราชบัญญัติคุ้มครองข้อมูลส่วนตัว (PDPA) เราจะเก็บรักษาข้อมูลอย่างปลอดภัยและไม่ส่งต่อให้บุคคลที่สามโดยไม่ได้รับความยินยอม',
+          'ภาพที่อัปโหลดถูกส่งไปยังเซิร์ฟเวอร์เพื่อวิเคราะห์ การล้างแคชบนอุปกรณ์ไม่ได้ลบภาพหรือประวัติบนเซิร์ฟเวอร์ หน้านี้ยังไม่รองรับการส่งออกและลบข้อมูลการใช้งานทั้งหมด',
       'privacy_disable_process_warning':
-          'หากปิดการยินยอมนี้ แอปจะไม่สามารถวิเคราะห์รูปภาพได้ คุณต้องการปิดจริงหรือ?',
+          'ตัวเลือกนี้ยังไม่หยุดการประมวลผลบนเซิร์ฟเวอร์ หากไม่ต้องการส่งภาพไปวิเคราะห์ อย่าอัปโหลดภาพ ต้องการเปลี่ยนตัวเลือกบนอุปกรณ์หรือไม่?',
       'confirm': 'ยืนยัน',
       'privacy_exporting': 'กำลังดำเนินการส่งสำเนาข้อมูลของคุณ',
       'privacy_export_unavailable':
@@ -384,6 +409,8 @@ class AppTranslations {
       'password_changed': 'เปลี่ยนรหัสผ่านสำเร็จ',
       'profile_change_password': 'เปลี่ยนรหัสผ่าน',
       'profile_delete_account': 'ลบบัญชีผู้ใช้งาน',
+      'profile_delete_account_desc':
+          'บัญชีจะถูกปิดใช้งานและไม่สามารถเข้าสู่ระบบได้ ข้อมูลภาพ ผลวิเคราะห์ และรายงานบนเซิร์ฟเวอร์ไม่ได้ถูกลบทันที ยืนยันรหัสผ่านเพื่อดำเนินการ',
       'profile_delete_failed':
           'ไม่สามารถลบบัญชีได้ กรุณาตรวจสอบรหัสผ่านแล้วลองใหม่',
       'visual_anomaly_title': 'ตรวจจับความผิดปกติ',
@@ -393,6 +420,13 @@ class AppTranslations {
       'anomaly_pixel_desc': 'มีการบีบอัดภาพซ้อนทับกันหลายชั้น',
     },
     'en': {
+      'scan_error_invalid_image':
+          'The image is corrupted or unreadable. Choose another image.',
+      'scan_error_image_format': 'Choose a JPEG, PNG or WebP image.',
+      'scan_error_image_size':
+          'The image exceeds the size limit. Reduce its size or choose another image.',
+      'auth_show_password': 'Show password',
+      'auth_hide_password': 'Hide password',
       'settings': 'Settings',
       'account': 'Account',
       'notifications': 'Notifications',
@@ -425,7 +459,6 @@ class AppTranslations {
       'filter': 'Filter',
       'high_risk': 'High Risk',
       'suspicious': 'Suspicious',
-      'safe': 'Safe',
       'delete_confirm': 'Confirm Delete',
       'delete_desc': 'Are you sure you want to delete this history?',
       'delete': 'Delete',
@@ -475,10 +508,7 @@ class AppTranslations {
       'result_ocr': 'Text Analysis',
       'result_ocr_detected': 'Detected Text:',
       'result_ocr_suspicious': 'Suspicious Words',
-      'result_ocr_accuracy': 'Accuracy',
       'result_source_check': 'Source Check',
-      'result_source_found': 'First Detected',
-      'result_source_reports': 'Reports Count',
       'result_source_links': 'Related Links & Reports:',
       'result_anomaly': 'Visual Anomaly Analysis',
       'result_view_heatmap': 'View Heatmap',
@@ -494,6 +524,9 @@ class AppTranslations {
       'result_evidence_score_only':
           'A score is available, but no additional detail was provided',
       'result_score_out_of_100': 'out of 100',
+      'result_heatmap_label': 'HEATMAP',
+      'result_source_image_label': 'Source image',
+      'result_image_unavailable': 'No preview image available',
       // Report Screen
       'report_title': 'Report Scam',
       'report_select_scan_title': 'Select a scan to report',
@@ -579,6 +612,25 @@ class AppTranslations {
       'auth_terms_suffix': ' of ScamGuard',
       'auth_terms_error': 'Please accept terms of service',
       'auth_has_account': 'Already have an account? ',
+      'auth_error_credentials': 'Email or password is incorrect',
+      'auth_error_network':
+          'Could not connect to the server. Check your network and try again.',
+      'auth_error_email_registered': 'This email is already registered',
+      'auth_error_generic': 'Something went wrong. Please try again.',
+      'onboarding_badge': 'Security check',
+      'onboarding_title': 'Check images for safety',
+      'onboarding_disclaimer':
+          'This app helps assess image risk. Results are a technical analysis, not a legal judgment. Please use your own judgment.',
+      'onboarding_terms_title': 'Accept the Terms of Service',
+      'onboarding_terms_subtitle': 'Read the terms and privacy policy',
+      'onboarding_research_title': 'Allow data use to improve the system',
+      'onboarding_research_subtitle':
+          'Your data will be kept confidential and used to improve AI accuracy',
+      'onboarding_start': 'Get started',
+      'onboarding_version_note': 'Your security is important to us',
+      'splash_tagline': 'Scam image detection',
+      'splash_loading': 'Checking security...',
+      'app_version': 'ScamGuard v1.0.0',
       // Loading
       'loading_title': 'Analyzing Security',
       'loading_subtitle': 'Please wait, AI is processing',
@@ -699,17 +751,17 @@ class AppTranslations {
       'result_suspicious_word_3': 'Click link',
       'result_ocr_analysis_desc':
           'Found urgent and alarming phrasing typical of phishing scams.',
-      'result_accuracy': 'Accuracy',
-      'result_first_detected': 'First Detected',
+      'result_accuracy': 'Text risk score',
+      'result_first_detected': 'Analysis date',
       'result_sample_date': 'Jan 12, 2024',
-      'result_recurring': 'Recurring Reports',
+      'result_recurring': 'Source verification details',
       'result_sample_count': '42 Times',
       'result_related_links': 'Related Links & Reports:',
       'result_visual_analysis': 'Visual Anomaly Analysis',
       'result_xai': 'AI Explanation (XAI)',
       'result_xai_unavailable':
           'No additional AI explanation is available for this scan.',
-      'result_ai_generated_probability': 'Manipulation confidence',
+      'result_manipulation_confidence': 'Manipulation confidence',
       'result_anomaly_score': 'Anomaly score',
       'history_ocr_unavailable': 'No text-analysis data is available',
       'history_no_suspicious_keywords':
@@ -726,7 +778,6 @@ class AppTranslations {
       'result_low_risk': 'Low Risk',
       'result_medium': 'Medium Risk',
       'result_low': 'Low Risk',
-      'result_safe': 'Safe',
       'settings_category_account': 'Account',
       'settings_category_preferences': 'App Preferences',
       'settings_category_data_privacy': 'Data & Privacy',
@@ -737,7 +788,7 @@ class AppTranslations {
       'privacy_title': 'Privacy',
       'privacy_manage_consent': 'Manage Consents',
       'privacy_manage_desc':
-          'Choose how you want ScamGuard to handle your data',
+          'These preferences are saved on this device only. They do not change your server consent.',
       'privacy_consent_process_title': 'Allow Image Processing',
       'privacy_consent_process_desc':
           'Used to analyze risk in your uploaded images',
@@ -749,9 +800,9 @@ class AppTranslations {
       'privacy_export_data': 'Request Personal Data Copy',
       'privacy_delete_all_data': 'Delete All Usage Data',
       'privacy_info_desc':
-          'ScamGuard values your privacy. Your data is processed in accordance with PDPA. We will keep your data secure and not share it with third parties without consent.',
+          'Uploaded images are sent to the server for analysis. Clearing the device cache does not delete server images or history. This page does not yet support exporting or deleting all usage data.',
       'privacy_disable_process_warning':
-          'If you disable this, the app cannot analyze images. Are you sure?',
+          'This preference does not stop server processing. Do not upload images if you do not want them analyzed. Change the device preference?',
       'confirm': 'Confirm',
       'privacy_exporting': 'Processing your data export request',
       'privacy_export_unavailable':
@@ -773,6 +824,8 @@ class AppTranslations {
       'password_changed': 'Password changed successfully',
       'profile_change_password': 'Change Password',
       'profile_delete_account': 'Delete Account',
+      'profile_delete_account_desc':
+          'Your account will be deactivated and you will no longer be able to sign in. Server images, analysis results and reports are not deleted immediately. Confirm your password to continue.',
       'profile_delete_failed':
           'Unable to delete account. Check your password and try again.',
       'visual_anomaly_title': 'Visual Anomaly',

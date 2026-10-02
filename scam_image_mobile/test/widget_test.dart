@@ -1,3 +1,4 @@
+import 'package:scam_image_mobile/core/storage/secure_storage.dart';
 // Basic smoke test — verifies the ScamGuardApp widget tree can be built and
 // that the router renders the initial splash route without errors.
 
@@ -47,10 +48,11 @@ void main() {
           const ConsentSetting(processingConsent: true, researchConsent: true),
     );
     ServiceLocator.settingsRepository = settingsRepo;
+    ServiceLocator.secureStorage = SecureStorage();
 
     await tester.pumpWidget(const ScamGuardApp());
     // The router shows the splash screen with the title on startup.
-    expect(find.text('Scam Image Detection'), findsOneWidget);
+    expect(find.text('ScamGuard'), findsOneWidget);
     // Advance time by 3 seconds to clear SplashCubit's Future.delayed
     await tester.pump(const Duration(seconds: 3));
   });

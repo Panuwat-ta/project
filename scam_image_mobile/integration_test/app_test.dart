@@ -1,106 +1,147 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:scam_image_mobile/core/di/injection_container.dart';
+import 'package:scam_image_mobile/core/storage/secure_storage.dart';
+import 'package:scam_image_mobile/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:scam_image_mobile/features/auth/presentation/screens/login_screen.dart';
+import 'package:scam_image_mobile/features/auth/presentation/screens/onboarding_screen.dart';
+import 'package:scam_image_mobile/features/history/presentation/screens/history_screen.dart';
+import 'package:scam_image_mobile/features/scan/presentation/screens/home_screen.dart';
+import 'package:scam_image_mobile/features/settings/presentation/screens/settings_screen.dart';
 import 'package:scam_image_mobile/main.dart' as app;
 
+import 'support/staging_test_config.dart';
+
+Future<void> waitFor(
+  WidgetTester tester,
+  bool Function() ready,
+  String step,
+) async {
+  final deadline = DateTime.now().add(const Duration(seconds: 45));
+  while (!ready() && DateTime.now().isBefore(deadline)) {
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(
+      tester.takeException() == null,
+      isTrue,
+      reason: 'Flutter exception during $step',
+    );
+  }
+  expect(ready(), isTrue, reason: 'Timed out during $step');
+}
+
+Future<void> tapVisible(WidgetTester tester, Finder finder) async {
+  expect(finder, findsOneWidget);
+  await tester.ensureVisible(finder);
+  await tester.tap(finder);
+  await tester.pump();
+}
+
 void main() {
+  final config = StagingTestConfig.fromEnvironment();
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-
-  group('End-to-End Test', () {
-    testWidgets('Full authentication and navigation flow', (tester) async {
-      // 0. Clear secure storage so we always start at onboarding
-      const storage = FlutterSecureStorage();
-      await storage.deleteAll();
-
-      // 1. Start the app
-      app.main();
-      
-      // Wait for the app to settle (animations, network calls to load initial state)
-      await tester.pumpAndSettle(const Duration(seconds: 3));
-
-      // 1.5 Handle Onboarding
-      final getStartedBtn = find.text('เริ่มใช้งาน');
-      if (getStartedBtn.evaluate().isNotEmpty) {
-        // Need to check the two consent checkboxes
-        final checkboxes = find.byType(CheckboxListTile);
-        expect(checkboxes, findsNWidgets(2));
-        
-        await tester.tap(checkboxes.first);
-        await tester.pumpAndSettle();
-        await tester.tap(checkboxes.last);
-        await tester.pumpAndSettle();
-        
-        await tester.tap(getStartedBtn);
-        await tester.pumpAndSettle(const Duration(seconds: 2));
+  testWidgets('Staging login, History, Settings and confirmed logout', (
+    tester,
+  ) async {
+    // Dedicated signed-out test installation; never delete user storage.
+    await ServiceLocator.init();
+    runApp(const app.ScamGuardApp());
+    await waitFor(
+      tester,
+      () =>
+          find.byType(LoginScreen).evaluate().isNotEmpty ||
+          find.byType(OnboardingScreen).evaluate().isNotEmpty ||
+          find.byType(HomeScreen).evaluate().isNotEmpty,
+      'initial route',
+    );
+    expect(
+      find.byType(HomeScreen),
+      findsNothing,
+      reason: 'Use a dedicated signed-out staging installation',
+    );
+    if (find.byType(OnboardingScreen).evaluate().isNotEmpty) {
+      expect(
+        config.acceptTerms,
+        isTrue,
+        reason: 'Explicit E2E_ACCEPT_TERMS approval required for onboarding',
+      );
+      final checkboxes = find.byType(CheckboxListTile);
+      expect(checkboxes, findsNWidgets(2));
+      if (!tester.widget<CheckboxListTile>(checkboxes.first).value!) {
+        await tapVisible(tester, checkboxes.first);
       }
-
-      // 2. Login Flow
-      // Find the email field (the first TextFormField)
-      final emailField = find.byType(TextFormField).first;
-      expect(emailField, findsOneWidget);
-      await tester.enterText(emailField, 'test@example.com');
-      
-      // Find the password field (the last TextFormField)
-      final passwordField = find.byType(TextFormField).last;
-      expect(passwordField, findsOneWidget);
-      await tester.enterText(passwordField, 'password123');
-      await tester.pumpAndSettle();
-
-      // Find and tap the Login button
-      FocusManager.instance.primaryFocus?.unfocus();
-      await tester.pumpAndSettle();
-      
-      final loginButton = find.byType(ElevatedButton);
-      expect(loginButton, findsOneWidget);
-      await tester.ensureVisible(loginButton);
-      await tester.tap(loginButton);
-      
-      // Wait for navigation and animations to complete without settling since there is a repeating pulse animation
-      await tester.pump(const Duration(seconds: 3));
-      await tester.pump(const Duration(seconds: 1));
-
-      // 3. Navigation Flow (Home -> History -> Settings)
-      // Verify we are on the Home screen (should have an Upload icon/button)
-      expect(find.byIcon(Icons.upload_outlined), findsWidgets);
-
-      // Tap on History tab in BottomNavigationBar
-      final historyTab = find.byIcon(Icons.history_outlined);
-      if (historyTab.evaluate().isNotEmpty) {
-        await tester.tap(historyTab.first);
-        await tester.pump(const Duration(seconds: 1));
-        // Verify History screen title (usually has a search icon)
-        expect(find.byIcon(Icons.search_outlined), findsWidgets);
-      }
-
-      // Tap on Settings tab in BottomNavigationBar
-      final settingsTab = find.byIcon(Icons.settings_outlined);
-      if (settingsTab.evaluate().isNotEmpty) {
-        await tester.tap(settingsTab.first);
-        await tester.pump(const Duration(seconds: 1));
-        // Verify Settings screen elements (e.g. Theme setting)
-        expect(find.byIcon(Icons.palette_outlined), findsWidgets);
-      }
-
-      // 4. Logout Flow
-      // Scroll down to find the Logout button and tap it
-      final logoutButton = find.byIcon(Icons.logout_outlined);
-      if (logoutButton.evaluate().isNotEmpty) {
-        // Ensure it's visible by scrolling
-        await tester.ensureVisible(logoutButton.first);
-        await tester.tap(logoutButton.first);
-        await tester.pump(const Duration(seconds: 1));
-        
-        // Confirm logout if there's a dialog
-        final confirmButton = find.text('ออกจากระบบ');
-        if (confirmButton.evaluate().isNotEmpty) {
-          await tester.tap(confirmButton.first);
-          await tester.pumpAndSettle(const Duration(seconds: 2));
-        }
-
-        // Verify we are back to the Login screen (Email field should be visible again)
-        expect(find.byType(TextFormField).first, findsOneWidget);
-      }
-    });
+      // Do not enable research consent.
+      await tapVisible(tester, find.byType(ElevatedButton));
+      await waitFor(
+        tester,
+        () => find.byType(LoginScreen).evaluate().isNotEmpty,
+        'onboarding completion',
+      );
+    }
+    final fields = find.byType(TextFormField);
+    expect(fields, findsNWidgets(2));
+    await tester.enterText(fields.first, config.email);
+    await tester.enterText(fields.last, config.password);
+    FocusManager.instance.primaryFocus?.unfocus();
+    await tester.pump();
+    await tapVisible(tester, find.byType(ElevatedButton));
+    await waitFor(
+      tester,
+      () => find.byType(HomeScreen).evaluate().isNotEmpty,
+      'authenticated Home',
+    );
+    final navigation = find.byWidgetPredicate(
+      (widget) => widget is NavigationBar || widget is NavigationRail,
+    );
+    await tapVisible(
+      tester,
+      find.descendant(
+        of: navigation,
+        matching: find.byIcon(Icons.history_outlined),
+      ),
+    );
+    await waitFor(
+      tester,
+      () => find.byType(HistoryScreen).evaluate().isNotEmpty,
+      'History navigation',
+    );
+    await tapVisible(
+      tester,
+      find.descendant(
+        of: navigation,
+        matching: find.byIcon(Icons.settings_outlined),
+      ),
+    );
+    await waitFor(
+      tester,
+      () => find.byType(SettingsScreen).evaluate().isNotEmpty,
+      'Settings navigation',
+    );
+    await tapVisible(tester, find.byIcon(Icons.logout));
+    final dialog = find.byType(AlertDialog);
+    expect(dialog, findsOneWidget);
+    final actions = find.descendant(
+      of: dialog,
+      matching: find.byType(TextButton),
+    );
+    expect(actions, findsNWidgets(2));
+    await tapVisible(tester, actions.last);
+    await waitFor(
+      tester,
+      () =>
+          find.byType(LoginScreen).evaluate().isNotEmpty &&
+          tester.element(find.byType(LoginScreen)).read<AuthBloc>().state
+              is AuthUnauthenticated,
+      'completed local logout',
+    );
+    expect(
+      (await ServiceLocator.secureStorage.getToken(kAccessToken)) == null,
+      isTrue,
+      reason: 'Access token must be absent after logout',
+    );
+    expect(find.byType(HomeScreen), findsNothing);
+    expect(find.byType(HistoryScreen), findsNothing);
+    expect(tester.takeException() == null, isTrue);
   });
 }

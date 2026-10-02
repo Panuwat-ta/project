@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -5,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:scam_image_mobile/core/di/injection_container.dart';
 import 'package:scam_image_mobile/features/auth/domain/entities/user.dart';
 import 'package:scam_image_mobile/features/auth/domain/repositories/auth_repository.dart';
 import 'package:scam_image_mobile/features/auth/presentation/bloc/auth_bloc.dart';
@@ -23,7 +26,14 @@ void main() {
     registerFallbackValue(ThemeMode.light);
   });
 
-  Future<({AuthBloc authBloc, SettingsCubit settingsCubit, GoRouter router})>
+  Future<
+    ({
+      AuthBloc authBloc,
+      SettingsCubit settingsCubit,
+      GoRouter router,
+      MockAuthRepository authRepository,
+    })
+  >
   pumpSettings(
     WidgetTester tester, {
     User user = const User(
@@ -34,6 +44,9 @@ void main() {
     ThemeMode appThemeMode = ThemeMode.light,
     String language = 'th',
     int cacheSize = 0,
+    bool authenticated = true,
+    Future<User?>? currentUserFuture,
+    bool settleAfterPump = true,
   }) async {
     final authRepository = MockAuthRepository();
     final settingsRepository = MockSettingsRepository();
@@ -48,9 +61,18 @@ void main() {
     when(
       () => settingsRepository.getConsents(),
     ).thenAnswer((_) async => const ConsentSetting());
+    ServiceLocator.authRepository = authRepository;
+    if (currentUserFuture != null) {
+      when(
+        () => authRepository.getCurrentUser(),
+      ).thenAnswer((_) => currentUserFuture);
+    }
 
-    final authBloc = AuthBloc(authRepository)..add(AuthSessionRestored(user));
-    await authBloc.stream.firstWhere((state) => state is AuthAuthenticated);
+    final authBloc = AuthBloc(authRepository);
+    if (authenticated) {
+      authBloc.add(AuthSessionRestored(user));
+      await authBloc.stream.firstWhere((state) => state is AuthAuthenticated);
+    }
     final settingsCubit = SettingsCubit(repository: settingsRepository);
     if (language != 'th') await settingsCubit.setLanguage(language);
     if (appThemeMode != ThemeMode.light) {
@@ -95,11 +117,20 @@ void main() {
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    if (settleAfterPump) {
+      await tester.pumpAndSettle();
+    } else {
+      await tester.pump();
+    }
     addTearDown(authBloc.close);
     addTearDown(settingsCubit.close);
     addTearDown(router.dispose);
-    return (authBloc: authBloc, settingsCubit: settingsCubit, router: router);
+    return (
+      authBloc: authBloc,
+      settingsCubit: settingsCubit,
+      router: router,
+      authRepository: authRepository,
+    );
   }
 
   testWidgets('shows authenticated display name and formatted cache size', (
@@ -127,6 +158,68 @@ void main() {
     );
 
     expect(find.text('fallback'), findsOneWidget);
+  });
+
+  testWidgets('shows loading while restoring a user then updates the header', (
+    tester,
+  ) async {
+    final currentUser = Completer<User?>();
+    await pumpSettings(
+      tester,
+      authenticated: false,
+      currentUserFuture: currentUser.future,
+      settleAfterPump: false,
+    );
+
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.text('กำลังโหลด...'), findsOneWidget);
+
+    currentUser.complete(
+      const User(
+        id: 'restored-user',
+        email: 'restored@example.com',
+        displayName: 'Restored User',
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Restored User'), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+  });
+
+  testWidgets('keeps the placeholder when current user lookup fails', (
+    tester,
+  ) async {
+    final currentUser = Completer<User?>();
+    await pumpSettings(
+      tester,
+      authenticated: false,
+      currentUserFuture: currentUser.future,
+      settleAfterPump: false,
+    );
+    currentUser.completeError(Exception('offline'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('ผู้ใช้งาน'), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('keeps the placeholder when current user lookup returns null', (
+    tester,
+  ) async {
+    final currentUser = Completer<User?>();
+    await pumpSettings(
+      tester,
+      authenticated: false,
+      currentUserFuture: currentUser.future,
+      settleAfterPump: false,
+    );
+    currentUser.complete(null);
+    await tester.pumpAndSettle();
+
+    expect(find.text('ผู้ใช้งาน'), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
   });
 
   testWidgets('language dialog switches to English', (tester) async {
@@ -187,6 +280,34 @@ void main() {
     expect(find.text('ล้าง Cache สำเร็จ'), findsOneWidget);
   });
 
+  testWidgets('logout cancellation preserves session; confirmation logs out', (
+    tester,
+  ) async {
+    final env = await pumpSettings(tester);
+    final repository = env.authRepository;
+    when(() => repository.logout()).thenAnswer((_) async {});
+
+    await tester.dragUntilVisible(
+      find.text('ออกจากระบบ'),
+      find.byType(ListView),
+      const Offset(0, -250),
+    );
+    await tester.tap(find.text('ออกจากระบบ').first);
+    await tester.pumpAndSettle();
+    expect(find.text('คุณแน่ใจหรือไม่ว่าต้องการออกจากระบบ?'), findsOneWidget);
+    await tester.tap(find.text('ยกเลิก'));
+    await tester.pumpAndSettle();
+    verifyNever(() => repository.logout());
+
+    await tester.tap(find.text('ออกจากระบบ').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('ออกจากระบบ').last);
+    await tester.pumpAndSettle();
+
+    verify(() => repository.logout()).called(1);
+    expect(find.text('Login route'), findsOneWidget);
+  });
+
   testWidgets('dark mode and English state render without layout errors', (
     tester,
   ) async {
@@ -201,5 +322,41 @@ void main() {
     expect(find.text('Theme'), findsOneWidget);
     expect(find.text('0 B'), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('system theme mode is shown in the settings summary', (
+    tester,
+  ) async {
+    await pumpSettings(tester, appThemeMode: ThemeMode.system);
+
+    expect(find.text('ตามระบบ'), findsOneWidget);
+  });
+
+  testWidgets('profile, notifications and privacy routes open from settings', (
+    tester,
+  ) async {
+    final env = await pumpSettings(tester);
+
+    await tester.tap(find.text('Tester'));
+    await tester.pumpAndSettle();
+    expect(find.text('Profile route'), findsOneWidget);
+
+    env.router.go('/settings');
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.notifications_none).first);
+    await tester.pumpAndSettle();
+    expect(find.text('Notifications route'), findsOneWidget);
+
+    env.router.go('/settings');
+    await tester.pumpAndSettle();
+    await tester.dragUntilVisible(
+      find.text('ความเป็นส่วนตัว'),
+      find.byType(ListView),
+      const Offset(0, -250),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('ความเป็นส่วนตัว'));
+    await tester.pumpAndSettle();
+    expect(find.text('Privacy route'), findsOneWidget);
   });
 }

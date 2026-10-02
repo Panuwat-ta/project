@@ -11,6 +11,8 @@ Exception mapDioException(DioException e) {
     case DioExceptionType.sendTimeout:
     case DioExceptionType.connectionError:
       return NetworkException(e.message ?? 'Connection error');
+    case DioExceptionType.badCertificate:
+      return const ServerException('Secure connection could not be verified');
     case DioExceptionType.badResponse:
       final statusCode = e.response?.statusCode;
       final data = e.response?.data;

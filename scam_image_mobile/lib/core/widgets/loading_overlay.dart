@@ -8,11 +8,7 @@ import '../theme/app_typography.dart';
 /// Wrap a [Stack] or use [Stack] + conditional render to overlay content.
 /// When [message] is provided it is shown below the spinner.
 class LoadingOverlay extends StatelessWidget {
-  const LoadingOverlay({
-    super.key,
-    this.message,
-    this.isFullScreen = true,
-  });
+  const LoadingOverlay({super.key, this.message, this.isFullScreen = true});
 
   /// Optional descriptive text shown below the [CircularProgressIndicator].
   final String? message;
@@ -24,8 +20,9 @@ class LoadingOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final Color spinnerColor =
-        isDark ? AppColors.primaryFixedDim : AppColors.primary;
+    final Color spinnerColor = isDark
+        ? AppColors.primaryFixedDim
+        : AppColors.primary;
 
     final content = Center(
       child: Column(

@@ -31,10 +31,21 @@ class AnalysisResultScreen extends StatefulWidget {
 }
 
 class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
+  late final ResultBloc _resultBloc;
+
+  @override
+  void dispose() {
+    if (!_resultBloc.isClosed) {
+      _resultBloc.add(ResultPollingStopped(widget.taskId));
+    }
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
-    context.read<ResultBloc>().add(ResultLoadRequested(widget.taskId));
+    _resultBloc = context.read<ResultBloc>();
+    _resultBloc.add(ResultLoadRequested(widget.taskId));
   }
 
   @override
@@ -595,6 +606,13 @@ class _ResultBody extends StatelessWidget {
   }
 
   Widget _buildVisualAnomalyCard(BuildContext context) {
+    final heatmapUrl = result.heatmapUrl?.trim();
+    final imageUrl = result.imageUrl?.trim();
+    final previewUrl = heatmapUrl?.isNotEmpty == true
+        ? heatmapUrl
+        : imageUrl?.isNotEmpty == true
+        ? imageUrl
+        : null;
     final visuals = result.factors.where((f) => f.type == 'visual');
     final visualFactor = visuals.isNotEmpty
         ? visuals.first
@@ -642,43 +660,55 @@ class _ResultBody extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: AppSpacing.sm),
-              Builder(
-                builder: (_) {
-                  final vLevel = RiskLevelHelper.factorLevelForScore(
-                    visualFactor.score,
-                  );
-                  final vBg = RiskLevelHelper.toBgColor(vLevel, isDark: isDark);
-                  final vFg = RiskLevelHelper.toTextColor(
-                    vLevel,
-                    isDark: isDark,
-                  );
-                  return Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
+              if (visuals.isNotEmpty)
+                Builder(
+                  builder: (_) {
+                    final vLevel = RiskLevelHelper.factorLevelForScore(
+                      visualFactor.score,
+                    );
+                    final vBg = RiskLevelHelper.toBgColor(
+                      vLevel,
+                      isDark: isDark,
+                    );
+                    final vFg = RiskLevelHelper.toTextColor(
+                      vLevel,
+                      isDark: isDark,
+                    );
+                    return Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: vBg,
+                        borderRadius: AppRadius.smBorder,
+                      ),
+                      child: Text(
+                        '${visualFactor.score}%',
+                        style: AppTypography.caption(
+                          color: vFg,
+                        ).copyWith(fontWeight: FontWeight.bold),
+                      ),
+                    );
+                  },
+                )
+              else
+                Flexible(
+                  child: Text(
+                    'result_evidence_unavailable'.tr(context),
+                    textAlign: TextAlign.end,
+                    style: AppTypography.caption(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
-                    decoration: BoxDecoration(
-                      color: vBg,
-                      borderRadius: AppRadius.smBorder,
-                    ),
-                    child: Text(
-                      '${visualFactor.score}%',
-                      style: AppTypography.caption(
-                        color: vFg,
-                      ).copyWith(fontWeight: FontWeight.bold),
-                    ),
-                  );
-                },
-              ),
+                  ),
+                ),
             ],
           ),
           const SizedBox(height: 16),
 
           // Evidence image preview
           GestureDetector(
-            onTap:
-                (result.imageUrl?.trim().isNotEmpty == true ||
-                    result.heatmapUrl?.trim().isNotEmpty == true)
+            onTap: previewUrl != null
                 ? () {
                     context.push(
                       '/heatmap/${result.taskId}',
@@ -700,10 +730,9 @@ class _ResultBody extends StatelessWidget {
                     height: 200,
                     width: double.infinity,
                     color: AppColors.slate900,
-                    child:
-                        (result.heatmapUrl != null || result.imageUrl != null)
+                    child: previewUrl != null
                         ? CachedNetworkImage(
-                            imageUrl: (result.heatmapUrl ?? result.imageUrl)!,
+                            imageUrl: previewUrl,
                             fit: BoxFit.cover,
                             width: double.infinity,
                             height: 200,
@@ -738,19 +767,63 @@ class _ResultBody extends StatelessWidget {
                               ),
                             ),
                           )
-                        : const Center(
-                            child: Icon(
-                              Icons.image,
-                              color: Colors.white24,
-                              size: 48,
+                        : Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.image,
+                                  color: Colors.white24,
+                                  size: 48,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'result_image_unavailable'.tr(context),
+                                  style: const TextStyle(color: Colors.white54),
+                                ),
+                              ],
                             ),
                           ),
                   ),
+                  if (previewUrl != null)
+                    Positioned(
+                      top: 12,
+                      left: 12,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.72),
+                          borderRadius: AppRadius.pillBorder,
+                        ),
+                        child: Text(
+                          heatmapUrl?.isNotEmpty == true
+                              ? 'result_heatmap_label'.tr(context)
+                              : 'result_source_image_label'.tr(context),
+                          style: AppTypography.caption(
+                            color: Colors.white,
+                          ).copyWith(fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
           ),
           const SizedBox(height: 20),
+
+          if (result.manipulationConfidence != null) ...[
+            Text(
+              '${'result_manipulation_confidence'.tr(context)}: '
+              '${(result.manipulationConfidence! * 100).round()}%',
+              style: AppTypography.bodyBase(
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+          ],
 
           // Alerts from visual factor details
           if (visualFactor.details.isNotEmpty)
@@ -772,8 +845,8 @@ class _ResultBody extends StatelessWidget {
           else
             _buildAlertItem(
               context: context,
-              icon: Icons.check_circle,
-              iconColor: AppColors.success,
+              icon: Icons.info_outline,
+              iconColor: Theme.of(context).colorScheme.onSurfaceVariant,
               title: 'result_no_visual_details'.tr(context),
               subtitle: '',
               isDark: isDark,

@@ -25,8 +25,9 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final Color titleColor =
-        isDark ? AppColors.primaryFixedDim : AppColors.primary;
+    final Color titleColor = isDark
+        ? AppColors.primaryFixedDim
+        : AppColors.primary;
 
     return AppBar(
       toolbarHeight: 50,

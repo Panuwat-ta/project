@@ -1,7 +1,6 @@
 import '../../domain/entities/analysis_result.dart';
 import 'risk_factor_model.dart';
 
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../../../core/network/url_resolver.dart';
 
 class AnalysisResultModel extends AnalysisResult {
@@ -25,7 +24,10 @@ class AnalysisResultModel extends AnalysisResult {
   /// Parses the canonical scan-endpoint contract:
   /// `total_risk_score` + `risk_grade` (+ flat factor scores).
   /// A missing or unrecognized grade maps to [RiskLevel.unknown] — never Low.
-  factory AnalysisResultModel.fromJson(Map<String, dynamic> json) {
+  factory AnalysisResultModel.fromJson(
+    Map<String, dynamic> json, {
+    String? baseUrl,
+  }) {
     final riskScore = json['total_risk_score'] as int? ?? 0;
     final riskLevelStr = json['risk_grade'] as String?;
 
@@ -73,11 +75,9 @@ class AnalysisResultModel extends AnalysisResult {
             type: 'visual',
             score: json['visual_score'] as int,
             title: 'visual',
-            details: json['manipulation_confidence'] != null
-                ? [
-                    'ความม่ันใจว่าถูกดัดแปลง: ${((json['manipulation_confidence'] as num) * 100).round()}%',
-                  ]
-                : [],
+            // Confidence remains a typed metric on AnalysisResult. Only
+            // server-provided narrative evidence belongs in factor details.
+            details: [],
           ),
         );
       }
@@ -93,8 +93,7 @@ class AnalysisResultModel extends AnalysisResult {
       }
     }
 
-    String? parseUrl(String? url) =>
-        resolveUploadUrl(dotenv.env['API_BASE_URL'], url);
+    String? parseUrl(String? url) => resolveUploadUrl(baseUrl, url);
 
     final xaiExplanation =
         json['xai_explanation'] as String? ?? json['xaiExplanation'] as String?;

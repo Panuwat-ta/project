@@ -7,12 +7,7 @@ import '../theme/app_colors.dart';
 /// Border: [AppColors.outlineVariant] at 10% opacity.
 /// Border radius: 12 dp.
 class GlassCard extends StatelessWidget {
-  const GlassCard({
-    super.key,
-    required this.child,
-    this.padding,
-    this.margin,
-  });
+  const GlassCard({super.key, required this.child, this.padding, this.margin});
 
   final Widget child;
 
@@ -25,7 +20,7 @@ class GlassCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Container(
       margin: margin,
       padding: padding ?? const EdgeInsets.all(20),

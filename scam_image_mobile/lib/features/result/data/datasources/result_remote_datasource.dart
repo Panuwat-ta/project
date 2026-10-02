@@ -20,10 +20,9 @@ class ResultRemoteDataSourceImpl implements ResultRemoteDataSource {
       );
       final body = response.data;
       if (body == null) throw const ServerException('Empty response body');
-      return AnalysisResultModel.fromJson(body);
+      return AnalysisResultModel.fromJson(body, baseUrl: dio.options.baseUrl);
     } on DioException catch (e) {
       throw mapDioException(e);
     }
   }
-
 }

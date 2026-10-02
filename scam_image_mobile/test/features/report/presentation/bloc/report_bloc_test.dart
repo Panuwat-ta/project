@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -32,6 +33,27 @@ void main() {
     registerFallbackValue(tReport);
   });
 
+  for (final succeeds in [false, true]) {
+    test('session clear ignores old report success/error', () async {
+      final pending = Completer<void>();
+      when(
+        () => mockRepo.submitReport(tReport),
+      ).thenAnswer((_) => pending.future);
+      final bloc = ReportBloc(repository: mockRepo);
+      bloc.add(ReportSubmitted(tReport));
+      await Future<void>.delayed(Duration.zero);
+      bloc.add(const ReportSessionCleared());
+      await Future<void>.delayed(Duration.zero);
+      if (succeeds) {
+        pending.complete();
+      } else {
+        pending.completeError(Exception('old session'));
+      }
+      await Future<void>.delayed(Duration.zero);
+      expect(bloc.state, const ReportInitial());
+      await bloc.close();
+    });
+  }
   group('ReportSubmitted', () {
     blocTest<ReportBloc, ReportState>(
       'emits [ReportSubmitting, ReportSuccess] on success',
@@ -65,6 +87,23 @@ void main() {
       ],
     );
 
+    for (final message in ['Connection error', 'SocketException: closed']) {
+      blocTest<ReportBloc, ReportState>(
+        'maps $message to the network error state',
+        build: () {
+          when(
+            () => mockRepo.submitReport(any()),
+          ).thenThrow(Exception(message));
+          return ReportBloc(repository: mockRepo);
+        },
+        act: (bloc) => bloc.add(const ReportSubmitted(tReport)),
+        expect: () => const [
+          ReportSubmitting(),
+          ReportError('report_error_network'),
+        ],
+      );
+    }
+
     blocTest<ReportBloc, ReportState>(
       'emits [ReportSubmitting, ReportError] with session message on AuthException',
       build: () {
@@ -83,6 +122,23 @@ void main() {
         ),
       ],
     );
+
+    for (final message in ['403 forbidden']) {
+      blocTest<ReportBloc, ReportState>(
+        'maps $message to the auth error state',
+        build: () {
+          when(
+            () => mockRepo.submitReport(any()),
+          ).thenThrow(Exception(message));
+          return ReportBloc(repository: mockRepo);
+        },
+        act: (bloc) => bloc.add(const ReportSubmitted(tReport)),
+        expect: () => const [
+          ReportSubmitting(),
+          ReportError('report_error_auth'),
+        ],
+      );
+    }
 
     blocTest<ReportBloc, ReportState>(
       'emits [ReportSubmitting, ReportError] with generic message on unknown error',
@@ -104,30 +160,51 @@ void main() {
     );
   });
 
+  test(
+    'duplicate report while pending submits once and failure can retry',
+    () async {
+      final pending = Completer<void>();
+      var calls = 0;
+      when(() => mockRepo.submitReport(any())).thenAnswer((_) {
+        calls++;
+        return calls == 1 ? pending.future : Future<void>.value();
+      });
+      final bloc = ReportBloc(repository: mockRepo);
+      bloc.add(const ReportSubmitted(tReport));
+      await bloc.stream.firstWhere((state) => state is ReportSubmitting);
+      bloc.add(const ReportSubmitted(tReport));
+      await Future<void>.delayed(Duration.zero);
+      expect(calls, 1);
+      pending.completeError(const NetworkException('offline'));
+      await bloc.stream.firstWhere((state) => state is ReportError);
+      bloc.add(const ReportSubmitted(tReport));
+      await bloc.stream.firstWhere((state) => state is ReportSuccess);
+      expect(calls, 2);
+      await bloc.close();
+    },
+  );
+
   group('ReportState equality', () {
     test('ReportInitial instances are equal', () {
-      expect(const ReportInitial(), equals(const ReportInitial()));
+      expect(ReportInitial(), equals(ReportInitial()));
     });
 
     test('ReportSubmitting instances are equal', () {
-      expect(const ReportSubmitting(), equals(const ReportSubmitting()));
+      expect(ReportSubmitting(), equals(ReportSubmitting()));
     });
 
     test('ReportSuccess instances are equal', () {
-      expect(const ReportSuccess(), equals(const ReportSuccess()));
+      expect(ReportSuccess(), equals(ReportSuccess()));
     });
 
     test('ReportError instances with same message are equal', () {
-      expect(const ReportError('msg'), equals(const ReportError('msg')));
+      expect(ReportError('msg'), equals(ReportError('msg')));
     });
   });
 
   group('ReportEvent equality', () {
     test('ReportSubmitted with same report are equal', () {
-      expect(
-        const ReportSubmitted(tReport),
-        equals(const ReportSubmitted(tReport)),
-      );
+      expect(ReportSubmitted(tReport), equals(ReportSubmitted(tReport)));
     });
   });
 }

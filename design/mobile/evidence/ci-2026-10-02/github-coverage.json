@@ -1,0 +1,10 @@
+{
+  "lines_hit": 5463,
+  "lines_found": 6010,
+  "line_percent": 90.89850249584026,
+  "branches_hit": 1401,
+  "branches_found": 1703,
+  "branch_percent": 82.2665883734586,
+  "minimum": 80,
+  "passed": true
+}

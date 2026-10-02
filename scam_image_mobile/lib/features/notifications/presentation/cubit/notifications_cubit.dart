@@ -87,6 +87,12 @@ class NotificationsCubit extends Cubit<NotificationsState> {
     emit(state.copyWith(items: updated));
   }
 
+  void resetSession() {
+    _readIds.clear();
+    _dismissedIds.clear();
+    emit(const NotificationsState());
+  }
+
   void clearAll() {
     _dismissedIds.addAll(state.items.map((n) => n.id));
     emit(const NotificationsState());

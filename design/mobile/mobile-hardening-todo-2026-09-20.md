@@ -4,6 +4,33 @@
 โปรเจกต์: `/home/panuwat/project/scam_image_mobile`
 เป้าหมาย: ทำ Mobile ให้พร้อม Production Deploy แบบตรวจสอบย้อนกลับได้
 
+## GitHub Issues cross-check — 2026-10-02
+
+ณ cross-check ล่าสุด 2026-10-02 Issues #71–#76, #78, #80, #82 และ #84 ปิดแล้ว; #77, #79, #81, #83, #85–#88 ยังเปิด. #78 CLOSED เวลา 07:29 +07 พร้อม automated evidence และข้อจำกัด backend/product. ข้อความสถานะเวลา 01:53 ด้านล่างเป็นประวัติเดิมก่อนปิด Issues #71–#76. #88 เป็น roadmap หลักและอ้างอิง hardening gates ในรายการด้านล่าง:
+
+| Issue | Checklist section |
+|---|---|
+| [#71](https://github.com/Panuwat-ta/project/issues/71) | §1.1 History Detail overflow |
+| [#72](https://github.com/Panuwat-ta/project/issues/72) | §1.2 Notifications test harness |
+| [#73](https://github.com/Panuwat-ta/project/issues/73) | §2.1 Presentation branch tests |
+| [#74](https://github.com/Panuwat-ta/project/issues/74) | §2.2 Router/BLoC/data/shared branch tests |
+| [#75](https://github.com/Panuwat-ta/project/issues/75) | §2.3 NFR-09 branch coverage gate |
+| [#76](https://github.com/Panuwat-ta/project/issues/76) | §3 Final product integrity, UX, localization audit |
+| [#77](https://github.com/Panuwat-ta/project/issues/77) | §4 Accessibility and Android native QA |
+| [#78](https://github.com/Panuwat-ta/project/issues/78) | §5 Security, session, input and privacy |
+| [#79](https://github.com/Panuwat-ta/project/issues/79) | §6 Production API contract and staging E2E |
+| [#80](https://github.com/Panuwat-ta/project/issues/80) | §8 Offline, retry and async recovery |
+| [#81](https://github.com/Panuwat-ta/project/issues/81) | §9 Performance and stability soak |
+| [#82](https://github.com/Panuwat-ta/project/issues/82) | §10 Auth UI, accessibility and localization |
+| [#83](https://github.com/Panuwat-ta/project/issues/83) | §11 Production configuration and release artifact |
+| [#84](https://github.com/Panuwat-ta/project/issues/84) | §14 CI/CD and quality gates |
+| [#85](https://github.com/Panuwat-ta/project/issues/85) | §15 Store/distribution readiness |
+| [#86](https://github.com/Panuwat-ta/project/issues/86) | §18 Backend/Model production coordination |
+| [#87](https://github.com/Panuwat-ta/project/issues/87) | §16 Release Candidate QA |
+| [#88](https://github.com/Panuwat-ta/project/issues/88) | Master roadmap; references #71–#87 |
+
+ตัวเลข coverage ใน §0.4 เป็นผลย้อนหลัง ณ 20 กันยายน 2026 ไม่ใช่ผลปัจจุบัน. ผลล่าสุด 2026-10-02 หลัง security/config hardening: full suite ผ่าน 737 tests; LCOV line 5,470/6,018 (90.89%) และ branch 1,408/1,711 (82.29%). รายงานล่าสุดคือ `tests_all/tests_report/automate_tests/mobile/issue-78-security-2026-10-02.md`; residual branches ของ Issues #74/#75 อยู่ในรายงานเดิม `issue-74-75-2026-10-02.md`.
+
 ## สัญลักษณ์สถานะ
 
 - `[x]` ทำเสร็จและมีผลตรวจยืนยันแล้ว
@@ -74,25 +101,27 @@
 - [x] SettingsScreen branch ประมาณ `2/68 -> 39/68 = 57.35%`
 
 ## 1. P0 — ปิด defect ที่รู้แล้วก่อนเพิ่ม feature/test
-### 1.1 History Detail overflow
-- [ ] แก้ `RenderFlex overflow` ใน `history_detail_screen.dart` บริเวณ Source/Evidence row
-- [ ] รองรับข้อความ/หลักฐานยาวโดยไม่ล้นแนวนอน
-- [ ] ตรวจ mobile width + landscape + dark mode
-- [ ] ปรับ test assertion ที่ score เดียวกันแสดงหลายตำแหน่งโดยตั้งใจ
-- [ ] รัน `history_detail_screen_test.dart` ให้ผ่านทั้งหมด
-- [ ] วัด branch coverage ของ History Detail หลังแก้
+### 1.1 History Detail overflow — แก้แล้ว 2026-10-02
+- [x] แก้ `RenderFlex overflow` ที่เกิดจาก OCR summary row และป้าย evidence unavailable ใน `history_detail_screen.dart`
+- [x] รองรับข้อความ/หลักฐานยาวโดยไม่ล้นแนวนอน
+- [x] ตรวจที่ 320x800 (dark mode) และ 800x360 (landscape + dark mode)
+- [x] ตรวจ assertion คะแนนที่แสดงซ้ำ; ใช้ `findsWidgets` สำหรับคะแนน 88%, 20% และ 10% ที่อาจพบหลายตำแหน่ง
+- [x] รัน `history_detail_screen_test.dart` ผ่านทั้งหมด และ Flutter suite ผ่าน 425 tests
+- [x] วัด coverage จาก LCOV: History Detail line 339/385 (88.05%), branch 34/53 (64.15%); coverage ทั้งชุด branch 978/1,547 (63.22%)
+- รายงานผล: `tests_all/tests_report/automate_tests/mobile/history-detail-overflow-2026-10-02.md`
 
 ### 1.2 Notifications Screen testability
-- [!] harness เดิม BLOCKED หลังครบ 3 attempts ตาม loop limit
-- [ ] ออกแบบ harness ใหม่ที่ไม่รอ HistoryBloc race เดิม
-- [ ] cover HistoryEmpty / HistoryDataLoaded / HistoryError
-- [ ] cover completed / high-risk / failed notification
-- [ ] cover today / yesterday / earlier grouping
-- [ ] cover mark-as-read / dismiss / clear-all
-- [ ] cover navigation เมื่อมี scanId และกรณีไม่มี scanId
-- [ ] ห้าม retry approach เดิมครั้งที่ 4
+- [x] แทน harness เดิมที่เคย BLOCKED ด้วย `MockBloc` + controlled stream; ไม่ใช้ repository async หรือ `pumpAndSettle()` รอ HistoryBloc
+- [x] cover HistoryEmpty / HistoryDataLoaded / HistoryError
+- [x] cover completed / high-risk / failed notification และไม่แสดง processing scan
+- [x] cover today / yesterday / earlier grouping
+- [x] cover mark-as-read / dismiss / clear-all
+- [x] cover navigation เมื่อมี scanId และยืนยันว่าไม่มีการ navigate เมื่อไม่มี scanId
+- [x] ไม่ retry approach เดิม; เพิ่ม test file แยก `notifications_screen_test.dart`
+- ผลทดสอบ: 8 widget tests ผ่านซ้ำ 5 รอบ; full suite 432/432 และ analyzer ผ่าน. รายงาน: `tests_all/tests_report/automate_tests/mobile/notifications-screen-harness-2026-10-02.md`
 
 ### 1.3 Known runtime/performance warnings
+- [x] ตัดdefaultSplashdelay3วินาทีและguardduplicate/lateasyncหลังclose; tests737ผ่าน โดยยังต้องhardwareprofiling #81
 - [ ] วิเคราะห์ skipped frames ตอน cold start ว่าเป็น debug-only หรือมี main-thread work จริง
 - [ ] profile startup ใน profile/release mode ก่อนถือว่า performance ผ่าน
 - [ ] ตรวจ memory growth ระหว่าง History/Result/Heatmap navigation หลายรอบ
@@ -100,64 +129,62 @@
 
 ## 2. P1 — Branch Coverage NFR-09 >= 80%
 ### 2.1 Presentation screens ที่ยังมี missed branches สูง
-- [ ] `settings_screen.dart` ลด missed branches ที่เหลือ
-- [ ] `image_crop_screen.dart` เพิ่ม branch tests โดยระวัง native plugin lifecycle
-- [ ] `history_detail_screen.dart` เพิ่ม behavior coverage หลังปิด overflow
-- [ ] `notifications_screen.dart` หลังเปลี่ยน harness
-- [ ] `analysis_loading_screen.dart` เพิ่ม retry/timeout/status/render branches
-- [ ] `report_scam_screen.dart` เพิ่ม selector/form/error/success branches
-- [ ] `home_screen.dart` เพิ่ม permission/history/loading/error branches
-- [ ] `user_profile_screen.dart` เพิ่ม loading/fallback/update/error branches
-- [ ] `privacy_consent_screen.dart` เพิ่ม consent warning/update/error branches
-- [ ] `history_screen.dart` เพิ่ม filter/search/delete/empty/error branches
-- [ ] `analysis_result_screen.dart` เพิ่ม partial evidence/action/navigation branches
-- [ ] `heatmap_viewer_screen.dart` เพิ่ม unavailable/toggle/slider/error branches
+- [x] `settings_screen.dart` branch 62/68 (91.18%); ครอบคลุม logout cancel/confirm, language/theme/cache, current-user restore loading/success/null/error, system theme และ profile/privacy/notifications navigation; ยังมี defensive/repository branches
+- [ ] `image_crop_screen.dart` branch 38/55 (69.09%); ครอบคลุม crop success/cancel/error, เปลี่ยนภาพ, notification, zoom/reset, discard cancel/confirm; rotate utility มี test แยกแต่ widget/file IO, mounted/transforming และ image-load error ยังไม่ครอบคลุม; native UI ยังไม่ทดสอบบนอุปกรณ์จริง
+- [x] `history_detail_screen.dart` branch 44/53 (83.02%); ครอบคลุม unavailable evidence, report/heatmap/share navigation และ delete cancel/confirm/success/failure; external share chooser ยังไม่ได้ทดสอบแบบ native
+- [x] `notifications_screen.dart` หลังเปลี่ยน harness: branch 45/51 (88.24%); line 193/204 (94.61%)
+- [ ] `analysis_loading_screen.dart` branch 48/53 (90.57%); ครอบคลุม retry/timeout, polling progress และ backend status ทุกขั้น, cancel/resume/background, ScanCompleted ไปผลตรวจ, notification, แก้รูปและไป History; ยังเหลือ fallback/error-image/reduced-motion branches
+- [x] `report_scam_screen.dart` branch 57/69 (82.61%); ครอบคลุม required fields, custom category/platform validation และ trimmed submission, research consent, canonical category, network error/success และ scan selector error/retry
+- [x] `home_screen.dart` branch 31/36 (86.11%); ครอบคลุม permission denied/retry/error, history empty/recent และ result/history navigation
+- [x] `user_profile_screen.dart` branch 32/36 (88.89%); ครอบคลุม authenticated/restored/fallback identity, unsupported action และ delete failure; แก้ controller lifecycle
+- [x] `privacy_consent_screen.dart` branch 18/24 (75.00%); ครอบคลุม consent confirm/cancel, export success/unavailable และ delete confirm/unavailable
+- [ ] `history_screen.dart` branch 42/50 (84.00%); ครอบคลุม empty/error/retry, notification/result navigation, risk filter ทั้งผลตรงและไม่มีรายการ, search debounce/clear, visible count และ confirm delete cancel/success; gesture ปัดจริงกับ refresh callback ยังไม่เสถียรใน widget harness
+- [x] `analysis_result_screen.dart` branch 52/55 (94.55%); ครอบคลุม pending/unavailable XAI, missing/score-only/partial visual evidence, ResultError, report/detail/share/heatmap/notification navigation, previous/home navigation และ delete cancel/success/failure; network image error กับ disposed-context branch ยังไม่ครอบคลุม
+- [x] `heatmap_viewer_screen.dart` branch 21/23 (91.30%); ครอบคลุม unavailable/toggle/intensity/zoom/reset; native image error ยังไม่จำลองใน widget test
+
+ผล LCOV ล่าสุดของ Issue #73: suite branch 1,244/1,548 (80.36%), line 5,007/5,679 (88.17%); full suite 496 tests ผ่าน, analyzer ผ่าน. Issue #73 ปิดแล้วหลังแนบรายการ residual branches และเหตุผลไว้ใน issue comment.
 
 ### 2.2 Core/logic coverage ที่ยังควรเก็บ
-- [ ] `app_router.dart` cover auth/onboarding/deep-link/error branches เพิ่ม
-- [ ] `scan_bloc.dart` ปิด polling/race/error branches ที่เหลือ
-- [ ] `history_bloc.dart` ปิด pagination/delete/error branches ที่เหลือ
-- [ ] `report_bloc.dart` ปิด failure/state branches ที่เหลือ
-- [ ] `database_helper.dart` เพิ่ม migration/error branches ที่มี behavioral value
-- [ ] `risk_progress_bar.dart` เพิ่ม widget branches หรือยุบถ้าไม่ถูกใช้งานจริง
-- [ ] `loading_overlay.dart` เพิ่ม minimal visibility branch tests
+- [x] `app_router.dart` ทดสอบ onboarding/auth guards และ deep-link redirect ผ่าน `GoRouter` จริง; branch 15/30 โดย route builder บางหน้ากับ extra mapping ยังเป็น residual ตามรายงาน
+- [x] `scan_bloc.dart` ทดสอบ timer polling, duplicate/stale poll, upload/status errors, cancellation, timeout และ race; branch 36/36
+- [x] `history_bloc.dart` ทดสอบ pagination, repeated page, delete, refresh/search retention และ failure ระหว่างโหลดหน้าถัดไป; branch 47/47
+- [x] `report_bloc.dart` ทดสอบ success และ network/auth/generic failure mapping; branch 19/19
+- [x] `database_helper.dart` ทดสอบ migration v1–v5, partial upgrade, column rename, nulling ค่าเดิม และ schema ที่ถูก rename แล้ว; branch 20/24 โดยเหลือ plugin init/defensive catch ตามรายงาน
+- [x] `risk_progress_bar.dart` ทดสอบช่วงสี Low/Medium/High และ label; branch 10/11 โดย Unknown case เป็น defensive branch ที่ score mapping ปัจจุบันเข้าไม่ถึง
+- [x] `loading_overlay.dart` ทดสอบ fullscreen/contained, optional message และ light/dark spinner; branch 4/4
 
 ### 2.3 Coverage gate
-- [ ] รัน `flutter test --branch-coverage`
-- [ ] คำนวณ branch hit จาก `BRDA` จริง
-- [ ] ห้ามใช้ line coverage แทน branch coverage
-- [ ] branch coverage รวมต้อง `>= 80%` ก่อน Production sign-off
+- [x] รัน full `flutter test --coverage --branch-coverage --reporter=failures-only`
+- [x] คำนวณ branch hit จาก LCOV `BRDA` จริง: 1,283/1,548 (82.88%)
+- [x] ตรวจ LCOV มี critical source files และไม่มี custom exclusion เพื่อยก coverage; line coverage รายงานแยก ไม่ใช้แทน branch coverage
+- [x] branch coverage รวมเกิน NFR-09 gate 80%; Issue #75 ปิดตาม acceptance
 ## 3. P1 — Final UX/UI และ AI-slop audit
 
+สถานะ 2026-10-02 06:18 +07: Issue #76 CLOSED; source/widget audit และ independent review เสร็จแล้ว; confirmed findings แก้และ verify แล้ว ตาม `mobile-design-ux-audit-2026-10-02.md`. Native runtime/staging QA ยังติดตามใน Issues #77/#79.
+
 ### 3.1 Product integrity
-- [ ] ตรวจทั้ง Mobile อีกรอบว่าไม่มี fake evidence / demo evidence / placeholder ที่ดูเหมือนผลจริง
-- [ ] ตรวจข้อความ Low/Medium/High/Unknown ไม่สื่อความแน่นอนเกิน backend
-- [ ] ตรวจ “ไม่มีข้อมูล”, “ไม่พบ”, “ตรวจไม่ได้” ใช้ต่างความหมายถูกต้อง
-- [ ] ตรวจ score/grade ทุกหน้ามาจาก authority เดียวกัน
-- [ ] ตรวจ Heatmap ไม่มี fallback จำลอง anomaly
+- [x] ตรวจ source ของ Mobile ว่าไม่มี fake evidence ใน flow ที่ตรวจ; unavailable/empty แสดง state แทนการสร้างหลักฐาน
+- [x] ตรวจข้อความ Low/Medium/High/Unknown และ score/grade ใช้ backend authority กับ RiskLevelHelper
+- [x] ตรวจ semantics ของ score, วันที่วิเคราะห์, source detail และ Heatmap/source image labels; แก้ label ที่อ้างข้อมูลเกินจริง
+- [x] ตรวจ Heatmap ไม่มี fallback จำลอง anomaly; preview แยก Heatmap, ภาพต้นฉบับ และไม่มีภาพตาม URL
 
 ### 3.2 Visual quality / AI-slop
-- [ ] รัน Impeccable native audit รอบ final
-- [ ] รัน independent `agy` review รอบ final
-- [ ] เทียบกับ baseline audit เดิมแบบ before/after
-- [ ] ลด generic security decoration ที่ยังเหลือโดยไม่ลด usability
-- [ ] ตรวจ Profile / Privacy / Notifications / Auth visual consistency
-- [ ] ตรวจ card stacking, gradients, shadow, icon-in-square ที่ไม่จำเป็น
-- [ ] ตรวจ typography, spacing, radius และ semantic color authority
-- [ ] ตรวจ dark mode ทุกหน้าหลัก
-- [ ] ตรวจ English mode ไม่รั่ว Thai copy และ Thai modeไม่รั่ว English placeholder
+- [x] ทำ Impeccable native source audit; ผลและเกณฑ์ตรวจอยู่ใน audit report
+- [x] independent `agy` review สำเร็จเมื่อใช้ `--print-timeout 0s`; รัน 205.404684316 วินาที มี report และ finding disposition; timeout 3 ครั้งก่อนหน้าเป็นประวัติการรัน
+- [x] เทียบ before/after กับ baseline audit 2026-09-20 โดยแยกผลเดิมกับ defect ที่ยืนยันเพิ่มในรอบนี้
+- [x] ตรวจ Profile / Privacy / Notifications / Auth และ design-token consistency จาก source/checklist; ไม่พบ fabricated evidence เพิ่มใน scope ที่ตรวจ
+- [x] ตรวจ theme-aware surfaces, semantic risk colors, responsive navigation, spacing/radius และ interactive affordance จาก source
+- [x] ตรวจ TH/EN dictionary parity และ English copy; เพิ่ม tests สำหรับ Auth, Onboarding, Splash และ evidence labels
+- [!] dark-mode/native visual QA ครบทุกหน้าจอยังต้องทดสอบบนอุปกรณ์ตาม §4; widget/source audit ไม่ทดแทน device certification
 
 ### 3.3 User flows
-- [ ] onboarding -> login/register -> home
-- [ ] image pick -> crop -> optional name -> submit
-- [ ] scan progress -> success -> result
-- [ ] network failure -> retry โดย context ไม่หาย
-- [ ] Result -> Heatmap -> Back
-- [ ] Result/History -> Report พร้อม scanId/image ที่ถูกต้อง
-- [ ] Report tab -> เลือก History scan -> form -> submit
-- [ ] History search/filter/delete/refresh/pagination
-- [ ] Settings theme/language/cache/privacy/profile/logout
-- [ ] notification open/dismiss/read/clear-all เมื่อ harness ใหม่พร้อม
+- [x] source/widget tests ครอบคลุม image pick/crop/optional name/submit และ scan progress/error recovery
+- [x] Result/History tests ครอบคลุม preview state, Heatmap navigation, report payload, history actions และ notification actions
+- [x] Report tab เลือก scan ก่อนเข้า form; tests ตรวจ scanId/image payload และ submit behavior
+- [x] Settings theme/language/cache/privacy/profile/logout และ notification actions มี widget coverage
+- [!] onboarding-to-auth และ end-to-end flows ยังไม่ได้ยืนยันกับ staging backend/installed app ในรอบนี้
+
+ผล test suite รอบสุดท้ายและ coverage: `tests_all/tests_report/automate_tests/mobile/issue-76-integrity-localization-2026-10-02.md`.
 
 ## 4. P1 — Accessibility / Native behavior
 
@@ -189,29 +216,31 @@
 
 ### 5.1 Secrets / logging / transport
 - [x] Authorization header ไม่ถูก print ใน debug log แล้ว
-- [ ] grep source/logs ว่าไม่มี access token / refresh token / password logging อื่น
-- [ ] release build ต้องปิด verbose network logger โดย design
-- [ ] production API ต้องใช้ HTTPS เท่านั้น
-- [ ] ตรวจ cleartext traffic policy ของ Android manifest/network config
-- [ ] ตรวจ certificate/TLS failure handling ไม่ bypass validation
-- [ ] ตรวจ `.env`/build config ไม่มี secret ฝังใน repository หรือ APK โดยไม่จำเป็น
+- [x] grep source/logs ว่าไม่มี access token / refresh token / password logging อื่น
+- [x] release build ต้องปิด verbose network logger โดย design
+- [x] production API ต้องใช้ HTTPS เท่านั้น
+- [x] ตรวจ cleartext traffic policy ของ Android manifest/network config
+- [x] ตรวจ certificate/TLS failure handling ไม่ bypass validation
+- [x] ตรวจ `.env`/build config ไม่มี secret ฝังใน repository หรือ APK โดยไม่จำเป็น
 - [ ] ตรวจ API key ที่เป็น public client key แยกจาก server secret ให้ชัด
 
 ### 5.2 Authentication/session
-- [ ] access token expiry / refresh success / refresh failure / concurrent 401 ผ่าน tests
-- [ ] logout ล้าง local credential จริง
-- [ ] refresh failure fail closed และกลับ login อย่างปลอดภัย
-- [ ] session restoration ไม่เปิด protected screen เมื่อ token/storage ใช้ไม่ได้
-- [ ] deep link protected routes ผ่าน auth guard
+- [x] access token expiry / refresh success / refresh failure / concurrent 401 ผ่าน tests
+- [x] logout ล้าง local credential จริง
+- [x] refresh failure fail closed และกลับ login อย่างปลอดภัย
+- [x] session restoration ไม่เปิด protected screen เมื่อ token/storage ใช้ไม่ได้
+- [x] deep link protected routes ผ่าน auth guard
 - [ ] ตรวจ secure storage บนอุปกรณ์จริงหลัง logout/reinstall ตาม requirement
 
 ### 5.3 Input/file security
-- [ ] validate image type/size ก่อน upload ตาม backend contract
-- [ ] corrupt/non-image file ให้ error ที่ recover ได้
-- [ ] ไม่เชื่อ filename/MIME จาก client เพียงอย่างเดียว
+- [x] validate image type/size ก่อน upload ตาม backend contract
+- [x] corrupt/non-image file ให้ error ที่ recover ได้
+- [x] ไม่เชื่อ filename/MIME จาก client เพียงอย่างเดียว
 - [ ] ตรวจ file URI/path handling ไม่เปิด arbitrary file access
 - [ ] ตรวจ report form/user text validation ไม่เกิด injection ฝั่ง client/server
-- [ ] dependency vulnerability audit สำหรับ Flutter/Android dependencies ก่อน release
+- [x] dependency vulnerability audit สำหรับ Flutter/Android dependencies ก่อน release
+
+หลักฐาน #78/#83/#84: [Security/config/CI](mobile-security-config-ci-2026-10-02.md). Tests เป็น automated evidence; physical secure storage และ production configuration ยังไม่ได้ผ่าน.
 
 ## 6. P1 — Backend/API contract และ End-to-End
 
@@ -240,43 +269,45 @@
 
 ## 7. P1 — Data integrity / Privacy / PDPA
 ### 7.1 Consent / user data
-- [ ] consent processing/history/research ต้องสะท้อน behavior จริง
-- [ ] consent default และ persisted value ผ่าน tests
-- [ ] ถ้าปิด consent ที่จำเป็น ต้องบอกผลกระทบก่อนดำเนินการ
-- [ ] Privacy screen ไม่มีปุ่มที่ทำเหมือนสำเร็จทั้งที่ backend ไม่รองรับ
-- [ ] Account deletion flow มี confirmation และ error recovery
-- [ ] Export data ระบุ unsupported จน backend มี endpoint จริง
+- [!] UI ระบุ local-only preference แล้ว; server consent update/retention policy ยังต้องยืนยัน #79/#85/#86
+- [x] consent default และ persisted value ผ่าน tests
+- [x] แจ้งว่าการเปลี่ยน local preference ไม่หยุด server processing และควรงด upload หากไม่ยินยอม
+- [x] Privacy screen ไม่มีปุ่มที่ทำเหมือนสำเร็จทั้งที่ backend ไม่รองรับ
+- [x] Account deletion flow มี confirmation และ error recovery
+- [x] Export data ระบุ unsupported จน backend มี endpoint จริง
 - [ ] ระบุ retention policy ของ scan image/result/history ในเอกสารผู้ใช้
 - [ ] ระบุว่า image/metadata ใดถูก upload และเก็บนานเท่าไร
 - [ ] ตรวจ permission ที่ขอจาก Android ว่าจำเป็นทุก permission
 - [ ] ไม่ขอ broad storage permission ถ้า Android picker/API ใหม่ทำได้
 
 ### 7.2 Local data
-- [ ] SQLite/cache schema migration ผ่านจาก supported versions
-- [ ] malformed cache ไม่ crash และ fallback ถูกต้อง
+- [x] SQLite/cache schema migration ผ่านจาก supported versions
+- [x] malformed cache ไม่ crash และ fallback ถูกต้อง
 - [ ] clear cache ลบเฉพาะ cache ไม่ลบ history/account ผิด scope
 - [ ] logout/account deletion เคลียร์ local data ตาม policy
 - [ ] sensitive local data อยู่ใน secure storage เมื่อเหมาะสม
 
 ## 8. P1 — Reliability / Offline / Error recovery
 
-- [ ] airplane/offline ตอนเปิดแอปมี fallback ที่เข้าใจได้
-- [ ] network หายระหว่าง upload/scan polling recover ได้
-- [ ] scan timeout ไม่ auto-redirect ทำ context หาย
-- [ ] Retry ไม่สร้าง duplicate task โดยไม่ตั้งใจ
-- [ ] stale async response ไม่เขียนทับ scan ใหม่
-- [ ] concurrent polling ถูกจำกัดและไม่ leak timer
-- [ ] History remote fail -> cache fallback ตาม contract
-- [ ] authoritative server error ไม่ถูกแทนด้วย stale cache แบบทำให้เข้าใจผิด
-- [ ] malformed JSON/partial response ไม่ crash
-- [ ] empty/missing evidence มี explicit state
-- [ ] delete/report/account action failure ไม่แสดง success ก่อน server confirm
-- [ ] app resume/background ระหว่าง scan ไม่ทำ state เพี้ยน
+- [ ] airplane/offline จริงบนเครื่องต้อง native QA (#77); automated network/cache recovery ผ่านแล้ว
+- [x] network หายระหว่าง upload/scan polling recover ได้
+- [x] scan timeout ไม่ auto-redirect ทำ context หาย
+- [x] Retry ไม่สร้าง duplicate task โดยไม่ตั้งใจ
+- [x] stale async response ไม่เขียนทับ scan ใหม่
+- [x] concurrent polling ถูกจำกัดและไม่ leak timer
+- [x] History remote fail -> cache fallback ตาม contract
+- [x] authoritative server error ไม่ถูกแทนด้วย stale cache แบบทำให้เข้าใจผิด
+- [x] malformed JSON/partial response ไม่ crash
+- [x] empty/missing evidence มี explicit state
+- [x] delete/report/account action failure ไม่แสดง success ก่อน server confirm
+- [x] Flutter binding paused/resumed ระหว่าง scan ไม่เปลี่ยน task; physical recreation/soak อยู่ #81
+
+หลักฐาน: [Async recovery](mobile-async-recovery-2026-10-02.md); full suite 684/684, branch 83.13%, focused Scan รวม lifecycle 20/20
 
 ## 9. P1 — Performance / Resource usage
 
 ### 9.1 Startup/rendering
-- [ ] วัด startup ใน `--profile` หรือ release build ไม่ใช้ debug skipped-frame เป็น final metric
+- [x] วัด signed-out startup ใน `--profile` บน RMX3370: Android AM และ Flutter FrameTiming มีหลักฐานแล้ว; sample3framesไม่เพียงพอสรุปทั้งแอป/performanceพร้อมproduction ดู `mobile-native-status-2026-10-02.md`
 - [ ] ตรวจ frame jank Home / History scroll / Result / Heatmap
 - [ ] ตรวจ animation ไม่ทำงานเมื่อ offscreen หรือ reduced-motion
 - [ ] ลด rebuild ที่ไม่จำเป็นใน BLoC/widget tree ถ้าพบจาก profiler
@@ -296,23 +327,25 @@
 - [ ] ทดสอบ low-memory/process recreation เท่าที่ Android tooling รองรับ
 
 ## 10. P1 — Auth/UI scope ที่เคยถูก loop deny
-- [H] ขออนุมัติแก้ `features/auth/**` ถ้ายังใช้ loop deny path เดิม
-- [ ] ตรวจ Login/Register/Onboarding/Splash visual consistency กับ redesign
-- [ ] ตรวจ touch target/semantics ของ auth forms
-- [ ] reduced-motion สำหรับ Splash/Onboarding animation
-- [ ] localization auth copy ไทย/อังกฤษให้ครบ
-- [ ] validation email/password/display name ชัดเจนและสม่ำเสมอ
-- [ ] loading state ป้องกัน double submit
-- [ ] auth error ไม่เผย raw server/internal detail ที่ไม่ควรให้ผู้ใช้เห็น
-- [ ] legacy `main_shell.dart`/navigation code ที่ไม่ใช้แล้วต้องลบหรือยืนยันว่า dead code
-- [ ] ลด raw colors/radius ใน auth scope ให้ใช้ design authority เดียวกับแอป
+- [x] ผู้ใช้อนุมัติทำ Issues ต่อทั้งหมด; ทำ Auth scope ตาม #82 แล้ว
+- [x] ตรวจ Login/Register/Onboarding/Splash visual consistency กับ redesign
+- [x] ตรวจ touch target/semantics ของ auth forms
+- [x] reduced-motion สำหรับ Splash/Onboarding animation
+- [x] localization auth copy ไทย/อังกฤษให้ครบ
+- [x] validation email/password/display name ชัดเจนและสม่ำเสมอ
+- [x] loading state ป้องกัน double submit
+- [x] auth error ไม่เผย raw server/internal detail ที่ไม่ควรให้ผู้ใช้เห็น
+- [x] legacy `main_shell.dart`/navigation code ที่ไม่ใช้แล้วต้องลบหรือยืนยันว่า dead code
+- [x] ลด raw colors/radius ใน auth scope ให้ใช้ design authority เดียวกับแอป
+
+หลักฐาน: [Auth hardening](mobile-auth-hardening-2026-10-02.md), full suite 670/670 และ branch 83.49%; native QA ยังคงอยู่ #77
 
 ## 11. P1 — Release configuration
 
 ### 11.1 Environment / build mode
-- [ ] แยก dev / staging / production configuration อย่างชัดเจน
+- [x] แยก dev / staging / production configuration อย่างชัดเจน
 - [ ] Production `API_BASE_URL` เป็น HTTPS public endpoint ไม่ใช่ LAN IP
-- [ ] ไม่มี `.env` development value ติด release artifact
+- [x] ไม่มี `.env` development value ติด release artifact
 - [ ] ตรวจ feature flags/debug flags ทุกตัวก่อน release
 - [ ] ปิด debug banner/debug-only UI/loggers ใน release
 - [ ] ตรวจ app display name / package name / applicationId สำหรับ production
@@ -332,8 +365,8 @@
 ## 12. P1 — Release signing / artifact integrity
 
 - [H] เตรียม production keystore/upload key ผ่านช่องทางปลอดภัย
-- [ ] ห้าม commit keystore/password/signing secret ลง Git
-- [ ] ตั้ง release signing config จาก environment/secure secret source
+- [x] ห้าม commit keystore/password/signing secret ลง Git
+- [x] ตั้ง release signing config จาก environment/secure secret source
 - [ ] build `flutter build appbundle --release` ผ่าน
 - [ ] build release APK ถ้าช่องทาง deploy ต้องใช้
 - [ ] ตรวจ artifact ใช้ production applicationId/version
@@ -356,18 +389,20 @@
 - [ ] release build ต้องไม่มี debug network/body logging
 ## 14. P1 — CI/CD และ Quality Gates
 
-- [ ] CI ใช้ Flutter/Dart version ที่ pin/บันทึกไว้ชัดเจน
-- [ ] CI รัน `flutter pub get`
-- [ ] CI รัน `dart format --output=none --set-exit-if-changed` เฉพาะ scope ที่กำหนด หรือ normalize legacy ก่อนบังคับทั้ง repo
-- [ ] CI รัน `flutter analyze`
-- [ ] CI รัน full `flutter test`
-- [ ] CI รัน `flutter test --branch-coverage`
-- [ ] CI fail ถ้า branch coverage ต่ำกว่า 80% เมื่อ NFR-09 พร้อมบังคับใช้
-- [ ] CI build release/AAB จาก production config โดยไม่เผย secret
-- [ ] dependency/security audit เป็น release gate
-- [ ] เก็บ test/coverage/build artifacts ของแต่ละ release
-- [ ] ห้าม auto-deploy production เมื่อ final gate fail
-- [ ] production deploy ต้องมี human approval
+- [x] CI ใช้ Flutter/Dart version ที่ pin/บันทึกไว้ชัดเจน
+- [x] CI รัน `flutter pub get`
+- [x] CI รัน `dart format --output=none --set-exit-if-changed` เฉพาะ scope ที่กำหนด หรือ normalize legacy ก่อนบังคับทั้ง repo
+- [x] CI รัน `flutter analyze`
+- [x] CI รัน full `flutter test`
+- [x] CI รัน `flutter test --branch-coverage`
+- [x] CI fail ถ้า branch coverage ต่ำกว่า 80% เมื่อ NFR-09 พร้อมบังคับใช้
+- [x] CI compile unsigned release จาก explicit HTTPSfixture โดยไม่มีproductionsecret; signedproductionAABอยู่ #83
+- [x] dependency/security audit เป็น release gate
+- [x] เก็บ test/coverage/build artifacts ของแต่ละ release
+- [x] ห้าม auto-deploy production เมื่อ final gate fail
+- [H] production signing/distribution/deploy เป็นขั้นแยกที่ต้องให้คนอนุมัติ; workflowนี้ไม่มีdeploy/publishstep
+
+workflow #84 และ tooling tests8/8ผ่าน; actual GitHub clean-checkout run36946512530 completed/successครบทุกgate (หลักฐานissue-84-ci-2026-10-02.md). Compile artifact เป็น unsigned quality fixture ไม่ใช่ production/RC.
 
 ## 15. P1 — Store/Distribution readiness
 
@@ -584,16 +619,22 @@
 
 ## 27. Current blockers / ยังห้ามประกาศ Production-ready
 
-- [!] History Detail มี RenderFlex overflow ที่ regression test ใหม่ตรวจพบ
-- [!] branch coverage ล่าสุด 54.62% ยังต่ำกว่า NFR-09 80%
-- [!] NotificationsScreen widget harness ต้องเปลี่ยน approach หลังครบ 3 attempts
-- [!] Manual TalkBack ยังไม่ได้ทดสอบบนเครื่องจริง
-- [!] Manual rotation ยังไม่ได้ทดสอบบนเครื่องจริง
-- [!] Auth visual/accessibility cleanup ยังติด loop deny scope เดิมจนกว่าจะอนุมัติ
-- [!] Production environment/API endpoint ยังต้อง final verify
-- [!] Production signing/AAB/internal distribution ยังไม่ทำ
-- [!] Final release-mode performance/security QA ยังไม่ทำ
-- [!] Production rollout/monitoring/rollback rehearsal ยังไม่ทำ
+สถานะอิง Issues และ source ล่าสุด 2026-10-02: ปิด10/18; เปิด #77/#79/#81/#83/#85/#86/#87/#88. Branch refactor-mobileทำงานที่ `/home/panuwat/project-mobile-hardening`; workspaceหลักdevelopคงเดิม.
+
+- [x] RenderFlex overflow ที่พบใน regressionเดิมแก้และทดสอบแล้ว; ไม่ถือเป็น current blocker
+- [x] Full suite749/749, analyzer0; CI36961640199success/branch82.35% สูงกว่าNFR-09เกณฑ์80; ไม่ใช่54.62%ของbaselineเดิม
+- [x] Notifications widget harness เปลี่ยน approachและผ่านแล้ว; ไม่เป็น current blocker
+- [x] Auth scopeได้รับอนุมัติและ #82CLOSED; ไม่ติดloopdenyเดิม
+- [!] #77 actualTalkBack/textscale/rotation/tablet/insets/Backทุกหน้ายังไม่ครบ; LoginportraitTH/light/font1.0/keyboardscroll/Back baselineมีหลักฐานแล้ว แต่ไม่แทนทั้งmatrix
+- [!] #79 ยังไม่มีconfirmedHTTPSstaging/accountfixturesและstagingE2E; localhost8000downในenvironmentล่าสุด
+- [!] #81 profileprobeมี3framesและoverbudget; Home/History/Result/Heatmap/image-memory/fullsoak/processrecreationยังไม่ครบ
+- [!] #83 productionidentity/version/key/signedartifact/cleanupgradeยังไม่ยืนยัน; test-onlyprobeIDไม่ใช่productionidentity
+- [!] #85 distributionchannel/privacyTerms/supportURLs/approvedpolicy/screenshotsยังไม่ยืนยัน
+- [!] #86 backend/model/migrationfreeze/monitoringowners/thresholds/rollbackrehearsalยังไม่ครบ
+- [!] #87 signedsame-sourceRC/native/staging/install/soak/signoffยังไม่ครบ
+- [!] #88 roadmapยังปิดไม่ได้จนdependentgatesผ่านจริง
+
+Toollifecyclefinding: flutterdrivedefaultstop/uninstallหลังtestทำให้regularappที่reinstallแสดงOnboarding; localstateไม่ได้พิสูจน์preserved. Probeรอบใหม่ใช้dedicatedapplicationIdและ--keep-app-runningแล้ว ไม่ถือรอบเดิมเป็นupgradepreservesdataผ่าน. ดูรายงาน `tests_all/tests_report/automate_tests/mobile/issue-81-native-startup-probe-2026-10-02.md`.
 
 ## 28. Production Sign-off Gate
 
@@ -602,7 +643,7 @@
 - [ ] ไม่มี P0/P1 blocker ที่ยังเปิดอยู่
 - [ ] product evidence ทุกจุด trace กลับ backend/real analysis ได้
 - [ ] AI-slop final audit ไม่มี deceptive/fabricated UI
-- [ ] branch coverage >=80% ตาม NFR-09
+- [x] branch coverage >=80% ตาม NFR-09: local82.12%, CI36961640199ได้82.35%; ต้องตรวจซ้ำกับsourceของfinalsignedRC
 - [ ] security/privacy release gates ผ่าน
 - [ ] automated + manual QA ผ่านตาม matrix
 - [ ] release AAB signed/build/install ผ่าน

@@ -1,0 +1,18 @@
+{
+  "source_commit": "ac5e8334097739539d143be0e2d91b004656bbd8",
+  "artifact_type": "AAB",
+  "size_bytes": 61361753,
+  "sha256": "c3f5c56553c5c25e044a4bb86ccd4c52690d05052030b83a32457b17fcdba923",
+  "env_assets": 0,
+  "duplicate_launcher_flutter_assets": 0,
+  "social_svgs": 3,
+  "signature_status": "unsigned confirmed by jarsigner",
+  "environment": "staging HTTPS example.invalid compile fixture",
+  "production_identity_confirmed": false,
+  "distribution_ready": false,
+  "native_abis": [
+    "arm64-v8a",
+    "armeabi-v7a",
+    "x86_64"
+  ]
+}

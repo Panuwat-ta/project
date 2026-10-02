@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../../../core/constants/scan_upload_limits.dart';
 
 class ScanImage extends Equatable {
   final String filePath;
@@ -14,7 +15,8 @@ class ScanImage extends Equatable {
   bool get isValidFormat =>
       ['jpg', 'jpeg', 'png', 'webp'].contains(format.toLowerCase());
 
-  bool get isValidSize => fileSizeBytes <= 10 * 1024 * 1024; // 10 MB
+  bool get isValidSize =>
+      fileSizeBytes > 0 && fileSizeBytes <= maxScanUploadBytes;
 
   @override
   List<Object?> get props => [filePath, fileSizeBytes, format];

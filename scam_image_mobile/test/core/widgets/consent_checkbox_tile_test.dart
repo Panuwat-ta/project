@@ -39,10 +39,12 @@ void main() {
     });
 
     testWidgets('shows description when provided', (tester) async {
-      await tester.pumpWidget(buildTile(
-        label: 'ฉันยอมรับเงื่อนไข',
-        description: 'รายละเอียดเงื่อนไขการใช้งาน',
-      ));
+      await tester.pumpWidget(
+        buildTile(
+          label: 'ฉันยอมรับเงื่อนไข',
+          description: 'รายละเอียดเงื่อนไขการใช้งาน',
+        ),
+      );
       await tester.pump();
 
       expect(find.text('รายละเอียดเงื่อนไขการใช้งาน'), findsOneWidget);
@@ -71,14 +73,17 @@ void main() {
       expect(checkbox.value, isTrue);
     });
 
-    testWidgets('tapping tile calls onChanged with toggled value',
-        (tester) async {
+    testWidgets('tapping tile calls onChanged with toggled value', (
+      tester,
+    ) async {
       bool? received;
-      await tester.pumpWidget(buildTile(
-        label: 'ยอมรับ',
-        initialValue: false,
-        onChanged: (v) => received = v,
-      ));
+      await tester.pumpWidget(
+        buildTile(
+          label: 'ยอมรับ',
+          initialValue: false,
+          onChanged: (v) => received = v,
+        ),
+      );
       await tester.pump();
 
       // Tap the InkWell (the whole tile)
@@ -88,14 +93,17 @@ void main() {
       expect(received, isTrue); // toggled from false → true
     });
 
-    testWidgets('tapping tile from true state calls onChanged with false',
-        (tester) async {
+    testWidgets('tapping tile from true state calls onChanged with false', (
+      tester,
+    ) async {
       bool? received;
-      await tester.pumpWidget(buildTile(
-        label: 'ยอมรับ',
-        initialValue: true,
-        onChanged: (v) => received = v,
-      ));
+      await tester.pumpWidget(
+        buildTile(
+          label: 'ยอมรับ',
+          initialValue: true,
+          onChanged: (v) => received = v,
+        ),
+      );
       await tester.pump();
 
       await tester.tap(find.byType(InkWell));
@@ -106,47 +114,53 @@ void main() {
   });
 
   group('ConsentCheckboxTile + PrimaryButton integration', () {
-    testWidgets('PrimaryButton is disabled when consent is unchecked',
-        (tester) async {
-      await tester.pumpWidget(MaterialApp(
-        theme: ThemeData.dark(),
-        home: Scaffold(body: _ConsentButtonWrapper(initialValue: false)),
-      ));
+    testWidgets('PrimaryButton is disabled when consent is unchecked', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData.dark(),
+          home: Scaffold(body: _ConsentButtonWrapper(initialValue: false)),
+        ),
+      );
       await tester.pump();
 
       // ElevatedButton onPressed should be null when disabled
-      final button =
-          tester.widget<ElevatedButton>(find.byType(ElevatedButton));
+      final button = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
       expect(button.onPressed, isNull);
     });
 
-    testWidgets('PrimaryButton is enabled after checking consent',
-        (tester) async {
-      await tester.pumpWidget(MaterialApp(
-        theme: ThemeData.dark(),
-        home: Scaffold(body: _ConsentButtonWrapper(initialValue: false)),
-      ));
+    testWidgets('PrimaryButton is enabled after checking consent', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData.dark(),
+          home: Scaffold(body: _ConsentButtonWrapper(initialValue: false)),
+        ),
+      );
       await tester.pump();
 
       // Tap the ConsentCheckboxTile's InkWell (the first one in the tree)
       await tester.tap(find.byType(InkWell).first);
       await tester.pumpAndSettle();
 
-      final button =
-          tester.widget<ElevatedButton>(find.byType(ElevatedButton));
+      final button = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
       expect(button.onPressed, isNotNull);
     });
 
-    testWidgets('PrimaryButton starts enabled when consent is pre-checked',
-        (tester) async {
-      await tester.pumpWidget(MaterialApp(
-        theme: ThemeData.dark(),
-        home: Scaffold(body: _ConsentButtonWrapper(initialValue: true)),
-      ));
+    testWidgets('PrimaryButton starts enabled when consent is pre-checked', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData.dark(),
+          home: Scaffold(body: _ConsentButtonWrapper(initialValue: true)),
+        ),
+      );
       await tester.pump();
 
-      final button =
-          tester.widget<ElevatedButton>(find.byType(ElevatedButton));
+      final button = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
       expect(button.onPressed, isNotNull);
     });
   });

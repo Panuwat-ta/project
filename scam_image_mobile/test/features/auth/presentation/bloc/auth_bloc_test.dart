@@ -1,3 +1,5 @@
+import 'package:scam_image_mobile/core/storage/secure_storage.dart';
+import 'dart:async';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -75,7 +77,7 @@ void main() {
         isA<AuthError>().having(
           (s) => s.message,
           'message',
-          'อีเมลหรือรหัสผ่านไม่ถูกต้อง',
+          'auth_error_credentials',
         ),
       ],
     );
@@ -102,7 +104,7 @@ void main() {
         isA<AuthError>().having(
           (s) => s.message,
           'message',
-          'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาตรวจสอบเครือข่าย',
+          'auth_error_network',
         ),
       ],
     );
@@ -165,11 +167,138 @@ void main() {
         isA<AuthError>().having(
           (s) => s.message,
           'message',
-          'อีเมลนี้ถูกใช้งานแล้ว',
+          'auth_error_email_registered',
         ),
       ],
     );
   });
+
+  test(
+    'ignores duplicate login and cross-operation register while login waits',
+    () async {
+      final pending = Completer<User>();
+      when(
+        () => mockRepo.login(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenAnswer((_) => pending.future);
+      final bloc = AuthBloc(mockRepo);
+      const request = LoginRequested(
+        email: 'test@example.com',
+        password: 'password123',
+      );
+      bloc.add(request);
+      await bloc.stream.firstWhere((s) => s is AuthLoading);
+      bloc.add(request);
+      bloc.add(
+        const RegisterRequested(
+          email: 'test@example.com',
+          password: 'password123',
+          displayName: 'Test',
+          systemConsent: true,
+          researchConsent: false,
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      verify(
+        () =>
+            mockRepo.login(email: 'test@example.com', password: 'password123'),
+      ).called(1);
+      verifyNever(
+        () => mockRepo.register(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+          displayName: any(named: 'displayName'),
+          systemConsent: any(named: 'systemConsent'),
+          researchConsent: any(named: 'researchConsent'),
+        ),
+      );
+      pending.complete(tUser);
+      await bloc.stream.firstWhere((s) => s is AuthAuthenticated);
+      await bloc.close();
+    },
+  );
+
+  test(
+    'duplicate register is ignored and a failed operation can retry',
+    () async {
+      final pending = Completer<User>();
+      var calls = 0;
+      when(
+        () => mockRepo.register(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+          displayName: any(named: 'displayName'),
+          systemConsent: any(named: 'systemConsent'),
+          researchConsent: any(named: 'researchConsent'),
+        ),
+      ).thenAnswer((_) {
+        calls++;
+        return calls == 1 ? pending.future : Future.value(tUser);
+      });
+      final bloc = AuthBloc(mockRepo);
+      const request = RegisterRequested(
+        email: 'test@example.com',
+        password: 'password123',
+        displayName: 'Test',
+        systemConsent: true,
+        researchConsent: false,
+      );
+      bloc.add(request);
+      await bloc.stream.firstWhere((s) => s is AuthLoading);
+      bloc.add(request);
+      await Future<void>.delayed(Duration.zero);
+      expect(calls, 1);
+      pending.completeError(Exception('network unavailable'));
+      await bloc.stream.firstWhere((s) => s is AuthError);
+      bloc.add(request);
+      await bloc.stream.firstWhere((s) => s is AuthAuthenticated);
+      expect(calls, 2);
+      await bloc.close();
+    },
+  );
+
+  test('late login success cannot authenticate again after logout', () async {
+    final pending = Completer<User>();
+    when(
+      () => mockRepo.login(
+        email: any(named: 'email'),
+        password: any(named: 'password'),
+      ),
+    ).thenAnswer((_) => pending.future);
+    when(() => mockRepo.logout()).thenAnswer((_) async {});
+    final bloc = AuthBloc(mockRepo);
+    bloc.add(
+      const LoginRequested(email: 'user@example.com', password: 'password'),
+    );
+    await bloc.stream.firstWhere((state) => state is AuthLoading);
+    bloc.add(const LogoutRequested());
+    await bloc.stream.firstWhere((state) => state is AuthUnauthenticated);
+    pending.complete(tUser);
+    await Future<void>.delayed(Duration.zero);
+    expect(bloc.state, isA<AuthUnauthenticated>());
+    await bloc.close();
+  });
+
+  test(
+    'invalidated secure-storage session logs out an authenticated user',
+    () async {
+      final storage = SecureStorage();
+      when(() => mockRepo.logout()).thenAnswer((_) async {});
+      final bloc = AuthBloc(mockRepo, sessionStorage: storage);
+      bloc.add(const AuthSessionRestored(tUser));
+      await bloc.stream.firstWhere((state) => state is AuthAuthenticated);
+      final ended = bloc.stream.firstWhere(
+        (state) => state is AuthUnauthenticated,
+      );
+      storage.invalidateAuthSession();
+      await ended;
+      verify(() => mockRepo.logout()).called(1);
+      await bloc.close();
+      storage.dispose();
+    },
+  );
 
   // ── Logout ────────────────────────────────────────────────────────────────
 

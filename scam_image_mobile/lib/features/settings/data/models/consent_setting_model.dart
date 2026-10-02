@@ -34,8 +34,8 @@ class ConsentSettingModel extends ConsentSetting {
       );
 
   Map<String, dynamic> toJson() => {
-        'processingConsent': processingConsent,
-        'historyConsent': historyConsent,
-        'researchConsent': researchConsent,
-      };
+    'processingConsent': processingConsent,
+    'historyConsent': historyConsent,
+    'researchConsent': researchConsent,
+  };
 }

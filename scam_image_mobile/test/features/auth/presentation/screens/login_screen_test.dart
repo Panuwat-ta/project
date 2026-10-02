@@ -14,7 +14,9 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MockAuthRepository extends Mock implements AuthRepository {}
-class MockSettingsCubit extends MockCubit<SettingsState> implements SettingsCubit {}
+
+class MockSettingsCubit extends MockCubit<SettingsState>
+    implements SettingsCubit {}
 
 void main() {
   late MockAuthRepository mockAuthRepo;
@@ -34,14 +36,10 @@ void main() {
     final router = GoRouter(
       initialLocation: '/login',
       routes: [
-        GoRoute(
-          path: '/login',
-          builder: (_, _) => const LoginScreen(),
-        ),
+        GoRoute(path: '/login', builder: (_, _) => const LoginScreen()),
         GoRoute(
           path: '/main/home',
-          builder: (_, _) =>
-              const Scaffold(body: Center(child: Text('Home'))),
+          builder: (_, _) => const Scaffold(body: Center(child: Text('Home'))),
         ),
         GoRoute(
           path: '/register',
@@ -57,17 +55,10 @@ void main() {
     return MultiBlocProvider(
       providers: [
         // The app-scoped AuthBloc the screens now consume.
-        BlocProvider<AuthBloc>(
-          create: (_) => AuthBloc(mockAuthRepo),
-        ),
-        BlocProvider<SettingsCubit>.value(
-          value: settingsCubit,
-        ),
+        BlocProvider<AuthBloc>(create: (_) => AuthBloc(mockAuthRepo)),
+        BlocProvider<SettingsCubit>.value(value: settingsCubit),
       ],
-      child: MaterialApp.router(
-        routerConfig: router,
-        theme: ThemeData.dark(),
-      ),
+      child: MaterialApp.router(routerConfig: router, theme: ThemeData.dark()),
     );
   }
 
@@ -90,16 +81,14 @@ void main() {
       expect(find.text('กรุณากรอกอีเมล'), findsOneWidget);
     });
 
-    testWidgets('email without "@" shows "รูปแบบอีเมลไม่ถูกต้อง"',
-        (tester) async {
+    testWidgets('email without "@" shows "รูปแบบอีเมลไม่ถูกต้อง"', (
+      tester,
+    ) async {
       await tester.pumpWidget(buildApp());
       await tester.pumpAndSettle();
 
       // Type an email without '@'
-      await tester.enterText(
-        find.byType(TextFormField).first,
-        'invalidemail',
-      );
+      await tester.enterText(find.byType(TextFormField).first, 'invalidemail');
 
       await submitForm(tester);
 
@@ -158,8 +147,9 @@ void main() {
       await tester.pumpAndSettle();
 
       // The password TextFormField (index 1) should have obscureText = true
-      final passwordField =
-          tester.widget<EditableText>(find.byType(EditableText).at(1));
+      final passwordField = tester.widget<EditableText>(
+        find.byType(EditableText).at(1),
+      );
       expect(passwordField.obscureText, isTrue);
     });
 
@@ -171,8 +161,9 @@ void main() {
       await tester.tap(find.byIcon(Icons.visibility_outlined));
       await tester.pumpAndSettle();
 
-      final passwordField =
-          tester.widget<EditableText>(find.byType(EditableText).at(1));
+      final passwordField = tester.widget<EditableText>(
+        find.byType(EditableText).at(1),
+      );
       expect(passwordField.obscureText, isFalse);
     });
 
@@ -188,8 +179,9 @@ void main() {
       await tester.tap(find.byIcon(Icons.visibility_off_outlined));
       await tester.pumpAndSettle();
 
-      final passwordField =
-          tester.widget<EditableText>(find.byType(EditableText).at(1));
+      final passwordField = tester.widget<EditableText>(
+        find.byType(EditableText).at(1),
+      );
       expect(passwordField.obscureText, isTrue);
     });
   });

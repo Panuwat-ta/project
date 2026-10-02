@@ -1,0 +1,22 @@
+[
+  {
+    "step": "full-tests",
+    "exit_code": 0,
+    "seconds": 42.994
+  },
+  {
+    "step": "analyze",
+    "exit_code": 0,
+    "seconds": 3.477
+  },
+  {
+    "step": "format",
+    "exit_code": 0,
+    "seconds": 0.999
+  },
+  {
+    "step": "coverage",
+    "exit_code": 0,
+    "seconds": 0.04
+  }
+]

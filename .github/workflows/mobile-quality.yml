@@ -1,0 +1,89 @@
+name: Mobile quality gates
+
+on:
+  push:
+    paths:
+      - 'scam_image_mobile/**'
+      - '.github/workflows/mobile-quality.yml'
+  pull_request:
+    paths:
+      - 'scam_image_mobile/**'
+      - '.github/workflows/mobile-quality.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    defaults:
+      run:
+        working-directory: scam_image_mobile
+    env:
+      # Compile-only artifact: no production endpoint, key or credentials.
+      SCAMGUARD_ALLOW_UNSIGNED_QUALITY_BUILD: 'true'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          flutter-version: '3.47.2'
+          channel: stable
+          cache: true
+      - name: Resolve locked dependencies
+        run: flutter pub get --enforce-lockfile
+      - name: Check Dart formatting
+        run: dart format --output=none --set-exit-if-changed lib test integration_test test_driver
+      - name: Analyze
+        run: flutter analyze --fatal-infos
+      - name: Test quality gate tools
+        run: python3 -m unittest discover -s tool/tests -v
+      - name: Test with branch coverage
+        run: flutter test --coverage --branch-coverage --reporter expanded
+      - name: Enforce coverage >= 80 percent
+        run: python3 tool/check_coverage.py coverage/lcov.info --output build/quality/coverage.json
+      - name: Compile unsigned release APK
+        run: flutter build apk --release --dart-define=APP_ENV=staging --dart-define=API_BASE_URL=https://example.invalid/api/v1
+      - name: Resolve Android dependency graph
+        run: |
+          mkdir -p build/quality
+          cd android
+          ./gradlew :app:dependencies --configuration releaseRuntimeClasspath --console=plain > ../build/quality/android-dependencies.txt
+      - name: Audit resolved Pub and Maven dependencies
+        run: python3 tool/audit_dependencies.py --gradle-report build/quality/android-dependencies.txt --output build/quality/dependency-audit.json
+      - name: Reject bundled environment files
+        run: |
+          python3 - <<'PY'
+          import zipfile
+          from pathlib import Path
+          apk = Path('build/app/outputs/flutter-apk/app-release.apk')
+          with zipfile.ZipFile(apk) as archive:
+              assert not any(Path(name).name.startswith('.env') for name in archive.namelist()), 'Environment file bundled in APK'
+          PY
+      - name: Save artifact checksum
+        run: sha256sum build/app/outputs/flutter-apk/app-release.apk > build/quality/unsigned-apk.sha256
+      - name: Upload quality evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: mobile-quality-${{ github.sha }}
+          path: |
+            scam_image_mobile/coverage/lcov.info
+            scam_image_mobile/build/quality/
+            scam_image_mobile/build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 14
+
+# Production signing/distribution are separate human-controlled release steps.
+# This workflow has no production secrets and never deploys or publishes.

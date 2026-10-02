@@ -60,4 +60,43 @@ void main() {
     await tester.pump();
     expect(find.byKey(const Key('heatmap-overlay')), findsOneWidget);
   });
+
+  testWidgets('heatmap intensity and zoom controls update the viewer', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData.light(),
+        home: const HeatmapViewerScreen(
+          taskId: 'scan-controls',
+          imageUrl: 'https://example.invalid/original.jpg',
+          heatmapUrl: 'https://example.invalid/heatmap.jpg',
+        ),
+      ),
+    );
+    await tester.pump();
+
+    InteractiveViewer viewer = tester.widget(find.byType(InteractiveViewer));
+    expect(viewer.transformationController!.value.getMaxScaleOnAxis(), 1.0);
+    await tester.tap(find.byIcon(Icons.add));
+    await tester.pump();
+    viewer = tester.widget(find.byType(InteractiveViewer));
+    expect(viewer.transformationController!.value.getMaxScaleOnAxis(), 1.2);
+    await tester.tap(find.byIcon(Icons.remove));
+    await tester.pump();
+    await tester.tap(find.byIcon(Icons.refresh));
+    await tester.pump();
+    viewer = tester.widget(find.byType(InteractiveViewer));
+    expect(viewer.transformationController!.value.getMaxScaleOnAxis(), 1.0);
+
+    final slider = tester.widget<Slider>(find.byType(Slider));
+    await tester.drag(find.byType(Slider), const Offset(-100, 0));
+    await tester.pump();
+    final updatedSlider = tester.widget<Slider>(find.byType(Slider));
+    expect(updatedSlider.value, lessThan(slider.value));
+    expect(
+      find.text('${(updatedSlider.value * 100).round()}%'),
+      findsOneWidget,
+    );
+  });
 }

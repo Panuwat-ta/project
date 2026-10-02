@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:image/image.dart' as image;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:scam_image_mobile/features/scan/data/datasources/scan_remote_datasource.dart';
@@ -10,28 +12,34 @@ class MockScanRemote extends Mock implements ScanRemoteDataSource {}
 void main() {
   late MockScanRemote remote;
   late ScanRepositoryImpl repository;
+  late Directory directory;
+  late String path;
 
-  setUp(() {
+  setUp(() async {
+    directory = await Directory.systemTemp.createTemp('scamguard-upload-test-');
+    path = '${directory.path}/a.jpg';
+    await File(
+      path,
+    ).writeAsBytes(image.encodeJpg(image.Image(width: 2, height: 2)));
     remote = MockScanRemote();
     repository = ScanRepositoryImpl(remoteDataSource: remote);
   });
+
+  tearDown(() => directory.delete(recursive: true));
 
   test(
     'submitImage delegates only backend-supported file/title fields',
     () async {
       when(
-        () => remote.submitScan(filePath: '/tmp/a.jpg', scanName: 'Example'),
+        () => remote.submitScan(filePath: path, scanName: 'Example'),
       ).thenAnswer((_) async => 'scan-1');
 
       expect(
-        await repository.submitImage(
-          filePath: '/tmp/a.jpg',
-          scanName: 'Example',
-        ),
+        await repository.submitImage(filePath: path, scanName: 'Example'),
         'scan-1',
       );
       verify(
-        () => remote.submitScan(filePath: '/tmp/a.jpg', scanName: 'Example'),
+        () => remote.submitScan(filePath: path, scanName: 'Example'),
       ).called(1);
     },
   );

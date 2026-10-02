@@ -275,10 +275,13 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                   isDark,
                 )
               else
-                Text(
-                  'result_evidence_unavailable'.tr(context),
-                  style: AppTypography.caption(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                Flexible(
+                  child: Text(
+                    'result_evidence_unavailable'.tr(context),
+                    textAlign: TextAlign.end,
+                    style: AppTypography.caption(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ),
             ],
@@ -310,8 +313,11 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
             ),
           ),
           const SizedBox(height: AppSpacing.md),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            spacing: AppSpacing.md,
+            runSpacing: AppSpacing.xs,
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.start,
             children: [
               Text(
                 'result_suspicious_words'.tr(context),
@@ -439,10 +445,13 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                   isDark,
                 )
               else
-                Text(
-                  'result_evidence_unavailable'.tr(context),
-                  style: AppTypography.caption(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                Flexible(
+                  child: Text(
+                    'result_evidence_unavailable'.tr(context),
+                    textAlign: TextAlign.end,
+                    style: AppTypography.caption(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ),
             ],
@@ -514,6 +523,13 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
   }
 
   Widget _buildImageAnomalyCard(bool isDark, AnalysisResult result) {
+    final heatmapUrl = result.heatmapUrl?.trim();
+    final imageUrl = result.imageUrl?.trim();
+    final previewUrl = heatmapUrl?.isNotEmpty == true
+        ? heatmapUrl
+        : imageUrl?.isNotEmpty == true
+        ? imageUrl
+        : null;
     final visuals = result.factors.where((f) => f.type == 'visual');
     final hasVisualFactor = visuals.isNotEmpty;
     final visualFactor = hasVisualFactor
@@ -559,10 +575,13 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                   isDark,
                 )
               else
-                Text(
-                  'result_evidence_unavailable'.tr(context),
-                  style: AppTypography.caption(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                Flexible(
+                  child: Text(
+                    'result_evidence_unavailable'.tr(context),
+                    textAlign: TextAlign.end,
+                    style: AppTypography.caption(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ),
             ],
@@ -579,11 +598,11 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                 ),
                 child: Stack(
                   children: [
-                    if (result.heatmapUrl != null || result.imageUrl != null)
+                    if (previewUrl != null)
                       ClipRRect(
                         borderRadius: AppRadius.smBorder,
                         child: CachedNetworkImage(
-                          imageUrl: (result.heatmapUrl ?? result.imageUrl)!,
+                          imageUrl: previewUrl,
                           fit: BoxFit.cover,
                           width: 120,
                           height: 120,
@@ -605,24 +624,28 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                             ),
                           ),
                         ),
-                      )
-                    else
-                      const Center(
-                        child: Icon(
-                          Icons.image,
-                          color: Colors.white54,
-                          size: 40,
+                      ),
+                    if (previewUrl == null)
+                      Center(
+                        child: Text(
+                          'result_image_unavailable'.tr(context),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: Colors.white54),
                         ),
                       ),
-                    Positioned(
-                      top: 8,
-                      left: 8,
-                      child: _buildPill(
-                        'HEATMAP',
-                        AppColors.successDarkForeground,
-                        AppColors.successDarkText,
+                    if (previewUrl != null)
+                      Positioned(
+                        top: 8,
+                        left: 8,
+                        child: _buildPill(
+                          (heatmapUrl?.isNotEmpty == true
+                                  ? 'result_heatmap_label'
+                                  : 'result_source_image_label')
+                              .tr(context),
+                          AppColors.slate900,
+                          Colors.white,
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -632,7 +655,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'result_ai_generated_probability'.tr(context),
+                      'result_manipulation_confidence'.tr(context),
                       style: AppTypography.caption(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
@@ -642,16 +665,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                           ? '${(result.manipulationConfidence! * 100).toStringAsFixed(0)}%'
                           : 'result_evidence_unavailable'.tr(context),
                       style: AppTypography.titleMd(
-                        color:
-                            (result.manipulationConfidence != null &&
-                                    result.manipulationConfidence! >= 0.7) ||
-                                visualFactor.score >= 70
-                            ? AppColors.danger
-                            : (result.manipulationConfidence != null &&
-                                      result.manipulationConfidence! >= 0.4) ||
-                                  visualFactor.score >= 40
-                            ? AppColors.warning
-                            : (isDark ? Colors.white : AppColors.onSurface),
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.sm),
@@ -708,18 +722,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
     );
   }
 
-  Color _getRiskColor(RiskLevel level) {
-    switch (level) {
-      case RiskLevel.high:
-        return AppColors.danger;
-      case RiskLevel.medium:
-        return AppColors.warning;
-      case RiskLevel.low:
-        return AppColors.success;
-      case RiskLevel.unknown:
-        return Colors.grey;
-    }
-  }
+  Color _getRiskColor(RiskLevel level) => RiskLevelHelper.toColor(level);
 
   /// Score pill colored by server grade ([RiskLevel]), never by raw-score bands.
   /// Factor pills pass [RiskLevelHelper.factorLevelForScore] (presentation-only).

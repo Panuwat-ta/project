@@ -7,7 +7,10 @@ import '../../domain/entities/analysis_result.dart';
 import '../../domain/entities/risk_factor.dart';
 
 abstract class ResultLocalDataSource {
-  Future<void> cacheResult(AnalysisResult result);
+  Future<void> cacheResult(
+    AnalysisResult result, {
+    bool Function()? isCurrentSession,
+  });
   Future<AnalysisResult?> getResult(String scanId);
   Future<void> clearCache();
 }
@@ -17,7 +20,10 @@ class ResultLocalDataSourceImpl implements ResultLocalDataSource {
   final DatabaseHelper databaseHelper;
 
   @override
-  Future<void> cacheResult(AnalysisResult result) async {
+  Future<void> cacheResult(
+    AnalysisResult result, {
+    bool Function()? isCurrentSession,
+  }) async {
     final db = await databaseHelper.database;
     final factorsJson = jsonEncode(
       result.factors
@@ -31,24 +37,27 @@ class ResultLocalDataSourceImpl implements ResultLocalDataSource {
           )
           .toList(),
     );
-    await db.insert(DatabaseHelper.tableDetails, {
-      'scanId': result.scanId,
-      'taskId': result.taskId,
-      'status': result.status,
-      'riskScore': result.riskScore,
-      'riskLevel': result.riskLevel.name,
-      'summary': result.summary,
-      'imageUrl': result.imageUrl,
-      'heatmapUrl': result.heatmapUrl,
-      'xaiExplanation': result.xaiExplanation,
-      'manipulationConfidence': result.manipulationConfidence,
-      'ocrText': result.ocrText,
-      'scamKeywordsJson': result.scamKeywords != null
-          ? jsonEncode(result.scamKeywords)
-          : null,
-      'createdAt': result.createdAt.toIso8601String(),
-      'factorsJson': factorsJson,
-    }, conflictAlgorithm: ConflictAlgorithm.replace);
+    await db.transaction((transaction) async {
+      if (isCurrentSession != null && !isCurrentSession()) return;
+      await transaction.insert(DatabaseHelper.tableDetails, {
+        'scanId': result.scanId,
+        'taskId': result.taskId,
+        'status': result.status,
+        'riskScore': result.riskScore,
+        'riskLevel': result.riskLevel.name,
+        'summary': result.summary,
+        'imageUrl': result.imageUrl,
+        'heatmapUrl': result.heatmapUrl,
+        'xaiExplanation': result.xaiExplanation,
+        'manipulationConfidence': result.manipulationConfidence,
+        'ocrText': result.ocrText,
+        'scamKeywordsJson': result.scamKeywords != null
+            ? jsonEncode(result.scamKeywords)
+            : null,
+        'createdAt': result.createdAt.toIso8601String(),
+        'factorsJson': factorsJson,
+      }, conflictAlgorithm: ConflictAlgorithm.replace);
+    });
   }
 
   @override

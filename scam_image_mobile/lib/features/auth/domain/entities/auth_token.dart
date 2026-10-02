@@ -11,8 +11,7 @@ class AuthToken extends Equatable {
     this.expiresAt,
   });
 
-  bool get isExpired =>
-      expiresAt != null && DateTime.now().isAfter(expiresAt!);
+  bool get isExpired => expiresAt != null && DateTime.now().isAfter(expiresAt!);
 
   @override
   List<Object?> get props => [accessToken, refreshToken, expiresAt];

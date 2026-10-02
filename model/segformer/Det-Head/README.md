@@ -16,3 +16,10 @@
 - `export_onnx_dynamic.py` / `export_onnx.sh` — ONNX export
 
 ให้รันคำสั่งจาก `/home/panuwat/project/model/segformer` เพื่อให้ relative paths ของ `configs/`, `work_dirs/` และ `venv/` ตรงกัน
+
+## Version comparison (Det-Head รายเวอร์ชัน)
+
+- `eval_det_diagnostics.py` — รันทุก head พร้อมกันบนภาพชุดเดียวกัน (camera9, chatshot2, pilot11, testcases) ได้ `diagnostics.json` + CSV รายเซ็ต เป็นวิธีเปรียบเทียบเวอร์ชันที่ทำซ้ำได้
+- `plot_det_versions.py` — สร้างกราฟเปรียบเทียบทุกเวอร์ชันจาก `diagnostics.json` ที่มีอยู่แล้ว (ไม่รัน inference ใหม่) ได้กราฟ PNG, `report.html` แบบฝังภาพในไฟล์เดียว และ `charts_data.json`
+- `test_plot_det_versions.py` — unit test ของ pipeline สรุปข้อมูลกราฟ
+- `diagnostics_det_versions_2026-10-02/` — ผลรันเปรียบเทียบ 20 heads (det1–det7b) บน Test-Cases 176 ภาพ พร้อมกราฟใน `charts/`

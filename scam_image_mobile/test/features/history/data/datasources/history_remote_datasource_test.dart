@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:scam_image_mobile/core/errors/exceptions.dart';
@@ -13,14 +12,11 @@ void main() {
   late MockDio dio;
   late HistoryRemoteDataSourceImpl dataSource;
 
-  setUpAll(() {
-    dotenv.loadFromString(
-      envString: 'API_BASE_URL=http://localhost:8000/api/v1',
-    );
-  });
-
   setUp(() {
     dio = MockDio();
+    when(
+      () => dio.options,
+    ).thenReturn(BaseOptions(baseUrl: 'http://localhost:8000/api/v1'));
     dataSource = HistoryRemoteDataSourceImpl(dio: dio);
   });
 

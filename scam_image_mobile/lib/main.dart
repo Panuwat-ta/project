@@ -15,11 +15,8 @@ import 'features/result/presentation/bloc/result_bloc.dart';
 import 'features/scan/presentation/bloc/scan_bloc.dart';
 import 'features/settings/presentation/bloc/settings_bloc.dart';
 
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
   await ServiceLocator.init();
   runApp(const ScamGuardApp());
 }
@@ -36,7 +33,10 @@ class ScamGuardApp extends StatelessWidget {
           create: (_) => SplashCubit(ServiceLocator.authRepository),
         ),
         BlocProvider<AuthBloc>(
-          create: (_) => AuthBloc(ServiceLocator.authRepository),
+          create: (_) => AuthBloc(
+            ServiceLocator.authRepository,
+            sessionStorage: ServiceLocator.secureStorage,
+          ),
         ),
 
         // Scan (used by AnalysisLoadingScreen)
@@ -76,18 +76,29 @@ class ScamGuardApp extends StatelessWidget {
           create: (_) => NotificationsCubit()..loadNotifications(),
         ),
       ],
-      child: BlocBuilder<SettingsCubit, SettingsState>(
-        builder: (context, state) {
-          return MaterialApp.router(
-            title: 'ScamGuard',
-            debugShowCheckedModeBanner: false,
-            themeMode: state.themeMode,
-            locale: Locale(state.language),
-            theme: AppTheme.light,
-            darkTheme: AppTheme.dark,
-            routerConfig: AppRouter.router,
-          );
+      child: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state is AuthLoading || state is AuthUnauthenticated) {
+            context.read<ScanBloc>().add(AnalysisCancelled());
+            context.read<ResultBloc>().add(const ResultSessionCleared());
+            context.read<HistoryBloc>().add(const HistorySessionCleared());
+            context.read<ReportBloc>().add(const ReportSessionCleared());
+            context.read<NotificationsCubit>().resetSession();
+          }
         },
+        child: BlocBuilder<SettingsCubit, SettingsState>(
+          builder: (context, state) {
+            return MaterialApp.router(
+              title: 'ScamGuard',
+              debugShowCheckedModeBanner: false,
+              themeMode: state.themeMode,
+              locale: Locale(state.language),
+              theme: AppTheme.light,
+              darkTheme: AppTheme.dark,
+              routerConfig: AppRouter.router,
+            );
+          },
+        ),
       ),
     );
   }

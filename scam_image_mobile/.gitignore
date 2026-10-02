@@ -45,3 +45,9 @@ app.*.map.json
 /android/app/release
 # Widget Preview related
 .widget_preview/
+
+# Production signing material and local release configuration
+*.jks
+*.keystore
+/android/key.properties
+/config/*.local.json

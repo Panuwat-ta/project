@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:scam_image_mobile/core/storage/secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:scam_image_mobile/core/errors/exceptions.dart';
@@ -97,4 +99,46 @@ void main() {
     );
     verifyNever(() => local.getHistory());
   });
+  for (final error in [
+    const AuthException('expired'),
+    const ServerException('not found', statusCode: 404),
+    const ServerException('unavailable', statusCode: 503),
+    const ValidationException('malformed response'),
+  ]) {
+    test('authoritative $error is not replaced with cached history', () async {
+      stubRemote(remote, answer: (_) => Future.error(error));
+      await expectLater(repository.getScanHistory(), throwsA(same(error)));
+      verifyNever(() => local.getHistory());
+    });
+  }
+
+  test('cache write failure preserves successful fresh history', () async {
+    final fresh = [item('fresh')];
+    stubRemote(remote, answer: (_) async => fresh);
+    when(
+      () => local.cacheHistory(fresh),
+    ).thenThrow(const CacheException('disk full'));
+    expect((await repository.getScanHistory()).single.scanId, 'fresh');
+    verifyNever(() => local.getHistory());
+  });
+  test(
+    'response from an invalidated session never reaches history cache',
+    () async {
+      final storage = SecureStorage();
+      final pending = Completer<List<ScanHistoryItemModel>>();
+      stubRemote(remote, answer: (_) => pending.future);
+      final repository = HistoryRepositoryImpl(
+        remoteDataSource: remote,
+        localDataSource: local,
+        sessionStorage: storage,
+      );
+      final response = repository.getScanHistory();
+      final rejected = expectLater(response, throwsA(isA<AuthException>()));
+      storage.invalidateAuthSession();
+      pending.complete([item('old-user')]);
+      await rejected;
+      verifyNever(() => local.getHistory());
+      storage.dispose();
+    },
+  );
 }

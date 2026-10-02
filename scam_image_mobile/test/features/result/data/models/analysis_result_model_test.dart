@@ -1,16 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:scam_image_mobile/features/result/data/models/analysis_result_model.dart';
 import 'package:scam_image_mobile/features/result/domain/entities/analysis_result.dart';
 
-void main() {
-  setUpAll(() {
-    // Initialize dotenv with test values so parseUrl works
-    dotenv.loadFromString(
-      envString: 'API_BASE_URL=http://10.0.0.1:8000/api/v1',
-    );
-  });
+AnalysisResultModel _parse(Map<String, dynamic> json) =>
+    AnalysisResultModel.fromJson(json, baseUrl: 'http://10.0.0.1:8000/api/v1');
 
+void main() {
   group('AnalysisResultModel.fromJson — server flat format', () {
     test('maps flat scores into RiskFactor list', () {
       final json = {
@@ -30,7 +25,7 @@ void main() {
         'created_at': '2026-01-01T00:00:00',
       };
 
-      final model = AnalysisResultModel.fromJson(json);
+      final model = _parse(json);
 
       expect(model.scanId, 'scan-abc');
       expect(model.riskScore, 75);
@@ -47,8 +42,10 @@ void main() {
 
       final visualFactor = model.factors.firstWhere((f) => f.type == 'visual');
       expect(visualFactor.score, 25);
-      expect(visualFactor.details.first, contains('85%'));
-      expect(visualFactor.details.first, contains('ความม่ันใจว่าถูกดัดแปลง'));
+      // Numeric confidence is retained separately, without fabricating a
+      // localized narrative detail in the data layer.
+      expect(visualFactor.details, isEmpty);
+      expect(model.manipulationConfidence, 0.85);
 
       final sourceFactor = model.factors.firstWhere((f) => f.type == 'source');
       expect(sourceFactor.score, 20);
@@ -62,7 +59,7 @@ void main() {
         'created_at': '2026-01-01T00:00:00',
       };
 
-      final model = AnalysisResultModel.fromJson(json);
+      final model = _parse(json);
       expect(model.riskLevel, RiskLevel.medium);
     });
 
@@ -74,7 +71,7 @@ void main() {
         'created_at': '2026-01-01T00:00:00',
       };
 
-      final model = AnalysisResultModel.fromJson(json);
+      final model = _parse(json);
       expect(model.riskLevel, RiskLevel.low);
     });
 
@@ -85,7 +82,7 @@ void main() {
         'created_at': '2026-01-01T00:00:00',
       };
 
-      final model = AnalysisResultModel.fromJson(json);
+      final model = _parse(json);
       expect(model.riskLevel, RiskLevel.unknown);
     });
 
@@ -97,7 +94,7 @@ void main() {
         'created_at': '2026-01-01T00:00:00',
       };
 
-      final model = AnalysisResultModel.fromJson(json);
+      final model = _parse(json);
       expect(model.riskLevel, RiskLevel.unknown);
     });
 
@@ -109,7 +106,7 @@ void main() {
         'created_at': '2026-01-01T00:00:00',
       };
 
-      final model = AnalysisResultModel.fromJson(json);
+      final model = _parse(json);
       expect(model.riskScore, 0);
       expect(model.riskLevel, RiskLevel.unknown);
     });
@@ -135,7 +132,7 @@ void main() {
         ],
       };
 
-      final model = AnalysisResultModel.fromJson(json);
+      final model = _parse(json);
 
       expect(model.scanId, 'scan-1');
       expect(model.riskScore, 60);
@@ -152,7 +149,7 @@ void main() {
         'created_at': '2026-01-01T00:00:00',
       };
 
-      final model = AnalysisResultModel.fromJson(json);
+      final model = _parse(json);
       expect(model.imageUrl, 'http://cdn.example.com/image.jpg');
     });
 
@@ -163,7 +160,7 @@ void main() {
         'created_at': '2026-01-01T00:00:00',
       };
 
-      final model = AnalysisResultModel.fromJson(json);
+      final model = _parse(json);
       expect(model.imageUrl, contains('http://10.0.0.1:8000'));
       expect(model.imageUrl, contains('/uploads/'));
     });
@@ -171,7 +168,7 @@ void main() {
     test('null URLs remain null', () {
       final json = {'id': 'scan-1', 'created_at': '2026-01-01T00:00:00'};
 
-      final model = AnalysisResultModel.fromJson(json);
+      final model = _parse(json);
       expect(model.imageUrl, isNull);
       expect(model.heatmapUrl, isNull);
     });
@@ -183,7 +180,7 @@ void main() {
         'created_at': '2026-01-01T00:00:00',
       };
 
-      final model = AnalysisResultModel.fromJson(json);
+      final model = _parse(json);
       expect(model.imageUrl, isNot(contains(r'\')));
       expect(model.imageUrl, contains('/uploads/'));
     });
@@ -193,21 +190,21 @@ void main() {
     test('defaults riskScore to 0 when missing', () {
       final json = {'id': 'scan-1', 'created_at': '2026-01-01T00:00:00'};
 
-      final model = AnalysisResultModel.fromJson(json);
+      final model = _parse(json);
       expect(model.riskScore, 0);
     });
 
     test('defaults status to completed when missing', () {
       final json = {'id': 'scan-1', 'created_at': '2026-01-01T00:00:00'};
 
-      final model = AnalysisResultModel.fromJson(json);
+      final model = _parse(json);
       expect(model.status, 'completed');
     });
 
     test('defaults createdAt to now when missing', () {
       final json = {'id': 'scan-1'};
 
-      final model = AnalysisResultModel.fromJson(json);
+      final model = _parse(json);
       expect(model.createdAt, isNotNull);
       // Should be approximately now
       expect(
@@ -223,14 +220,14 @@ void main() {
         'created_at': '2026-01-01T00:00:00',
       };
 
-      final model = AnalysisResultModel.fromJson(json);
+      final model = _parse(json);
       expect(model.summary, isEmpty);
     });
 
     test('empty factors when no score fields', () {
       final json = {'id': 'scan-1', 'created_at': '2026-01-01T00:00:00'};
 
-      final model = AnalysisResultModel.fromJson(json);
+      final model = _parse(json);
       expect(model.factors, isEmpty);
     });
   });

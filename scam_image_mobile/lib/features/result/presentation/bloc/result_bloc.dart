@@ -13,6 +13,12 @@ abstract class ResultEvent extends Equatable {
   const ResultEvent();
 }
 
+class ResultSessionCleared extends ResultEvent {
+  const ResultSessionCleared();
+  @override
+  List<Object?> get props => [];
+}
+
 class ResultLoadRequested extends ResultEvent {
   const ResultLoadRequested(this.taskId);
 
@@ -28,6 +34,13 @@ class ResultPollRequested extends ResultEvent {
 
   final String taskId;
 
+  @override
+  List<Object?> get props => [taskId];
+}
+
+class ResultPollingStopped extends ResultEvent {
+  const ResultPollingStopped(this.taskId);
+  final String taskId;
   @override
   List<Object?> get props => [taskId];
 }
@@ -74,13 +87,32 @@ class ResultError extends ResultState {
 
 class ResultBloc extends Bloc<ResultEvent, ResultState> {
   ResultBloc({required this.repository}) : super(const ResultInitial()) {
+    on<ResultSessionCleared>((event, emit) {
+      _generation++;
+      _activeTaskId = null;
+      _stopped = true;
+      _pollTimer?.cancel();
+      emit(const ResultInitial());
+    });
     on<ResultLoadRequested>(_onLoadRequested);
     on<ResultPollRequested>(_onPollRequested);
+    on<ResultPollingStopped>((event, emit) {
+      if (_activeTaskId == event.taskId) {
+        _generation++;
+        _activeTaskId = null;
+        _stopped = true;
+        _pollTimer?.cancel();
+      }
+    });
   }
 
   final ResultRepository repository;
   Timer? _pollTimer;
   int _pollCount = 0;
+  int _generation = 0;
+  String? _activeTaskId;
+  final Set<int> _pollsInFlight = {};
+  bool _stopped = false;
 
   /// โพลสูงสุด ~5 นาที (60 ครั้ง × 5 วินาที) ตรงกับ XAI_TIMEOUT 300s ของ server
   static const int maxPolls = 60;
@@ -98,12 +130,17 @@ class ResultBloc extends Bloc<ResultEvent, ResultState> {
   ) async {
     _pollTimer?.cancel();
     _pollCount = 0;
+    final generation = ++_generation;
+    _activeTaskId = event.taskId;
+    _stopped = false;
     emit(const ResultLoading());
     try {
       final result = await repository.getAnalysisResult(event.taskId);
+      if (generation != _generation || isClosed) return;
       emit(ResultLoaded(result));
       _schedulePollIfNeeded(event.taskId, result);
     } catch (e) {
+      if (generation != _generation || isClosed) return;
       emit(ResultError(e.toString()));
     }
   }
@@ -112,13 +149,21 @@ class ResultBloc extends Bloc<ResultEvent, ResultState> {
     ResultPollRequested event,
     Emitter<ResultState> emit,
   ) async {
+    if (_stopped) return;
+    _activeTaskId ??= event.taskId;
+    if (_activeTaskId != event.taskId) return;
+    final generation = _generation;
+    if (!_pollsInFlight.add(generation)) return;
     try {
       final result = await repository.getAnalysisResult(event.taskId);
+      if (generation != _generation || isClosed) return;
       emit(ResultLoaded(result));
       _schedulePollIfNeeded(event.taskId, result);
     } catch (_) {
       // โพลล้มเหลวครั้งเดียวไม่ควรทิ้งผลเดิมที่แสดงอยู่ ให้หยุดโพลเงียบๆ
-      _pollTimer?.cancel();
+      if (generation == _generation) _pollTimer?.cancel();
+    } finally {
+      _pollsInFlight.remove(generation);
     }
   }
 
@@ -126,11 +171,16 @@ class ResultBloc extends Bloc<ResultEvent, ResultState> {
     if (!isXaiPending(result) || _pollCount >= maxPolls) return;
     _pollCount++;
     _pollTimer?.cancel();
-    _pollTimer = Timer(pollInterval, () => add(ResultPollRequested(taskId)));
+    _pollTimer = Timer(pollInterval, () {
+      if (!isClosed && _activeTaskId == taskId) {
+        add(ResultPollRequested(taskId));
+      }
+    });
   }
 
   @override
   Future<void> close() {
+    _generation++;
     _pollTimer?.cancel();
     return super.close();
   }

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../bloc/auth_bloc.dart';
 import '../../../../core/localization/app_translations.dart';
+import '../../../../core/theme/app_radius.dart';
 import '../../../../core/di/injection_container.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -22,7 +23,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
           context.go('/main/home');
         } else if (state is AuthError) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+            SnackBar(
+              content: Text(state.message.tr(context)),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
           );
         }
       },
@@ -46,6 +50,7 @@ class _RegisterViewState extends State<_RegisterView> {
   final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
+  bool _preparingSubmission = false;
   bool _termsAccepted = false;
 
   @override
@@ -58,16 +63,20 @@ class _RegisterViewState extends State<_RegisterView> {
   }
 
   Future<void> _submit() async {
+    if (_preparingSubmission || context.read<AuthBloc>().state is AuthLoading) {
+      return;
+    }
     if (!_formKey.currentState!.validate()) return;
     if (!_termsAccepted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('auth_terms_error'.tr(context)),
-          backgroundColor: Colors.red,
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
       return;
     }
+    setState(() => _preparingSubmission = true);
     try {
       final consents = await ServiceLocator.settingsRepository.getConsents();
       if (!mounted) return;
@@ -85,24 +94,25 @@ class _RegisterViewState extends State<_RegisterView> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('auth_consent_load_error'.tr(context)),
-          backgroundColor: Colors.red,
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
+    } finally {
+      if (mounted) setState(() => _preparingSubmission = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? const Color(0xFF141F2B) : const Color(0xFFF5F7F9);
-    final cardColor = isDark ? const Color(0xFF1E2936) : Colors.white;
-    final textColor = isDark ? Colors.white : const Color(0xFF111827);
-    final subtitleColor = isDark ? Colors.white70 : const Color(0xFF6B7280);
-    final primaryColor = const Color(0xFF007293);
-    final inputFillColor = isDark ? const Color(0xFF141F2B) : Colors.white;
-    final inputBorderColor = isDark
-        ? const Color(0xFF334155)
-        : const Color(0xFFE2E8F0);
+    final colors = Theme.of(context).colorScheme;
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
+    final cardColor = colors.surface;
+    final textColor = Theme.of(context).colorScheme.onSurface;
+    final subtitleColor = colors.onSurfaceVariant;
+    final primaryColor = colors.primary;
+    final inputFillColor = colors.surface;
+    final inputBorderColor = colors.outline;
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -152,7 +162,7 @@ class _RegisterViewState extends State<_RegisterView> {
                   Container(
                     decoration: BoxDecoration(
                       color: cardColor,
-                      borderRadius: BorderRadius.circular(24),
+                      borderRadius: AppRadius.lgBorder,
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withValues(alpha: 0.05),
@@ -204,6 +214,7 @@ class _RegisterViewState extends State<_RegisterView> {
                             controller: _displayNameController,
                             style: TextStyle(color: textColor),
                             decoration: InputDecoration(
+                              labelText: 'auth_fullname'.tr(context),
                               hintText: 'auth_fullname_hint'.tr(context),
                               hintStyle: TextStyle(
                                 color: subtitleColor.withValues(alpha: 0.5),
@@ -219,15 +230,15 @@ class _RegisterViewState extends State<_RegisterView> {
                                 vertical: 16,
                               ),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: AppRadius.lgBorder,
                                 borderSide: BorderSide(color: inputBorderColor),
                               ),
                               enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: AppRadius.lgBorder,
                                 borderSide: BorderSide(color: inputBorderColor),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: AppRadius.lgBorder,
                                 borderSide: BorderSide(color: primaryColor),
                               ),
                             ),
@@ -252,6 +263,7 @@ class _RegisterViewState extends State<_RegisterView> {
                             keyboardType: TextInputType.emailAddress,
                             style: TextStyle(color: textColor),
                             decoration: InputDecoration(
+                              labelText: 'auth_email'.tr(context),
                               hintText: 'example@email.com',
                               hintStyle: TextStyle(
                                 color: subtitleColor.withValues(alpha: 0.5),
@@ -267,15 +279,15 @@ class _RegisterViewState extends State<_RegisterView> {
                                 vertical: 16,
                               ),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: AppRadius.lgBorder,
                                 borderSide: BorderSide(color: inputBorderColor),
                               ),
                               enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: AppRadius.lgBorder,
                                 borderSide: BorderSide(color: inputBorderColor),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: AppRadius.lgBorder,
                                 borderSide: BorderSide(color: primaryColor),
                               ),
                             ),
@@ -308,6 +320,7 @@ class _RegisterViewState extends State<_RegisterView> {
                             obscureText: _obscurePassword,
                             style: TextStyle(color: textColor),
                             decoration: InputDecoration(
+                              labelText: 'auth_password'.tr(context),
                               hintText: 'auth_password_min_hint'.tr(context),
                               hintStyle: TextStyle(
                                 color: subtitleColor.withValues(alpha: 0.5),
@@ -317,6 +330,11 @@ class _RegisterViewState extends State<_RegisterView> {
                                 color: subtitleColor,
                               ),
                               suffixIcon: IconButton(
+                                tooltip:
+                                    (_obscurePassword
+                                            ? 'auth_show_password'
+                                            : 'auth_hide_password')
+                                        .tr(context),
                                 icon: Icon(
                                   _obscurePassword
                                       ? Icons.visibility_outlined
@@ -334,15 +352,15 @@ class _RegisterViewState extends State<_RegisterView> {
                                 vertical: 16,
                               ),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: AppRadius.lgBorder,
                                 borderSide: BorderSide(color: inputBorderColor),
                               ),
                               enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: AppRadius.lgBorder,
                                 borderSide: BorderSide(color: inputBorderColor),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: AppRadius.lgBorder,
                                 borderSide: BorderSide(color: primaryColor),
                               ),
                             ),
@@ -373,6 +391,7 @@ class _RegisterViewState extends State<_RegisterView> {
                             obscureText: _obscureConfirm,
                             style: TextStyle(color: textColor),
                             decoration: InputDecoration(
+                              labelText: 'auth_password_confirm'.tr(context),
                               hintText: 'auth_password_confirm_hint'.tr(
                                 context,
                               ),
@@ -384,6 +403,11 @@ class _RegisterViewState extends State<_RegisterView> {
                                 color: subtitleColor,
                               ),
                               suffixIcon: IconButton(
+                                tooltip:
+                                    (_obscureConfirm
+                                            ? 'auth_show_password'
+                                            : 'auth_hide_password')
+                                        .tr(context),
                                 icon: Icon(
                                   _obscureConfirm
                                       ? Icons.visibility_outlined
@@ -401,15 +425,15 @@ class _RegisterViewState extends State<_RegisterView> {
                                 vertical: 16,
                               ),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: AppRadius.lgBorder,
                                 borderSide: BorderSide(color: inputBorderColor),
                               ),
                               enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: AppRadius.lgBorder,
                                 borderSide: BorderSide(color: inputBorderColor),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: AppRadius.lgBorder,
                                 borderSide: BorderSide(color: primaryColor),
                               ),
                             ),
@@ -432,9 +456,11 @@ class _RegisterViewState extends State<_RegisterView> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(
-                                width: 24,
-                                height: 24,
+                                width: 48,
+                                height: 48,
                                 child: Checkbox(
+                                  semanticLabel:
+                                      '${'auth_terms_accept'.tr(context)} ${'auth_terms_link'.tr(context)} ${'auth_terms_and'.tr(context)} ${'auth_privacy_link'.tr(context)}',
                                   value: _termsAccepted,
                                   onChanged: (v) => setState(
                                     () => _termsAccepted = v ?? false,
@@ -449,6 +475,7 @@ class _RegisterViewState extends State<_RegisterView> {
                               const SizedBox(width: 12),
                               Expanded(
                                 child: RichText(
+                                  textScaler: MediaQuery.textScalerOf(context),
                                   text: TextSpan(
                                     style: TextStyle(
                                       fontSize: 12,
@@ -494,7 +521,9 @@ class _RegisterViewState extends State<_RegisterView> {
                             child: BlocBuilder<AuthBloc, AuthState>(
                               builder: (context, state) {
                                 return ElevatedButton.icon(
-                                  onPressed: state is AuthLoading
+                                  onPressed:
+                                      _preparingSubmission ||
+                                          state is AuthLoading
                                       ? null
                                       : _submit,
                                   style: ElevatedButton.styleFrom(
@@ -575,9 +604,11 @@ class _RegisterViewState extends State<_RegisterView> {
                               TextButton(
                                 onPressed: () => context.go('/login'),
                                 style: TextButton.styleFrom(
-                                  padding: EdgeInsets.zero,
-                                  tapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
+                                  minimumSize: const Size(48, 48),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                  ),
+                                  tapTargetSize: MaterialTapTargetSize.padded,
                                 ),
                                 child: Text(
                                   'auth_login_button'.tr(context),
@@ -589,49 +620,6 @@ class _RegisterViewState extends State<_RegisterView> {
                                 ),
                               ),
                             ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-
-                  // Bottom badge
-                  Center(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? const Color(0xFF1E2936)
-                            : const Color(0xFFE0F2FE),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: isDark
-                              ? const Color(0xFF334155)
-                              : const Color(0xFFBAE6FD),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.shield,
-                            color: Color(0xFF10B981),
-                            size: 16,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'END-TO-END ENCRYPTED DATA PROTECTION',
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              color: isDark
-                                  ? const Color(0xFF10B981)
-                                  : const Color(0xFF047857),
-                            ),
                           ),
                         ],
                       ),

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:scam_image_mobile/features/scan/domain/entities/analysis_task.dart';
@@ -43,6 +44,110 @@ void main() {
     repo = MockScanRepo();
   });
 
+  test(
+    'duplicate upload and active polling do not submit the same image twice',
+    () async {
+      final pending = Completer<String>();
+      when(
+        () => repo.submitImage(
+          filePath: any(named: 'filePath'),
+          scanName: any(named: 'scanName'),
+        ),
+      ).thenAnswer((_) => pending.future);
+      final bloc = ScanBloc(repository: repo);
+      bloc.add(CropConfirmed('/image.jpg'));
+      await bloc.stream.firstWhere((state) => state is ScanUploading);
+      bloc.add(CropConfirmed('/image.jpg'));
+      await Future<void>.delayed(Duration.zero);
+      verify(
+        () => repo.submitImage(filePath: '/image.jpg', scanName: null),
+      ).called(1);
+      pending.complete('task-duplicate');
+      await bloc.stream.firstWhere((state) => state is ScanPolling);
+      bloc.add(CropConfirmed('/image.jpg'));
+      await Future<void>.delayed(Duration.zero);
+      verifyNever(
+        () => repo.submitImage(filePath: '/image.jpg', scanName: null),
+      );
+      bloc.add(AnalysisCancelled());
+      await bloc.stream.firstWhere((state) => state is ScanInitial);
+      final ready = bloc.stream.firstWhere((state) => state is ScanPolling);
+      bloc.add(CropConfirmed('/image.jpg'));
+      await ready;
+      verify(
+        () => repo.submitImage(filePath: '/image.jpg', scanName: null),
+      ).called(1);
+      await bloc.close();
+    },
+  );
+
+  test(
+    'timeout retry resumes canonical task without uploading again',
+    () async {
+      _stubSubmit(repo, 'existing-task');
+      final bloc = ScanBloc(repository: repo, timeoutSeconds: 3);
+      await _startScan(bloc);
+      bloc.add(AnalysisPollTick('existing-task'));
+      await bloc.stream.firstWhere((state) => state is ScanTimeout);
+      expect((bloc.state as ScanTimeout).taskId, 'existing-task');
+      final resumed = bloc.stream.firstWhere((state) => state is ScanPolling);
+      bloc.add(AnalysisResumed('existing-task'));
+      await resumed;
+      expect((bloc.state as ScanPolling).taskId, 'existing-task');
+      verify(
+        () => repo.submitImage(filePath: '/image.jpg', scanName: null),
+      ).called(1);
+      await bloc.close();
+    },
+  );
+
+  test('wall clock deadline ends scan even without any polling tick', () async {
+    _stubSubmit(repo, 'deadline-task');
+    final bloc = ScanBloc(
+      repository: repo,
+      timeoutSeconds: 0,
+      pollInterval: const Duration(hours: 1),
+    );
+    final timedOut = bloc.stream.firstWhere((state) => state is ScanTimeout);
+    bloc.add(CropConfirmed('/image.jpg'));
+    await timedOut.timeout(const Duration(seconds: 1));
+    expect((bloc.state as ScanTimeout).taskId, 'deadline-task');
+    verifyNever(() => repo.getAnalysisStatus(any()));
+    await bloc.close();
+  });
+
+  testWidgets(
+    'polling survives background and resume without submitting again',
+    (tester) async {
+      await tester.runAsync(() async {
+        _stubSubmit(repo, 'lifecycle-task');
+        when(() => repo.getAnalysisStatus('lifecycle-task')).thenAnswer(
+          (_) async => _task(
+            'lifecycle-task',
+            AnalysisTaskStatus.completed,
+            progress: 100,
+          ),
+        );
+        final bloc = ScanBloc(repository: repo);
+        await _startScan(bloc);
+        tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+        tester.binding.handleAppLifecycleStateChanged(
+          AppLifecycleState.resumed,
+        );
+        final completed = bloc.stream.firstWhere(
+          (state) => state is ScanCompleted,
+        );
+        bloc.add(AnalysisPollTick('lifecycle-task'));
+        await completed;
+        expect((bloc.state as ScanCompleted).taskId, 'lifecycle-task');
+        verify(
+          () => repo.submitImage(filePath: '/image.jpg', scanName: null),
+        ).called(1);
+        await bloc.close();
+      });
+    },
+  );
+
   group('CropConfirmed', () {
     blocTest<ScanBloc, ScanState>(
       'emits uploading then polling for a successful upload',
@@ -77,6 +182,21 @@ void main() {
           'scan_error_network',
         ),
       ],
+    );
+
+    blocTest<ScanBloc, ScanState>(
+      'maps other upload failures to the generic upload message',
+      build: () {
+        when(
+          () => repo.submitImage(
+            filePath: any(named: 'filePath'),
+            scanName: any(named: 'scanName'),
+          ),
+        ).thenThrow(Exception('invalid image'));
+        return ScanBloc(repository: repo);
+      },
+      act: (bloc) => bloc.add(CropConfirmed('/image.jpg')),
+      expect: () => [isA<ScanUploading>(), ScanError('scan_error_upload')],
     );
 
     test(
@@ -121,6 +241,29 @@ void main() {
   });
 
   group('AnalysisPollTick', () {
+    test('periodic timer polls the currently active task', () async {
+      _stubSubmit(repo, 'task-1');
+      final firstPoll = Completer<void>();
+      when(() => repo.getAnalysisStatus('task-1')).thenAnswer((_) async {
+        if (!firstPoll.isCompleted) firstPoll.complete();
+        return _task('task-1', AnalysisTaskStatus.processingText, progress: 25);
+      });
+      final bloc = ScanBloc(
+        repository: repo,
+        pollInterval: const Duration(milliseconds: 10),
+      );
+      await _startScan(bloc);
+
+      final updated = bloc.stream.firstWhere(
+        (state) => state is ScanPolling && state.progress == 25,
+      );
+      await firstPoll.future.timeout(const Duration(seconds: 1));
+      await updated.timeout(const Duration(seconds: 1));
+      expect((bloc.state as ScanPolling).progress, 25);
+      verify(() => repo.getAnalysisStatus('task-1')).called(greaterThan(0));
+      await bloc.close();
+    });
+
     test(
       'updates active task progress and clamps malformed progress to 100',
       () async {
@@ -142,6 +285,34 @@ void main() {
         await updated.timeout(const Duration(seconds: 1));
 
         expect((bloc.state as ScanPolling).progress, 100);
+        await bloc.close();
+      },
+    );
+
+    test(
+      'clamps negative progress to zero and ignores ticks for other tasks',
+      () async {
+        _stubSubmit(repo, 'task-1');
+        when(() => repo.getAnalysisStatus('task-1')).thenAnswer(
+          (_) async => _task(
+            'task-1',
+            AnalysisTaskStatus.processingVisual,
+            progress: -10,
+          ),
+        );
+        final bloc = ScanBloc(repository: repo);
+        await _startScan(bloc);
+
+        bloc.add(AnalysisPollTick('not-active'));
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+        verifyNever(() => repo.getAnalysisStatus(any()));
+
+        final updated = bloc.stream.firstWhere(
+          (state) => state is ScanPolling && state.progress == 0,
+        );
+        bloc.add(AnalysisPollTick('task-1'));
+        await updated.timeout(const Duration(seconds: 1));
+        expect((bloc.state as ScanPolling).progress, 0);
         await bloc.close();
       },
     );
@@ -181,6 +352,24 @@ void main() {
       await failed.timeout(const Duration(seconds: 1));
       expect((failedBloc.state as ScanError).message, 'Server error');
       await failedBloc.close();
+
+      reset(repo);
+      _stubSubmit(repo, 'task-3');
+      when(
+        () => repo.getAnalysisStatus('task-3'),
+      ).thenAnswer((_) async => _task('task-3', AnalysisTaskStatus.failed));
+      final missingMessageBloc = ScanBloc(repository: repo);
+      await _startScan(missingMessageBloc);
+      final missingMessage = missingMessageBloc.stream.firstWhere(
+        (state) => state is ScanError,
+      );
+      missingMessageBloc.add(AnalysisPollTick('task-3'));
+      await missingMessage.timeout(const Duration(seconds: 1));
+      expect(
+        (missingMessageBloc.state as ScanError).message,
+        'scan_error_analysis_failed',
+      );
+      await missingMessageBloc.close();
     });
 
     test(
@@ -317,5 +506,37 @@ void main() {
       act: (bloc) => bloc.add(AnalysisCancelled()),
       expect: () => [isA<ScanInitial>()],
     );
+  });
+
+  group('Scan event and state equality', () {
+    test('events compare the values used by polling and scan submission', () {
+      expect(CropConfirmed('/one.jpg'), equals(CropConfirmed('/one.jpg')));
+      expect(
+        CropConfirmed('/one.jpg'),
+        isNot(equals(CropConfirmed('/two.jpg'))),
+      );
+      expect(AnalysisPollTick('task-1'), equals(AnalysisPollTick('task-1')));
+      expect(
+        AnalysisPollTick('task-1'),
+        isNot(equals(AnalysisPollTick('task-2'))),
+      );
+      expect(AnalysisCancelled(), equals(AnalysisCancelled()));
+    });
+
+    test('states compare task identity, progress and error details', () {
+      expect(ScanInitial(), equals(ScanInitial()));
+      expect(ScanUploading(), equals(ScanUploading()));
+      expect(
+        ScanPolling(taskId: 'task-1', progress: 20),
+        equals(ScanPolling(taskId: 'task-1', progress: 20)),
+      );
+      expect(
+        ScanPolling(taskId: 'task-1', progress: 20),
+        isNot(equals(ScanPolling(taskId: 'task-2', progress: 20))),
+      );
+      expect(ScanCompleted('task-1'), equals(ScanCompleted('task-1')));
+      expect(ScanError('network'), equals(ScanError('network')));
+      expect(ScanTimeout(), equals(ScanTimeout()));
+    });
   });
 }

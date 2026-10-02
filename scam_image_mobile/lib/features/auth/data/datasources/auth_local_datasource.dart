@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import '../../../../core/storage/secure_storage.dart';
+import '../../../../core/errors/exceptions.dart';
 import '../models/auth_token_model.dart';
 
 /// Handles local persistence of auth tokens via [SecureStorage].
@@ -12,17 +13,14 @@ class AuthLocalDataSource {
   /// Persists both access and refresh tokens (and optional expiry) to secure
   /// storage.
   Future<void> saveTokens(AuthTokenModel token) async {
-    await secureStorage.saveToken(kAccessToken, token.accessToken);
-    await secureStorage.saveToken(kRefreshToken, token.refreshToken);
-    if (token.expiresAt != null) {
-      await secureStorage.saveToken(
-        kTokenExpiresAt,
-        token.expiresAt!.toIso8601String(),
-      );
-    } else {
-      // Never carry an expiry timestamp from a previous session into a new
-      // token that does not explicitly provide one.
-      await secureStorage.deleteToken(kTokenExpiresAt);
+    final saved = await secureStorage.saveAuthTokens(
+      accessToken: token.accessToken,
+      refreshToken: token.refreshToken,
+      expiresAt: token.expiresAt?.toIso8601String(),
+      expectedRevision: secureStorage.authRevision,
+    );
+    if (!saved) {
+      throw const AuthException('Session ended during credential save');
     }
   }
 
@@ -42,6 +40,7 @@ class AuthLocalDataSource {
   /// exists and otherwise read `exp` from the JWT payload. This is only a local
   /// freshness check; the server remains authoritative for token validity.
   Future<bool> hasValidToken() async {
+    if (!secureStorage.authSessionActive) return false;
     final token = await secureStorage.getToken(kAccessToken);
     if (token == null || token.isEmpty) return false;
 

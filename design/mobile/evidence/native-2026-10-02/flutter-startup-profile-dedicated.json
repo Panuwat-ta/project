@@ -1,0 +1,45 @@
+{
+  "signed_out_startup_frames": {
+    "average_frame_build_time_millis": 15.81,
+    "90th_percentile_frame_build_time_millis": 29.173,
+    "99th_percentile_frame_build_time_millis": 29.173,
+    "worst_frame_build_time_millis": 29.173,
+    "missed_frame_build_budget_count": 1,
+    "average_frame_rasterizer_time_millis": 13.43,
+    "90th_percentile_frame_rasterizer_time_millis": 28.019,
+    "99th_percentile_frame_rasterizer_time_millis": 28.019,
+    "worst_frame_rasterizer_time_millis": 28.019,
+    "average_layer_cache_count": 0.0,
+    "90th_percentile_layer_cache_count": 0,
+    "99th_percentile_layer_cache_count": 0,
+    "worst_layer_cache_count": 0,
+    "average_layer_cache_memory": 0.0,
+    "90th_percentile_layer_cache_memory": 0.0,
+    "99th_percentile_layer_cache_memory": 0.0,
+    "worst_layer_cache_memory": 0.0,
+    "average_picture_cache_count": 0.0,
+    "90th_percentile_picture_cache_count": 0,
+    "99th_percentile_picture_cache_count": 0,
+    "worst_picture_cache_count": 0,
+    "average_picture_cache_memory": 0.0,
+    "90th_percentile_picture_cache_memory": 0.0,
+    "99th_percentile_picture_cache_memory": 0.0,
+    "worst_picture_cache_memory": 0.0,
+    "missed_frame_rasterizer_budget_count": 1,
+    "frame_count": 3,
+    "frame_build_times": [
+      29173,
+      12138,
+      6119
+    ],
+    "frame_rasterizer_times": [
+      8913,
+      3359,
+      28019
+    ],
+    "new_gen_gc_count": 4,
+    "old_gen_gc_count": 0
+  },
+  "di_to_signed_out_route_ms": 382,
+  "scope": "Profile test harness DI to Login/Onboarding and Flutter frames; not OS cold startup, authenticated flows or full soak"
+}
