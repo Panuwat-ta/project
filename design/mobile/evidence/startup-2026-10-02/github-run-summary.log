@@ -1,0 +1,6 @@
+quality	Analyze	2026-10-02T01:31:40.6870789Z No issues found! (ran in 11.5s)
+quality	Test quality gate tools	2026-10-02T01:31:40.9660100Z Ran 8 tests in 0.071s
+quality	Test with branch coverage	2026-10-02T01:33:08.5955245Z 01:14 +737: All tests passed!
+quality	Enforce coverage >= 80 percent	2026-10-02T01:33:08.7328035Z   "line_percent": 90.89398471252908,
+quality	Enforce coverage >= 80 percent	2026-10-02T01:33:08.7328723Z   "branch_percent": 82.29105786090005,
+quality	Audit resolved Pub and Maven dependencies	2026-10-02T01:36:50.4467413Z {"status": "passed", "packages": 230, "findings": 0, "report": "build/quality/dependency-audit.json"}

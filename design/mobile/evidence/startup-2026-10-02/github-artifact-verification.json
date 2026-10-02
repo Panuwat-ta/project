@@ -1,0 +1,10 @@
+{
+  "run_id": 36951286426,
+  "source_commit": "ac5e8334097739539d143be0e2d91b004656bbd8",
+  "bytes": 63447112,
+  "sha256": "addbba05d1155f9dcc0d9d72042b8a915686ee72230656e15709d30714ce3ff2",
+  "checksum_matches": true,
+  "env_asset_present": false,
+  "duplicate_launcher_png_present": false,
+  "purpose": "unsigned compile-only quality fixture; not production RC"
+}

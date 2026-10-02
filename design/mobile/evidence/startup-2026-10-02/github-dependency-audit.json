@@ -1,0 +1,1167 @@
+{
+  "checked_at": "2026-10-02T01:36:49.806461+00:00",
+  "status": "passed",
+  "source": "https://api.osv.dev/v1/querybatch",
+  "packages": [
+    {
+      "ecosystem": "Pub",
+      "name": "_fe_analyzer_shared",
+      "version": "99.0.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "analyzer",
+      "version": "12.1.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "archive",
+      "version": "4.3.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "args",
+      "version": "2.7.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "async",
+      "version": "2.13.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "bloc",
+      "version": "9.2.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "bloc_test",
+      "version": "10.0.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "boolean_selector",
+      "version": "2.1.2"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "cached_network_image",
+      "version": "3.4.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "cached_network_image_platform_interface",
+      "version": "4.1.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "cached_network_image_web",
+      "version": "1.3.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "characters",
+      "version": "1.4.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "cli_config",
+      "version": "0.2.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "clock",
+      "version": "1.1.2"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "code_assets",
+      "version": "1.2.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "collection",
+      "version": "1.19.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "convert",
+      "version": "3.1.2"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "coverage",
+      "version": "1.15.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "cross_file",
+      "version": "0.3.5+3"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "crypto",
+      "version": "3.0.7"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "cupertino_icons",
+      "version": "1.0.9"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "diff_match_patch",
+      "version": "0.4.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "dio",
+      "version": "5.10.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "dio_web_adapter",
+      "version": "2.2.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "equatable",
+      "version": "2.0.8"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "fake_async",
+      "version": "1.3.3"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "ffi",
+      "version": "2.2.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "ffi_leak_tracker",
+      "version": "0.1.2"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "file",
+      "version": "7.0.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "file_selector_linux",
+      "version": "0.9.4"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "file_selector_macos",
+      "version": "0.9.5"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "file_selector_platform_interface",
+      "version": "2.7.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "file_selector_windows",
+      "version": "0.9.3+5"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "fixnum",
+      "version": "1.1.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "flutter_bloc",
+      "version": "9.1.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "flutter_cache_manager",
+      "version": "3.4.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "flutter_lints",
+      "version": "6.0.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "flutter_plugin_android_lifecycle",
+      "version": "2.0.35"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "flutter_secure_storage",
+      "version": "10.3.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "flutter_secure_storage_darwin",
+      "version": "0.3.2"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "flutter_secure_storage_linux",
+      "version": "3.0.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "flutter_secure_storage_platform_interface",
+      "version": "2.0.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "flutter_secure_storage_web",
+      "version": "2.1.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "flutter_secure_storage_windows",
+      "version": "4.2.2"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "flutter_svg",
+      "version": "2.3.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "frontend_server_client",
+      "version": "4.0.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "glob",
+      "version": "2.1.3"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "go_router",
+      "version": "17.3.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "google_fonts",
+      "version": "8.1.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "hooks",
+      "version": "2.0.2"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "http",
+      "version": "1.6.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "http_multi_server",
+      "version": "3.2.2"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "http_parser",
+      "version": "4.1.2"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "image",
+      "version": "4.10.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "image_cropper",
+      "version": "12.2.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "image_cropper_for_web",
+      "version": "7.0.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "image_cropper_platform_interface",
+      "version": "8.0.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "image_picker",
+      "version": "1.2.3"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "image_picker_android",
+      "version": "0.8.13+19"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "image_picker_for_web",
+      "version": "3.1.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "image_picker_ios",
+      "version": "0.8.13+6"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "image_picker_linux",
+      "version": "0.2.2"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "image_picker_macos",
+      "version": "0.2.2+1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "image_picker_platform_interface",
+      "version": "2.11.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "image_picker_windows",
+      "version": "0.2.2"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "intl",
+      "version": "0.20.3"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "io",
+      "version": "1.0.5"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "jni",
+      "version": "1.0.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "jni_flutter",
+      "version": "1.0.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "leak_tracker",
+      "version": "11.0.2"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "leak_tracker_flutter_testing",
+      "version": "3.0.10"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "leak_tracker_testing",
+      "version": "3.0.2"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "lints",
+      "version": "6.1.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "logging",
+      "version": "1.3.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "matcher",
+      "version": "0.12.20"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "material_color_utilities",
+      "version": "0.13.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "meta",
+      "version": "1.19.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "mime",
+      "version": "2.0.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "mocktail",
+      "version": "1.0.5"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "native_toolchain_c",
+      "version": "0.19.3"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "nested",
+      "version": "1.0.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "node_preamble",
+      "version": "2.0.2"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "objective_c",
+      "version": "9.4.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "octo_image",
+      "version": "2.1.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "package_config",
+      "version": "2.2.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "path",
+      "version": "1.9.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "path_parsing",
+      "version": "1.1.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "path_provider",
+      "version": "2.1.6"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "path_provider_android",
+      "version": "2.3.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "path_provider_foundation",
+      "version": "2.6.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "path_provider_linux",
+      "version": "2.2.2"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "path_provider_platform_interface",
+      "version": "2.1.3"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "path_provider_windows",
+      "version": "2.3.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "petitparser",
+      "version": "7.0.2"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "platform",
+      "version": "3.1.6"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "plugin_platform_interface",
+      "version": "2.1.8"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "pool",
+      "version": "1.5.2"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "posix",
+      "version": "6.5.2"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "process",
+      "version": "5.0.6"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "provider",
+      "version": "6.1.5+1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "pub_semver",
+      "version": "2.2.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "record_use",
+      "version": "0.6.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "rxdart",
+      "version": "0.28.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "share_plus",
+      "version": "13.2.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "share_plus_platform_interface",
+      "version": "7.1.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "shelf",
+      "version": "1.4.2"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "shelf_packages_handler",
+      "version": "3.0.2"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "shelf_static",
+      "version": "1.1.3"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "shelf_web_socket",
+      "version": "3.0.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "source_map_stack_trace",
+      "version": "2.1.2"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "source_maps",
+      "version": "0.10.13"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "source_span",
+      "version": "1.10.2"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "sqflite",
+      "version": "2.4.3"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "sqflite_android",
+      "version": "2.4.3"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "sqflite_common",
+      "version": "2.5.11"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "sqflite_common_ffi",
+      "version": "2.4.3"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "sqflite_darwin",
+      "version": "2.4.3+1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "sqflite_platform_interface",
+      "version": "2.4.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "sqlite3",
+      "version": "3.5.2"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "stack_trace",
+      "version": "1.12.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "stream_channel",
+      "version": "2.1.4"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "string_scanner",
+      "version": "1.4.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "sync_http",
+      "version": "0.3.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "synchronized",
+      "version": "3.4.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "term_glyph",
+      "version": "1.2.2"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "test",
+      "version": "1.31.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "test_api",
+      "version": "0.7.12"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "test_core",
+      "version": "0.6.18"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "typed_data",
+      "version": "1.4.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "url_launcher_linux",
+      "version": "3.2.2"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "url_launcher_platform_interface",
+      "version": "2.3.2"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "url_launcher_web",
+      "version": "2.4.3"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "url_launcher_windows",
+      "version": "3.1.5"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "uuid",
+      "version": "4.5.3"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "vector_graphics",
+      "version": "1.2.2"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "vector_graphics_codec",
+      "version": "1.1.13"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "vector_graphics_compiler",
+      "version": "1.2.6"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "vector_math",
+      "version": "2.4.2"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "vm_service",
+      "version": "15.2.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "watcher",
+      "version": "1.2.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "web",
+      "version": "1.1.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "web_socket",
+      "version": "1.0.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "web_socket_channel",
+      "version": "3.0.3"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "webdriver",
+      "version": "3.1.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "webkit_inspection_protocol",
+      "version": "1.2.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "win32",
+      "version": "6.3.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "xdg_directories",
+      "version": "1.1.0"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "xml",
+      "version": "7.0.1"
+    },
+    {
+      "ecosystem": "Pub",
+      "name": "yaml",
+      "version": "3.1.3"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.activity:activity",
+      "version": "1.12.4"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.activity:activity-ktx",
+      "version": "1.12.4"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.annotation:annotation",
+      "version": "1.10.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.annotation:annotation-experimental",
+      "version": "1.4.1"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.annotation:annotation-jvm",
+      "version": "1.10.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.appcompat:appcompat",
+      "version": "1.1.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.appcompat:appcompat-resources",
+      "version": "1.1.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.arch.core:core-common",
+      "version": "2.2.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.arch.core:core-runtime",
+      "version": "2.2.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.asynclayoutinflater:asynclayoutinflater",
+      "version": "1.0.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.collection:collection",
+      "version": "1.4.2"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.collection:collection-jvm",
+      "version": "1.4.2"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.collection:collection-ktx",
+      "version": "1.4.2"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.compose.runtime:runtime-annotation",
+      "version": "1.9.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.compose.runtime:runtime-annotation-android",
+      "version": "1.9.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.concurrent:concurrent-futures",
+      "version": "1.1.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.coordinatorlayout:coordinatorlayout",
+      "version": "1.0.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.core:core",
+      "version": "1.18.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.core:core-ktx",
+      "version": "1.18.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.core:core-viewtree",
+      "version": "1.0.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.cursoradapter:cursoradapter",
+      "version": "1.0.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.customview:customview",
+      "version": "1.1.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.documentfile:documentfile",
+      "version": "1.0.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.drawerlayout:drawerlayout",
+      "version": "1.0.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.exifinterface:exifinterface",
+      "version": "1.4.2"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.fragment:fragment",
+      "version": "1.7.1"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.fragment:fragment-ktx",
+      "version": "1.7.1"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.interpolator:interpolator",
+      "version": "1.0.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.legacy:legacy-support-core-ui",
+      "version": "1.0.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.legacy:legacy-support-core-utils",
+      "version": "1.0.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.lifecycle:lifecycle-common",
+      "version": "2.7.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.lifecycle:lifecycle-common-java8",
+      "version": "2.7.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.lifecycle:lifecycle-livedata",
+      "version": "2.7.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.lifecycle:lifecycle-livedata-core",
+      "version": "2.7.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.lifecycle:lifecycle-livedata-core-ktx",
+      "version": "2.7.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.lifecycle:lifecycle-process",
+      "version": "2.7.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.lifecycle:lifecycle-runtime",
+      "version": "2.7.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.lifecycle:lifecycle-runtime-ktx",
+      "version": "2.7.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.lifecycle:lifecycle-viewmodel",
+      "version": "2.7.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.lifecycle:lifecycle-viewmodel-ktx",
+      "version": "2.7.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.lifecycle:lifecycle-viewmodel-savedstate",
+      "version": "2.7.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.loader:loader",
+      "version": "1.0.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.localbroadcastmanager:localbroadcastmanager",
+      "version": "1.0.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.navigationevent:navigationevent",
+      "version": "1.0.2"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.navigationevent:navigationevent-android",
+      "version": "1.0.2"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.preference:preference",
+      "version": "1.2.1"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.print:print",
+      "version": "1.0.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.profileinstaller:profileinstaller",
+      "version": "1.4.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.recyclerview:recyclerview",
+      "version": "1.0.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.savedstate:savedstate",
+      "version": "1.2.1"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.savedstate:savedstate-ktx",
+      "version": "1.2.1"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.slidingpanelayout:slidingpanelayout",
+      "version": "1.2.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.startup:startup-runtime",
+      "version": "1.1.1"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.swiperefreshlayout:swiperefreshlayout",
+      "version": "1.0.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.tracing:tracing",
+      "version": "1.2.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.transition:transition",
+      "version": "1.4.1"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.vectordrawable:vectordrawable",
+      "version": "1.1.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.vectordrawable:vectordrawable-animated",
+      "version": "1.1.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.versionedparcelable:versionedparcelable",
+      "version": "1.1.1"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.viewpager:viewpager",
+      "version": "1.0.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.window.extensions.core:core",
+      "version": "1.0.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.window:window",
+      "version": "1.2.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "androidx.window:window-java",
+      "version": "1.2.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "com.getkeepsafe.relinker:relinker",
+      "version": "1.4.5"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "com.github.Yalantis:ucrop",
+      "version": "2.2.11"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "com.google.code.findbugs:jsr305",
+      "version": "3.0.2"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "com.google.code.gson:gson",
+      "version": "2.13.2"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "com.google.crypto.tink:tink-android",
+      "version": "1.21.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "com.google.errorprone:error_prone_annotations",
+      "version": "2.41.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "com.google.guava:listenablefuture",
+      "version": "1.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "io.flutter:arm64_v8a_release",
+      "version": "1.0.0-a804b261645ef8c13eb3d5c44a5c2fb0340c5539"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "io.flutter:armeabi_v7a_release",
+      "version": "1.0.0-a804b261645ef8c13eb3d5c44a5c2fb0340c5539"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "io.flutter:flutter_embedding_release",
+      "version": "1.0.0-a804b261645ef8c13eb3d5c44a5c2fb0340c5539"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "io.flutter:x86_64_release",
+      "version": "1.0.0-a804b261645ef8c13eb3d5c44a5c2fb0340c5539"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "org.jetbrains.kotlin:kotlin-stdlib",
+      "version": "2.3.20"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "org.jetbrains.kotlinx:kotlinx-coroutines-android",
+      "version": "1.9.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "org.jetbrains.kotlinx:kotlinx-coroutines-bom",
+      "version": "1.9.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "org.jetbrains.kotlinx:kotlinx-coroutines-core",
+      "version": "1.9.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm",
+      "version": "1.9.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "org.jetbrains:annotations",
+      "version": "23.0.0"
+    },
+    {
+      "ecosystem": "Maven",
+      "name": "org.jspecify:jspecify",
+      "version": "1.0.0"
+    }
+  ],
+  "excluded_sdk_packages": [
+    "flutter",
+    "flutter_driver",
+    "flutter_test",
+    "flutter_web_plugins",
+    "fuchsia_remote_debug_protocol",
+    "integration_test",
+    "sky_engine"
+  ],
+  "findings": []
+}

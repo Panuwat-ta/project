@@ -22,3 +22,7 @@ SplashCubitdefaultหน่วง3วินาทีก่อนอ่านsess
 ## Compile artifacts ของ startupfixac5e833
 
 ProfileAPKcompileผ่าน33.8s(117.5MB) แต่ยังไม่ได้ติดตั้งcorrectsourceหลังstartupfixบนอุปกรณ์. UnsignedAABcompileผ่าน67.2s(61.4MB); zipassertionsไม่มี.env/ไม่มีlauncherPNGซ้ำ/SVG3ครบ; jarsignerยืนยันunsigned. Exactbytes/SHA256/ABIsในevidence/startup-2026-10-02/unsigned-aab.json. ทั้งคู่ไม่ใช่productionRC; productionidentity/key/signature/clean-upgradeinstallยังต้อง #83.
+
+## Remote CI ของ source ac5e833
+
+[Run36951286426](https://github.com/Panuwat-ta/project/actions/runs/36951286426) completed/success เวลา01:36:57UTC (08:36:57+07). Flutter737/737, Python tools8/8, analyzer0, line90.89%/branch82.29%, OSV230packages0findings. ดาวน์โหลด unsigned quality APK63,447,112bytes และตรวจ SHA256ตรง `addbba05d1155f9dcc0d9d72042b8a915686ee72230656e15709d30714ce3ff2`; ไม่พบ.env/launcherPNGซ้ำในAPK. Metadataอยู่evidence/startup-2026-10-02/github-*. ผลCIไม่ใช่nativeQAหรือsignedRC; #81/#83ยังOPEN.
