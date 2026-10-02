@@ -57,3 +57,11 @@ Export commit `849e52d` ด้วย git archive ไป directory ใหม่ (
 Export commit718c8d4ไปdirectoryใหม่และรันgatesตามworkflowลำดับที่แก้: ทุกgateผ่าน; full727/727 (44.677s), tooltests8/8, format/analyzer0, coverage>=80, unsignedcompile59.88s, graph/audit230packages0advisories, no.env. JSONหลักฐานใน `evidence/ci-2026-10-02/`; artifact SHA-256 `f451fa6ff214b58f001db27bda58e18ee4b1f8e381b4d58eef43e766312fbf76` เป็น unsignedfixture ไม่ใช่RC.
 
 พบbranchremoteมีcommit718c8d4แล้วจากread-only ls-remote; GitHub Actions run https://github.com/Panuwat-ta/project/actions/runs/36946512530 กำลังรัน. ยังไม่สรุปremoteCIpassจนruncompleted.
+
+## GitHub CI ยืนยันแล้ว
+
+Run36946512530 ของ718c8d4 completed/success ทุกstep; remotebranchcoverage82.27%, dependency230รายการ0advisories, qualityartifactuploadและdownloadchecksummatch. หลักฐานgithub-*ในevidence/ci-2026-10-02และreportissue84. งานCIgateผ่าน ไม่ใช่productiondeployment/sign-off.
+
+## Asset optimization #83
+
+PNGต้นฉบับlauncherไม่ได้มีcallerในFlutterlib จึงเปลี่ยนpubspecจากiconsfolderเป็น3SVGที่ใช้จริง. PNGต้นฉบับและAndroidmipmapsยังอยู่. AssetManifesttestใหม่+fullsuite728ผ่าน; analyzer0; unsignedbuild49.0s ขนาด63,447,112bytes ลด1,009,923bytes; SHA256`7c9c0004c43e9b0a491270b61bf6a38cdcf5c3e7f2b7a951c05968e9db657360`. No.env/noPNGduplicate/SVG3ครบ. ยังไม่ได้signedAABหรือactualclean-upgradeinstall.

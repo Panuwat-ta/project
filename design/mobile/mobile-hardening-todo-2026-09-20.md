@@ -29,7 +29,7 @@
 | [#87](https://github.com/Panuwat-ta/project/issues/87) | §16 Release Candidate QA |
 | [#88](https://github.com/Panuwat-ta/project/issues/88) | Master roadmap; references #71–#87 |
 
-ตัวเลข coverage ใน §0.4 เป็นผลย้อนหลัง ณ 20 กันยายน 2026 ไม่ใช่ผลปัจจุบัน. ผลล่าสุด 2026-10-02 หลัง security/config hardening: full suite ผ่าน 727 tests; LCOV line 5,462/6,010 (90.88%) และ branch 1,399/1,703 (82.15%). รายงานล่าสุดคือ `tests_all/tests_report/automate_tests/mobile/issue-78-security-2026-10-02.md`; residual branches ของ Issues #74/#75 อยู่ในรายงานเดิม `issue-74-75-2026-10-02.md`.
+ตัวเลข coverage ใน §0.4 เป็นผลย้อนหลัง ณ 20 กันยายน 2026 ไม่ใช่ผลปัจจุบัน. ผลล่าสุด 2026-10-02 หลัง security/config hardening: full suite ผ่าน 728 tests; LCOV line 5,456/6,010 (90.78%) และ branch 1,394/1,703 (81.86%). รายงานล่าสุดคือ `tests_all/tests_report/automate_tests/mobile/issue-78-security-2026-10-02.md`; residual branches ของ Issues #74/#75 อยู่ในรายงานเดิม `issue-74-75-2026-10-02.md`.
 
 ## สัญลักษณ์สถานะ
 
@@ -388,20 +388,20 @@
 - [ ] release build ต้องไม่มี debug network/body logging
 ## 14. P1 — CI/CD และ Quality Gates
 
-- [ ] CI ใช้ Flutter/Dart version ที่ pin/บันทึกไว้ชัดเจน
-- [ ] CI รัน `flutter pub get`
-- [ ] CI รัน `dart format --output=none --set-exit-if-changed` เฉพาะ scope ที่กำหนด หรือ normalize legacy ก่อนบังคับทั้ง repo
-- [ ] CI รัน `flutter analyze`
-- [ ] CI รัน full `flutter test`
-- [ ] CI รัน `flutter test --branch-coverage`
-- [ ] CI fail ถ้า branch coverage ต่ำกว่า 80% เมื่อ NFR-09 พร้อมบังคับใช้
-- [ ] CI build release/AAB จาก production config โดยไม่เผย secret
-- [ ] dependency/security audit เป็น release gate
-- [ ] เก็บ test/coverage/build artifacts ของแต่ละ release
-- [ ] ห้าม auto-deploy production เมื่อ final gate fail
-- [ ] production deploy ต้องมี human approval
+- [x] CI ใช้ Flutter/Dart version ที่ pin/บันทึกไว้ชัดเจน
+- [x] CI รัน `flutter pub get`
+- [x] CI รัน `dart format --output=none --set-exit-if-changed` เฉพาะ scope ที่กำหนด หรือ normalize legacy ก่อนบังคับทั้ง repo
+- [x] CI รัน `flutter analyze`
+- [x] CI รัน full `flutter test`
+- [x] CI รัน `flutter test --branch-coverage`
+- [x] CI fail ถ้า branch coverage ต่ำกว่า 80% เมื่อ NFR-09 พร้อมบังคับใช้
+- [x] CI compile unsigned release จาก explicit HTTPSfixture โดยไม่มีproductionsecret; signedproductionAABอยู่ #83
+- [x] dependency/security audit เป็น release gate
+- [x] เก็บ test/coverage/build artifacts ของแต่ละ release
+- [x] ห้าม auto-deploy production เมื่อ final gate fail
+- [H] production signing/distribution/deploy เป็นขั้นแยกที่ต้องให้คนอนุมัติ; workflowนี้ไม่มีdeploy/publishstep
 
-workflow #84 เพิ่มแล้วและ tooling tests 8/8 ผ่าน; actual GitHub clean-checkout run ยังไม่เกิด. Compile artifact เป็น unsigned quality fixture ไม่ใช่ production/RC.
+workflow #84 และ tooling tests8/8ผ่าน; actual GitHub clean-checkout run36946512530 completed/successครบทุกgate (หลักฐานissue-84-ci-2026-10-02.md). Compile artifact เป็น unsigned quality fixture ไม่ใช่ production/RC.
 
 ## 15. P1 — Store/Distribution readiness
 

@@ -61,5 +61,8 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/icons/
+    # Launcher PNG is an Android mipmap source, not a Flutter runtime asset.
+    - assets/icons/google.svg
+    - assets/icons/github.svg
+    - assets/icons/facebook.svg
     - assets/images/

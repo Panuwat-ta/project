@@ -1,0 +1,71 @@
+{
+  "unsigned_compile_fixture": true,
+  "largest_entries": [
+    {
+      "path": "lib/x86_64/libflutter.so",
+      "compressed_bytes": 13051424,
+      "uncompressed_bytes": 13051424
+    },
+    {
+      "path": "lib/arm64-v8a/libflutter.so",
+      "compressed_bytes": 11747864,
+      "uncompressed_bytes": 11747864
+    },
+    {
+      "path": "lib/armeabi-v7a/libapp.so",
+      "compressed_bytes": 9781832,
+      "uncompressed_bytes": 9781832
+    },
+    {
+      "path": "lib/x86_64/libapp.so",
+      "compressed_bytes": 8979336,
+      "uncompressed_bytes": 8979336
+    },
+    {
+      "path": "lib/arm64-v8a/libapp.so",
+      "compressed_bytes": 8717192,
+      "uncompressed_bytes": 8717192
+    },
+    {
+      "path": "lib/armeabi-v7a/libflutter.so",
+      "compressed_bytes": 8615900,
+      "uncompressed_bytes": 8615900
+    },
+    {
+      "path": "assets/flutter_assets/assets/icons/scamguard_app_icon.png",
+      "compressed_bytes": 1009713,
+      "uncompressed_bytes": 1009713
+    },
+    {
+      "path": "assets/flutter_assets/assets/images/onboarding_hero.png",
+      "compressed_bytes": 780258,
+      "uncompressed_bytes": 780258
+    },
+    {
+      "path": "classes.dex",
+      "compressed_bytes": 733989,
+      "uncompressed_bytes": 1622196
+    },
+    {
+      "path": "resources.arsc",
+      "compressed_bytes": 197648,
+      "uncompressed_bytes": 197648
+    },
+    {
+      "path": "lib/arm64-v8a/libdartjni.so",
+      "compressed_bytes": 124592,
+      "uncompressed_bytes": 124592
+    },
+    {
+      "path": "lib/x86_64/libdartjni.so",
+      "compressed_bytes": 108464,
+      "uncompressed_bytes": 108464
+    }
+  ],
+  "total_compressed_bytes": 64317851,
+  "native_abis": [
+    "arm64-v8a",
+    "armeabi-v7a",
+    "x86_64"
+  ]
+}
