@@ -1,0 +1,9 @@
+{
+  "source_commit": "718c8d4fd15cc1c75b2ee270abec5532e0fc3b7b",
+  "size_bytes": 64457035,
+  "sha256": "f451fa6ff214b58f001db27bda58e18ee4b1f8e381b4d58eef43e766312fbf76",
+  "env_assets": 0,
+  "signed": false,
+  "distribution_ready": false,
+  "configuration": "staging HTTPS example.invalid compile fixture"
+}

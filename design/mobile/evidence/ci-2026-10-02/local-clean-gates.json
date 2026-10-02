@@ -1,0 +1,47 @@
+[
+  {
+    "step": "pub",
+    "exit_code": 0,
+    "seconds": 1.347
+  },
+  {
+    "step": "format",
+    "exit_code": 0,
+    "seconds": 0.922
+  },
+  {
+    "step": "analyze",
+    "exit_code": 0,
+    "seconds": 3.989
+  },
+  {
+    "step": "tool-tests",
+    "exit_code": 0,
+    "seconds": 0.238
+  },
+  {
+    "step": "flutter-tests",
+    "exit_code": 0,
+    "seconds": 44.677
+  },
+  {
+    "step": "coverage",
+    "exit_code": 0,
+    "seconds": 0.044
+  },
+  {
+    "step": "unsigned-build",
+    "exit_code": 0,
+    "seconds": 59.88
+  },
+  {
+    "step": "android-dependencies",
+    "exit_code": 0,
+    "seconds": 1.245
+  },
+  {
+    "step": "audit",
+    "exit_code": 0,
+    "seconds": 2.136
+  }
+]

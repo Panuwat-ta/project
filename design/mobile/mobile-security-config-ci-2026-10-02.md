@@ -51,3 +51,9 @@ Gradle อ่าน identity/key จาก environment; release packaging ไม
 ## Clean source verification รอบแรก
 
 Export commit `849e52d` ด้วย git archive ไป directory ใหม่ (ไม่มี `.env`/build/.dart_tool): locked pub get, format, analyzer, tool tests8/8, full Flutter727/727 ผ่าน (45.183s), coverage gateผ่าน. แต่ Android graph เริ่มไม่ได้เพราะ `gradlew` ไม่ tracked ใน repo และต้องให้ Flutter build bootstrap ก่อน. จึงย้าย unsigned release compile ไปก่อน dependency graph ใน workflow; ยังไม่ถือว่ารอบนี้ผ่านทุก gate.
+
+## Clean source verification รอบสุดท้าย
+
+Export commit718c8d4ไปdirectoryใหม่และรันgatesตามworkflowลำดับที่แก้: ทุกgateผ่าน; full727/727 (44.677s), tooltests8/8, format/analyzer0, coverage>=80, unsignedcompile59.88s, graph/audit230packages0advisories, no.env. JSONหลักฐานใน `evidence/ci-2026-10-02/`; artifact SHA-256 `f451fa6ff214b58f001db27bda58e18ee4b1f8e381b4d58eef43e766312fbf76` เป็น unsignedfixture ไม่ใช่RC.
+
+พบbranchremoteมีcommit718c8d4แล้วจากread-only ls-remote; GitHub Actions run https://github.com/Panuwat-ta/project/actions/runs/36946512530 กำลังรัน. ยังไม่สรุปremoteCIpassจนruncompleted.
