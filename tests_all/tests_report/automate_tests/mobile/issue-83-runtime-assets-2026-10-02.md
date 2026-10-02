@@ -17,3 +17,21 @@ AssetManifest assertionมีgoogle/github/facebookSVGและonboardingheroค
 รอบก่อนถูกinterrupt: runnerถึง611Passedแต่เกิด5loadingerrors/SIGTERMและbuildexit143 จึงไม่ถือว่าผ่าน. หลังเปลี่ยนpermission profile Flutterต้องเขียนSDKcacheนอกworkspace; sandboxattemptexit1 แล้วรันใหม่ด้วยapprovedescalationจน728ผ่าน. ไม่ยืนยันสาเหตุผู้ส่งSIGTERMจากlogเพียงอย่างเดียว. Buildรอบสุดท้ายมีInvaliddepfilewarningจากinterruptedbuildแต่compileจบsuccess; analyzer0issues. ผลcoverageรอบล่าสุดใช้ค่าที่วัดจริงจากconcurrency2 ไม่ใช้ตัวเลขรอบก่อนแทน.
 
 Artifactยังเป็นunsignedHTTPSexample.invalidcompilefixture; signing/production/nativeinstallยังไม่ผ่าน #83.
+
+## 2026-10-02 - Unsigned AAB compile/container gate
+
+- Target: `app-release.aab` ของcommitac5e833
+- Command: `SCAMGUARD_ALLOW_UNSIGNED_QUALITY_BUILD=true flutter build appbundle --release --dart-define=APP_ENV=staging --dart-define=API_BASE_URL=https://example.invalid/api/v1` ตามด้วยjarsignerและPythonzip/assertions
+- Result: PASS สำหรับcompile/containergate; signingstatusเป็นunsignedตามที่ตั้งใจ
+- Summary: Build67.2s | Assertions6Passed | Failed0
+
+### 1. รายการที่ผ่าน (Passed Tests) และพฤติกรรมที่ผ่าน (How it Passed)
+
+- ReleaseAABcompileสำเร็จขนาด61,361,753bytes; ไม่มี.envทุกentryและไม่มีlauncherPNGซ้ำในFlutterassets
+- google/github/facebookSVGมีครบในbaseassetsจริงทั้ง3assertions
+- jarsigneroutputระบุjarunsigned และassertตรงกับunsignedqualitybuild ไม่ใช้debugsigningfallback
+- ExactSHA256/ABIs/sourcecommit/configเก็บใน `design/mobile/evidence/startup-2026-10-02/unsigned-aab.json`
+
+### 2. รายการที่ไม่ผ่าน (Failed Tests) และสาเหตุที่ไม่ผ่าน (How & Why it Failed)
+
+ไม่มีข้อผิดพลาด (0 Failed) ในcompile/containergate. ไม่ใช่productionidentity/signatureacceptanceหรือphysicalclean-upgradeinstall; ไม่ปิด #83 จากunsignedartifactนี้.
