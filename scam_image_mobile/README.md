@@ -69,13 +69,16 @@ lib/
    ```
 
 3. **รันแอปพลิเคชัน (Development)**
-   รันแอปพลิเคชันโดยสามารถกำหนด URL ของ API Backend ผ่าน Environment Variable ได้:
+   สร้างไฟล์ `.env` จากตัวอย่าง หากยังไม่มี แล้วแก้ `API_BASE_URL` ให้ตรงกับอุปกรณ์:
    ```bash
-   flutter run --dart-define=APP_ENV=development --dart-define=API_BASE_URL=http://10.0.2.2:8000/api/v1
+   test -f .env || cp .env.example .env
+   python3 tool/run_dev.py -- --device-id <device-id>
    ```
-   Android Emulator ใช้ `10.0.2.2`; เครื่องจริงใช้ LAN IP ของ backend และต้องระบุ `/api/v1` ตาม API contract ปัจจุบัน ไม่มี URL เริ่มต้น และไม่อ่าน/บรรจุ `.env` ในแอปอีกแล้ว
+   runner อ่านเฉพาะ `API_BASE_URL` จาก `.env`, ตรวจ URL และส่งค่าเป็น Dart define สำหรับ `APP_ENV=development`; ไม่ source ทั้งไฟล์และไม่ bundle `.env` หรือ key อื่นในแอป หากต้องใช้ไฟล์จากตำแหน่งอื่น ให้เพิ่ม `--env-file <path>` ก่อน `--`
 
-   สำหรับ profile บนเครื่องจริง ใช้ `flutter run --profile` พร้อม dart defines เดียวกัน Development HTTP อนุญาตเฉพาะ debug/profile; staging/production ต้อง HTTPS ทุก build mode
+   Android Emulator ใช้ `http://10.0.2.2:8000/api/v1`; เครื่องจริงใช้ LAN address ของ backend ที่มือถือเข้าถึงได้ และห้ามใช้ `localhost`/`127.0.0.1` แทน host backend ตรวจ config โดยไม่แสดง URL ได้ด้วย `python3 tool/run_dev.py --check-config`
+
+   สำหรับ profile บนเครื่องจริง ใช้ `python3 tool/run_dev.py -- --profile --device-id <device-id>` Development HTTP อนุญาตเฉพาะ debug/profile; staging/production ต้อง HTTPS ทุก build mode และใช้ release pipeline ที่กำหนดไว้ด้านล่าง
 
 
 ### การ Build สำหรับ Production

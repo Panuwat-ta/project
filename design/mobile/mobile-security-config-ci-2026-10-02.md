@@ -4,7 +4,7 @@
 
 งาน #78: แก้ security/session/input/privacy ฝั่ง Mobile พร้อม regression tests และบันทึกข้อจำกัด backend/product ด้านล่าง งานนี้ไม่ใช่การรับรอง production readiness.
 งาน #83: เตรียม config/signing แบบ fail closed แต่ยังไม่มี production identity/key/endpoint และ signed RC.
-งาน #84: เพิ่ม workflow และ quality gates; ยังไม่ได้รัน workflow บน GitHub จาก clean checkout.
+งาน #84: GitHub clean-checkout run 36963858748 หลัง pin action Node 24 ผ่านทุก gate; follow-up PR #90 รัน CI ซ้ำบน source ที่เพิ่ม development API runner แล้ว (run 36969781386) และผ่านทุก gate ทั้งคู่เป็น quality/compile evidence ไม่ใช่ signed RC หรือ production sign-off.
 
 ## สิ่งที่แก้และหลักฐาน
 
@@ -46,7 +46,7 @@ Gradle อ่าน identity/key จาก environment; release packaging ไม
 3. Backend ไม่มี privacy export/delete-all usage endpoints; account deletion เป็นคนละ operation. ห้ามอ้างว่าการ logout/cache purge ลบข้อมูลบนเซิร์ฟเวอร์
 4. Cache cleanup ของ image/temp manager อาจข้ามไฟล์ที่ลบไม่ได้; ไม่ได้พิสูจน์ forensic erasure หรือ encryption ของ SQLite/cache. Production retention/storage policy ยังต้อง sign-off
 5. OSV เป็น advisory snapshot ไม่ใช่ penetration test; actual TLS/production network และ staging E2E ยังไม่ผ่าน #79
-6. ไม่มี actual signed AAB, clean/upgrade install, store metadata, GitHub CI run หรือ production monitoring sign-off
+6. ยังไม่มี signed AAB, clean/upgrade install จาก RC, store metadata หรือ production monitoring sign-off; GitHub CI ยืนยันเฉพาะ quality/compile gates
 
 ## Clean source verification รอบแรก
 
@@ -77,6 +77,10 @@ Run36962909262 (af9f9a0) completed/success:749/749,tools8/8,analyzer0,line90.91%
 | actions/setup-python | v7.0.0 | 5fda3b95a4ea91299a34e894583c3862153e4b97 |
 | actions/upload-artifact | v7.0.1 | 043fb46d1a93c77aae656e7c1c64a875d1fc6a0a |
 
-ทั้ง4action.ymlใช้node24;officialtagชี้commitSHAตรงกับpin. Runnerรอบก่อน2.337.0สูงกว่าminimum2.327.1ที่READMEกำหนด. Evidence/sourceURLsใน `evidence/ci-2026-10-02/node24-action-pins.json`. รันCIยืนยันใหม่หลังpinupdate; การตรวจmetadataยังไม่ใช่หลักฐานว่าworkflowใหม่รันผ่าน.
+ทั้ง4action.ymlใช้node24;officialtagชี้commitSHAตรงกับpin. Runnerรอบก่อน2.337.0สูงกว่าminimum2.327.1ที่READMEกำหนด. Evidence/sourceURLsใน `evidence/ci-2026-10-02/node24-action-pins.json`. GitHub run 36963858748 ของ commit 7d30cc1 completed/success หลัง pin update; annotations 0. รายละเอียด coverage, audit, checksum และ APK assertions อยู่ใน `evidence/ci-2026-10-02/github-node24-artifact-verification.json`.
 
 ตรวจrepo-levelGitHubvariables/secretsได้รายการว่าง;environmentsมีcopilotและgithub-pages ไม่พบstaging/productionenvironmentในrepositoryนี้. ไม่ได้อ่านsecretvaluesและไม่ถือว่ามีproductionconfigพร้อมจากunsignedcompilefixture.
+
+## Follow-up CI — development API runner (PR #90)
+
+GitHub run 36969781386 (`6c1f8a3e`) completed/success: `flutter analyze` พบ 0 issues, quality-tool tests 18/18, Flutter tests 749/749, line coverage 5,471/6,018 (90.91%), branch coverage 1,409/1,711 (82.35%). Dependency audit ตรวจ 230 packages และรายงาน 0 advisories. Unsigned APK ขนาด 63,447,112 bytes, SHA-256 `addbba05d1155f9dcc0d9d72042b8a915686ee72230656e15709d30714ce3ff2`; ตรวจ artifact แล้วไม่พบ `.env` หรือ signature files. สรุปเครื่องอ่านได้อยู่ที่ `evidence/ci-2026-10-02/github-run-36969781386-summary.json`. ผลนี้ไม่ใช่ signed RC, staging E2E หรือ production sign-off.
