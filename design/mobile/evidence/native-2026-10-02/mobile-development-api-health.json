@@ -1,0 +1,25 @@
+{
+  "checked_at": "2026-10-02T12:18:51+07:00",
+  "device_model": "RMX3370",
+  "android_version": "13",
+  "build_source": "develop c74167b3 (mobile source inherited from 7d30cc17)",
+  "build_mode": "profile, APP_ENV=development",
+  "api_url_source": "only API_BASE_URL read from local ignored .env; value omitted",
+  "apk_bytes": 92155887,
+  "apk_env_assets": [],
+  "api_url_embedded_in_flutter_library": true,
+  "adb_reverse_mappings": [],
+  "request": "GET /health",
+  "health_http_status": 200,
+  "health_body": {
+    "status": "ok",
+    "version": "0.1.0",
+    "database": "ok",
+    "redis": "ok"
+  },
+  "authenticated_request_made": false,
+  "login_ui_flow_tested": false,
+  "profile_apk_sha256": "7d292df51b6f71a3420925882bddb6658f4ec412ffa3b2785336d7e83fd92b10",
+  "app_install_success": true,
+  "app_launch_status_ok": true
+}

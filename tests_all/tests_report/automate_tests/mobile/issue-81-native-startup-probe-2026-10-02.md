@@ -32,3 +32,13 @@ Rawsanitizedmetrics: `design/mobile/evidence/native-2026-10-02/flutter-startup-p
 - Metric: DI→signedoutroute382ms; build29.173/12.138/6.119ms, raster8.913/3.359/28.019ms, buildmiss1/rastermiss1, newgenGC4/oldgenGC0. ตัวอย่างยัง3framesจึงไม่ถือperformanceพร้อมproduction และไม่เทียบbefore/afterกับรอบแรกที่route/artifactต่างกัน
 - ไม่มีข้อผิดพลาด (0 Failed) ในรอบdedicated; ยังมีoverbudgetfindingและข้อจำกัดauthenticated/staging/fullsoakเหมือนเดิม
 - Evidence: flutter-startup-profile-dedicated.json และ dedicated-probe-artifact.json ใน design/mobile/evidence/native-2026-10-02/
+
+## Dedicated startup probe repeat — 2026-10-02 12:59 +07
+
+- อุปกรณ์: RMX3370, Android 13; signed-out dedicated probe app `com.example.scam_image_mobile.hardening_probe`
+- Command: `flutter drive --profile --no-dds --keep-app-running --driver=test_driver/startup_profile_test.dart --target=integration_test/startup_profile_test.dart -d f9a12239 --dart-define=E2E_DEDICATED_INSTALL=true --dart-define=APP_ENV=development --dart-define=API_BASE_URL=[redacted]`; runner อ่านเฉพาะ API_BASE_URL จาก `.env` ที่ผู้ใช้มี โดยไม่บันทึก URL
+- Result: PASS 1/1; startup พบ Login/Onboarding, ไม่มี Flutter exception และได้ frame count 3 ตาม assertion
+- Measurement: DI→signed-out route 401 ms; build average 23.719 ms / worst 38.024 ms / budget misses 2 of 3; raster average 17.888 ms / worst 33.928 ms / budget misses 1 of 3; new-gen GC 4, old-gen GC 0
+- สิ่งที่ไม่ผ่าน: automated assertion ไม่ fail แต่ sample มี frame-budget misses ตามค่าที่ Flutter SDK รายงาน จึงยังสรุป rendering performance ผ่านไม่ได้
+- ขอบเขต: วัดเฉพาะ DI ถึง signed-out route และ 3 Flutter frames; ไม่ใช่ OS cold launch, authenticated Home/History/Result/Heatmap, image-memory, soak, process recreation หรือ staging. #81 คง OPEN
+- Sanitized evidence: `design/mobile/evidence/native-2026-10-02/mobile-startup-profile-rerun.json`

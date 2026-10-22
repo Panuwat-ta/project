@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-02",
+  "local_time": "12:59 +07",
+  "source_commit": "ddcc1057770ed091f193142a51576d776bff3641",
+  "device": {
+    "model": "RMX3370",
+    "android_version": "13",
+    "serial": "f9a12239"
+  },
+  "application_id": "com.example.scam_image_mobile.hardening_probe",
+  "mode": "profile/development",
+  "api_base_url": "redacted; read only from user-owned .env",
+  "test": {
+    "name": "Signed-out startup produces Flutter frame timings",
+    "passed": 1,
+    "failed": 0,
+    "frame_count": 3
+  },
+  "di_to_signed_out_route_ms": 401,
+  "flutter_frame_timing": {
+    "build_average_ms": 23.719,
+    "build_p90_ms": 38.024,
+    "build_worst_ms": 38.024,
+    "build_budget_misses": 2,
+    "build_samples_ms": [
+      38.024,
+      25.068,
+      8.066
+    ],
+    "raster_average_ms": 17.888,
+    "raster_p90_ms": 33.928,
+    "raster_worst_ms": 33.928,
+    "raster_budget_misses": 1,
+    "raster_samples_ms": [
+      12.775,
+      6.963,
+      33.928
+    ]
+  },
+  "gc_counts": {
+    "new_generation": 4,
+    "old_generation": 0
+  },
+  "scope": "Profile test harness DI to Login/Onboarding and Flutter frames; not OS cold startup, authenticated flows or full soak",
+  "conclusion": "Probe passed; sample contains frame budget misses and does not satisfy Issue #81 performance/soak acceptance criteria."
+}

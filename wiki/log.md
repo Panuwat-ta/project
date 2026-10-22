@@ -134,3 +134,4 @@ grep "^## \[" wiki/log.md | tail -5
 ## [2026-09-16] fix | sync wiki/Document กับ code: canonical FR catalog, 3-factor risk, badge colors, consent/register, polling, 16 mobile routes, mIoU, scan_id, weighted loss, admin auth split, modular monolith, React 19 stack, Android-only, local /uploads; retire NFR-10/11 และลบ Jira to-do เก่า
 ## [2026-09-30] update | S_visual และ manipulation_confidence ใช้ Det Head, ยกเลิกสูตร Confidence x Coverage พร้อมหลักฐานจากการวัด (risk-scoring, ai-inference-service, database-schema, database-er-diagram, backend-documentation)
 ## [2026-10-02] update | ขยาย Mobile manual test cases 43→87, sync CSV และปรับยอดใน testing/test-cases.md; Flutter suite 417 ผ่าน, branch coverage 59.51% ยังต่ำกว่า NFR-09 80%
+## [2026-10-02] update | เพิ่ม TC-MOB-88 สำหรับ Android development API transport smoke; sync ยอดเคส mobile ใน testing/test-cases.md กับ Markdown/CSV และบันทึกว่าเคสนี้ไม่แทน staging E2E

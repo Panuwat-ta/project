@@ -30,10 +30,9 @@
 
 | TC ID | วันที่ (ปปปป-ดด-วว) | ผู้ทดสอบ | อุปกรณ์และสภาพแวดล้อม | ผล (Pass Fail Blocked Skipped) | หมายเหตุ (Bug ID / รอบ Retest / GAP) |
 |---|---|---|---|---|---|
-| (แถวแม่แบบ — ลบแถวนี้เมื่อมีผลรันจริงแถวแรก) TC-MOB-AUTH-01 | ปปปป-ดด-วว | ชื่อผู้ทดสอบ | Pixel 6 Android 14 แอปบิลด์ทดสอบ ต่อ Backend ทดสอบ | Pass | รอบ Smoke ครั้งที่ 1 |
-| (แถวแม่แบบ — ลบแถวนี้เมื่อมีผลรันจริงแถวแรก) TC-BE-SCAN-01 | ปปปป-ดด-วว | ชื่อผู้ทดสอบ | Backend Port 8000 ต่อ PostgreSQL 5432 และ Redis 6379 | Fail | เปิด BUG-001 แล้ว รอแก้ |
+| TC-MOB-88 | 2026-10-02 | Codex agent | RMX3370, Android 13, ScamGuard Profile build, development API ผ่าน Wi-Fi, ไม่มี ADB reverse | Pass | GET /health ได้ HTTP 200; database/redis เป็น ok; ไม่มี credential; login/error banner ไม่ได้ทดสอบ |
 
-> **สถานะผลรันจริง (2026-09-12)**: ยังไม่มีผลรัน manual จริงในไฟล์นี้ (มีเฉพาะแถวแม่แบบข้างต้น) — **Pass Rate คำนวณไม่ได้จนกว่าจะมีรอบรันจริง** ห้ามนำแถวแม่แบบไปคิด Pass Rate หรืออ้างใน release_signoff.md
+> ณ 2026-09-12 ยังไม่มีผล manual; รอบจริงแรกเพิ่มวันที่ 2026-10-02 ด้านบนแล้ว มีเพียง TC-MOB-88 หนึ่งเคส ไม่ใช้แทน release matrix หรือคำนวณ pass rate ตาม P0/P1/P2
 
 ---
 
@@ -49,6 +48,16 @@
 ---
 
 ## 5. สรุปรอบทดสอบ (กรอก 1 ชุดต่อ 1 รอบ)
+
+### รอบ 2026-10-02 — Mobile Development API transport smoke
+
+- รอบที่: 1 รอบ วันที่ 2026-10-02
+- ขอบเขต: TC-MOB-88 บนอุปกรณ์ RMX3370 / Android 13; Profile build จาก `develop`
+- สรุปจำนวน: ทั้งหมด 1 | Pass 1 | Fail 0 | Blocked 0 | Skipped 0; ไม่คำนวณ release pass rate จาก smoke case เดียว
+- รายการที่ผ่าน: อุปกรณ์เรียก `GET /health` ได้ HTTP 200 หลังยืนยันว่าไม่มี ADB reverse mapping; response ระบุ status/database/redis เป็น ok
+- รายการ Fail/Blocked: ไม่มี
+- GAP: ไม่ได้กรอก credential หรือทดสอบ Login UI/error banner; local development transport ไม่ใช่ staging contract/E2E
+- ผู้สรุปและวันที่: Codex agent, 2026-10-02
 
 - รอบที่: ระบุครั้งที่และช่วงวันที่
 - ขอบเขตรอบนี้: ระบุโมดูลและรายการ TC ที่รัน เช่น Mobile Auth 10 TC, Backend Scan 8 TC, Regression 4 TC

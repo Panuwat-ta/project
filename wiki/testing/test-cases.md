@@ -45,7 +45,7 @@ updated: 2026-10-02
 | admin | `tests_all/manual_tests/test_cases_admin.md` | `spreadsheets/admin/test_cases_admin.csv` | 25 |
 | ai_model | `tests_all/manual_tests/test_cases_ai_model.md` | `spreadsheets/ai_model/test_cases_ai_model.csv` | 24 |
 | backend | `tests_all/manual_tests/test_cases_backend.md` | `spreadsheets/backend/test_cases_backend.csv` | 32 |
-| mobile | `tests_all/manual_tests/test_cases_mobile.md` | `spreadsheets/mobile/test_cases_mobile.csv` | 43 |
+| mobile | `tests_all/manual_tests/test_cases_mobile.md` | `spreadsheets/mobile/test_cases_mobile.csv` | 88 |
 | nfr | `tests_all/manual_tests/test_cases_nfr.md` | `spreadsheets/nfr/test_cases_nfr.csv` | 23 |
 | image_testset | `tests_all/manual_tests/test_cases_image_testset.md` | `spreadsheets/image_testset/test_cases_image_testset.csv` | 6 |
 | e2e | `tests_all/manual_tests/test_cases_e2e.md` | `spreadsheets/e2e/test_cases_e2e_scenarios.csv` + `spreadsheets/e2e/test_cases_e2e_traceability.csv` | 10 scenarios + 4 กลุ่ม traceability |
@@ -61,7 +61,7 @@ updated: 2026-10-02
 - **admin — 25 เคส** (`TC-ADM-*`): หมวด Admin Authentication, Dashboard, การจัดการผู้ใช้/โมเดล และการตรวจสอบ
 - **ai_model — 24 เคส** (`TC-AI-*`): หมวด Overlapping Tiling Inference, SegFormer/ONNX, Surya OCR, Qwen2.5 XAI และ Source Verification
 - **backend — 32 เคส** (`TC-BE-*`): หมวด Authentication & RBAC, Scan API, ฐานข้อมูล PostgreSQL/Redis และ endpoint ฝั่งเซิร์ฟเวอร์
-- **mobile — 87 เคส** (`TC-MOB-*`): 87 cases (`TC-MOB-01` ถึง `TC-MOB-87`) ครอบคลุม Auth, Scan/Crop, Result/Heatmap, History, Report, Settings/Privacy, in-app notifications, routing และ accessibility
+- **mobile — 88 เคส** (`TC-MOB-*`): 88 cases (`TC-MOB-01` ถึง `TC-MOB-88`) ครอบคลุม Auth, Scan/Crop, Result/Heatmap, History, Report, Settings/Privacy, in-app notifications, routing และ accessibility
 - **nfr — 23 เคส** (`TC-NFR-*`): หมวด Performance & Reliability, Security, PDPA และ Accessibility
 - **image_testset — 6 เคส** (`TC-IMGM-*` / `TC-IMGP-*`): เคส mask (ภาพปลอมที่มี ground-truth mask, ภาพจริง mask ดำล้วน, face morphing) และเคสคู่เทียบ (pairs) อ้างอิงข้อมูลจริงที่ `/home/panuwat/Pictures/Test-Cases/`
 - **e2e — 10 scenarios + 4 กลุ่ม traceability**: scenario ข้ามระบบ (`TC-E2E-SCAN-01` ถึง `TC-E2E-HIST-10`) ครอบคลุม journey สแกนเต็มรูปแบบ, cache hit, รายงาน incident, deploy โมเดล, ban ผู้ใช้, offline sync, วงจร register-to-audit, token refresh, regression หลัง deploy และการลบประวัติ ส่วนตาราง traceability แยกย่อย scenario หลักเป็น 4 กลุ่ม (A: อัปโหลด+ตรวจไฟล์, B: ประมวลผล AI, C: แสดงผลลัพธ์, D: บันทึกประวัติ+เวลา)
@@ -94,7 +94,7 @@ tests_all/tests_report/
 ## ประเด็นสำคัญ
 
 - ตาราง manual test ทุกไฟล์ใช้ 10 คอลัมน์ตาม IEEE 829 / ISTQB โดย md เป็น canonical และ CSV ใน `spreadsheets/<area>/` ต้องสร้างใหม่ทุกครั้งที่ md เปลี่ยน
-- ยอดเคสรวม: admin 25, ai_model 24, backend 32, mobile 87, nfr 23, image_testset 6, e2e 10 scenarios + 4 กลุ่ม traceability
+- ยอดเคสรวม: admin 25, ai_model 24, backend 32, mobile 88, nfr 23, image_testset 6, e2e 10 scenarios + 4 กลุ่ม traceability
 - ผลการรันจริงเท่านั้นที่อยู่ใน `tests_all/tests_report/` และต้องแจกแจง 4 มิติเป็นภาษาไทย
 
 ---

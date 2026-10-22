@@ -1,0 +1,38 @@
+{
+  "run_id": 36963858748,
+  "workflow": "Mobile quality gates",
+  "source_commit": "7d30cc175793b0c2f38116bf0705515755ae25f1",
+  "conclusion": "success",
+  "run_url": "https://github.com/Panuwat-ta/project/actions/runs/36963858748",
+  "flutter_tests_passed": 749,
+  "flutter_tests_failed": 0,
+  "analyzer_issues": 0,
+  "coverage": {
+    "lines_hit": 5471,
+    "lines_found": 6018,
+    "line_percent": 90.9106015287471,
+    "branches_hit": 1409,
+    "branches_found": 1711,
+    "branch_percent": 82.34950321449445,
+    "minimum": 80,
+    "passed": true
+  },
+  "dependency_audit": {
+    "status": "passed",
+    "resolved_packages": 230,
+    "advisories": 0,
+    "checked_at": "2026-10-02T04:22:45.356515+00:00"
+  },
+  "unsigned_apk": {
+    "bytes": 63447112,
+    "sha256_expected": "addbba05d1155f9dcc0d9d72042b8a915686ee72230656e15709d30714ce3ff2",
+    "sha256_actual": "addbba05d1155f9dcc0d9d72042b8a915686ee72230656e15709d30714ce3ff2",
+    "checksum_matches": true,
+    "env_archive_members": [],
+    "duplicate_launcher_asset_members": [],
+    "flutter_icon_assets": 3
+  },
+  "check_annotations": 0,
+  "node_runtime_action_pins": 4,
+  "production_release_or_deployment": false
+}

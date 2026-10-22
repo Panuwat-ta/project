@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-02",
+  "source_commit": "6c1f8a3ef98af8720346e53d624ba14e1b78701a",
+  "pull_request": "https://github.com/Panuwat-ta/project/pull/90",
+  "workflow_run": "https://github.com/Panuwat-ta/project/actions/runs/36969781386",
+  "workflow_conclusion": "success",
+  "required_automate_test_run": "https://github.com/Panuwat-ta/project/actions/runs/36969781382",
+  "results": {
+    "dart_format": "passed",
+    "flutter_analyzer_issues": 0,
+    "python_quality_tool_tests": {
+      "passed": 18,
+      "failed": 0
+    },
+    "flutter_tests": {
+      "passed": 749,
+      "failed": 0
+    },
+    "line_coverage": {
+      "hit": 5471,
+      "found": 6018,
+      "percent": 90.91
+    },
+    "branch_coverage": {
+      "hit": 1409,
+      "found": 1711,
+      "percent": 82.35,
+      "minimum_percent": 80
+    },
+    "dependency_audit": {
+      "status": "passed",
+      "packages": 230,
+      "advisories": 0
+    },
+    "unsigned_apk": {
+      "bytes": 63447112,
+      "sha256": "addbba05d1155f9dcc0d9d72042b8a915686ee72230656e15709d30714ce3ff2",
+      "env_assets": [],
+      "signature_files": []
+    }
+  },
+  "limits": [
+    "unsigned compile artifact only",
+    "not staging authenticated E2E",
+    "not production sign-off"
+  ]
+}
